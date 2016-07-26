@@ -131,5 +131,7 @@ class UserRepository(
       androidToken -> flatOrNull(data.androidToken),
       name -> flatOrNull(data.name),
       avatar -> flatOrNull(data.avatar),
-      cover -> flatOrNull(data.cover))
+      cover -> flatOrNull(data.cover),
+      deviceName -> flatOrNull(data.deviceName),
+      deviceCloudId -> flatOrNull(data.deviceCloudId))
 }

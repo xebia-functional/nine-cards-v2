@@ -95,6 +95,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def startAddItemToCollection(contact: Contact): Unit = startAddItemToCollection(toAddCardRequest(contact))
 
+  def launchMenu(): Unit = actions.openMenu().run
+
   private[this] def startAddItemToCollection(addCardRequest: AddCardRequest): Unit = {
     statuses = statuses.startAddItem(addCardRequest)
     actions.startAddItem(addCardRequest.cardType).run
@@ -224,9 +226,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def editCollectionInReorderMode(): Unit =
     (statuses.collectionReorderMode match {
-      case Some(_) => actions.showNoImplementedYetMessage()
+      case Some(collection) => actions.editCollection(collection)
       case None => actions.showContactUsError()
     }).run
+
+  def goToMomentWorkspace(): Unit = (actions.goToMomentWorkspace() ~ actions.closeAppsMoment()).run
+
+  def clickWorkspaceBackground(): Unit = actions.openAppsMoment().run
+
+  def clickMomentTopBar(): Unit = actions.openAppsMoment().run
 
   def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
     self !>>
@@ -236,6 +244,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         action = OpenAction,
         label = card.packageName map ProvideLabel,
         value = Some(OpenMomentFromWorkspaceValue))
+    actions.closeAppsMoment().run
     execute(card.intent)
   }
 
@@ -270,6 +279,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         actions.reloadWorkspaces(data, Some(page)).run
       case _ =>
     }
+  }
+
+  def updateCollection(collection: Collection): Unit = {
+    val data = updateCollectionInCurrentData(collection)
+    actions.reloadWorkspaces(data).run
   }
 
   def removeCollection(collection: Collection): Unit = {
@@ -497,7 +511,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         } getOrElse {
           if (preferenceStatus.momentsWasChanged) {
             preferenceStatus.setMoments(false)
-            actions.reloadCurrentMoment()
+            actions.reloadMomentTopBar()
           } else {
             Ui.nop
           }
@@ -564,8 +578,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   private[this] def reorderCollectionsInCurrentData(from: Int, to: Int): Seq[LauncherData] = {
-    val currentData = actions.getData
-    val cols = currentData flatMap (_.collections)
+    val cols = actions.getData flatMap (_.collections)
     val collections = cols.reorder(from, to).zipWithIndex map {
       case (collection, index) => collection.copy(position = index)
     }
@@ -573,8 +586,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   private[this] def reloadCollectionsInCurrentData: Seq[LauncherData] = {
-    val currentData = actions.getData
-    val collections = currentData flatMap (_.collections)
+    val collections = actions.getData flatMap (_.collections)
     createLauncherDataCollections(collections)
   }
 
@@ -591,6 +603,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       val page = newData.size - 1
       (page, newData)
     }
+  }
+
+  private[this] def updateCollectionInCurrentData(collection: Collection): Seq[LauncherData] = {
+    val cols = actions.getData flatMap (_.collections)
+    val collections = cols.updated(collection.position, collection)
+    createLauncherDataCollections(collections)
   }
 
   private[this] def createLauncherDataCollections(collections: Seq[Collection]): Seq[LauncherData] = {
@@ -618,6 +636,8 @@ trait LauncherUiActions {
   def startReorder: Ui[Any]
 
   def endReorder: Ui[Any]
+
+  def goToMomentWorkspace(): Ui[Any]
 
   def goToPreviousScreenReordering(): Ui[Any]
 
@@ -655,6 +675,8 @@ trait LauncherUiActions {
 
   def reloadCurrentMoment(): Ui[Any]
 
+  def reloadMomentTopBar(): Ui[Any]
+
   def reloadMoment(moment: LauncherData): Ui[Any]
 
   def reloadAppsInDrawer(
@@ -664,7 +686,7 @@ trait LauncherUiActions {
 
   def reloadContactsInDrawer(
     contacts: IterableContacts,
-    counters: Seq[TermCounter] = Seq.empty): Ui[_]
+    counters: Seq[TermCounter] = Seq.empty): Ui[Any]
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
 
@@ -672,7 +694,15 @@ trait LauncherUiActions {
 
   def resetFromCollection(): Ui[Any]
 
+  def editCollection(collection: Collection): Ui[Any]
+
   def addWidgetView(widgetView: View): Ui[Any]
+
+  def openMenu(): Ui[Any]
+
+  def openAppsMoment(): Ui[Any]
+
+  def closeAppsMoment(): Ui[Any]
 
   def isEmptyCollectionsInWorkspace: Boolean
 

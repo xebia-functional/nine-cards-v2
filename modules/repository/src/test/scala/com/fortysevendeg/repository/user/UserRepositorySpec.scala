@@ -22,6 +22,8 @@ trait UserRepositorySpecification
   with DisjunctionMatchers
   with Mockito {
 
+  val contentResolverException = new RuntimeException("Irrelevant message")
+
   trait UserRepositoryScope
     extends Scope {
 
@@ -32,84 +34,8 @@ trait UserRepositorySpecification
     lazy val userRepository = new UserRepository(contentResolverWrapper, uriCreator)
 
     lazy val mockUri = mock[Uri]
-  }
-
-  trait ValidUserRepositoryResponses
-    extends UserRepositoryTestData {
-
-    self: UserRepositoryScope =>
 
     uriCreator.parse(any) returns mockUri
-
-    contentResolverWrapper.insert(
-      uri = mockUri,
-      values = createUserValues,
-      notificationUri = Some(mockUri)) returns testId
-
-    contentResolverWrapper.delete(
-      uri = mockUri,
-      where = "",
-      notificationUri = Some(mockUri)) returns 1
-
-    contentResolverWrapper.deleteById(
-      uri = mockUri,
-      id = testId,
-      notificationUri = Some(mockUri)) returns 1
-
-    contentResolverWrapper.findById(
-      uri = mockUri,
-      id = testId,
-      projection = allFields)(
-        f = getEntityFromCursor(userEntityFromCursor)) returns Some(userEntity)
-
-    contentResolverWrapper.findById(
-      uri = mockUri,
-      id = testNonExistingId,
-      projection = allFields)(
-        f = getEntityFromCursor(userEntityFromCursor)) returns None
-
-    contentResolverWrapper.updateById(
-      uri = mockUri,
-      id = testId,
-      values = createUserValues,
-      notificationUri = Some(mockUri)) returns 1
-  }
-
-  trait ErrorUserRepositoryResponses
-    extends UserRepositoryTestData {
-
-    self: UserRepositoryScope =>
-
-    val contentResolverException = new RuntimeException("Irrelevant message")
-
-    uriCreator.parse(any) returns mockUri
-
-    contentResolverWrapper.insert(
-      uri = mockUri,
-      values = createUserValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
-
-    contentResolverWrapper.delete(
-      uri = mockUri,
-      where = "",
-      notificationUri = Some(mockUri)) throws contentResolverException
-
-    contentResolverWrapper.deleteById(
-      uri = mockUri,
-      id = testId,
-      notificationUri = Some(mockUri)) throws contentResolverException
-
-    contentResolverWrapper.findById(
-      uri = mockUri,
-      id = testId,
-      projection = allFields)(
-        f = getEntityFromCursor(userEntityFromCursor)) throws contentResolverException
-
-    contentResolverWrapper.updateById(
-      uri = mockUri,
-      id = testId,
-      values = createUserValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
   }
 
 }
@@ -128,7 +54,9 @@ trait UserMockCursor
     (androidToken, 6, userSeq map (_.data.androidToken orNull), StringDataType),
     (name, 7, userSeq map (_.data.name orNull), StringDataType),
     (avatar, 8, userSeq map (_.data.avatar orNull), StringDataType),
-    (cover, 9, userSeq map (_.data.cover orNull), StringDataType))
+    (cover, 9, userSeq map (_.data.cover orNull), StringDataType),
+    (deviceName, 10, userSeq map (_.data.deviceName orNull), StringDataType),
+    (deviceCloudId, 11, userSeq map (_.data.deviceCloudId orNull), StringDataType))
 
   prepareCursor[User](userSeq.size, cursorData)
 }
@@ -147,34 +75,41 @@ trait EmptyUserMockCursor
     (androidToken, 6, Seq.empty, StringDataType),
     (name, 7, Seq.empty, StringDataType),
     (avatar, 8, Seq.empty, StringDataType),
-    (cover, 9, Seq.empty, StringDataType))
+    (cover, 9, Seq.empty, StringDataType),
+    (deviceName, 10, Seq.empty, StringDataType),
+    (deviceCloudId, 11, Seq.empty, StringDataType))
 
   prepareCursor[User](0, cursorData)
 }
 
 class UserRepositorySpec
-  extends UserRepositorySpecification {
+  extends UserRepositorySpecification
+  with UserRepositoryTestData {
 
   "UserRepositoryClient component" should {
 
     "addUser" should {
 
       "return a User object with a valid request" in
-        new UserRepositoryScope
-          with ValidUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.insert(any, any, any) returns testId
 
           val result = userRepository.addUser(data = createUserData).run.run
 
           result must beLike {
             case Answer(userResponse) =>
               userResponse.id shouldEqual testId
-              userResponse.data.userId shouldEqual testUserIdOption
+              userResponse.data.userId should beSome(testUserId)
           }
+
+          there was one(contentResolverWrapper).insert(mockUri, createUserValues, Some(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new UserRepositoryScope
-          with ErrorUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.insert(any, any, any) throws contentResolverException
 
           val result = userRepository.addUser(data = createUserData).run.run
 
@@ -185,14 +120,17 @@ class UserRepositorySpec
               }
             }
           }
+
+          there was one(contentResolverWrapper).insert(mockUri, createUserValues, Some(mockUri))
         }
     }
 
     "deleteUsers" should {
 
       "return a successful result when all the users are deleted" in
-        new UserRepositoryScope
-          with ValidUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.delete(any, any, any, any) returns 1
 
           val result = userRepository.deleteUsers().run.run
 
@@ -200,11 +138,17 @@ class UserRepositorySpec
             case Answer(deleted) =>
               deleted shouldEqual 1
           }
+
+          there was one(contentResolverWrapper).delete(
+            uri = mockUri,
+            where = "",
+            notificationUri = Some(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new UserRepositoryScope
-          with ErrorUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.delete(any, any, any, any) throws contentResolverException thenReturn 1
 
           val result = userRepository.deleteUsers().run.run
 
@@ -215,14 +159,20 @@ class UserRepositorySpec
               }
             }
           }
+
+          there was one(contentResolverWrapper).delete(
+            uri = mockUri,
+            where = "",
+            notificationUri = Some(mockUri))
         }
     }
 
     "deleteUser" should {
 
       "return a successful result when a valid user id is given" in
-        new UserRepositoryScope
-          with ValidUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
 
           val result = userRepository.deleteUser(user).run.run
 
@@ -230,11 +180,17 @@ class UserRepositorySpec
             case Answer(deleted) =>
               deleted shouldEqual 1
           }
+
+          there was one(contentResolverWrapper).deleteById(
+            uri = mockUri,
+            id = testId,
+            notificationUri = Some(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new UserRepositoryScope
-          with ErrorUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException thenReturn 1
 
           val result = userRepository.deleteUser(user).run.run
 
@@ -245,14 +201,20 @@ class UserRepositorySpec
               }
             }
           }
+
+          there were one(contentResolverWrapper).deleteById(
+            uri = mockUri,
+            id = testId,
+            notificationUri = Some(mockUri))
         }
     }
 
     "findUserById" should {
 
       "return a User object when a existing id is given" in
-        new UserRepositoryScope
-          with ValidUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.findById[UserEntity](any, any, any, any, any, any)(any) returns Some(userEntity)
 
           val result = userRepository.findUserById(id = testId).run.run
 
@@ -260,25 +222,40 @@ class UserRepositorySpec
             case Answer(maybeUser) =>
               maybeUser must beSome[User].which { user =>
                 user.id shouldEqual testId
-                user.data.userId shouldEqual testUserIdOption
+                user.data.userId should beSome(testUserId)
               }
           }
+
+          there was one(contentResolverWrapper).findById(
+            uri = mockUri,
+            id = testId,
+            projection = allFields)(
+            f = getEntityFromCursor(userEntityFromCursor))
         }
 
       "return None when a non-existing id is given" in
-        new UserRepositoryScope
-          with ValidUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.findById(any, any, any, any, any, any)(any) returns None
+
           val result = userRepository.findUserById(id = testNonExistingId).run.run
 
           result must beLike {
             case Answer(maybeUser) =>
               maybeUser must beNone
           }
+
+          there was one(contentResolverWrapper).findById(
+            uri = mockUri,
+            id = testNonExistingId,
+            projection = allFields)(
+            f = getEntityFromCursor(userEntityFromCursor))
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new UserRepositoryScope
-          with ErrorUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.findById(any, any, any, any, any, any)(any) throws contentResolverException thenReturn None
 
           val result = userRepository.findUserById(id = testId).run.run
 
@@ -289,14 +266,21 @@ class UserRepositorySpec
               }
             }
           }
+
+          there was one(contentResolverWrapper).findById(
+            uri = mockUri,
+            id = testId,
+            projection = allFields)(
+            f = getEntityFromCursor(userEntityFromCursor))
         }
     }
 
     "updateUser" should {
 
       "return a successful result when the user is updated" in
-        new UserRepositoryScope
-          with ValidUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.updateById(any, any, any, any) returns 1
 
           val result = userRepository.updateUser(item = user).run.run
 
@@ -304,11 +288,18 @@ class UserRepositorySpec
             case Answer(updated) =>
               updated shouldEqual 1
           }
+
+          there was one(contentResolverWrapper).updateById(
+            uri = mockUri,
+            id = testId,
+            values = createUserValues,
+            notificationUri = Some(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new UserRepositoryScope
-          with ErrorUserRepositoryResponses {
+        new UserRepositoryScope {
+
+          contentResolverWrapper.updateById(any, any, any, any) throws contentResolverException thenReturn 1
 
           val result = userRepository.updateUser(item = user).run.run
 
@@ -319,6 +310,12 @@ class UserRepositorySpec
               }
             }
           }
+
+          there was one(contentResolverWrapper).updateById(
+            uri = mockUri,
+            id = testId,
+            values = createUserValues,
+            notificationUri = Some(mockUri))
         }
     }
 

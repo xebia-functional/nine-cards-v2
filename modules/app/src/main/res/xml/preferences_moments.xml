@@ -2,26 +2,10 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ListPreference
-            android:key="numberOfAppsInHorizontalMoment"
-            android:defaultValue="5"
-            android:entries="@array/numberOfAppsInHorizontalValues"
-            android:entryValues="@array/numberOfAppsInHorizontalValues"
-            android:title="@string/numberOfAppsInHorizontalTitle"
-            android:summary="@string/numberOfAppsInHorizontalSummary"/>
-
-    <ListPreference
-            android:key="numberOfRowsMoment"
-            android:defaultValue="1"
-            android:entries="@array/numberOfRowsValues"
-            android:entryValues="@array/numberOfRowsValues"
-            android:title="@string/numberOfRowsTitle"
-            android:summary="@string/numberOfRowsSummary"/>
-
     <CheckBoxPreference
-            android:key="showBackgroundMoment"
+            android:key="showClockMoment"
             android:defaultValue="false"
-            android:title="@string/showBackgroundTitle"
-            android:summary="@string/showBackgroundSummary"/>
+            android:title="@string/showClockTitle"
+            android:summary="@string/showClockSummary"/>
 
 </PreferenceScreen>

@@ -5,17 +5,16 @@ import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{PrivateCollection, Collection}
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.Ui
 
-class PrivateCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
+class PrivateCollectionsFragment(implicit lPresenter: LauncherPresenter)
   extends BaseActionFragment
-  with PrivateCollectionsComposer
-  with NineCardIntentConversions
-  with PrivateCollectionsActions { self =>
+  with PrivateCollectionsActionsImpl
+  with NineCardIntentConversions { self =>
 
-  implicit lazy val presenter = new PrivateCollectionsPresenter(self)
+  override lazy val collectionPresenter = new PrivateCollectionsPresenter(self)
+
+  lazy val launcherPresenter = lPresenter
 
   lazy val packages = getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])
 
@@ -23,25 +22,8 @@ class PrivateCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    presenter.initialize()
+    collectionPresenter.initialize()
   }
-
-  override def initialize(): Ui[Any] = initUi
-
-  override def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any] =
-    reloadPrivateCollections(privateCollections)
-
-  override def addCollection(collection: Collection): Ui[Any] = Ui {
-    launcherPresenter.addCollection(collection)
-  }
-
-  override def showLoading(): Ui[Any] = showLoadingView
-
-  override def showEmptyMessage(): Ui[Any] = showError(R.string.messageEmpty, presenter.loadPrivateCollections())
-
-  override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError)
-
-  override def close(): Ui[Any] = unreveal()
 }
 
 

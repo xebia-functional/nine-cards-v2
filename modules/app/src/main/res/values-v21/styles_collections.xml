@@ -5,8 +5,4 @@
         <item name="android:elevation">@dimen/elevation_fab_button</item>
     </style>
 
-    <style name="LauncherCollectionItemIcon" parent="LauncherCollectionItemIconParent">
-        <item name="android:elevation">@dimen/elevation_default</item>
-    </style>
-
 </resources>

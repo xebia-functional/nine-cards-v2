@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.commons._
+import AnimatedWorkSpaces._
 import macroid.FullDsl._
 import macroid._
 
@@ -25,9 +26,13 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   (context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr)
   with Contexts[View]
-  with LongClickHandler { self =>
+  with ClicksHandler { self =>
 
-  type PageChangedObserver = (Int => Unit)
+  // First parameter  [Data]    : Current data of the screen
+  // Second parameter [Data]    : The data where you go
+  // Third parameter  [Boolean] : movement to left?
+  // Fourth parameter [Float]   : Fraction of the movement
+  type MovementObserver = ((Data, Data, Boolean, Float) => Unit)
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -48,6 +53,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     infinite = false)
 
   var onPageChangedObservers: Seq[PageChangedObserver] = Seq.empty
+
+  var onMovementObservers: Seq[MovementObserver] = Seq.empty
 
   val (touchSlop, maximumVelocity, minimumVelocity) = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
@@ -112,21 +119,23 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
     views = (newData.zipWithIndex map {
       case (itemData, index) =>
+        val newScreen = data.lift(index).isEmpty
         val sameData = data.lift(index) contains itemData
-        (sameData, views.lift(index), forcePopulatePosition) match {
-          case (true, Some(oldView: Holder), Some(forceIndex)) if index == forceIndex =>
-            populateView(Some(oldView), itemData, getItemViewType(itemData, index), index).run
-            oldView
-          case (true, Some(oldView: Holder), _) =>
-            oldView
-          case (false, Some(oldView: Holder), _) =>
-            populateView(Some(oldView), itemData, getItemViewType(itemData, index), index).run
-            oldView
-          case _ =>
-            val view = createView(getItemViewType(itemData, index))
-            populateView(Some(view), itemData, getItemViewType(itemData, index), index).run
-            view
+
+        lazy val newView = createView(getItemViewType(itemData, index))
+
+        val selectedView =
+          if (newScreen) newView
+          else views.lift(index) match {
+            case Some(oldView) => oldView
+            case _ => newView
+          }
+
+        (sameData, forcePopulatePosition) match {
+          case (true, Some(forceIndex)) if index != forceIndex =>
+          case _ => populateView(Some(selectedView), itemData, getItemViewType(itemData, index), index).run
         }
+        selectedView
     }) ++ (newData.length until minimumViews map (_ => createEmptyView()))
 
     data = newData
@@ -156,6 +165,15 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   def notifyPageChangedObservers() = onPageChangedObservers foreach (observer => observer(goToItem()))
 
   def addPageChangedObservers(f: PageChangedObserver) = onPageChangedObservers = onPageChangedObservers :+ f
+
+  def notifyMovementObservers(percent: Float) = for {
+    from <- data.lift(currentPage())
+    to <- data.lift(goToItem())
+  } yield {
+    onMovementObservers foreach (observer => observer(from, to, statuses.isFromLeft, percent))
+  }
+
+  def addMovementObservers(f: MovementObserver) = onMovementObservers = onMovementObservers :+ f
 
   private[this] def getSizeWidget = if (statuses.horizontalGallery) getWidth else getHeight
 
@@ -208,6 +226,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   private[this] def transformPanelCanvas(): Ui[_] = {
     val percent = statuses.percent(getSizeWidget)
     val fromLeft = statuses.isFromLeft
+    notifyMovementObservers(percent)
     applyTransformer(if (fromLeft) getPreviousView else getNextView, percent, fromLeft)
   }
 
@@ -309,9 +328,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       case (ACTION_MOVE, Stopped) => setStateIfNeeded(x, y)
       case (ACTION_DOWN, _) =>
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        startLongClick()
+        startClicks()
       case (ACTION_CANCEL | ACTION_UP, _) =>
-        resetLongClick()
+        if (isClick && action == ACTION_UP) listener.onClick()
+        resetClicks()
         computeFling()
         statuses = statuses.copy(touchState = Stopped)
       case _ =>
@@ -349,7 +369,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       val yMoved = yDiff > touchSlop
 
       if (xMoved || yMoved) {
-        resetLongClick()
+        resetClicks()
         val penultimate = data.length - 2
         val isScrolling = (statuses.infinite, statuses.horizontalGallery, xDiff > yDiff, moveItemsAnimator.isRunning) match {
           case (true, true, true, _) => true
@@ -451,7 +471,13 @@ case class AnimatedWorkSpacesStatuses(
 
 }
 
+object AnimatedWorkSpaces {
+  // First parameter [Int]: Position of the screen
+  type PageChangedObserver = (Int => Unit)
+}
+
 case class AnimatedWorkSpacesListener(
+  onClick: () => Unit = () => (),
   onLongClick: () => Unit = () => ())
 
 case class Dimen(width: Int = 0, height: Int = 0)

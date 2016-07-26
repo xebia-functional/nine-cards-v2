@@ -16,6 +16,8 @@ trait Conversions {
       androidToken = user.androidToken,
       name = googlePlusProfile.name,
       avatar = googlePlusProfile.avatarUrl,
-      cover = googlePlusProfile.coverUrl)
+      cover = googlePlusProfile.coverUrl,
+      deviceName = user.deviceName,
+      deviceCloudId = user.deviceCloudId)
 
 }

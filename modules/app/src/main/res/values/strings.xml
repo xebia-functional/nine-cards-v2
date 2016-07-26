@@ -20,6 +20,8 @@
     <string name="todo">TODO. Sorry. We are working in that</string>
     <string name="buttonErrorReload">Reload</string>
 
+    <string name="atHour">at</string>
+
     <string name="itemAddedToCollectionSuccessful">Item added to <xliff:g id="collection" example="Social">%1$s</xliff:g> collection</string>
 
     <!-- Menu -->
@@ -91,6 +93,7 @@
     <string name="publicCollections">Public collections</string>
 
     <string name="newCollection">New collection</string>
+    <string name="editCollection">Edit collection</string>
     <string name="collectionName">Collection name</string>
     <string name="selectIcon">Select icon</string>
     <string name="selectColor">Select color</string>
@@ -249,15 +252,25 @@
     <string name="syncCurrent">Current device</string>
     <string name="syncLastSynced">Last synced: %s</string>
 
+    <string name="menuAccountSync">Synchronize</string>
+    <string name="menuAccountCopy">Copy</string>
+    <string name="menuAccountDelete">Delete</string>
+
     <string name="accountSynced">Account synced</string>
 
     <string name="errorSyncing">Error syncing account. Try again please</string>
 
     <string name="errorLoadingUser">Error loading user</string>
 
+    <string name="errorEmptyNameForDevice">Please, specify a name for the new configuration</string>
+    <string name="errorEmptyNameForDeviceButton">Try again</string>
+
     <string name="logout">Logout</string>
 
+    <string name="copyAccountSyncDialogTitle">New configuration</string>
+    <string name="hintNewConfigurationName">Name</string>
     <string name="removeAccountSyncMessage">Are you sure that you want remove this device?</string>
+
 
     <!-- Preferences -->
 
@@ -292,14 +305,8 @@
     <string name="momentsPrefTitle">Moments</string>
     <string name="momentsPrefSummary">Moments Summary</string>
 
-    <string name="numberOfAppsInHorizontalTitle">Number of apps in horizontal</string>
-    <string name="numberOfAppsInHorizontalSummary">Number of apps in horizontal Summary</string>
-
-    <string name="numberOfRowsTitle">Number of rows</string>
-    <string name="numberOfRowsSummary">Number of rows Summary</string>
-
-    <string name="showBackgroundTitle">Show background</string>
-    <string name="showBackgroundSummary">Show background Summary</string>
+    <string name="showClockTitle">Show Clock</string>
+    <string name="showClockSummary">Show Clock Summary</string>
 
     <!-- App Drawer Preferences -->
 
@@ -436,6 +443,5 @@
     <string name="sendFeedback">Send a Feedback (Launch AppTentive)</string>
     <string name="tutorial">See the Tutorial</string>
     <string name="tos">Terms of Use</string>
-
 
 </resources>

@@ -16,6 +16,8 @@
     <string name="sendTo">Enviar a</string>
     <string name="buttonErrorReload">Recargar</string>
 
+    <string name="atHour">a las</string>
+
     <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a la collectión %1$s</string>
 
     <!-- Menu -->
@@ -86,6 +88,7 @@
     <string name="publicCollections">Colecciones Públicas</string>
 
     <string name="newCollection">Nueva colección</string>
+    <string name="editCollection">Editar colección</string>
     <string name="collectionName">Nombre de la colección</string>
     <string name="selectIcon">Seleccionar icono</string>
     <string name="selectColor">Seleccionar color</string>
@@ -239,14 +242,23 @@
     <string name="syncCurrent">Dispositivo actual</string>
     <string name="syncLastSynced">Última sincronización: %s</string>
 
+    <string name="menuAccountSync">Sincronizar</string>
+    <string name="menuAccountCopy">Copiar</string>
+    <string name="menuAccountDelete">Eliminar</string>
+
     <string name="accountSynced">Cuenta sincronizada</string>
 
     <string name="errorSyncing">Error sincronizando cuenta. Inténtale de nuevo</string>
 
     <string name="errorLoadingUser">Error cargando usuario</string>
 
+    <string name="errorEmptyNameForDevice">Por favor, especifique un nombre para la nueva configuración</string>
+    <string name="errorEmptyNameForDeviceButton">Inténtalo de nuevo</string>
+
     <string name="logout">Salir</string>
 
+    <string name="copyAccountSyncDialogTitle">Nueva configuración</string>
+    <string name="hintNewConfigurationName">Nombre</string>
     <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
 
     <!-- Preferences -->
@@ -282,14 +294,8 @@
     <string name="momentsPrefTitle">Momentos</string>
     <string name="momentsPrefSummary">Resumen Momentos</string>
 
-    <string name="numberOfAppsInHorizontalTitle">Número de aplicaciones en horizontal</string>
-    <string name="numberOfAppsInHorizontalSummary">Resumen de Número de aplicaciones</string>
-
-    <string name="numberOfRowsTitle">Número de filas</string>
-    <string name="numberOfRowsSummary">Resumen de Número de filas</string>
-
-    <string name="showBackgroundTitle">Mostrar fondo en aplicaciones</string>
-    <string name="showBackgroundSummary">Resumen de Mostrar fondo en aplicaciones</string>
+    <string name="showClockTitle">Mostrar reloj</string>
+    <string name="showClockSummary">Resumen de Mostrar reloj</string>
 
     <!-- AppDrawer Preferences -->
 

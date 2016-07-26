@@ -28,7 +28,7 @@ class WorkspaceItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private[this] val title = Option(findView(TR.workspace_title))
 
-  private[this] val icon = Option(findView(TR.workspace_icon))
+  val icon = Option(findView(TR.workspace_icon))
 
   (icon <~ fabStyle).run
 
