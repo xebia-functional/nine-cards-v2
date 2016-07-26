@@ -15,11 +15,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.HeaderRadio
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceData}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+import org.ocpsoft.prettytime.PrettyTime
 
 trait WizardUiActionsImpl
   extends WizardUiActions
@@ -159,9 +160,20 @@ trait WizardUiActionsImpl
     usersSpinner <~ sAdapter(sa)
   }
 
-  private[this] def addDevicesToRadioGroup(devices: Seq[CloudStorageDevice]): Ui[Any] = {
-    val radioViews = (devices map (device => userRadio(device.data.deviceName, device.cloudId))) :+
-      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey)
+  private[this] def addDevicesToRadioGroup(devices: Seq[UserCloudDevice]): Ui[Any] = {
+
+    def subtitle(device: UserCloudDevice): String = {
+      if (device.fromV1) "" else {
+        val time = new PrettyTime().format(device.modifiedDate)
+        resGetString(R.string.syncLastSynced, time)
+      }
+    }
+
+    val radioViews = (devices map (device => userRadio(device.deviceName, subtitle(device), device.cloudId))) :+
+      userRadio(
+        resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL),
+        resGetString(R.string.newConfigurationSubtitle),
+        newConfigurationKey)
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui {
         radioViews.headOption foreach (_.setChecked(true))
@@ -185,8 +197,11 @@ trait WizardUiActionsImpl
   private[this] def pagination(position: Int) =
     (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
-  private[this] def userRadio(title: String, tag: String): HeaderRadioButton =
-    (w[HeaderRadioButton] <~ hrbTitle(title) <~ vTag(tag)).get
+  private[this] def userRadio(title: String, subtitle: String, tag: String): HeaderRadioButton =
+    (w[HeaderRadioButton] <~
+      hrbTitle(title) <~
+      hrbSubTitle(subtitle) <~
+      vTag(tag)).get
 
 }
 

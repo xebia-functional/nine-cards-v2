@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
+import java.util.Date
+
 import android.accounts.{Account, AccountManager, OperationCanceledException}
 import android.app.Activity
 import android.content.{Context, Intent}
@@ -12,13 +14,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider, GooglePlusApiClientProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceData, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
@@ -315,24 +317,33 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }) getOrElse actions.showErrorConnectingGoogle().run
   }
 
-  private[this] def addMomentsToCollections(collections: Seq[Collection], moments: Seq[Moment]) =
-    collections map (collection => toCloudStorageCollection(collection, moments.find(_.collectionId == Option(collection.id))))
-
   private[this] def verifyAndUpdate(
     cloudStorageProcess: CloudStorageProcess,
     name: String,
     cloudStorageResources: Seq[CloudStorageDeviceSummary]
   ): ServiceDef2[UserCloudDevices, UserConfigException with CloudStorageProcessException] = {
+
+    def sort(devices: Seq[UserCloudDevice]): Seq[UserCloudDevice] =
+      devices.sortBy(_.modifiedDate)(Ordering[Date].reverse)
+
+    def fixAndOrder(devices: Seq[UserCloudDevice]): Seq[UserCloudDevice] = {
+
+      val (userDevices, otherDevices) = devices.partition(_.currentDevice)
+
+      val sortedUserDevices = sort(userDevices)
+
+      val fixedUserDevice = sortedUserDevices.drop(1).map(_.copy(currentDevice = false))
+
+      sortedUserDevices.headOption.toSeq ++ sort(fixedUserDevice ++ otherDevices)
+    }
+
     if (cloudStorageResources.isEmpty) {
       for {
         userInfo <- di.userConfigProcess.getUserInfo
         cloudStorageDevices <- storeOnCloud(cloudStorageProcess, userInfo.devices map toCloudStorageDevice)
-      } yield UserCloudDevices(userInfo.name, cloudStorageDevices)
+      } yield UserCloudDevices(userInfo.name, fixAndOrder(cloudStorageDevices map toUserCloudDevice))
     } else {
-      for {
-        devices <- loadFromCloud(cloudStorageProcess, cloudStorageResources)
-        _ <- fakeUserConfigException
-      } yield UserCloudDevices(name, devices.flatten)
+      Service(Task(Answer(UserCloudDevices(name, fixAndOrder(cloudStorageResources map toUserCloudDevice)))))
     }
   }
 
@@ -340,18 +351,6 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).run)
     Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
   }
-
-  private[this] def loadFromCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageResources: Seq[CloudStorageDeviceSummary]) = Service {
-    val tasks = cloudStorageResources map (r => cloudStorageProcess.getCloudStorageDevice(r.cloudId).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect {
-      case Answer(r) => Some(r)
-      case e@Errata(_) =>
-        AppLog.printErrorTaskMessage(s"Error parsing cloud device", e.exceptions)
-        None
-    }))
-  }
-
-  private[this] def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer()))
 
   private[this] def getAuthToken(
     accountManager: AccountManager,

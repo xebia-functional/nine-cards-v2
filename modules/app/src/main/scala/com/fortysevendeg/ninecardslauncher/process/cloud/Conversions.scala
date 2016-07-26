@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud
 
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevice
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
@@ -73,4 +74,20 @@ object Conversions {
       from = timeSlot.from,
       to = timeSlot.to,
       days = timeSlot.days)
+
+  def toUserCloudDevice(device: CloudStorageDeviceSummary) =
+    UserCloudDevice(
+      deviceName = device.title,
+      cloudId = device.cloudId,
+      currentDevice = device.currentDevice,
+      fromV1 = false,
+      modifiedDate = device.modifiedDate)
+
+  def toUserCloudDevice(device: CloudStorageDevice) =
+    UserCloudDevice(
+      deviceName = device.data.deviceName,
+      cloudId = device.cloudId,
+      currentDevice = false,
+      fromV1 = true,
+      modifiedDate = new java.util.Date())
 }

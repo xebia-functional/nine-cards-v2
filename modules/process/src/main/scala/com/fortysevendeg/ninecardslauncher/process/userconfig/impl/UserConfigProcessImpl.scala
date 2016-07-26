@@ -23,7 +23,7 @@ class UserConfigProcessImpl(apiServices: ApiServices, persistenceServices: Persi
   override def getUserInfo(implicit context: ContextSupport) = (for {
     requestConfig <- apiUtils.getRequestConfig
     userConfigResponse <- apiServices.getUserConfig()(requestConfig)
-  } yield toUserInfo(userConfigResponse.userConfig)).resolve[UserConfigException]
+  } yield toUserInfo(requestConfig.deviceId, userConfigResponse.userConfig)).resolve[UserConfigException]
 
   override def getUserCollection(deviceId: String)(implicit context: ContextSupport) = (for {
     requestConfig <- apiUtils.getRequestConfig

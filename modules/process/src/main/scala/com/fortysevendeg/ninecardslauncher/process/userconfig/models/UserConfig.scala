@@ -6,6 +6,7 @@ case class UserInfo(
   email: String,
   name: String,
   imageUrl: String,
+  androidId: String,
   devices: Seq[UserDevice])
 
 case class UserDevice(

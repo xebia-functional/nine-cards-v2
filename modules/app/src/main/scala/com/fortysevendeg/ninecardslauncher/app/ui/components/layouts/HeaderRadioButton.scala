@@ -30,11 +30,11 @@ class HeaderRadioButton(context: Context, attrs: AttributeSet, defStyle: Int)
 
   lazy val subtitle = findView(TR.item_subtitle)
 
-  override def isChecked: Boolean = (check ~> rbChecked).get
+  override def isChecked: Boolean = check.isChecked
 
-  override def setChecked(checked: Boolean): Ui[_] = check <~ rbSetChecked(checked)
+  override def setChecked(checked: Boolean): Unit = check.setChecked(checked)
 
-  override def toggle(): Ui[_] = Option(check) <~ rbToggle
+  override def toggle(): Unit = check.toggle()
 
   def setTitle(text: String): Ui[_] = title <~ tvText(text)
 
@@ -44,7 +44,7 @@ class HeaderRadioButton(context: Context, attrs: AttributeSet, defStyle: Int)
 object HeaderRadioButtonTweaks {
 
   def hrbChecked(checked: Boolean)(implicit contextWrapper: ContextWrapper): Tweak[HeaderRadioButton] =
-    Tweak[HeaderRadioButton](_.setChecked(checked).run)
+    Tweak[HeaderRadioButton](_.setChecked(checked))
 
   def hrbTitle(text: String): Tweak[HeaderRadioButton] = Tweak[HeaderRadioButton](_.setTitle(text).run)
 

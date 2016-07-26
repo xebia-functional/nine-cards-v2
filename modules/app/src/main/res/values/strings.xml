@@ -81,6 +81,8 @@
     <string name="errorAndroidMarketPermissionNotAccepted">You need to accept the Android Market permission in order to use 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">You need to accept the Google permission in order to use 9Cards</string>
 
+    <string name="newConfigurationSubtitle">We\'ll create a new configuration from your apps</string>
+
     <!-- Moment -->
 
     <string name="editMoment">Edit Moment</string>
