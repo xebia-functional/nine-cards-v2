@@ -75,7 +75,7 @@
     <dimen name="wizard_margin_pager">6dp</dimen>
     <dimen name="wizard_size_pager">10dp</dimen>
 
-    <dimen name="margin_left_subtitle">32dp</dimen>
+    <dimen name="margin_left_subtitle">40dp</dimen>
 
     <!-- App Drawer -->
     <dimen name="drawer_size_pager">6dp</dimen>

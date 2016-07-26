@@ -76,7 +76,9 @@
     <string name="errorAndroidMarketPermissionNotAccepted">Tienes que aceptar el permiso de Android Market para poder usar 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">Tienes que aceptar el permiso de Google para poder usar 9Cards</string>
 
+    <string name="currentDeviceTitle">%s (dispositivo actual)</string>
     <string name="newConfigurationSubtitle">Crearemos una nueva configración a partir de tus aplicaciones</string>
+    <string name="otherDevicesLink">Other devices configurations</string>
 
     <!-- Moment -->
 

@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 import android.accounts._
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
@@ -10,6 +11,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks.{W, _}
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.StepData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
@@ -161,20 +163,30 @@ trait WizardUiActionsImpl
 
   private[this] def addDevicesToRadioGroup(userDevice: Option[UserCloudDevice], devices: Seq[UserCloudDevice]): Ui[Any] = {
 
-//    def subtitle(device: UserCloudDevice): String = {
-//      if (device.fromV1) "" else {
-//        val time = new PrettyTime().format(device.modifiedDate)
-//        resGetString(R.string.syncLastSynced, time)
-//      }
-//    }
+    def subtitle(device: UserCloudDevice): String = {
+      if (device.fromV1) "" else {
+        val time = new PrettyTime().format(device.modifiedDate)
+        resGetString(R.string.syncLastSynced, time)
+      }
+    }
 
-    val userRadioView = (userDevice map (d => userRadio(d.deviceName, d.cloudId))).toSeq
+    val userRadioView = userDevice.toSeq.flatMap { device =>
+      Seq(
+        userRadio(resGetString(R.string.currentDeviceTitle, device.deviceName), device.cloudId),
+        userRadioSubtitle(subtitle(device)))
+    }
 
-    val newConfRadioView = userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey)
+    val newConfRadioView = Seq(
+      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
+      userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
 
-    val allRadioViews = devices map (d => userRadio(d.deviceName, d.cloudId))
+    val allRadioViews = devices map { device =>
+      Seq(
+        userRadio(device.deviceName, device.cloudId, visible = false),
+        userRadioSubtitle(subtitle(device), visible = false))
+    }
 
-    val radioViews = (userRadioView :+ newConfRadioView) ++ allRadioViews
+    val radioViews = (userRadioView ++ newConfRadioView :+ otherDevicesLink(resGetString(R.string.otherDevicesLink))) ++ allRadioViews.flatten
 
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui {
@@ -202,11 +214,34 @@ trait WizardUiActionsImpl
   private[this] def pagination(position: Int) =
     (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
-  private[this] def userRadio(title: String, tag: String): RadioButton =
-    (w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)).get
+  private[this] def userRadio(title: String, tag: String, visible: Boolean = true): RadioButton =
+    (w[RadioButton] <~
+      radioStyle <~
+      tvText(title) <~
+      vTag(tag) <~
+      (if (visible) vVisible else vGone)).get
 
-  private[this] def userRadioSubtitle(text: String): TextView =
-    (w[TextView] <~ radioSubtitleStyle <~ tvText(text)).get
+  private[this] def userRadioSubtitle(text: String, visible: Boolean = true): TextView =
+    (w[TextView] <~
+      radioSubtitleStyle <~
+      tvText(text) <~
+      (if (visible) vVisible else vGone)).get
+
+  private[this] def otherDevicesLink(text: String): TextView = {
+    val linkTag = "otherDevicesLink"
+
+    (w[TextView] <~
+      otherDevicesLinkStyle <~
+      tvUnderlineText(text) <~
+      vTag(linkTag) <~
+      On.click {
+        devicesGroup <~ Transformer {
+          case view if view.getVisibility == View.GONE => view <~ vVisible
+          case link if Option(link.getTag) contains linkTag => link <~ vGone
+          case _ => Ui.nop
+        }
+      }).get
+  }
 
 }
 

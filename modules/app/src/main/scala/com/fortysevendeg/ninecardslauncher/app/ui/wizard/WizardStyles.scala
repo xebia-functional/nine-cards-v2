@@ -31,9 +31,16 @@ trait WizardStyles {
 
   def radioSubtitleStyle(implicit context: ActivityContextWrapper): Tweak[TextView] =
     vWrapContent +
-      vMargin(
-        marginLeft = resGetDimensionPixelSize(R.dimen.margin_left_subtitle),
-        marginBottom = resGetDimensionPixelSize(R.dimen.padding_default))
+      vPadding(
+        paddingLeft = resGetDimensionPixelSize(R.dimen.margin_left_subtitle),
+        paddingRight = resGetDimensionPixelSize(R.dimen.padding_default),
+        paddingBottom = resGetDimensionPixelSize(R.dimen.padding_default))
+
+  def otherDevicesLinkStyle(implicit context: ActivityContextWrapper): Tweak[TextView] =
+    vMatchWidth +
+      tvGravity(Gravity.CENTER_HORIZONTAL) +
+      vPaddings(resGetDimensionPixelSize(R.dimen.padding_large)) +
+      tvColorResource(R.color.primary)
 
   def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val size = resGetDimensionPixelSize(R.dimen.wizard_size_pager)
