@@ -8,6 +8,7 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppWidgetProviderInfoOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
@@ -77,11 +78,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ => Ui.nop
   }
 
-  def addWidget(widgetView: View): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView).run
+  def addWidget(widgetView: View, cell: Cell): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView, cell).run
     case None =>
       // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
-      uiHandlerDelayed(Ui(addWidget(widgetView)), 200).run
+      uiHandlerDelayed(Ui(addWidget(widgetView, cell)), 200).run
     case _ =>
   }
 

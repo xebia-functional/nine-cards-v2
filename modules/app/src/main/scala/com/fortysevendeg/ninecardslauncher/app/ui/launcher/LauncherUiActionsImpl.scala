@@ -10,27 +10,27 @@ import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppWidgetProviderInfoOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
@@ -38,6 +38,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconSha
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
@@ -196,7 +197,18 @@ trait LauncherUiActionsImpl
 
   override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
 
-  override def addWidget(widgetViewId: Int): Ui[Any] = workspaces <~ lwsAddWidget(createView(widgetViewId))
+  override def addWidget(widgetViewId: Int): Ui[Any] = {
+    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widgetViewId)
+
+    val widthContent = workspaces map (_.getWidth) getOrElse 0
+    val heightContent = workspaces map (_.getHeight) getOrElse 0
+
+    val cell = appWidgetInfo.getCell(widthContent, heightContent)
+
+    val hostView = appWidgetHost.createView(activityContextWrapper.application, widgetViewId, appWidgetInfo)
+    hostView.setAppWidget(widgetViewId, appWidgetInfo)
+    workspaces <~ lwsAddWidget(hostView, cell)
+  }
 
   override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()
 
@@ -219,13 +231,6 @@ trait LauncherUiActionsImpl
     val pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
     pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
     uiStartIntentForResult(pickIntent, RequestCodes.goToWidgets)
-  }
-
-  private[this] def createView(appWidgetId: Int): View = {
-    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-    val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
-    hostView.setAppWidget(appWidgetId, appWidgetInfo)
-    hostView
   }
 
   override def openMenu(): Ui[Any] = drawerLayout <~ dlOpenDrawer
