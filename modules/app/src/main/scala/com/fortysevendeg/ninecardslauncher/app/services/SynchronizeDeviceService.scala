@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
+import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
@@ -68,14 +69,15 @@ class SynchronizeDeviceService
       })
 
   private[this] def sync(
-    client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException] = {
+    client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException with UserException] = {
     val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       collections <- di.collectionProcess.getCollections
       moments <- di.momentProcess.getMoments
-      _ <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+      savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
         collections = addMomentsToCollections(collections, moments),
         moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
+      _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId)
     } yield ()
   }
 
