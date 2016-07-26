@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/MenuAppsMomentContent">
+
+    <FrameLayout
+        style="@style/MenuAppsMomentIconContent"
+        android:id="@+id/launcher_moment_icon_content">
+
+        <ImageView
+            style="@style/MenuAppsMomentIcon"
+            android:id="@+id/launcher_moment_icon"/>
+
+    </FrameLayout>
+
+    <ScrollView style="@style/MenuAppsMomentScroll">
+
+        <LinearLayout
+            style="@style/MenuAppsMomentApps"
+            android:id="@+id/launcher_moment_apps"/>
+
+    </ScrollView>
+
+</LinearLayout>

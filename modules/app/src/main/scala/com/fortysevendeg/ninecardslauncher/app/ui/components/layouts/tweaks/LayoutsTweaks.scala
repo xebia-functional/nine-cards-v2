@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
+import AnimatedWorkSpaces._
 import macroid._
 
 object LauncherWorkSpacesTweaks {
@@ -80,6 +81,9 @@ object LauncherWorkSpacesTweaks {
     }
   }
 
+  def lwsAddPageChangedObserver(observer: ((LauncherData, LauncherData, Boolean, Float) => Unit)) =
+    Tweak[W](_.addMovementObservers(observer))
+
   def lwsCurrentPage() = Excerpt[W, Int] (_.currentPage())
 
   def lwsCountCollections() = Excerpt[W, Int] (_.getCountCollections)
@@ -120,7 +124,7 @@ object AnimatedWorkSpacesTweaks {
 
   def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
-  def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
+  def awsAddPageChangedObserver(observer: PageChangedObserver) = Tweak[W](_.addPageChangedObservers(observer))
 
   def awsCurrentWorkSpace() = Excerpt[W, Int] (_.statuses.currentItem)
 
@@ -349,5 +353,32 @@ object CollectionActionsPanelLayoutTweaks {
 
   def caplDragDispatcher(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.dragController(action, x, y))
+
+}
+
+object TopBarLayoutTweaks {
+
+  type W = TopBarLayout
+
+  def tblInit(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.init.run)
+
+  def tblReloadMoment(collection: Collection)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.reloadMoment(collection).run)
+
+  def tblReloadByType(workSpaceType: WorkSpaceType)(implicit contextWrapper: ContextWrapper) =
+    Tweak[W] (_.reloadByType(workSpaceType).run)
+
+}
+
+object AppsMomentLayoutTweaks {
+
+  type W = AppsMomentLayout
+
+  def amlPopulate(moment: LauncherMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter) =
+    Tweak[W] (_.populate(moment).run)
+
+  def amlPaddingTopAndBottom(paddingTop: Int, paddingBottom: Int)(implicit theme: NineCardsTheme, presenter: LauncherPresenter) =
+    Tweak[W] (_.setPaddingTopAndBottom(paddingTop, paddingBottom).run)
 
 }

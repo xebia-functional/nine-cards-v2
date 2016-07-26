@@ -5,12 +5,7 @@ import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TypeSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.Ui
 
 class PublicCollectionsFragment(implicit lPresenter: LauncherPresenter)
   extends BaseActionFragment

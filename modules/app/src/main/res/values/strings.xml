@@ -20,6 +20,8 @@
     <string name="todo">TODO. Sorry. We are working in that</string>
     <string name="buttonErrorReload">Reload</string>
 
+    <string name="atHour">at</string>
+
     <string name="itemAddedToCollectionSuccessful">Item added to <xliff:g id="collection" example="Social">%1$s</xliff:g> collection</string>
 
     <!-- Menu -->
@@ -303,14 +305,8 @@
     <string name="momentsPrefTitle">Moments</string>
     <string name="momentsPrefSummary">Moments Summary</string>
 
-    <string name="numberOfAppsInHorizontalTitle">Number of apps in horizontal</string>
-    <string name="numberOfAppsInHorizontalSummary">Number of apps in horizontal Summary</string>
-
-    <string name="numberOfRowsTitle">Number of rows</string>
-    <string name="numberOfRowsSummary">Number of rows Summary</string>
-
-    <string name="showBackgroundTitle">Show background</string>
-    <string name="showBackgroundSummary">Show background Summary</string>
+    <string name="showClockTitle">Show Clock</string>
+    <string name="showClockSummary">Show Clock Summary</string>
 
     <!-- App Drawer Preferences -->
 
@@ -447,6 +443,5 @@
     <string name="sendFeedback">Send a Feedback (Launch AppTentive)</string>
     <string name="tutorial">See the Tutorial</string>
     <string name="tos">Terms of Use</string>
-
 
 </resources>

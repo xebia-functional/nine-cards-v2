@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments
 import android.os.Bundle
 import android.preference.Preference.OnPreferenceChangeListener
 import android.preference.{Preference, PreferenceFragment}
-import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesStatus, NumberOfAppsInHorizontalMoment, NumberOfRowsMoment, ShowBackgroundMoment}
+import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesStatus, ShowClockMoment}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
@@ -19,13 +19,7 @@ class MomentsFragment
 
     addPreferencesFromResource(R.xml.preferences_moments)
 
-    findPreference(NumberOfAppsInHorizontalMoment.name).
-      setOnPreferenceChangeListener(onPreferenceChangeListener(status.setMoments(true)))
-
-    findPreference(NumberOfRowsMoment.name).
-      setOnPreferenceChangeListener(onPreferenceChangeListener(status.setMoments(true)))
-
-    findPreference(ShowBackgroundMoment.name).
+    findPreference(ShowClockMoment.name).
       setOnPreferenceChangeListener(onPreferenceChangeListener(status.setMoments(true)))
 
   }

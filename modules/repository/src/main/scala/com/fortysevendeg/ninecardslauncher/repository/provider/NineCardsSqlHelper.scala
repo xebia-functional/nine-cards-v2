@@ -44,6 +44,9 @@ class NineCardsSqlHelper(context: Context)
         db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.name} TEXT")
         db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.avatar} TEXT")
         db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.cover} TEXT")
+      case 11 =>
+        db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.deviceName} TEXT")
+        db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.deviceCloudId} TEXT")
     }
 
     new Handler().post(() => execVersionsDB(oldVersion, newVersion))
@@ -53,5 +56,5 @@ class NineCardsSqlHelper(context: Context)
 object NineCardsSqlHelper {
   val id = "_id"
   val databaseName = "nineCards"
-  val databaseVersion = 10
+  val databaseVersion = 11
 }

@@ -16,7 +16,7 @@ case class Device(current: Boolean) extends AccountSyncType
 case class AccountSync(
   title: String,
   accountSyncType: AccountSyncType,
-  resourceId: Option[String] = None,
+  cloudId: Option[String] = None,
   subtitle: Option[String] = None)
 
 object AccountSync {
@@ -30,12 +30,12 @@ object AccountSync {
     title: String,
     syncDate: Date,
     current: Boolean = false,
-    resourceId: String)(implicit context: ContextSupport): AccountSync = {
+    cloudId: String)(implicit context: ContextSupport): AccountSync = {
     val time = new PrettyTime().format(syncDate)
     AccountSync(
       title = title,
       accountSyncType = Device(current),
-      resourceId = resourceId.some,
+      cloudId = cloudId.some,
       subtitle = Option(context.getResources.getString(R.string.syncLastSynced, time)))
   }
 

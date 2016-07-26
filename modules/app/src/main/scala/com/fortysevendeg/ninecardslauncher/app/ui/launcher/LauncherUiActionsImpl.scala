@@ -9,8 +9,10 @@ import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
@@ -20,9 +22,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
@@ -57,6 +62,8 @@ trait LauncherUiActionsImpl
   implicit val managerContext: FragmentManagerContext[Fragment, FragmentManager]
 
   lazy val foreground = Option(findView(TR.launcher_foreground))
+
+  lazy val appsMoment = Option(findView(TR.launcher_apps_moment))
 
   lazy val actionForCollections = Seq(
     CollectionActionItem(resGetString(R.string.edit), R.drawable.icon_launcher_action_edit, CollectionActionEdit),
@@ -98,12 +105,39 @@ trait LauncherUiActionsImpl
     goToNextWorkspace().ifUi(canMoveToNextScreen)
   }
 
-  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] =
-    showLauncherInfo(data, apps)
+  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] = {
+    val collectionMoment = data.headOption.flatMap(_.moment).flatMap(_.collection)
+    val launcherMoment = data.headOption.flatMap(_.moment)
+    (loading <~ vGone) ~
+      (appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
+      (topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank)) ~
+      (dockAppsPanel <~ daplInit(apps)) ~
+      (workspaces <~
+        vGlobalLayoutListener(_ =>
+          (workspaces <~
+            lwsData(data, selectedPageDefault) <~
+            (topBarPanel map (tbp => lwsAddPageChangedObserver(tbp.movement)) getOrElse Tweak.blank) <~
+            awsAddPageChangedObserver(currentPage => {
+              (paginationPanel <~ reloadPager(currentPage)).run
+            })) ~
+            createPager(selectedPageDefault)
+        ))
+  }
 
   override def reloadCurrentMoment(): Ui[Any] = workspaces <~ lwsDataForceReloadMoment()
 
-  override def reloadMoment(moment: LauncherData): Ui[Any] = workspaces <~ lwsDataMoment(moment)
+  override def reloadMomentTopBar(): Ui[Any] = {
+    val collectionMoment = getData.headOption.flatMap(_.moment).flatMap(_.collection)
+    topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank)
+  }
+
+  override def reloadMoment(data: LauncherData): Ui[Any] = {
+    val collectionMoment = data.moment.flatMap(_.collection)
+    val launcherMoment = data.moment
+    (workspaces <~ lwsDataMoment(data)) ~
+      (appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
+      (topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank))
+  }
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =
     userProfileMenu(email, name, avatarUrl, coverPhotoUrl)
@@ -154,6 +188,12 @@ trait LauncherUiActionsImpl
     workspaces <~ lwsAddWidget(widgetView)
   }
 
+  override def openMenu(): Ui[Any] = drawerLayout <~ dlOpenDrawer
+
+  override def openAppsMoment(): Ui[Any] = drawerLayout <~ dlOpenDrawerEnd
+
+  override def closeAppsMoment(): Ui[Any] = drawerLayout <~ dlCloseDrawerEnd
+
   override def back: Ui[Any] =
     if (isDrawerTabsOpened) {
       closeDrawerTabs
@@ -178,16 +218,18 @@ trait LauncherUiActionsImpl
   override def closeTabs: Ui[Any] = closeDrawerTabs
 
   override def startReorder: Ui[Any] =
-    (dockAppsPanel <~ fadeOut()) ~
-      (searchPanel <~ fadeOut()) ~
-      (collectionActionsPanel <~ caplLoad(actionForCollections) <~ fadeIn()) ~
+    (dockAppsPanel <~ applyFadeOut()) ~
+      (topBarPanel <~ applyFadeOut()) ~
+      (collectionActionsPanel <~ caplLoad(actionForCollections) <~ applyFadeIn()) ~
       reloadEdges()
 
   override def endReorder: Ui[Any] =
-    (dockAppsPanel <~ fadeIn()) ~
-      (searchPanel <~ fadeIn()) ~
-      (collectionActionsPanel <~~ fadeOut()) ~
+    (dockAppsPanel <~ applyFadeIn()) ~
+      (topBarPanel <~ applyFadeIn()) ~
+      (collectionActionsPanel <~~ applyFadeOut()) ~
       hideEdges()
+
+  override def goToMomentWorkspace(): Ui[Any] = goToWorkspace(pageMoments)
 
   override def goToNextScreenReordering(): Ui[Any] = {
     val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreenOnlyCollections()).get getOrElse false
@@ -202,9 +244,9 @@ trait LauncherUiActionsImpl
   override def startAddItem(cardType: CardType): Ui[Any] = {
     val isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get getOrElse false
     revealOutDrawer ~
-      (searchPanel <~ fadeOut()) ~
+      (topBarPanel <~ applyFadeOut()) ~
       (cardType match {
-        case AppCardType => collectionActionsPanel <~ caplLoad(actionForApps) <~ fadeIn()
+        case AppCardType => collectionActionsPanel <~ caplLoad(actionForApps) <~ applyFadeIn()
         case _ => Ui.nop
       }) ~
       reloadEdges() ~
@@ -212,8 +254,8 @@ trait LauncherUiActionsImpl
   }
 
   override def endAddItem: Ui[Any] =
-    (searchPanel <~ fadeIn()) ~
-      (collectionActionsPanel <~~ fadeOut()) ~
+    (topBarPanel <~ applyFadeIn()) ~
+      (collectionActionsPanel <~~ applyFadeOut()) ~
       hideEdges()
 
   override def goToPreviousScreenAddingItem(): Ui[Any] = {
@@ -225,10 +267,6 @@ trait LauncherUiActionsImpl
     val canMoveToNextScreen = (workspaces ~> lwsCanMoveToNextScreen()).get getOrElse false
     (goToNextWorkspace() ~ reloadEdges()).ifUi(canMoveToNextScreen)
   }
-
-  private[this] def fadeIn() = vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))
-
-  private[this] def fadeOut() = applyAnimation(alpha = Some(0)) + vInvisible
 
   override def isTabsOpened: Boolean = isDrawerTabsOpened
 
@@ -280,6 +318,7 @@ trait LauncherUiActionsImpl
         (content <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (menuCollectionRoot <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (drawerContent <~ vPadding(0, sbHeight, 0, nbHeight)) ~
+        (appsMoment <~ amlPaddingTopAndBottom(sbHeight, nbHeight)) ~
         (actionFragmentContent <~
           vPadding(paddingDefault, paddingDefault + sbHeight, paddingDefault, paddingDefault + nbHeight)) ~
         (drawerLayout <~ vBackground(R.drawable.background_workspace)) ~
@@ -293,7 +332,7 @@ trait LauncherUiActionsImpl
       val dragAreaKey = "drag-area"
       override def onDrag(v: View, event: DragEvent): Boolean = {
         val dragArea = v.getField[DragArea](dragAreaKey) getOrElse NoDragArea
-        (event.getAction, (searchPanel ~> height).get, (dockAppsPanel ~> height).get) match {
+        (event.getAction, (topBarPanel ~> height).get, (dockAppsPanel ~> height).get) match {
           case (_, Some(topBar), Some(bottomBar)) =>
             val height = KitKat.ifSupportedThen (view.getHeight - getStatusBarHeight) getOrElse view.getHeight
             val top = KitKat.ifSupportedThen (topBar + getStatusBarHeight) getOrElse topBar

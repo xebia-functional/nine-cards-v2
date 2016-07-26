@@ -25,15 +25,14 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{LauncherWorkSpaces, AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
@@ -43,7 +42,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -95,15 +93,9 @@ trait CollectionsUiActions
 
   lazy val paginationPanel = Option(findView(TR.launcher_pagination_panel))
 
-  lazy val searchPanel = Option(findView(TR.launcher_search_panel))
+  lazy val topBarPanel = Option(findView(TR.launcher_top_bar_panel))
 
   lazy val collectionActionsPanel = Option(findView(TR.launcher_collections_actions_panel))
-
-  lazy val burgerIcon = Option(findView(TR.launcher_burger_icon))
-
-  lazy val googleIcon = Option(findView(TR.launcher_google_icon))
-
-  lazy val micIcon = Option(findView(TR.launcher_mic_icon))
 
   lazy val actionFragmentContent = Option(findView(TR.action_fragment_content))
 
@@ -120,11 +112,13 @@ trait CollectionsUiActions
   lazy val menuLauncherSettings = Option(findView(TR.menu_launcher_settings))
 
   def initCollectionsUi: Ui[Any] =
-    (drawerLayout <~ dlStatusBarBackground(android.R.color.transparent)) ~
+    (drawerLayout <~ dlStatusBarBackground(R.color.primary)) ~
       (navigationView <~ nvNavigationItemSelectedListener(itemId => {
         (goToMenuOption(itemId) ~ closeMenu()).run
         true
       })) ~
+      (paginationPanel <~ On.longClick((workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
+      (topBarPanel <~ tblInit) ~
       (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (menuCollectionRoot <~ vGone) ~
@@ -138,9 +132,9 @@ trait CollectionsUiActions
           )
         ) <~
         awsListener(AnimatedWorkSpacesListener(
+          onClick = () => presenter.clickWorkspaceBackground(),
           onLongClick = () => (workspaces <~ lwsOpenMenu).run)
         )) ~
-      (searchPanel <~ searchContentStyle) ~
       (menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
       (menuLauncherWallpaper <~ On.click {
         closeCollectionMenu() ~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
@@ -150,12 +144,7 @@ trait CollectionsUiActions
       }) ~
       (menuLauncherSettings <~ On.click {
         closeCollectionMenu() ~ uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
-      }) ~
-      (burgerIcon <~ burgerButtonStyle <~ On.click(
-        drawerLayout <~ dlOpenDrawer
-      )) ~
-      (googleIcon <~ googleButtonStyle <~ On.click(Ui(presenter.launchSearch))) ~
-      (micIcon <~ micButtonStyle <~ On.click(Ui(presenter.launchVoiceSearch)))
+      })
 
   def showEditCollection(collection: Collection): Ui[Any] = {
     val view = collectionActionsPanel flatMap (_.leftActionView)
@@ -177,22 +166,6 @@ trait CollectionsUiActions
     }
 
   def showCollectionsLoading: Ui[Any] = loading <~ vVisible
-
-  def showLauncherInfo(
-    data: Seq[LauncherData],
-    apps: Seq[DockApp]): Ui[Any] = {
-    (loading <~ vGone) ~
-      (dockAppsPanel <~ daplInit(apps)) ~
-      (workspaces <~
-        vGlobalLayoutListener(_ =>
-          (workspaces <~
-            lwsData(data, selectedPageDefault) <~
-            awsAddPageChangedObserver(currentPage => {
-              (paginationPanel <~ reloadPager(currentPage)).run
-            })) ~
-            createPager(selectedPageDefault)
-        ))
-  }
 
   def userProfileMenu(
     maybeEmail: Option[String],
@@ -224,7 +197,11 @@ trait CollectionsUiActions
 
   def isCollectionMenuVisible: Boolean = workspaces exists (_.workSpacesStatuses.openedMenu)
 
-  def goToWorkspace(page: Int): Ui[Any] = (workspaces <~ lwsSelect(page)) ~ (paginationPanel <~ reloadPager(page))
+  def goToWorkspace(page: Int): Ui[Any] = {
+    (getData.lift(page) map (data => topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
+      (workspaces <~ lwsSelect(page)) ~
+      (paginationPanel <~ reloadPager(page))
+  }
 
   def goToNextWorkspace(): Ui[Any] =
     (workspaces ~> lwsNextScreen()).get.flatten map { next =>
@@ -309,7 +286,7 @@ trait CollectionsUiActions
       (menuLauncherContent <~ vTranslationY(height)) ~
       (dockAppsPanel <~ fade(out = true)) ~
       (paginationPanel <~ fade(out = true)) ~
-      (searchPanel <~ fade(out = true))
+      (topBarPanel <~ fade(out = true))
   }
 
   private[this] def updateOpenCollectionMenu(percent: Float): Ui[Any] = {
@@ -328,11 +305,11 @@ trait CollectionsUiActions
     } else {
       (dockAppsPanel <~ fade()) ~
         (paginationPanel <~ fade()) ~
-        (searchPanel <~ fade()) ~
+        (topBarPanel <~ fade()) ~
         (menuCollectionRoot <~ vGone)
     }
 
-  private[this] def createPager(activePosition: Int): Ui[Any] =
+  def createPager(activePosition: Int): Ui[Any] =
     workspaces map { ws =>
       val pagerViews = 0 until ws.getWorksSpacesCount map { position =>
         val view = pagination(position)

@@ -77,9 +77,9 @@ trait ProfileUiActionsImpl
 
   override def showLoadingUserError(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingUser, clickAction)
 
-  override def showSyncingError(): Ui[Any] = showMessage(R.string.errorSyncing)
+  override def showSyncingError(): Ui[Any] = showMessage(R.string.errorSyncing) ~ (loadingView <~ vInvisible)
 
-  override def showMessageAccountSynced(): Ui[Any] = showMessage(R.string.accountSynced)
+  override def showMessageAccountSynced(): Ui[Any] = showMessage(R.string.accountSynced) ~ (loadingView <~ vInvisible)
 
   override def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_] =
     (userName <~ tvText(name)) ~
@@ -104,8 +104,8 @@ trait ProfileUiActionsImpl
       (loadingView <~ vInvisible)
 
   override def handleToolbarVisibility(percentage: Float): Ui[Any] = toolbar match {
-    case Some(t) if percentage >= 0.5 && t.getVisibility == View.VISIBLE => toolbar <~ SnailsCommons.fadeOut()
-    case Some(t) if percentage < 0.5 && t.getVisibility == View.INVISIBLE => toolbar <~ SnailsCommons.fadeIn()
+    case Some(t) if percentage >= 0.5 && t.getVisibility == View.VISIBLE => toolbar <~ SnailsCommons.applyFadeOut()
+    case Some(t) if percentage < 0.5 && t.getVisibility == View.INVISIBLE => toolbar <~ SnailsCommons.applyFadeIn()
     case _ => Ui.nop
   }
 
@@ -121,7 +121,7 @@ trait ProfileUiActionsImpl
   private[this] def accountClickListener(position: Int, accountSync: AccountSync): Unit =
     accountSync.accountSyncType match {
       case Device(true) => presenter.launchService()
-      case Device(false) => accountSync.resourceId foreach presenter.showDialogForDeleteDevice
+      case Device(false) => accountSync.cloudId foreach presenter.showDialogForDeleteDevice
       case _ =>
     }
 

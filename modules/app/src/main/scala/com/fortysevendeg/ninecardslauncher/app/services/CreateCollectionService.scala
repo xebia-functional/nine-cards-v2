@@ -39,7 +39,7 @@ class CreateCollectionService
 
   lazy val notifyManager = getSystemService(Context.NOTIFICATION_SERVICE).asInstanceOf[NotificationManager]
 
-  private var loadDeviceId: Option[String] = None
+  private var selectedCloudId: Option[String] = None
 
   private var currentState: Option[String] = None
 
@@ -54,12 +54,12 @@ class CreateCollectionService
 
     registerDispatchers
 
-    val hasKey = Option(intent) exists (_.hasExtra(keyDevice))
+    val hasKey = Option(intent) exists (_.hasExtra(cloudIdKey))
 
     if (hasKey) {
-      loadDeviceId = Option(intent) flatMap { i =>
-        if (i.hasExtra(keyDevice)) {
-          val key = i.getStringExtra(keyDevice)
+      selectedCloudId = Option(intent) flatMap { i =>
+        if (i.hasExtra(cloudIdKey)) {
+          val key = i.getStringExtra(cloudIdKey)
           if (key == newConfiguration) None else Some(key)
         } else None
       }
@@ -100,7 +100,7 @@ class CreateCollectionService
   private[this] def getTextByProcess(process: CreateCollectionsProcess): Option[String] = process match {
     case GettingAppsProcess => Option(resGetString(R.string.loadingAppsInfoMessage))
     case LoadingConfigProcess => Option(resGetString(R.string.loadingUserConfigMessage))
-    case CreatingCollectionsProcess => Option(loadDeviceId map (_ =>
+    case CreatingCollectionsProcess => Option(selectedCloudId map (_ =>
       resGetString(R.string.loadingFromDeviceMessage)) getOrElse resGetString(R.string.loadingForMyDeviceMessage))
   }
 
@@ -117,7 +117,7 @@ class CreateCollectionService
   override def onBind(intent: Intent): IBinder = javaNull
 
   override def connected(client: GoogleApiClient): Unit = {
-    val service = loadDeviceId map (loadConfiguration(client, _)) getOrElse createNewConfiguration
+    val service = selectedCloudId map (loadConfiguration(client, _)) getOrElse createNewConfiguration(client)
 
     Task.fork(service.run).resolveAsync(
       onResult = collections => {
@@ -135,7 +135,7 @@ class CreateCollectionService
 }
 
 object CreateCollectionService {
-  val keyDevice: String = "__key_device__"
+  val cloudIdKey: String = "__key_device__"
   val newConfiguration: String = "new-configuration"
   val notificationId: Int = 1101
   val homeMorningKey = "home"
