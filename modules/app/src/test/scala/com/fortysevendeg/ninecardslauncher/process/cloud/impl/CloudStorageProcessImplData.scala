@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
-import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
+import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
 import org.joda.time.DateTime
 
@@ -30,13 +30,13 @@ trait CloudStorageProcessImplData {
     deviceName = Some("device"),
     deviceCloudId = Some(cloudId))
 
-  val driveServiceFile = generateDriveServiceFile
+  val driveServiceFileSummary = generateDriveServiceFileSummary
 
-  val driveServiceFileSeq: Seq[DriveServiceFileSummary] = 1 to 10 map (_ => generateDriveServiceFile)
+  val driveServiceFileSummarySeq: Seq[DriveServiceFileSummary] = 1 to 10 map (_ => generateDriveServiceFileSummary)
 
-  val driveServiceFileEmptySeq = Seq.empty[DriveServiceFileSummary]
+  val driveServiceFileSummaryEmptySeq = Seq.empty[DriveServiceFileSummary]
 
-  def generateDriveServiceFile =
+  def generateDriveServiceFileSummary =
     DriveServiceFileSummary(
       uuid = java.util.UUID.randomUUID.toString,
       deviceId = Random.nextString(10).some,
@@ -164,4 +164,12 @@ trait CloudStorageProcessImplData {
     """
       |{ "inexistendField": "Value" }
     """.stripMargin
+
+  val driveServiceFile = DriveServiceFile(
+    driveServiceFileSummary,
+    validCloudStorageDeviceJson)
+
+  val invalidDriveServiceFileJson = DriveServiceFile(
+    driveServiceFileSummary,
+    invalidCloudStorageDeviceJson)
 }

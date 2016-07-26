@@ -77,16 +77,16 @@ class CloudStorageProcessImplSpec
 
         context.getActiveUserId returns Some(activeUserId)
 
-        driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileSeq)))
+        driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileSummarySeq)))
 
         persistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
 
         val result = cloudStorageProcess.getCloudStorageDevices.run.run
         result must beLike {
           case Answer(resultSeqCollection) =>
-            resultSeqCollection.size shouldEqual driveServiceFileSeq.size
-            resultSeqCollection.map(_.deviceName) shouldEqual driveServiceFileSeq.map(_.title)
-            resultSeqCollection.map(_.cloudId) shouldEqual driveServiceFileSeq.map(_.uuid)
+            resultSeqCollection.size shouldEqual driveServiceFileSummarySeq.size
+            resultSeqCollection.map(_.deviceName) shouldEqual driveServiceFileSummarySeq.map(_.title)
+            resultSeqCollection.map(_.cloudId) shouldEqual driveServiceFileSummarySeq.map(_.uuid)
         }
 
       }
@@ -96,7 +96,7 @@ class CloudStorageProcessImplSpec
 
         context.getActiveUserId returns Some(activeUserId)
 
-        driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileEmptySeq)))
+        driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileSummaryEmptySeq)))
 
         persistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
 
@@ -145,7 +145,7 @@ class CloudStorageProcessImplSpec
 
         context.getActiveUserId returns Some(activeUserId)
 
-        driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileEmptySeq)))
+        driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileSummaryEmptySeq)))
 
         persistenceServices.findUserById(any) returns Service(Task(Answer(None)))
 
@@ -163,7 +163,7 @@ class CloudStorageProcessImplSpec
 
         context.getActiveUserId returns Some(activeUserId)
 
-        driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileEmptySeq)))
+        driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileSummaryEmptySeq)))
 
         val result = cloudStorageProcess.getCloudStorageDevices.run.run
         result must beLike {
@@ -183,7 +183,7 @@ class CloudStorageProcessImplSpec
     "return a valid CloudStorageDevice when the service returns a valid Json" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        driveServices.readFile(cloudId) returns Service(Task(Answer(validCloudStorageDeviceJson)))
+        driveServices.readFile(cloudId) returns Service(Task(Answer(driveServiceFile)))
 
         val result = cloudStorageProcess.getCloudStorageDevice(cloudId).run.run
         result must beLike {
@@ -198,7 +198,7 @@ class CloudStorageProcessImplSpec
     "return a CloudStorageProcessException when the service return a non valid Json" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        driveServices.readFile(cloudId) returns Service(Task(Answer(invalidCloudStorageDeviceJson)))
+        driveServices.readFile(cloudId) returns Service(Task(Answer(invalidDriveServiceFileJson)))
 
         val result = cloudStorageProcess.getCloudStorageDevice(cloudId).run.run
         result must beLike {
@@ -234,7 +234,7 @@ class CloudStorageProcessImplSpec
             anArgThat[String, String](new JsonMatcher(validCloudStorageDeviceJson)),
             anyString,
             anyString,
-            anyString) returns Service(Task(Answer(cloudId)))
+            anyString) returns Service(Task(Answer(driveServiceFileSummary)))
 
           cloudStorageProcess.createCloudStorageDevice(cloudStorageDevice).run.run
         }
@@ -269,7 +269,7 @@ class CloudStorageProcessImplSpec
             anyString,
             anyString,
             anyString,
-            anyString) returns Service(Task(Answer(cloudId)))
+            anyString) returns Service(Task(Answer(driveServiceFileSummary)))
 
           cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageDevice.collections,
@@ -287,7 +287,7 @@ class CloudStorageProcessImplSpec
 
           driveServices.updateFile(
             anyString,
-            anyString) returns Service(Task(Answer(())))
+            anyString) returns Service(Task(Answer(driveServiceFileSummary)))
 
           cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageDevice.collections,
@@ -308,7 +308,7 @@ class CloudStorageProcessImplSpec
             anyString,
             anyString,
             anyString,
-            anyString) returns Service(Task(Answer(cloudId)))
+            anyString) returns Service(Task(Answer(driveServiceFileSummary)))
 
           cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageDevice.collections,

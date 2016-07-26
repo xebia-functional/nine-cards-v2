@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.Account
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
@@ -41,17 +41,28 @@ trait WizardPresenterData {
   val momentType = Option("HOME")
 
   val cloudStorageDevice =
-    CloudStorageDevice(cloudId = cloudId,
-      CloudStorageDeviceData(
+    CloudStorageDevice(
+      cloudId = cloudId,
+      createdDate = new java.util.Date(),
+      modifiedDate = new java.util.Date(),
+      data = CloudStorageDeviceData(
         deviceId = deviceId,
         deviceName = deviceName,
         documentVersion = 1,
         collections = Seq.empty,
         moments = None))
 
+  val userCloudDevice = UserCloudDevice(
+    deviceName = deviceName,
+    cloudId = cloudId,
+    currentDevice = false,
+    fromV1 = false,
+    modifiedDate = new java.util.Date())
+
   val userCloudDevices = UserCloudDevices(
     name = nameDevice,
-    devices = Seq(cloudStorageDevice)
+    userDevice = None,
+    devices = Seq(userCloudDevice)
   )
 
   val items = Seq(CloudStorageCollectionItem("APP", "App 1", "{\"intentExtras\":{},\"className\":\"\",\"packageName\":\"\",\"categories\":[],\"action\":\"\",\"extras\":{},\"flags\":1,\"type\":\"\",\"dataString\":null}"))
