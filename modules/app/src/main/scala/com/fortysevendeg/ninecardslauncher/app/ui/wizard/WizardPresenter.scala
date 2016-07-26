@@ -247,6 +247,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     val scopes = "androidmarket"
     Task.fork(requestUserPermissions(account, scopes, client).run).resolveAsync(
       onResult = (permissions: UserPermissions) => {
+        clientStatuses = clientStatuses.copy(userPermissions = Some(permissions))
         setToken(permissions.token)
         requestGooglePermission(account, client)
       },
@@ -266,7 +267,6 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     val scopes = resGetString(R.string.oauth_scopes)
     Task.fork(requestUserPermissions(account, scopes, client).run).resolveAsync(
       onResult = (permissions: UserPermissions) => {
-        clientStatuses = clientStatuses.copy(userPermissions = Some(permissions))
         clientStatuses.driveApiClient foreach (_.connect())
       },
       onException = (ex: Throwable) => ex match {
