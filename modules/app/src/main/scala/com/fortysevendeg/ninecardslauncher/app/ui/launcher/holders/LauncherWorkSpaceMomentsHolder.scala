@@ -69,6 +69,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     })
     val (width, height) = cell.getSize
     val params = new LayoutParams(width, height)
+    params.setMargins(paddingDefault, paddingDefault, paddingDefault, paddingDefault)
     widgets <~ vgRemoveAllViews <~ vgAddViews(Seq(widgetView, viewBlockTouch), params)
   }
 
