@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks.{W, _}
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -169,14 +169,22 @@ trait WizardUiActionsImpl
       }
     }
 
-    val radioViews = (devices map (device => userRadio(device.deviceName, subtitle(device), device.cloudId))) :+
-      userRadio(
-        resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL),
-        resGetString(R.string.newConfigurationSubtitle),
-        newConfigurationKey)
+    val allRadioViews = devices map { device =>
+      Seq(userRadio(device.deviceName, device.cloudId), userRadioSubtitle(subtitle(device)))
+    }
+
+    val newConfRadioView = Seq(
+      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
+      userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
+
+    val radioViews = allRadioViews.headOption.toSeq.flatten ++ allRadioViews.drop(1).flatten ++ newConfRadioView
+
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui {
-        radioViews.headOption foreach (_.setChecked(true))
+        radioViews.headOption match {
+          case Some(radioButton: RadioButton) => radioButton.setChecked(true)
+          case _ =>
+        }
       }
   }
 
@@ -197,11 +205,11 @@ trait WizardUiActionsImpl
   private[this] def pagination(position: Int) =
     (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
-  private[this] def userRadio(title: String, subtitle: String, tag: String): HeaderRadioButton =
-    (w[HeaderRadioButton] <~
-      hrbTitle(title) <~
-      hrbSubTitle(subtitle) <~
-      vTag(tag)).get
+  private[this] def userRadio(title: String, tag: String): RadioButton =
+    (w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)).get
+
+  private[this] def userRadioSubtitle(text: String): TextView =
+    (w[TextView] <~ radioSubtitleStyle <~ tvText(text)).get
 
 }
 

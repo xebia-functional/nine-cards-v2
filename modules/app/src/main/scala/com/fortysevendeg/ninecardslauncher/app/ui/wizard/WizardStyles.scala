@@ -1,10 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
-import android.view.ViewGroup
-import android.widget.{Button, ImageView, RadioButton}
+import android.view.{Gravity, ViewGroup}
+import android.widget.{Button, ImageView, RadioButton, TextView}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
@@ -20,9 +21,19 @@ trait WizardStyles {
       vBackgroundTint(resGetColor(R.color.wizard_background_button_dive_in)) +
       vEnabled(false)
 
-  def radioStyle(implicit context: ActivityContextWrapper): Tweak[RadioButton] =
+  def radioStyle(implicit context: ActivityContextWrapper): Tweak[RadioButton] = {
+    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
     vWrapContent +
-      vPaddings(resGetDimensionPixelSize(R.dimen.padding_default))
+      vPadding(paddingLeft = padding, paddingTop = padding, paddingRight = padding) +
+      tvGravity(Gravity.CENTER_VERTICAL)
+
+  }
+
+  def radioSubtitleStyle(implicit context: ActivityContextWrapper): Tweak[TextView] =
+    vWrapContent +
+      vMargin(
+        marginLeft = resGetDimensionPixelSize(R.dimen.margin_left_subtitle),
+        marginBottom = resGetDimensionPixelSize(R.dimen.padding_default))
 
   def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val size = resGetDimensionPixelSize(R.dimen.wizard_size_pager)

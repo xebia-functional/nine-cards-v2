@@ -168,8 +168,8 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       case Some(apiClient) =>
         val googlePlusProcess = di.createGooglePlusProcess(apiClient)
         Task.fork(googlePlusProcess.updateUserProfile().run).resolveAsync(
-          onResult = (_) =>
-            loadDevices(clientStatuses.driveApiClient, clientStatuses.username, clientStatuses.userPermissions),
+          onResult = (userName) =>
+            loadDevices(clientStatuses.driveApiClient, userName orElse clientStatuses.username, clientStatuses.userPermissions),
           onException = error,
           onPreTask = () => actions.showLoading().run
         )

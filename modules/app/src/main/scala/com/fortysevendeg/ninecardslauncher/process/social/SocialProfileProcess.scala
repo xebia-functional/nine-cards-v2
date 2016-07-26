@@ -8,6 +8,6 @@ trait SocialProfileProcess {
   /**
     * Load the user information for Google Plus and updates the values on the database
     */
-  def updateUserProfile()(implicit context: ContextSupport): ServiceDef2[Unit, SocialProfileProcessException]
+  def updateUserProfile()(implicit context: ContextSupport): ServiceDef2[Option[String], SocialProfileProcessException]
 
 }
