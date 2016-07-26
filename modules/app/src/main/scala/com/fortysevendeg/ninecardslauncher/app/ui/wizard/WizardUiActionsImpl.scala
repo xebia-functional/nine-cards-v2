@@ -10,8 +10,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks.{W, _}
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{HeaderRadioButton, StepData}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.HeaderRadioButtonTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.StepData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
@@ -137,7 +136,7 @@ trait WizardUiActionsImpl
   override def showErrorAcceptTerms(): Ui[Any] = showMessage(R.string.messageAcceptTerms)
 
   override def showDevices(devices: UserCloudDevices): Ui[Any] =
-    addDevicesToRadioGroup(devices.devices) ~
+    addDevicesToRadioGroup(devices.userDevice, devices.devices) ~
       showDevices ~
       (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, devices.name)))
 
@@ -160,24 +159,22 @@ trait WizardUiActionsImpl
     usersSpinner <~ sAdapter(sa)
   }
 
-  private[this] def addDevicesToRadioGroup(devices: Seq[UserCloudDevice]): Ui[Any] = {
+  private[this] def addDevicesToRadioGroup(userDevice: Option[UserCloudDevice], devices: Seq[UserCloudDevice]): Ui[Any] = {
 
-    def subtitle(device: UserCloudDevice): String = {
-      if (device.fromV1) "" else {
-        val time = new PrettyTime().format(device.modifiedDate)
-        resGetString(R.string.syncLastSynced, time)
-      }
-    }
+//    def subtitle(device: UserCloudDevice): String = {
+//      if (device.fromV1) "" else {
+//        val time = new PrettyTime().format(device.modifiedDate)
+//        resGetString(R.string.syncLastSynced, time)
+//      }
+//    }
 
-    val allRadioViews = devices map { device =>
-      Seq(userRadio(device.deviceName, device.cloudId), userRadioSubtitle(subtitle(device)))
-    }
+    val userRadioView = (userDevice map (d => userRadio(d.deviceName, d.cloudId))).toSeq
 
-    val newConfRadioView = Seq(
-      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
-      userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
+    val newConfRadioView = userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey)
 
-    val radioViews = allRadioViews.headOption.toSeq.flatten ++ allRadioViews.drop(1).flatten ++ newConfRadioView
+    val allRadioViews = devices map (d => userRadio(d.deviceName, d.cloudId))
+
+    val radioViews = (userRadioView :+ newConfRadioView) ++ allRadioViews
 
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui {

@@ -77,18 +77,23 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   def processFinished(): Unit = actions.showDiveIn().run
 
-  def connectAccount(username: String, termsAccept: Boolean): Unit = if (termsAccept) {
-    getAccount(username) match {
-      case Some(acc) =>
-        val googleApiClient = createGoogleDriveClient(acc.name)
-        clientStatuses = clientStatuses.copy(
-          driveApiClient = Some(googleApiClient),
-          username = Some(acc.name))
-        requestAndroidMarketPermission(acc, googleApiClient)
-      case _ => actions.showErrorSelectUser().run
+  def connectAccount(username: String, termsAccept: Boolean): Unit = {
+
+    def getAccount(username: String): Option[Account] = accounts find (_.name == username)
+
+    if (termsAccept) {
+      getAccount(username) match {
+        case Some(acc) =>
+          val googleApiClient = createGoogleDriveClient(acc.name)
+          clientStatuses = clientStatuses.copy(
+            driveApiClient = Some(googleApiClient),
+            username = Some(acc.name))
+          requestAndroidMarketPermission(acc, googleApiClient)
+        case _ => actions.showErrorSelectUser().run
+      }
+    } else {
+      actions.showErrorAcceptTerms().run
     }
-  } else {
-    actions.showErrorAcceptTerms().run
   }
 
   def generateCollections(maybeKey: Option[String]): Unit =
@@ -109,7 +114,10 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       case _ =>
     }
 
-  def activityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean =
+  def activityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean = {
+
+    def tryToConnect(): Unit = clientStatuses.driveApiClient foreach (_.connect())
+
     (requestCode, resultCode) match {
       case (`resolveGooglePlayConnection`, Activity.RESULT_OK) =>
         tryToConnect()
@@ -129,6 +137,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         true
       case _ => false
     }
+  }
 
   def stop(): Unit = {
     List(clientStatuses.driveApiClient, clientStatuses.plusApiClient).flatten foreach {
@@ -206,45 +215,49 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }
   }
 
-  private[this] def getAccount(username: String): Option[Account] = accounts find (_.name == username)
-
   private[this] def requestUserPermissions(
     account: Account,
     scopes: String,
     client: GoogleApiClient): ServiceDef2[UserPermissions, AuthTokenException with AuthTokenOperationCancelledException] = {
+
+    def getAuthToken(
+      accountManager: AccountManager,
+      account: Account,
+      scopes: String): ServiceDef2[String, AuthTokenException with AuthTokenOperationCancelledException] = Service {
+      Task {
+        \/.fromTryCatchNonFatal {
+          val result = accountManager.getAuthToken(account, scopes, javaNull, contextWrapper.getOriginal, javaNull, javaNull).getResult
+          result.getString(AccountManager.KEY_AUTHTOKEN)
+        } match {
+          case \/-(x) => Result.answer(x)
+          case -\/(e: OperationCanceledException) => Errata(Seq((
+            implicitly[ClassTag[AuthTokenOperationCancelledException]],
+            (e.getMessage, AuthTokenOperationCancelledExceptionImpl(e.getMessage, Some(e))))))
+          case -\/(e) => Errata(Seq((
+            implicitly[ClassTag[AuthTokenException]],
+            (e.getMessage, AuthTokenExceptionImpl(e.getMessage, Some(e))))))
+        }
+      }
+    }
+
     for {
       token <- getAuthToken(accountManager, account, scopes)
     } yield UserPermissions(token, Seq(scopes))
   }
 
-  private[this] def invalidateToken(): Unit = {
-    getToken foreach { token =>
-      accountManager.invalidateAuthToken(accountType, token)
-      setToken(javaNull)
-    }
-  }
-
-  private[this] def loadCloudDevices(
-    client: GoogleApiClient,
-    username: String,
-    userPermissions: UserPermissions
-  ): ServiceDef2[UserCloudDevices, UserException with UserConfigException with CloudStorageProcessException] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client)
-    for {
-      response <- di.userProcess.signIn(username, Build.MODEL, userPermissions.token, userPermissions.oauthScopes)
-      cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
-      userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudStorageResources).resolveTo(UserCloudDevices(username, Seq.empty))
-    } yield userCloudDevices
-
-  }
-
   private[this] def connectionError(): Unit = actions.showErrorConnectingGoogle().run
-
-  private[this] def tryToConnect(): Unit = clientStatuses.driveApiClient foreach (_.connect())
 
   private[this] def requestAndroidMarketPermission(
     account: Account,
     client: GoogleApiClient): Unit = {
+
+    def invalidateToken(): Unit = {
+      getToken foreach { token =>
+        accountManager.invalidateAuthToken(accountType, token)
+        setToken(javaNull)
+      }
+    }
+
     invalidateToken()
     val scopes = "androidmarket"
     Task.fork(requestUserPermissions(account, scopes, client).run).resolveAsync(
@@ -301,6 +314,54 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     maybeUsername: Option[String],
     maybeUserPermissions: Option[UserPermissions]
   ): Unit = {
+
+    def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = Service {
+      val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).run)
+      Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
+    }
+
+    def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer()))
+
+    def verifyAndUpdate(
+      cloudStorageProcess: CloudStorageProcess,
+      name: String,
+      cloudStorageResources: Seq[CloudStorageDeviceSummary]) =
+      if (cloudStorageResources.isEmpty) {
+        for {
+          userInfo <- di.userConfigProcess.getUserInfo
+          cloudStorageDevices <- storeOnCloud(cloudStorageProcess, userInfo.devices map toCloudStorageDevice)
+          (maybeUserDevice, devices) <- cloudStorageProcess.prepareForActualDevice(cloudStorageDevices)
+        } yield {
+          UserCloudDevices(
+            name = name,
+            userDevice = maybeUserDevice map toUserCloudDevice,
+            devices = devices map toUserCloudDevice)
+        }
+      } else {
+        for {
+          (maybeUserDevice, devices) <- cloudStorageProcess.prepareForActualDevice(cloudStorageResources)
+          _ <- fakeUserConfigException
+        } yield {
+          UserCloudDevices(
+            name = name,
+            userDevice = maybeUserDevice map toUserCloudDevice,
+            devices = devices map toUserCloudDevice)
+        }
+      }
+
+    def loadCloudDevices(
+      client: GoogleApiClient,
+      username: String,
+      userPermissions: UserPermissions) = {
+      val cloudStorageProcess = di.createCloudStorageProcess(client)
+      for {
+        response <- di.userProcess.signIn(username, Build.MODEL, userPermissions.token, userPermissions.oauthScopes)
+        cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
+        userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudStorageResources).resolveTo(UserCloudDevices(username, None, Seq.empty))
+      } yield userCloudDevices
+
+    }
+
     (for {
       client <- maybeClient
       username <- maybeUsername
@@ -317,61 +378,6 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }) getOrElse actions.showErrorConnectingGoogle().run
   }
 
-  private[this] def verifyAndUpdate(
-    cloudStorageProcess: CloudStorageProcess,
-    name: String,
-    cloudStorageResources: Seq[CloudStorageDeviceSummary]
-  ): ServiceDef2[UserCloudDevices, UserConfigException with CloudStorageProcessException] = {
-
-    def sort(devices: Seq[UserCloudDevice]): Seq[UserCloudDevice] =
-      devices.sortBy(_.modifiedDate)(Ordering[Date].reverse)
-
-    def fixAndOrder(devices: Seq[UserCloudDevice]): Seq[UserCloudDevice] = {
-
-      val (userDevices, otherDevices) = devices.partition(_.currentDevice)
-
-      val sortedUserDevices = sort(userDevices)
-
-      val fixedUserDevice = sortedUserDevices.drop(1).map(_.copy(currentDevice = false))
-
-      sortedUserDevices.headOption.toSeq ++ sort(fixedUserDevice ++ otherDevices)
-    }
-
-    if (cloudStorageResources.isEmpty) {
-      for {
-        userInfo <- di.userConfigProcess.getUserInfo
-        cloudStorageDevices <- storeOnCloud(cloudStorageProcess, userInfo.devices map toCloudStorageDevice)
-      } yield UserCloudDevices(userInfo.name, fixAndOrder(cloudStorageDevices map toUserCloudDevice))
-    } else {
-      Service(Task(Answer(UserCloudDevices(name, fixAndOrder(cloudStorageResources map toUserCloudDevice)))))
-    }
-  }
-
-  private[this] def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = Service {
-    val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).run)
-    Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
-  }
-
-  private[this] def getAuthToken(
-    accountManager: AccountManager,
-    account: Account,
-    scopes: String
-  ): ServiceDef2[String, AuthTokenException with AuthTokenOperationCancelledException] = Service {
-    Task {
-      \/.fromTryCatchNonFatal {
-        val result = accountManager.getAuthToken(account, scopes, javaNull, contextWrapper.getOriginal, javaNull, javaNull).getResult
-        result.getString(AccountManager.KEY_AUTHTOKEN)
-      } match {
-        case \/-(x) => Result.answer(x)
-        case -\/(e: OperationCanceledException) => Errata(Seq((
-          implicitly[ClassTag[AuthTokenOperationCancelledException]],
-          (e.getMessage, AuthTokenOperationCancelledExceptionImpl(e.getMessage, Some(e))))))
-        case -\/(e) => Errata(Seq((
-          implicitly[ClassTag[AuthTokenException]],
-          (e.getMessage, AuthTokenExceptionImpl(e.getMessage, Some(e))))))
-      }
-    }
-  }
 }
 
 object Statuses {

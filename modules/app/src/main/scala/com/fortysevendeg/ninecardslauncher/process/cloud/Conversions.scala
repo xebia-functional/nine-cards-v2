@@ -5,15 +5,16 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem, UserDevice}
-import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
+import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
 
 object Conversions {
 
-  def toCloudStorageDeviceSummary(driveServiceFile: DriveServiceFile, maybeCloudId: Option[String]): CloudStorageDeviceSummary =
+  def toCloudStorageDeviceSummary(driveServiceFile: DriveServiceFileSummary, maybeCloudId: Option[String]): CloudStorageDeviceSummary =
     CloudStorageDeviceSummary(
       cloudId = driveServiceFile.uuid,
-      title = driveServiceFile.title,
+      deviceName = driveServiceFile.title,
+      deviceId = driveServiceFile.deviceId,
       createdDate = driveServiceFile.createdDate,
       modifiedDate = driveServiceFile.modifiedDate,
       currentDevice = maybeCloudId contains driveServiceFile.uuid)
@@ -77,7 +78,7 @@ object Conversions {
 
   def toUserCloudDevice(device: CloudStorageDeviceSummary) =
     UserCloudDevice(
-      deviceName = device.title,
+      deviceName = device.deviceName,
       cloudId = device.cloudId,
       currentDevice = device.currentDevice,
       fromV1 = false,

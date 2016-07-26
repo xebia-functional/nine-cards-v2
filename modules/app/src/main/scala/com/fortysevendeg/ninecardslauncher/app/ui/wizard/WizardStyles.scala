@@ -24,7 +24,7 @@ trait WizardStyles {
   def radioStyle(implicit context: ActivityContextWrapper): Tweak[RadioButton] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
     vWrapContent +
-      vPadding(paddingLeft = padding, paddingTop = padding, paddingRight = padding) +
+      vPadding(paddingLeft = padding, paddingRight = padding) +
       tvGravity(Gravity.CENTER_VERTICAL)
 
   }

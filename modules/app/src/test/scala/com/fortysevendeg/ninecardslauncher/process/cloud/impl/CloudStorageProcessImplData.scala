@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
-import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
+import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
 import org.joda.time.DateTime
 
@@ -32,14 +32,13 @@ trait CloudStorageProcessImplData {
 
   val driveServiceFile = generateDriveServiceFile
 
-  val driveServiceFileSeq: Seq[DriveServiceFile] = 1 to 10 map (_ => generateDriveServiceFile)
+  val driveServiceFileSeq: Seq[DriveServiceFileSummary] = 1 to 10 map (_ => generateDriveServiceFile)
 
-  val driveServiceFileEmptySeq = Seq.empty[DriveServiceFile]
+  val driveServiceFileEmptySeq = Seq.empty[DriveServiceFileSummary]
 
   def generateDriveServiceFile =
-    DriveServiceFile(
+    DriveServiceFileSummary(
       uuid = java.util.UUID.randomUUID.toString,
-      googleDriveId = Random.nextString(10),
       deviceId = Random.nextString(10).some,
       title = Random.nextString(10),
       createdDate = DateTime.now().minusMonths(6).toDate,

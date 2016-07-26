@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.drive._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
-import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
+import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, PendingResult, Result}
 import com.google.android.gms.drive._
 import com.google.android.gms.drive.metadata.CustomPropertyKey
@@ -47,11 +47,11 @@ class DriveServicesImpl(client: GoogleApiClient)
     searchFileByUUID(driveId)(_.nonEmpty)
 
   override def readFile(driveId: String) =
-    openDriveFile(driveId) { driveContentsResult =>
+    openDriveFile(driveId) { (summary, driveContentsResult) =>
       val contents = driveContentsResult.getDriveContents
       val stringContent = scala.io.Source.fromInputStream(contents.getInputStream).mkString
       contents.discard(client)
-      Answer(stringContent)
+      Answer(DriveServiceFile(summary, stringContent))
     }
 
   override def createFile(title: String, content: String, deviceId: String, fileType: String, mimeType: String) =
@@ -76,18 +76,18 @@ class DriveServicesImpl(client: GoogleApiClient)
         .foreach(writer.write))
 
   override def deleteFile(driveId: String) =
-    fetchDriveFile(driveId)(_.delete(client).withResult(_ => Answer(Unit)))
+    fetchDriveFile(driveId)(_.getDriveId.asDriveFile.delete(client).withResult(_ => Answer(Unit)))
 
   private[this] def newUUID = com.gilt.timeuuid.TimeUuid().toString
 
-  private[this] def searchFileByUUID[R](driveId: String)(f: (Option[DriveServiceFile]) => R) = {
+  private[this] def searchFileByUUID[R](driveId: String)(f: (Option[DriveServiceFileSummary]) => R) = {
     val query = new Query.Builder()
       .addFilter(Filters.eq(propertyUUID, driveId))
       .build()
     searchFiles(query.some)(seq => f(seq.headOption))
   }
 
-  private[this] def searchFiles[R](query: Option[Query])(f: (Seq[DriveServiceFile]) => R) = Service {
+  private[this] def searchFiles[R](query: Option[Query])(f: (Seq[DriveServiceFileSummary]) => R) = Service {
     Task {
       val request = query match {
         case Some(q) => appFolder.queryChildren(client, q)
@@ -112,11 +112,11 @@ class DriveServicesImpl(client: GoogleApiClient)
             .asDriveResource()
             .updateMetadata(client, changeSet)
             .await()
-          toGoogleDriveFile(uuid, metadata)
+          toGoogleDriveFileSummary(uuid, metadata)
         }
         // End fix
 
-        val response = f((validFiles map toGoogleDriveFile) ++ fixedFiles)
+        val response = f((validFiles map toGoogleDriveFileSummary) ++ fixedFiles)
         buffer.release()
         Answer(response)
       }
@@ -152,7 +152,13 @@ class DriveServicesImpl(client: GoogleApiClient)
           appFolder
             .createFile(client, changeSet, driveContents)
             .withResult { nr =>
-              Answer(uuid)
+              val now = new java.util.Date
+              Answer(DriveServiceFileSummary(
+                uuid = uuid,
+                deviceId = Some(deviceId),
+                title = title,
+                createdDate = now,
+                modifiedDate = now))
             }
         }
 
@@ -160,15 +166,15 @@ class DriveServicesImpl(client: GoogleApiClient)
   }
 
   private[this] def updateFile(driveId: String, f: (OutputStreamWriter) => Unit) =
-    openDriveFile(driveId, DriveFile.MODE_WRITE_ONLY) { driveContentsResult =>
+    openDriveFile(driveId, DriveFile.MODE_WRITE_ONLY) { (summary, driveContentsResult) =>
       val contents = driveContentsResult.getDriveContents
       val writer = new OutputStreamWriter(contents.getOutputStream)
       f(writer)
       writer.close()
-      contents.commit(client, javaNull).withResult(_ => Answer())
+      contents.commit(client, javaNull).withResult(_ => Answer(summary))
     }
 
-  private[this] def fetchDriveFile[R](driveId: String)(f: (DriveFile) => core.Result[R, DriveServicesException]) =
+  private[this] def fetchDriveFile[R](driveId: String)(f: (Metadata) => core.Result[R, DriveServicesException]) =
     Service {
       Task {
         appFolder
@@ -176,7 +182,7 @@ class DriveServicesImpl(client: GoogleApiClient)
           .withResult { r =>
             val buffer = r.getMetadataBuffer
             val response = buffer.iterator().toIterable.headOption match {
-              case Some(metaData) => f(metaData.getDriveId.asDriveFile)
+              case Some(metaData) => f(metaData)
               case None => Errata(DriveServicesException(fileNotFoundError(driveId)))
             }
             buffer.release()
@@ -187,8 +193,11 @@ class DriveServicesImpl(client: GoogleApiClient)
 
   private[this] def openDriveFile[R](
     driveId: String,
-    mode: Int = DriveFile.MODE_READ_ONLY)(f: (DriveApi.DriveContentsResult) => core.Result[R, DriveServicesException]) =
-      fetchDriveFile(driveId)(_.open(client, mode, javaNull).withResult(f(_)))
+    mode: Int = DriveFile.MODE_READ_ONLY)(f: (DriveServiceFileSummary, DriveApi.DriveContentsResult) => core.Result[R, DriveServicesException]) =
+      fetchDriveFile(driveId) { metadata =>
+        val driveServiceFileSummary = toGoogleDriveFileSummary(metadata)
+        metadata.getDriveId.asDriveFile.open(client, mode, javaNull).withResult(f(driveServiceFileSummary, _))
+      }
 
 }
 

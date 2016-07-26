@@ -12,7 +12,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
-import android.widget.{EditText, ImageView, RadioButton}
+import android.widget.{EditText, ImageView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -139,9 +139,5 @@ object ExtraTweaks {
       view.openDrawer(GravityCompat.END)
     }
   }
-
-  def rbSetChecked(checked: Boolean)(implicit contextWrapper: ContextWrapper) = Tweak[RadioButton](_.setChecked(checked))
-
-  def rbToggle(implicit contextWrapper: ContextWrapper) = Tweak[RadioButton](_.toggle())
 
 }

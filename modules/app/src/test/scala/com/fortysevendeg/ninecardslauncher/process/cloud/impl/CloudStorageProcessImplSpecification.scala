@@ -85,7 +85,7 @@ class CloudStorageProcessImplSpec
         result must beLike {
           case Answer(resultSeqCollection) =>
             resultSeqCollection.size shouldEqual driveServiceFileSeq.size
-            resultSeqCollection.map(_.title) shouldEqual driveServiceFileSeq.map(_.title)
+            resultSeqCollection.map(_.deviceName) shouldEqual driveServiceFileSeq.map(_.title)
             resultSeqCollection.map(_.cloudId) shouldEqual driveServiceFileSeq.map(_.uuid)
         }
 
