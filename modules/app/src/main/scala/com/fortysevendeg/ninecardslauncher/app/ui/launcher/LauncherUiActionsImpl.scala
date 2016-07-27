@@ -38,7 +38,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconSha
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
@@ -216,13 +215,13 @@ trait LauncherUiActionsImpl
 
   override def configureWidget(appWidgetId: Int): Ui[Any] = {
     val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-    if (appWidgetInfo.configure != javaNull) {
-      val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
-      intent.setComponent(appWidgetInfo.configure)
-      intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-      uiStartIntentForResult(intent, RequestCodes.goToConfigureWidgets)
-    } else {
-      Ui(presenter.addWidget(Some(appWidgetId)))
+    Option(appWidgetInfo.configure) match {
+      case Some(configure) =>
+        val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
+        intent.setComponent(configure)
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        uiStartIntentForResult(intent, RequestCodes.goToConfigureWidgets)
+      case _ => Ui(presenter.addWidget(Some(appWidgetId)))
     }
   }
 
