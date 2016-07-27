@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
-import android.content.Context
+import android.content.{Context, Intent}
+import android.net.Uri
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
@@ -53,6 +54,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   // API 17 and more
   lazy val momentClock = Option(findView(TR.launcher_moment_text_clock))
+
+  lazy val momentWeather = Option(findView(TR.launcher_moment_weather))
 
   lazy val momentGoogleIcon = Option(findView(TR.launcher_moment_google_icon))
 
@@ -108,6 +111,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         ivSrc(resIcon)) ~
       (momentText <~
         tvText(text)) ~
+      (momentWeather <~
+        On.click(Ui(presenter.launchGoogleWeather))) ~
       (momentGoogleIcon <~
         On.click(Ui(presenter.launchSearch))) ~
       (momentMicIcon <~

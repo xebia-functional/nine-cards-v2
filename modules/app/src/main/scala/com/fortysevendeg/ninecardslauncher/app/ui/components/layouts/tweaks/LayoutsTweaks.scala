@@ -19,7 +19,10 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermC
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppWidgetProviderInfoOps.Cell
 import macroid._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object LauncherWorkSpacesTweaks {
   type W = LauncherWorkSpaces
@@ -51,7 +54,9 @@ object LauncherWorkSpacesTweaks {
     view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
   }
 
-  def lwsAddWidget(widgetView: View) = Tweak[W] (_.addWidget(widgetView))
+  def lwsAddWidget(widgetView: View, cell: Cell) = Tweak[W] (_.addWidget(widgetView, cell))
+
+  def lwsClearWidgets() = Tweak[W] (_.clearWidgets())
 
   def lwsClean = Tweak[W] (_.clean())
 
@@ -61,7 +66,7 @@ object LauncherWorkSpacesTweaks {
 
   def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))
 
-  def lwsCloseMenu = Tweak[W] (_.closeMenu().run)
+  def lwsCloseMenu = Snail[W] (_.closeMenu().get map (_ => ()))
 
   def lwsPrepareItemsScreenInReorder(position: Int) = Tweak[W] (_.prepareItemsScreenInReorder(position).run)
 

@@ -7,10 +7,11 @@ import android.view.MotionEvent._
 import android.view.View.OnTouchListener
 import android.view.{LayoutInflater, MotionEvent, View}
 import android.widget.FrameLayout
+import android.widget.FrameLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppWidgetProviderInfoOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
@@ -49,17 +50,14 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       collection <- moment.collection
     } yield {
       (message <~ vGone) ~
-          ((for {
-            moment <- moment.momentType
-            view <- presenter.getWidgetView(moment)
-          } yield addWidget(view)) getOrElse clearWidgets()) ~
-        (widgets <~ vVisible <~ vAlpha(0f) <~ applyAnimation(alpha = Some(1f)))
+        (widgets <~ vVisible) ~
+        (moment.momentType map (moment => Ui(presenter.loadWidgetsForMoment(moment))) getOrElse clearWidgets())
     }) getOrElse
       ((message <~ vVisible) ~
         (widgets <~ vGone))
   }
 
-  def addWidget(widgetView: View): Ui[Any] = {
+  def addWidget(widgetView: View, cell: Cell): Ui[Any] = {
     val viewBlockTouch = w[FrameLayout].get
     viewBlockTouch.setOnTouchListener(new OnTouchListener {
       override def onTouch(v: View, event: MotionEvent): Boolean = {
@@ -69,16 +67,12 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
         false
       }
     })
-    val view = (
-      w[FrameLayout] <~
-        vgAddViews(
-          Seq(widgetView, viewBlockTouch))
-      ).get
-    widgets <~ vgRemoveAllViews <~ vgAddView(view)
+    val (width, height) = cell.getSize
+    val params = new LayoutParams(width, height)
+    params.setMargins(paddingDefault, paddingDefault, paddingDefault, paddingDefault)
+    widgets <~ vgRemoveAllViews <~ vgAddViews(Seq(widgetView, viewBlockTouch), params)
   }
 
-  def clearWidgets(): Ui[Any] = {
-    widgets <~ vgRemoveAllViews
-  }
+  def clearWidgets(): Ui[Any] = widgets <~ vgRemoveAllViews
 
 }
