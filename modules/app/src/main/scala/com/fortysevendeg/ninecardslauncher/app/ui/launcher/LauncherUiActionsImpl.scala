@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
-import android.content.ClipData
+import android.appwidget.{AppWidgetHost, AppWidgetManager}
+import android.content.{ClipData, Intent}
 import android.graphics.Point
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
@@ -9,25 +10,27 @@ import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppWidgetProviderInfoOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
@@ -61,6 +64,10 @@ trait LauncherUiActionsImpl
 
   implicit val managerContext: FragmentManagerContext[Fragment, FragmentManager]
 
+  lazy val appWidgetManager = AppWidgetManager.getInstance(activityContextWrapper.application)
+
+  lazy val appWidgetHost = new AppWidgetHost(activityContextWrapper.application, R.id.app_widget_host_id)
+
   lazy val foreground = Option(findView(TR.launcher_foreground))
 
   lazy val appsMoment = Option(findView(TR.launcher_apps_moment))
@@ -74,11 +81,16 @@ trait LauncherUiActionsImpl
     CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall))
 
   override def initialize: Ui[Any] =
-    Ui(initAllSystemBarsTint) ~
+    Ui{
+      appWidgetHost.startListening()
+      initAllSystemBarsTint
+    } ~
       prepareBars ~
       initCollectionsUi ~
       initDrawerUi ~
       (root <~ dragListener())
+
+  override def destroy: Ui[Any] = Ui(appWidgetHost.stopListening())
 
   override def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): Ui[Any] =
     (workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager
@@ -184,8 +196,40 @@ trait LauncherUiActionsImpl
 
   override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
 
-  override def addWidgetView(widgetView: View): Ui[Any] = {
-    workspaces <~ lwsAddWidget(widgetView)
+  override def addWidget(widgetViewId: Int): Ui[Any] = {
+    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widgetViewId)
+
+    val widthContent = workspaces map (_.getWidth) getOrElse 0
+    val heightContent = workspaces map (_.getHeight) getOrElse 0
+
+    val cell = appWidgetInfo.getCell(widthContent, heightContent)
+
+    val hostView = appWidgetHost.createView(activityContextWrapper.application, widgetViewId, appWidgetInfo)
+    hostView.setAppWidget(widgetViewId, appWidgetInfo)
+    workspaces <~ lwsAddWidget(hostView, cell)
+  }
+
+  override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()
+
+  override def deleteWidget(widgetViewId: Int): Ui[Any] = Ui(appWidgetHost.deleteAppWidgetId(widgetViewId))
+
+  override def configureWidget(appWidgetId: Int): Ui[Any] = {
+    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+    Option(appWidgetInfo.configure) match {
+      case Some(configure) =>
+        val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
+        intent.setComponent(configure)
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+        uiStartIntentForResult(intent, RequestCodes.goToConfigureWidgets)
+      case _ => Ui(presenter.addWidget(Some(appWidgetId)))
+    }
+  }
+
+  override def showWidgetsDialog(): Ui[Any] = {
+    val appWidgetId = appWidgetHost.allocateAppWidgetId()
+    val pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
+    pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+    uiStartIntentForResult(pickIntent, RequestCodes.goToWidgets)
   }
 
   override def openMenu(): Ui[Any] = drawerLayout <~ dlOpenDrawer

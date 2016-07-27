@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConvers
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, CallData, LastCallsContact, Widget, WidgetDimensions, _}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{App, CallData, LastCallsContact, Widget, _}
 import com.fortysevendeg.ninecardslauncher.process.device.types._
 import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp}
 import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
@@ -81,7 +81,6 @@ trait DeviceProcessData
   val minResizeHeight1 = 40
   val minResizeWidth1 = 40
   val minWidth1 = 40
-  val numCells1 = 1
   val resizeMode1 = 1
   val updatePeriodMillis1 = 1
   val label1 = "label1"
@@ -98,7 +97,6 @@ trait DeviceProcessData
   val minResizeHeight2 = 110
   val minResizeWidth2 = 110
   val minWidth2 = 110
-  val numCells2 = 2
   val resizeMode2 = 2
   val updatePeriodMillis2 = 2
   val label2 = "label2"
@@ -115,7 +113,6 @@ trait DeviceProcessData
   val minResizeHeight3 = 180
   val minResizeWidth3 = 180
   val minWidth3 = 180
-  val numCells3 = 3
   val resizeMode3 = 3
   val updatePeriodMillis3 = 3
   val label3 = "label3"
@@ -443,12 +440,10 @@ trait DeviceProcessData
       userHashCode = userHashCodeOption1,
       autoAdvanceViewId = autoAdvanceViewId1,
       initialLayout = initialLayout1,
-      dimensions = WidgetDimensions(
-        minCellHeight = numCells1,
-        minResizeCellHeight = numCells1,
-        minResizeCellWidth = numCells1,
-        minCellWidth = numCells1
-      ),
+      minWidth = minWidth1,
+      minHeight = minWidth1,
+      minResizeWidth = minWidth1,
+      minResizeHeight = minWidth1,
       className = className1,
       packageName = packageName1,
       resizeMode = WidgetResizeMode(resizeMode1),
@@ -460,12 +455,10 @@ trait DeviceProcessData
       userHashCode = userHashCodeOption2,
       autoAdvanceViewId = autoAdvanceViewId2,
       initialLayout = initialLayout2,
-      dimensions = WidgetDimensions(
-        minCellHeight = numCells2,
-        minResizeCellHeight = numCells2,
-        minResizeCellWidth = numCells2,
-        minCellWidth = numCells2
-      ),
+      minWidth = minWidth2,
+      minHeight = minWidth2,
+      minResizeWidth = minWidth2,
+      minResizeHeight = minWidth2,
       className = className2,
       packageName = packageName2,
       resizeMode = WidgetResizeMode(resizeMode2),
@@ -477,12 +470,10 @@ trait DeviceProcessData
       userHashCode = userHashCodeOption3,
       autoAdvanceViewId = autoAdvanceViewId3,
       initialLayout = initialLayout3,
-      dimensions = WidgetDimensions(
-        minCellHeight = numCells3,
-        minResizeCellHeight = numCells3,
-        minResizeCellWidth = numCells3,
-        minCellWidth = numCells3
-      ),
+      minWidth = minWidth3,
+      minHeight = minWidth3,
+      minResizeWidth = minWidth3,
+      minResizeHeight = minWidth3,
       className = className3,
       packageName = packageName3,
       resizeMode = WidgetResizeMode(resizeMode3),

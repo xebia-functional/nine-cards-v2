@@ -6,7 +6,9 @@ import android.view.{MotionEvent, View}
 import android.view.MotionEvent._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppWidgetProviderInfoOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
@@ -18,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
@@ -75,8 +78,16 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ => Ui.nop
   }
 
-  def addWidget(widgetView: View): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView).run
+  def addWidget(widgetView: View, cell: Cell): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView, cell).run
+    case None =>
+      // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
+      uiHandlerDelayed(Ui(addWidget(widgetView, cell)), 200).run
+    case _ =>
+  }
+
+  def clearWidgets(): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.clearWidgets().run
     case _ =>
   }
 
@@ -175,10 +186,10 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     }
   }
 
-  def closeMenu(): Ui[_] = if (workSpacesStatuses.openedMenu) {
+  def closeMenu(): Ui[Future[Any]] = if (workSpacesStatuses.openedMenu) {
     setOpenedMenu(false)
     animateViewsMenuMovement(0, durationAnimation)
-  } else Ui.nop
+  } else Ui(Future.successful())
 
   private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
     action match {
@@ -237,7 +248,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     workSpacesListener.onEndOpenMenu(workSpacesStatuses.openedMenu)
   }
 
-  private[this] def animateViewsMenuMovement(dest: Int, duration: Int): Ui[_] =
+  private[this] def animateViewsMenuMovement(dest: Int, duration: Int): Ui[Future[Any]] =
     (this <~
       vInvalidate <~~
       menuAnimator.move(workSpacesStatuses.displacement, dest, duration)) ~~ resetMenuMovement()
