@@ -1,11 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
-import android.appwidget.{AppWidgetHost, AppWidgetManager}
 import android.content.{Context, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
@@ -56,16 +54,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   lazy val preferenceStatus = new NineCardsPreferencesStatus
 
-  lazy val appWidgetManager = AppWidgetManager.getInstance(contextWrapper.application)
-
-  lazy val appWidgetHost = new AppWidgetHost(contextWrapper.application, R.id.app_widget_host_id)
-
   var statuses = LauncherPresenterStatuses()
 
   override def getApplicationContext: Context = contextWrapper.application
 
   def initialize(): Unit = {
-    appWidgetHost.startListening()
     Task.fork(di.userProcess.register.run).resolveAsync()
     actions.initialize.run
   }
@@ -81,7 +74,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def pause(): Unit = di.observerRegister.unregisterObserver()
 
-  def destroy(): Unit = appWidgetHost.stopListening()
+  def destroy(): Unit = actions.destroy.run
 
   def back(): Unit = actions.back.run
 
@@ -416,17 +409,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  def goToWidgets(): Unit = contextWrapper.original.get foreach { activity =>
-    val appWidgetId = appWidgetHost.allocateAppWidgetId()
-    val pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
-    pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-    activity.startActivityForResult(pickIntent, RequestCodes.goToWidgets)
-  }
+  def goToWidgets(): Unit = actions.showWidgetsDialog().run
 
-  def deleteWidget(maybeAppWidgetId: Option[Int]): Unit = maybeAppWidgetId foreach appWidgetHost.deleteAppWidgetId
+  def deleteWidget(maybeAppWidgetId: Option[Int]): Unit =
+    (maybeAppWidgetId map actions.deleteWidget getOrElse Ui.nop).run
 
-  def getWidgetView(nineCardMoment: NineCardsMoment): Option[View] =
-    cache.getWidgetId(nineCardMoment) map createView
+  def loadWidgetsForMoment(nineCardMoment: NineCardsMoment): Unit =
+    (cache.getWidgetId(nineCardMoment) map actions.addWidget getOrElse actions.clearWidgets()).run
 
   def addWidget(maybeAppWidgetId: Option[Int]): Unit =
     ((for {
@@ -436,33 +425,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       nineCardMoment <- moment.momentType
     } yield {
       cache.setWidgetId(nineCardMoment, appWidgetId)
-      drawWidget(appWidgetId)
+      actions.addWidget(appWidgetId)
     }) getOrElse actions.showContactUsError()).run
 
-  private[this] def drawWidget(appWidgetId: Int): Ui[Any] = actions.addWidgetView(createView(appWidgetId))
-
-  private[this] def createView(appWidgetId: Int): View = {
-    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-    val hostView = appWidgetHost.createView(contextWrapper.application, appWidgetId, appWidgetInfo)
-    hostView.setAppWidget(appWidgetId, appWidgetInfo)
-    hostView
-  }
-
   def configureWidgetOrAdd(maybeAppWidgetId: Option[Int]): Unit =
-    (for {
-      appWidgetId <- maybeAppWidgetId
-      activity <- contextWrapper.original.get
-    } yield {
-      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-      if (appWidgetInfo.configure != javaNull) {
-        val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
-        intent.setComponent(appWidgetInfo.configure)
-        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-        activity.startActivityForResult(intent, RequestCodes.goToConfigureWidgets)
-      } else {
-        addWidget(Some(appWidgetId))
-      }
-    }) getOrElse actions.showContactUsError().run
+    (maybeAppWidgetId map actions.configureWidget getOrElse actions.showContactUsError()).run
 
   private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
@@ -623,6 +590,8 @@ trait LauncherUiActions {
 
   def initialize: Ui[Any]
 
+  def destroy: Ui[Any]
+
   def back: Ui[Any]
 
   def resetAction: Ui[Any]
@@ -696,7 +665,15 @@ trait LauncherUiActions {
 
   def editCollection(collection: Collection): Ui[Any]
 
-  def addWidgetView(widgetView: View): Ui[Any]
+  def addWidget(widgetViewId: Int): Ui[Any]
+
+  def deleteWidget(widgetViewId: Int): Ui[Any]
+
+  def configureWidget(appWidgetId: Int): Ui[Any]
+
+  def clearWidgets(): Ui[Any]
+
+  def showWidgetsDialog(): Ui[Any]
 
   def openMenu(): Ui[Any]
 

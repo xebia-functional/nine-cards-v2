@@ -9,7 +9,7 @@
             android:id="@+id/launcher_moment_message"
             style="@style/LauncherMomentMessage"/>
 
-    <LinearLayout
+    <FrameLayout
             android:id="@+id/launcher_moment_widgets"
             style="@style/LauncherMomentWidgets" />
 

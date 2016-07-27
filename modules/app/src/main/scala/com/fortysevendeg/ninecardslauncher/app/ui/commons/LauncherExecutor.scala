@@ -110,6 +110,17 @@ trait LauncherExecutor {
       }
     }
 
+  def launchGoogleWeather(implicit activityContext: ActivityContextWrapper) =
+    for {
+      activity <- activityContext.original.get
+    } yield {
+      val intent = new Intent(Intent.ACTION_VIEW)
+      intent.setData(Uri.parse("dynact://velour/weather/ProxyActivity"))
+      intent.setClassName("com.google.android.googlequicksearchbox",
+        "com.google.android.apps.gsa.velour.DynamicActivityTrampoline")
+      tryOrError(activity, intent)
+    }
+
   def launchVoiceSearch(implicit activityContext: ActivityContextWrapper) =
     for {
       activity <- activityContext.original.get
