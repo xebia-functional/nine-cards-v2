@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
+import java.util.Date
+
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
@@ -15,6 +17,8 @@ trait CloudStorageProcessImplData {
   val activeUserId = 10
 
   val cloudId = "drive-id"
+
+  val anotherCloudId = "drive-id-2"
 
   val user = User(
     activeUserId,
@@ -46,6 +50,8 @@ trait CloudStorageProcessImplData {
 
   val deviceId = "device-id"
 
+  val anotherDeviceId = "device-id-2"
+
   val deviceName = "device-name"
 
   val documentVersion = 1
@@ -60,13 +66,23 @@ trait CloudStorageProcessImplData {
 
   val momentType = Option("HOME")
 
-  val cloudStorageDevice =
+  def generateCloudStorageDeviceData(deviceId: String = deviceId) =
     CloudStorageDeviceData(
       deviceId,
       deviceName,
       documentVersion,
       generateCollections(numCollections, numItemsPerCollection),
       Some(generateMoments(numMoments, numTimeSlot)))
+
+  def generateCloudStorageDevice(
+    cloudId: String = cloudId,
+    minusDays: Int = 0,
+    deviceId: String = deviceId) =
+    CloudStorageDevice(
+      cloudId,
+      createdDate = DateTime.now().minusDays(minusDays).toDate,
+      modifiedDate = DateTime.now().minusDays(minusDays).toDate,
+      data = generateCloudStorageDeviceData(deviceId))
 
   def generateCollections(num: Int, numItems: Int): Seq[CloudStorageCollection] = 1 to num map { i =>
     CloudStorageCollection(
