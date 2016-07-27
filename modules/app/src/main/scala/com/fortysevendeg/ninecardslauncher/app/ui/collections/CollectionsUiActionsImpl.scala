@@ -239,13 +239,12 @@ trait CollectionsUiActionsImpl
 
   override def destroyAction: Ui[Any] = Ui(removeActionFragment)
 
-  override def showPublishCollectionWizardDialog: Ui[Any] = Ui {
+  override def showPublishCollectionWizardDialog(collection: Collection): Ui[Any] = Ui {
     activityContextWrapper.getOriginal match {
       case activity: AppCompatActivity =>
         val fragmentManager = activity.getSupportFragmentManager
         val ft = fragmentManager.beginTransaction()
         Option(fragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-        val collection = getCurrentCollection.get
         ft.addToBackStack(javaNull)
         val dialog = new PublishCollectionFragment(collection)
         dialog.show(ft, tagDialog)
@@ -253,6 +252,8 @@ trait CollectionsUiActionsImpl
         showContactUsError
     }
   }
+
+  override def showMessagePublishContactsCollectionError: Ui[Any] = showError(R.string.publishCollectionError)
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = root <~ vSnackbarShort(error)
 

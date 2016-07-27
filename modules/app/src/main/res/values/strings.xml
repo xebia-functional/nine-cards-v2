@@ -130,6 +130,7 @@
     <string name="congratulationsHeader">Congratulations!</string>
     <string name="congratulationsMessage">Your collection has been successfully published</string>
     <string name="shareCollection">Share your collection</string>
+    <string name="publishCollectionError">Oops! A collection without apps can\'t be published</string>
 
     <!-- Contacts Action -->
 

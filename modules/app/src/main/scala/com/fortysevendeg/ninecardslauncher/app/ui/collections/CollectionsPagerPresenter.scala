@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.ShortcutCardType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, ShortcutCardType}
 import com.fortysevendeg.ninecardslauncher.process.device.ShortcutException
 import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.Result
@@ -56,7 +56,15 @@ class CollectionsPagerPresenter(
 
   def showMessageNotImplemented(): Unit = actions.showMessageNotImplemented.run
   
-  def showPublishCollectionWizard(): Unit = actions.showPublishCollectionWizardDialog.run
+  def showPublishCollectionWizard(): Unit = {
+    actions.getCurrentCollection map { collection =>
+      if (collection.cards.exists(_.cardType == AppCardType)) {
+        actions.showPublishCollectionWizardDialog(collection).run
+      } else {
+        actions.showMessagePublishContactsCollectionError.run
+      }
+    } getOrElse actions.showContactUsError
+  }
 
   def addCards(cards: Seq[AddCardRequest]): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.addCards(collection.id, cards).run).resolveAsyncUi(
@@ -128,7 +136,9 @@ trait CollectionsUiActions {
 
   def destroyAction: Ui[Any]
 
-  def showPublishCollectionWizardDialog: Ui[Any]
+  def showPublishCollectionWizardDialog(collection: Collection): Ui[Any]
+
+  def showMessagePublishContactsCollectionError: Ui[Any]
 
   def showContactUsError: Ui[Any]
 

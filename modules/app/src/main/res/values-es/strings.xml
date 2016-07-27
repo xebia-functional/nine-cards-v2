@@ -125,6 +125,7 @@
     <string name="congratulationsHeader">¡Enhorabuena!</string>
     <string name="congratulationsMessage">Tu colección se ha publicado con éxito</string>
     <string name="shareCollection">Comparte tu colección</string>
+    <string name="publishCollectionError">Oops! Una colección sin aplicaciones no puede ser publicada</string>
 
     <!-- Contacts Action -->
 
