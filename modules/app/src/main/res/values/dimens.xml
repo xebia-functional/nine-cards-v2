@@ -23,6 +23,7 @@
     <dimen name="text_micro">8sp</dimen>
 
     <dimen name="divider_default">1px</dimen>
+    <dimen name="divider_wide">3px</dimen>
 
     <dimen name="elevation_box_workspaces">6dp</dimen>
     <dimen name="elevation_toolbar">4dp</dimen>
@@ -175,7 +176,6 @@
     <dimen name="margin_bottom_error_dialog_image">55dp</dimen>
 
     <dimen name="header_wizard_height">70dp</dimen>
-    <dimen name="footer_wizard_height">70dp</dimen>
 
     <!-- ListPopupMenu -->
     <dimen name="width_list_popup_menu">220dp</dimen>
@@ -197,5 +197,17 @@
 
     <!-- Profile -->
     <dimen name="height_profile_user">180dp</dimen>
+
+    <!-- Publish Collection Wizard -->
+    <dimen name="message_publish_collection_width">260dp</dimen>
+    <dimen name="message_publish_collection_height">60dp</dimen>
+    <dimen name="input_margin_top">15dp</dimen>
+    <dimen name="input_category_margin_top">20dp</dimen>
+    <dimen name="form_padding">0dp</dimen>
+    <dimen name="form_height">232dp</dimen>
+    <dimen name="category_padding">4dp</dimen>
+    <dimen name="footer_wizard_height">70dp</dimen>
+    <dimen name="footer_wizard_end_margin">20dp</dimen>
+    <dimen name="footer_wizard_end_height">50dp</dimen>
 
 </resources>

@@ -123,6 +123,10 @@
     <string name="publishCollectionMessage">If you publish your collections, other users can find new applications</string>
     <string name="addInformationHeader">Add information</string>
     <string name="addInformationMessage">Add information about your collections for other users can find it</string>
+    <string name="publishAction">Publish</string>
+    <string name="addInformationcollectionName">Collection name</string>
+    <string name="addInformationDescription">Description</string>
+    <string name="addInformationCategory">Select a category</string>
     <string name="congratulationsHeader">Congratulations!</string>
     <string name="congratulationsMessage">Your collection has been successfully published</string>
     <string name="shareCollection">Share your collection</string>

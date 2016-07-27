@@ -118,6 +118,10 @@
     <string name="publishCollectionMessage">Si publicas tu colección, otros usuarios podrán encontrar nuevas aplicaciones</string>
     <string name="addInformationHeader">Añade información</string>
     <string name="addInformationMessage">Añade información sobre tu colección para que otros usuarios puedan encontrarla</string>
+    <string name="publishAction">Publicar</string>
+    <string name="addInformationcollectionName">Nombre de la colección</string>
+    <string name="addInformationDescription">Descripción</string>
+    <string name="addInformationCategory">Selecciona una categoría</string>
     <string name="congratulationsHeader">¡Enhorabuena!</string>
     <string name="congratulationsMessage">Tu colección se ha publicado con éxito</string>
     <string name="shareCollection">Comparte tu colección</string>

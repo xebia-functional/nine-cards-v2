@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/PublishCollectionWizardRoot">
+
+    <LinearLayout
+            android:id="@+id/publish_collection_wizard_start"
+            style="@style/PublishCollectionWizardDialog">
+
+        <LinearLayout
+                android:id="@+id/publish_collection_wizard_start_content"
+                style="@style/PublishCollectionWizardContent">
+
+            <TextView
+                    android:id="@+id/publish_collection_wizard_header"
+                    style="@style/PublishCollectionWizardStartHeader"/>
+
+            <TextView
+                    android:id="@+id/publish_collection_wizard_message"
+                    style="@style/PublishCollectionWizardStartMessage"/>
+
+            <ImageView
+                    android:id="@+id/publish_collection_wizard_image"
+                    style="@style/PublishCollectionWizardImageStart"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/publish_collection_wizard_start_footer"
+                style="@style/PublishCollectionWizardStartFooter">
+
+            <ImageButton
+                    android:id="@+id/publish_collection_wizard_arrow"
+                    style="@style/PublishCollectionWizardStartArrow"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/publish_collection_wizard_information"
+            style="@style/PublishCollectionWizardDialog">
+
+        <LinearLayout
+                android:id="@+id/publish_collection_wizard_information_content"
+                style="@style/PublishCollectionWizardContent">
+
+            <TextView
+                    android:id="@+id/publish_collection_wizard_information_header"
+                    style="@style/PublishCollectionWizardInformationHeader"/>
+
+
+            <ScrollView style="@style/PublishCollectionWizardInformationScroll">
+
+                <LinearLayout style="@style/PublishCollectionWizardInformationScrollContent">
+
+                    <TextView
+                            android:id="@+id/publish_collection_information_message"
+                            style="@style/PublishCollectionWizardInformationMessage"/>
+
+                    <LinearLayout
+                            android:id="@+id/publish_collection_wizard_information_form"
+                            style="@style/PublishCollectionWizardInformationForm">
+
+                        <android.support.design.widget.TextInputLayout
+                                android:id="@+id/collection_name_information"
+                                style="@style/PublishCollectionWizardInformationInput">
+
+                            <EditText
+                                    android:id="@+id/collection_name"
+                                    style="@style/PublishCollectionWizardInformationCollectionNameInputMessage"/>
+
+                        </android.support.design.widget.TextInputLayout>
+
+                        <android.support.design.widget.TextInputLayout
+                                android:id="@+id/description_information"
+                                style="@style/PublishCollectionWizardInformationInput">
+
+                            <EditText
+                                    android:id="@+id/description"
+                                    style="@style/PublishCollectionWizardInformationDescriptionInputMessage"/>
+
+                        </android.support.design.widget.TextInputLayout>
+
+                        <LinearLayout
+                                style="@style/PublishCollectionWizardInformationCategorySelectContent">
+
+                            <Spinner
+                                    android:id="@+id/category"
+                                    style="@style/PublishCollectionWizardInformationCategorySpinner"/>
+
+                            <ImageView
+                                    style="@style/PublishCollectionWizardInformationLineHorizontal"/>
+
+                    </LinearLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </ScrollView>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/publish_collection_wizard_information_footer"
+                style="@style/PublishCollectionWizardInformationFooter">
+
+            <Button
+                    android:id="@+id/publish_collection_wizard_information_button"
+                    style="@style/PublishCollectionWizardInformationButton"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/publish_collection_wizard_end"
+            style="@style/PublishCollectionWizardDialog">
+
+        <LinearLayout
+                android:id="@+id/publish_collection_wizard_end_content"
+                style="@style/PublishCollectionWizardContent">
+
+            <TextView
+                    android:id="@+id/publish_collection_wizard_end_header"
+                    style="@style/PublishCollectionWizardEndHeader"/>
+
+            <TextView
+                    android:id="@+id/publish_collection_wizard_end_message"
+                    style="@style/PublishCollectionWizardEndMessage"/>
+
+            <ImageView
+                    android:id="@+id/publish_collection_wizard_end_image"
+                    style="@style/PublishCollectionWizardImageEnd"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/publish_collection_wizard_end_footer"
+                style="@style/PublishCollectionWizardEndFooter">
+
+            <ImageView
+                    style="@style/PublishCollectionWizardEndLineHorizontal"/>
+
+            <Button
+                    android:id="@+id/publish_collection_wizard_end_button"
+                    style="@style/PublishCollectionWizardEndButton"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

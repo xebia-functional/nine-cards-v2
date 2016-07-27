@@ -150,6 +150,10 @@
     <color name="background_header_content">#29000000</color>
     <color name="text_dialog_name">#ffffff</color>
 
+    <!-- Publish Collection Dialog -->
+    <color name="footer_text_color">#636363</color>
+    <color name="divider_category_color">#626262</color>
+
     <!-- Public Collection Dialog -->
     <color name="background_count_public_collection_dialog">#cdcdcd</color>
     <color name="tab_public_collection_dialog">#ffffff</color>
