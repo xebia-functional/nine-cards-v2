@@ -315,9 +315,6 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }) getOrElse actions.showErrorConnectingGoogle().run
   }
 
-  private[this] def addMomentsToCollections(collections: Seq[Collection], moments: Seq[Moment]) =
-    collections map (collection => toCloudStorageCollection(collection, moments.find(_.collectionId == Option(collection.id))))
-
   private[this] def verifyAndUpdate(
     cloudStorageProcess: CloudStorageProcess,
     name: String,

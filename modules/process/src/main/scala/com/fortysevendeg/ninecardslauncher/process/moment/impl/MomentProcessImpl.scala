@@ -36,8 +36,10 @@ class MomentProcessImpl(
       collections <- persistenceServices.fetchCollections //TODO - Issue #394 - Change this service's call for a new one to be created that returns the number of created collections
       length = collections.length
       servicesApp <- persistenceServices.fetchApps(OrderByName, ascending = true)
+      apps = servicesApp map toApp
       collections = moments.zipWithIndex map {
-        case (moment, index) => generateAddCollection(servicesApp map toApp, moment, length + index)
+        case (moment, index) =>
+          generateAddCollection(filterAppsByMoment(apps, moment), moment, length + index)
       }
       moments <- persistenceServices.addCollections(collections)
     } yield moments map toCollection).resolve[MomentException]
@@ -125,7 +127,7 @@ class MomentProcessImpl(
     (fromDT, toDT)
   }
 
-  private[this] def filterAppsByMoment(apps: Seq[App], moment: NineCardsMoment) =
+  private[this] def filterAppsByMoment(apps: Seq[App], moment: NineCardsMoment): Seq[App] =
     apps.filter { app =>
       moment match {
         case HomeMorningMoment => homeApps.contains(app.packageName)
