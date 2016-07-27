@@ -83,6 +83,7 @@
 
     <string name="currentDeviceTitle">%s (current device)</string>
     <string name="newConfigurationSubtitle">We\'ll create a new configuration from your apps</string>
+    <string name="deviceMigratedFromV1">Migrated from the previous version</string>
     <string name="otherDevicesLink">Other devices configurations</string>
 
     <!-- Moment -->

@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
-import java.util.Date
-
 import android.accounts.{Account, AccountManager, OperationCanceledException}
 import android.app.Activity
 import android.content.{Context, Intent}
@@ -12,19 +10,16 @@ import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider, GooglePlusApiClientProvider}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Presenter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices, UserPermissions}
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevices, UserPermissions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceData, CloudStorageDeviceSummary}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
-import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
 import NineCardExtensions._
@@ -87,7 +82,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
           val googleApiClient = createGoogleDriveClient(acc.name)
           clientStatuses = clientStatuses.copy(
             driveApiClient = Some(googleApiClient),
-            username = Some(acc.name))
+            email = Some(acc.name))
           requestAndroidMarketPermission(acc, googleApiClient)
         case _ => actions.showErrorSelectUser().run
       }
@@ -132,8 +127,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         }
         true
       case (`resolveConnectedUser`, _) =>
-        // TODO - Failed to SignIn
-        loadDevices(clientStatuses.driveApiClient, clientStatuses.username, clientStatuses.userPermissions)
+        connectionError()
         true
       case _ => false
     }
@@ -148,9 +142,9 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
   override def onDriveConnectionSuspended(connectionSuspendedCause: ConnectionSuspendedCause): Unit = {}
 
   override def onDriveConnected(bundle: Bundle): Unit = {
-    clientStatuses.username match {
-      case Some(username) =>
-        val client = createGooglePlusClient(username)
+    clientStatuses.email match {
+      case Some(email) =>
+        val client = createGooglePlusClient(email)
         clientStatuses = clientStatuses.copy(plusApiClient = Some(client))
         signIn(client)
       case None => actions.goToUser().run
@@ -177,8 +171,8 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       case Some(apiClient) =>
         val googlePlusProcess = di.createGooglePlusProcess(apiClient)
         Task.fork(googlePlusProcess.updateUserProfile().run).resolveAsync(
-          onResult = (userName) =>
-            loadDevices(clientStatuses.driveApiClient, userName orElse clientStatuses.username, clientStatuses.userPermissions),
+          onResult = (profileName) =>
+            loadDevices(clientStatuses.driveApiClient, profileName, clientStatuses.email, clientStatuses.userPermissions),
           onException = error,
           onPreTask = () => actions.showLoading().run
         )
@@ -311,7 +305,8 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   private[this] def loadDevices(
     maybeClient: Option[GoogleApiClient],
-    maybeUsername: Option[String],
+    maybeProfileName: Option[String],
+    maybeEmail: Option[String],
     maybeUserPermissions: Option[UserPermissions]
   ): Unit = {
 
@@ -324,7 +319,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
     def verifyAndUpdate(
       cloudStorageProcess: CloudStorageProcess,
-      name: String,
+      email: String,
       cloudStorageResources: Seq[CloudStorageDeviceSummary]) =
       if (cloudStorageResources.isEmpty) {
         for {
@@ -333,7 +328,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
           (maybeUserDevice, devices) <- cloudStorageProcess.prepareForActualDevice(cloudStorageDevices)
         } yield {
           UserCloudDevices(
-            name = name,
+            name = maybeProfileName getOrElse email,
             userDevice = maybeUserDevice map toUserCloudDevice,
             devices = devices map toUserCloudDevice)
         }
@@ -343,7 +338,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
           _ <- fakeUserConfigException
         } yield {
           UserCloudDevices(
-            name = name,
+            name = maybeProfileName getOrElse email,
             userDevice = maybeUserDevice map toUserCloudDevice,
             devices = devices map toUserCloudDevice)
         }
@@ -351,23 +346,23 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
     def loadCloudDevices(
       client: GoogleApiClient,
-      username: String,
+      email: String,
       userPermissions: UserPermissions) = {
       val cloudStorageProcess = di.createCloudStorageProcess(client)
       for {
-        response <- di.userProcess.signIn(username, Build.MODEL, userPermissions.token, userPermissions.oauthScopes)
+        response <- di.userProcess.signIn(email, Build.MODEL, userPermissions.token, userPermissions.oauthScopes)
         cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
-        userCloudDevices <- verifyAndUpdate(cloudStorageProcess, username, cloudStorageResources).resolveTo(UserCloudDevices(username, None, Seq.empty))
+        userCloudDevices <- verifyAndUpdate(cloudStorageProcess, email, cloudStorageResources).resolveTo(UserCloudDevices(email, None, Seq.empty))
       } yield userCloudDevices
 
     }
 
     (for {
       client <- maybeClient
-      username <- maybeUsername
+      email <- maybeEmail
       userPermissions <- maybeUserPermissions
     } yield {
-      Task.fork(loadCloudDevices(client, username, userPermissions).run).resolveAsyncUi(
+      Task.fork(loadCloudDevices(client, email, userPermissions).run).resolveAsyncUi(
         onPreTask = () => actions.showLoading(),
         onResult = (devices: UserCloudDevices) => actions.showDevices(devices),
         onException = (ex: Throwable) => ex match {
@@ -385,7 +380,7 @@ object Statuses {
   case class WizardPresenterStatuses(
     driveApiClient: Option[GoogleApiClient] = None,
     plusApiClient: Option[GoogleApiClient] = None,
-    username: Option[String] = None,
+    email: Option[String] = None,
     userPermissions: Option[UserPermissions] = None)
 
 }

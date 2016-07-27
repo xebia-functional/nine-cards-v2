@@ -9,7 +9,9 @@ import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, Con
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState.{stateFailure => _, stateSuccess => _, _}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
@@ -86,9 +88,10 @@ class CreateCollectionService
     Service.START_NOT_STICKY
   }
 
-  private[this] def setState(state: String) = {
+  private[this] def setState(state: String, close: Boolean = false) = {
     currentState = Option(state)
     self ! BroadAction(WizardStateActionFilter.action, Option(state))
+    if (close) closeService()
   }
 
   protected def setProcess(process: CreateCollectionsProcess) = {
@@ -121,17 +124,18 @@ class CreateCollectionService
 
     Task.fork(service.run).resolveAsync(
       onResult = collections => {
-        setState(stateSuccess)
-        closeService()
+        setState(stateSuccess, close = true)
       },
       onException = ex => {
-        setState(stateFailure)
-        closeService()
+        setState(stateFailure, close = true)
       }
     )
   }
 
-  override def error(message: String, maybeException: Option[Throwable]): Unit = closeService()
+  override def error(message: String, maybeException: Option[Throwable]): Unit = {
+    maybeException foreach (ex => printErrorMessage(ex))
+    setState(stateFailure, close = true)
+  }
 }
 
 object CreateCollectionService {

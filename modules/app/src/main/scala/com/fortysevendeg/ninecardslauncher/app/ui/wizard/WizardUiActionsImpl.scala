@@ -7,7 +7,7 @@ import android.view.View
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks.{W, _}
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -17,7 +17,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Anim
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceData}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -164,7 +163,7 @@ trait WizardUiActionsImpl
   private[this] def addDevicesToRadioGroup(userDevice: Option[UserCloudDevice], devices: Seq[UserCloudDevice]): Ui[Any] = {
 
     def subtitle(device: UserCloudDevice): String = {
-      if (device.fromV1) "" else {
+      if (device.fromV1) resGetString(R.string.deviceMigratedFromV1) else {
         val time = new PrettyTime().format(device.modifiedDate)
         resGetString(R.string.syncLastSynced, time)
       }
@@ -228,18 +227,14 @@ trait WizardUiActionsImpl
       (if (visible) vVisible else vGone)).get
 
   private[this] def otherDevicesLink(text: String): TextView = {
-    val linkTag = "otherDevicesLink"
-
     (w[TextView] <~
       otherDevicesLinkStyle <~
       tvUnderlineText(text) <~
-      vTag(linkTag) <~
-      On.click {
-        devicesGroup <~ Transformer {
+      FuncOn.click { v: View =>
+        (devicesGroup <~ Transformer {
           case view if view.getVisibility == View.GONE => view <~ vVisible
-          case link if Option(link.getTag) contains linkTag => link <~ vGone
           case _ => Ui.nop
-        }
+        }) ~ (v <~ vGone)
       }).get
   }
 
