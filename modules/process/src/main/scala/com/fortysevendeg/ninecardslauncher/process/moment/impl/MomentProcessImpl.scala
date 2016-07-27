@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.DefaultApps._
@@ -65,10 +65,29 @@ class MomentProcessImpl(
   override def getBestAvailableMoment(implicit context: ContextSupport) =
     (for {
       serviceMoments <- persistenceServices.fetchMoments
+      collections <- persistenceServices.fetchCollections
       wifi <- wifiServices.getCurrentSSID
       moments = serviceMoments map toMoment
-      momentsPrior = moments sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
+      momentWithCollection = moments filter (m => collections.exists(col => m.collectionId.contains(col.id)))
+      momentsPrior = momentWithCollection sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
     } yield momentsPrior.headOption).resolve[MomentException]
+
+  override def getAvailableMoments(implicit context: ContextSupport) =
+    (for {
+      serviceMoments <- persistenceServices.fetchMoments
+      serviceCollections <- persistenceServices.fetchCollections
+      collections = serviceCollections map toCollection
+      moments = serviceMoments map toMoment
+      momentWithCollection = moments flatMap {
+        case moment @ Moment(Some(collectionId), _, _, _, _) =>
+          collections find (_.id == collectionId) match {
+            case Some(collection: Collection) =>
+              Some(toMomentWithCollection(moment, collection))
+            case _ => None
+          }
+        case _ => None
+      }
+    } yield momentWithCollection).resolve[MomentException]
 
   private[this] def prioritizedMoments(moment1: Moment, moment2: Moment, wifi: Option[String]): Boolean = {
 

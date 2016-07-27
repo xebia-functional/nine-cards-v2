@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.moment
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.moment.models._
 
 trait MomentProcess {
@@ -56,5 +56,13 @@ trait MomentProcess {
     * @throws MomentException if there was an error getting the best moment
     */
   def getBestAvailableMoment(implicit context: ContextSupport): ServiceDef2[Option[Moment], MomentException]
+
+  /**
+    * Gets all available moments. Only the moments with collection
+    *
+    * @return sequuence com.fortysevendeg.ninecardslauncher.process.moment.models.Moment
+    * @throws MomentException if there was an error getting the best moment
+    */
+  def getAvailableMoments(implicit context: ContextSupport): ServiceDef2[Seq[MomentWithCollection], MomentException]
 
 }

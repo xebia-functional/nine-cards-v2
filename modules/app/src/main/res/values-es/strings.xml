@@ -99,6 +99,8 @@
 
     <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
 
+    <string name="emptyMoment">No tienes momentos definidos</string>
+
     <string name="momentNotFoundMessage">Momento no encontrado. Tu deberías crear colecciones desde la sección Mis Collections</string>
 
     <!-- Collections Detail -->

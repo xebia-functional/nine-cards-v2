@@ -181,7 +181,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val namesMoments: Map[NineCardsMoment, String] = (moments map {
     moment =>
-      val identifier = resources.getIdentifier(moment.getIconResource, "string", contextSupport.getPackageName)
+      val identifier = resources.getIdentifier(moment.getStringResource, "string", contextSupport.getPackageName)
       (moment, if (identifier != 0) resources.getString(identifier) else moment.name)
   }).toMap
 
