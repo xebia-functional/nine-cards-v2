@@ -77,9 +77,9 @@
     <string name="errorGooglePermissionNotAccepted">Tienes que aceptar el permiso de Google para poder usar 9Cards</string>
 
     <string name="currentDeviceTitle">%s (dispositivo actual)</string>
-    <string name="newConfigurationSubtitle">Crearemos una nueva configración a partir de tus aplicaciones</string>
+    <string name="newConfigurationSubtitle">Crearemos una nueva configuración a partir de tus aplicaciones</string>
     <string name="deviceMigratedFromV1">Migrado de la versión anterior</string>
-    <string name="otherDevicesLink">Other devices configurations</string>
+    <string name="otherDevicesLink">Configuraciones de otros dispositivos</string>
 
     <!-- Moment -->
 

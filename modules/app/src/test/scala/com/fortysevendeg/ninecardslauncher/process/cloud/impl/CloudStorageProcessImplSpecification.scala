@@ -75,7 +75,7 @@ class CloudStorageProcessImplSpec
 
   "prepareForActualDevice" should {
 
-    "return the actual device and an empty list when passing only one element that correspond with the device id" in
+    "return the actual device and an empty list when passing only one element that corresponds to the device id" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
         persistenceServices.getAndroidId returns Service(Task(Answer(deviceId)))
@@ -107,7 +107,7 @@ class CloudStorageProcessImplSpec
 
       }
 
-    "return an empty option and an empty list when passing only one element that not correspond with the device id" in
+    "return an empty option and an empty list when passing only one element that not corresponds to the device id" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
         persistenceServices.getAndroidId returns Service(Task(Answer(deviceId)))
@@ -182,7 +182,7 @@ class CloudStorageProcessImplSpec
 
       }
 
-    "return a CloudStorageProcessException when the service return an exception" in
+    "return a CloudStorageProcessException when the service returns an exception" in
       new CloudStorageProcessImplScope with WithErrorServices with CloudStorageProcessImplData {
 
         val result = cloudStorageProcess.prepareForActualDevice(Seq.empty).run.run
@@ -536,7 +536,7 @@ class CloudStorageProcessImplSpec
 
     "deleteCloudStorageDeviceByAndroidId" should {
 
-      "return a valid response when the service find the device" in
+      "return a valid response when the service finds the device" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
           driveServices.deleteFile(cloudId) returns Service(Task(Answer(Unit)))
@@ -545,7 +545,7 @@ class CloudStorageProcessImplSpec
           result must beAnInstanceOf[Answer[Unit, CloudStorageProcessException]]
         }
 
-      "return a CloudStorageProcessException when the service return an exception" in
+      "return a CloudStorageProcessException when the service returns an exception" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData with WithErrorServices {
 
           val result = cloudStorageProcess.deleteCloudStorageDevice(cloudId).run.run
