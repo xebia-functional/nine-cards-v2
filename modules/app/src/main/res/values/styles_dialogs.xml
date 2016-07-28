@@ -377,9 +377,19 @@
         <item name="android:layout_gravity">center</item>
     </style>
 
+    <style name="PublishCollectionWizardStepsPaginationPanel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/footer_wizard_height</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
     <style name="PublishCollectionWizardFooter">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/footer_wizard_height</item>
+        <item name="android:layout_gravity">bottom</item>
     </style>
 
     <style name="PublishCollectionWizardStartFooter" parent="PublishCollectionWizardFooter">

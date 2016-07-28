@@ -1,10 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
-import android.widget.ArrayAdapter
+import android.widget.{ArrayAdapter, ImageView}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
@@ -19,11 +20,14 @@ import macroid._
 trait PublishCollectionActionsImpl
   extends PublishCollectionActions
   with LauncherExecutor
-  with Styles {
+  with Styles
+  with PublishCollectionStyles {
 
   self: TypedFindView with PublishCollectionFragment =>
 
   implicit val publishCollectionPresenter: PublishCollectionPresenter
+
+  val steps = 4
 
   lazy val startLayout = findView(TR.publish_collection_wizard_start)
 
@@ -40,6 +44,8 @@ trait PublishCollectionActionsImpl
   lazy val descriptionText = findView(TR.description)
 
   lazy val categorySpinner = findView(TR.category)
+
+  lazy val paginationPanel = Option(findView(TR.publish_collection_wizard_steps_pagination_panel))
 
   lazy val publishButton = findView(TR.publish_collection_wizard_information_button)
 
@@ -59,7 +65,8 @@ trait PublishCollectionActionsImpl
       (informationLayout <~ vInvisible) ~
       (publishingLayout <~ vInvisible) ~
       (endLayout <~ vInvisible) ~
-      (startArrow <~ On.click(Ui(publishCollectionPresenter.showCollectionInformation())))
+      (startArrow <~ On.click(Ui(publishCollectionPresenter.showCollectionInformation()))) ~
+      createPagers()
 
   override def goToPublishCollectionInformation(collection: Collection): Ui[Any] =
     (startLayout <~ applyFadeOut()) ~
@@ -68,7 +75,8 @@ trait PublishCollectionActionsImpl
       (endLayout <~ vInvisible) ~
       (collectionName <~ tvText(collection.name)) ~
       addCategoriesToSpinner(collection) ~
-      (publishButton <~ On.click(Ui(publishCollectionPresenter.publishCollection(getName, getDescription, getCategory))))
+      (publishButton <~ On.click(Ui(publishCollectionPresenter.publishCollection(getName, getDescription, getCategory)))) ~
+      (paginationPanel <~ reloadPagers(currentPage = 1))
 
   override def goBackToPublishCollectionInformation(name: String, description: String, category: NineCardCategory): Ui[Any] =
     (startLayout <~ vInvisible) ~
@@ -78,13 +86,15 @@ trait PublishCollectionActionsImpl
       (collectionName <~ tvText(name)) ~
       (descriptionText <~ tvText(description)) ~
       addCategoriesToSpinner(collection) ~
-      (publishButton <~ On.click(Ui(publishCollectionPresenter.publishCollection(getName, getDescription, getCategory))))
+      (publishButton <~ On.click(Ui(publishCollectionPresenter.publishCollection(getName, getDescription, getCategory)))) ~
+      (paginationPanel <~ reloadPagers(currentPage = 1))
 
   override def goToPublishCollectionPublishing(): Ui[Any] =
     (startLayout <~ vInvisible) ~
       (informationLayout <~ applyFadeOut()) ~
       (publishingLayout <~ applyFadeIn()) ~
-      (endLayout <~ vInvisible)
+      (endLayout <~ vInvisible) ~
+      (paginationPanel <~ reloadPagers(currentPage = 2))
 
   override def goToPublishCollectionEnd(shareLink: String): Ui[Any] =
     (startLayout <~ vInvisible) ~
@@ -100,6 +110,23 @@ trait PublishCollectionActionsImpl
   override def showMessagePublishingError: Ui[Any] = showMessage(R.string.publishingError)
 
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
+
+  private[this] def createPagers() = {
+    val pagerViews = (0 until steps) map { position =>
+      val view = pagination(position)
+      view.setActivated(position == 0)
+      view
+    }
+    paginationPanel <~ vgAddViews(pagerViews)
+  }
+
+  private[this] def reloadPagers(currentPage: Int) = Transformer {
+    case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) => i <~ vActivated(true)
+    case i: ImageView => i <~ vActivated(false)
+  }
+
+  private[this] def pagination(position: Int) =
+    (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
   private[this] def addCategoriesToSpinner(collection: Collection): Ui[Any] = {
     val selectCategory = Seq(resGetString(R.string.addInformationCategory))

@@ -207,7 +207,10 @@
     <dimen name="form_height">232dp</dimen>
     <dimen name="category_padding">4dp</dimen>
     <dimen name="footer_wizard_height">70dp</dimen>
+    <dimen name="footer_wizard_center">30dp</dimen>
     <dimen name="footer_wizard_end_margin">20dp</dimen>
     <dimen name="footer_wizard_end_height">50dp</dimen>
+    <dimen name="publish_collection_wizard_size_pager">8dp</dimen>
+    <dimen name="publish_collection_wizard_margin_pager">4dp</dimen>
 
 </resources>

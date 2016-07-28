@@ -177,4 +177,8 @@
 
     </LinearLayout>
 
+    <LinearLayout
+            android:id="@+id/publish_collection_wizard_steps_pagination_panel"
+            style="@style/PublishCollectionWizardStepsPaginationPanel"/>
+
 </FrameLayout>
