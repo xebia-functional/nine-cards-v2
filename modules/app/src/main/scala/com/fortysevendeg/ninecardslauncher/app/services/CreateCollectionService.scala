@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.device.ImplicitsDeviceException
+import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
@@ -58,32 +59,37 @@ class CreateCollectionService
 
     val hasKey = Option(intent) exists (_.hasExtra(cloudIdKey))
 
-    if (hasKey) {
-      selectedCloudId = Option(intent) flatMap { i =>
-        if (i.hasExtra(cloudIdKey)) {
-          val key = i.getStringExtra(cloudIdKey)
-          if (key == newConfiguration) None else Some(key)
-        } else None
-      }
+    Task.fork(di.userProcess.getUser.run).resolveAsync(
+      onResult = (user: User) => {
+        if (hasKey && user.deviceCloudId.isEmpty) {
+          selectedCloudId = Option(intent) flatMap { i =>
+            if (i.hasExtra(cloudIdKey)) {
+              val key = i.getStringExtra(cloudIdKey)
+              if (key == newConfiguration) None else Some(key)
+            } else None
+          }
 
-      setState(stateCreatingCollections)
+          setState(stateCreatingCollections)
 
-      val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
-      val title: String = getString(R.string.workingNotificationTitle)
-      builder.
-        setContentTitle(title).
-        setTicker(title).
-        setContentText(getString(R.string.downloadingAppsInfoMessage)).
-        setSmallIcon(R.drawable.icon_notification_working).
-        setProgress(1, maxProgress, true).
-        setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
+          val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
+          val title: String = getString(R.string.workingNotificationTitle)
+          builder.
+            setContentTitle(title).
+            setTicker(title).
+            setContentText(getString(R.string.downloadingAppsInfoMessage)).
+            setSmallIcon(R.drawable.icon_notification_working).
+            setProgress(1, maxProgress, true).
+            setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
 
-      startForeground(notificationId, builder.build)
+          startForeground(notificationId, builder.build)
 
-      synchronizeDevice
-    } else {
-      closeService()
-    }
+          synchronizeDevice
+        } else {
+          closeService()
+        }
+      },
+      onException = (_) => closeService()
+    )
 
     Service.START_NOT_STICKY
   }
