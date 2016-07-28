@@ -13,8 +13,6 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppWidgetProviderInfoOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
@@ -23,6 +21,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.MomentDialog
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
@@ -49,15 +48,14 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
-import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 trait LauncherUiActionsImpl
   extends LauncherUiActions
-  with CollectionsUiActions
-  with DrawerUiActions {
+    with CollectionsUiActions
+    with DrawerUiActions {
 
   self: TypedFindView with SystemBarsTint with Contexts[AppCompatActivity] =>
 
@@ -86,7 +84,7 @@ trait LauncherUiActionsImpl
     CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall))
 
   override def initialize: Ui[Any] =
-    Ui{
+    Ui {
       appWidgetHost.startListening()
       initAllSystemBarsTint
     } ~
@@ -114,7 +112,7 @@ trait LauncherUiActionsImpl
 
   override def showLoading(): Ui[Any] = showCollectionsLoading
 
-  override def goToPreviousScreen(): Ui[Any]= {
+  override def goToPreviousScreen(): Ui[Any] = {
     val canMoveToPreviousScreen = (workspaces ~> lwsCanMoveToPreviousScreen()).get getOrElse false
     goToPreviousWorkspace().ifUi(canMoveToPreviousScreen)
   }
@@ -191,7 +189,7 @@ trait LauncherUiActionsImpl
     addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact))
 
   override def rippleToCollection(color: Int, point: Point): Ui[Future[Any]] = {
-    val y = KitKat.ifSupportedThen (point.y - getStatusBarHeight) getOrElse point.y
+    val y = KitKat.ifSupportedThen(point.y - getStatusBarHeight) getOrElse point.y
     val background = new RippleCollectionDrawable(point.x, y, color)
     (foreground <~
       vVisible <~
@@ -249,7 +247,7 @@ trait LauncherUiActionsImpl
   override def showWidgetsDialog(): Ui[Any] = {
     val widthContent = workspaces map (_.getWidth) getOrElse 0
     val heightContent = workspaces map (_.getHeight) getOrElse 0
-    val map = Map (
+    val map = Map(
       WidgetsFragment.widgetContentWidth -> widthContent.toString,
       WidgetsFragment.widgetContentHeight -> heightContent.toString
     )
@@ -257,11 +255,11 @@ trait LauncherUiActionsImpl
   }
 
   override def showSelectMomentDialog(moments: Seq[MomentWithCollection]): Ui[Any] = activityContextWrapper.original.get match {
-      case Some(activity: Activity) => Ui {
-        val momentDialog = new MomentDialog(moments)
-        momentDialog.show()
-      }
-      case _ => Ui.nop
+    case Some(activity: Activity) => Ui {
+      val momentDialog = new MomentDialog(moments)
+      momentDialog.show()
+    }
+    case _ => Ui.nop
   }
 
   override def openMenu(): Ui[Any] = drawerLayout <~ dlOpenDrawer
@@ -406,12 +404,13 @@ trait LauncherUiActionsImpl
   private[this] def dragListener(): Tweak[View] = Tweak[View] { view =>
     view.setOnDragListener(new OnDragListener {
       val dragAreaKey = "drag-area"
+
       override def onDrag(v: View, event: DragEvent): Boolean = {
         val dragArea = v.getField[DragArea](dragAreaKey) getOrElse NoDragArea
         (event.getAction, (topBarPanel ~> height).get, (dockAppsPanel ~> height).get) match {
           case (_, Some(topBar), Some(bottomBar)) =>
-            val height = KitKat.ifSupportedThen (view.getHeight - getStatusBarHeight) getOrElse view.getHeight
-            val top = KitKat.ifSupportedThen (topBar + getStatusBarHeight) getOrElse topBar
+            val height = KitKat.ifSupportedThen(view.getHeight - getStatusBarHeight) getOrElse view.getHeight
+            val top = KitKat.ifSupportedThen(topBar + getStatusBarHeight) getOrElse topBar
             // Project location to views
             val x = event.getX
             val y = event.getY
