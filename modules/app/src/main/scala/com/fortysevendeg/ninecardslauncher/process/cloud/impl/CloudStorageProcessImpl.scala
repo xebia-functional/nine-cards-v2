@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
+import java.util.Date
+
 import android.os.Build
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
@@ -8,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageImplicits._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, Conversions, ImplicitsCloudStorageProcessExceptions}
+import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
 import play.api.libs.json.Json
@@ -34,6 +37,28 @@ class CloudStorageProcessImpl(
 
   private[this] val userNotFoundErrorMessage = (id: Int) => s"User with id $id not found in the database"
 
+  override def prepareForActualDevice[T <: CloudStorageResource](devices: Seq[T])(implicit context: ContextSupport) = {
+
+    def sort(devices: Seq[T]): Seq[T] =
+      devices.sortBy(_.modifiedDate)(Ordering[Date].reverse)
+
+    def fixAndSort(androidId: String, devices: Seq[T]): (Option[T], Seq[T]) = {
+
+      val (userDevices, otherDevices) = devices.partition(_.deviceId.contains(androidId))
+
+      val sortedUserDevices = sort(userDevices)
+
+      val fixedUserDevice = sortedUserDevices.drop(1)
+
+      (sortedUserDevices.headOption, sort(fixedUserDevice ++ otherDevices))
+    }
+
+    (for {
+      androidId <- persistenceServices.getAndroidId
+      fixedDevices = fixAndSort(androidId, devices)
+    } yield fixedDevices).resolve[CloudStorageProcessException]
+  }
+
   override def getCloudStorageDevices(implicit context: ContextSupport) =
     context.getActiveUserId map { id =>
       (for {
@@ -44,17 +69,43 @@ class CloudStorageProcessImpl(
       Service(Task(Result.errata[Seq[CloudStorageDeviceSummary], CloudStorageProcessException](CloudStorageProcessException(noActiveUserErrorMessage))))
     }
 
-  override def getCloudStorageDevice(cloudId: String) = (for {
-    json <- driveServices.readFile(cloudId)
-    device <- parseDevice(json)
-  } yield CloudStorageDevice(cloudId, device)).resolve[CloudStorageProcessException]
+  override def getCloudStorageDevice(cloudId: String) = {
+
+    def parseDevice(json: String): ServiceDef2[CloudStorageDeviceData, CloudStorageProcessException] = Service {
+      Task {
+        Try(Json.parse(json).as[CloudStorageDeviceData]) match {
+          case Success(s) => Answer(s)
+          case Failure(e) => Errata(CloudStorageProcessException(message = e.getMessage, cause = e.some))
+        }
+      }
+    }
+
+    (for {
+      driveFile <- driveServices.readFile(cloudId)
+      device <- parseDevice(driveFile.content)
+    } yield CloudStorageDevice(
+      cloudId = cloudId,
+      createdDate = driveFile.summary.createdDate,
+      modifiedDate = driveFile.summary.modifiedDate,
+      data = device)).resolve[CloudStorageProcessException]
+  }
 
   override def createCloudStorageDevice(cloudStorageDeviceData: CloudStorageDeviceData) =
     createOrUpdateCloudStorageDevice(None, cloudStorageDeviceData)
 
   override def createOrUpdateActualCloudStorageDevice(
     collections: Seq[CloudStorageCollection],
-    moments: Seq[CloudStorageMoment])(implicit context: ContextSupport) =
+    moments: Seq[CloudStorageMoment])(implicit context: ContextSupport) = {
+
+    def deviceExists(
+      maybeCloudId: Option[String]): ServiceDef2[Boolean, DriveServicesException] =
+      maybeCloudId match {
+        case Some(cloudId) =>
+          driveServices.fileExists(cloudId)
+        case _ =>
+          Service(Task(Result.answer[Boolean, DriveServicesException](false)))
+      }
+
     context.getActiveUserId map { id =>
       (for {
         androidId <- persistenceServices.getAndroidId
@@ -73,54 +124,45 @@ class CloudStorageProcessImpl(
     } getOrElse {
       Service(Task(Result.errata[CloudStorageDevice, CloudStorageProcessException](CloudStorageProcessException(noActiveUserErrorMessage))))
     }
+  }
 
   override def deleteCloudStorageDevice(cloudId: String) =
     driveServices.deleteFile(cloudId).resolve[CloudStorageProcessException]
 
-  private[this] def parseDevice(json: String): ServiceDef2[CloudStorageDeviceData, CloudStorageProcessException] = Service {
-    Task {
-      Try(Json.parse(json).as[CloudStorageDeviceData]) match {
-        case Success(s) => Answer(s)
-        case Failure(e) => Errata(CloudStorageProcessException(message = e.getMessage, cause = e.some))
-      }
-    }
-  }
-
-  private[this] def deviceToJson(device: CloudStorageDeviceData): ServiceDef2[String, CloudStorageProcessException] = Service {
-    Task {
-      Try(Json.toJson(device).toString()) match {
-        case Success(s) => Answer(s)
-        case Failure(e) => Errata(CloudStorageProcessException(message = e.getMessage, cause = Some(e)))
-      }
-    }
-  }
-
-  private[this] def createOrUpdateFile(
-    maybeCloudId: Option[String],
-    title: String,
-    content: String,
-    deviceId: String): ServiceDef2[String, DriveServicesException] =
-    maybeCloudId match {
-      case Some(cloudId) => driveServices.updateFile(cloudId, content) map (_ => cloudId)
-      case _ => driveServices.createFile(title, content, deviceId, userDeviceType, jsonMimeType)
-    }
-
-  private[this] def deviceExists(
-    maybeCloudId: Option[String]): ServiceDef2[Boolean, DriveServicesException] =
-    maybeCloudId match {
-      case Some(cloudId) =>
-        driveServices.fileExists(cloudId)
-      case _ =>
-        Service(Task(Result.answer[Boolean, DriveServicesException](false)))
-    }
-
   private[this] def createOrUpdateCloudStorageDevice(
     maybeCloudId: Option[String],
-    cloudStorageDeviceData: CloudStorageDeviceData): ServiceDef2[CloudStorageDevice, CloudStorageProcessException] =
+    cloudStorageDeviceData: CloudStorageDeviceData): ServiceDef2[CloudStorageDevice, CloudStorageProcessException] = {
+
+    def createOrUpdateFile(
+      maybeCloudId: Option[String],
+      title: String,
+      content: String,
+      deviceId: String): ServiceDef2[DriveServiceFileSummary, DriveServicesException] =
+      maybeCloudId match {
+        case Some(cloudId) => driveServices.updateFile(cloudId, content)
+        case _ => driveServices.createFile(title, content, deviceId, userDeviceType, jsonMimeType)
+      }
+
+    def deviceToJson(device: CloudStorageDeviceData): ServiceDef2[String, CloudStorageProcessException] = Service {
+      Task {
+        Try(Json.toJson(device).toString()) match {
+          case Success(s) => Answer(s)
+          case Failure(e) => Errata(CloudStorageProcessException(message = e.getMessage, cause = Some(e)))
+        }
+      }
+    }
+
     (for {
       json <- deviceToJson(cloudStorageDeviceData)
-      cloudId <- createOrUpdateFile(maybeCloudId, cloudStorageDeviceData.deviceName, json, cloudStorageDeviceData.deviceId)
-    } yield CloudStorageDevice(cloudId, cloudStorageDeviceData)).resolve[CloudStorageProcessException]
+      summary <- createOrUpdateFile(maybeCloudId, cloudStorageDeviceData.deviceName, json, cloudStorageDeviceData.deviceId)
+    } yield {
+      CloudStorageDevice(
+        cloudId = summary.uuid,
+        createdDate = summary.createdDate,
+        modifiedDate = summary.modifiedDate,
+        data = cloudStorageDeviceData)
+    }).resolve[CloudStorageProcessException]
+  }
 
   private[this] def findUserDeviceCloudId(userId: Int): ServiceDef2[Option[String], CloudStorageProcessException] = Service {
     persistenceServices.findUserById(FindUserByIdRequest(userId)).run map {

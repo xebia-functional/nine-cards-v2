@@ -117,11 +117,16 @@
         <item name="android:gravity">center_horizontal</item>
     </style>
 
-    <style name="WizardDeviceRadioGroup">
+    <style name="WizardDeviceRadioGroupScroll">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
         <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="WizardDeviceRadioGroup">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
         <item name="android:textColor">@color/wizard_text_title</item>
         <item name="android:textSize">@dimen/text_default</item>

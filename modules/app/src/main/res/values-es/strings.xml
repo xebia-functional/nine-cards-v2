@@ -41,7 +41,7 @@
 
     <string name="messageEmpty">No hay datos en este moment</string>
 
-    <string name="addDeviceTitle">Hola, %1$s</string>
+    <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
 
     <string name="deviceDetectedNoProUser">Hemos detectado una configuración guardada para tu %1$s. Si eres usuario Pro puedes cargar previas configuraciones (colecciones y temas). ¿Quieres convertirte en Pro ahora?</string>
@@ -75,6 +75,11 @@
 
     <string name="errorAndroidMarketPermissionNotAccepted">Tienes que aceptar el permiso de Android Market para poder usar 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">Tienes que aceptar el permiso de Google para poder usar 9Cards</string>
+
+    <string name="currentDeviceTitle">%s (dispositivo actual)</string>
+    <string name="newConfigurationSubtitle">Crearemos una nueva configuración a partir de tus aplicaciones</string>
+    <string name="deviceMigratedFromV1">Migrado de la versión anterior</string>
+    <string name="otherDevicesLink">Configuraciones de otros dispositivos</string>
 
     <!-- Moment -->
 

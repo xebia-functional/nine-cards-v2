@@ -190,7 +190,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     filterOutResourceIds: Seq[String] = Seq.empty): Unit = {
 
     def toAccountSync(d: CloudStorageDeviceSummary, current: Boolean = false): AccountSync =
-      AccountSync.syncDevice(title = d.title, syncDate = d.modifiedDate, current = current, cloudId = d.cloudId)
+      AccountSync.syncDevice(title = d.deviceName, syncDate = d.modifiedDate, current = current, cloudId = d.cloudId)
 
     def order(seq: Seq[CloudStorageDeviceSummary]): Seq[CloudStorageDeviceSummary] =
       seq.sortBy(_.modifiedDate)(Ordering[Date].reverse)

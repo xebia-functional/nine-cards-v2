@@ -6,21 +6,30 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardsMomen
 
 trait CloudStorageResource {
   def cloudId: String
-  def title: String
+  def deviceId: Option[String]
+  def deviceName: String
   def createdDate: Date
   def modifiedDate: Date
 }
 
 case class CloudStorageDeviceSummary(
   cloudId: String,
-  title: String,
+  deviceId: Option[String],
+  deviceName: String,
   createdDate: Date,
   modifiedDate: Date,
   currentDevice: Boolean) extends CloudStorageResource
 
 case class CloudStorageDevice(
   cloudId: String,
-  data: CloudStorageDeviceData)
+  createdDate: Date,
+  modifiedDate: Date,
+  data: CloudStorageDeviceData) extends CloudStorageResource {
+
+  override def deviceId: Option[String] = Some(data.deviceId)
+
+  override def deviceName: String = data.deviceName
+}
 
 case class CloudStorageDeviceData(
   deviceId: String,
