@@ -13,6 +13,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppWidgetProviderInfoOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -47,6 +48,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByNam
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
+import macroid._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
