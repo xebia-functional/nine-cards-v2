@@ -38,7 +38,7 @@ class MomentDialog(moments: Seq[MomentWithCollection])(implicit contextWrapper: 
 
     val text = findView(TR.select_moment_item_text)
 
-    val colorIcon = resGetColor(R.color.item_list_popup_menu)
+    val colorIcon = resGetColor(R.color.item_list_popup_moments_menu)
 
     moment.momentType foreach { momentType =>
       ((this <~ On.click(
