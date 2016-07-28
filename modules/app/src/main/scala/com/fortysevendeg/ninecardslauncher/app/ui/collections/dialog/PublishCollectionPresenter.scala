@@ -5,6 +5,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsExceptions
@@ -39,7 +40,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
       description <- maybeDescription
       category <- maybeCategory
     } yield {
-      Task.fork(publishCollectionInServer(name, description, category).run).resolveAsyncUi(
+      Task.fork(createPublishedCollection(name, description, category).run).resolveAsyncUi(
         onPreTask = () => actions.goToPublishCollectionPublishing(),
         onResult = (shareLink: String) => actions.goToPublishCollectionEnd(shareLink),
         onException = (ex: Throwable) => {
@@ -48,7 +49,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
         })
     }) getOrElse actions.showMessageFormFieldError.run
 
-  private[this] def publishCollectionInServer(name: String, description: String, category: NineCardCategory): ServiceDef2[String, UserException with SharedCollectionsExceptions] =
+  private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): ServiceDef2[String, UserException with SharedCollectionsExceptions with CollectionException] =
     for {
       user <- di.userProcess.getUser
       collection <- getCollection
@@ -61,6 +62,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
         icon = collection.icon,
         community = false)
       createdCollection <- di.sharedCollectionsProcess.createSharedCollection(sharedCollection)
+      _ <- di.collectionProcess.updateSharedCollection(collection.id, createdCollection.sharedCollectionId)
     } yield createdCollection.shareLink
 
   private[this] def getCollection: ServiceDef2[Collection, SharedCollectionsExceptions] = statuses.collection map { col =>
