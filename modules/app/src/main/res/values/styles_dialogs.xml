@@ -367,7 +367,7 @@
 
     <style name="PublishCollectionWizardLoadingContent">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">@dimen/form_height</item>
         <item name="android:gravity">center</item>
     </style>
 

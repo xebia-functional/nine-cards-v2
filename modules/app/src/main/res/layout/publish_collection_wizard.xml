@@ -48,7 +48,6 @@
                     android:id="@+id/publish_collection_wizard_information_header"
                     style="@style/PublishCollectionWizardInformationHeader"/>
 
-
             <ScrollView style="@style/PublishCollectionWizardInformationScroll">
 
                 <LinearLayout style="@style/PublishCollectionWizardInformationScrollContent">
