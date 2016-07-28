@@ -86,6 +86,7 @@ trait SharedCollectionsProcessImplData {
         packages = sharedCollection.packages,
         category = sharedCollection.category.name,
         shareLink = sharedCollection.shareLink,
+        sharedCollectionId = sharedCollection.sharedCollectionId,
         icon = sharedCollection.icon,
         community = sharedCollection.community
       )

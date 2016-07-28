@@ -380,6 +380,7 @@ trait Conversions {
       packages = sharedCollection.packages,
       category = sharedCollection.category,
       shareLink = sharedCollection.shareLink,
+      sharedCollectionId = sharedCollection.sharedCollectionId,
       icon = sharedCollection.icon,
       community = sharedCollection.community
     )

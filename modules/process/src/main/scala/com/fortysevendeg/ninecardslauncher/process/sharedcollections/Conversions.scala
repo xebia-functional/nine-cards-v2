@@ -42,6 +42,7 @@ trait Conversions {
       packages = item.newSharedCollection.packages,
       category = NineCardCategory(item.newSharedCollection.category),
       shareLink = item.newSharedCollection.shareLink,
+      sharedCollectionId = item.newSharedCollection.sharedCollectionId,
       icon = item.newSharedCollection.icon,
       community = item.newSharedCollection.community
     )

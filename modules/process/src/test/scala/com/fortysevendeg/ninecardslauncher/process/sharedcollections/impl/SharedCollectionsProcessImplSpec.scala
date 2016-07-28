@@ -122,6 +122,7 @@ class SharedCollectionsProcessImplSpec
             sharedCollection.packages,
             sharedCollection.category,
             sharedCollection.shareLink,
+            sharedCollection.sharedCollectionId,
             sharedCollection.icon,
             sharedCollection.community
           ))

@@ -44,6 +44,7 @@ case class CreatedCollection(
   packages: Seq[String],
   category: NineCardCategory,
   shareLink: String,
+  sharedCollectionId: String,
   icon: String,
   community: Boolean
 )
