@@ -56,9 +56,14 @@
             android:id="@+id/wizard_device_message"
             style="@style/WizardDeviceMessage"/>
 
-        <RadioGroup
-            android:id="@+id/wizard_device_group"
-            style="@style/WizardDeviceRadioGroup"/>
+        <ScrollView
+            style="@style/WizardDeviceRadioGroupScroll">
+
+            <RadioGroup
+                android:id="@+id/wizard_device_group"
+                style="@style/WizardDeviceRadioGroup"/>
+
+        </ScrollView>
 
         <Button
             android:id="@+id/wizard_device_action"

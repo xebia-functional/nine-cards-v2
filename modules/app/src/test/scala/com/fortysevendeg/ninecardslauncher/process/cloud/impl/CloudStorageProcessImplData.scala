@@ -1,9 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
+import java.util.Date
+
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
-import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
+import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
 import org.joda.time.DateTime
 
@@ -15,6 +17,8 @@ trait CloudStorageProcessImplData {
   val activeUserId = 10
 
   val cloudId = "drive-id"
+
+  val anotherCloudId = "drive-id-2"
 
   val user = User(
     activeUserId,
@@ -30,22 +34,23 @@ trait CloudStorageProcessImplData {
     deviceName = Some("device"),
     deviceCloudId = Some(cloudId))
 
-  val driveServiceFile = generateDriveServiceFile
+  val driveServiceFileSummary = generateDriveServiceFileSummary
 
-  val driveServiceFileSeq: Seq[DriveServiceFile] = 1 to 10 map (_ => generateDriveServiceFile)
+  val driveServiceFileSummarySeq: Seq[DriveServiceFileSummary] = 1 to 10 map (_ => generateDriveServiceFileSummary)
 
-  val driveServiceFileEmptySeq = Seq.empty[DriveServiceFile]
+  val driveServiceFileSummaryEmptySeq = Seq.empty[DriveServiceFileSummary]
 
-  def generateDriveServiceFile =
-    DriveServiceFile(
+  def generateDriveServiceFileSummary =
+    DriveServiceFileSummary(
       uuid = java.util.UUID.randomUUID.toString,
-      googleDriveId = Random.nextString(10),
       deviceId = Random.nextString(10).some,
       title = Random.nextString(10),
       createdDate = DateTime.now().minusMonths(6).toDate,
       modifiedDate = DateTime.now().minusMonths(3).toDate)
 
   val deviceId = "device-id"
+
+  val anotherDeviceId = "device-id-2"
 
   val deviceName = "device-name"
 
@@ -61,13 +66,23 @@ trait CloudStorageProcessImplData {
 
   val momentType = Option("HOME")
 
-  val cloudStorageDevice =
+  def generateCloudStorageDeviceData(deviceId: String = deviceId) =
     CloudStorageDeviceData(
       deviceId,
       deviceName,
       documentVersion,
       generateCollections(numCollections, numItemsPerCollection),
       Some(generateMoments(numMoments, numTimeSlot)))
+
+  def generateCloudStorageDevice(
+    cloudId: String = cloudId,
+    minusDays: Int = 0,
+    deviceId: String = deviceId) =
+    CloudStorageDevice(
+      cloudId,
+      createdDate = DateTime.now().minusDays(minusDays).toDate,
+      modifiedDate = DateTime.now().minusDays(minusDays).toDate,
+      data = generateCloudStorageDeviceData(deviceId))
 
   def generateCollections(num: Int, numItems: Int): Seq[CloudStorageCollection] = 1 to num map { i =>
     CloudStorageCollection(
@@ -165,4 +180,12 @@ trait CloudStorageProcessImplData {
     """
       |{ "inexistendField": "Value" }
     """.stripMargin
+
+  val driveServiceFile = DriveServiceFile(
+    driveServiceFileSummary,
+    validCloudStorageDeviceJson)
+
+  val invalidDriveServiceFileJson = DriveServiceFile(
+    driveServiceFileSummary,
+    invalidCloudStorageDeviceJson)
 }

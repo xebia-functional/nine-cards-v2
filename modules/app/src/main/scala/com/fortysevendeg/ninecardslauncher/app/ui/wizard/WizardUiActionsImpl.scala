@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 import android.accounts._
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
@@ -10,15 +11,16 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.StepData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceData}
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+import org.ocpsoft.prettytime.PrettyTime
 
 trait WizardUiActionsImpl
   extends WizardUiActions
@@ -135,7 +137,7 @@ trait WizardUiActionsImpl
   override def showErrorAcceptTerms(): Ui[Any] = showMessage(R.string.messageAcceptTerms)
 
   override def showDevices(devices: UserCloudDevices): Ui[Any] =
-    addDevicesToRadioGroup(devices.devices) ~
+    addDevicesToRadioGroup(devices.userDevice, devices.devices) ~
       showDevices ~
       (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, devices.name)))
 
@@ -158,12 +160,39 @@ trait WizardUiActionsImpl
     usersSpinner <~ sAdapter(sa)
   }
 
-  private[this] def addDevicesToRadioGroup(devices: Seq[CloudStorageDevice]): Ui[Any] = {
-    val radioViews = (devices map (device => userRadio(device.data.deviceName, device.cloudId))) :+
-      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey)
+  private[this] def addDevicesToRadioGroup(userDevice: Option[UserCloudDevice], devices: Seq[UserCloudDevice]): Ui[Any] = {
+
+    def subtitle(device: UserCloudDevice): String = {
+      if (device.fromV1) resGetString(R.string.deviceMigratedFromV1) else {
+        val time = new PrettyTime().format(device.modifiedDate)
+        resGetString(R.string.syncLastSynced, time)
+      }
+    }
+
+    val userRadioView = userDevice.toSeq.flatMap { device =>
+      Seq(
+        userRadio(resGetString(R.string.currentDeviceTitle, device.deviceName), device.cloudId),
+        userRadioSubtitle(subtitle(device)))
+    }
+
+    val newConfRadioView = Seq(
+      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
+      userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
+
+    val allRadioViews = devices map { device =>
+      Seq(
+        userRadio(device.deviceName, device.cloudId, visible = false),
+        userRadioSubtitle(subtitle(device), visible = false))
+    }
+
+    val radioViews = (userRadioView ++ newConfRadioView :+ otherDevicesLink(resGetString(R.string.otherDevicesLink))) ++ allRadioViews.flatten
+
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui {
-        radioViews.headOption foreach (_.setChecked(true))
+        radioViews.headOption match {
+          case Some(radioButton: RadioButton) => radioButton.setChecked(true)
+          case _ =>
+        }
       }
   }
 
@@ -184,8 +213,30 @@ trait WizardUiActionsImpl
   private[this] def pagination(position: Int) =
     (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
-  private[this] def userRadio(title: String, tag: String): RadioButton =
-    (w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)).get
+  private[this] def userRadio(title: String, tag: String, visible: Boolean = true): RadioButton =
+    (w[RadioButton] <~
+      radioStyle <~
+      tvText(title) <~
+      vTag(tag) <~
+      (if (visible) vVisible else vGone)).get
+
+  private[this] def userRadioSubtitle(text: String, visible: Boolean = true): TextView =
+    (w[TextView] <~
+      radioSubtitleStyle <~
+      tvText(text) <~
+      (if (visible) vVisible else vGone)).get
+
+  private[this] def otherDevicesLink(text: String): TextView = {
+    (w[TextView] <~
+      otherDevicesLinkStyle <~
+      tvUnderlineText(text) <~
+      FuncOn.click { v: View =>
+        (devicesGroup <~ Transformer {
+          case view if view.getVisibility == View.GONE => view <~ vVisible
+          case _ => Ui.nop
+        }) ~ (v <~ vGone)
+      }).get
+  }
 
 }
 

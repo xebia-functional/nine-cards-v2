@@ -1,24 +1,22 @@
 package com.fortysevendeg.ninecardslauncher.services.drive
 
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
-import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFile
+import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
 import com.google.android.gms.drive.Metadata
 
 trait Conversions {
 
-  def toGoogleDriveFile(metadata: Metadata): DriveServiceFile =
-    DriveServiceFile(
+  def toGoogleDriveFileSummary(metadata: Metadata): DriveServiceFileSummary =
+    DriveServiceFileSummary(
       uuid = metadata.getCustomProperties.get(propertyUUID),
-      googleDriveId = metadata.getDriveId.getResourceId,
       deviceId = Option(metadata.getCustomProperties.get(propertyDeviceId)),
       title = metadata.getTitle,
       createdDate = metadata.getCreatedDate,
       modifiedDate = metadata.getModifiedDate)
 
-  def toGoogleDriveFile(uuid: String, metadata: Metadata): DriveServiceFile =
-    DriveServiceFile(
+  def toGoogleDriveFileSummary(uuid: String, metadata: Metadata): DriveServiceFileSummary =
+    DriveServiceFileSummary(
       uuid = uuid,
-      googleDriveId = metadata.getDriveId.getResourceId,
       deviceId = Option(metadata.getCustomProperties.get(propertyDeviceId)),
       title = metadata.getTitle,
       createdDate = metadata.getCreatedDate,
