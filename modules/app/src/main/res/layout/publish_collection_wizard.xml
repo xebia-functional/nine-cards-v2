@@ -12,15 +12,15 @@
                 style="@style/PublishCollectionWizardContent">
 
             <TextView
-                    android:id="@+id/publish_collection_wizard_header"
+                    android:id="@+id/publish_collection_wizard_start_header"
                     style="@style/PublishCollectionWizardStartHeader"/>
 
             <TextView
-                    android:id="@+id/publish_collection_wizard_message"
+                    android:id="@+id/publish_collection_wizard_start_message"
                     style="@style/PublishCollectionWizardStartMessage"/>
 
             <ImageView
-                    android:id="@+id/publish_collection_wizard_image"
+                    android:id="@+id/publish_collection_wizard_start_image"
                     style="@style/PublishCollectionWizardImageStart"/>
 
         </LinearLayout>
@@ -108,6 +108,36 @@
             <Button
                     android:id="@+id/publish_collection_wizard_information_button"
                     style="@style/PublishCollectionWizardInformationButton"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/publish_collection_wizard_publishing"
+            style="@style/PublishCollectionWizardDialog">
+
+        <LinearLayout
+                android:id="@+id/publish_collection_wizard_publishing_content"
+                style="@style/PublishCollectionWizardContent">
+
+            <TextView
+                    android:id="@+id/publish_collection_wizard_publishing_header"
+                    style="@style/PublishCollectionWizardPublishingHeader"/>
+
+            <TextView
+                    android:id="@+id/publish_collection_wizard_publishing_message"
+                    style="@style/PublishCollectionWizardPublishingMessage"/>
+
+            <LinearLayout
+                    android:id="@+id/publish_collection_wizard_loading"
+                    style="@style/PublishCollectionWizardLoadingContent">
+
+                <ProgressBar
+                        android:id="@+id/action_loading"
+                        style="@style/PublishingLoading"/>
+
+            </LinearLayout>
+
         </LinearLayout>
 
     </LinearLayout>

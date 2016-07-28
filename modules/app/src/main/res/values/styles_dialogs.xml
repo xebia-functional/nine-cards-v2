@@ -260,6 +260,10 @@
         <item name="android:text">@string/addInformationHeader</item>
     </style>
 
+    <style name="PublishCollectionWizardPublishingHeader" parent="PublishCollectionWizardHeader">
+        <item name="android:text">@string/publishingHeader</item>
+    </style>
+
     <style name="PublishCollectionWizardEndHeader" parent="PublishCollectionWizardHeader">
         <item name="android:text">@string/congratulationsHeader</item>
     </style>
@@ -276,6 +280,10 @@
 
     <style name="PublishCollectionWizardInformationMessage" parent="PublishCollectionWizardMessage">
         <item name="android:text">@string/addInformationMessage</item>
+    </style>
+
+    <style name="PublishCollectionWizardPublishingMessage" parent="PublishCollectionWizardMessage">
+        <item name="android:text">@string/publishingMessage</item>
     </style>
 
     <style name="PublishCollectionWizardEndMessage" parent="PublishCollectionWizardMessage">
@@ -355,6 +363,18 @@
         <item name="android:layout_height">@dimen/divider_wide</item>
         <item name="android:background">@color/divider_category_color</item>
         <item name="android:layout_gravity">bottom</item>
+    </style>
+
+    <style name="PublishCollectionWizardLoadingContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="PublishingLoading">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="PublishCollectionWizardFooter">

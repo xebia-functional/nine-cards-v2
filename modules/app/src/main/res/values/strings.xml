@@ -124,6 +124,8 @@
     <string name="addInformationHeader">Add information</string>
     <string name="addInformationMessage">Add information about your collections for other users can find it</string>
     <string name="publishAction">Publish</string>
+    <string name="publishingHeader">Publishing</string>
+    <string name="publishingMessage">Your collection is being published</string>
     <string name="addInformationcollectionName">Collection name</string>
     <string name="addInformationDescription">Description</string>
     <string name="addInformationCategory">Select a category</string>
@@ -131,6 +133,9 @@
     <string name="congratulationsMessage">Your collection has been successfully published</string>
     <string name="shareCollection">Share your collection</string>
     <string name="publishCollectionError">Oops! A collection without apps can\'t be published</string>
+    <string name="publishingError">Oops! An error has occurred publishing your collection</string>
+    <string name="collectionError">Oops! An error has occurred getting this collection</string>
+    <string name="defaultUser">User</string>
 
     <!-- Contacts Action -->
 

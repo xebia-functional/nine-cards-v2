@@ -2,8 +2,9 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
-import com.fortysevendeg.ninecardslauncher.services.api.{RequestConfig, SharedCollectionResponseList, SharedCollectionResponse, CreateSharedCollectionResponse, CreateSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, SharedCollection}
+import com.fortysevendeg.ninecardslauncher.services.api.{CreateSharedCollectionResponse, RequestConfig, SharedCollectionResponse, SharedCollectionResponseList, CreateSharedCollection => ApiCreateSharedCollection}
+
 import scala.util.Random
 
 trait SharedCollectionsProcessImplData {
@@ -63,15 +64,28 @@ trait SharedCollectionsProcessImplData {
 
   val sharedCollection = generateSharedCollection
 
+  def generateCreateSharedCollection =
+    CreateSharedCollection(
+      description = Random.nextString(10),
+      author = Random.nextString(10),
+      name = Random.nextString(10),
+      packages = Seq.empty,
+      category = Communication,
+      icon = Random.nextString(10),
+      community = Random.nextBoolean())
+
+  val createSharedCollection = generateCreateSharedCollection
+
   val createSharedCollectionResponse ={
     CreateSharedCollectionResponse(
       statusCode = statusCodeOk,
-      newSharedCollection = CreateSharedCollection(
+      newSharedCollection = ApiCreateSharedCollection(
         name = sharedCollection.name,
         description = sharedCollection.description,
         author = sharedCollection.author,
         packages = sharedCollection.packages,
         category = sharedCollection.category.name,
+        shareLink = sharedCollection.shareLink,
         icon = sharedCollection.icon,
         community = sharedCollection.community
       )

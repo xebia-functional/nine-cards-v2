@@ -119,6 +119,8 @@
     <string name="addInformationHeader">Añade información</string>
     <string name="addInformationMessage">Añade información sobre tu colección para que otros usuarios puedan encontrarla</string>
     <string name="publishAction">Publicar</string>
+    <string name="publishingHeader">Publicando</string>
+    <string name="publishingMessage">Tu colección se está publicando</string>
     <string name="addInformationcollectionName">Nombre de la colección</string>
     <string name="addInformationDescription">Descripción</string>
     <string name="addInformationCategory">Selecciona una categoría</string>
@@ -126,6 +128,8 @@
     <string name="congratulationsMessage">Tu colección se ha publicado con éxito</string>
     <string name="shareCollection">Comparte tu colección</string>
     <string name="publishCollectionError">Oops! Una colección sin aplicaciones no puede ser publicada</string>
+    <string name="publishingError">Oops! Ha ocurrido un error publicando tu colección</string>
+    <string name="collectionError">Oops! Ha ocurrido un error obteniendo esta colección</string>
 
     <!-- Contacts Action -->
 

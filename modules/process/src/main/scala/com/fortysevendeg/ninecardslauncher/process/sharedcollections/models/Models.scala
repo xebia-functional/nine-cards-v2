@@ -19,6 +19,15 @@ case class SharedCollection(
   icon: String,
   community: Boolean)
 
+case class CreateSharedCollection(
+   description: String,
+   author: String,
+   name: String,
+   packages: Seq[String],
+   category: NineCardCategory,
+   icon: String,
+   community: Boolean)
+
 case class SharedCollectionPackage(
   packageName: String,
   title: String,
@@ -34,6 +43,7 @@ case class CreatedCollection(
   author: String,
   packages: Seq[String],
   category: NineCardCategory,
+  shareLink: String,
   icon: String,
   community: Boolean
 )

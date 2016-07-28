@@ -18,7 +18,7 @@ case class PublishCollectionFragment(collection: Collection)
   with Contexts[Fragment]
   with NineCardIntentConversions { self =>
 
-  lazy val publishCollectionPresenter = new PublishCollectionPresenter(self)
+  override lazy val publishCollectionPresenter = new PublishCollectionPresenter(self)
 
   protected var rootView: Option[PublishCollectionWizardStartView] = None
 

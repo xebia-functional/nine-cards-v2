@@ -629,6 +629,7 @@ class ApiServicesImplSpec
               author = sharedCollection.author,
               packages = sharedCollection.packages,
               category = sharedCollection.category,
+              shareLink = sharedCollection.shareLink,
               icon = sharedCollection.icon,
               community = sharedCollection.community
             )
