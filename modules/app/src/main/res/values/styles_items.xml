@@ -553,4 +553,52 @@
         <item name="android:src">@drawable/icon_dialog_collection_share</item>
     </style>
 
+    <!-- Widget Items -->
+
+    <style name="WidgetItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="WidgetItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/widgets_background_content</item>
+    </style>
+
+    <style name="WidgetItemPreview">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/size_widget_item_preview</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+    </style>
+
+    <style name="WidgetItemHeaderContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/padding_medium</item>
+        <item name="android:background">@color/widgets_background_header</item>
+    </style>
+
+    <style name="WidgetItemTitle">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/text_default_title</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="WidgetItemCells">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/text_default_subtitle</item>
+    </style>
+
 </resources>

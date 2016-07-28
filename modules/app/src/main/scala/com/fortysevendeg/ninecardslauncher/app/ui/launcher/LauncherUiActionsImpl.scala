@@ -2,22 +2,18 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
 import android.appwidget.{AppWidgetHost, AppWidgetManager}
-import android.content.{ClipData, Intent}
+import android.content.{ClipData, ComponentName, Intent}
 import android.graphics.Point
-import android.support.design.widget.BottomSheetDialog
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
-import android.widget.TextView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppWidgetProviderInfoOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
@@ -38,6 +34,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Laun
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets.WidgetsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
@@ -49,9 +46,8 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastC
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher2.TypedResource._
-import macroid._
 import macroid.FullDsl._
+import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -222,6 +218,20 @@ trait LauncherUiActionsImpl
 
   override def deleteWidget(widgetViewId: Int): Ui[Any] = Ui(appWidgetHost.deleteAppWidgetId(widgetViewId))
 
+  override def hostWidget(widget: Widget): Ui[Any] = {
+    val appWidgetId = appWidgetHost.allocateAppWidgetId()
+    val provider = new ComponentName(widget.packageName, widget.className)
+    val success = appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, provider)
+    if (success) {
+      Ui(presenter.configureWidgetOrAdd(Some(appWidgetId)))
+    } else {
+      val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
+      intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+      intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider)
+      uiStartIntentForResult(intent, RequestCodes.goToWidgets)
+    }
+  }
+
   override def configureWidget(appWidgetId: Int): Ui[Any] = {
     val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
     Option(appWidgetInfo.configure) match {
@@ -235,10 +245,13 @@ trait LauncherUiActionsImpl
   }
 
   override def showWidgetsDialog(): Ui[Any] = {
-    val appWidgetId = appWidgetHost.allocateAppWidgetId()
-    val pickIntent = new Intent(AppWidgetManager.ACTION_APPWIDGET_PICK)
-    pickIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-    uiStartIntentForResult(pickIntent, RequestCodes.goToWidgets)
+    val widthContent = workspaces map (_.getWidth) getOrElse 0
+    val heightContent = workspaces map (_.getHeight) getOrElse 0
+    val map = Map (
+      WidgetsFragment.widgetContentWidth -> widthContent.toString,
+      WidgetsFragment.widgetContentHeight -> heightContent.toString
+    )
+    showAction(f[WidgetsFragment], None, resGetColor(R.color.widgets_fab_button), map)
   }
 
   override def showSelectMomentDialog(moments: Seq[MomentWithCollection]): Ui[Any] = activityContextWrapper.original.get match {

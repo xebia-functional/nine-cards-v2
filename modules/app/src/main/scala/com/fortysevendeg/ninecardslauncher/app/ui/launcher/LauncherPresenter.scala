@@ -426,6 +426,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       actions.addWidget(appWidgetId)
     }) getOrElse actions.showContactUsError()).run
 
+  def hostWidget(widget: Widget): Unit = actions.hostWidget(widget).run
+
   def configureWidgetOrAdd(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map actions.configureWidget getOrElse actions.showContactUsError()).run
 
@@ -668,6 +670,8 @@ trait LauncherUiActions {
   def addWidget(widgetViewId: Int): Ui[Any]
 
   def deleteWidget(widgetViewId: Int): Ui[Any]
+
+  def hostWidget(widget: Widget): Ui[Any]
 
   def configureWidget(appWidgetId: Int): Ui[Any]
 
