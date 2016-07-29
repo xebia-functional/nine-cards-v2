@@ -86,7 +86,7 @@
     <string name="editMoment">Editar Momento</string>
     <string name="changeMoment">Cambiar Momento</string>
 
-    <string name="widgetsErrorMessage">Hemos tenido problemas cargados los widgets. Inténtalo más tarde</string>
+    <string name="widgetsErrorMessage">Hemos tenido problemas cargando los widgets. Inténtalo más tarde</string>
 
     <!-- Collections -->
 

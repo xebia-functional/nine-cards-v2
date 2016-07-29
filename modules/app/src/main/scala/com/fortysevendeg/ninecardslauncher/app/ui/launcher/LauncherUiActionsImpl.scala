@@ -223,7 +223,7 @@ trait LauncherUiActionsImpl
     val provider = new ComponentName(widget.packageName, widget.className)
     val success = appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, provider)
     if (success) {
-      Ui(presenter.configureWidgetOrAdd(Some(appWidgetId)))
+      Ui(presenter.configureOrAddWidget(Some(appWidgetId)))
     } else {
       val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
       intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)

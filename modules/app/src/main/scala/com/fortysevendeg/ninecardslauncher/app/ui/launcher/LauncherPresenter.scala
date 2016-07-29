@@ -428,7 +428,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def hostWidget(widget: Widget): Unit = actions.hostWidget(widget).run
 
-  def configureWidgetOrAdd(maybeAppWidgetId: Option[Int]): Unit =
+  def configureOrAddWidget(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map actions.configureWidget getOrElse actions.showContactUsError()).run
 
   private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
