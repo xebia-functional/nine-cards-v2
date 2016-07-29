@@ -9,13 +9,16 @@ import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, Con
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState.{stateFailure => _, stateSuccess => _, _}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.device.ImplicitsDeviceException
+import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
@@ -56,39 +59,45 @@ class CreateCollectionService
 
     val hasKey = Option(intent) exists (_.hasExtra(cloudIdKey))
 
-    if (hasKey) {
-      selectedCloudId = Option(intent) flatMap { i =>
-        if (i.hasExtra(cloudIdKey)) {
-          val key = i.getStringExtra(cloudIdKey)
-          if (key == newConfiguration) None else Some(key)
-        } else None
-      }
+    Task.fork(di.userProcess.getUser.run).resolveAsync(
+      onResult = (user: User) => {
+        if (hasKey && user.deviceCloudId.isEmpty) {
+          selectedCloudId = Option(intent) flatMap { i =>
+            if (i.hasExtra(cloudIdKey)) {
+              val key = i.getStringExtra(cloudIdKey)
+              if (key == newConfiguration) None else Some(key)
+            } else None
+          }
 
-      setState(stateCreatingCollections)
+          setState(stateCreatingCollections)
 
-      val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
-      val title: String = getString(R.string.workingNotificationTitle)
-      builder.
-        setContentTitle(title).
-        setTicker(title).
-        setContentText(getString(R.string.downloadingAppsInfoMessage)).
-        setSmallIcon(R.drawable.icon_notification_working).
-        setProgress(1, maxProgress, true).
-        setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
+          val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
+          val title: String = getString(R.string.workingNotificationTitle)
+          builder.
+            setContentTitle(title).
+            setTicker(title).
+            setContentText(getString(R.string.downloadingAppsInfoMessage)).
+            setSmallIcon(R.drawable.icon_notification_working).
+            setProgress(1, maxProgress, true).
+            setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
 
-      startForeground(notificationId, builder.build)
+          startForeground(notificationId, builder.build)
 
-      synchronizeDevice
-    } else {
-      closeService()
-    }
+          synchronizeDevice
+        } else {
+          closeService()
+        }
+      },
+      onException = (_) => closeService()
+    )
 
     Service.START_NOT_STICKY
   }
 
-  private[this] def setState(state: String) = {
+  private[this] def setState(state: String, close: Boolean = false) = {
     currentState = Option(state)
     self ! BroadAction(WizardStateActionFilter.action, Option(state))
+    if (close) closeService()
   }
 
   protected def setProcess(process: CreateCollectionsProcess) = {
@@ -121,17 +130,18 @@ class CreateCollectionService
 
     Task.fork(service.run).resolveAsync(
       onResult = collections => {
-        setState(stateSuccess)
-        closeService()
+        setState(stateSuccess, close = true)
       },
       onException = ex => {
-        setState(stateFailure)
-        closeService()
+        setState(stateFailure, close = true)
       }
     )
   }
 
-  override def error(message: String, maybeException: Option[Throwable]): Unit = closeService()
+  override def error(message: String, maybeException: Option[Throwable]): Unit = {
+    maybeException foreach (ex => printErrorMessage(ex))
+    setState(stateFailure, close = true)
+  }
 }
 
 object CreateCollectionService {

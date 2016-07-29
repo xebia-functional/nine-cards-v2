@@ -218,6 +218,41 @@
         <item name="android:textColor">@color/item_list_popup_menu</item>
     </style>
 
+    <!-- SelectMomentDialog -->
+
+    <style name="SelectMomentDialogContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:background">@color/background_actions</item>
+        <item name="layout_behavior">android.support.design.widget.BottomSheetBehavior</item>
+    </style>
+
+    <style name="SelectMomentItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="SelectMomentItemIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="SelectMomentItemText">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/item_list_popup_moments_menu</item>
+        <item name="android:layout_marginLeft">@dimen/padding_default</item>
+    </style>
+
     <!-- Dialog Publish Collection Wizard  -->
 
     <style name="PublishCollectionWizardRoot">

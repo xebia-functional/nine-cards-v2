@@ -45,6 +45,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait CollectionsUiActions
   extends Styles
@@ -137,13 +139,13 @@ trait CollectionsUiActions
         )) ~
       (menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
       (menuLauncherWallpaper <~ On.click {
-        closeCollectionMenu() ~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
+        closeCollectionMenu() ~~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
       }) ~
       (menuLauncherWidgets <~ On.click {
-        closeCollectionMenu() ~ Ui(presenter.goToWidgets())
+        closeCollectionMenu() ~~ Ui(presenter.goToWidgets())
       }) ~
       (menuLauncherSettings <~ On.click {
-        closeCollectionMenu() ~ uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
+        closeCollectionMenu() ~~ uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
       })
 
   def showEditCollection(collection: Collection): Ui[Any] = {
@@ -189,7 +191,7 @@ trait CollectionsUiActions
 
   def closeMenu(): Ui[Any] = drawerLayout <~ dlCloseDrawer
 
-  def closeCollectionMenu(): Ui[Any] = workspaces <~ lwsCloseMenu
+  def closeCollectionMenu(): Ui[Future[Any]] = workspaces <~~ lwsCloseMenu
 
   def cleanWorkspaces(): Ui[Any] = workspaces <~ lwsClean
 
@@ -262,13 +264,13 @@ trait CollectionsUiActions
       workspaceButtonEditMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       On.click {
-        closeCollectionMenu() ~ showNoImplementedYetMessage()
+        closeCollectionMenu() ~~ showNoImplementedYetMessage()
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonChangeMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       On.click {
-        closeCollectionMenu() ~ Ui(presenter.goToChangeMoment())
+        closeCollectionMenu() ~~ Ui(presenter.goToChangeMoment())
       }).get
   )
 

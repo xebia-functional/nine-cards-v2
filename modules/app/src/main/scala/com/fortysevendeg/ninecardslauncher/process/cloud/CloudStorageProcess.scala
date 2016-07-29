@@ -7,6 +7,15 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 trait CloudStorageProcess {
 
   /**
+    * Transform a sequence of devices into a tuple containing a possible configuration for the actual device and a list
+    * with the remaining elements
+    * @param devices sequence of devices
+    * @return tuple of an optional CloudStorageDeviceSummary and a list of CloudStorageDeviceSummary
+    * @throws CloudStorageProcessException if the service throws an error
+    */
+  def prepareForActualDevice[T <: CloudStorageResource](devices: Seq[T])(implicit context: ContextSupport): ServiceDef2[(Option[T], Seq[T]), CloudStorageProcessException]
+
+  /**
     * Return a sequence of `CloudStorageResource` filtered by device type
     * @return sequence of `CloudStorageResource`
     * @throws CloudStorageProcessException if the service throws an error

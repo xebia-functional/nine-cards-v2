@@ -6,10 +6,11 @@ import com.fortysevendeg.ninecardslauncher.services.api.models.{UserConfig, User
 
 trait UserConfigConversions {
 
-  def toUserInfo(userConfig: UserConfig): UserInfo = UserInfo(
+  def toUserInfo(androidId: String, userConfig: UserConfig): UserInfo = UserInfo(
     email = userConfig.email,
     name = userConfig.plusProfile.displayName,
     imageUrl = userConfig.plusProfile.profileImage.imageUrl,
+    androidId = androidId,
     devices = userConfig.devices map toUserDevice)
 
   def toUserDevice(userConfigDevice: UserConfigDevice): UserDevice = UserDevice(

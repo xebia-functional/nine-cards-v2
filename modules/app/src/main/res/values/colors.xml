@@ -163,6 +163,9 @@
     <!-- ListPopupMenu -->
     <color name="item_list_popup_menu">#000000</color>
 
+    <!-- Moments Dialog -->
+    <color name="item_list_popup_moments_menu">#747474</color>
+
     <!-- Error Dialog -->
     <color name="error_dialog_text">#33000000</color>
     <color name="error_dialog_text_button">#ffffff</color>

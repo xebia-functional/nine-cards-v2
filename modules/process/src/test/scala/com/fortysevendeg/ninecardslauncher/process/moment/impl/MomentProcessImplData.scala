@@ -464,5 +464,11 @@ trait MomentProcessImplData {
 
   val servicesMomentSeq = Seq(homeMorningServicesMoment, workServicesMoment, homeNightServicesMoment, dayNoWifiServicesMoment)
 
+  val seqServicesCollectionForMoments =
+    createSeqServicesCollection(num = 1, id = homeMorningCollectionId.get) ++
+      createSeqServicesCollection(num = 1, id = homeNightCollectionId.get) ++
+      createSeqServicesCollection(num = 1, id = workCollectionId.get)
+
+  val servicesAvailableMomentsSeq = Seq(homeMorningServicesMoment, workServicesMoment, homeNightServicesMoment)
 
 }

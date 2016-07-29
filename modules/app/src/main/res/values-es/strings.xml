@@ -41,7 +41,7 @@
 
     <string name="messageEmpty">No hay datos en este moment</string>
 
-    <string name="addDeviceTitle">Hola, %1$s</string>
+    <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
 
     <string name="deviceDetectedNoProUser">Hemos detectado una configuración guardada para tu %1$s. Si eres usuario Pro puedes cargar previas configuraciones (colecciones y temas). ¿Quieres convertirte en Pro ahora?</string>
@@ -76,6 +76,11 @@
     <string name="errorAndroidMarketPermissionNotAccepted">Tienes que aceptar el permiso de Android Market para poder usar 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">Tienes que aceptar el permiso de Google para poder usar 9Cards</string>
 
+    <string name="currentDeviceTitle">%s (dispositivo actual)</string>
+    <string name="newConfigurationSubtitle">Crearemos una nueva configuración a partir de tus aplicaciones</string>
+    <string name="deviceMigratedFromV1">Migrado de la versión anterior</string>
+    <string name="otherDevicesLink">Configuraciones de otros dispositivos</string>
+
     <!-- Moment -->
 
     <string name="editMoment">Editar Momento</string>
@@ -98,6 +103,8 @@
     <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta colección?</string>
 
     <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
+
+    <string name="emptyMoment">No tienes momentos definidos</string>
 
     <string name="momentNotFoundMessage">Momento no encontrado. Tu deberías crear colecciones desde la sección Mis Collections</string>
 
@@ -262,14 +269,23 @@
     <string name="syncCurrent">Dispositivo actual</string>
     <string name="syncLastSynced">Última sincronización: %s</string>
 
+    <string name="menuAccountSync">Sincronizar</string>
+    <string name="menuAccountCopy">Copiar</string>
+    <string name="menuAccountDelete">Eliminar</string>
+
     <string name="accountSynced">Cuenta sincronizada</string>
 
     <string name="errorSyncing">Error sincronizando cuenta. Inténtale de nuevo</string>
 
     <string name="errorLoadingUser">Error cargando usuario</string>
 
+    <string name="errorEmptyNameForDevice">Por favor, especifique un nombre para la nueva configuración</string>
+    <string name="errorEmptyNameForDeviceButton">Inténtalo de nuevo</string>
+
     <string name="logout">Salir</string>
 
+    <string name="copyAccountSyncDialogTitle">Nueva configuración</string>
+    <string name="hintNewConfigurationName">Nombre</string>
     <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
 
     <!-- Preferences -->

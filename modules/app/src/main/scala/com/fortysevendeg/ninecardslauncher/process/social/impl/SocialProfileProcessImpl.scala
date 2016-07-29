@@ -26,7 +26,7 @@ class SocialProfileProcessImpl(
   override def updateUserProfile()(implicit context: ContextSupport) = (for {
     googlePlusProfile <- googlePlusServices.loadUserProfile
     _ <- findAndUpdateUserProfile(googlePlusProfile)
-  } yield ()).resolve[SocialProfileProcessException]
+  } yield googlePlusProfile.name).resolve[SocialProfileProcessException]
 
   private[this] def findAndUpdateUserProfile(googlePlusProfile: GooglePlusProfile)(implicit context: ContextSupport) =
     context.getActiveUserId map { id =>

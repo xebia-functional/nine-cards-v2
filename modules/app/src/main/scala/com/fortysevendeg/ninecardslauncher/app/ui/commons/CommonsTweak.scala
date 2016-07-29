@@ -10,9 +10,11 @@ import android.view.View
 import ColorOps._
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
+import android.text.SpannableString
+import android.text.style.UnderlineSpan
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
-import android.widget.{Spinner, EditText, ImageView}
+import android.widget.{Spinner, EditText, ImageView, TextView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -138,6 +140,12 @@ object ExtraTweaks {
     } else {
       view.openDrawer(GravityCompat.END)
     }
+  }
+
+  def tvUnderlineText(text: String): Tweak[TextView] = Tweak[TextView] { tv =>
+    val content = new SpannableString(text)
+    content.setSpan(new UnderlineSpan(), 0, text.length, 0)
+    tv.setText(content)
   }
 
   def sSelection(position: Int) = Tweak[Spinner](_.setSelection(position))

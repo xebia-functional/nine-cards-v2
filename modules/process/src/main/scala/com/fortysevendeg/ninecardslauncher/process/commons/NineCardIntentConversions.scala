@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.{UnformedAp
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardIntent, NineCardIntentExtras}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, EmailCardType, PhoneCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, ContactCardType, EmailCardType, PhoneCardType}
 import com.fortysevendeg.ninecardslauncher.process.moment.models.{App => MomentApp}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
@@ -55,17 +55,18 @@ trait NineCardIntentConversions {
   def toNineCardIntent(item: UnformedContact): (NineCardIntent, String) = item match {
     case UnformedContact(_, _, _, Some(info)) if info.phones.nonEmpty =>
       val phone = info.phones.headOption map (_.number)
-      val intent = NineCardIntent(NineCardIntentExtras(tel = phone))
+      val intent = NineCardIntent(NineCardIntentExtras(tel = phone, contact_lookup_key = Some(item.lookupKey)))
       intent.setAction(openPhone)
       (intent, PhoneCardType.name)
     case UnformedContact(_, _, _, Some(info)) if info.emails.nonEmpty =>
       val address = info.emails.headOption map (_.address)
-      val intent = NineCardIntent(NineCardIntentExtras(email = address))
+      val intent = NineCardIntent(NineCardIntentExtras(email = address, contact_lookup_key = Some(item.lookupKey)))
       intent.setAction(openEmail)
       (intent, EmailCardType.name)
-    case _ => // TODO 9C-234 - We should create a new action for open contact and use it here
-      val intent = NineCardIntent(NineCardIntentExtras())
-      (intent, AppCardType.name)
+    case _ =>
+      val intent = NineCardIntent(NineCardIntentExtras(contact_lookup_key = Some(item.lookupKey)))
+      intent.setAction(openContact)
+      (intent, ContactCardType.name)
   }
 
 }
