@@ -23,7 +23,7 @@
     <string name="shared_preferences_key">ninecards-shared-preferences</string>
     <string name="user_id_key">ninecards-user-id</string>
 
-    <string name="shared_collection_url">http://www.9cards.io/id/%1$s</string>
+    <string name="shared_collection_url">http://www.9cards.io/collections/id/%1$s</string>
 
     <!-- Crashlytics -->
     <string name="crashlytics_api_key">${crashlytics.apikey}</string>
