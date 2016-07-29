@@ -1,12 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets.models
 
 import android.appwidget.{AppWidgetProviderInfo => AndroidAppWidgetProviderInfo}
-import android.graphics.drawable.Drawable
 
 trait Conversions {
 
-  def toWidget(androidAppWidgetProviderInfo: AndroidAppWidgetProviderInfo, widgetLabel: String, iconImage: Drawable,
-    previewImageView: Option[Drawable], userHashCode: Option[Int]): Widget = {
+  def toWidget(androidAppWidgetProviderInfo: AndroidAppWidgetProviderInfo, widgetLabel: String, userHashCode: Option[Int]): Widget = {
 
       import androidAppWidgetProviderInfo._
 
@@ -23,7 +21,6 @@ trait Conversions {
         resizeMode = resizeMode,
         updatePeriodMillis = updatePeriodMillis,
         label = widgetLabel,
-        icon = iconImage,
-        preview = previewImageView)
+        preview = previewImage)
     }
 }

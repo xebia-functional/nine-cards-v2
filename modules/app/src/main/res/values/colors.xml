@@ -108,6 +108,11 @@
     <color name="collection_detail_fab_button_item">#3F51B5</color>
     <color name="collection_detail_fab_button_item_ripple">#ff1a2346</color>
 
+    <!-- Widgets -->
+    <color name="widgets_fab_button">#ff9800</color>
+    <color name="widgets_background_header">#e9e9e9</color>
+    <color name="widgets_background_content">#f1f1f1</color>
+
     <!-- Collections -->
     <color name="hint_collection_name">#898989</color>
 

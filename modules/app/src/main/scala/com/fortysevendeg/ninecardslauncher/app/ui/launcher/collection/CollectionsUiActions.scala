@@ -326,7 +326,7 @@ trait CollectionsUiActions
   def pagination(position: Int) =
     (w[TintableImageView] <~ paginationItemStyle <~ vSetPosition(position)).get
 
-  private[this] def showAction[F <: BaseActionFragment]
+  protected def showAction[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty): Ui[Any] = {
     val sizeIconWorkSpaceMenuItem = resGetDimensionPixelSize(R.dimen.size_workspace_menu_item)
     val (startX: Int, startY: Int) = maybeView map calculateAnchorViewPosition getOrElse(0, 0)

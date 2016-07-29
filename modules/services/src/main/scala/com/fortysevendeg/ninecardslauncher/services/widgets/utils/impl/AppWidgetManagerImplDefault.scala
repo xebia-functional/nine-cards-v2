@@ -20,19 +20,13 @@ class AppWidgetManagerImplDefault(implicit contextSupport: ContextSupport)
 
   override def getAllProviders = getAppWidgetProviderInfo map { appWidgetProviderInfo =>
     val label = getLabel(appWidgetProviderInfo)
-    val iconImage = getIconImage(appWidgetProviderInfo)
-    val previewImageView = getPreviewImage(appWidgetProviderInfo)
     val userHashCode = getUser(appWidgetProviderInfo)
-    toWidget(appWidgetProviderInfo, label, iconImage, previewImageView, userHashCode)
+    toWidget(appWidgetProviderInfo, label, userHashCode)
   }
 
   protected def getAppWidgetProviderInfo = AppWidgetManager.getInstance(contextSupport.context).getInstalledProviders.toSeq
 
   protected def getLabel(info: AppWidgetProviderInfo) = info.label.trim
-
-  protected def getIconImage(info: AppWidgetProviderInfo) = getFullResIcon(info.provider.getPackageName, info.icon)
-
-  protected def getPreviewImage(info: AppWidgetProviderInfo) = Option(packageManager.getDrawable(info.provider.getPackageName, info.previewImage, javaNull))
 
   protected def getUser(info: AppWidgetProviderInfo) =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) Option(android.os.Process.myUserHandle.hashCode)

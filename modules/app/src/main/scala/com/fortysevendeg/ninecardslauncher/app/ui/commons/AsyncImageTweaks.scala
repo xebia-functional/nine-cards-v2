@@ -19,7 +19,7 @@ import com.bumptech.glide._
 import com.bumptech.glide.load.resource.bitmap.{BitmapEncoder, StreamBitmapDecoder}
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder, IconFromPackageDecoder, IconFromPackageLoader}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -54,7 +54,26 @@ object AsyncImageTweaks {
             .load(packageName)
             .into(imageView)
         case _ =>
-          (imageView <~ ivSrc(new CharDrawable(term.charAt(0).toString, circle = true))).run
+          (imageView <~ ivSrc(CharDrawable(term.charAt(0).toString, circle = true))).run
+      }
+    }
+  )
+
+  def ivSrcIconFromPackage(packageName: String, icon: Int, term: String)(implicit context: UiContext[_], contextWrapper: ContextWrapper): Tweak[W] = Tweak[W](
+    imageView => {
+      glide() match {
+        case Some(glide) =>
+          glide
+            .using(new IconFromPackageLoader, classOf[Int])
+            .from(classOf[Int])
+            .as(classOf[Bitmap])
+            .decoder(new IconFromPackageDecoder(packageName))
+            .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
+            .encoder(new BitmapEncoder())
+            .load(icon)
+            .into(imageView)
+        case _ =>
+          (imageView <~ ivSrc(CharDrawable(term.charAt(0).toString, circle = true))).run
       }
     }
   )

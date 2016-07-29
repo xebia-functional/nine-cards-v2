@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.services.widgets.impl.utils.impl
 import android.appwidget.AppWidgetProviderInfo
 import android.content.ComponentName
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.impl.AppWidgetManagerImplDefault
 import org.specs2.mock.Mockito
@@ -40,6 +39,7 @@ trait AppWidgetManagerDefaultImplSpecification
       sampleAppWidgetProviderInfo.minWidth = minWidth
       sampleAppWidgetProviderInfo.resizeMode = resizeMode
       sampleAppWidgetProviderInfo.updatePeriodMillis = updatePeriodMillis
+      sampleAppWidgetProviderInfo.previewImage = preview
       sampleAppWidgetProviderInfo.provider = createComponentName
       sampleAppWidgetProviderInfo
     }
@@ -57,10 +57,6 @@ trait AppWidgetManagerDefaultImplSpecification
       override protected def getAppWidgetProviderInfo: Seq[AppWidgetProviderInfo] = seqAppWidgetProviderInfo
 
       override protected def getLabel(info: AppWidgetProviderInfo): String = label
-
-      override protected def getIconImage(info: AppWidgetProviderInfo): Drawable = icon
-
-      override protected def getPreviewImage(info: AppWidgetProviderInfo): Option[Drawable] = previewOption
 
       override protected def getUser(info: AppWidgetProviderInfo): Option[Int] = userHashCodeOption
     }

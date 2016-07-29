@@ -84,11 +84,9 @@ trait DeviceProcessData
   val resizeMode1 = 1
   val updatePeriodMillis1 = 1
   val label1 = "label1"
-  val icon1: Drawable = new TestDrawable
-  val preview1: Drawable = new TestDrawable
+  val preview1: Int = 1
 
   val userHashCodeOption1 = Option(userHashCode1)
-  val previewOption1 = Option(preview1)
 
   val userHashCode2 = 2
   val autoAdvanceViewId2 = 2
@@ -100,11 +98,9 @@ trait DeviceProcessData
   val resizeMode2 = 2
   val updatePeriodMillis2 = 2
   val label2 = "label2"
-  val icon2: Drawable = new TestDrawable
-  val preview2: Drawable = new TestDrawable
+  val preview2: Int = 2
 
   val userHashCodeOption2 = Option(userHashCode2)
-  val previewOption2 = Option(preview2)
 
   val userHashCode3 = 3
   val autoAdvanceViewId3 = 3
@@ -116,11 +112,9 @@ trait DeviceProcessData
   val resizeMode3 = 3
   val updatePeriodMillis3 = 3
   val label3 = "label3"
-  val icon3: Drawable = new TestDrawable
-  val preview3: Drawable = new TestDrawable
+  val preview3: Int = 3
 
   val userHashCodeOption3 = Option(userHashCode3)
-  val previewOption3 = Option(preview3)
 
   val phoneNumber1 = "+00 111 222 333"
   val contactName1 = "Contact 1"
@@ -401,8 +395,7 @@ trait DeviceProcessData
       resizeMode = resizeMode1,
       updatePeriodMillis = updatePeriodMillis1,
       label = label1,
-      icon = icon1,
-      preview = previewOption1),
+      preview = preview1),
     ServicesWidget(
       userHashCode = userHashCodeOption2,
       autoAdvanceViewId = autoAdvanceViewId2,
@@ -416,8 +409,7 @@ trait DeviceProcessData
       resizeMode = resizeMode2,
       updatePeriodMillis = updatePeriodMillis2,
       label = label2,
-      icon = icon2,
-      preview = previewOption2),
+      preview = preview2),
     ServicesWidget(
       userHashCode = userHashCodeOption3,
       autoAdvanceViewId = autoAdvanceViewId3,
@@ -431,8 +423,7 @@ trait DeviceProcessData
       resizeMode = resizeMode3,
       updatePeriodMillis = updatePeriodMillis3,
       label = label3,
-      icon = icon3,
-      preview = previewOption3)
+      preview = preview3)
   )
 
   val widgets: Seq[Widget] = Seq(
@@ -449,8 +440,7 @@ trait DeviceProcessData
       resizeMode = WidgetResizeMode(resizeMode1),
       updatePeriodMillis = updatePeriodMillis1,
       label = label1,
-      icon = icon1,
-      preview = previewOption1),
+      preview = preview1),
     Widget(
       userHashCode = userHashCodeOption2,
       autoAdvanceViewId = autoAdvanceViewId2,
@@ -464,8 +454,7 @@ trait DeviceProcessData
       resizeMode = WidgetResizeMode(resizeMode2),
       updatePeriodMillis = updatePeriodMillis2,
       label = label2,
-      icon = icon2,
-      preview = previewOption2),
+      preview = preview2),
     Widget(
       userHashCode = userHashCodeOption3,
       autoAdvanceViewId = autoAdvanceViewId3,
@@ -479,8 +468,7 @@ trait DeviceProcessData
       resizeMode = WidgetResizeMode(resizeMode3),
       updatePeriodMillis = updatePeriodMillis3,
       label = label3,
-      icon = icon3,
-      preview = previewOption3)
+      preview = preview3)
   )
 
   val callsServices: Seq[ServicesCall] = Seq(
