@@ -95,6 +95,16 @@ trait CollectionProcess {
   def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest): ServiceDef2[Collection, CollectionException]
 
   /**
+    * Updates a Collection with the sharedCollectionId
+    *
+    * @param collectionId the Id of the Collection
+    * @param sharedCollectionId the Id of the collection after being published
+    * @return the [[Collection]]
+    * @throws CollectionException if there was an error finding the collection or updating it
+    */
+  def updateSharedCollection(collectionId: Int, sharedCollectionId: String): ServiceDef2[Collection, CollectionException]
+
+  /**
    * Adds some new Cards after the last existing one in a given Collection
  *
    * @param collectionId the Id of the Collection

@@ -29,12 +29,12 @@ class CollectionFragment
     actions = self)
 
   override lazy val collectionsPresenter: CollectionsPagerPresenter = getActivity match {
-    case a: CollectionsDetailsActivity => a.presenter
+    case activity: CollectionsDetailsActivity => activity.collectionsPagerPresenter
     case _ => throw new IllegalArgumentException(badActivityMessage)
   }
 
   override lazy val theme: NineCardsTheme = getActivity match {
-    case a: CollectionsDetailsActivity => a.theme
+    case activity: CollectionsDetailsActivity => activity.theme
     case _ => throw new IllegalArgumentException(badActivityMessage)
   }
 

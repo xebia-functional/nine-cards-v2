@@ -71,6 +71,7 @@ trait Conversions {
       androidToken = user.androidToken,
       deviceName = user.deviceName,
       deviceCloudId = user.deviceCloudId,
+      name = user.name,
       userProfile = toUserProfile(user))
 
   def toUserProfile(user: ServicesUser): UserProfile =

@@ -23,6 +23,7 @@
     <dimen name="text_micro">8sp</dimen>
 
     <dimen name="divider_default">1px</dimen>
+    <dimen name="divider_wide">3px</dimen>
 
     <dimen name="elevation_box_workspaces">6dp</dimen>
     <dimen name="elevation_toolbar">4dp</dimen>
@@ -176,6 +177,8 @@
     <dimen name="margin_top_error_dialog_image">46dp</dimen>
     <dimen name="margin_bottom_error_dialog_image">55dp</dimen>
 
+    <dimen name="header_wizard_height">70dp</dimen>
+
     <!-- ListPopupMenu -->
     <dimen name="width_list_popup_menu">220dp</dimen>
     <dimen name="height_list_popup_menu">320dp</dimen>
@@ -196,5 +199,20 @@
 
     <!-- Profile -->
     <dimen name="height_profile_user">180dp</dimen>
+
+    <!-- Publish Collection Wizard -->
+    <dimen name="publish_collection_message_width">260dp</dimen>
+    <dimen name="publish_collection_message_height">60dp</dimen>
+    <dimen name="publish_collection_input_margin_top">15dp</dimen>
+    <dimen name="publish_collection_input_category_margin_top">20dp</dimen>
+    <dimen name="publish_collection_form_padding">0dp</dimen>
+    <dimen name="publish_collection_form_height">232dp</dimen>
+    <dimen name="publish_collection_category_padding">4dp</dimen>
+    <dimen name="publish_collection_footer_height">70dp</dimen>
+    <dimen name="publish_collection_footer_center">30dp</dimen>
+    <dimen name="publish_collection_footer_end_margin">20dp</dimen>
+    <dimen name="publish_collection_footer_end_height">50dp</dimen>
+    <dimen name="publish_collection_size_pager">8dp</dimen>
+    <dimen name="publish_collection_margin_pager">4dp</dimen>
 
 </resources>

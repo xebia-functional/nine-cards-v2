@@ -330,6 +330,26 @@ trait CollectionProcessImplSpecification
 
   }
 
+  trait ValidUpdateSharedCollectionPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(servicesCollection)))
+    mockPersistenceServices.updateCollection(any) returns Service(Task(Result.answer(collectionId)))
+
+  }
+
+  trait ErrorUpdateSharedCollectionPersistenceServicesResponses
+    extends CollectionProcessImplData {
+
+    self: CollectionProcessScope =>
+
+    mockPersistenceServices.findCollectionById(any) returns Service(Task(Result.answer(servicesCollection)))
+    mockPersistenceServices.updateCollection(any) returns Service(Task(Errata(persistenceServiceException)))
+
+  }
+
   trait ValidAddCardPersistenceServicesResponses
     extends CollectionProcessImplData {
 
@@ -804,6 +824,38 @@ class CollectionProcessImplSpec
     "returns a CollectionException if the service throws a exception updating the collection" in
       new CollectionProcessScope with ErrorEditCollectionPersistenceServicesResponses {
         val result = collectionProcess.editCollection(collectionId, editCollectionRequest).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
+          }
+        }
+      }
+  }
+
+  "updateSharedCollection" should {
+
+    "returns a the updated collection for a valid request" in
+      new CollectionProcessScope with ValidUpdateSharedCollectionPersistenceServicesResponses {
+        val result = collectionProcess.updateSharedCollection(collectionId, sharedCollectionId).run.run
+        result must beLike {
+          case Answer(resultCollection) =>
+            resultCollection shouldEqual updatedCollection
+        }
+      }
+
+    "returns a CollectionException if the service throws a exception finding the collection by Id" in
+      new CollectionProcessScope with ErrorFindCollectionPersistenceServicesResponses {
+        val result = collectionProcess.updateSharedCollection(collectionId, sharedCollectionId).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]
+          }
+        }
+      }
+
+    "returns a CollectionException if the service throws a exception updating the collection" in
+      new CollectionProcessScope with ErrorUpdateSharedCollectionPersistenceServicesResponses {
+        val result = collectionProcess.updateSharedCollection(collectionId, sharedCollectionId).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[CollectionExceptionImpl]

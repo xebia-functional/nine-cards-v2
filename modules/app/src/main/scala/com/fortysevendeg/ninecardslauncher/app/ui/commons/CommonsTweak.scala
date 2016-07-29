@@ -14,7 +14,7 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
-import android.widget.{EditText, ImageView, TextView}
+import android.widget.{Spinner, EditText, ImageView, TextView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -147,5 +147,7 @@ object ExtraTweaks {
     content.setSpan(new UnderlineSpan(), 0, text.length, 0)
     tv.setText(content)
   }
+
+  def sSelection(position: Int) = Tweak[Spinner](_.setSelection(position))
 
 }

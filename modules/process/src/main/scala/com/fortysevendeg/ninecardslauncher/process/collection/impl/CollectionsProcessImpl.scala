@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{AddCollectionRequ
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions}
 
 import scalaz.concurrent.Task
 
@@ -88,6 +88,13 @@ trait CollectionsProcessImpl {
     (for {
       Some(collection) <- findCollectionById(collectionId)
       updatedCollection = toUpdatedCollection(toCollection(collection), editCollectionRequest)
+      _ <- updateCollection(updatedCollection)
+    } yield updatedCollection).resolve[CollectionException]
+
+  def updateSharedCollection(collectionId: Int, sharedCollectionId: String) =
+    (for {
+      Some(collection) <- findCollectionById(collectionId)
+      updatedCollection = toUpdatedSharedCollection(toCollection(collection), sharedCollectionId)
       _ <- updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 
