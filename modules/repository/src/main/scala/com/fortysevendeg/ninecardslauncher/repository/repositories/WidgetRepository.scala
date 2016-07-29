@@ -99,7 +99,7 @@ class WidgetRepository(
       }
     }
 
-  def fetchWidgetByAppWidgetId(position: Int): ServiceDef2[Option[Widget], RepositoryException] =
+  def fetchWidgetByAppWidgetId(appWidgetId: Int): ServiceDef2[Option[Widget], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
@@ -150,27 +150,27 @@ class WidgetRepository(
       }
     }
 
-  def updateWidget(collection: Widget): ServiceDef2[Int, RepositoryException] =
+  def updateWidget(widget: Widget): ServiceDef2[Int, RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = createMapValues(collection.data)
+          val values = createMapValues(widget.data)
 
           contentResolverWrapper.updateById(
             uri = widgetUri,
-            id = collection.id,
+            id = widget.id,
             values = values,
             notificationUri = Some(widgetNotificationUri))
         }
       }
     }
 
-  def updateWidgets(collections: Seq[Widget]): ServiceDef2[Seq[Int], RepositoryException] =
+  def updateWidgets(widgets: Seq[Widget]): ServiceDef2[Seq[Int], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = collections map { collection =>
-            (collection.id, createMapValues(collection.data))
+          val values = widgets map { widget =>
+            (widget.id, createMapValues(widget.data))
           }
 
           contentResolverWrapper.updateByIds(
