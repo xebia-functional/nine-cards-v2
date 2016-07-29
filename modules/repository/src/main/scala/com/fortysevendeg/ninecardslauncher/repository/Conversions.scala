@@ -75,4 +75,16 @@ object Conversions {
       deviceName = Option[String](userEntity.data.deviceName),
       deviceCloudId = Option[String](userEntity.data.deviceCloudId)))
 
+  def toWidget(widget: WidgetEntity): Widget = Widget(
+    id = widget.id,
+    data = WidgetData(
+      momentId = widget.data.momentId,
+      packageName = widget.data.packageName,
+      className = widget.data.className,
+      appWidgetId = widget.data.appWidgetId,
+      spanX = widget.data.spanX,
+      spanY = widget.data.spanY,
+      startX = widget.data.startX,
+      startY = widget.data.startY))
+
 }

@@ -20,4 +20,6 @@ object NineCardsUri {
 
   val userUriString = s"$baseUriString/${UserEntity.table}"
 
+  val widgetUriString = s"$baseUriString/${WidgetEntity.table}"
+
 }
