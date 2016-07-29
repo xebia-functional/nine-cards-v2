@@ -50,6 +50,8 @@ trait WidgetsUiActionsImpl
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
+  override def showMessageWidgetsFailed(): Ui[Any] = showError(R.string.widgetsErrorMessage, widgetsPresenter.loadWidgets())
+
   override def close(): Ui[Any] = unreveal()
 
 }

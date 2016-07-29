@@ -11,9 +11,15 @@ class WidgetsPresenter(actions: WidgetsUiActions)(implicit contextWrapper: Activ
   extends Presenter {
 
   def initialize(): Unit = {
+    actions.initialize().run
+    loadWidgets()
+  }
+
+  def loadWidgets(): Unit = {
     Task.fork(di.deviceProcess.getWidgets.run).resolveAsyncUi(
-      onPreTask = () => actions.initialize() ~ actions.showLoading(),
-      onResult = (widgets: Seq[Widget]) => actions.loadWidgets(widgets)
+      onPreTask = () => actions.showLoading(),
+      onResult = (widgets: Seq[Widget]) => actions.loadWidgets(widgets),
+      onException = (_) => actions.showMessageWidgetsFailed()
     )
   }
 
@@ -28,6 +34,8 @@ trait WidgetsUiActions {
   def loadWidgets(widgets: Seq[Widget]): Ui[Any]
 
   def showLoading(): Ui[Any]
+
+  def showMessageWidgetsFailed(): Ui[Any]
 
   def close(): Ui[Any]
 
