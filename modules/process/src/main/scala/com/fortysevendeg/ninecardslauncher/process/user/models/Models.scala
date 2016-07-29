@@ -16,6 +16,7 @@ case class User(
   androidToken: Option[String],
   deviceName: Option[String],
   deviceCloudId: Option[String],
+  name: Option[String],
   userProfile: UserProfile)
 
 case class UserProfile(

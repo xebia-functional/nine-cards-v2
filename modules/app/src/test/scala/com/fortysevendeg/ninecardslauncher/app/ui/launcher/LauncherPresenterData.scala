@@ -102,6 +102,7 @@ trait LauncherPresenterData {
     androidToken = None,
     deviceName = None,
     deviceCloudId = None,
+    name = Option(name),
     userProfile = UserProfile(name = None, avatar = None, cover = None))
 
 }

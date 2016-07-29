@@ -8,31 +8,32 @@ import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.View
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails
-import CollectionsSnails._
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.PublishCollectionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, SnailsCommons, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailBackgroundColor, NineCardsTheme}
@@ -50,9 +51,9 @@ trait CollectionsUiActionsImpl
 
   self: SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] =>
 
-  implicit val presenter: CollectionsPagerPresenter
+  implicit val collectionsPagerPresenter: CollectionsPagerPresenter
 
-  implicit lazy val theme: NineCardsTheme = presenter.getTheme
+  implicit lazy val theme: NineCardsTheme = collectionsPagerPresenter.getTheme
 
   val resistanceDisplacement = .2f
 
@@ -82,9 +83,11 @@ trait CollectionsUiActionsImpl
 
   lazy val icon = Option(findView(TR.collections_icon))
 
-  def updateBarsInFabMenuShow(): Ui[_] = updateStatusToBlack
+  val tagDialog = "dialog"
 
-  def updateBarsInFabMenuHide(): Ui[_] =
+  def updateBarsInFabMenuShow(): Ui[Any] = updateStatusToBlack
+
+  def updateBarsInFabMenuHide(): Ui[Any] =
     getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
   override def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): Ui[Any] =
@@ -161,13 +164,13 @@ trait CollectionsUiActionsImpl
 
   override def showContactUsError: Ui[Any] = showError()
 
-  override def showMessageNotImplemented: Ui[Any]= showError(R.string.todo)
+  override def showMessageNotImplemented: Ui[Any] = showError(R.string.todo)
 
   override def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
     adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
   }
 
-  override def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[_] = {
+  override def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[Any] = {
     val displacement = scroll * resistanceDisplacement
     val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_action)
     val scale = 1f + ((scroll / distanceToValidClose) * resistanceScale)
@@ -185,7 +188,7 @@ trait CollectionsUiActionsImpl
       }
   }
 
-  override def translationScrollY(scroll: Int): Ui[_] = {
+  override def translationScrollY(scroll: Int): Ui[Any] = {
     val move = math.min(scroll, spaceMove)
     val ratio: Float = move.toFloat / spaceMove.toFloat
     val isTop = ratio >= 1
@@ -196,7 +199,7 @@ trait CollectionsUiActionsImpl
       (if (isTop) elevationsUp else elevationsDefault)
   }
 
-  override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[_] =
+  override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] =
     hideFabButton ~
       ((toolbar <~~
         applyAnimation(onUpdate = (ratio) => current match {
@@ -208,7 +211,7 @@ trait CollectionsUiActionsImpl
         elevationsUp ~
         (iconContent <~ vAlpha(0))).ifUi(canScroll)
 
-  override def notifyScroll(sType: ScrollType): Ui[_] = (for {
+  override def notifyScroll(sType: ScrollType): Ui[Any] = (for {
     vp <- viewPager
     adapter <- getAdapter
   } yield {
@@ -236,16 +239,34 @@ trait CollectionsUiActionsImpl
 
   override def destroyAction: Ui[Any] = Ui(removeActionFragment)
 
-  private[this] def showError(error: Int = R.string.contactUsError): Ui[_] = root <~ vSnackbarShort(error)
+  override def showPublishCollectionWizardDialog(collection: Collection): Ui[Any] =
+    activityContextWrapper.getOriginal match {
+      case activity: AppCompatActivity => Ui {
+        val fragmentManager = activity.getSupportFragmentManager
+        val ft = fragmentManager.beginTransaction()
+        Option(fragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+        ft.addToBackStack(javaNull)
+        val dialog = new PublishCollectionFragment(collection)
+        dialog.show(ft, tagDialog)
+      }
+      case _ =>
+        showContactUsError
+    }
 
-  private[this] def elevationsDefault: Ui[_] = Lollipop.ifSupportedThen {
+  override def showMessagePublishContactsCollectionError: Ui[Any] = showError(R.string.publishCollectionError)
+
+  override def showMessageNotPublishedCollectionError: Ui[Any] = showError(R.string.notPublishedCollectionError)
+
+  private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = root <~ vSnackbarShort(error)
+
+  private[this] def elevationsDefault: Ui[Any] = Lollipop.ifSupportedThen {
     (viewPager <~ vElevation(elevation)) ~
       (tabs <~ vElevation(elevation)) ~
       (toolbar <~ vElevation(elevation)) ~
       (iconContent <~ vElevation(elevation))
   } getOrElse Ui.nop
 
-  private[this] def elevationsUp: Ui[_] = Lollipop.ifSupportedThen {
+  private[this] def elevationsUp: Ui[Any] = Lollipop.ifSupportedThen {
     (viewPager <~ vElevation(elevation)) ~
       (tabs <~ vElevation(elevationUp)) ~
       (toolbar <~ vElevation(elevationUp)) ~
@@ -303,12 +324,12 @@ trait CollectionsUiActionsImpl
     fragment <- adapter.getActiveFragment
   } yield fragment.presenter
 
-  override def turnOffFragmentContent: Ui[_] =
+  override def turnOffFragmentContent: Ui[Any] =
     (fragmentContent <~
       colorContentDialog(paint = false) <~
       vClickable(false)) ~ updateBarsInFabMenuHide
 
-  private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[_] = getAdapter map {
+  private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] = getAdapter map {
     adapter =>
       (pageMovement match {
         case Start | Idle => icon <~ ivSrc(iconCollectionDetail(collection.icon))
@@ -323,12 +344,12 @@ trait CollectionsUiActionsImpl
       })
   } getOrElse Ui.nop
 
-  private[this] def updateToolbarColor(color: Int): Ui[_] =
+  private[this] def updateToolbarColor(color: Int): Ui[Any] =
     (toolbar <~ vBackgroundColor(color)) ~
       updateStatusColor(color)
 
   private[this] def showAction[F <: BaseActionFragment]
-  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, NineCardCategory] = Map.empty, packages: Seq[String] = Seq.empty): Ui[_] = {
+  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, NineCardCategory] = Map.empty, packages: Seq[String] = Seq.empty): Ui[Any] = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = fabButton map (_.getWidth) getOrElse 0
     val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map calculateAnchorViewPosition getOrElse(0, 0)
@@ -354,8 +375,8 @@ trait CollectionsUiActionsImpl
 
   class OnPageChangeCollectionsListener(
    position: Int,
-   updateToolbarColor: (Int) => Ui[_],
-   updateCollection: (Collection, Int, PageMovement) => Ui[_])
+   updateToolbarColor: (Int) => Ui[Any],
+   updateCollection: (Collection, Int, PageMovement) => Ui[Any])
     extends OnPageChangeListener {
 
     var lastPosition = -1

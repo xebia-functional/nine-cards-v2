@@ -29,8 +29,6 @@ class CollectionsDetailsActivity
   with SystemBarsTint
   with BroadcastDispatcher { self =>
 
-  val tagDialog = "dialog"
-
   val defaultPosition = 0
 
   val defaultIndexColor = 0
@@ -41,12 +39,12 @@ class CollectionsDetailsActivity
 
   var firstTime = true
 
-  override lazy val presenter = new CollectionsPagerPresenter(self)
+  override lazy val collectionsPagerPresenter = new CollectionsPagerPresenter(self)
 
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (AppsActionFilter(action), data) match {
-    case (AppInstalledActionFilter, _) => presenter.reloadCards(true)
+    case (AppInstalledActionFilter, _) => collectionsPagerPresenter.reloadCards(true)
     case _ =>
   }
 
@@ -79,7 +77,7 @@ class CollectionsDetailsActivity
     getSupportActionBar.setDisplayHomeAsUpEnabled(true)
     getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
 
-    presenter.initialize(indexColor, icon, position, isStateChanged)
+    collectionsPagerPresenter.initialize(indexColor, icon, position, isStateChanged)
 
     registerDispatchers
 
@@ -93,13 +91,13 @@ class CollectionsDetailsActivity
       overridePendingTransition(R.anim.abc_grow_fade_in_from_bottom, R.anim.abc_shrink_fade_out_from_bottom)
     }
     super.onResume()
-    presenter.resume()
+    collectionsPagerPresenter.resume()
   }
 
   override def onPause(): Unit = {
     overridePendingTransition(R.anim.abc_grow_fade_in_from_bottom, R.anim.abc_shrink_fade_out_from_bottom)
     super.onPause()
-    presenter.pause()
+    collectionsPagerPresenter.pause()
   }
 
   override def onDestroy(): Unit = {
@@ -126,7 +124,7 @@ class CollectionsDetailsActivity
           val shortcutIntent = b.getParcelable[Intent](EXTRA_SHORTCUT_INTENT)
           getCurrentCollection foreach { collection =>
             val maybeBitmap = getBitmapFromShortcutIntent(b)
-            presenter.addShortcut(collection.id, shortcutName, shortcutIntent, maybeBitmap)
+            collectionsPagerPresenter.addShortcut(collection.id, shortcutName, shortcutIntent, maybeBitmap)
           }
         case _ =>
       }
@@ -140,16 +138,22 @@ class CollectionsDetailsActivity
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case android.R.id.home =>
-      presenter.close()
+      collectionsPagerPresenter.close()
       false
+    case R.id.action_make_public =>
+      collectionsPagerPresenter.showPublishCollectionWizard()
+      true
+    case R.id.action_share =>
+      collectionsPagerPresenter.shareCollection()
+      true
     case _ => super.onOptionsItemSelected(item)
   }
 
-  override def onBackPressed(): Unit = presenter.back()
+  override def onBackPressed(): Unit = collectionsPagerPresenter.back()
 
-  override def onStartFinishAction(): Unit = presenter.resetAction()
+  override def onStartFinishAction(): Unit = collectionsPagerPresenter.resetAction()
 
-  override def onEndFinishAction(): Unit = presenter.destroyAction()
+  override def onEndFinishAction(): Unit = collectionsPagerPresenter.destroyAction()
 
   private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
     case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
