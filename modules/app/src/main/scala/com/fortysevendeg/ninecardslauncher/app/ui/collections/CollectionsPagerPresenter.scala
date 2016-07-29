@@ -3,8 +3,9 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.content.Intent
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
@@ -20,6 +21,7 @@ import scalaz.concurrent.Task
 class CollectionsPagerPresenter(
   actions: CollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Presenter
+  with LauncherExecutor
   with NineCardIntentConversions { self =>
 
   val delay = 200
@@ -63,7 +65,18 @@ class CollectionsPagerPresenter(
       } else {
         actions.showMessagePublishContactsCollectionError.run
       }
-    } getOrElse actions.showContactUsError
+    } getOrElse actions.showContactUsError.run
+  }
+
+  def shareCollection(): Unit = actions.getCurrentCollection foreach { collection =>
+    Task.fork(di.collectionProcess.getCollectionById(collection.id).run).resolveAsync(
+      onResult = (c) => c map { col =>
+        if (col.sharedCollectionId.isDefined) {
+          col.getUrlSharedCollection map launchShare
+        } else {
+          actions.showMessageNotPublishedCollectionError.run
+        }
+      })
   }
 
   def addCards(cards: Seq[AddCardRequest]): Unit = actions.getCurrentCollection foreach { collection =>
@@ -139,6 +152,8 @@ trait CollectionsUiActions {
   def showPublishCollectionWizardDialog(collection: Collection): Ui[Any]
 
   def showMessagePublishContactsCollectionError: Ui[Any]
+
+  def showMessageNotPublishedCollectionError: Ui[Any]
 
   def showContactUsError: Ui[Any]
 

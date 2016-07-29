@@ -133,6 +133,7 @@
     <string name="congratulationsMessage">Your collection has been successfully published</string>
     <string name="shareCollection">Share your collection</string>
     <string name="publishCollectionError">Oops! A collection without apps can\'t be published</string>
+    <string name="notPublishedCollectionError">This collection must be published before sharing it</string>
     <string name="publishingError">Oops! An error has occurred publishing your collection</string>
     <string name="collectionError">Oops! An error has occurred getting this collection</string>
     <string name="defaultUser">User</string>

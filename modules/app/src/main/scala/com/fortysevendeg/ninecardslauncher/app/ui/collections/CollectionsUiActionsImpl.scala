@@ -28,8 +28,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FabButtonBehaviour, RequestCodes, SnailsCommons, SystemBarsTint}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
@@ -239,21 +239,23 @@ trait CollectionsUiActionsImpl
 
   override def destroyAction: Ui[Any] = Ui(removeActionFragment)
 
-  override def showPublishCollectionWizardDialog(collection: Collection): Ui[Any] = Ui {
+  override def showPublishCollectionWizardDialog(collection: Collection): Ui[Any] =
     activityContextWrapper.getOriginal match {
-      case activity: AppCompatActivity =>
+      case activity: AppCompatActivity => Ui {
         val fragmentManager = activity.getSupportFragmentManager
         val ft = fragmentManager.beginTransaction()
         Option(fragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
         ft.addToBackStack(javaNull)
         val dialog = new PublishCollectionFragment(collection)
         dialog.show(ft, tagDialog)
+      }
       case _ =>
         showContactUsError
     }
-  }
 
   override def showMessagePublishContactsCollectionError: Ui[Any] = showError(R.string.publishCollectionError)
+
+  override def showMessageNotPublishedCollectionError: Ui[Any] = showError(R.string.notPublishedCollectionError)
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = root <~ vSnackbarShort(error)
 

@@ -269,8 +269,8 @@
     </style>
 
     <style name="PublishCollectionWizardMessage">
-        <item name="android:layout_width">@dimen/message_publish_collection_width</item>
-        <item name="android:layout_height">@dimen/message_publish_collection_height</item>
+        <item name="android:layout_width">@dimen/publish_collection_message_width</item>
+        <item name="android:layout_height">@dimen/publish_collection_message_height</item>
         <item name="android:gravity">center</item>
     </style>
 
@@ -318,15 +318,15 @@
 
     <style name="PublishCollectionWizardInformationForm" parent="PublishCollectionWizardImage">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/form_height</item>
+        <item name="android:layout_height">@dimen/publish_collection_form_height</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:padding">@dimen/form_padding</item>
+        <item name="android:padding">@dimen/publish_collection_form_padding</item>
     </style>
 
     <style name="PublishCollectionWizardInformationInput">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/input_margin_top</item>
+        <item name="android:layout_marginTop">@dimen/publish_collection_input_margin_top</item>
     </style>
 
     <style name="PublishCollectionWizardInformationInputMessage">
@@ -346,8 +346,8 @@
     <style name="PublishCollectionWizardInformationCategorySelectContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">@dimen/category_padding</item>
-        <item name="android:paddingRight">@dimen/category_padding</item>
+        <item name="android:paddingLeft">@dimen/publish_collection_category_padding</item>
+        <item name="android:paddingRight">@dimen/publish_collection_category_padding</item>
         <item name="android:orientation">vertical</item>
     </style>
 
@@ -355,7 +355,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">bottom</item>
-        <item name="android:layout_marginTop">@dimen/input_category_margin_top</item>
+        <item name="android:layout_marginTop">@dimen/publish_collection_input_category_margin_top</item>
     </style>
 
     <style name="PublishCollectionWizardInformationLineHorizontal">
@@ -367,7 +367,7 @@
 
     <style name="PublishCollectionWizardLoadingContent">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/form_height</item>
+        <item name="android:layout_height">@dimen/publish_collection_form_height</item>
         <item name="android:gravity">center</item>
     </style>
 
@@ -379,7 +379,7 @@
 
     <style name="PublishCollectionWizardStepsPaginationPanel">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/footer_wizard_height</item>
+        <item name="android:layout_height">@dimen/publish_collection_footer_height</item>
         <item name="android:padding">@dimen/padding_default</item>
         <item name="android:gravity">center</item>
         <item name="android:layout_gravity">bottom</item>
@@ -388,7 +388,7 @@
 
     <style name="PublishCollectionWizardFooter">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/footer_wizard_height</item>
+        <item name="android:layout_height">@dimen/publish_collection_footer_height</item>
         <item name="android:layout_gravity">bottom</item>
     </style>
 
@@ -401,8 +401,8 @@
     </style>
 
     <style name="PublishCollectionWizardEndFooter" parent="PublishCollectionWizardFooter">
-        <item name="android:layout_marginTop">@dimen/footer_wizard_end_margin</item>
-        <item name="android:layout_height">@dimen/footer_wizard_end_height</item>
+        <item name="android:layout_marginTop">@dimen/publish_collection_footer_end_margin</item>
+        <item name="android:layout_height">@dimen/publish_collection_footer_end_height</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center_horizontal</item>
     </style>

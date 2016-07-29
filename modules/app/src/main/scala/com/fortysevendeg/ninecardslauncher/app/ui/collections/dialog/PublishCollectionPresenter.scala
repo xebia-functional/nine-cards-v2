@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -45,7 +46,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
         onResult = (shareLink: String) => actions.goToPublishCollectionEnd(shareLink),
         onException = (ex: Throwable) => {
           actions.showMessagePublishingError ~
-          actions.goBackToPublishCollectionInformation(name, description, category)
+            actions.goBackToPublishCollectionInformation(name, description, category)
         })
     }) getOrElse actions.showMessageFormFieldError.run
 
@@ -63,7 +64,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
         community = false)
       createdCollection <- di.sharedCollectionsProcess.createSharedCollection(sharedCollection)
       _ <- di.collectionProcess.updateSharedCollection(collection.id, createdCollection.sharedCollectionId)
-    } yield createdCollection.shareLink
+    } yield createdCollection.getUrlSharedCollection
 
   private[this] def getCollection: ServiceDef2[Collection, SharedCollectionsExceptions] = statuses.collection map { col =>
     Service(Task(Answer[Collection, SharedCollectionsExceptions](col)))

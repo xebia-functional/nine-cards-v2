@@ -144,7 +144,7 @@ class CollectionsDetailsActivity
       collectionsPagerPresenter.showPublishCollectionWizard()
       true
     case R.id.action_share =>
-      collectionsPagerPresenter.showMessageNotImplemented()
+      collectionsPagerPresenter.shareCollection()
       true
     case _ => super.onOptionsItemSelected(item)
   }

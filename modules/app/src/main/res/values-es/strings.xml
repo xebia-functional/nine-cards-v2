@@ -128,6 +128,7 @@
     <string name="congratulationsMessage">Tu colección se ha publicado con éxito</string>
     <string name="shareCollection">Comparte tu colección</string>
     <string name="publishCollectionError">Oops! Una colección sin aplicaciones no puede ser publicada</string>
+    <string name="notPublishedCollectionError">Esta colección debe ser publicada antes de ser compartida</string>
     <string name="publishingError">Oops! Ha ocurrido un error publicando tu colección</string>
     <string name="collectionError">Oops! Ha ocurrido un error obteniendo esta colección</string>
 
