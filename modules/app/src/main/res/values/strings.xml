@@ -109,6 +109,8 @@
 
     <string name="minimumOneCollectionMessage">You can\'t remove the last collection</string>
 
+    <string name="emptyMoment">You don\'t have moments defined</string>
+
     <string name="momentNotFoundMessage">Moment don\'t found. You should create new moments from My Collections section</string>
 
     <!-- Collections Detail -->

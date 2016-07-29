@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/SelectMomentItemContent">
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        android:id="@+id/select_moment_item_icon"
+        style="@style/SelectMomentItemIcon"/>
+
+    <TextView
+        android:id="@+id/select_moment_item_text"
+        style="@style/SelectMomentItemText"/>
+
+</LinearLayout>

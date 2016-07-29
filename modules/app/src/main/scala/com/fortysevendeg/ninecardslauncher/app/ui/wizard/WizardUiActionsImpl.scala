@@ -179,13 +179,20 @@ trait WizardUiActionsImpl
       userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
       userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
 
-    val allRadioViews = devices map { device =>
-      Seq(
-        userRadio(device.deviceName, device.cloudId, visible = false),
-        userRadioSubtitle(subtitle(device), visible = false))
+    val allRadioViews = {
+
+      val radioViews = devices flatMap { device =>
+        Seq(
+          userRadio(device.deviceName, device.cloudId, visible = false),
+          userRadioSubtitle(subtitle(device), visible = false))
+      }
+
+      if (radioViews.isEmpty) radioViews else {
+        otherDevicesLink(resGetString(R.string.otherDevicesLink)) +: radioViews
+      }
     }
 
-    val radioViews = (userRadioView ++ newConfRadioView :+ otherDevicesLink(resGetString(R.string.otherDevicesLink))) ++ allRadioViews.flatten
+    val radioViews = userRadioView ++ newConfRadioView ++ allRadioViews
 
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui {

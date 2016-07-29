@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.moment
 
 import com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedApp
 import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
-import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCard
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCard}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.models.App
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -42,5 +42,14 @@ trait MomentConversions extends CommonConversions {
       cardType = AppCardType,
       intent = toNineCardIntent(app),
       imagePath = app.imagePath)
+
+  def toMomentWithCollection(moment: Moment, collection: Collection): MomentWithCollection =
+    MomentWithCollection(
+      collection = collection,
+      timeslot = moment.timeslot,
+      wifi = moment.wifi,
+      headphone = moment.headphone,
+      momentType = moment.momentType
+    )
 
 }

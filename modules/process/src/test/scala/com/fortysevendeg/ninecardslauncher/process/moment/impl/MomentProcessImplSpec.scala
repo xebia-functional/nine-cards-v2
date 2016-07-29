@@ -127,6 +127,7 @@ trait MomentProcessImplSpecification
     val wifi: Option[String]
     val time: DateTime
 
+    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollectionForMoments)))
     mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(servicesMomentSeq)))
 
     mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Result.answer(wifi)))
@@ -144,6 +145,7 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
+    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollectionForMoments)))
     mockPersistenceServices.fetchMoments returns Service(Task(Errata(persistenceServiceException)))
 
   }
@@ -152,8 +154,27 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
+    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollectionForMoments)))
     mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(servicesMomentSeq)))
     mockWifiServices.getCurrentSSID(contextSupport) returns Service(Task(Errata(wifiServiceException)))
+
+  }
+
+  trait ValidGetAvailableMomentsPersistenceServicesResponses {
+
+    self: MomentProcessScope =>
+
+    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollectionForMoments)))
+    mockPersistenceServices.fetchMoments returns Service(Task(Result.answer(servicesMomentSeq)))
+
+  }
+
+  trait ErrorGetAvailableMomentsServicesResponses {
+
+    self: MomentProcessScope =>
+
+    mockPersistenceServices.fetchCollections returns Service(Task(Result.answer(seqServicesCollectionForMoments)))
+    mockPersistenceServices.fetchMoments returns Service(Task(Errata(persistenceServiceException)))
 
   }
 
@@ -415,4 +436,29 @@ class MomentProcessImplSpec
         }
       }
   }
+
+  "getAvailableMoments" should {
+
+    "returns the available moments with collection" in
+      new MomentProcessScope with ValidGetAvailableMomentsPersistenceServicesResponses {
+
+        val result = momentProcess.getAvailableMoments(contextSupport).run.run
+        result must beLike {
+          case Answer(resultMoment) =>
+            resultMoment flatMap (_.momentType map (_.name)) shouldEqual (servicesAvailableMomentsSeq flatMap (_.momentType))
+        }
+      }
+
+    "returns a MomentException if the service throws a exception" in
+      new MomentProcessScope with ErrorGetAvailableMomentsServicesResponses {
+        val result = momentProcess.getAvailableMoments(contextSupport).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[MomentException]
+          }
+        }
+      }
+
+  }
+
 }

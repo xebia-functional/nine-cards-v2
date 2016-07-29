@@ -25,7 +25,7 @@ import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, MomentWithCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
@@ -290,23 +290,21 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def goToChangeMoment(): Unit = {
-    Task.fork(di.momentProcess.getMoments.run).resolveAsyncUi(
-      onResult = (moments: Seq[Moment]) => {
-        val currentMomentType = actions.getData.headOption flatMap(_.moment) flatMap(_.momentType)
-        val newMomentType = if (currentMomentType.contains(HomeMorningMoment)) {
-          WorkMoment
-        } else if (currentMomentType.contains(WorkMoment)) {
-          HomeNightMoment
+    Task.fork(di.momentProcess.getAvailableMoments.run).resolveAsyncUi(
+      onResult = (moments: Seq[MomentWithCollection]) => {
+        if (moments.isEmpty) {
+          actions.showEmptyMoments()
         } else {
-          HomeMorningMoment
+          actions.showSelectMomentDialog(moments)
         }
-        val newMoment = actions.getCollectionsWithMoment(moments).find(_._1 == newMomentType)
-        newMoment map { moment =>
-          cache.updateTimeMomentChangedManually()
-          val data = LauncherData(MomentWorkSpace, Some(LauncherMoment(Some(moment._1),moment._2)))
-          actions.reloadMoment(data)
-        } getOrElse Ui.nop
-      })
+      },
+      onException = (_) => actions.showContactUsError())
+  }
+
+  def changeMoment(moment: MomentWithCollection): Unit = {
+    cache.updateTimeMomentChangedManually()
+    val data = LauncherData(MomentWorkSpace, Some(LauncherMoment(moment.momentType, Some(moment.collection))))
+    actions.reloadMoment(data).run
   }
 
   def loadLauncherInfo(): Unit = {
@@ -632,6 +630,8 @@ trait LauncherUiActions {
 
   def showMinimumOneCollectionMessage(): Ui[Any]
 
+  def showEmptyMoments(): Ui[Any]
+
   def showNoImplementedYetMessage(): Ui[Any]
 
   def showLoading(): Ui[Any]
@@ -674,6 +674,8 @@ trait LauncherUiActions {
   def clearWidgets(): Ui[Any]
 
   def showWidgetsDialog(): Ui[Any]
+
+  def showSelectMomentDialog(moments: Seq[MomentWithCollection]): Ui[Any]
 
   def openMenu(): Ui[Any]
 

@@ -49,6 +49,13 @@ case class Moment(
   headphone: Boolean,
   momentType: Option[NineCardsMoment])
 
+case class MomentWithCollection(
+  collection: Collection,
+  timeslot: Seq[MomentTimeSlot],
+  wifi: Seq[String],
+  headphone: Boolean,
+  momentType: Option[NineCardsMoment])
+
 case class MomentTimeSlot(
   from: String,
   to: String,
