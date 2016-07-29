@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -13,6 +12,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Dial
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.process.device.models.Widget
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import macroid._
 import macroid.FullDsl._
 
@@ -57,7 +58,7 @@ trait WidgetsUiActionsImpl
 }
 
 case class ViewHolderWidgetsLayoutAdapter(
-  content: ViewGroup)(implicit context: ActivityContextWrapper, presenter: WidgetsPresenter, launcherPresenter: LauncherPresenter)
+  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: WidgetsPresenter, launcherPresenter: LauncherPresenter)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -72,12 +73,15 @@ case class ViewHolderWidgetsLayoutAdapter(
   def bind(widget: Widget, widgetContentWidth: Int, widgetContentHeight: Int): Ui[Any] = {
     val cell = widget.getCell(widgetContentWidth, widgetContentHeight)
     val size = s"${cell.spanX}x${cell.spanY}"
+    val iconTweak = if (widget.preview > 0)
+      ivSrcIconFromPackage(widget.packageName, widget.preview, widget.label)
+    else ivSrcByPackageName(Some(widget.packageName), widget.label)
     (content <~
       On.click(Ui {
         launcherPresenter.hostWidget(widget)
         presenter.close()
       })) ~
-      (preview <~ (widget.preview map ivSrc getOrElse ivSrc(widget.icon))) ~
+      (preview <~ iconTweak) ~
       (title <~ tvText(widget.label)) ~
       (cells <~ tvText(size))
   }

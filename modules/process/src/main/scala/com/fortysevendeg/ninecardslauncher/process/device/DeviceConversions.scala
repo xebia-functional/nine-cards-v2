@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.process.device
 
 import android.content.{ComponentName, Intent}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.commons.Dimensions._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
@@ -181,7 +180,6 @@ trait DeviceConversions extends NineCardIntentConversions {
     resizeMode = WidgetResizeMode(item.resizeMode),
     updatePeriodMillis = item.updatePeriodMillis,
     label = item.label,
-    icon = item.icon,
     preview = item.preview)
 
 }
