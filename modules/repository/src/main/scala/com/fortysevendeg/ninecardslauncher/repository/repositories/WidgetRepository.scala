@@ -122,13 +122,19 @@ class WidgetRepository(
       }
     }
 
-  def fetchWidgets: ServiceDef2[Seq[Widget], RepositoryException] =
+  def fetchWidgets(
+    where: String = "",
+    whereParams: Seq[String] = Seq.empty,
+    orderBy: String = ""): ServiceDef2[Seq[Widget], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = widgetUri,
-            projection = allFields)(getListFromCursor(widgetEntityFromCursor)) map toWidget
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy)(getListFromCursor(widgetEntityFromCursor)) map toWidget
         }
       }
     }

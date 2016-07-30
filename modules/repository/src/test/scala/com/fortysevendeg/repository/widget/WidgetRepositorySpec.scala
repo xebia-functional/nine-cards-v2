@@ -96,6 +96,14 @@ trait WidgetRepositorySpecification
       orderBy = s"${WidgetEntity.momentId} asc")(
       f = getListFromCursor(widgetEntityFromCursor)) returns Seq.empty
 
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields,
+      where = "",
+      whereParams = Seq.empty,
+      orderBy = "")(
+      f = getListFromCursor(widgetEntityFromCursor)) returns widgetEntitySeq
+
     contentResolverWrapper.fetch(
       uri = mockUri,
       projection = allFields,
@@ -186,6 +194,14 @@ trait WidgetRepositorySpecification
       where = s"$momentId = ?",
       whereParams = Seq(testMomentId.toString),
       orderBy = s"${WidgetEntity.momentId} asc")(
+      f = getListFromCursor(widgetEntityFromCursor)) throws contentResolverException
+
+    contentResolverWrapper.fetchAll(
+      uri = mockUri,
+      projection = allFields,
+      where = "",
+      whereParams = Seq.empty,
+      orderBy = "")(
       f = getListFromCursor(widgetEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
@@ -529,7 +545,7 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidAllWidgetsRepositoryResponses {
 
-          val result = widgetRepository.fetchWidgets.run.run
+          val result = widgetRepository.fetchWidgets().run.run
 
           result must beLike {
             case Answer(widgets) =>
@@ -541,7 +557,7 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorAllWidgetsRepositoryResponses {
 
-          val result = widgetRepository.fetchWidgets.run.run
+          val result = widgetRepository.fetchWidgets().run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {
