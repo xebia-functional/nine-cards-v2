@@ -183,3 +183,36 @@ case class UpdateMomentRequest(
   headphone: Boolean,
   momentType: Option[String])
 
+case class AddWidgetRequest(
+  momentId: Int,
+  packageName: String,
+  className: String,
+  appWidgetId: Int,
+  spanX: Int,
+  spanY: Int,
+  startX: Int,
+  startY: Int)
+
+case class DeleteWidgetsRequest(where: String)
+
+case class DeleteWidgetRequest(widget: Widget)
+
+case class FindWidgetByIdRequest(id: Int)
+
+case class FetchWidgetByAppWidgetIdRequest(appWidgetId: Int)
+
+case class FetchWidgetsByMomentRequest(momentId: Int)
+
+case class UpdateWidgetRequest(
+  id: Int,
+  momentId: Int,
+  packageName: String,
+  className: String,
+  appWidgetId: Int,
+  spanX: Int,
+  spanY: Int,
+  startX: Int,
+  startY: Int)
+
+case class UpdateWidgetsRequest(updateWidgetRequests: Seq[UpdateWidgetRequest])
+

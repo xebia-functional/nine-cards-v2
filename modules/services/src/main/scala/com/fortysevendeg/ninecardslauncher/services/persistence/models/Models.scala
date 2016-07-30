@@ -72,3 +72,14 @@ case class MomentTimeSlot(
   days: Seq[Int])
 
 case class DataCounter(term: String, count: Int)
+
+case class Widget(
+  id: Int,
+  momentId: Int,
+  packageName: String,
+  className: String,
+  appWidgetId: Int,
+  spanX: Int,
+  spanY: Int,
+  startX: Int,
+  startY: Int)

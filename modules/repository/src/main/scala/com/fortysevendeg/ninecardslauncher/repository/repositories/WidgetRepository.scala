@@ -195,7 +195,6 @@ class WidgetRepository(
       whereParams = selectionArgs,
       orderBy = sortOrder)(getEntityFromCursor(widgetEntityFromCursor)) map toWidget
 
-
   private[this] def createMapValues(data: WidgetData) =
     Map[String, Any](
       momentId -> data.momentId,

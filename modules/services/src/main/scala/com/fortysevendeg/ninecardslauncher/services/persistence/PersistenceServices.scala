@@ -437,4 +437,90 @@ trait PersistenceServices {
     */
   def updateMoment(request: UpdateMomentRequest): ServiceDef2[Int, PersistenceServiceException]
 
+  /**
+    * Add a widget to the repository
+    * @param request includes the necessary data to create a new widget in the repository
+    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget
+    * @throws PersistenceServiceException if exist some problem creating the widgets
+    */
+  def addWidget(request: AddWidgetRequest): ServiceDef2[Widget, PersistenceServiceException]
+
+  /**
+    * Adds widgets to the repository
+    * @param request includes the necessary data to create new widgets in the repository
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
+    * @throws PersistenceServiceException if exist some problem creating the widgets
+    */
+  def addWidgets(request: Seq[AddWidgetRequest]): ServiceDef2[Seq[Widget], PersistenceServiceException]
+
+  /**
+    * Deletes all widgets from the repository by the where clause
+    * @return an Int if the widgets has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the widgets
+    */
+  def deleteAllWidgets(): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
+    * Deletes an widget from the repository by the widget
+    * @param request includes the widget to delete
+    * @return an Int if the widget has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the widget
+    */
+  def deleteWidget(request: DeleteWidgetRequest): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
+    * Deletes the widgets from the repository by the moment id
+    * @param momentId the id of the moment that contains the widgets
+    * @return an Int if the widgets have been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the widgets
+    */
+  def deleteWidgetsByMoment(momentId: Int): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
+    * Obtains all the widgets from the repository
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
+    * @throws PersistenceServiceException if exist some problem obtaining the widgets
+    */
+  def fetchWidgets: ServiceDef2[Seq[Widget], PersistenceServiceException]
+
+  /**
+    * Obtains an widget from the repository by the id
+    * @param request includes the widget id  of the widget to get
+    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
+    * @throws PersistenceServiceException if exist some problem obtaining the widget
+    */
+  def findWidgetById(request: FindWidgetByIdRequest): ServiceDef2[Option[Widget], PersistenceServiceException]
+
+  /**
+    * Obtains the widget from the repository by the appWidgetId
+    * @param request includes the appWidgetId
+    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
+    * @throws PersistenceServiceException if exist some problem obtaining the widget
+    */
+  def fetchWidgetByAppWidgetId(request: FetchWidgetByAppWidgetIdRequest): ServiceDef2[Option[Widget], PersistenceServiceException]
+
+  /**
+    * Obtains all the widgets from the repository by the moment id
+    * @param request includes the id of the moment
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
+    * @throws PersistenceServiceException if exist some problem obtaining the widgets
+    */
+  def fetchWidgetsByMoment(request: FetchWidgetsByMomentRequest): ServiceDef2[Seq[Widget], PersistenceServiceException]
+
+  /**
+    * Updates the data of an widget from the repository
+    * @param request includes the data to update the widget
+    * @return an Int if the widget has been updated correctly
+    * @throws PersistenceServiceException if exist some problem updating the widget
+    */
+  def updateWidget(request: UpdateWidgetRequest): ServiceDef2[Int, PersistenceServiceException]
+
+  /**
+    * Bulk update of the data of some widgets from the repository
+    * @param request includes the data to update the widgets
+    * @return a Seq[Int] if the widgets has been updated correctly
+    * @throws PersistenceServiceException if exist some problem updating the widget
+    */
+  def updateWidgets(request: UpdateWidgetsRequest): ServiceDef2[Seq[Int], PersistenceServiceException]
+
 }
