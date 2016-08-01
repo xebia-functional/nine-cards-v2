@@ -387,7 +387,7 @@ trait DeviceProcessSpecification
   trait SaveShortcutScope {
     self: DeviceProcessScope =>
 
-    val saveBitmap = SaveBitmap(mockBitmap)
+    val saveBitmap = SaveBitmap(bitmap = mockBitmap, bitmapResize = None)
 
     val saveBitmapPath = SaveBitmapPath(nameShortcut, fileNameShortcut)
 
