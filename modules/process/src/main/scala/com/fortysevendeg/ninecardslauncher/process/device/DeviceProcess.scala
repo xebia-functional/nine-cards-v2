@@ -70,7 +70,7 @@ trait DeviceProcess {
    * @return the String contains the path where the icon was stored
    * @throws ShortcutException if exist some problem storing icon
    */
-  def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport): ServiceDef2[String, ShortcutException]
+  def saveShortcutIcon(bitmap: Bitmap)(implicit context: ContextSupport): ServiceDef2[String, ShortcutException]
 
   /**
    * Get the favorite contacts if they exist and fill all their data

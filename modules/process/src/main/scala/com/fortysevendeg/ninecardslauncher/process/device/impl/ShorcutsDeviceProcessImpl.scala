@@ -17,9 +17,9 @@ trait ShorcutsDeviceProcessImpl {
       shortcuts <- shortcutsServices.getShortcuts
     } yield toShortcutSeq(shortcuts)).resolve[ShortcutException]
 
-  def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport) =
+  def saveShortcutIcon(bitmap: Bitmap)(implicit context: ContextSupport) =
     (for {
-      saveBitmapPath <- imageServices.saveBitmap(SaveBitmap(name, bitmap))
+      saveBitmapPath <- imageServices.saveBitmap(SaveBitmap(bitmap))
     } yield saveBitmapPath.path).resolve[ShortcutException]
 
 }
