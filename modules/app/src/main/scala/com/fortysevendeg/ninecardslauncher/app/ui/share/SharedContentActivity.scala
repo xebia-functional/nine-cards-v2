@@ -1,14 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.share
 
 import android.app.Activity
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.webkit.URLUtil
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.share.models.{SharedContent, Web}
 import com.fortysevendeg.ninecardslauncher2.TypedFindView
 import macroid.Contexts
 

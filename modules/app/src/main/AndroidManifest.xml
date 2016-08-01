@@ -62,7 +62,7 @@
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity"/>
 
         <activity
-            android:theme="@style/AppTheme"
+            android:theme="@style/AppThemeSharedContent"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:label=""

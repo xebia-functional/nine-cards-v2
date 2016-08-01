@@ -477,5 +477,9 @@
     <!-- Shared Content -->
     <string name="sharedIntentLabel">Add card</string>
     <string name="sharedContentDefaultTitle">Web page</string>
+    <string name="sharedCardAdded">Card added</string>
+    <string name="sharedContentErrorEmpty">No content</string>
+    <string name="sharedContentErrorNotSupported">Shared content not supported</string>
+    <string name="sharedContentErrorUnexpected">Unexpected error</string>
 
 </resources>

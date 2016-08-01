@@ -14,10 +14,11 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, NineCardIntent, NineCardIntentExtras}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.ShortcutCardType
-import com.fortysevendeg.ninecardslauncher.process.device.ShortcutException
+import com.fortysevendeg.ninecardslauncher.process.device.{IconResize, ShortcutException}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.Answer
+
 import scalaz.concurrent.Task
 
 class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -83,8 +84,10 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
     def saveBitmap(maybeUri: Option[Uri]): ServiceDef2[String, ShortcutException] = {
       maybeUri match {
         case Some(uri) =>
+          val iconSize = resGetDimensionPixelSize(R.dimen.size_icon_card)
           di.deviceProcess.saveShortcutIcon(
-            MediaStore.Images.Media.getBitmap(contextWrapper.bestAvailable.getContentResolver, uri))
+            MediaStore.Images.Media.getBitmap(contextWrapper.bestAvailable.getContentResolver, uri),
+            Some(IconResize(iconSize, iconSize)))
         case _ => Service(Task(Answer("")))
       }
     }
@@ -102,6 +105,8 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
       case _ => uiActions.showUnexpectedError().run
     }
   }
+
+  def dialogDismissed() = uiActions.finishUi().run
 
   private[this] def error(throwable: Throwable): Ui[Any] = {
     printErrorMessage(throwable)
@@ -128,5 +133,7 @@ trait SharedContentUiActions {
   def showErrorContentNotSupported(): Ui[Any]
 
   def showUnexpectedError(): Ui[Any]
+
+  def finishUi(): Ui[Any]
 
 }
