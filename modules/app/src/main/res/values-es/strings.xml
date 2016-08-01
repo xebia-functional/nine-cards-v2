@@ -16,6 +16,8 @@
     <string name="sendTo">Enviar a</string>
     <string name="buttonErrorReload">Recargar</string>
 
+    <string name="atHour">a las</string>
+
     <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a la collectión %1$s</string>
 
     <!-- Menu -->
@@ -23,9 +25,8 @@
     <string name="momentsTitle">Momentos</string>
     <string name="profileTitle">Perfil</string>
     <string name="configurationTitle">Configuración</string>
-    <string name="wallpaperTitle">Fondo de Pantalla</string>
-    <string name="androidSettingsTitle">Ajustes de Android</string>
-    <string name="nineCardsSettingsTitle">Ajustes de 9Cards</string>
+    <string name="wallpaperTitle">Wallpapers</string>
+    <string name="nineCardsSettingsTitle">Ajustes</string>
     <string name="widgetsTitle">Widgets</string>
 
     <!-- Wizard -->
@@ -38,7 +39,9 @@
 
     <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
 
-    <string name="addDeviceTitle">Hola, %1$s</string>
+    <string name="messageEmpty">No hay datos en este moment</string>
+
+    <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
 
     <string name="deviceDetectedNoProUser">Hemos detectado una configuración guardada para tu %1$s. Si eres usuario Pro puedes cargar previas configuraciones (colecciones y temas). ¿Quieres convertirte en Pro ahora?</string>
@@ -73,6 +76,18 @@
     <string name="errorAndroidMarketPermissionNotAccepted">Tienes que aceptar el permiso de Android Market para poder usar 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">Tienes que aceptar el permiso de Google para poder usar 9Cards</string>
 
+    <string name="currentDeviceTitle">%s (dispositivo actual)</string>
+    <string name="newConfigurationSubtitle">Crearemos una nueva configuración a partir de tus aplicaciones</string>
+    <string name="deviceMigratedFromV1">Migrado de la versión anterior</string>
+    <string name="otherDevicesLink">Configuraciones de otros dispositivos</string>
+
+    <!-- Moment / Widgets -->
+
+    <string name="editMoment">Editar Momento</string>
+    <string name="changeMoment">Cambiar Momento</string>
+
+    <string name="widgetsErrorMessage">Hemos tenido problemas cargando los widgets. Inténtalo más tarde</string>
+
     <!-- Collections -->
 
     <string name="createNewCollection">Crear nueva colección</string>
@@ -80,6 +95,7 @@
     <string name="publicCollections">Colecciones Públicas</string>
 
     <string name="newCollection">Nueva colección</string>
+    <string name="editCollection">Editar colección</string>
     <string name="collectionName">Nombre de la colección</string>
     <string name="selectIcon">Seleccionar icono</string>
     <string name="selectColor">Seleccionar color</string>
@@ -89,6 +105,10 @@
     <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta colección?</string>
 
     <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
+
+    <string name="emptyMoment">No tienes momentos definidos</string>
+
+    <string name="momentNotFoundMessage">Momento no encontrado. Tu deberías crear colecciones desde la sección Mis Collections</string>
 
     <!-- Collections Detail -->
 
@@ -100,6 +120,26 @@
     <string name="unnamed">Sin nombre</string>
 
     <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta?</string>
+
+    <!-- Publish Collections Wizard -->
+
+    <string name="publishCollectionHeader">Publica tu colección</string>
+    <string name="publishCollectionMessage">Si publicas tu colección, otros usuarios podrán encontrar nuevas aplicaciones</string>
+    <string name="addInformationHeader">Añade información</string>
+    <string name="addInformationMessage">Añade información sobre tu colección para que otros usuarios puedan encontrarla</string>
+    <string name="publishAction">Publicar</string>
+    <string name="publishingHeader">Publicando</string>
+    <string name="publishingMessage">Tu colección se está publicando</string>
+    <string name="addInformationcollectionName">Nombre de la colección</string>
+    <string name="addInformationDescription">Descripción</string>
+    <string name="addInformationCategory">Selecciona una categoría</string>
+    <string name="congratulationsHeader">¡Enhorabuena!</string>
+    <string name="congratulationsMessage">Tu colección se ha publicado con éxito</string>
+    <string name="shareCollection">Comparte tu colección</string>
+    <string name="publishCollectionError">Oops! Una colección sin aplicaciones no puede ser publicada</string>
+    <string name="notPublishedCollectionError">Esta colección debe ser publicada antes de ser compartida</string>
+    <string name="publishingError">Oops! Ha ocurrido un error publicando tu colección</string>
+    <string name="collectionError">Oops! Ha ocurrido un error obteniendo esta colección</string>
 
     <!-- Contacts Action -->
 
@@ -231,14 +271,23 @@
     <string name="syncCurrent">Dispositivo actual</string>
     <string name="syncLastSynced">Última sincronización: %s</string>
 
+    <string name="menuAccountSync">Sincronizar</string>
+    <string name="menuAccountCopy">Copiar</string>
+    <string name="menuAccountDelete">Eliminar</string>
+
     <string name="accountSynced">Cuenta sincronizada</string>
 
     <string name="errorSyncing">Error sincronizando cuenta. Inténtale de nuevo</string>
 
     <string name="errorLoadingUser">Error cargando usuario</string>
 
+    <string name="errorEmptyNameForDevice">Por favor, especifique un nombre para la nueva configuración</string>
+    <string name="errorEmptyNameForDeviceButton">Inténtalo de nuevo</string>
+
     <string name="logout">Salir</string>
 
+    <string name="copyAccountSyncDialogTitle">Nueva configuración</string>
+    <string name="hintNewConfigurationName">Nombre</string>
     <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
 
     <!-- Preferences -->
@@ -250,8 +299,13 @@
     <!-- Preferences Personalization -->
     <string name="personalizationPreferences">Personalización</string>
 
-    <string name="themesTitle">Temas</string>
-    <string name="themesSummary">Resumen de Temas</string>
+    <!-- Theme Preferences -->
+
+    <string name="themesPrefTitle">Temas</string>
+    <string name="themesPrefSummary">Resumen de Temas</string>
+
+    <string name="selectThemeTitle">Seleccionar Tema</string>
+    <string name="selectThemeSummary">Resumen de Seleccionar Tema</string>
 
     <string name="themesDark">Oscuro</string>
     <string name="themesLight">Claro</string>
@@ -264,8 +318,18 @@
     <string name="colouredGoogleLogo">Coloreado</string>
     <string name="themeColourGoogleLogo">Color del Tema</string>
 
-    <string name="appDrawerTitle">Cajón de Aplicaciones</string>
-    <string name="appDrawerSummary">Resumen de Cajón de Aplicaciones</string>
+    <!-- Moment Preferences -->
+
+    <string name="momentsPrefTitle">Momentos</string>
+    <string name="momentsPrefSummary">Resumen Momentos</string>
+
+    <string name="showClockTitle">Mostrar reloj</string>
+    <string name="showClockSummary">Resumen de Mostrar reloj</string>
+
+    <!-- AppDrawer Preferences -->
+
+    <string name="appDrawerPrefTitle">Cajón de Aplicaciones</string>
+    <string name="appDrawerPrefSummary">Resumen de Cajón de Aplicaciones</string>
 
     <string name="defaultWindowTitle">Apertura de Ventana por defecto</string>
     <string name="defaultWindowSummary">Resumen de Apertura de Ventana por defecto</string>
@@ -286,8 +350,10 @@
     <string name="windowIconsClassic">Clásico</string>
     <string name="windowIconsNineCards">9Cards</string>
 
-    <string name="sizesTitle">Tamaños</string>
-    <string name="sizesSummary">Resumen de Tamaños</string>
+    <!-- Sizes Preferences -->
+
+    <string name="sizesPrefTitle">Tamaños</string>
+    <string name="sizesPrefSummary">Resumen de Tamaños</string>
 
     <string name="fontsTitle">Fuentes</string>
     <string name="fontsSummary">Resumen de Fuentes</string>
@@ -310,8 +376,10 @@
     <string name="cardPaddingsMedium">Mediano</string>
     <string name="cardPaddingsBigger">Grande</string>
 
-    <string name="animationsTitle">Animaciones</string>
-    <string name="animationsSummary">Resumen de Animaciones</string>
+    <!-- Animations Preferences -->
+
+    <string name="animationsPrefTitle">Animaciones</string>
+    <string name="animationsPrefSummary">Resumen de Animaciones</string>
 
     <string name="speedTitle">Velocidad</string>
     <string name="speedSummary">Resumen de Velocidad</string>
@@ -357,8 +425,10 @@
 
     <string name="collectionDetailAddCardsMessage">Añade nuevas tarjetas a esta colección</string>
 
-    <string name="newAppTitle">Nueva aplicación</string>
-    <string name="newAppSummary">Resumen de Nueva Aplicación</string>
+    <!-- New App Preferences -->
+
+    <string name="newAppPrefTitle">Nueva aplicación</string>
+    <string name="newAppPrefSummary">Resumen de Nueva Aplicación</string>
     <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->

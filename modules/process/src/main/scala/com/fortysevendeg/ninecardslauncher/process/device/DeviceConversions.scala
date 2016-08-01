@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.process.device
 
 import android.content.{ComponentName, Intent}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.commons.Dimensions._
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
@@ -42,26 +41,26 @@ trait DeviceConversions extends NineCardIntentConversions {
       version = app.version,
       installedFromGooglePlay = app.installedFromGooglePlay)
 
-  def toAddAppRequest(item: Application, category: NineCardCategory, imagePath: String): AddAppRequest =
+  def toAddAppRequest(item: Application, category: NineCardCategory): AddAppRequest =
       AddAppRequest(
         name = item.name,
         packageName = item.packageName,
         className = item.className,
         category = category.name,
-        imagePath = imagePath,
+        imagePath = "",
         dateInstalled = item.dateInstalled,
         dateUpdate = item.dateUpdate,
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
 
-  def toUpdateAppRequest(id: Int, item: Application, category: NineCardCategory, imagePath: String): UpdateAppRequest =
+  def toUpdateAppRequest(id: Int, item: Application, category: NineCardCategory): UpdateAppRequest =
       UpdateAppRequest(
         id = id,
         name = item.name,
         packageName = item.packageName,
         className = item.className,
         category = category.name,
-        imagePath = imagePath,
+        imagePath = "",
         dateInstalled = item.dateInstalled,
         dateUpdate = item.dateUpdate,
         version = item.version,
@@ -82,8 +81,7 @@ trait DeviceConversions extends NineCardIntentConversions {
     AppPackage(
       packageName = item.packageName,
       className = item.className,
-      name = item.name,
-      icon = item.resourceIcon)
+      name = item.name)
 
   def toCreateOrUpdateDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): CreateOrUpdateDockAppRequest =
     CreateOrUpdateDockAppRequest(
@@ -173,22 +171,15 @@ trait DeviceConversions extends NineCardIntentConversions {
     userHashCode = item.userHashCode,
     autoAdvanceViewId = item.autoAdvanceViewId,
     initialLayout = item.initialLayout,
-    dimensions = toWidgetDimensions(item.minHeight, item.minResizeHeight, item.minResizeWidth, item.minWidth),
+    minWidth = item.minWidth,
+    minHeight = item.minHeight,
+    minResizeWidth = item.minResizeWidth,
+    minResizeHeight = item.minResizeHeight,
     className = item.className,
     packageName = item.packageName,
     resizeMode = WidgetResizeMode(item.resizeMode),
     updatePeriodMillis = item.updatePeriodMillis,
     label = item.label,
-    icon = item.icon,
     preview = item.preview)
-
-  def toWidgetDimensions(minDPHeight: Int, minResizeDPHeight: Int, minResizeDPWidth: Int, minDPWidth: Int): WidgetDimensions =
-    WidgetDimensions(
-      minCellHeight = toCell(minDPHeight),
-      minResizeCellHeight = toCell(minResizeDPHeight),
-      minResizeCellWidth = toCell(minResizeDPWidth),
-      minCellWidth = toCell(minDPWidth))
-
-  private[this] def toCell(size: Int): Int = (size + margins) / cellSize
 
 }

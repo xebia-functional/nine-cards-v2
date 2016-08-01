@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
@@ -25,7 +25,13 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   def loadPrivateCollections(): Unit = {
     Task.fork(getPrivateCollections.run).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
-      onResult = (privateCollections: Seq[PrivateCollection]) => actions.addPrivateCollections(privateCollections),
+      onResult = (privateCollections: Seq[PrivateCollection]) => {
+        if (privateCollections.isEmpty) {
+          actions.showEmptyMessage()
+        } else {
+          actions.addPrivateCollections(privateCollections)
+        }
+      },
       onException = (ex: Throwable) => actions.showContactUsError())
   }
 
@@ -64,6 +70,8 @@ trait PrivateCollectionsActions {
   def showLoading(): Ui[Any]
 
   def showContactUsError(): Ui[Any]
+
+  def showEmptyMessage(): Ui[Any]
 
   def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any]
 

@@ -1,132 +1,99 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks
 
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar.OnMenuItemClickListener
 import android.view.{MenuItem, View}
 import android.widget.LinearLayout
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
+import AnimatedWorkSpaces._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import macroid._
 
-import scala.annotation.tailrec
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object LauncherWorkSpacesTweaks {
   type W = LauncherWorkSpaces
 
-  val defaultPage = 1
+  def lwsInitialize(presenter: LauncherPresenter, theme: NineCardsTheme) = Tweak[W] { view =>
+    view.presenter = Some(presenter)
+    view.theme = Some(theme)
+  }
 
-  // We create a new page every 9 collections
-  @tailrec
-  private[this] def getCollectionsItems(collections: Seq[Collection], acc: Seq[LauncherData], newLauncherData: LauncherData): Seq[LauncherData] = {
-    def updatePositions(data: Seq[LauncherData]) = data.zipWithIndex map {
-      case (d, index) => d.copy(positionByType = index)
-    }
-    collections match {
-      case Nil if newLauncherData.collections.nonEmpty =>
-        updatePositions(acc :+ newLauncherData)
-      case Nil =>
-        updatePositions(acc)
-      case h :: t if newLauncherData.collections.length == numSpaces =>
-        getCollectionsItems(t, acc :+ newLauncherData, LauncherData(CollectionsWorkSpace, Seq(h)))
-      case h :: t =>
-        val g: Seq[Collection] = newLauncherData.collections :+ h
-        val n = LauncherData(CollectionsWorkSpace, g)
-        getCollectionsItems(t, acc, n)
+  def lwsData(data: Seq[LauncherData], pageSelected: Int) = Tweak[W] { view =>
+    view.init(data, pageSelected)
+  }
+
+  def lwsDataCollections(data: Seq[LauncherData], pageCollectionSelected: Option[Int]) = Tweak[W] { view =>
+    view.data.headOption match {
+      case Some(moment) =>
+        val page = pageCollectionSelected map (_ + 1) getOrElse view.currentPage()
+        view.init(moment +: data, page)
+      case _ =>
     }
   }
 
-  def lwsPresenter(presenter: LauncherPresenter) = Tweak[W] (_.presenter = Some(presenter))
-
-  def lwsData(collections: Seq[Collection], pageSelected: Int) = Tweak[W] { workspaces =>
-    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
-    workspaces.init(pageSelected)
+  def lwsDataMoment(moment: LauncherData) = Tweak[W] { view =>
+    val data = view.data.filter(_.workSpaceType == CollectionsWorkSpace)
+    view.init(moment +: data, view.currentPage())
   }
+
+  def lwsDataForceReloadMoment() = Tweak[W] { view =>
+    view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
+  }
+
+  def lwsAddWidget(widgetView: View, cell: Cell) = Tweak[W] (_.addWidget(widgetView, cell))
+
+  def lwsClearWidgets() = Tweak[W] (_.clearWidgets())
 
   def lwsClean = Tweak[W] (_.clean())
 
-  def lwsAddCollection(collection: Collection) = Tweak[W] { workspaces =>
-    workspaces.data.lastOption foreach { data =>
-      val lastWorkspaceHasSpace = data.collections.size < numSpaces
-      if (lastWorkspaceHasSpace) {
-        workspaces.data = workspaces.data map { d =>
-          if (d == data) d.copy(collections = d.collections :+ collection) else d
-        }
-      } else {
-        val newPosition = workspaces.data.count(_.workSpaceType == CollectionsWorkSpace)
-        workspaces.data = workspaces.data :+ LauncherData(CollectionsWorkSpace, Seq(collection), newPosition)
-      }
-      workspaces.selectPosition(workspaces.data.size - 1)
-    }
-  }
-
-  def lwsRemoveCollection(collectionId: Int) = Tweak[W] { workspaces =>
-    // We remove a collection in sequence and fix positions
-    val collections = (workspaces.data flatMap (_.collections.filterNot(_.id == collectionId))).zipWithIndex map {
-      case (col, index) => col.copy(position = index)
-    }
-    val maybeWorkspaceCollection = workspaces.data find (_.collections.exists(_.id == collectionId))
-    val maybePage = maybeWorkspaceCollection map workspaces.data.indexOf
-    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
-    val page = maybePage map { page =>
-      if (workspaces.data.isDefinedAt(page)) page else workspaces.data.length - 1
-    } getOrElse defaultPage
-    workspaces.selectPosition(page)
-  }
-
-  def lwsReloadReorderedCollections(from: Int, to: Int) = Tweak[W] { workspaces =>
-    val cols = workspaces.data flatMap (_.collections)
-    val collections = cols.reorder(from, to).zipWithIndex map {
-      case (collection, index) => collection.copy(position = index)
-    }
-    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
-    val page = workspaces.data.lift(workspaces.currentPage()) map (_ => workspaces.currentPage()) getOrElse defaultPage
-    workspaces.selectPosition(page)
-  }
-
-  def lwsReloadCollections() = Tweak[W] { workspaces =>
-    val collections = workspaces.data flatMap (_.collections)
-    workspaces.data = LauncherData(MomentWorkSpace) +: getCollectionsItems(collections, Seq.empty, LauncherData(CollectionsWorkSpace))
-    val page = workspaces.data.lift(workspaces.currentPage()) map (_ => workspaces.currentPage()) getOrElse defaultPage
-    workspaces.selectPosition(page)
-  }
+  def lwsOpenMenu = Tweak[W] (_.openMenu())
 
   def lwsListener(listener: LauncherWorkSpacesListener) = Tweak[W] (_.workSpacesListener = listener)
 
   def lwsSelect(position: Int) = Tweak[W](_.selectPosition(position))
 
-  def lwsCloseMenu = Tweak[W] (_.closeMenu().run)
+  def lwsCloseMenu = Snail[W] (_.closeMenu().get map (_ => ()))
 
   def lwsPrepareItemsScreenInReorder(position: Int) = Tweak[W] (_.prepareItemsScreenInReorder(position).run)
 
-  def lwsDragDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
-    _.frontView match {
+  def lwsDragAddItemDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
+    _.getCurrentView match {
       case Some(holder: LauncherWorkSpaceCollectionsHolder) =>
         holder.dragAddItemController(action, x, y)
       case _ =>
     }
   }
 
+  def lwsDragReorderCollectionDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
+    _.getCurrentView match {
+      case Some(holder: LauncherWorkSpaceCollectionsHolder) =>
+        holder.dragReorderCollectionController(action, x, y)
+      case _ =>
+    }
+  }
+
+  def lwsAddPageChangedObserver(observer: ((LauncherData, LauncherData, Boolean, Float) => Unit)) =
+    Tweak[W](_.addMovementObservers(observer))
+
+  def lwsCurrentPage() = Excerpt[W, Int] (_.currentPage())
+
   def lwsCountCollections() = Excerpt[W, Int] (_.getCountCollections)
 
   def lwsGetCollections() = Excerpt[W, Seq[Collection]] (_.getCollections)
-
-  def lwsCountCollectionScreens() = Excerpt[W, Int] (_.getCountCollectionScreens)
 
   def lwsEmptyCollections() = Excerpt[W, Boolean] (_.isEmptyCollections)
 
@@ -162,7 +129,7 @@ object AnimatedWorkSpacesTweaks {
 
   def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
-  def awsAddPageChangedObserver(observer: (Int => Unit)) = Tweak[W](_.addPageChangedObservers(observer))
+  def awsAddPageChangedObserver(observer: PageChangedObserver) = Tweak[W](_.addPageChangedObservers(observer))
 
   def awsCurrentWorkSpace() = Excerpt[W, Int] (_.statuses.currentItem)
 
@@ -173,54 +140,32 @@ object AnimatedWorkSpacesTweaks {
 object FabItemMenuTweaks {
   type W = FabItemMenu
 
-  def fimBackgroundColor(color: Int) = Tweak[W](_.icon foreach {
-    ic =>
-      Lollipop ifSupportedThen {
-        ic.setBackgroundColor(color)
-      } getOrElse {
-        val d = new ShapeDrawable(new OvalShape)
-        d.getPaint.setColor(color)
-        ic.setBackground(d)
-      }
-  })
+  def fimBackgroundColor(color: Int) = Tweak[W](_.changeBackground(color).run)
 
-  def fimSrc(res: Int) = Tweak[W](_.icon foreach (_.setImageResource(res)))
-
-  def fimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
-
-  def fimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
+  def fimPopulate(backgroundColor: Int, resourceId: Int, text: Int) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
 
 }
 
 object WorkSpaceItemMenuTweaks {
-  type W = WorkSpaceItemMenu
+  type W = WorkspaceItemMenu
 
-  def wimBackgroundColor(color: Int) = Tweak[W](_.icon foreach {
-    ic =>
-      Lollipop ifSupportedThen {
-        ic.setBackgroundColor(color)
-      } getOrElse {
-        val d = new ShapeDrawable(new OvalShape)
-        d.getPaint.setColor(color)
-        ic.setBackground(d)
-      }
-  })
+  def wimPopulate(backgroundColor: Int, resourceId: Int, text: Int) = Tweak[W](_.populate(backgroundColor, resourceId, text).run)
 
-  def wimSrc(resourceId: Int) = Tweak[W](_.icon foreach (_.setImageResource(resourceId)))
+}
 
-  def wimTitle(text: Int) = Tweak[W](_.title foreach (_.setText(text)))
+object WorkSpaceMomentMenuTweaks {
+  type W = WorkSpaceMomentIcon
 
-  def wimTitle(text: String) = Tweak[W](_.title foreach (_.setText(text)))
+  def wmmPopulateCollection(collection: Collection) = Tweak[W](_.populateCollection(collection).run)
+
+  def wmmPopulateCard(card: Card) = Tweak[W](_.populateCard(card).run)
 
 }
 
 object StepsWorkspacesTweaks {
   type W = StepsWorkspaces
 
-  def swData(data: Seq[StepData]) = Tweak[W] { view =>
-    view.data = data
-    view.init()
-  }
+  def swData(data: Seq[StepData]) = Tweak[W] (_.init(data))
 
 }
 
@@ -236,6 +181,8 @@ object SearchBoxesViewTweaks {
     Tweak[W](_.updateHeaderIcon(resourceId).run)
 
   def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[W] (_.addTextChangedListener(onChangeText))
+
+  def sbvShowKeyboard = Tweak[W] (_.showKeyboard.run)
 
   def sbvClean = Tweak[W] (_.clean.run)
 
@@ -410,6 +357,33 @@ object CollectionActionsPanelLayoutTweaks {
     Tweak[W] (_.load(actions).run)
 
   def caplDragDispatcher(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
-    Tweak[W] (_.dragAddItemController(action, x, y))
+    Tweak[W] (_.dragController(action, x, y))
+
+}
+
+object TopBarLayoutTweaks {
+
+  type W = TopBarLayout
+
+  def tblInit(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.init.run)
+
+  def tblReloadMoment(collection: Collection)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.reloadMoment(collection).run)
+
+  def tblReloadByType(workSpaceType: WorkSpaceType)(implicit contextWrapper: ContextWrapper) =
+    Tweak[W] (_.reloadByType(workSpaceType).run)
+
+}
+
+object AppsMomentLayoutTweaks {
+
+  type W = AppsMomentLayout
+
+  def amlPopulate(moment: LauncherMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter) =
+    Tweak[W] (_.populate(moment).run)
+
+  def amlPaddingTopAndBottom(paddingTop: Int, paddingBottom: Int)(implicit theme: NineCardsTheme, presenter: LauncherPresenter) =
+    Tweak[W] (_.setPaddingTopAndBottom(paddingTop, paddingBottom).run)
 
 }

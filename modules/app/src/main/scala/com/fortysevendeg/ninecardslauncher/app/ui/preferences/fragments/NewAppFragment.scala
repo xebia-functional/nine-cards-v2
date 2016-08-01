@@ -8,7 +8,7 @@ class NewAppFragment extends PreferenceFragment {
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
-    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.newAppTitle)))
+    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.newAppPrefTitle)))
     addPreferencesFromResource(R.xml.preferences_new_app)
   }
 

@@ -7,6 +7,7 @@ import android.widget.{EditText, FrameLayout, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.EditTextTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -54,11 +55,14 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def updateHeaderIcon(resourceId: Int)(implicit theme: NineCardsTheme): Ui[_] = headerIcon <~ searchBoxButtonStyle(resourceId)
 
+  def showKeyboard: Ui[_] = editText <~ etShowKeyboard
+
   def clean: Ui[_] = editText <~ (if (isEmpty) Tweak.blank else tvText("")) <~ etHideKeyboard
 
   def enableSearch: Ui[_] = editText <~ Tweak[EditText] { view =>
     view.setEnabled(true)
     view.setFocusable(true)
+    view.setFocusableInTouchMode(true)
   }
 
   def disableSearch: Ui[_] = editText <~ Tweak[EditText] { view =>

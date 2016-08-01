@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.image.impl
 
-import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.services.image._
 
 trait ImageServicesImplData {
@@ -8,8 +7,7 @@ trait ImageServicesImplData {
   val appPackage = AppPackage(
     "com.fortysevendeg.ninecardslauncher.test",
     "ClassNameExample",
-    "Sample Name",
-    0)
+    "Sample Name")
 
   val appWebsite = AppWebsite(
     "com.fortysevendeg.ninecardslauncher.test",
@@ -31,8 +29,6 @@ trait ImageServicesImplData {
   val resultFilePath = s"$fileFolder/C"
 
   val resultFilePathPackage = s"$fileFolder/$packageName"
-
-  val icon = appPackage.icon
 
   val uri = appWebsite.url
 

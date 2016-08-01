@@ -7,8 +7,8 @@
             android:defaultValue="3"
             android:entries="@array/themes"
             android:entryValues="@array/themesValues"
-            android:title="@string/themesTitle"
-            android:summary="@string/themesSummary"/>
+            android:title="@string/selectThemeTitle"
+            android:summary="@string/selectThemeSummary"/>
 
     <ListPreference
             android:key="googleLogo"

@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets.impl.utils.impl
 
-import android.graphics.drawable.Drawable
-import com.fortysevendeg.ninecardslauncher.services.widgets.impl.TestDrawable
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Widget
 
 import scala.util.Random
@@ -20,11 +18,9 @@ trait AppWidgetManagerData {
   val resizeMode: Int = Random.nextInt(10)
   val updatePeriodMillis: Int = Random.nextInt(10)
   val label: String = Random.nextString(5)
-  val icon: Drawable = new TestDrawable
-  val preview: Drawable = new TestDrawable
+  val preview: Int = Random.nextInt(10)
 
   val userHashCodeOption = Option(userHashCode)
-  val previewOption = Option(preview)
 
   def createSeqWidget(
     num: Int = 5,
@@ -40,8 +36,7 @@ trait AppWidgetManagerData {
     resizeMode: Int = resizeMode,
     updatePeriodMillis: Int = updatePeriodMillis,
     label: String = label,
-    icon: Drawable = icon,
-    preview: Option[Drawable] = previewOption): Seq[Widget] = List.tabulate(num)(
+    preview: Int = preview): Seq[Widget] = List.tabulate(num)(
     item => Widget(
       userHashCode = userHashCode,
       autoAdvanceViewId = autoAdvanceViewId,
@@ -55,7 +50,6 @@ trait AppWidgetManagerData {
       resizeMode = resizeMode,
       updatePeriodMillis = updatePeriodMillis,
       label = label,
-      icon = icon,
       preview = preview))
 
   val seqWidget: Seq[Widget] = createSeqWidget()

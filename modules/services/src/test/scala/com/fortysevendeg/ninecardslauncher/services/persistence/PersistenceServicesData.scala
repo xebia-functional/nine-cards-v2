@@ -1,28 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{
-  AppData => RepositoryAppData,
-  App => RepositoryApp,
-  Collection => RepositoryCollection,
-  DataCounter => RepositoryDataCounter,
-  CollectionData => RepositoryCollectionData,
-  Card => RepositoryCard,
-  CardData => RepositoryCardData,
-  DockApp => RepositoryDockApp,
-  DockAppData => RepositoryDockAppData,
-  User => RepositoryUser,
-  UserData => RepositoryUserData,
-  Moment => RepositoryMoment,
-  MomentData => RepositoryMomentData
-}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App, Card, Collection, DockApp, Moment, _}
+import com.fortysevendeg.ninecardslauncher.repository.model.{CardsWithCollectionId, App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData}
+import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
+import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.services.persistence.reads.MomentImplicits
 import play.api.libs.json.Json
 
 import scala.util.Random
 
-trait PersistenceServicesData {
+trait PersistenceServicesData extends Conversions {
 
   import MomentImplicits._
 
@@ -76,6 +63,8 @@ trait PersistenceServicesData {
   val nameUser: String = Random.nextString(5)
   val avatar: String = Random.nextString(5)
   val cover: String = Random.nextString(5)
+  val deviceName: String = Random.nextString(5)
+  val deviceCloudId: String = Random.nextString(5)
 
   val dockAppId: Int = Random.nextInt(10)
   val nonExistentDockAppId: Int = Random.nextInt(10) + 100
@@ -282,7 +271,9 @@ trait PersistenceServicesData {
     androidToken: String = androidToken,
     name: String = nameUser,
     avatar: String = avatar,
-    cover: String = cover): Seq[User] = List.tabulate(num)(
+    cover: String = cover,
+    deviceName: String = deviceName,
+    deviceCloudId: String = deviceCloudId): Seq[User] = List.tabulate(num)(
     item =>
       User(
         id = id + item,
@@ -294,7 +285,9 @@ trait PersistenceServicesData {
         androidToken = Option(androidToken),
         name = Option(name),
         avatar = Option(avatar),
-        cover = Option(cover)))
+        cover = Option(cover),
+        deviceName = Option(deviceName),
+        deviceCloudId = Option(deviceCloudId)))
 
   def createSeqRepoUser(
     num: Int = 5,
@@ -311,7 +304,9 @@ trait PersistenceServicesData {
     androidToken: String = androidToken,
     name: String = nameUser,
     avatar: String = avatar,
-    cover: String = cover): RepositoryUserData =
+    cover: String = cover,
+    deviceName: String = deviceName,
+    deviceCloudId: String = deviceCloudId): RepositoryUserData =
     RepositoryUserData(
       userId = Option(userId),
       email = Option(email),
@@ -321,7 +316,9 @@ trait PersistenceServicesData {
       androidToken = Option(androidToken),
       name = Option(name),
       avatar = Option(avatar),
-      cover = Option(cover))
+      cover = Option(cover),
+      deviceName = Option(deviceName),
+      deviceCloudId = Option(deviceCloudId))
 
   def createSeqDockApp(
     num: Int = 5,
@@ -592,7 +589,9 @@ trait PersistenceServicesData {
     androidToken: String = androidToken,
     name: String = nameUser,
     avatar: String = avatar,
-    cover: String = cover): AddUserRequest =
+    cover: String = cover,
+    deviceName: String = deviceName,
+    deviceCloudId: String = deviceCloudId): AddUserRequest =
     AddUserRequest(
       userId = Option(userId),
       email = Option(email),
@@ -602,7 +601,9 @@ trait PersistenceServicesData {
       androidToken = Option(androidToken),
       name = Option(name),
       avatar = Option(avatar),
-      cover = Option(cover))
+      cover = Option(cover),
+      deviceName = Option(deviceName),
+      deviceCloudId = Option(deviceCloudId))
 
   def createDeleteUserRequest(user: User): DeleteUserRequest =
     DeleteUserRequest(user = user)
@@ -620,7 +621,9 @@ trait PersistenceServicesData {
     androidToken: String = androidToken,
     name: String = nameUser,
     avatar: String = avatar,
-    cover: String = cover): UpdateUserRequest =
+    cover: String = cover,
+    deviceName: String = deviceName,
+    deviceCloudId: String = deviceCloudId): UpdateUserRequest =
     UpdateUserRequest(
       id = id,
       userId = Option(userId),
@@ -631,7 +634,9 @@ trait PersistenceServicesData {
       androidToken = Option(androidToken),
       name = Option(name),
       avatar = Option(avatar),
-      cover = Option(cover))
+      cover = Option(cover),
+      deviceName = Option(deviceName),
+      deviceCloudId = Option(deviceCloudId))
 
   def createCreateOrUpdateDockAppRequest(
     name: String = name,
@@ -709,5 +714,9 @@ trait PersistenceServicesData {
       momentType = momentType)
 
   val dataCounters = 1 to 10 map createDataCounter
+
+  val addCollectionRequest = createAddCollectionRequest()
+
+  val seqAddCardWithCollectionIdRequest = Seq(CardsWithCollectionId(collection.id, Seq.empty))
 
 }

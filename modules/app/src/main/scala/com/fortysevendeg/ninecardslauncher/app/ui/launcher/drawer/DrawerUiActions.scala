@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SystemBarsTint
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
@@ -104,13 +105,10 @@ trait DrawerUiActions
         }
       })) ~
       (tabs <~ tvClose) ~
-      (appDrawerMain <~ appDrawerMainStyle <~ On.click {
-        (if (getItemsCount == 0) {
-          loadAppsAlphabetical
-        } else {
-          Ui.nop
-        }) ~ revealInDrawer ~~ (searchPanel <~ vGone)
-      }) ~
+      (appDrawerMain <~
+        appDrawerMainStyle <~
+        On.click (openDrawer(showKeyboard = false)) <~
+        On.longClick (openDrawer(showKeyboard = true) ~ Ui(true))) ~
       (recycler <~
         recyclerStyle <~
         drvListener(DrawerRecyclerViewListener(
@@ -147,6 +145,13 @@ trait DrawerUiActions
       loadAppsAlphabetical ~
       createDrawerPagers
   }
+
+  private[this] def openDrawer(showKeyboard: Boolean) =
+    (if (getItemsCount == 0) {
+      loadAppsAlphabetical
+    } else {
+      Ui.nop
+    }) ~ revealInDrawer(showKeyboard) ~~ (topBarPanel <~ vGone)
 
   protected def openTabs: Ui[_] =
     (tabs <~ tvOpen <~ showTabs) ~
@@ -225,14 +230,21 @@ trait DrawerUiActions
 
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
-  def revealInDrawer: Ui[Future[_]] =
-    (paginationDrawerPanel <~ reloadPager(0)) ~
-      (searchBoxView <~ sbvEnableSearch) ~
-      (appDrawerMain mapUiF (source => drawerContent <~~ revealInAppDrawer(source)))
+  def revealInDrawer(showKeyboard: Boolean): Ui[Future[_]] =
+    (drawerLayout <~ dlLockedClosed) ~
+      (paginationDrawerPanel <~ reloadPager(0)) ~
+      (appDrawerMain mapUiF { source =>
+        (drawerContent <~~
+          revealInAppDrawer(source)) ~~
+          (searchBoxView <~
+            sbvEnableSearch <~
+            (if (showKeyboard) sbvShowKeyboard else Tweak.blank))
+      })
 
   def revealOutDrawer: Ui[_] = {
     val searchIsEmpty = searchBoxView exists (_.isEmpty)
-    (searchPanel <~ vVisible) ~
+    (drawerLayout <~ dlUnlocked) ~
+      (topBarPanel <~ vVisible) ~
       (searchBoxView <~ sbvClean <~ sbvDisableSearch) ~
       (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData(searchIsEmpty)))
   }

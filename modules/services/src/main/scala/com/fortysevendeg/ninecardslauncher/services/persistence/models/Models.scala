@@ -46,7 +46,9 @@ case class User(
   androidToken: Option[String],
   name: Option[String],
   avatar: Option[String],
-  cover: Option[String])
+  cover: Option[String],
+  deviceName: Option[String],
+  deviceCloudId: Option[String])
 
 case class DockApp(
   id: Int,

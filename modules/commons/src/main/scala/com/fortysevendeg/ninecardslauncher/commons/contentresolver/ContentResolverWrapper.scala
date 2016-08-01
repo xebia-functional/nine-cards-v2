@@ -22,6 +22,12 @@ trait ContentResolverWrapper {
     values: Map[String, Any],
     notificationUri: Option[Uri] = None): Int
 
+  def inserts(
+    authority: String,
+    uri: Uri,
+    allValues: Seq[Map[String, Any]],
+    notificationUri: Option[Uri] = None): Seq[Int]
+
   def delete(
     uri: Uri,
     where: String = "",
@@ -96,6 +102,26 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     val idString = response.getPathSegments.get(1)
     notificationUri foreach (contentResolver.notifyChange(_, javaNull))
     Integer.parseInt(idString)
+  }
+
+  override def inserts(
+    authority: String,
+    uri: Uri,
+    allValues: Seq[Map[String, Any]],
+    notificationUri: Option[Uri] = None): Seq[Int] = {
+
+    val operations = allValues map { values =>
+      ContentProviderOperation.newInsert(uri)
+        .withValues(map2ContentValue(values))
+        .build()
+    }
+
+    import scala.collection.JavaConverters._
+    val result = contentResolver.applyBatch(authority, new util.ArrayList(operations.asJava))
+
+    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+
+    result.map(_.uri.getPathSegments.get(1).toInt)
   }
 
   override def update(

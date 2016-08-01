@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.moment
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.moment.models._
 
 trait MomentProcess {
@@ -21,7 +21,7 @@ trait MomentProcess {
     * @return the List[com.fortysevendeg.ninecardslauncher.process.commons.models.Collection]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def createMoments(implicit context: ContextSupport): ServiceDef2[List[Collection], MomentException]
+  def createMoments(implicit context: ContextSupport): ServiceDef2[Seq[Collection], MomentException]
 
   /**
     * Creates Moments from some already formed and given Moments
@@ -30,7 +30,7 @@ trait MomentProcess {
     * @return the List[com.fortysevendeg.ninecardslauncherprocess.moment.models.Moment]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def saveMoments(items: Seq[Moment])(implicit context: ContextSupport): ServiceDef2[List[Moment], MomentException]
+  def saveMoments(items: Seq[Moment])(implicit context: ContextSupport): ServiceDef2[Seq[Moment], MomentException]
 
   /**
     * Generate Private Moments Collections with the apps installed in the device
@@ -56,5 +56,13 @@ trait MomentProcess {
     * @throws MomentException if there was an error getting the best moment
     */
   def getBestAvailableMoment(implicit context: ContextSupport): ServiceDef2[Option[Moment], MomentException]
+
+  /**
+    * Gets all available moments. Only the moments with collection
+    *
+    * @return sequuence com.fortysevendeg.ninecardslauncher.process.moment.models.Moment
+    * @throws MomentException if there was an error getting the best moment
+    */
+  def getAvailableMoments(implicit context: ContextSupport): ServiceDef2[Seq[MomentWithCollection], MomentException]
 
 }

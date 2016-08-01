@@ -4,15 +4,12 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, UnformedApp, UnformedContact}
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCollectionRequest, CollectionException, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, PersistenceServiceException}
-import rapture.core.Answer
+import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions}
 
 import scalaz.concurrent.Task
 
@@ -25,16 +22,19 @@ trait CollectionsProcessImpl {
 
   val minAppsGenerateCollections = 1
 
-  def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = Service {
-    val tasks = createCollections(apps, contacts, appsCategories, minAppsToAdd) map (persistenceServices.addCollection(_).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
-  }.resolve[CollectionException]
+  def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = {
+    val collections = createCollections(apps, contacts, appsCategories, minAppsToAdd)
+    (for {
+      collections <- persistenceServices.addCollections(collections)
+    } yield collections map toCollection).resolve[CollectionException]
+  }
 
   def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) =
     (for {
       apps <- appsServices.getInstalledApplications
-      collections <- createCollectionsAndFillData(items, apps)
-    } yield collections).resolve[CollectionException]
+      collectionsRequest = toAddCollectionRequestByFormedCollection(fillImageUri(items, apps))
+      collections <- persistenceServices.addCollections(collectionsRequest)
+    } yield collections map toCollection).resolve[CollectionException]
 
   def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = Service {
     Task {
@@ -91,11 +91,12 @@ trait CollectionsProcessImpl {
       _ <- updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 
-  private[this] def createCollectionsAndFillData(items: Seq[FormedCollection], apps: Seq[Application])
-    (implicit context: ContextSupport): ServiceDef2[List[Collection], PersistenceServiceException] = Service {
-    val tasks = toAddCollectionRequestByFormedCollection(fillImageUri(items, apps)) map (persistenceServices.addCollection(_).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => toCollection(collection) }))
-  }
+  def updateSharedCollection(collectionId: Int, sharedCollectionId: String) =
+    (for {
+      Some(collection) <- findCollectionById(collectionId)
+      updatedCollection = toUpdatedSharedCollection(toCollection(collection), sharedCollectionId)
+      _ <- updateCollection(updatedCollection)
+    } yield updatedCollection).resolve[CollectionException]
 
   private[this] def moveCollectionList(collectionList: Seq[Collection], position: Int) =
     collectionList map { collection =>

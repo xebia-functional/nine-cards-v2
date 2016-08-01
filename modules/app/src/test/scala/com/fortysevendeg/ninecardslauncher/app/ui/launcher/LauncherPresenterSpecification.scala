@@ -5,9 +5,10 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionExceptionImpl}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.device.DockAppException
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
+import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import macroid.{ActivityContextWrapper, Ui}
@@ -32,6 +33,7 @@ trait LauncherPresenterSpecification
     extends RuntimeException(message)
     with CollectionException
     with DockAppException
+    with MomentException
 
   val launcherAppsException = LauncherAppsException("", None)
 
@@ -52,7 +54,6 @@ trait LauncherPresenterSpecification
     mockActions.showLoading() returns Ui[Any]()
     mockActions.showContactUsError() returns Ui[Any]()
     mockActions.showMinimumOneCollectionMessage() returns Ui[Any]()
-    mockActions.addCollection(collection) returns Ui[Any]()
     mockActions.canRemoveCollections returns canRemoveCollections
 
     val mockStatuses = mock[LauncherPresenterStatuses]
@@ -61,8 +62,8 @@ trait LauncherPresenterSpecification
       statuses = mockStatuses
       override protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
         Service(Task(Answer(())))
-      override protected def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
-        Service(Task(Answer((collectionSeq, dockAppSeq))))
+      override protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
+        Service(Task(Answer((collectionSeq, dockAppSeq, Some(moment)))))
       override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Answer(user)))
     }
 
@@ -70,7 +71,7 @@ trait LauncherPresenterSpecification
       statuses = mockStatuses
       override protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
         Service(Task(Errata(collectionException)))
-      override protected def getLauncherApps: ServiceDef2[(Seq[Collection], Seq[DockApp]), CollectionException with DockAppException] =
+      override protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
         Service(Task(Errata(launcherAppsException)))
       override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Errata(userException)))
     }
@@ -81,16 +82,6 @@ trait LauncherPresenterSpecification
 
 class LauncherPresenterSpec
   extends LauncherPresenterSpecification {
-
-  "Add Collection" should {
-
-    "return a successful connecting account" in
-      new WizardPresenterScope {
-        presenter.addCollection(collection)
-        there was after(1 seconds).one(mockActions).addCollection(collection)
-      }
-
-  }
 
   "Select collection to remove" should {
 
@@ -121,12 +112,6 @@ class LauncherPresenterSpec
 
   "Remove Collection" should {
 
-    "remove collection returning a successful data" in
-      new WizardPresenterScope {
-        presenter.removeCollection(collection)
-        there was after(1 seconds).one(mockActions).removeCollection(collection)
-      }
-
     "show error returning a failed" in
       new WizardPresenterScope {
         presenterFailed.removeCollection(collection)
@@ -137,25 +122,25 @@ class LauncherPresenterSpec
 
   "Load Collections and DockApps" should {
 
-    "load the list of collections and dock apps returning a successful data" in
+    "returning a empty list the information is loaded" in
       new WizardPresenterScope {
-        presenter.loadCollectionsAndDockApps()
-        there was after(1 seconds).one(mockActions).loadCollections(collectionSeq, dockAppSeq)
+        presenter.loadLauncherInfo()
+        there was after(1 seconds).one(mockActions).loadLauncherInfo(any, any)
       }
 
-    "go to wizard returning a empty list" in
+    "returning a empty list the information isn't loaded" in
       new WizardPresenterScope {
 
         override val collectionSeq: Seq[Collection] = Seq.empty
 
-        presenter.loadCollectionsAndDockApps()
-        there was after(1 seconds).no(mockActions).loadCollections(any, any)
+        presenter.loadLauncherInfo()
+        there was after(1 seconds).no(mockActions).loadLauncherInfo(any, any)
       }
 
     "go to wizard returning a failed loading collections" in
       new WizardPresenterScope {
-        presenterFailed.loadCollectionsAndDockApps()
-        there was after(1 seconds).no(mockActions).loadCollections(any, any)
+        presenterFailed.loadLauncherInfo()
+        there was after(1 seconds).no(mockActions).loadLauncherInfo(any, any)
       }
 
   }

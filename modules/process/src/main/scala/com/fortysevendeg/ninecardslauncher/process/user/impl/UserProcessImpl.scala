@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.user._
-import com.fortysevendeg.ninecardslauncher.process.user.models.{User, Device}
+import com.fortysevendeg.ninecardslauncher.process.user.models.Device
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -25,7 +25,7 @@ class UserProcessImpl(
 
   private[this] val noActiveUserErrorMessage = "No active user"
 
-  val emptyUserRequest = AddUserRequest(None, None, None, None, None, None, None, None, None)
+  val emptyUserRequest = AddUserRequest(None, None, None, None, None, None, None, None, None, None, None)
 
   override def signIn(email: String, deviceName: String, token: String, permissions: Seq[String])(implicit context: ContextSupport) = {
     withActiveUser { id =>
@@ -59,7 +59,7 @@ class UserProcessImpl(
 
   override def unregister(implicit context: ContextSupport) =
     withActiveUser { id =>
-      val update = UpdateUserRequest(id, None, None, None, None, None, None, None, None, None)
+      val update = UpdateUserRequest(id, None, None, None, None, None, None, None, None, None, None, None)
       (for {
         _ <- syncInstallation(id, None, None, None)
         _ <- persistenceServices.updateUser(update)
@@ -71,6 +71,16 @@ class UserProcessImpl(
       (for {
         Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(id))
       } yield toUser(user)).resolve[UserException]
+    }
+
+  override def updateUserDevice(
+    deviceName: String,
+    deviceCloudId: String)(implicit context: ContextSupport) =
+    withActiveUser { id =>
+      (for {
+        Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(id))
+        _ <- persistenceServices.updateUser(toUpdateRequest(id, user, deviceName, deviceCloudId))
+      } yield ()).resolve[UserException]
     }
 
   private[this] def withActiveUser[T](f: Int => ServiceDef2[T, UserException])(implicit context: ContextSupport) =

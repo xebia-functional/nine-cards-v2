@@ -5,29 +5,34 @@
     <PreferenceCategory android:title="@string/personalizationPreferences">
 
         <PreferenceScreen
-                android:title="@string/themesTitle"
+                android:title="@string/themesPrefTitle"
                 android:key="themesKey"
-                android:summary="@string/themesSummary" />
+                android:summary="@string/themesPrefSummary" />
 
         <PreferenceScreen
-                android:title="@string/appDrawerTitle"
+                android:title="@string/momentsPrefTitle"
+                android:key="momentKey"
+                android:summary="@string/momentsPrefSummary" />
+
+        <PreferenceScreen
+                android:title="@string/appDrawerPrefTitle"
                 android:key="appDrawerKey"
-                android:summary="@string/appDrawerSummary" />
+                android:summary="@string/appDrawerPrefSummary" />
 
         <PreferenceScreen
-                android:title="@string/sizesTitle"
+                android:title="@string/sizesPrefTitle"
                 android:key="sizesKey"
-                android:summary="@string/sizesSummary" />
+                android:summary="@string/sizesPrefSummary" />
 
         <PreferenceScreen
-                android:title="@string/animationsTitle"
+                android:title="@string/animationsPrefTitle"
                 android:key="animationsKey"
-                android:summary="@string/animationsSummary" />
+                android:summary="@string/animationsPrefSummary" />
 
         <PreferenceScreen
-                android:title="@string/newAppTitle"
+                android:title="@string/newAppPrefTitle"
                 android:key="newAppKey"
-                android:summary="@string/newAppSummary" />
+                android:summary="@string/newAppPrefSummary" />
 
     </PreferenceCategory>
 

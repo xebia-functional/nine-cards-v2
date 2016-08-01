@@ -5,20 +5,33 @@ import java.util.Date
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardsMoment, NineCardCategory, CollectionType}
 
 trait CloudStorageResource {
-  def resourceId: String
-  def title: String
+  def cloudId: String
+  def deviceId: Option[String]
+  def deviceName: String
   def createdDate: Date
   def modifiedDate: Date
 }
 
 case class CloudStorageDeviceSummary(
-  resourceId: String,
-  title: String,
+  cloudId: String,
+  deviceId: Option[String],
+  deviceName: String,
   createdDate: Date,
   modifiedDate: Date,
   currentDevice: Boolean) extends CloudStorageResource
 
 case class CloudStorageDevice(
+  cloudId: String,
+  createdDate: Date,
+  modifiedDate: Date,
+  data: CloudStorageDeviceData) extends CloudStorageResource {
+
+  override def deviceId: Option[String] = Some(data.deviceId)
+
+  override def deviceName: String = data.deviceName
+}
+
+case class CloudStorageDeviceData(
   deviceId: String,
   deviceName: String,
   documentVersion: Int,

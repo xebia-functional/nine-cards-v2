@@ -56,6 +56,12 @@ object RequestCodes {
 
   val goToCollectionDetails = 8
 
+  val goToPreferences = 9
+
+  val goToWidgets = 10
+
+  val goToConfigureWidgets = 11
+
 }
 
 object ResultCodes {

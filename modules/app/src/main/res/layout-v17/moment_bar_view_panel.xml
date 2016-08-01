@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        style="@style/LauncherMomentPanel"
+        android:id="@+id/launcher_moment_panel">
+
+    <LinearLayout
+            android:id="@+id/launcher_moment_content"
+            style="@style/LauncherMomentInfoContent">
+
+        <ImageView
+                style="@style/LauncherMomentIcon"
+                android:id="@+id/launcher_moment_icon"/>
+
+        <TextView
+                style="@style/LauncherMomentText"
+                android:id="@+id/launcher_moment_text"/>
+
+        <TextClock
+                style="@style/LauncherMomentClock"
+                android:id="@+id/launcher_moment_text_clock"/>
+
+    </LinearLayout>
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        style="@style/LauncherMomentWeather"
+        android:id="@+id/launcher_moment_weather"/>
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            style="@style/LauncherMomentGoogleButton"
+            android:id="@+id/launcher_moment_google_icon"/>
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            style="@style/LauncherMomentMicButton"
+            android:id="@+id/launcher_moment_mic_icon"/>
+
+</LinearLayout>

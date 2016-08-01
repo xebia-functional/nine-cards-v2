@@ -43,7 +43,6 @@ trait AppsServicesImplData {
       name = name,
       packageName = packageName,
       className = className,
-      resourceIcon = resourceIcon,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,

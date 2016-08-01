@@ -152,4 +152,23 @@
         <item name="android:layout_gravity">center</item>
     </style>
 
+    <style name="ProfileConfigurationNameDialog">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="ProfileConfigurationNameWrapper">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="ProfileConfigurationName">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:inputType">textAutoComplete</item>
+        <item name="android:hint">@string/hintNewConfigurationName</item>
+    </style>
+
 </resources>

@@ -15,7 +15,7 @@ trait CollectionProcess {
    * @return the List[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
    * @throws CollectionException if there was an error creating the existing collections
    */
-  def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport): ServiceDef2[List[Collection], CollectionException]
+  def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport): ServiceDef2[Seq[Collection], CollectionException]
 
   /**
     * Generate Private Collections with the apps installed in the device and their categories
@@ -33,7 +33,7 @@ trait CollectionProcess {
    * @return the List[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
    * @throws CollectionException if there was an error creating the collections
    */
-  def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport): ServiceDef2[List[Collection], CollectionException]
+  def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport): ServiceDef2[Seq[Collection], CollectionException]
 
   /**
    * Gets the existing collections
@@ -93,6 +93,16 @@ trait CollectionProcess {
    * @throws CollectionException if there was an error finding the collection or updating it
    */
   def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest): ServiceDef2[Collection, CollectionException]
+
+  /**
+    * Updates a Collection with the sharedCollectionId
+    *
+    * @param collectionId the Id of the Collection
+    * @param sharedCollectionId the Id of the collection after being published
+    * @return the [[Collection]]
+    * @throws CollectionException if there was an error finding the collection or updating it
+    */
+  def updateSharedCollection(collectionId: Int, sharedCollectionId: String): ServiceDef2[Collection, CollectionException]
 
   /**
    * Adds some new Cards after the last existing one in a given Collection

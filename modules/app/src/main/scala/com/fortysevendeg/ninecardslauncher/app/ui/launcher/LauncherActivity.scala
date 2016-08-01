@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
+import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
@@ -9,7 +10,6 @@ import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 
@@ -46,6 +46,11 @@ class LauncherActivity
     presenter.pause()
   }
 
+  override def onDestroy(): Unit = {
+    super.onDestroy()
+    presenter.destroy()
+  }
+
   override def onStartFinishAction(): Unit = presenter.resetAction()
 
   override def onEndFinishAction(): Unit = presenter.destroyAction()
@@ -71,11 +76,23 @@ class LauncherActivity
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
+
+    def getExtraAppWidgetId = Option(data) flatMap(d => Option(d.getExtras)) flatMap { extras =>
+      val id = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, 0)
+      if (id == 0) None else Some(id)
+    }
+
     (requestCode, resultCode) match {
       case (RequestCodes.goToCollectionDetails, _) =>
         presenter.resetFromCollectionDetail()
       case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) =>
         presenter.logout()
+      case (RequestCodes.goToWidgets, Activity.RESULT_OK) =>
+        presenter.configureOrAddWidget(getExtraAppWidgetId)
+      case (RequestCodes.goToConfigureWidgets, Activity.RESULT_OK) =>
+        presenter.addWidget(getExtraAppWidgetId)
+      case (RequestCodes.goToConfigureWidgets | RequestCodes.goToWidgets, Activity.RESULT_CANCELED) =>
+        presenter.deleteWidget(getExtraAppWidgetId)
       case _ =>
     }
   }

@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import java.io.{File, InputStream}
 
 import android.content.{ContentResolver, UriMatcher}
+import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.ContactsContract
@@ -14,8 +15,11 @@ import com.bumptech.glide.load.model.stream.StreamModelLoader
 import com.bumptech.glide.load.resource.drawable.GlideDrawable
 import com.bumptech.glide.request.animation.GlideAnimation
 import com.bumptech.glide.request.target.ViewTarget
-import com.bumptech.glide.{DrawableTypeRequest, Glide, Priority, RequestManager}
+import com.bumptech.glide._
+import com.bumptech.glide.load.resource.bitmap.{BitmapEncoder, StreamBitmapDecoder}
+import com.bumptech.glide.load.resource.file.FileToStreamDecoder
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder, IconFromPackageDecoder, IconFromPackageLoader}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -27,18 +31,54 @@ import scala.util.Try
 object AsyncImageTweaks {
   type W = ImageView
 
-  def ivUri(uri: String)(implicit context: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivUri(uri: String)(implicit context: UiContext[_]): Tweak[W] = Tweak[W] { imageView =>
+    glide() foreach { glide =>
+      glide
+        .load(uri)
+        .crossFade()
+        .into(imageView)
+    }
+  }
+
+  def ivSrcByPackageName(maybePackageName: Option[String], term: String)(implicit context: UiContext[_], contextWrapper: ContextWrapper): Tweak[W] = Tweak[W](
     imageView => {
-      glide() foreach { glide =>
-        glide
-          .load(uri)
-          .crossFade()
-          .into(imageView)
+      (glide(), maybePackageName) match {
+        case (Some(glide), Some(packageName)) =>
+          glide
+            .using(new AppIconLoader, classOf[String])
+            .from(classOf[String])
+            .as(classOf[Bitmap])
+            .decoder(new ApplicationIconDecoder(packageName))
+            .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
+            .encoder(new BitmapEncoder())
+            .load(packageName)
+            .into(imageView)
+        case _ =>
+          (imageView <~ ivSrc(CharDrawable(term.charAt(0).toString, circle = true))).run
       }
     }
   )
 
-  def ivCardUri(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivSrcIconFromPackage(packageName: String, icon: Int, term: String)(implicit context: UiContext[_], contextWrapper: ContextWrapper): Tweak[W] = Tweak[W](
+    imageView => {
+      glide() match {
+        case Some(glide) =>
+          glide
+            .using(new IconFromPackageLoader, classOf[Int])
+            .from(classOf[Int])
+            .as(classOf[Bitmap])
+            .decoder(new IconFromPackageDecoder(packageName))
+            .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
+            .encoder(new BitmapEncoder())
+            .load(icon)
+            .into(imageView)
+        case _ =>
+          (imageView <~ ivSrc(CharDrawable(term.charAt(0).toString, circle = true))).run
+      }
+    }
+  )
+
+  def ivCardUri(uri: String, name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
         loadCardUri(
@@ -50,7 +90,7 @@ object AsyncImageTweaks {
       }
     })
 
-  def ivUriContact(uri: String, name: String, circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivUriContact(uri: String, name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
         makeRequest(
@@ -62,7 +102,7 @@ object AsyncImageTweaks {
       }
     })
 
-  def ivUriContactInfo(uri: String, header: Boolean = true)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivUriContactInfo(uri: String, header: Boolean = true)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
         makeContactRequest(
@@ -79,6 +119,7 @@ object AsyncImageTweaks {
         case c: ApplicationUiContext => Glide.`with`(c.value)
         case c: ActivityUiContext => Glide.`with`(c.value)
         case c: FragmentUiContext => Glide.`with`(c.value)
+        case c: GenericUiContext => Glide.`with`(c.value)
       }
     }.toOption
 
@@ -87,7 +128,7 @@ object AsyncImageTweaks {
     request: DrawableTypeRequest[_],
     uri: String,
     char: String,
-    circular: Boolean = false)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) = {
+    circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]) = {
     if (new File(uri).exists()) {
       makeRequest(
         request = request,
@@ -104,14 +145,14 @@ object AsyncImageTweaks {
     imageView: ImageView,
     char: String,
     circular: Boolean = false,
-    fadeInFailed: Boolean = true)(implicit context: ActivityContextWrapper) = {
+    fadeInFailed: Boolean = true)(implicit context: ContextWrapper) = {
     request
       .crossFade()
       .into(new ViewTarget[ImageView, GlideDrawable](imageView) {
         override def onLoadStarted(placeholder: Drawable): Unit =
-          imageView.setImageDrawable(javaNull)
+          view.setImageDrawable(javaNull)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-          (imageView <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
+          (view <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
           view.setImageDrawable(resource.getCurrent)
       })
@@ -121,7 +162,7 @@ object AsyncImageTweaks {
     request: DrawableTypeRequest[_],
     imageView: ImageView,
     header: Boolean,
-    fadeInFailed: Boolean = true)(implicit context: ActivityContextWrapper) = {
+    fadeInFailed: Boolean = true)(implicit context: ContextWrapper) = {
     request
       .crossFade()
       .into(new ViewTarget[ImageView, GlideDrawable](imageView) {

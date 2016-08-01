@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.repository.model.CardsWithCollectionId
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
@@ -23,6 +24,11 @@ trait CardPersistenceServicesImpl {
       case None =>
         Service(Task(Result.errata[Card, PersistenceServiceException](PersistenceServiceException("CollectionId can't be empty"))))
     }
+
+  def addCards(request: Seq[AddCardWithCollectionIdRequest]) =
+    (for {
+      cards <- cardRepository.addCards(request map toCardsWithCollectionId)
+    } yield cards map toCard).resolve[PersistenceServiceException]
 
   def deleteAllCards() =
     (for {

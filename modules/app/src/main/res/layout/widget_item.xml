@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/WidgetItemRoot">
+
+    <LinearLayout
+        style="@style/WidgetItemContent">
+
+        <LinearLayout
+            style="@style/WidgetItemHeaderContent">
+
+            <TextView
+                android:id="@+id/widget_item_title"
+                style="@style/WidgetItemTitle"/>
+
+            <TextView
+                android:id="@+id/widget_item_cells"
+                style="@style/WidgetItemCells"/>
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/widget_item_preview"
+            style="@style/WidgetItemPreview"/>
+
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

@@ -1,8 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
 
-import android.view.DragEvent._
-import android.view.View.OnDragListener
-import android.view.{DragEvent, View}
 import android.widget.{ImageView, LinearLayout}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -10,33 +7,15 @@ import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.DragObject
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceItemMenu
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkspaceItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
 
 trait Styles {
-
-  def searchContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[LinearLayout] =
-    vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
-
-  def burgerButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    tivDefaultColor(theme.get(SearchIconsColor)) +
-      tivPressedColor(theme.get(SearchPressedColor))
-
-  def googleButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    tivDefaultColor(theme.get(SearchGoogleColor)) +
-      tivPressedColor(theme.get(SearchPressedColor))
-
-  def micButtonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    tivDefaultColor(theme.get(SearchIconsColor)) +
-      tivPressedColor(theme.get(SearchPressedColor))
 
   def menuAvatarStyle(implicit context: ContextWrapper): Tweak[ImageView] =
     Lollipop ifSupportedThen {
@@ -50,25 +29,29 @@ trait Styles {
       ivSrc(R.drawable.workspaces_pager)
   }
 
-  def workspaceButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
-    workspaceButton(R.string.createNewCollection,
+  def workspaceButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
+    wimPopulate(resGetColor(R.color.collection_group_1),
       R.drawable.fab_menu_icon_create_new_collection,
-      R.color.collection_fab_button_item_create_new_collection)
+      R.string.createNewCollection)
 
-  def workspaceButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
-    workspaceButton(R.string.myCollections,
+  def workspaceButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_my_collections),
       R.drawable.fab_menu_icon_my_collections,
-      R.color.collection_fab_button_item_my_collections)
+      R.string.myCollections)
 
-  def workspaceButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
-    workspaceButton(R.string.publicCollections,
+  def workspaceButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_public_collection),
       R.drawable.fab_menu_icon_public_collections,
-      R.color.collection_fab_button_item_public_collection)
+      R.string.publicCollections)
 
-  private[this] def workspaceButton(title: Int, icon: Int, color: Int)(implicit context: ContextWrapper): Tweak[WorkSpaceItemMenu] =
-    vWrapContent +
-      wimBackgroundColor(resGetColor(color)) +
-      wimTitle(resGetString(title)) +
-      wimSrc(icon)
+  def workspaceButtonChangeMomentStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_change_moment),
+      R.drawable.fab_menu_icon_change_moment,
+      R.string.changeMoment)
+
+  def workspaceButtonEditMomentStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_edit_moment),
+      R.drawable.fab_menu_icon_edit_moment,
+      R.string.editMoment)
 
 }

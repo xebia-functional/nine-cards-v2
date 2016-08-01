@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toApp
 import com.fortysevendeg.ninecardslauncher.repository.model.{App, AppData, DataCounter}
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntity, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
@@ -36,16 +36,7 @@ class AppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            name -> data.name,
-            packageName -> data.packageName,
-            className -> data.className,
-            category -> data.category,
-            imagePath -> data.imagePath,
-            dateInstalled -> data.dateInstalled,
-            dateUpdate -> data.dateUpdate,
-            version -> data.version,
-            installedFromGooglePlay -> data.installedFromGooglePlay)
+          val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
             uri = appUri,
@@ -55,6 +46,21 @@ class AppRepository(
           App(
             id = id,
             data = data)
+        }
+      }
+    }
+
+  def addApps(datas: Seq[AppData]): ServiceDef2[Unit, RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          val values = datas map createMapValues
+
+          contentResolverWrapper.inserts(
+            authority = NineCardsUri.authorityPart,
+            uri = appUri,
+            allValues = values,
+            notificationUri = Some(appNotificationUri))
         }
       }
     }
@@ -169,6 +175,18 @@ class AppRepository(
       }
     }
 
+  def fetchAppByPackages(packageName: Seq[String]): ServiceDef2[Seq[App], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          contentResolverWrapper.fetchAll(
+            uri = appUri,
+            projection = allFields,
+            where = s"${AppEntity.packageName} IN (${packageName.mkString("\"", ",", "\"")})")(getListFromCursor(appEntityFromCursor)) map toApp
+        }
+      }
+    }
+
   def fetchAppsByCategory(category: String, orderBy: String = ""): ServiceDef2[Seq[App], RepositoryException] =
     Service {
       Task {
@@ -203,16 +221,7 @@ class AppRepository(
     Service {
       Task {
         CatchAll[RepositoryException] {
-          val values = Map[String, Any](
-            name -> app.data.name,
-            packageName -> app.data.packageName,
-            className -> app.data.className,
-            category -> app.data.category,
-            imagePath -> app.data.imagePath,
-            dateInstalled -> app.data.dateInstalled,
-            dateUpdate -> app.data.dateUpdate,
-            version -> app.data.version,
-            installedFromGooglePlay -> app.data.installedFromGooglePlay)
+          val values = createMapValues(app.data)
 
           contentResolverWrapper.updateById(
             uri = appUri,
@@ -304,6 +313,18 @@ class AppRepository(
     intervals find { interval =>
       installationDate.isAfter(interval.date)
     }
+
+  private[this] def createMapValues(data: AppData) =
+    Map[String, Any](
+      name -> data.name,
+      packageName -> data.packageName,
+      className -> data.className,
+      category -> data.category,
+      imagePath -> data.imagePath,
+      dateInstalled -> data.dateInstalled,
+      dateUpdate -> data.dateUpdate,
+      version -> data.version,
+      installedFromGooglePlay -> data.installedFromGooglePlay)
 
   case class InstallationDateInterval(term: String, date: DateTime)
 

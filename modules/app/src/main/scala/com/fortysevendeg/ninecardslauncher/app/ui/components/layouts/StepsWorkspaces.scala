@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
-import android.widget.FrameLayout
+import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -18,6 +18,8 @@ class StepsWorkspaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
+  override def createEmptyView(): StepWorkSpaceWidgetsHolder = new StepWorkSpaceWidgetsHolder
+
   override def createView(viewType: Int): StepWorkSpaceWidgetsHolder = new StepWorkSpaceWidgetsHolder
 
   override def populateView(view: Option[StepWorkSpaceWidgetsHolder], data: StepData, viewType: Int, position: Int): Ui[_] =
@@ -31,16 +33,14 @@ class StepsWorkspaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
 case class StepData(image: Int, message: String)
 
 class StepWorkSpaceWidgetsHolder(implicit contextWrapper: ContextWrapper)
-  extends FrameLayout(contextWrapper.application)
-    with TypedFindView {
+  extends LinearLayout(contextWrapper.application)
+  with TypedFindView {
 
   lazy val image = findView(TR.wizard_step_item_image)
 
   lazy val message = findView(TR.wizard_step_item_message)
 
-  val root = LayoutInflater.from(contextWrapper.application).inflate(R.layout.wizard_step, javaNull, false)
-
-  addView(root)
+  LayoutInflater.from(contextWrapper.application).inflate(R.layout.wizard_step, this)
 
   def bind(data: StepData): Ui[_] =
     (image <~ ivSrc(data.image)) ~

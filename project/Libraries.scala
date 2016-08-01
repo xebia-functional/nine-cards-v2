@@ -29,6 +29,7 @@ object Libraries {
     lazy val androidRecyclerview = androidDep("recyclerview-v7")
     lazy val androidCardView = androidDep("cardview-v7")
     lazy val androidDesign = androidDep("design")
+    lazy val androidFlexbox = "com.google.android" % "flexbox" % flexboxV
   }
 
   object macroid {
@@ -50,7 +51,8 @@ object Libraries {
 
   object date {
     lazy val prettyTime = "org.ocpsoft.prettytime" % "prettytime" % prettyTimeV
-    val jodaTime = "joda-time" % "joda-time" % jodaTimeV
+    lazy val jodaTime = "joda-time" % "joda-time" % jodaTimeV
+    lazy val gfcTimeUUID = "com.gilt" %% "gfc-timeuuid" % gfcTimeUUIDV
   }
 
   object test {

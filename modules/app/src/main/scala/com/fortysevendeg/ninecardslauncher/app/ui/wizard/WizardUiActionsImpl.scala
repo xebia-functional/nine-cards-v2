@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 import android.accounts._
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
@@ -10,15 +11,16 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.StepData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDevice
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+import org.ocpsoft.prettytime.PrettyTime
 
 trait WizardUiActionsImpl
   extends WizardUiActions
@@ -85,20 +87,22 @@ trait WizardUiActionsImpl
                 val tag = Option(i.getTag) map (_.toString)
                 tag match {
                   case Some(`newConfigurationKey`) => presenter.generateCollections(None)
-                  case device => presenter.generateCollections(device)
+                  case cloudId => presenter.generateCollections(cloudId)
                 }
               }
           }
         }) ~
       (workspaces <~
-        swData(steps) <~
-        awsAddPageChangedObserver(currentPage => {
-          val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
-          ((wizardRootLayout <~ rbvColor(backgroundColor)) ~
-            (stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
-            (paginationPanel <~ reloadPagers(currentPage))).run
-        }
-        )) ~
+        vGlobalLayoutListener(_ => {
+          workspaces <~
+            swData(steps) <~
+            awsAddPageChangedObserver(currentPage => {
+              val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
+              ((wizardRootLayout <~ rbvColor(backgroundColor)) ~
+                (stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
+                (paginationPanel <~ reloadPagers(currentPage))).run
+            })
+        })) ~
       (stepsAction <~
         diveInActionStyle <~
         On.click(Ui(presenter.finishWizard()))) ~
@@ -107,22 +111,22 @@ trait WizardUiActionsImpl
   }
 
   override def goToUser(): Ui[Any] =
-    (loadingRootLayout <~ vGone) ~
+    (loadingRootLayout <~ vInvisible) ~
       (userRootLayout <~ vVisible) ~
-      (wizardRootLayout <~ vGone) ~
-      (deviceRootLayout <~ vGone)
+      (wizardRootLayout <~ vInvisible) ~
+      (deviceRootLayout <~ vInvisible)
 
   override def goToWizard(): Ui[Any] =
-    (loadingRootLayout <~ vGone) ~
-      (userRootLayout <~ vGone) ~
+    (loadingRootLayout <~ vInvisible) ~
+      (userRootLayout <~ vInvisible) ~
       (wizardRootLayout <~ vVisible <~ rbvColor(resGetColor(R.color.wizard_background_step_0), forceFade = true)) ~
-      (deviceRootLayout <~ vGone)
+      (deviceRootLayout <~ vInvisible)
 
   override def showLoading(): Ui[Any] =
     (loadingRootLayout <~ vVisible) ~
-      (userRootLayout <~ vGone) ~
-      (wizardRootLayout <~ vGone) ~
-      (deviceRootLayout <~ vGone)
+      (userRootLayout <~ vInvisible) ~
+      (wizardRootLayout <~ vInvisible) ~
+      (deviceRootLayout <~ vInvisible)
 
   override def showErrorLoginUser(): Ui[Any] = backToUser(R.string.errorLoginUser)
 
@@ -133,7 +137,7 @@ trait WizardUiActionsImpl
   override def showErrorAcceptTerms(): Ui[Any] = showMessage(R.string.messageAcceptTerms)
 
   override def showDevices(devices: UserCloudDevices): Ui[Any] =
-    addDevicesToRadioGroup(devices.devices) ~
+    addDevicesToRadioGroup(devices.userDevice, devices.devices) ~
       showDevices ~
       (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, devices.name)))
 
@@ -156,12 +160,46 @@ trait WizardUiActionsImpl
     usersSpinner <~ sAdapter(sa)
   }
 
-  private[this] def addDevicesToRadioGroup(devices: Seq[CloudStorageDevice]): Ui[Any] = {
-    val radioViews = (devices map (device => userRadio(device.deviceName, device.deviceId))) :+
-      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey)
+  private[this] def addDevicesToRadioGroup(userDevice: Option[UserCloudDevice], devices: Seq[UserCloudDevice]): Ui[Any] = {
+
+    def subtitle(device: UserCloudDevice): String = {
+      if (device.fromV1) resGetString(R.string.deviceMigratedFromV1) else {
+        val time = new PrettyTime().format(device.modifiedDate)
+        resGetString(R.string.syncLastSynced, time)
+      }
+    }
+
+    val userRadioView = userDevice.toSeq.flatMap { device =>
+      Seq(
+        userRadio(resGetString(R.string.currentDeviceTitle, device.deviceName), device.cloudId),
+        userRadioSubtitle(subtitle(device)))
+    }
+
+    val newConfRadioView = Seq(
+      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
+      userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
+
+    val allRadioViews = {
+
+      val radioViews = devices flatMap { device =>
+        Seq(
+          userRadio(device.deviceName, device.cloudId, visible = false),
+          userRadioSubtitle(subtitle(device), visible = false))
+      }
+
+      if (radioViews.isEmpty) radioViews else {
+        otherDevicesLink(resGetString(R.string.otherDevicesLink)) +: radioViews
+      }
+    }
+
+    val radioViews = userRadioView ++ newConfRadioView ++ allRadioViews
+
     (devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
       Ui {
-        radioViews.headOption foreach (_.setChecked(true))
+        radioViews.headOption match {
+          case Some(radioButton: RadioButton) => radioButton.setChecked(true)
+          case _ =>
+        }
       }
   }
 
@@ -182,8 +220,30 @@ trait WizardUiActionsImpl
   private[this] def pagination(position: Int) =
     (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
-  private[this] def userRadio(title: String, tag: String): RadioButton =
-    (w[RadioButton] <~ radioStyle <~ tvText(title) <~ vTag(tag)).get
+  private[this] def userRadio(title: String, tag: String, visible: Boolean = true): RadioButton =
+    (w[RadioButton] <~
+      radioStyle <~
+      tvText(title) <~
+      vTag(tag) <~
+      (if (visible) vVisible else vGone)).get
+
+  private[this] def userRadioSubtitle(text: String, visible: Boolean = true): TextView =
+    (w[TextView] <~
+      radioSubtitleStyle <~
+      tvText(text) <~
+      (if (visible) vVisible else vGone)).get
+
+  private[this] def otherDevicesLink(text: String): TextView = {
+    (w[TextView] <~
+      otherDevicesLinkStyle <~
+      tvUnderlineText(text) <~
+      FuncOn.click { v: View =>
+        (devicesGroup <~ Transformer {
+          case view if view.getVisibility == View.GONE => view <~ vVisible
+          case _ => Ui.nop
+        }) ~ (v <~ vGone)
+      }).get
+  }
 
 }
 

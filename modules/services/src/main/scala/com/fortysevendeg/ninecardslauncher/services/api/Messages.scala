@@ -101,5 +101,7 @@ case class CreateSharedCollection(
   author: String,
   packages: Seq[String],
   category: String,
+  shareLink: String,
+  sharedCollectionId: String,
   icon: String,
   community: Boolean)

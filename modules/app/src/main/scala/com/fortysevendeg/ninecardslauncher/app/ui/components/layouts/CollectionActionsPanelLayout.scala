@@ -3,17 +3,14 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 import android.content.Context
 import android.util.AttributeSet
 import android.view.DragEvent._
-import android.view.View.OnDragListener
-import android.view.{DragEvent, LayoutInflater, View}
+import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.DragObject
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableButton
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableButtonTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.ReorderCollection
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -39,20 +36,23 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
 
   var draggingTo: Option[Int] = None
 
+  def leftActionView: Option[TintableButton] = Option(findView(TR.launcher_collections_action_1))
+
+  def rightActionView: Option[TintableButton] = Option(findView(TR.launcher_collections_action_2))
+
   def load(actions: Seq[CollectionActionItem])
-    (implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Ui[Any] = {
+          (implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Ui[Any] = {
 
     def populate(action: CollectionActionItem, position: Int): Tweak[TintableButton] =
       tvText(action.name) +
         tvCompoundDrawablesWithIntrinsicBoundsResources(left = action.resource) +
         vSetPosition(position) +
-        dragListenerStyle(action.collectionActionType) +
         tbPressedColor(theme.get(PrimaryColor)) +
         tbResetColor
 
     def buttonByIndex(index: Int): Option[TintableButton] = index match {
-      case 0 => Option(findView(TR.launcher_collections_action_1))
-      case 1 => Option(findView(TR.launcher_collections_action_2))
+      case 0 => leftActionView
+      case 1 => rightActionView
       case _ => None
     }
 
@@ -62,11 +62,13 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
     }: _*)
   }
 
-  def dragAddItemController(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Unit = {
+  def dragController(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Unit = {
 
     def performAction(action: CollectionActionItem) = action.collectionActionType match {
       case CollectionActionAppInfo => presenter.settingsInAddItem()
       case CollectionActionUninstall => presenter.uninstallInAddItem()
+      case CollectionActionRemove => presenter.removeCollectionInReorderMode()
+      case CollectionActionEdit => presenter.editCollectionInReorderMode()
       case _ =>
     }
 
@@ -80,7 +82,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
       case ACTION_DROP =>
         draggingTo flatMap actions.lift match {
           case Some(action: CollectionActionItem) => performAction(action)
-          case _ => presenter.endAddItem()
+          case _ =>
         }
         draggingTo = None
         (this <~ select(unselectedPosition)).run
@@ -88,7 +90,6 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
         draggingTo = None
         (this <~ select(unselectedPosition)).run
       case ACTION_DRAG_ENDED =>
-        presenter.endAddItem()
         draggingTo = None
         (this <~ select(unselectedPosition)).run
       case _ =>
@@ -100,25 +101,6 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
   private[this] def select(position: Int)(implicit contextWrapper: ActivityContextWrapper) = Transformer {
     case view: TintableButton if view.getPosition.contains(position) => Ui(view.setPressedColor())
     case view: TintableButton => Ui(view.setDefaultColor())
-  }
-
-  private[this] def dragListenerStyle(collectionActionType: CollectionActionType)(implicit presenter: LauncherPresenter): Tweak[View] = Tweak[View] { view =>
-    view.setOnDragListener(new OnDragListener {
-      override def onDrag(v: View, event: DragEvent): Boolean = {
-        event.getLocalState match {
-          case DragObject(_, ReorderCollection) =>
-            (event.getAction, v, collectionActionType) match {
-              case (ACTION_DRAG_ENTERED, tb: TintableButton, _) => tb.setPressedColor()
-              case (ACTION_DRAG_EXITED, tb: TintableButton, _) => tb.setDefaultColor()
-              case (ACTION_DROP, _, CollectionActionRemove) => presenter.removeCollectionInReorderMode()
-              case (ACTION_DROP, _, CollectionActionEdit) => presenter.editCollectionInReorderMode()
-              case _ =>
-            }
-            true
-          case _ => false
-        }
-      }
-    })
   }
 
 }

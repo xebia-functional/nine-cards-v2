@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionExceptionImpl, CollectionProcess}
-import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcess}
+import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentExceptionImpl, MomentProcess}
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigProcess
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
@@ -326,90 +326,9 @@ class WizardPresenterSpec
 
   }
 
-  "Save Current Device" should {
-
-    "call to show dive in Actions and create or update actual cloud storage device with the right params in CloudStorageProcess" in
-      new WizardPresenterScope {
-        presenter.clientStatuses = WizardPresenterStatuses(driveApiClient = Some(mockGoogleApiClient))
-
-        mockCollectionProcess.getCollections returns Service(Task(Answer(Seq(collection))))
-        mockMomentProcess.getMoments returns Service(Task(Answer(moments)))
-        mockCloudStorageProcess.createOrUpdateActualCloudStorageDevice(any, any)(any) returns Service(Task(Answer(Unit)))
-
-        presenter.saveCurrentDevice()
-
-        there was after(1.seconds).one(mockCloudStorageProcess).createOrUpdateActualCloudStorageDevice(
-          Seq(cloudStorageCollection),
-          Seq(cloudStorageMoment))(mockContextSupport)
-        there was after(1.seconds).one(mockActions).showDiveIn()
-      }
-
-    "call to show dive in Actions but not to CloudStorageProcess if the collection process returns an error" in
-      new WizardPresenterScope {
-        presenter.clientStatuses = WizardPresenterStatuses(driveApiClient = Some(mockGoogleApiClient))
-
-        mockCollectionProcess.getCollections returns Service(Task(Errata(CollectionExceptionImpl(""))))
-        mockMomentProcess.getMoments returns Service(Task(Answer(moments)))
-        mockCloudStorageProcess.createOrUpdateActualCloudStorageDevice(any, any)(any) returns Service(Task(Answer(Unit)))
-
-        presenter.saveCurrentDevice()
-
-        there was after(1.seconds).no(mockCloudStorageProcess).createOrUpdateActualCloudStorageDevice(any, any)(any)
-        there was after(1.seconds).one(mockActions).showDiveIn()
-      }
-
-    "call to show dive in Actions but not to CloudStorageProcess if the moment process returns an error" in
-      new WizardPresenterScope {
-        presenter.clientStatuses = WizardPresenterStatuses(driveApiClient = Some(mockGoogleApiClient))
-
-        mockCollectionProcess.getCollections returns Service(Task(Answer(Seq(collection))))
-        mockMomentProcess.getMoments returns Service(Task(Errata(MomentException(""))))
-        mockCloudStorageProcess.createOrUpdateActualCloudStorageDevice(any, any)(any) returns Service(Task(Answer(Unit)))
-
-        presenter.saveCurrentDevice()
-
-        there was after(1.seconds).no(mockCloudStorageProcess).createOrUpdateActualCloudStorageDevice(any, any)(any)
-        there was after(1.seconds).one(mockActions).showDiveIn()
-      }
-
-    "call to connectAccount if the Google Api Client is not set but had set an account" in
-      new WizardPresenterScope {
-        presenter.clientStatuses = WizardPresenterStatuses(username = Some(accountName))
-
-        mockAccountManager.getAuthToken(any, any, any, any[Activity], any, any) returns mockAccountManagerFuture
-
-        mockAccountManagerFuture.getResult returns mockBundle
-
-        mockBundle.getString(AccountManager.KEY_AUTHTOKEN) returns token
-
-        mockResources.getString(anyInt) returns googleScopes
-
-        mockSharedPreferences.getString(any, any) returns token
-
-        presenter.saveCurrentDevice()
-
-        there was after(1.seconds).two(mockActions).showLoading()
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull)
-        there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull)
-        there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, javaNull)
-        there was after(1.seconds).one(mockAccountManager).invalidateAuthToken(presenter.accountType, token)
-
-      }
-
-    "call to go to user in Actions if neither the Google Api Client or the account is set" in
-      new WizardPresenterScope {
-        presenter.clientStatuses = WizardPresenterStatuses()
-
-        presenter.saveCurrentDevice()
-
-        there was after(1.seconds).one(mockActions).goToUser()
-      }
-
-  }
-
   "Generate Collections" should {
 
-    "call to go to wizard in Actions and startService in the activity" in
+    "call to go to wizard in Actions and startService in the activity with a new configuration" in
       new WizardPresenterScope {
 
         mockContextActivity.startService(any) returns mock[ComponentName]
@@ -417,11 +336,11 @@ class WizardPresenterSpec
         presenter.generateCollections(None)
 
         there was after(1.seconds).one(mockActions).goToWizard()
-        there was after(1.seconds).no(mockIntent).putExtra(any, anyString)
+        there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.cloudIdKey, CreateCollectionService.newConfiguration)
         there was after(1.seconds).one(mockContextActivity).startService(mockIntent)
     }
 
-    "call to go to wizard in Actions and startService in the activity with the right Intent when pass a key" in
+    "call to go to wizard in Actions and startService in the activity with device id" in
       new WizardPresenterScope {
 
         mockContextActivity.startService(any) returns mock[ComponentName]
@@ -429,7 +348,7 @@ class WizardPresenterSpec
         presenter.generateCollections(Some(intentKey))
 
         there was after(1.seconds).one(mockActions).goToWizard()
-        there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.keyDevice, intentKey)
+        there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.cloudIdKey, intentKey)
         there was after(1.seconds).one(mockContextActivity).startService(mockIntent)
     }
   }

@@ -20,6 +20,8 @@
     <string name="todo">TODO. Sorry. We are working in that</string>
     <string name="buttonErrorReload">Reload</string>
 
+    <string name="atHour">at</string>
+
     <string name="itemAddedToCollectionSuccessful">Item added to <xliff:g id="collection" example="Social">%1$s</xliff:g> collection</string>
 
     <!-- Menu -->
@@ -28,9 +30,9 @@
     <string name="profileTitle">Profile</string>
     <string name="configurationTitle">Configuration</string>
     <string name="wallpaperTitle">Wallpaper</string>
-    <string name="androidSettingsTitle">Android Settings</string>
-    <string name="nineCardsSettingsTitle">9Cards Settings</string>
+    <string name="nineCardsSettingsTitle">Settings</string>
     <string name="widgetsTitle">Widgets</string>
+    <string name="sendFeedbackTitle">Send feedback</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continue</string>
@@ -42,7 +44,9 @@
 
     <string name="messageAcceptTerms">You should accept terms and conditions</string>
 
-    <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g></string>
+    <string name="messageEmpty">There isn\'t data in this moment</string>
+
+    <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
 
     <string name="deviceDetectedNoProUser">We have detected a saved configuration for your <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g>. If you are PRO User you can load your previous collections and themes. Would you like to upgrade now?</string>
@@ -77,6 +81,18 @@
     <string name="errorAndroidMarketPermissionNotAccepted">You need to accept the Android Market permission in order to use 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">You need to accept the Google permission in order to use 9Cards</string>
 
+    <string name="currentDeviceTitle">%s (current device)</string>
+    <string name="newConfigurationSubtitle">We\'ll create a new configuration from your apps</string>
+    <string name="deviceMigratedFromV1">Migrated from the previous version</string>
+    <string name="otherDevicesLink">Other devices configurations</string>
+
+    <!-- Moment / Widgets -->
+
+    <string name="editMoment">Edit Moment</string>
+    <string name="changeMoment">Change Moment</string>
+
+    <string name="widgetsErrorMessage">We have had problems loading the widgets. Please try again</string>
+
     <!-- Collections -->
 
     <string name="createNewCollection">Create new collection</string>
@@ -84,6 +100,7 @@
     <string name="publicCollections">Public collections</string>
 
     <string name="newCollection">New collection</string>
+    <string name="editCollection">Edit collection</string>
     <string name="collectionName">Collection name</string>
     <string name="selectIcon">Select icon</string>
     <string name="selectColor">Select color</string>
@@ -92,7 +109,11 @@
 
     <string name="removeCollectionMessage">Are you sure that you want remove this collection?</string>
 
-    <string name="minimumOneCollectionMessage">You can\'t remove the last collection</string><!-- Pending review language -->
+    <string name="minimumOneCollectionMessage">You can\'t remove the last collection</string>
+
+    <string name="emptyMoment">You don\'t have moments defined</string>
+
+    <string name="momentNotFoundMessage">Moment don\'t found. You should create new moments from My Collections section</string>
 
     <!-- Collections Detail -->
 
@@ -104,6 +125,27 @@
     <string name="unnamed">Unnamed</string>
 
     <string name="removeCardMessage">Are you sure that you want remove this card?</string>
+
+    <!-- Publish Collections Wizard -->
+
+    <string name="publishCollectionHeader">Publish your collection</string>
+    <string name="publishCollectionMessage">If you publish your collections, other users can find new applications</string>
+    <string name="addInformationHeader">Add information</string>
+    <string name="addInformationMessage">Add information about your collections for other users can find it</string>
+    <string name="publishAction">Publish</string>
+    <string name="publishingHeader">Publishing</string>
+    <string name="publishingMessage">Your collection is being published</string>
+    <string name="addInformationcollectionName">Collection name</string>
+    <string name="addInformationDescription">Description</string>
+    <string name="addInformationCategory">Select a category</string>
+    <string name="congratulationsHeader">Congratulations!</string>
+    <string name="congratulationsMessage">Your collection has been successfully published</string>
+    <string name="shareCollection">Share your collection</string>
+    <string name="publishCollectionError">Oops! A collection without apps can\'t be published</string>
+    <string name="notPublishedCollectionError">This collection must be published before sharing it</string>
+    <string name="publishingError">Oops! An error has occurred publishing your collection</string>
+    <string name="collectionError">Oops! An error has occurred getting this collection</string>
+    <string name="defaultUser">User</string>
 
     <!-- Contacts Action -->
 
@@ -240,15 +282,25 @@
     <string name="syncCurrent">Current device</string>
     <string name="syncLastSynced">Last synced: %s</string>
 
+    <string name="menuAccountSync">Synchronize</string>
+    <string name="menuAccountCopy">Copy</string>
+    <string name="menuAccountDelete">Delete</string>
+
     <string name="accountSynced">Account synced</string>
 
     <string name="errorSyncing">Error syncing account. Try again please</string>
 
     <string name="errorLoadingUser">Error loading user</string>
 
+    <string name="errorEmptyNameForDevice">Please, specify a name for the new configuration</string>
+    <string name="errorEmptyNameForDeviceButton">Try again</string>
+
     <string name="logout">Logout</string>
 
+    <string name="copyAccountSyncDialogTitle">New configuration</string>
+    <string name="hintNewConfigurationName">Name</string>
     <string name="removeAccountSyncMessage">Are you sure that you want remove this device?</string>
+
 
     <!-- Preferences -->
 
@@ -259,8 +311,13 @@
     <!-- Preferences Personalization -->
     <string name="personalizationPreferences">Personalization</string>
 
-    <string name="themesTitle">Themes</string>
-    <string name="themesSummary">Themes Summary</string>
+    <!-- Theme Preferences -->
+
+    <string name="themesPrefTitle">Themes</string>
+    <string name="themesPrefSummary">Themes Summary</string>
+
+    <string name="selectThemeTitle">Select Theme</string>
+    <string name="selectThemeSummary">Select Theme Summary</string>
 
     <string name="themesDark">Dark</string>
     <string name="themesLight">Light</string>
@@ -273,8 +330,18 @@
     <string name="colouredGoogleLogo">Coloured</string>
     <string name="themeColourGoogleLogo">Theme\'s Colour</string>
 
-    <string name="appDrawerTitle">App Drawer</string>
-    <string name="appDrawerSummary">App Drawer Summary</string>
+    <!-- Moment Preferences -->
+
+    <string name="momentsPrefTitle">Moments</string>
+    <string name="momentsPrefSummary">Moments Summary</string>
+
+    <string name="showClockTitle">Show Clock</string>
+    <string name="showClockSummary">Show Clock Summary</string>
+
+    <!-- App Drawer Preferences -->
+
+    <string name="appDrawerPrefTitle">App Drawer</string>
+    <string name="appDrawerPrefSummary">App Drawer Summary</string>
 
     <string name="defaultWindowTitle">Default Window Open</string>
     <string name="defaultWindowSummary">Default Window Summary</string>
@@ -295,8 +362,10 @@
     <string name="windowIconsClassic">Classic</string>
     <string name="windowIconsNineCards">9Cards</string>
 
-    <string name="sizesTitle">Sizes</string>
-    <string name="sizesSummary">Sizes Summary</string>
+    <!-- Sizes Preferences -->
+
+    <string name="sizesPrefTitle">Sizes</string>
+    <string name="sizesPrefSummary">Sizes Summary</string>
 
     <string name="fontsTitle">Fonts</string>
     <string name="fontsSummary">Fonts Summary</string>
@@ -319,8 +388,10 @@
     <string name="cardPaddingsMedium">Medium</string>
     <string name="cardPaddingsBigger">Bigger</string>
 
-    <string name="animationsTitle">Animations</string>
-    <string name="animationsSummary">Animations Summary</string>
+    <!-- Animations Preferences -->
+
+    <string name="animationsPrefTitle">Animations</string>
+    <string name="animationsPrefSummary">Animations Summary</string>
 
     <string name="speedTitle">Speed</string>
     <string name="speedSummary">Speed Summary</string>
@@ -366,8 +437,10 @@
 
     <string name="collectionDetailAddCardsMessage">Add new cards to this collection</string>
 
-    <string name="newAppTitle">New App</string>
-    <string name="newAppSummary">New App Summary</string>
+    <!-- New App Preferences -->
+
+    <string name="newAppPrefTitle">New App</string>
+    <string name="newAppPrefSummary">New App Summary</string>
     <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->
@@ -400,6 +473,5 @@
     <string name="sendFeedback">Send a Feedback (Launch AppTentive)</string>
     <string name="tutorial">See the Tutorial</string>
     <string name="tos">Terms of Use</string>
-
 
 </resources>

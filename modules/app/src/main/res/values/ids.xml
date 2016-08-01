@@ -8,4 +8,5 @@
     <item name="selected_item" type="id" />
     <item name="fields_map" type="id" />
     <item name="running_animation" type="id" />
+    <item name="app_widget_host_id" type="id" />
 </resources>

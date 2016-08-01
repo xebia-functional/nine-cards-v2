@@ -45,6 +45,10 @@ case class AddCardRequest(
   imagePath: String,
   notification: Option[String] = None)
 
+case class AddCardWithCollectionIdRequest(
+  collectionId: Int,
+  cards: Seq[AddCardRequest])
+
 case class DeleteCardsRequest(where: String)
 
 case class DeleteCardRequest(card: Card)
@@ -121,7 +125,9 @@ case class AddUserRequest(
   androidToken: Option[String],
   name: Option[String],
   avatar: Option[String],
-  cover: Option[String])
+  cover: Option[String],
+  deviceName: Option[String],
+  deviceCloudId: Option[String])
 
 case class DeleteUsersRequest(where: String)
 
@@ -139,7 +145,9 @@ case class UpdateUserRequest(
   androidToken: Option[String],
   name: Option[String],
   avatar: Option[String],
-  cover: Option[String])
+  cover: Option[String],
+  deviceName: Option[String],
+  deviceCloudId: Option[String])
 
 case class CreateOrUpdateDockAppRequest(
   name: String,

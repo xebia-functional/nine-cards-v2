@@ -111,7 +111,7 @@ class SharedCollectionsProcessImplSpec
     "successfully create a collection for a valid request" in
       new SharedCollectionsProcessProcessScope with ValidSharedCollectionsProcessProcessScope {
         val result = sharedCollectionsProcess.createSharedCollection(
-          sharedCollection
+          createSharedCollection
         )(contextSupport).run.run
 
         result mustEqual Answer(
@@ -121,6 +121,8 @@ class SharedCollectionsProcessImplSpec
             sharedCollection.author,
             sharedCollection.packages,
             sharedCollection.category,
+            sharedCollection.shareLink,
+            sharedCollection.sharedCollectionId,
             sharedCollection.icon,
             sharedCollection.community
           ))
@@ -129,7 +131,7 @@ class SharedCollectionsProcessImplSpec
     "return a SharedCollectionsException if the service throws an exception" in
       new SharedCollectionsProcessProcessScope with ErrorSharedCollectionsProcessProcessScope {
         val result = sharedCollectionsProcess.createSharedCollection(
-          sharedCollection
+          createSharedCollection
         )(contextSupport).run.run
 
         result must beLike {
