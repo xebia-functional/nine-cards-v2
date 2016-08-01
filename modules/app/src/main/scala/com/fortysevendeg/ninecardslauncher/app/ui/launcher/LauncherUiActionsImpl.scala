@@ -361,7 +361,8 @@ trait LauncherUiActionsImpl
   override def isEmptyCollectionsInWorkspace: Boolean = isEmptyCollections
 
   def turnOffFragmentContent: Ui[Any] =
-    fragmentContent <~ vClickable(false)
+    (fragmentContent <~ vClickable(false)) ~
+      (drawerLayout <~ dlUnlocked)
 
   def reloadPager(currentPage: Int) = Transformer {
     case imageView: TintableImageView if imageView.isPosition(currentPage) =>
