@@ -1,7 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence
+package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{CardsWithCollectionId, App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData, Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
+import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.services.persistence.reads.MomentImplicits
@@ -84,12 +85,6 @@ trait PersistenceServicesData extends Conversions {
   val termDataCounter: String = Random.nextString(1)
   val countDataCounter: Int = Random.nextInt(2)
   val momentType1: String = "HOME"
-
-  val seqMoment: Seq[Moment] = createSeqMoment()
-  val servicesMoment: Moment = seqMoment(0)
-  val repoMomentData: RepositoryMomentData = createRepoMomentData()
-  val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
-  val repoMoment: RepositoryMoment = seqRepoMoment(0)
 
   def createSeqApp(
     num: Int = 5,
@@ -422,6 +417,11 @@ trait PersistenceServicesData extends Conversions {
   val seqRepoDockApp: Seq[RepositoryDockApp] = createSeqRepoDockApp(data = repoDockAppData)
   val repoDockApp: RepositoryDockApp = seqRepoDockApp(0)
 
+  val seqMoment: Seq[Moment] = createSeqMoment()
+  val servicesMoment: Moment = seqMoment(0)
+  val repoMomentData: RepositoryMomentData = createRepoMomentData()
+  val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
+  val repoMoment: RepositoryMoment = seqRepoMoment(0)
 
   val where: String = ""
 

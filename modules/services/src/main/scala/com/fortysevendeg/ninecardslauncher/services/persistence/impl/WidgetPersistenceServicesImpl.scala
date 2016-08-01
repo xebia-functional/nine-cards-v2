@@ -44,9 +44,9 @@ trait WidgetPersistenceServicesImpl {
       widgets <- widgetRepository.fetchWidgetsByMoment(request.momentId)
     } yield widgets map toWidget).resolve[PersistenceServiceException]
 
-  def fetchWidgets =
+  def fetchWidgets() =
     (for {
-      widgetItems <- widgetRepository.fetchWidgets
+      widgetItems <- widgetRepository.fetchWidgets()
     } yield widgetItems map toWidget).resolve[PersistenceServiceException]
 
   def findWidgetById(request: FindWidgetByIdRequest) =
