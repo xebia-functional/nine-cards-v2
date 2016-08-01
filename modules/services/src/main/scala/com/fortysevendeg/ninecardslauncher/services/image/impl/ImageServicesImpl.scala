@@ -9,9 +9,14 @@ class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageSe
 
   implicit val implicitConfig: ImageServicesConfig = config
 
-  override def saveBitmap(request: SaveBitmap)(implicit contextSupport: ContextSupport) = for {
-    file <- imageServicesTasks.getPathByName(request.name)
-    _ <- imageServicesTasks.saveBitmap(file, request.bitmap)
-  } yield SaveBitmapPath(request.name, file.getAbsolutePath)
+  override def saveBitmap(request: SaveBitmap)(implicit contextSupport: ContextSupport) = {
+
+    val uniqueName = com.gilt.timeuuid.TimeUuid().toString
+
+    for {
+      file <- imageServicesTasks.getPathByName(uniqueName)
+      _ <- imageServicesTasks.saveBitmap(file, request.bitmap)
+    } yield SaveBitmapPath(uniqueName, file.getAbsolutePath)
+  }
 
 }

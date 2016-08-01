@@ -23,7 +23,6 @@ case class AppWebsitePath(
   path: String)
 
 case class SaveBitmap(
-  name: String,
   bitmap: Bitmap)
 
 case class SaveBitmapPath(
