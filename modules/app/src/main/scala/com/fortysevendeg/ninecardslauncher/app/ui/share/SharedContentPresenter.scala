@@ -32,7 +32,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
 
     def readImageUri(intent: Intent): Option[Uri] = {
       Option(intent.getClipData) flatMap { clipData =>
-        if (clipData.getItemCount > 0) Option(clipData.getItemAt(0)) map (_.getUri) else None
+        if (clipData.getItemCount > 0) Option(clipData.getItemAt(0)) flatMap (d => Option(d.getUri)) else None
       }
     }
 
