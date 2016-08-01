@@ -43,7 +43,7 @@ trait ImageServicesImplSpecification
     val resources = mock[Resources]
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
-    val saveBitmap = SaveBitmap(bitmap = mock[Bitmap])
+    val saveBitmap = SaveBitmap(bitmap = mock[Bitmap], bitmapResize = None)
 
     val fileExistsTask = Service(Task {
       Result.catching[FileException] {
