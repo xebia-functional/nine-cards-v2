@@ -2,7 +2,7 @@ object Versions {
 
   val appV = "1.0.0"
   val scalaV = "2.11.7"
-  val scalaZV = "7.2.4"
+  val scalaZV = "7.1.3"
   val androidPlatformV = "android-23"
   val androidV = "24.1.1"
   val androidProvidedV = "4.1.1.4"
