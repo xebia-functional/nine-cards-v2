@@ -23,7 +23,10 @@ case class AppWebsitePath(
   path: String)
 
 case class SaveBitmap(
-  bitmap: Bitmap)
+  bitmap: Bitmap,
+  bitmapResize: Option[BitmapResize])
+
+case class BitmapResize(width: Int, height: Int)
 
 case class SaveBitmapPath(
   name: String,
