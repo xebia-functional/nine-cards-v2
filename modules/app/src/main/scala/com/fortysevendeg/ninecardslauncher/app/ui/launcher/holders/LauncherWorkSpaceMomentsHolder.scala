@@ -3,10 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
 import android.content.Context
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
-import android.view.MotionEvent._
-import android.view.View.OnTouchListener
-import android.view.{LayoutInflater, MotionEvent, View}
-import android.widget.FrameLayout
+import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -14,11 +11,11 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid.FullDsl._
 import macroid._
 
 class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresenter, theme: NineCardsTheme, parentDimen: Dimen)
@@ -58,19 +55,12 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   }
 
   def addWidget(widgetView: View, cell: Cell): Ui[Any] = {
-    val viewBlockTouch = w[FrameLayout].get
-    viewBlockTouch.setOnTouchListener(new OnTouchListener {
-      override def onTouch(v: View, event: MotionEvent): Boolean = {
-        event.getAction match {
-          case ACTION_DOWN => presenter.statuses = presenter.statuses.copy(touchingWidget = true)
-        }
-        false
-      }
-    })
     val (width, height) = cell.getSize
     val params = new LayoutParams(width, height)
     params.setMargins(paddingDefault, paddingDefault, paddingDefault, paddingDefault)
-    widgets <~ vgRemoveAllViews <~ vgAddViews(Seq(widgetView, viewBlockTouch), params)
+    widgets <~
+      vgRemoveAllViews <~
+      vgAddView(new LauncherWidgetView(widgetView, presenter), params)
   }
 
   def clearWidgets(): Ui[Any] = widgets <~ vgRemoveAllViews
