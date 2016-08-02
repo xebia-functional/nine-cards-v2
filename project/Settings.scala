@@ -38,6 +38,7 @@ object Settings {
       name := "nine-cards-v2",
       run <<= run in Android,
       javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
+      scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7"),
       transitiveAndroidLibs in Android := true,
       libraryDependencies ++= appDependencies,
       packagingOptions in Android := PackagingOptions(excludes = Seq(
@@ -50,9 +51,10 @@ object Settings {
       dexMaxHeap in Android := "2048m",
       proguardScala in Android := true,
       useProguard in Android := true,
+      useProguardInDebug in Android := true,
       versionName in Android := Some(s"${versionName.value.getOrElse("")}-$versionNameSuffix"),
       proguardOptions in Android ++= proguardCommons,
-      proguardCache in Android := Seq.empty)
+      proguardCache in Android := proguardCacheList)
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++
@@ -178,7 +180,6 @@ object Settings {
 
   lazy val multiDex = Seq(
     dexMulti in Android := true,
-    dexMinimizeMain in Android := true,
     dexMainClasses in Android := multiDexClasses
   )
 
