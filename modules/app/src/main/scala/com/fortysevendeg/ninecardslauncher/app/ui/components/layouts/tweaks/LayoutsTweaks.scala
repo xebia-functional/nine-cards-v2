@@ -129,6 +129,10 @@ object AnimatedWorkSpacesTweaks {
 
   def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
+  def awsDisabled() = Tweak[W] (aws => aws.statuses = aws.statuses.copy(enabled = false))
+
+  def awsEnabled() = Tweak[W] (aws => aws.statuses = aws.statuses.copy(enabled = true))
+
   def awsAddPageChangedObserver(observer: PageChangedObserver) = Tweak[W](_.addPageChangedObservers(observer))
 
   def awsCurrentWorkSpace() = Excerpt[W, Int] (_.statuses.currentItem)
@@ -385,5 +389,14 @@ object AppsMomentLayoutTweaks {
 
   def amlPaddingTopAndBottom(paddingTop: Int, paddingBottom: Int)(implicit theme: NineCardsTheme, presenter: LauncherPresenter) =
     Tweak[W] (_.setPaddingTopAndBottom(paddingTop, paddingBottom).run)
+
+}
+
+object EditWidgetsTopPanelLayoutTweaks {
+
+  type W = EditWidgetsTopPanelLayout
+
+  def ewlInit(implicit presenter: LauncherPresenter) =
+    Tweak[W] (_.init.run)
 
 }

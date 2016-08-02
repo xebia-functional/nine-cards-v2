@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+<resources>
 
     <style name="LauncherRoot">
         <item name="android:layout_width">match_parent</item>
@@ -421,6 +420,37 @@
     <style name="LauncherCollectionsGrid">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <!-- Edit Widgets Top Bar -->
+
+    <style name="LauncherEditWidgetsTopBarPanel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_search_box</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">0dp</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="LauncherEditWidgetsTopBarRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="LauncherEditWidgetsTopBarIcon">
+        <item name="android:layout_width">@dimen/edit_widgets_size_icon</item>
+        <item name="android:layout_height">@dimen/edit_widgets_size_icon</item>
+    </style>
+
+    <style name="LauncherEditWidgetsTopBarText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:textColor">@color/text_launcher_moment_panel</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
     </style>
 
 </resources>

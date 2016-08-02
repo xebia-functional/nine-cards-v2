@@ -29,6 +29,10 @@
                     style="@style/LauncherSearchPanel"
                     android:id="@+id/launcher_top_bar_panel"/>
 
+                <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.EditWidgetsTopPanelLayout
+                    style="@style/LauncherEditWidgetsTopBarPanel"
+                    android:id="@+id/launcher_edit_widgets_top_panel"/>
+
             </FrameLayout>
 
             <FrameLayout

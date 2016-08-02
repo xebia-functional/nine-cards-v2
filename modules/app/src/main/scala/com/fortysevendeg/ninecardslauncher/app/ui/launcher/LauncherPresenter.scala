@@ -289,6 +289,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
+  def openModeEditWidgets(): Unit = actions.openModeEditWidgets().run
+
+  def closeModeEditWidgets(): Unit = actions.closeModeEditWidgets().run
+
   def goToChangeMoment(): Unit = {
     Task.fork(di.momentProcess.getAvailableMoments.run).resolveAsyncUi(
       onResult = (moments: Seq[MomentWithCollection]) => {
@@ -625,6 +629,10 @@ trait LauncherUiActions {
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): Ui[Any]
 
   def reloadDockApps(dockApp: DockApp): Ui[Any]
+
+  def openModeEditWidgets(): Ui[Any]
+
+  def closeModeEditWidgets(): Ui[Any]
 
   def showAddItemMessage(nameCollection: String): Ui[Any]
 

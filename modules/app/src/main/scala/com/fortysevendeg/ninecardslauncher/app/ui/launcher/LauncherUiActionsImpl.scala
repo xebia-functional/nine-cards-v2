@@ -29,6 +29,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
@@ -99,6 +100,18 @@ trait LauncherUiActionsImpl
     (workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager
 
   override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
+
+  override def openModeEditWidgets(): Ui[Any] =
+    (dockAppsPanel <~ applyFadeOut()) ~
+      (topBarPanel <~ applyFadeOut()) ~
+      (editWidgetsTopPanel <~ ewlInit <~ applyFadeIn()) ~
+      (workspaces <~ awsDisabled())
+
+  def closeModeEditWidgets(): Ui[Any] =
+    (dockAppsPanel <~ applyFadeIn()) ~
+      (topBarPanel <~ applyFadeIn()) ~
+      (editWidgetsTopPanel <~ applyFadeOut()) ~
+      (workspaces <~ awsEnabled())
 
   override def showAddItemMessage(nameCollection: String): Ui[Any] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
 

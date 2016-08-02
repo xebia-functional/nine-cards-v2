@@ -218,4 +218,7 @@
     <dimen name="publish_collection_size_pager">8dp</dimen>
     <dimen name="publish_collection_margin_pager">4dp</dimen>
 
+    <!-- Edit Widgets -->
+    <dimen name="edit_widgets_size_icon">48dp</dimen>
+
 </resources>
