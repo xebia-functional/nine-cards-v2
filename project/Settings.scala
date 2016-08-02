@@ -6,7 +6,7 @@ import Libraries.graphics._
 import Libraries.json._
 import Libraries.macroid._
 import Libraries.net._
-import Libraries.playServices._
+import Libraries.google._
 import Libraries.scala._
 import Libraries.date._
 import Libraries.test._
@@ -121,6 +121,8 @@ object Settings {
     aar(playServicesPlus),
     aar(multiDexLib),
     aar(crashlytics),
+    aar(firebaseCore),
+    aar(firebaseMessaging),
     prettyTime,
     glide,
     okHttp,

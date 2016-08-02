@@ -90,6 +90,7 @@
                 <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
             </intent-filter>
         </receiver>
+
         <service android:name="com.google.android.gms.analytics.AnalyticsService"
                  android:enabled="true"
                  android:exported="false"/>
@@ -100,7 +101,23 @@
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
-        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" />
+
+        <service
+            android:name="com.google.android.gms.analytics.CampaignTrackingService" />
+
+        <service
+            android:name="com.fortysevendeg.ninecardslauncher.app.services.NineCardsFirebaseInstanceIdService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="com.fortysevendeg.ninecardslauncher.app.services.NineCardsFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
     </application>
 

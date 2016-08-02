@@ -64,7 +64,7 @@ object Libraries {
     lazy val glide = "com.github.bumptech.glide" % "glide" % glideV
   }
 
-  object playServices {
+  object google {
 
     def playServicesDep(module: String) = "com.google.android.gms" % module % playServicesV
 
@@ -74,6 +74,9 @@ object Libraries {
     lazy val playServicesAnalytics = playServicesDep("play-services-analytics")
     lazy val playServicesAuth = playServicesDep("play-services-auth")
     lazy val playServicesPlus = playServicesDep("play-services-plus")
+
+    lazy val firebaseCore = "com.google.firebase" % "firebase-core" % playServicesV
+    lazy val firebaseMessaging = "com.google.firebase" % "firebase-messaging" % playServicesV
   }
 
   object debug {

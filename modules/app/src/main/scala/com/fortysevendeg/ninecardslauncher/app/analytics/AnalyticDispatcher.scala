@@ -11,7 +11,7 @@ trait AnalyticDispatcher {
   lazy val tracker = {
     val track = GoogleAnalytics
       .getInstance(getApplicationContext)
-      .newTracker(getApplicationContext.getString(R.string.google_analytics_id))
+      .newTracker(getApplicationContext.getString(R.string.ga_trackingId))
     track.setAppName(getApplicationContext.getString(R.string.app_name))
     track.enableAutoActivityTracking(false)
     track

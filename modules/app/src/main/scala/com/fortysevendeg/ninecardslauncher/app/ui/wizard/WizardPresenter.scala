@@ -196,7 +196,10 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
           case _ =>
         }
       }
-    } else if (connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
+    } else if (
+      connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||
+      connectionResult.getErrorCode == ConnectionResult.SERVICE_MISSING ||
+      connectionResult.getErrorCode == ConnectionResult.SERVICE_DISABLED) {
       actions.goToUser().run
       withActivity { activity =>
         GoogleApiAvailability.getInstance()
