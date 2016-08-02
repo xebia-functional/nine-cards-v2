@@ -1156,7 +1156,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getWidgets(contextSupport).run.run
         result must beLike {
           case Answer(resultWidgets) =>
-            resultWidgets shouldEqual widgets
+            resultWidgets shouldEqual appWithWidgets
         }
       }
 
