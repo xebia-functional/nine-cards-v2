@@ -123,14 +123,6 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
 
   def createDeleteWidgetRequest(widget: Widget): DeleteWidgetRequest = DeleteWidgetRequest(widget = widget)
 
-  def createFetchWidgetByAppWidgetIdRequest(appWidgetId: Int): FetchWidgetByAppWidgetIdRequest =
-    FetchWidgetByAppWidgetIdRequest(appWidgetId = appWidgetId)
-
-  def createFetchWidgetsByMomentRequest(momentId: Int): FetchWidgetsByMomentRequest =
-    FetchWidgetsByMomentRequest(momentId = momentId)
-
-  def createFindWidgetByIdRequest(id: Int): FindWidgetByIdRequest = FindWidgetByIdRequest(id = id)
-
   def createUpdateWidgetsRequest(
     num: Int = 5,
     id: Int = widgetId) =

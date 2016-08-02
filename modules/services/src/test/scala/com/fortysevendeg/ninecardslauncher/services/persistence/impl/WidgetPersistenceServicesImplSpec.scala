@@ -222,7 +222,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
   "fetchWidgetByAppWidgetId" should {
 
     "return a Widget elements for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchWidgetByAppWidgetId(createFetchWidgetByAppWidgetIdRequest(appWidgetId)).run.run
+      val result = persistenceServices.fetchWidgetByAppWidgetId(appWidgetId).run.run
 
       result must beLike {
         case Answer(cards) =>
@@ -231,7 +231,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchWidgetByAppWidgetId(createFetchWidgetByAppWidgetIdRequest(appWidgetId)).run.run
+      val result = persistenceServices.fetchWidgetByAppWidgetId(appWidgetId).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
@@ -246,7 +246,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
   "fetchWidgetsByMoment" should {
 
     "return a list of Widget elements for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchWidgetsByMoment(createFetchWidgetsByMomentRequest(momentId)).run.run
+      val result = persistenceServices.fetchWidgetsByMoment(momentId).run.run
 
       result must beLike {
         case Answer(cards) =>
@@ -255,7 +255,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchWidgetsByMoment(createFetchWidgetsByMomentRequest(momentId)).run.run
+      val result = persistenceServices.fetchWidgetsByMoment(momentId).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
@@ -294,7 +294,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
   "findWidgetById" should {
 
     "return a Widget for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findWidgetById(createFindWidgetByIdRequest(id = widgetId)).run.run
+      val result = persistenceServices.findWidgetById(widgetId).run.run
 
       result must beLike {
         case Answer(maybeWidget) =>
@@ -305,7 +305,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
     }
 
     "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findWidgetById(createFindWidgetByIdRequest(id = nonExistentWidgetId)).run.run
+      val result = persistenceServices.findWidgetById(nonExistentWidgetId).run.run
 
       result must beLike {
         case Answer(maybeWidget) =>
@@ -314,7 +314,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.findWidgetById(createFindWidgetByIdRequest(id = widgetId)).run.run
+      val result = persistenceServices.findWidgetById(widgetId).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {

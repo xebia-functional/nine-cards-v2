@@ -485,27 +485,27 @@ trait PersistenceServices {
 
   /**
     * Obtains an widget from the repository by the id
-    * @param request includes the widget id  of the widget to get
+    * @param widgetId the widget id  of the widget to get
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
     */
-  def findWidgetById(request: FindWidgetByIdRequest): ServiceDef2[Option[Widget], PersistenceServiceException]
+  def findWidgetById(widgetId: Int): ServiceDef2[Option[Widget], PersistenceServiceException]
 
   /**
     * Obtains the widget from the repository by the appWidgetId
-    * @param request includes the appWidgetId
+    * @param appWidgetId the appWidgetId value
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
     */
-  def fetchWidgetByAppWidgetId(request: FetchWidgetByAppWidgetIdRequest): ServiceDef2[Option[Widget], PersistenceServiceException]
+  def fetchWidgetByAppWidgetId(appWidgetId: Int): ServiceDef2[Option[Widget], PersistenceServiceException]
 
   /**
     * Obtains all the widgets from the repository by the moment id
-    * @param request includes the id of the moment
+    * @param momentId id of the moment
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widgets
     */
-  def fetchWidgetsByMoment(request: FetchWidgetsByMomentRequest): ServiceDef2[Seq[Widget], PersistenceServiceException]
+  def fetchWidgetsByMoment(momentId: Int): ServiceDef2[Seq[Widget], PersistenceServiceException]
 
   /**
     * Updates the data of an widget from the repository

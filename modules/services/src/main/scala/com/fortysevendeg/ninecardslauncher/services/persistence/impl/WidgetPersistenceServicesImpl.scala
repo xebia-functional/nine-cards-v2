@@ -16,8 +16,8 @@ trait WidgetPersistenceServicesImpl {
 
   def addWidgets(request: Seq[AddWidgetRequest]) =
     (for {
-      widget <- widgetRepository.addWidgets(request map toRepositoryWidgetData)
-    } yield widget map toWidget).resolve[PersistenceServiceException]
+      widgets <- widgetRepository.addWidgets(request map toRepositoryWidgetData)
+    } yield widgets map toWidget).resolve[PersistenceServiceException]
 
   def deleteAllWidgets() =
     (for {
@@ -34,14 +34,14 @@ trait WidgetPersistenceServicesImpl {
       deleted <- widgetRepository.deleteWidgets(where = s"${WidgetEntity.momentId} = $momentId")
     } yield deleted).resolve[PersistenceServiceException]
 
-  def fetchWidgetByAppWidgetId(request: FetchWidgetByAppWidgetIdRequest) =
+  def fetchWidgetByAppWidgetId(appWidgetId: Int) =
     (for {
-      widget <- widgetRepository.fetchWidgetByAppWidgetId(request.appWidgetId)
+      widget <- widgetRepository.fetchWidgetByAppWidgetId(appWidgetId)
     } yield widget map toWidget).resolve[PersistenceServiceException]
 
-  def fetchWidgetsByMoment(request: FetchWidgetsByMomentRequest) =
+  def fetchWidgetsByMoment(momentId: Int) =
     (for {
-      widgets <- widgetRepository.fetchWidgetsByMoment(request.momentId)
+      widgets <- widgetRepository.fetchWidgetsByMoment(momentId)
     } yield widgets map toWidget).resolve[PersistenceServiceException]
 
   def fetchWidgets() =
@@ -49,9 +49,9 @@ trait WidgetPersistenceServicesImpl {
       widgetItems <- widgetRepository.fetchWidgets()
     } yield widgetItems map toWidget).resolve[PersistenceServiceException]
 
-  def findWidgetById(request: FindWidgetByIdRequest) =
+  def findWidgetById(widgetId: Int) =
     (for {
-      maybeWidget <- widgetRepository.findWidgetById(request.id)
+      maybeWidget <- widgetRepository.findWidgetById(widgetId)
     } yield maybeWidget map toWidget).resolve[PersistenceServiceException]
 
   def updateWidget(request: UpdateWidgetRequest) =

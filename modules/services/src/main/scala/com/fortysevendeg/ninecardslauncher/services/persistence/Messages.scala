@@ -201,12 +201,6 @@ case class DeleteWidgetsRequest(where: String)
 
 case class DeleteWidgetRequest(widget: Widget)
 
-case class FindWidgetByIdRequest(id: Int)
-
-case class FetchWidgetByAppWidgetIdRequest(appWidgetId: Int)
-
-case class FetchWidgetsByMomentRequest(momentId: Int)
-
 case class UpdateWidgetRequest(
   id: Int,
   momentId: Int,

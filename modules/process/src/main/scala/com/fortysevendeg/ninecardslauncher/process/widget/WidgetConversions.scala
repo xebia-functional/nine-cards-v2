@@ -2,10 +2,12 @@ package com.fortysevendeg.ninecardslauncher.process.widget
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
 import com.fortysevendeg.ninecardslauncher.process.widget.models.Widget
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddWidgetRequest => ServicesAddWidgetRequest, FindWidgetByIdRequest, UpdateWidgetRequest => ServicesUpdateWidgetRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddWidgetRequest => ServicesAddWidgetRequest, UpdateWidgetRequest => ServicesUpdateWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Widget => ServicesWidget}
 
 trait WidgetConversions {
+
+  def toWidgetSeq(servicesWidgetSeq: Seq[ServicesWidget]) = servicesWidgetSeq map toWidget
 
   def toAddWidgetRequest(addWidgetRequest: AddWidgetRequest): ServicesAddWidgetRequest = ServicesAddWidgetRequest(
     momentId = addWidgetRequest.momentId,
@@ -20,9 +22,6 @@ trait WidgetConversions {
     label = addWidgetRequest.label,
     imagePath = addWidgetRequest.imagePath,
     intent = addWidgetRequest.intent)
-
-  def toFindWidgetByIdRequest(widgetId: Int): FindWidgetByIdRequest = FindWidgetByIdRequest(
-    id = widgetId)
 
   def toWidget(servicesWidget: ServicesWidget): Widget = Widget(
     id = servicesWidget.id,
