@@ -251,7 +251,7 @@ trait LauncherUiActionsImpl
       WidgetsFragment.widgetContentWidth -> widthContent.toString,
       WidgetsFragment.widgetContentHeight -> heightContent.toString
     )
-    showAction(f[WidgetsFragment], None, resGetColor(R.color.widgets_fab_button), map)
+    showAction(f[WidgetsFragment], None, resGetColor(R.color.primary), map)
   }
 
   override def showSelectMomentDialog(moments: Seq[MomentWithCollection]): Ui[Any] = activityContextWrapper.original.get match {

@@ -32,6 +32,7 @@ trait WidgetsStyles {
   def textMenuItemStyle(name: String)(implicit contextWrapper: ContextWrapper): Tweak[TextView] = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
     llWrapWeightHorizontal +
+      tvColorResource(R.color.widgets_text) +
       vPadding(paddingLeft = padding) +
       tvText(name) +
       tvLines(1) +

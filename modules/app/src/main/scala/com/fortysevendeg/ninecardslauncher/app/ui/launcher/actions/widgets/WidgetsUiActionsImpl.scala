@@ -43,10 +43,11 @@ trait WidgetsUiActionsImpl
   val widgetContentHeight: Int
 
   override def initialize(): Ui[Any] =
-    (toolbar <~
-      dtbInit(colorPrimary) <~
-      dtbChangeText(R.string.widgetsTitle) <~
-      dtbNavigationOnClickListener((_) => unreveal())) ~
+    (rootView <~ vBackgroundColorResource(R.color.widgets_background)) ~
+      (toolbar <~
+        dtbInit(colorPrimary) <~
+        dtbChangeText(R.string.widgetsTitle) <~
+        dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
 
   override def loadWidgets(appsWithWidgets: Seq[AppsWithWidgets]): Ui[Any] = {
