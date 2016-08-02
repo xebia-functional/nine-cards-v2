@@ -81,10 +81,12 @@
     <string name="deviceMigratedFromV1">Migrado de la versión anterior</string>
     <string name="otherDevicesLink">Configuraciones de otros dispositivos</string>
 
-    <!-- Moment -->
+    <!-- Moment / Widgets -->
 
     <string name="editMoment">Editar Momento</string>
     <string name="changeMoment">Cambiar Momento</string>
+
+    <string name="widgetsErrorMessage">Hemos tenido problemas cargando los widgets. Inténtalo más tarde</string>
 
     <!-- Collections -->
 

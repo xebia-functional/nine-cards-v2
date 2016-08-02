@@ -78,6 +78,9 @@
 
     <dimen name="margin_left_subtitle">40dp</dimen>
 
+    <!-- Widgets -->
+    <dimen name="size_widget_item_preview">150dp</dimen>
+
     <!-- App Drawer -->
     <dimen name="drawer_size_pager">6dp</dimen>
     <dimen name="margin_pager_drawer">2dp</dimen>

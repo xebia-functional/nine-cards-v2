@@ -88,7 +88,7 @@ class LauncherActivity
       case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) =>
         presenter.logout()
       case (RequestCodes.goToWidgets, Activity.RESULT_OK) =>
-        presenter.configureWidgetOrAdd(getExtraAppWidgetId)
+        presenter.configureOrAddWidget(getExtraAppWidgetId)
       case (RequestCodes.goToConfigureWidgets, Activity.RESULT_OK) =>
         presenter.addWidget(getExtraAppWidgetId)
       case (RequestCodes.goToConfigureWidgets | RequestCodes.goToWidgets, Activity.RESULT_CANCELED) =>

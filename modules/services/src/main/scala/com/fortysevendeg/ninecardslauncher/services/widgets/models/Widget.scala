@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets.models
 
-import android.graphics.drawable.Drawable
-
 case class Widget (
   userHashCode: Option[Int],
   autoAdvanceViewId: Int,
@@ -15,8 +13,7 @@ case class Widget (
   resizeMode: Int,
   updatePeriodMillis: Int,
   label: String,
-  icon: Drawable,
-  preview: Option[Drawable])
+  preview: Int)
 
 
 

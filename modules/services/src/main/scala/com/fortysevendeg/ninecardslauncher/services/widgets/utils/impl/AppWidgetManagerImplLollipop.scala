@@ -23,10 +23,8 @@ class AppWidgetManagerImplLollipop(implicit contextSupport: ContextSupport)
       appWidgetProviderInfo <- getAppWidgetProviderInfo(userHandle)
     } yield {
       val label = getLabel(appWidgetProviderInfo)
-      val iconImage = getIconImage(appWidgetProviderInfo)
-      val previewImageView = getPreviewImage(appWidgetProviderInfo)
       val userHashCode = getUser(appWidgetProviderInfo)
-      toWidget(appWidgetProviderInfo, label, iconImage, previewImageView, userHashCode)
+      toWidget(appWidgetProviderInfo, label, userHashCode)
     }
   }
 
@@ -35,10 +33,6 @@ class AppWidgetManagerImplLollipop(implicit contextSupport: ContextSupport)
   protected def getAppWidgetProviderInfo(userHandle: UserHandle) = AppWidgetManager.getInstance(contextSupport.context).getInstalledProvidersForProfile(userHandle).toSeq
 
   protected def getLabel(implicit info: AppWidgetProviderInfo) = info.loadLabel(packageManager)
-
-  protected def getIconImage(implicit info: AppWidgetProviderInfo) = info.loadIcon(contextSupport.context, 0)
-
-  protected def getPreviewImage(implicit info: AppWidgetProviderInfo) = Option(info.loadPreviewImage(contextSupport.context, 0))
 
   protected def getUser(implicit info: AppWidgetProviderInfo) = Option(android.os.Process.myUserHandle.hashCode)
 

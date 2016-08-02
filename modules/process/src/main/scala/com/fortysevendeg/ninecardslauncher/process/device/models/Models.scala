@@ -75,8 +75,7 @@ case class Widget(
   resizeMode: WidgetResizeMode,
   updatePeriodMillis: Int,
   label: String,
-  icon: Drawable,
-  preview: Option[Drawable])
+  preview: Int)
 
 case class TermCounter(
   term: String,

@@ -19,7 +19,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermC
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppWidgetProviderInfoOps.Cell
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
