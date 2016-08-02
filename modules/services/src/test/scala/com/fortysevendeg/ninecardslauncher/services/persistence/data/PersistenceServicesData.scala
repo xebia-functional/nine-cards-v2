@@ -86,6 +86,12 @@ trait PersistenceServicesData extends Conversions {
   val countDataCounter: Int = Random.nextInt(2)
   val momentType1: String = "HOME"
 
+  val seqMoment: Seq[Moment] = createSeqMoment()
+  val servicesMoment: Moment = seqMoment(0)
+  val repoMomentData: RepositoryMomentData = createRepoMomentData()
+  val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
+  val repoMoment: RepositoryMoment = seqRepoMoment(0)
+
   def createSeqApp(
     num: Int = 5,
     id: Int = appId,
@@ -416,12 +422,6 @@ trait PersistenceServicesData extends Conversions {
   val repoDockAppData: RepositoryDockAppData = createRepoDockAppData()
   val seqRepoDockApp: Seq[RepositoryDockApp] = createSeqRepoDockApp(data = repoDockAppData)
   val repoDockApp: RepositoryDockApp = seqRepoDockApp(0)
-
-  val seqMoment: Seq[Moment] = createSeqMoment()
-  val servicesMoment: Moment = seqMoment(0)
-  val repoMomentData: RepositoryMomentData = createRepoMomentData()
-  val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
-  val repoMoment: RepositoryMoment = seqRepoMoment(0)
 
   val where: String = ""
 
