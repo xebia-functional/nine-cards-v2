@@ -11,10 +11,14 @@ case class WidgetEntityData(
   packageName: String,
   className: String,
   appWidgetId: Int,
+  startX: Int,
+  startY: Int,
   spanX: Int,
   spanY: Int,
-  startX: Int,
-  startY: Int)
+  widgetType: String,
+  label: String,
+  imagePath: String,
+  intent: String)
 
 object WidgetEntity {
   val table = "Widget"
@@ -22,10 +26,14 @@ object WidgetEntity {
   val packageName = "packageName"
   val className = "className"
   val appWidgetId = "appWidgetId"
-  val spanX = "spanX"
-  val spanY = "spanY"
   val startX = "startX"
   val startY = "startY"
+  val spanX = "spanX"
+  val spanY = "spanY"
+  val widgetType = "widgetType"
+  val label = "label"
+  val imagePath = "imagePath"
+  val intent = "intent"
 
   val allFields = Seq[String](
     NineCardsSqlHelper.id,
@@ -33,10 +41,14 @@ object WidgetEntity {
     packageName,
     className,
     appWidgetId,
+    startX,
+    startY,
     spanX,
     spanY,
-    startX,
-    startY)
+    widgetType,
+    label,
+    imagePath,
+    intent)
 
   def widgetEntityFromCursor(cursor: Cursor): WidgetEntity =
     WidgetEntity(
@@ -46,22 +58,30 @@ object WidgetEntity {
         packageName = cursor.getString(cursor.getColumnIndex(packageName)),
         className = cursor.getString(cursor.getColumnIndex(className)),
         appWidgetId = cursor.getInt(cursor.getColumnIndex(appWidgetId)),
+        startX = cursor.getInt(cursor.getColumnIndex(startX)),
+        startY = cursor.getInt(cursor.getColumnIndex(startY)),
         spanX = cursor.getInt(cursor.getColumnIndex(spanX)),
         spanY = cursor.getInt(cursor.getColumnIndex(spanY)),
-        startX = cursor.getInt(cursor.getColumnIndex(startX)),
-        startY = cursor.getInt(cursor.getColumnIndex(startY))))
+        widgetType = cursor.getString(cursor.getColumnIndex(widgetType)),
+        label = cursor.getString(cursor.getColumnIndex(label)),
+        imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
+        intent = cursor.getString(cursor.getColumnIndex(intent))))
 
   def widgetFromCursor(cursor: Cursor): Widget = toWidget(widgetEntityFromCursor(cursor))
 
   def createTableSQL: String =
     s"""CREATE TABLE ${WidgetEntity.table}
-       |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
-       |${WidgetEntity.momentId} INTEGER not null,
-       |${WidgetEntity.packageName} TEXT not null,
-       |${WidgetEntity.className} TEXT not null,
-       |${WidgetEntity.appWidgetId} INTEGER not null,
-       |${WidgetEntity.spanX} INTEGER not null,
-       |${WidgetEntity.spanY} INTEGER not null,
-       |${WidgetEntity.startX} INTEGER not null,
-       |${WidgetEntity.startY} INTEGER not null)""".stripMargin
+        |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
+        |${WidgetEntity.momentId} INTEGER not null,
+        |${WidgetEntity.packageName} TEXT not null,
+        |${WidgetEntity.className} TEXT not null,
+        |${WidgetEntity.appWidgetId} INTEGER not null,
+        |${WidgetEntity.startX} INTEGER not null,
+        |${WidgetEntity.startY} INTEGER not null,
+        |${WidgetEntity.spanX} INTEGER not null,
+        |${WidgetEntity.spanY} INTEGER not null,
+        |${WidgetEntity.widgetType} TEXT not null,
+        |${WidgetEntity.label} TEXT,
+        |${WidgetEntity.imagePath} TEXT,
+        |${WidgetEntity.intent} TEXT)""".stripMargin
 }

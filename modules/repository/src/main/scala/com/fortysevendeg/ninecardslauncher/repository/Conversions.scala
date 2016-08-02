@@ -82,9 +82,13 @@ object Conversions {
       packageName = widget.data.packageName,
       className = widget.data.className,
       appWidgetId = widget.data.appWidgetId,
+      startX = widget.data.startX,
+      startY = widget.data.startY,
       spanX = widget.data.spanX,
       spanY = widget.data.spanY,
-      startX = widget.data.startX,
-      startY = widget.data.startY))
+      widgetType = widget.data.widgetType,
+      label = Option[String](widget.data.label),
+      imagePath = Option[String](widget.data.imagePath),
+      intent = Option[String](widget.data.intent)))
 
 }

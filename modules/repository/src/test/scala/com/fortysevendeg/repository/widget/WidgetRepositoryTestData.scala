@@ -15,10 +15,17 @@ trait WidgetRepositoryTestData {
   val testClassName = Random.nextString(5)
   val testAppWidgetId = Random.nextInt(10)
   val testNonExistingAppWidgetId = 15
-  val testSpanX = Random.nextInt(10)
-  val testSpanY = Random.nextInt(10)
   val testStartX = Random.nextInt(10)
   val testStartY = Random.nextInt(10)
+  val testSpanX = Random.nextInt(10)
+  val testSpanY = Random.nextInt(10)
+  val testWidgetType = Random.nextString(5)
+  val testLabel = Random.nextString(5)
+  val testImagePath = Random.nextString(5)
+  val testIntent = Random.nextString(5)
+  val testLabelOption = Option(testLabel)
+  val testImagePathOption = Option(testImagePath)
+  val testIntentOption = Option(testIntent)
 
   val widgetEntitySeq = createWidgetEntitySeq(5)
   val widgetEntity = widgetEntitySeq(0)
@@ -38,10 +45,14 @@ trait WidgetRepositoryTestData {
         packageName = testPackageName,
         className = testClassName,
         appWidgetId = testAppWidgetId,
+        startX = testStartX,
+        startY = testStartY,
         spanX = testSpanX,
         spanY = testSpanY,
-        startX = testStartX,
-        startY = testStartY)))
+        widgetType = testWidgetType,
+        label = testLabel,
+        imagePath = testImagePath,
+        intent = testIntent)))
 
   def createWidgetSeq(num: Int) = List.tabulate(num)(
     i => Widget(
@@ -51,10 +62,14 @@ trait WidgetRepositoryTestData {
         packageName = testPackageName,
         className = testClassName,
         appWidgetId = testAppWidgetId,
+        startX = testStartX,
+        startY = testStartY,
         spanX = testSpanX,
         spanY = testSpanY,
-        startX = testStartX,
-        startY = testStartY)))
+        widgetType = testWidgetType,
+        label = testLabelOption,
+        imagePath = testImagePathOption,
+        intent = testIntentOption)))
 
   def createWidgetValuesSeq(num: Int) = List.tabulate(num)(
     i => Map[String, Any](
@@ -62,10 +77,14 @@ trait WidgetRepositoryTestData {
       WidgetEntity.packageName -> testPackageName,
       WidgetEntity.className -> testClassName,
       WidgetEntity.appWidgetId -> testAppWidgetId,
+      WidgetEntity.startX -> testStartX,
+      WidgetEntity.startY -> testStartY,
       WidgetEntity.spanX -> testSpanX,
       WidgetEntity.spanY -> testSpanY,
-      WidgetEntity.startX -> testStartX,
-      WidgetEntity.startY -> testStartY))
+      WidgetEntity.widgetType -> testWidgetType,
+      WidgetEntity.label -> (testLabelOption orNull),
+      WidgetEntity.imagePath -> (testImagePathOption orNull),
+      WidgetEntity.intent -> (testIntentOption orNull)))
 
   def createWidgetIdAndValuesSeq(num: Int) = List.tabulate(num)(
     i => (testWidgetId + i, Map[String, Any](
@@ -73,18 +92,26 @@ trait WidgetRepositoryTestData {
       WidgetEntity.packageName -> testPackageName,
       WidgetEntity.className -> testClassName,
       WidgetEntity.appWidgetId -> testAppWidgetId,
+      WidgetEntity.startX -> testStartX,
+      WidgetEntity.startY -> testStartY,
       WidgetEntity.spanX -> testSpanX,
       WidgetEntity.spanY -> testSpanY,
-      WidgetEntity.startX -> testStartX,
-      WidgetEntity.startY -> testStartY)))
+      WidgetEntity.widgetType -> testWidgetType,
+      WidgetEntity.label -> (testLabelOption orNull),
+      WidgetEntity.imagePath -> (testImagePathOption orNull),
+      WidgetEntity.intent -> (testIntentOption orNull))))
 
   def createWidgetData = WidgetData(
     momentId = testMomentId,
     packageName = testPackageName,
     className = testClassName,
     appWidgetId = testAppWidgetId,
+    startX = testStartX,
+    startY = testStartY,
     spanX = testSpanX,
     spanY = testSpanY,
-    startX = testStartX,
-    startY = testStartY)
+    widgetType = testWidgetType,
+    label = testLabelOption,
+    imagePath = testImagePathOption,
+    intent = testIntentOption)
 }

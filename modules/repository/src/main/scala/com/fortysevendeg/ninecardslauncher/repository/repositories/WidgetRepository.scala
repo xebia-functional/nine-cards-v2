@@ -207,8 +207,12 @@ class WidgetRepository(
       packageName -> data.packageName,
       className -> data.className,
       appWidgetId -> data.appWidgetId,
+      startX -> data.startX,
+      startY -> data.startY,
       spanX -> data.spanX,
       spanY -> data.spanY,
-      startX -> data.startX,
-      startY -> data.startY)
+      widgetType -> data.widgetType,
+      label -> (data.label orNull),
+      imagePath -> (data.imagePath orNull),
+      intent -> (data.intent orNull))
 }

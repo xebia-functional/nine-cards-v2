@@ -16,6 +16,13 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
   val startY: Int = Random.nextInt(8)
   val spanX: Int = Random.nextInt(8)
   val spanY: Int = Random.nextInt(8)
+  val widgetType: String = Random.nextString(5)
+  val label: String = Random.nextString(5)
+  val widgetImagePath: String = Random.nextString(5)
+  val widgetIntent: String = Random.nextString(5)
+  val labelOption = Option(label)
+  val widgetImagePathOption = Option(widgetImagePath)
+  val widgetIntentOption = Option(widgetIntent)
 
   def createSeqWidget(
     num: Int = 5,
@@ -24,10 +31,14 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
     packageName: String = packageName,
     className: String = className,
     appWidgetId: Int = appWidgetId,
+    startX: Int = startX,
+    startY: Int = startY,
     spanX: Int = spanX,
     spanY: Int = spanY,
-    startX: Int = startX,
-    startY: Int = startY): Seq[Widget] = List.tabulate(num)(
+    widgetType: String = widgetType,
+    label: Option[String] = labelOption,
+    imagePath: Option[String] = widgetImagePathOption,
+    intent: Option[String] = widgetIntentOption) = List.tabulate(num)(
     item =>
       Widget(
         id = id + item,
@@ -35,10 +46,14 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
         packageName = packageName,
         className = className,
         appWidgetId = appWidgetId,
+        startX = startX,
+        startY = startY,
         spanX = spanX,
         spanY = spanY,
-        startX = startX,
-        startY = startY))
+        widgetType = widgetType,
+        label = label,
+        imagePath = imagePath,
+        intent = intent))
 
   def createSeqRepoWidget(
     num: Int = 5,
@@ -51,19 +66,27 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
     packageName: String = packageName,
     className: String = className,
     appWidgetId: Int = appWidgetId,
+    startX: Int = startX,
+    startY: Int = startY,
     spanX: Int = spanX,
     spanY: Int = spanY,
-    startX: Int = startX,
-    startY: Int = startY): RepositoryWidgetData =
+    widgetType: String = widgetType,
+    label: Option[String] = labelOption,
+    imagePath: Option[String] = widgetImagePathOption,
+    intent: Option[String] = widgetIntentOption): RepositoryWidgetData =
     RepositoryWidgetData(
       momentId = momentId,
       packageName = packageName,
       className = className,
       appWidgetId = appWidgetId,
+      startX = startX,
+      startY = startY,
       spanX = spanX,
       spanY = spanY,
-      startX = startX,
-      startY = startY)
+      widgetType = widgetType,
+      label = label,
+      imagePath = imagePath,
+      intent = intent)
 
   val seqWidget: Seq[Widget] = createSeqWidget()
   val servicesWidget: Widget = seqWidget(0)
@@ -76,19 +99,27 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
     packageName: String = packageName,
     className: String = className,
     appWidgetId: Int = appWidgetId,
+    startX: Int = startX,
+    startY: Int = startY,
     spanX: Int = spanX,
     spanY: Int = spanY,
-    startX: Int = startX,
-    startY: Int = startY): AddWidgetRequest =
+    widgetType: String = widgetType,
+    label: Option[String] = labelOption,
+    imagePath: Option[String] = widgetImagePathOption,
+    intent: Option[String] = widgetIntentOption): AddWidgetRequest =
     AddWidgetRequest(
       momentId = momentId,
       packageName = packageName,
       className = className,
       appWidgetId = appWidgetId,
+      startX = startX,
+      startY = startY,
       spanX = spanX,
       spanY = spanY,
-      startX = startX,
-      startY = startY)
+      widgetType = widgetType,
+      label = label,
+      imagePath = imagePath,
+      intent = intent)
 
   def createDeleteWidgetRequest(widget: Widget): DeleteWidgetRequest = DeleteWidgetRequest(widget = widget)
 
@@ -112,19 +143,26 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
     packageName: String = packageName,
     className: String = className,
     appWidgetId: Int = appWidgetId,
+    startX: Int = startX,
+    startY: Int = startY,
     spanX: Int = spanX,
     spanY: Int = spanY,
-    startX: Int = startX,
-    startY: Int = startY): UpdateWidgetRequest =
+    widgetType: String = widgetType,
+    label: Option[String] = labelOption,
+    imagePath: Option[String] = widgetImagePathOption,
+    intent: Option[String] = widgetIntentOption): UpdateWidgetRequest =
     UpdateWidgetRequest(
       id = id,
       momentId = momentId,
       packageName = packageName,
       className = className,
       appWidgetId = appWidgetId,
+      startX = startX,
+      startY = startY,
       spanX = spanX,
       spanY = spanY,
-      startX = startX,
-      startY = startY)
-
+      widgetType = widgetType,
+      label = label,
+      imagePath = imagePath,
+      intent = intent)
 }

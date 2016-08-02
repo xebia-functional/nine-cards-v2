@@ -15,10 +15,14 @@ trait WidgetConversions {
       packageName = widget.data.packageName,
       className = widget.data.className,
       appWidgetId = widget.data.appWidgetId,
+      startX = widget.data.startX,
+      startY = widget.data.startY,
       spanX = widget.data.spanX,
       spanY = widget.data.spanY,
-      startX = widget.data.startX,
-      startY = widget.data.startY)
+      widgetType = widget.data.widgetType,
+      label = widget.data.label,
+      imagePath = widget.data.imagePath,
+      intent = widget.data.intent)
 
   def toRepositoryWidget(widget: Widget): RepositoryWidget =
     RepositoryWidget(
@@ -28,10 +32,14 @@ trait WidgetConversions {
         packageName = widget.packageName,
         className = widget.className,
         appWidgetId = widget.appWidgetId,
+        startX = widget.startX,
+        startY = widget.startY,
         spanX = widget.spanX,
         spanY = widget.spanY,
-        startX = widget.startX,
-        startY = widget.startY))
+        widgetType = widget.widgetType,
+        label = widget.label,
+        imagePath = widget.imagePath,
+        intent = widget.intent))
 
   def toRepositoryWidget(request: UpdateWidgetRequest): RepositoryWidget =
     RepositoryWidget(
@@ -41,10 +49,14 @@ trait WidgetConversions {
         packageName = request.packageName,
         className = request.className,
         appWidgetId = request.appWidgetId,
+        startX = request.startX,
+        startY = request.startY,
         spanX = request.spanX,
         spanY = request.spanY,
-        startX = request.startX,
-        startY = request.startY))
+        widgetType = request.widgetType,
+        label = request.label,
+        imagePath = request.imagePath,
+        intent = request.intent))
 
   def toRepositoryWidgetData(request: AddWidgetRequest): RepositoryWidgetData =
     RepositoryWidgetData(
@@ -52,8 +64,12 @@ trait WidgetConversions {
       packageName = request.packageName,
       className = request.className,
       appWidgetId = request.appWidgetId,
+      startX = request.startX,
+      startY = request.startY,
       spanX = request.spanX,
       spanY = request.spanY,
-      startX = request.startX,
-      startY = request.startY)
+      widgetType = request.widgetType,
+      label = request.label,
+      imagePath = request.imagePath,
+      intent = request.intent)
 }

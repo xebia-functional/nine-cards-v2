@@ -188,10 +188,14 @@ case class AddWidgetRequest(
   packageName: String,
   className: String,
   appWidgetId: Int,
+  startX: Int,
+  startY: Int,
   spanX: Int,
   spanY: Int,
-  startX: Int,
-  startY: Int)
+  widgetType: String,
+  label: Option[String],
+  imagePath: Option[String],
+  intent: Option[String])
 
 case class DeleteWidgetsRequest(where: String)
 
@@ -209,10 +213,14 @@ case class UpdateWidgetRequest(
   packageName: String,
   className: String,
   appWidgetId: Int,
+  startX: Int,
+  startY: Int,
   spanX: Int,
   spanY: Int,
-  startX: Int,
-  startY: Int)
+  widgetType: String,
+  label: Option[String],
+  imagePath: Option[String],
+  intent: Option[String])
 
 case class UpdateWidgetsRequest(updateWidgetRequests: Seq[UpdateWidgetRequest])
 

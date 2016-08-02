@@ -1,6 +1,7 @@
 package com.fortysevendeg.repository.widget
 
 import android.net.Uri
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
@@ -256,10 +257,14 @@ trait WidgetMockCursor
     (packageName, 2, widgetSeq map (_.data.packageName), StringDataType),
     (className, 3, widgetSeq map (_.data.className), StringDataType),
     (appWidgetId, 4, widgetSeq map (_.data.appWidgetId), IntDataType),
-    (spanX, 5, widgetSeq map (_.data.spanX), IntDataType),
-    (spanY, 6, widgetSeq map (_.data.spanY), IntDataType),
-    (startX, 8, widgetSeq map (_.data.startX), IntDataType),
-    (startY, 9, widgetSeq map (_.data.startY), IntDataType))
+    (startX, 5, widgetSeq map (_.data.startX), IntDataType),
+    (startY, 6, widgetSeq map (_.data.startY), IntDataType),
+    (spanX, 7, widgetSeq map (_.data.spanX), IntDataType),
+    (spanY, 8, widgetSeq map (_.data.spanY), IntDataType),
+    (widgetType, 9, widgetSeq map (_.data.widgetType), StringDataType),
+    (label, 10, widgetSeq map (_.data.label getOrElse javaNull), StringDataType),
+    (imagePath, 11, widgetSeq map (_.data.imagePath getOrElse javaNull), StringDataType),
+    (intent, 12, widgetSeq map (_.data.intent getOrElse javaNull), StringDataType))
 
   prepareCursor[Widget](widgetSeq.size, cursorData)
 }
@@ -274,10 +279,14 @@ trait EmptyWidgetMockCursor
     (packageName, 2, Seq.empty, StringDataType),
     (className, 3, Seq.empty, StringDataType),
     (appWidgetId, 4, Seq.empty, StringDataType),
-    (spanX, 5, Seq.empty, IntDataType),
-    (spanY, 6, Seq.empty, IntDataType),
-    (startX, 8, Seq.empty, IntDataType),
-    (startY, 9, Seq.empty, IntDataType))
+    (startX, 5, Seq.empty, IntDataType),
+    (startY, 6, Seq.empty, IntDataType),
+    (spanX, 7, Seq.empty, IntDataType),
+    (spanY, 8, Seq.empty, IntDataType),
+    (widgetType, 9, Seq.empty, StringDataType),
+    (label, 10, Seq.empty, StringDataType),
+    (imagePath, 11, Seq.empty, StringDataType),
+    (intent, 12, Seq.empty, StringDataType))
 
   prepareCursor[Widget](0, cursorData)
 }

@@ -95,10 +95,14 @@ case class WidgetData(
   packageName: String,
   className: String,
   appWidgetId: Int,
+  startX: Int,
+  startY: Int,
   spanX: Int,
   spanY: Int,
-  startX: Int,
-  startY: Int)
+  widgetType: String,
+  label: Option[String],
+  imagePath: Option[String],
+  intent: Option[String])
 
 case class DataCounter(term: String, count: Int)
 
