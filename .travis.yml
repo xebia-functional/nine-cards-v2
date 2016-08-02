@@ -9,13 +9,13 @@ addons:
       - lib32z1
       - lib32stdc++6
 before_install:
-  - wget https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
-  - tar xf android-sdk_r24.4.1-linux.tgz
+  - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
+  - tar xf android-sdk_r24-linux.tgz
   - export ANDROID_HOME=$PWD/android-sdk-linux
   - export ANDROID_SDK_HOME=$PWD/android-sdk-linux
   - export PATH=${PATH}:${ANDROID_HOME}/tools:${ANDROID_HOME}/platform-tools
   - echo yes | android update sdk --all --filter platform-tools --no-ui
-  - echo yes | android update sdk --all --filter build-tools-24.0.1 --no-ui
+  - echo yes | android update sdk --all --filter build-tools-23.0.1 --no-ui
   - echo yes | android update sdk --all --filter android-23 --no-ui
   - echo yes | android update sdk --all --filter extra-android-support --no-ui
   - echo yes | android update sdk --all --filter extra-android-m2repository --no-ui
@@ -28,4 +28,15 @@ before_install:
   - export GIT_COMMIT=${TRAVIS_COMMIT}
   - pip install --user codecov && codecov -t ${CODECOV_TOKEN}
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION "project app" android:packageRelease
+  - sbt ++$TRAVIS_SCALA_VERSION "project commons" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project api" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project repository" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project services" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project process" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project app" coverage test
+after_success:
+  - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
+  - codecov
+  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" android:packageRelease
+  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-upload
+  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-generateLink
