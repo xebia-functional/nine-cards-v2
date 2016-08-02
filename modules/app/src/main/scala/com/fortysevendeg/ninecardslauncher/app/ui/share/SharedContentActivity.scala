@@ -15,7 +15,7 @@ class SharedContentActivity
     with TypedFindView
     with SharedContentUiActionsImpl { self =>
 
-  lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
+  lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
   lazy val presenter: SharedContentPresenter = new SharedContentPresenter(self)
 

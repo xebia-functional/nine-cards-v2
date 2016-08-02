@@ -22,7 +22,8 @@ trait SharedContentUiActionsImpl
   implicit lazy val theme: NineCardsTheme = presenter.getTheme
 
   override def showChooseCollection(collections: Seq[Collection]): Ui[Any] = activityContextWrapper.original.get match {
-    case Some(activity: Activity) => Ui(new CollectionDialog(collections).show())
+    case Some(activity: Activity) =>
+      Ui(new CollectionDialog(collections, presenter.collectionChosen, presenter.dialogDismissed).show())
     case _ => Ui.nop
   }
 

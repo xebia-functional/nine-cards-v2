@@ -40,14 +40,20 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
 
     val contentTypeText = "text/plain"
 
-    Option(intent) foreach { intent =>
-      (Option(intent.getAction), Option(intent.getType), Option(intent.getStringExtra(Intent.EXTRA_TEXT))) match {
+    Option(intent) foreach { i =>
+
+      val action = Option(i.getAction)
+      val intentType = Option(i.getType)
+      val extra = Option(i.getStringExtra(Intent.EXTRA_TEXT))
+      val subject = Option(i.getStringExtra(Intent.EXTRA_SUBJECT))
+
+      (action, intentType, extra) match {
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) if isLink(content) =>
           val sharedContent = SharedContent(
             contentType = Web,
-            title = Option(intent.getStringExtra(Intent.EXTRA_SUBJECT)) getOrElse resGetString(R.string.sharedContentDefaultTitle),
+            title = subject getOrElse resGetString(R.string.sharedContentDefaultTitle),
             content = content,
-            image = readImageUri(intent))
+            image = readImageUri(i))
           statuses = statuses.copy(sharedContent = Some(sharedContent))
           Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
             onResult = uiActions.showChooseCollection,
@@ -63,7 +69,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
     }
   }
 
-  def collectionChosen(collection: Collection): Unit = {
+  def collectionChosen(collectionId: Int): Unit = {
 
     def createRequest(sharedContent: SharedContent, imagePath: String): AddCardRequest = {
 
@@ -92,14 +98,14 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
       }
     }
 
-    def addCard(collectionId: Int, sharedContent: SharedContent): ServiceDef2[Unit, ShortcutException with CardException] = for {
+    def addCard(sharedContent: SharedContent): ServiceDef2[Unit, ShortcutException with CardException] = for {
       imagePath <- saveBitmap(sharedContent.image)
       _ <- di.collectionProcess.addCards(collectionId, Seq(createRequest(sharedContent, imagePath)))
     } yield ()
 
     statuses.sharedContent match {
       case Some(sharedContent) =>
-        Task.fork(addCard(collection.id, sharedContent).run).resolveAsyncUi(
+        Task.fork(addCard(sharedContent).run).resolveAsyncUi(
           onResult = (_) => uiActions.showSuccess(),
           onException = error)
       case _ => uiActions.showUnexpectedError().run

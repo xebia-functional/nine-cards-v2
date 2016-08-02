@@ -18,7 +18,10 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-class CollectionDialog(moments: Seq[Collection])(implicit contextWrapper: ContextWrapper, presenter: SharedContentPresenter)
+class CollectionDialog(
+  moments: Seq[Collection],
+  onCollection: (Int) => Any,
+  onDismissDialog: () => Any)(implicit contextWrapper: ContextWrapper)
   extends BottomSheetDialog(contextWrapper.getOriginal) { dialog =>
 
   val sheetView = getLayoutInflater.inflate(TR.layout.select_collection_dialog)
@@ -31,7 +34,7 @@ class CollectionDialog(moments: Seq[Collection])(implicit contextWrapper: Contex
   setContentView(sheetView)
 
   setOnDismissListener(new OnDismissListener {
-    override def onDismiss(dialog: DialogInterface): Unit = presenter.dialogDismissed()
+    override def onDismiss(dialog: DialogInterface): Unit = onDismissDialog()
   })
 
   class CollectionItem(collection: Collection)
@@ -48,7 +51,7 @@ class CollectionDialog(moments: Seq[Collection])(implicit contextWrapper: Contex
 
     ((this <~ On.click(
       Ui {
-        presenter.collectionChosen(collection)
+        onCollection(collection.id)
         dialog.dismiss()
       })) ~
       (icon <~ ivSrc(iconCollectionDetail(collection.icon)) <~ tivDefaultColor(colorIcon)) ~
