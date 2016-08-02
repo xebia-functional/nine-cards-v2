@@ -37,12 +37,12 @@ trait CreateCollectionsTasks
       _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
       momentCollections <- di.momentProcess.createMoments
-      moments <- di.momentProcess.getMoments
+      allCollections = collections ++ momentCollections
       savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-        collections = momentCollections.map(collection => toCloudStorageCollection(collection, collection.moment)),
-        moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
+        collections = allCollections map toCloudStorageCollection,
+        moments = Seq.empty)
       _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId)
-    } yield collections ++ momentCollections
+    } yield allCollections
   }
 
   def loadConfiguration(
