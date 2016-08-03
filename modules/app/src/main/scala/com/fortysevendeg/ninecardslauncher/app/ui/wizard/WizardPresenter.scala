@@ -309,8 +309,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     maybeClient: Option[GoogleApiClient],
     maybeProfileName: Option[String],
     maybeEmail: Option[String],
-    maybeUserPermissions: Option[UserPermissions]
-  ): Unit = {
+    maybeUserPermissions: Option[UserPermissions]): Unit = {
 
     def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = Service {
       val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).run)

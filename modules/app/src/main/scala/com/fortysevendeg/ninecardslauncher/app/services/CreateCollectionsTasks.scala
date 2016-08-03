@@ -24,7 +24,9 @@ trait CreateCollectionsTasks
 
   val dockAppsSize = 4
 
-  def createNewConfiguration(client: GoogleApiClient): ServiceDef2[Seq[Collection], ResetException with AppException with ContactException with CollectionException with DockAppException with MomentException with UserException with CloudStorageProcessException] = {
+  def createNewConfiguration(
+    client: GoogleApiClient,
+    deviceToken: Option[String]): ServiceDef2[Seq[Collection], ResetException with AppException with ContactException with CollectionException with DockAppException with MomentException with UserException with CloudStorageProcessException] = {
     val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       _ <- di.deviceProcess.resetSavedItems()
@@ -41,28 +43,29 @@ trait CreateCollectionsTasks
       savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
         collections = momentCollections.map(collection => toCloudStorageCollection(collection, collection.moment)),
         moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
-      _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId)
+      _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId, deviceToken)
     } yield collections ++ momentCollections
   }
 
   def loadConfiguration(
-   client: GoogleApiClient,
-   cloudId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CloudStorageProcessException with CollectionException with DockAppException with MomentException with UserException] = {
-   val cloudStorageProcess = di.createCloudStorageProcess(client)
-   for {
-     _ <- di.deviceProcess.resetSavedItems()
-     _ <- di.deviceProcess.saveInstalledApps
-     _ <- di.deviceProcess.generateDockApps(dockAppsSize)
-     apps <- di.deviceProcess.getSavedApps(GetByName)
-     _ = setProcess(GettingAppsProcess)
-     device <- cloudStorageProcess.getCloudStorageDevice(cloudId)
-     _ = setProcess(LoadingConfigProcess)
-     _ = setProcess(CreatingCollectionsProcess)
-     collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))
-     momentSeq = device.data.moments map (_ map toMoment) getOrElse Seq.empty
-     _ <- di.momentProcess.saveMoments(momentSeq)
-     _ <- di.userProcess.updateUserDevice(device.data.deviceName, device.cloudId)
-   } yield collections
+    client: GoogleApiClient,
+    deviceToken: Option[String],
+    cloudId: String): ServiceDef2[Seq[Collection], ResetException with AppException with CloudStorageProcessException with CollectionException with DockAppException with MomentException with UserException] = {
+    val cloudStorageProcess = di.createCloudStorageProcess(client)
+    for {
+      _ <- di.deviceProcess.resetSavedItems()
+      _ <- di.deviceProcess.saveInstalledApps
+      _ <- di.deviceProcess.generateDockApps(dockAppsSize)
+      apps <- di.deviceProcess.getSavedApps(GetByName)
+      _ = setProcess(GettingAppsProcess)
+      device <- cloudStorageProcess.getCloudStorageDevice(cloudId)
+      _ = setProcess(LoadingConfigProcess)
+      _ = setProcess(CreatingCollectionsProcess)
+      collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))
+      momentSeq = device.data.moments map (_ map toMoment) getOrElse Seq.empty
+      _ <- di.momentProcess.saveMoments(momentSeq)
+      _ <- di.userProcess.updateUserDevice(device.data.deviceName, device.cloudId, deviceToken)
+    } yield collections
   }
 
 }
