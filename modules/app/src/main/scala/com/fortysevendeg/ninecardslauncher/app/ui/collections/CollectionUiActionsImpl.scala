@@ -5,30 +5,31 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
+import android.text.Html
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullingListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchGoogleColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid._
 import macroid.FullDsl._
+import macroid._
+
 import scala.language.postfixOps
 
 trait CollectionUiActionsImpl
@@ -48,15 +49,21 @@ trait CollectionUiActionsImpl
 
   var statuses = CollectionStatuses()
 
-  lazy val emptyCollectionLayout = Option(findView(TR.collection_detail_empty))
+  lazy val emptyCollectionView = Option(findView(TR.collection_detail_empty))
 
   lazy val emptyCollectionMessage = Option(findView(TR.collection_empty_message))
-
-  lazy val emptyCollectionImage = Option(findView(TR.collection_empty_image))
 
   lazy val recyclerView = Option(findView(TR.collection_detail_recycler))
 
   lazy val pullToCloseView = Option(findView(TR.collection_detail_pull_to_close))
+
+  lazy val paddingSmall = resGetDimensionPixelSize(R.dimen.padding_small)
+
+  lazy val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
+
+  lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+
+  lazy val messageText = Html.fromHtml(resGetString(R.string.collectionDetailAddCardsMessage))
 
   override def updateStatus(canScroll: Boolean, sType: ScrollType): Ui[Any] = Ui {
     statuses = statuses.copy(scrollType = sType, canScroll = canScroll)
@@ -126,10 +133,8 @@ trait CollectionUiActionsImpl
 
     (recyclerView <~
       vGlobalLayoutListener(view => {
-        val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-        val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-        loadCollection(collection, padding, spaceMove, animateCards) ~
-          uiHandler(startScroll(padding, spaceMove))
+        loadCollection(collection, paddingSmall, spaceMove, animateCards) ~
+          uiHandler(startScroll())
       }) <~
       (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)) ~
       (pullToCloseView <~
@@ -153,21 +158,17 @@ trait CollectionUiActionsImpl
 
   override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
 
-  override def showEmptyCollection(): Ui[Any] = {
-    val color = theme.get(SearchGoogleColor)
-    (emptyCollectionMessage <~ tvColor(color)) ~
-      (emptyCollectionImage <~ tivDefaultColor(color)) ~
-      (emptyCollectionLayout <~ vVisible) ~
+  override def showEmptyCollection(): Ui[Any] =
+    (emptyCollectionMessage <~
+      tvText(messageText)) ~
+      (emptyCollectionView <~ vVisible) ~
       (recyclerView <~ vGone)
-  }
 
-  override def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): Ui[Any] = {
-      val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-      (recyclerView <~
-        rvAdapter(createAdapter(collection)) <~
-        nrvScheduleLayoutAnimation <~
-        getScrollListener(spaceMove)).ifUi(animateCards)
-    }
+  override def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): Ui[Any] =
+    (recyclerView <~
+      rvAdapter(createAdapter(collection)) <~
+      nrvScheduleLayoutAnimation <~
+      getScrollListener(spaceMove)).ifUi(animateCards)
 
   override def editCard(collectionId: Int, cardId: Int, cardName: String): Unit =
     showDialog(new EditCardDialogFragment(collectionId, cardId, cardName))
@@ -222,36 +223,30 @@ trait CollectionUiActionsImpl
 
   private[this] def showCollection(): Ui[_] =
     (recyclerView <~ vVisible) ~
-      (emptyCollectionLayout <~ vGone)
+      (emptyCollectionView <~ vGone)
 
   private[this] def openReorderMode: Ui[_] = {
-    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     collectionsPresenter.openReorderMode(statuses.scrollType, statuses.canScroll)
     (pullToCloseView <~ pdvEnable(false)) ~
       (recyclerView <~ nrvRegisterScroll(false)) ~
       (Ui(collectionsPresenter.scrollType(ScrollUp)) ~
       (recyclerView <~
-        vPadding(padding, padding, padding, padding))).ifUi(statuses.canScroll)
+        vPadding(paddingSmall, paddingSmall, paddingSmall, paddingSmall))).ifUi(statuses.canScroll)
   }
 
-  private[this] def closeReorderMode: Ui[_] = {
-    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
-    val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
+  private[this] def closeReorderMode: Ui[_] =
     (pullToCloseView <~ pdvEnable(true)) ~
       (recyclerView <~
-        vPadding(padding, spaceMove, padding, padding) <~
+        vPadding(paddingSmall, spaceMove, paddingSmall, paddingSmall) <~
         vScrollBy(0, -Int.MaxValue) <~
         vScrollBy(0, spaceMove)).ifUi(statuses.canScroll) ~
       (recyclerView <~ nrvRegisterScroll(true) <~ nrvResetScroll(spaceMove))
-  }
 
   def resetScroll: Ui[_] =
     recyclerView <~
-      getScrollListener(resGetDimensionPixelSize(R.dimen.space_moving_collection_details))
+      getScrollListener(spaceMove)
 
   def scrollType(newScrollType: ScrollType): Ui[_] = {
-    val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     (statuses.canScroll, statuses.scrollType) match {
       case (true, s) if s != newScrollType =>
         statuses = statuses.copy(scrollType = newScrollType)
@@ -263,11 +258,12 @@ trait CollectionUiActionsImpl
           })
       case (false, s) if s != newScrollType =>
         statuses = statuses.copy(scrollType = newScrollType)
-        val paddingTop = newScrollType match {
-          case ScrollUp => padding
-          case _ => spaceMove
+        val (paddingTop, marginTop) = newScrollType match {
+          case ScrollUp => (paddingSmall, paddingDefault)
+          case _ => (spaceMove, spaceMove + paddingSmall)
         }
-        recyclerView <~ vPadding(padding, paddingTop, padding, padding)
+        (recyclerView <~ vPadding(paddingSmall, paddingTop, paddingSmall, paddingSmall)) ~
+          (emptyCollectionView <~ vMargin(paddingDefault, marginTop, paddingDefault, paddingDefault))
       case _ => Ui.nop
     }
   }
@@ -323,12 +319,18 @@ trait CollectionUiActionsImpl
       }
     )
 
-  private[this] def startScroll(padding: Int, spaceMove: Int): Ui[_] =
+  private[this] def startScroll(): Ui[_] =
     (statuses.canScroll, statuses.scrollType) match {
-      case (true, ScrollUp) => recyclerView <~ vScrollBy(0, spaceMove)
-      case (true, ScrollDown) => recyclerView <~ vScrollBy(0, 0)
-      case (false, ScrollUp) => recyclerView <~ vPadding(padding, padding, padding, padding)
-      case (false, ScrollDown) => recyclerView <~ vPadding(padding, spaceMove, padding, padding)
+      case (true, ScrollUp) =>
+        recyclerView <~ vScrollBy(0, spaceMove)
+      case (true, ScrollDown) =>
+        recyclerView <~ vScrollBy(0, 0)
+      case (false, ScrollUp) =>
+        (recyclerView <~ vPadding(paddingSmall, paddingSmall, paddingSmall, paddingSmall)) ~
+          (emptyCollectionView <~ vMargin(paddingDefault, paddingDefault, paddingDefault, paddingDefault))
+      case (false, ScrollDown) =>
+        (recyclerView <~ vPadding(paddingSmall, spaceMove, paddingSmall, paddingSmall)) ~
+          (emptyCollectionView <~ vMargin(paddingDefault, spaceMove + paddingSmall, paddingDefault, paddingDefault))
       case _ => Ui.nop
     }
 
