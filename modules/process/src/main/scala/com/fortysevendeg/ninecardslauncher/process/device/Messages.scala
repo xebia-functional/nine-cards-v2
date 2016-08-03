@@ -24,3 +24,5 @@ object GetByInstallDate extends GetByInstallDate(false)
 case class GetByCategory(ascending: Boolean) extends GetAppOrder
 
 object GetByCategory extends GetByCategory(true)
+
+case class IconResize(width: Int, height: Int)

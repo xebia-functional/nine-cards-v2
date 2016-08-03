@@ -130,10 +130,8 @@ class CollectionsPagerPresenter(
     cards <- di.collectionProcess.addCards(collectionId, Seq(addCardRequest))
   } yield cards
 
-  private[this] def saveShortcutIcon(bitmap: Option[Bitmap]):
-  ServiceDef2[String, ShortcutException] = bitmap map { b =>
-    di.deviceProcess.saveShortcutIcon(Random.nextString(10), b) // Name is not important here
-  } getOrElse Service(Task(Result.answer(""))) // We use a empty string because the UI will generate an image
+  private[this] def saveShortcutIcon(bitmap: Option[Bitmap]): ServiceDef2[String, ShortcutException] =
+    bitmap map (di.deviceProcess.saveShortcutIcon(_)) getOrElse Service(Task(Result.answer(""))) // We use a empty string because the UI will generate an image
 
 }
 

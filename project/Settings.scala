@@ -126,7 +126,6 @@ object Settings {
     prettyTime,
     glide,
     okHttp,
-    gfcTimeUUID,
     stetho,
     stethoOkhttp,
     stethoUrlconnection,
@@ -140,6 +139,7 @@ object Settings {
     mockito)
 
   lazy val servicesDependencies = Seq(
+    gfcTimeUUID,
     androidProvidedLib,
     specs2,
     mockito)

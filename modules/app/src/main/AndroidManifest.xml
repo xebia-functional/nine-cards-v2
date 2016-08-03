@@ -56,10 +56,24 @@
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity"/>
 
         <activity
-                android:theme="@style/AppThemePreferences"
-                android:screenOrientation="portrait"
-                android:label="@string/nineCardsSettingsTitle"
-                android:name="com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity"/>
+            android:theme="@style/AppThemePreferences"
+            android:screenOrientation="portrait"
+            android:label="@string/nineCardsSettingsTitle"
+            android:name="com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity"/>
+
+        <activity
+            android:theme="@style/AppThemeSharedContent"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:label=""
+            android:name="com.fortysevendeg.ninecardslauncher.app.ui.share.SharedContentActivity" >
+            <intent-filter
+                android:label="@string/sharedIntentLabel">
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
 
         <service
             android:name="com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService"/>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/SelectCollectionItemContent">
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        android:id="@+id/select_collection_item_icon"
+        style="@style/SelectCollectionItemIcon"/>
+
+    <TextView
+        android:id="@+id/select_collection_item_text"
+        style="@style/SelectCollectionItemText"/>
+
+</LinearLayout>
