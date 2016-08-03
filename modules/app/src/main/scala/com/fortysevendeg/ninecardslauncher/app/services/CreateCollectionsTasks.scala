@@ -4,16 +4,12 @@ import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardInt
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageCollection
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, NineCardIntent}
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.{DockAppException, _}
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.google.android.gms.common.api.GoogleApiClient
-import play.api.libs.json.Json
 
 trait CreateCollectionsTasks
   extends Conversions
@@ -39,10 +35,10 @@ trait CreateCollectionsTasks
       _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
       momentCollections <- di.momentProcess.createMoments
-      moments <- di.momentProcess.getMoments
+      storedCollections <- di.collectionProcess.getCollections
       savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-        collections = momentCollections.map(collection => toCloudStorageCollection(collection, collection.moment)),
-        moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
+        collections = storedCollections map toCloudStorageCollection,
+        moments = Seq.empty)
       _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId, deviceToken)
     } yield collections ++ momentCollections
   }

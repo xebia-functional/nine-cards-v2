@@ -167,6 +167,14 @@ trait DeviceConversions extends NineCardIntentConversions {
     number = item.number,
     category = PhoneCategory(item.category))
 
+  def toAppsWithWidgets(apps: Seq[ServicesApp], widgets: Seq[ServicesWidget]): Seq[AppsWithWidgets] = apps map { app =>
+    AppsWithWidgets(
+      packageName = app.packageName,
+      name = app.name,
+      widgets = widgets filter(_.packageName == app.packageName) map toWidget
+    )
+  }
+
   def toWidget(item: ServicesWidget): Widget = Widget(
     userHashCode = item.userHashCode,
     autoAdvanceViewId = item.autoAdvanceViewId,

@@ -151,10 +151,10 @@ trait DeviceProcess {
 
   /**
    * Get the widgets available on the phone
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Widget]
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.AppsWithWidgets]
    * @throws WidgetException if exist some problem to get the widgets
    */
-  def getWidgets(implicit context: ContextSupport): ServiceDef2[Seq[Widget], WidgetException]
+  def getWidgets(implicit context: ContextSupport): ServiceDef2[Seq[AppsWithWidgets], WidgetException]
 
   /**
     * Get the last calls available on the phone

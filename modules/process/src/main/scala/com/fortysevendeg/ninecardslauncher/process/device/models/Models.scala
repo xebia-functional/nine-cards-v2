@@ -62,6 +62,11 @@ case class DockApp(
   imagePath: String,
   position: Int)
 
+case class AppsWithWidgets(
+  packageName: String,
+  name: String,
+  widgets: Seq[Widget])
+
 case class Widget(
   userHashCode: Option[Int],
   autoAdvanceViewId: Int,

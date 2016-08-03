@@ -471,6 +471,18 @@ trait DeviceProcessData
       preview = preview3)
   )
 
+  val appWithWidgets = widgets map { widget =>
+    AppsWithWidgets(
+      name = widget.packageName match {
+        case `packageName1` => name1
+        case `packageName2` => name2
+        case `packageName3` => name3
+        case _ => ""
+      },
+      packageName = widget.packageName,
+      widgets = Seq(widget))
+  }
+
   val callsServices: Seq[ServicesCall] = Seq(
     ServicesCall(
       number = phoneNumber1,
