@@ -57,10 +57,6 @@ object WidgetsOps {
 
   implicit class WidgetsOp(widget: Widget) {
 
-    val rows = 5
-
-    val columns = 5
-
     def getCell(widthContent: Int, heightContent: Int)(implicit contextWrapper: ContextWrapper): Cell =
       dimensionToCell(
         widthContent = widthContent,

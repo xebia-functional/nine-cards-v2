@@ -5,20 +5,18 @@ import android.view.View.OnTouchListener
 import android.view.{MotionEvent, View}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ClicksHandler
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 
-class LauncherWidgetView(widgetView: View, presenter: LauncherPresenter)(implicit contextWrapper: ContextWrapper)
+case class LauncherWidgetView(id: Int, widgetView: View, presenter: LauncherPresenter)(implicit contextWrapper: ContextWrapper)
   extends FrameLayout(contextWrapper.bestAvailable)
   with ClicksHandler {
 
-  override def onLongClick(): Unit = {
-    uiVibrate().run
-    presenter.openModeEditWidgets()
-  }
+  override def onLongClick(): Unit = presenter.openModeEditWidgets(id)
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = touchEvent(event)
 
@@ -36,6 +34,14 @@ class LauncherWidgetView(widgetView: View, presenter: LauncherPresenter)(implici
   })
 
   (this <~ vgAddViews(Seq(widgetView, viewBlockTouch))).run
+
+  def activeSelected(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_selected)
+
+  def activeResizing(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_resizing)
+
+  def activeMoving(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_moving)
+
+  def deactivateSelected(): Ui[Any] = this <~ vBlankBackground
 
   private[this] def touchEvent(event: MotionEvent): Boolean = {
     event.getAction match {

@@ -54,7 +54,7 @@ object Settings {
       useProguardInDebug in Android := true,
       versionName in Android := Some(s"${versionName.value.getOrElse("")}-$versionNameSuffix"),
       proguardOptions in Android ++= proguardCommons,
-      proguardCache in Android := proguardCacheList)
+      proguardCache in Android := Seq.empty)
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++

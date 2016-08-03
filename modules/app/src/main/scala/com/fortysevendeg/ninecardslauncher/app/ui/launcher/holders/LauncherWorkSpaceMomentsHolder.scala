@@ -3,12 +3,16 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
 import android.content.Context
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
+import android.view.ViewGroup.LayoutParams._
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout.LayoutParams
+import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DottedDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView
@@ -16,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import macroid.FullDsl._
 import macroid._
 
 class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresenter, theme: NineCardsTheme, parentDimen: Dimen)
@@ -24,6 +29,8 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   with TypedFindView {
 
   LayoutInflater.from(context).inflate(R.layout.moment_workspace_layout, this)
+
+  val ruleTag = "rule"
 
   val content = Option(findView(TR.launcher_moment_content))
 
@@ -54,15 +61,56 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
         (widgets <~ vGone))
   }
 
+  def reloadSelectedWidget(): Ui[Any] = this <~ Transformer {
+    case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeSelected()
+    case widget: LauncherWidgetView => widget.deactivateSelected()
+  }
+
   def addWidget(widgetView: View, cell: Cell): Ui[Any] = {
     val (width, height) = cell.getSize
     val params = new LayoutParams(width, height)
     params.setMargins(paddingDefault, paddingDefault, paddingDefault, paddingDefault)
     widgets <~
       vgRemoveAllViews <~
-      vgAddView(new LauncherWidgetView(widgetView, presenter), params)
+      vgAddView(LauncherWidgetView(1, widgetView, presenter), params) // Id is 1 for now, we only have one widget
   }
 
   def clearWidgets(): Ui[Any] = widgets <~ vgRemoveAllViews
+
+  def createRules(): Ui[Any] = {
+    val size = resGetDimensionPixelSize(R.dimen.stroke_thin)
+    val spaceWidth = (getWidth - (paddingDefault * 2)) / WidgetsOps.columns
+    val spaceHeight = (getHeight - (paddingDefault * 2)) / WidgetsOps.rows
+
+    def createView(horizontal: Boolean = true) =
+      (w[ImageView] <~
+        vWrapContent <~
+        vTag(ruleTag) <~
+        vBackground(new DottedDrawable(horizontal))).get
+
+    def horizontalRules(pos: Int) = {
+      val params = new LayoutParams(MATCH_PARENT, size)
+      params.leftMargin = paddingDefault
+      params.rightMargin = paddingDefault
+      params.topMargin = (pos * spaceHeight) + paddingDefault - size
+      vgAddView(createView(), params)
+    }
+
+    def verticalRules(pos: Int) = {
+      val params = new LayoutParams(size, MATCH_PARENT)
+      params.topMargin = paddingDefault
+      params.bottomMargin = paddingDefault
+      params.leftMargin = (pos * spaceWidth) + paddingDefault - size
+      vgAddView(createView(horizontal = false), params)
+    }
+
+    val tweaks = ((1 until WidgetsOps.rows) map horizontalRules) ++ ((1 until WidgetsOps.columns) map verticalRules)
+    val uis = tweaks map (tweak => this <~ tweak)
+    Ui.sequence(uis: _*)
+  }
+
+  def removeRules(): Ui[Any] = this <~ Transformer {
+    case i: ImageView if i.getTag == ruleTag => this <~ vgRemoveView(i)
+  }
 
 }

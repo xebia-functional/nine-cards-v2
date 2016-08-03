@@ -91,6 +91,21 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ =>
   }
 
+  def showRulesInMoment(): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.createRules().run
+    case _ =>
+  }
+
+  def hideRulesInMoment(): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.removeRules().run
+    case _ =>
+  }
+
+  def reloadSelectedWidget(): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.reloadSelectedWidget().run
+    case _ =>
+  }
+
   def openMenu(): Unit = {
     workSpacesStatuses = workSpacesStatuses.startLaunchedOpen()
     (uiVibrate() ~

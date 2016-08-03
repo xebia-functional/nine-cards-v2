@@ -225,7 +225,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def goToMomentWorkspace(): Unit = (actions.goToMomentWorkspace() ~ actions.closeAppsMoment()).run
 
-  def clickWorkspaceBackground(): Unit = actions.openAppsMoment().run
+  def clickWorkspaceBackground(): Unit = {
+    statuses.mode match {
+      case NormalMode => actions.openAppsMoment().run
+      case EditWidgetsMode => closeModeEditWidgets()
+      case _ =>
+    }
+  }
 
   def clickMomentTopBar(): Unit = actions.openAppsMoment().run
 
@@ -289,9 +295,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
-  def openModeEditWidgets(): Unit = actions.openModeEditWidgets().run
+  def openModeEditWidgets(id: Int): Unit = {
+    statuses = statuses.copy(mode = EditWidgetsMode, idWidget = Some(id))
+    actions.openModeEditWidgets().run
+  }
 
-  def closeModeEditWidgets(): Unit = actions.closeModeEditWidgets().run
+  def closeModeEditWidgets(): Unit = {
+    statuses = statuses.copy(mode = NormalMode, idWidget = None)
+    actions.closeModeEditWidgets().run
+  }
 
   def goToChangeMoment(): Unit = {
     Task.fork(di.momentProcess.getAvailableMoments.run).resolveAsyncUi(
@@ -715,6 +727,7 @@ object Statuses {
   case class LauncherPresenterStatuses(
     touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
     mode: LauncherMode = NormalMode,
+    idWidget: Option[Int] = None,
     cardAddItemMode: Option[AddCardRequest] = None,
     collectionReorderMode: Option[Collection] = None,
     startPositionReorderMode: Int = 0,
@@ -752,4 +765,6 @@ object Statuses {
   case object AddItemMode extends LauncherMode
 
   case object ReorderMode extends LauncherMode
+
+  case object EditWidgetsMode extends LauncherMode
 }

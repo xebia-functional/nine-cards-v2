@@ -56,6 +56,12 @@ object LauncherWorkSpacesTweaks {
 
   def lwsAddWidget(widgetView: View, cell: Cell) = Tweak[W] (_.addWidget(widgetView, cell))
 
+  def lwsShowRules() = Tweak[W] (_.showRulesInMoment())
+
+  def lwsHideRules() = Tweak[W] (_.hideRulesInMoment())
+
+  def lwsReloadSelectedWidget() = Tweak[W] (_.reloadSelectedWidget())
+
   def lwsClearWidgets() = Tweak[W] (_.clearWidgets())
 
   def lwsClean = Tweak[W] (_.clean())

@@ -102,16 +102,21 @@ trait LauncherUiActionsImpl
   override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
 
   override def openModeEditWidgets(): Ui[Any] =
-    (dockAppsPanel <~ applyFadeOut()) ~
+    uiVibrate() ~
+      (dockAppsPanel <~ applyFadeOut()) ~
+      (paginationPanel <~ applyFadeOut()) ~
       (topBarPanel <~ applyFadeOut()) ~
       (editWidgetsTopPanel <~ ewlInit <~ applyFadeIn()) ~
-      (workspaces <~ awsDisabled())
+      (workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
+      (drawerLayout <~ dlLockedClosed)
 
   def closeModeEditWidgets(): Ui[Any] =
     (dockAppsPanel <~ applyFadeIn()) ~
+      (paginationPanel <~ applyFadeIn()) ~
       (topBarPanel <~ applyFadeIn()) ~
       (editWidgetsTopPanel <~ applyFadeOut()) ~
-      (workspaces <~ awsEnabled())
+      (workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
+      (drawerLayout <~ dlUnlocked)
 
   override def showAddItemMessage(nameCollection: String): Ui[Any] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
 
