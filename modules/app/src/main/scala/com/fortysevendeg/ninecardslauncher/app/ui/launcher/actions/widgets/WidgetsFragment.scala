@@ -16,7 +16,7 @@ class WidgetsFragment(implicit lPresenter: LauncherPresenter)
 
   override lazy val widgetContentHeight = getString(Seq(getArguments), WidgetsFragment.widgetContentHeight, "0").toInt
 
-  override def getLayoutId: Int = R.layout.list_action_fragment
+  override def getLayoutId: Int = R.layout.widgets_action_fragment
 
   override lazy val widgetsPresenter = new WidgetsPresenter(this)
 
