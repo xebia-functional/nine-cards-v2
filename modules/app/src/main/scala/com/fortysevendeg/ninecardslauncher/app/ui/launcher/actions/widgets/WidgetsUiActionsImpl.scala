@@ -72,9 +72,8 @@ trait WidgetsUiActionsImpl
     val views = appsWithWidgets map { app =>
       (l[LinearLayout](
         w[ImageView] <~ iconMenuItemStyle(app.packageName, app.name) <~ vTag(app.packageName),
-        w[TextView] <~ textMenuItemStyle(app.name)
+        w[TextView] <~ textMenuItemStyle(app.name) <~ vTag(app.packageName)
       ) <~
-        vTag(app.packageName) <~
         contentMenuItemStyle <~
         On.click(showWidgets(app.packageName, app.widgets))).get
     }
@@ -88,6 +87,10 @@ trait WidgetsUiActionsImpl
           case content: ImageView if content.getTag == tag =>
             content <~ vAlpha(selectedAlpha)
           case content: ImageView =>
+            content <~ vAlpha(unselectedAlpha)
+          case content: TextView if content.getTag == tag =>
+            content <~ vAlpha(selectedAlpha)
+          case content: TextView =>
             content <~ vAlpha(unselectedAlpha)
         })
     case _ => Ui.nop
