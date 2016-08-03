@@ -37,7 +37,7 @@ class TranslationAnimator(
     animator.addListener(new AnimatorListenerAdapter() {
       override def onAnimationEnd(animation: Animator) = {
         super.onAnimationEnd(animation)
-        promise.trySuccess(Unit)
+        promise.trySuccess(())
       }
     })
     if (attachTarget) animator.setTarget(view)

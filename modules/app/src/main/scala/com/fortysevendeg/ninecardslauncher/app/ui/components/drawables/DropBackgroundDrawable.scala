@@ -60,7 +60,7 @@ class DropBackgroundDrawable(implicit contextWrapper: ContextWrapper)
     animator.addListener(new AnimatorListenerAdapter() {
       override def onAnimationEnd(animation: Animator): Unit = {
         super.onAnimationEnd(animation)
-        promise.trySuccess(Unit)
+        promise.trySuccess(())
       }
     })
     animator.setFloatValues(from, to)

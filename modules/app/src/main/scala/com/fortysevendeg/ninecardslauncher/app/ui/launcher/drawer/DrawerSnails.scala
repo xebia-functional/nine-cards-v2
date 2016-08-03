@@ -25,9 +25,9 @@ object DrawerSnails {
       val animPromise = Promise[Unit]()
 
       Lollipop.ifSupportedThen {
-        reveal(source, view)(animPromise.trySuccess(Unit))
+        reveal(source, view)(animPromise.trySuccess(()))
       } getOrElse {
-        fadeIn(view)(animPromise.trySuccess(Unit))
+        fadeIn(view)(animPromise.trySuccess(()))
       }
 
       animPromise.future
@@ -40,9 +40,9 @@ object DrawerSnails {
       val animPromise = Promise[Unit]()
 
       Lollipop.ifSupportedThen {
-        reveal(source, view, in = false)(animPromise.trySuccess(Unit))
+        reveal(source, view, in = false)(animPromise.trySuccess(()))
       } getOrElse {
-        fadeOut(view)(animPromise.trySuccess(Unit))
+        fadeOut(view)(animPromise.trySuccess(()))
       }
 
       animPromise.future

@@ -48,7 +48,7 @@ object ActionsSnails {
           override def onAnimationEnd(animation: Animator): Unit = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess(Unit)
+            animPromise.trySuccess(())
           }
         }).start()
       animPromise.future
@@ -72,7 +72,7 @@ object ActionsSnails {
           override def onAnimationEnd(animation: Animator): Unit = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess(Unit)
+            animPromise.trySuccess(())
           }
         }).start()
       animPromise.future
@@ -98,7 +98,7 @@ object ActionsSnails {
           override def onAnimationEnd(animation: Animator): Unit = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess(Unit)
+            animPromise.trySuccess(())
           }
         }).start()
       animPromise.future
@@ -134,7 +134,7 @@ object ActionsSnails {
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
       val endRadius = SnailsUtils.calculateRadius(x, y, w, h)
-      circularReveal(view, x, y, w, h, duration, startRadius, endRadius, animPromise.trySuccess(Unit))
+      circularReveal(view, x, y, w, h, duration, startRadius, endRadius, animPromise.trySuccess(()))
       animPromise.future
   }
 
@@ -146,7 +146,7 @@ object ActionsSnails {
       val startRadius = SnailsUtils.calculateRadius(x, y, w, h)
       circularReveal(view, x, y, w, h, duration, startRadius, 0, {
         view.setVisibility(View.GONE)
-        animPromise.trySuccess(Unit)
+        animPromise.trySuccess(())
       })
       animPromise.future
   }

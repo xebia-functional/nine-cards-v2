@@ -316,7 +316,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
     }
 
-    def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer(Unit)))
+    def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer(())))
 
     def verifyAndUpdate(
       cloudStorageProcess: CloudStorageProcess,
