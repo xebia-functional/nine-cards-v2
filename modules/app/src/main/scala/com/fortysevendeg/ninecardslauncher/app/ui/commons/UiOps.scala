@@ -11,7 +11,7 @@ object UiOps {
 
     def mapUi(f: (T) => Ui[_]): Ui[_] = maybeView map f getOrElse Ui.nop
 
-    def mapUiF(f: (T) => Ui[Future[_]]): Ui[Future[_]] = maybeView map f getOrElse Ui(Future.successful())
+    def mapUiF(f: (T) => Ui[Future[_]]): Ui[Future[_]] = maybeView map f getOrElse Ui(Future.successful(Unit))
 
     def ifUi[T](doUi: Boolean)(ui: () => Ui[T]) = if (doUi) ui() else Ui.nop
 

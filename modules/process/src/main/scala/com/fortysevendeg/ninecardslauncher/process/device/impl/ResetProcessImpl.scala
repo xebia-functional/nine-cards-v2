@@ -1,10 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.process.device.{ImplicitsDeviceException, DeviceConversions, ResetException}
+import com.fortysevendeg.ninecardslauncher.process.device.{DeviceConversions, DeviceProcess, ImplicitsDeviceException, ResetException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.ImplicitsPersistenceServiceExceptions
 
-trait ResetProcessImpl {
+trait ResetProcessImpl extends DeviceProcess {
 
   self: DeviceConversions
     with DeviceProcessDependencies

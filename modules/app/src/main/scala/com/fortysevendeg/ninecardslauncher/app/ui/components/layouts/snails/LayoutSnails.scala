@@ -29,7 +29,7 @@ object SwipeAnimatedDrawerViewSnails {
         override def onAnimationEnd(animation: Animator) = {
           super.onAnimationEnd(animation)
           (view <~ vUseLayerHardware <~ vTranslationY(0) <~ vAlpha(1) <~ vGone).run
-          animPromise.trySuccess()
+          animPromise.trySuccess(Unit)
         }
       }).start()
     animPromise.future
@@ -57,7 +57,7 @@ object TabsSnails {
           override def onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess()
+            animPromise.trySuccess(Unit)
           }
         }).start()
 
@@ -79,7 +79,7 @@ object TabsSnails {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
             view.setVisibility(View.GONE)
-            animPromise.trySuccess()
+            animPromise.trySuccess(Unit)
           }
         }).start()
 
@@ -100,7 +100,7 @@ object TabsSnails {
           override def onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess()
+            animPromise.trySuccess(Unit)
           }
         }).start()
 
@@ -120,7 +120,7 @@ object TabsSnails {
           override def onAnimationEnd(animation: Animator) {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess()
+            animPromise.trySuccess(Unit)
           }
         }).start()
 

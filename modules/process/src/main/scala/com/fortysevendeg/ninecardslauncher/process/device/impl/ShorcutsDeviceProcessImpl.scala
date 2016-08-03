@@ -3,10 +3,10 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.device.{ImplicitsDeviceException, DeviceConversions, ShortcutException}
+import com.fortysevendeg.ninecardslauncher.process.device.{DeviceConversions, DeviceProcess, ImplicitsDeviceException, ShortcutException}
 import com.fortysevendeg.ninecardslauncher.services.image.SaveBitmap
 
-trait ShorcutsDeviceProcessImpl {
+trait ShorcutsDeviceProcessImpl extends DeviceProcess {
 
   self: DeviceConversions
     with DeviceProcessDependencies
