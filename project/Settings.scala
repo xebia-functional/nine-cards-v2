@@ -38,7 +38,6 @@ object Settings {
       name := "nine-cards-v2",
       run <<= run in Android,
       javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-      scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7"),
       transitiveAndroidLibs in Android := true,
       libraryDependencies ++= appDependencies,
       packagingOptions in Android := PackagingOptions(excludes = Seq(
@@ -54,7 +53,7 @@ object Settings {
       useProguardInDebug in Android := true,
       versionName in Android := Some(s"${versionName.value.getOrElse("")}-$versionNameSuffix"),
       proguardOptions in Android ++= proguardCommons,
-      proguardCache in Android := proguardCacheList)
+      proguardCache in Android := Seq.empty)
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++
@@ -180,6 +179,7 @@ object Settings {
 
   lazy val multiDex = Seq(
     dexMulti in Android := true,
+    dexMinimizeMain in Android := true,
     dexMainClasses in Android := multiDexClasses
   )
 
