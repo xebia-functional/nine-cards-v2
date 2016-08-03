@@ -454,14 +454,14 @@ trait PersistenceServices {
   def addWidgets(request: Seq[AddWidgetRequest]): ServiceDef2[Seq[Widget], PersistenceServiceException]
 
   /**
-    * Deletes all widgets from the repository by the where clause
+    * Deletes all widgets from the repository
     * @return an Int if the widgets has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the widgets
     */
   def deleteAllWidgets(): ServiceDef2[Int, PersistenceServiceException]
 
   /**
-    * Deletes an widget from the repository by the widget
+    * Deletes a widget from the repository
     * @param request includes the widget to delete
     * @return an Int if the widget has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the widget
@@ -484,7 +484,7 @@ trait PersistenceServices {
   def fetchWidgets: ServiceDef2[Seq[Widget], PersistenceServiceException]
 
   /**
-    * Obtains an widget from the repository by the id
+    * Obtains a widget from the repository by the id
     * @param widgetId the widget id  of the widget to get
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
@@ -500,7 +500,7 @@ trait PersistenceServices {
   def fetchWidgetByAppWidgetId(appWidgetId: Int): ServiceDef2[Option[Widget], PersistenceServiceException]
 
   /**
-    * Obtains all the widgets from the repository by the moment id
+    * Obtains all widgets from the repository by the moment id
     * @param momentId id of the moment
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widgets
@@ -508,7 +508,7 @@ trait PersistenceServices {
   def fetchWidgetsByMoment(momentId: Int): ServiceDef2[Seq[Widget], PersistenceServiceException]
 
   /**
-    * Updates the data of an widget from the repository
+    * Updates the data of a widget from the repository
     * @param request includes the data to update the widget
     * @return an Int if the widget has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the widget
