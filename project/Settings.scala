@@ -179,6 +179,7 @@ object Settings {
 
   lazy val multiDex = Seq(
     dexMulti in Android := true,
+    dexMinimizeMain in Android := true,
     dexMainClasses in Android := multiDexClasses
   )
 
