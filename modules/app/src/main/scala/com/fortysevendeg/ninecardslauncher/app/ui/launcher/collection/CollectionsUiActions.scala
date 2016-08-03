@@ -346,7 +346,8 @@ trait CollectionsUiActions
       case (key, value) => args.putString(key, value)
     }
     args.putInt(BaseActionFragment.colorPrimary, color)
-    closeCollectionMenu() ~
+    (drawerLayout <~ dlLockedClosed) ~
+      closeCollectionMenu() ~
       (actionFragmentContent <~ vBackgroundColor(Color.BLACK.alpha(maxBackgroundPercent))) ~
       (fragmentContent <~ vClickable(true)) ~
       addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.SlidingPaneLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgets_actions_panel"
+    style="@style/WidgetsActionsListContent">
+
+    <ScrollView
+        style="@style/WidgetsActionsScrollMenu">
+
+        <LinearLayout
+            android:id="@+id/widgets_actions_menu"
+            style="@style/WidgetsActionsMenu" />
+
+    </ScrollView>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/widgets_actions_recycler"
+        style="@style/WidgetsActionsRecycler"/>
+
+</android.support.v4.widget.SlidingPaneLayout>

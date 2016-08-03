@@ -147,4 +147,29 @@
 
     <style name="ActionsFragmentContent" parent="ActionsFragmentContentParent" />
 
+    <!-- Widgets -->
+
+    <style name="WidgetsActionsListContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="WidgetsActionsScrollMenu">
+        <item name="android:layout_width">@dimen/width_widget_menu_large</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="WidgetsActionsMenu">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:gravity">left</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="WidgetsActionsRecycler">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">@dimen/width_widget_menu_small</item>
+    </style>
+
 </resources>

@@ -387,7 +387,7 @@ trait DeviceProcessSpecification
   trait SaveShortcutScope {
     self: DeviceProcessScope =>
 
-    val saveBitmap = SaveBitmap(nameShortcut, mockBitmap)
+    val saveBitmap = SaveBitmap(bitmap = mockBitmap, bitmapResize = None)
 
     val saveBitmapPath = SaveBitmapPath(nameShortcut, fileNameShortcut)
 
@@ -653,7 +653,7 @@ class DeviceProcessImplSpec
 
     "get path of icon stored" in
       new DeviceProcessScope with SaveShortcutScope {
-        val result = deviceProcess.saveShortcutIcon(nameShortcut, mockBitmap)(contextSupport).run.run
+        val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).run.run
         result must beLike {
           case Answer(path) => path shouldEqual fileNameShortcut
         }
@@ -661,7 +661,7 @@ class DeviceProcessImplSpec
 
     "returns ShortcutException when ImageServices fails storing the icon" in
       new DeviceProcessScope with SaveShortcutErrorScope {
-        val result = deviceProcess.saveShortcutIcon(nameShortcut, mockBitmap)(contextSupport).run.run
+        val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ShortcutException]
@@ -1156,7 +1156,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getWidgets(contextSupport).run.run
         result must beLike {
           case Answer(resultWidgets) =>
-            resultWidgets shouldEqual widgets
+            resultWidgets shouldEqual appWithWidgets
         }
       }
 

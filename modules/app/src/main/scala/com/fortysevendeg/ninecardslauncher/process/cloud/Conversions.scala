@@ -45,7 +45,7 @@ object Conversions {
       title = userCollectionItem.title,
       intent = userCollectionItem.intent)
 
-  def toCloudStorageCollection(collection: Collection, moment: Option[Moment]) =
+  def toCloudStorageCollection(collection: Collection) =
     CloudStorageCollection(
       name = collection.name,
       originalSharedCollectionId = collection.originalSharedCollectionId,
@@ -55,7 +55,7 @@ object Conversions {
       collectionType = collection.collectionType,
       icon = collection.icon,
       category = collection.appsCategory,
-      moment = moment map toCloudStorageMoment)
+      moment = collection.moment map toCloudStorageMoment)
 
   def toCloudStorageCollectionItem(card: Card) =
     CloudStorageCollectionItem(
