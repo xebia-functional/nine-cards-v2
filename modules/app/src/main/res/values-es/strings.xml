@@ -462,4 +462,12 @@
     <string name="tutorial">Revisa el Tutorial</string>
     <string name="tos">Términos de Uso</string>
 
+    <!-- Shared Content -->
+    <string name="sharedIntentLabel">Añadir tarjeta</string>
+    <string name="sharedContentDefaultTitle">Página web</string>
+    <string name="sharedCardAdded">Tarjeta añadida</string>
+    <string name="sharedContentErrorEmpty">Sin contenido</string>
+    <string name="sharedContentErrorNotSupported">Contenido compartido no soportado</string>
+    <string name="sharedContentErrorUnexpected">Error inesperado</string>
+
 </resources>

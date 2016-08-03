@@ -10,4 +10,13 @@
 
     </style>
 
+    <style name="AppThemeSharedContent" parent="AppThemeSharedContentBase">
+        <!-- Specifics for API 21 -->
+        <item name="android:fitsSystemWindows">true</item>
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+
+    </style>
+
 </resources>
