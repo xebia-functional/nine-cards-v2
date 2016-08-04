@@ -13,7 +13,7 @@ import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
-trait DockAppsDeviceProcessImpl {
+trait DockAppsDeviceProcessImpl extends DeviceProcess {
 
   self: DeviceConversions
     with DeviceProcessDependencies

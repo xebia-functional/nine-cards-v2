@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps
 
+import java.io.Closeable
+
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -20,7 +22,8 @@ case class AppsAdapter(
   longClickListener: Option[(View, App) => Unit])
   (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_])
   extends RecyclerView.Adapter[AppsIterableHolder]
-  with FastScrollerListener {
+  with FastScrollerListener
+  with Closeable {
 
   val columnsLists = 4
 
@@ -44,7 +47,7 @@ case class AppsAdapter(
     notifyDataSetChanged()
   }
 
-  def close() = apps.close()
+  override def close() = apps.close()
 
   override def getHeightAllRows = apps.count() / columnsLists * getHeightItem
 

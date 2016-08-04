@@ -12,7 +12,9 @@ import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, OrderByName}
 import rapture.core.Answer
 
-trait AppsDeviceProcessImpl extends KnownCategoriesUtil {
+trait AppsDeviceProcessImpl
+  extends DeviceProcess
+  with KnownCategoriesUtil {
 
   self: DeviceConversions
     with DeviceProcessDependencies

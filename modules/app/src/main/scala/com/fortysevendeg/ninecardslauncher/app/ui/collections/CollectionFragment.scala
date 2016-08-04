@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}
 import macroid.Contexts
+import scala.language.postfixOps
 
 class CollectionFragment
   extends Fragment
@@ -23,7 +24,7 @@ class CollectionFragment
 
   val badActivityMessage = "CollectionFragment only can be loaded in CollectionsDetailsActivity"
 
-  override lazy val presenter = new CollectionPresenter(
+  override lazy val presenter = CollectionPresenter(
     animateCards = getBoolean(Seq(getArguments), keyAnimateCards, default = false),
     maybeCollection = Option(getSerialize[Collection](Seq(getArguments), keyCollection, javaNull)),
     actions = self)

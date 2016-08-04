@@ -84,7 +84,7 @@ class CollectionsDetailsActivity
   }
 
   override def onResume(): Unit = {
-    if (firstTime && Lollipop.ifSupportedThen().isDefined) {
+    if (firstTime && Lollipop.ifSupportedThen(()).isDefined) {
       overridePendingTransition(0, 0)
       firstTime = false
     } else {
