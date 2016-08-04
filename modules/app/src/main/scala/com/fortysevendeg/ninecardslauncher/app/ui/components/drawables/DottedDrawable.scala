@@ -12,20 +12,28 @@ class DottedDrawable(horizontal: Boolean = true)(implicit contextWrapper: Contex
 
   val paint: Paint = {
     val paint = new Paint
+    paint.setAntiAlias(true)
+    paint.setDither(true)
     paint.setColor(resGetColor(R.color.stroke_rules_moment))
     paint.setStrokeWidth(resGetDimensionPixelSize(R.dimen.stroke_thin))
     paint.setStyle(Paint.Style.STROKE)
-    paint.setPathEffect(new DashPathEffect(Array(paddingDefault * 2, paddingDefault), 0))
+    paint.setPathEffect(new DashPathEffect(Array(paddingDefault, paddingDefault), 0))
     paint
   }
 
   override def draw(canvas: Canvas): Unit = {
     val bounds = getBounds
-    if (horizontal) {
-      canvas.drawLine(0, 0, bounds.width(), 0, paint)
+    canvas.drawPath(if (horizontal) {
+      val path = new Path()
+      path.moveTo(0, 0)
+      path.lineTo(bounds.width(), 0)
+      path
     } else {
-      canvas.drawLine(0, 0, 0, bounds.height(), paint)
-    }
+      val path = new Path()
+      path.moveTo(0, 0)
+      path.lineTo(0, bounds.height())
+      path
+    }, paint)
   }
 
   override def setColorFilter(cf: ColorFilter): Unit = paint.setColorFilter(cf)

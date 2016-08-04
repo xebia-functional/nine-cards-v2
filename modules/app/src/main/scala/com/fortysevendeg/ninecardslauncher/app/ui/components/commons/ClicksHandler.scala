@@ -8,7 +8,7 @@ trait ClicksHandler {
 
   var pressStart: Long = 0
 
-  private[this] val longClickMillis = 1000
+  private[this] val longClickMillis = 800
 
   private[this] val handler = new os.Handler()
 

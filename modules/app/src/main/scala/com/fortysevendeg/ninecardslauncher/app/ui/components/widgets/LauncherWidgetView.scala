@@ -16,6 +16,10 @@ case class LauncherWidgetView(id: Int, widgetView: View, presenter: LauncherPres
   extends FrameLayout(contextWrapper.bestAvailable)
   with ClicksHandler {
 
+  var lastMotionX = 0f
+
+  var lastMotionY = 0f
+
   override def onLongClick(): Unit = presenter.openModeEditWidgets(id)
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = touchEvent(event)
@@ -46,7 +50,15 @@ case class LauncherWidgetView(id: Int, widgetView: View, presenter: LauncherPres
   private[this] def touchEvent(event: MotionEvent): Boolean = {
     event.getAction match {
       case ACTION_DOWN =>
+        lastMotionX = event.getX
+        lastMotionY = event.getY
         startLongClick()
+      case ACTION_MOVE =>
+        val xDiff = math.abs(event.getX - lastMotionX)
+        val yDiff = math.abs(event.getY - lastMotionY)
+        val xMoved = xDiff > 0
+        val yMoved = yDiff > 0
+        if (xMoved || yMoved) resetLongClick()
       case ACTION_CANCEL | ACTION_UP =>
         resetLongClick()
       case _ =>

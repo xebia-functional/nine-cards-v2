@@ -59,6 +59,8 @@
     <dimen name="max_width_launcher_menu_item">100dp</dimen>
     <dimen name="size_edge_between_workspaces">15dp</dimen>
 
+    <dimen name="size_launcher_pager">12dp</dimen>
+
     <!-- FAB -->
     <dimen name="margin_fab_button">0dp</dimen>
     <dimen name="margin_horizontal_fab_button_item">23dp</dimen>

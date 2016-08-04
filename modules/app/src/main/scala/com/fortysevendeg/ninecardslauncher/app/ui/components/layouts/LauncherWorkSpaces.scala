@@ -192,7 +192,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     // We check that the user is doing up vertical swipe
     // If the user is touching a widget, we don't do a vertical movement in order to the
     // scrollable widgets works fine
-    if (isVerticalMoving(x, y) && !touchingWidget) {
+    if (isVerticalMoving(x, y) && !touchingWidget && statuses.enabled) {
       workSpacesListener.onStartOpenMenu().run
       resetLongClick()
       workSpacesStatuses = workSpacesStatuses.start()
@@ -213,15 +213,15 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
           p.statuses = p.statuses.copy(touchingWidget = false)
         }
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-      case ACTION_MOVE =>
-        if (!statuses.enabled) {
-          if (isVerticalMoving(x, y)) {
-            resetLongClick()
-            statuses = statuses.copy(enabled = true)
-            workSpacesStatuses = workSpacesStatuses.start()
-          }
-          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        }
+//      case ACTION_MOVE =>
+//        if (!statuses.enabled) {
+//          if (isVerticalMoving(x, y)) {
+//            resetLongClick()
+//            statuses = statuses.copy(enabled = true)
+//            workSpacesStatuses = workSpacesStatuses.start()
+//          }
+//          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
+//        }
       case _ =>
     }
   }
