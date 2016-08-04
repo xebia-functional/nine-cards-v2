@@ -85,6 +85,7 @@ object NineCardsMoments {
   val homeMorningMoment = "HOME"
   val workMoment = "WORK"
   val homeNightMoment = "NIGHT"
+  val transitMoment = "TRANSIT"
 }
 
 object Spaces {
