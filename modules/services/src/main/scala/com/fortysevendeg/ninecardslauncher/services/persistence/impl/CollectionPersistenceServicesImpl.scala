@@ -13,7 +13,7 @@ import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
 
-trait CollectionPersistenceServicesImpl {
+trait CollectionPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions
     with PersistenceDependencies

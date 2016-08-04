@@ -44,7 +44,7 @@ object Libraries {
   }
 
   object net {
-    lazy val okHttp = "com.squareup.okhttp" % "okhttp" % okHttpV
+    lazy val okHttp = "com.squareup.okhttp3" % "okhttp" % okHttpV
   }
 
   object date {
@@ -64,7 +64,7 @@ object Libraries {
     lazy val glide = "com.github.bumptech.glide" % "glide" % glideV
   }
 
-  object playServices {
+  object google {
 
     def playServicesDep(module: String) = "com.google.android.gms" % module % playServicesV
 
@@ -74,11 +74,14 @@ object Libraries {
     lazy val playServicesAnalytics = playServicesDep("play-services-analytics")
     lazy val playServicesAuth = playServicesDep("play-services-auth")
     lazy val playServicesPlus = playServicesDep("play-services-plus")
+
+    lazy val firebaseCore = "com.google.firebase" % "firebase-core" % playServicesV
+    lazy val firebaseMessaging = "com.google.firebase" % "firebase-messaging" % playServicesV
   }
 
   object debug {
     lazy val stetho = "com.facebook.stetho" % "stetho" % stethoV
-    lazy val stethoOkhttp = "com.facebook.stetho" % "stetho-okhttp" % stethoV
+    lazy val stethoOkhttp = "com.facebook.stetho" % "stetho-okhttp3" % stethoV
     lazy val stethoUrlconnection = "com.facebook.stetho" % "stetho-urlconnection" % stethoV
     lazy val crashlytics = "com.crashlytics.sdk.android" % "crashlytics" % crashlyticsV
   }

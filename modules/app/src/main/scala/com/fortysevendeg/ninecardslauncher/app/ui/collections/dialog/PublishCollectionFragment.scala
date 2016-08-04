@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
+import scala.language.postfixOps
 
 case class PublishCollectionFragment(collection: Collection)
   extends DialogFragment

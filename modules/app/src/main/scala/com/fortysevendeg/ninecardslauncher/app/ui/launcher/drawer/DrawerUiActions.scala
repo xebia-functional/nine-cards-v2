@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 
+import java.io.Closeable
+
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
@@ -11,6 +13,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SystemBarsTint
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
@@ -39,6 +42,7 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.util.{Failure, Try}
 
 trait DrawerUiActions
   extends DrawerStyles
@@ -161,13 +165,19 @@ trait DrawerUiActions
     (tabs <~ tvClose <~ hideTabs) ~
       (recycler <~ showList)
 
-  private[this] def closeCursorAdapter: Ui[_] =
+  private[this] def closeCursorAdapter: Ui[_] = {
+
+    def safeClose(closeable: Closeable): Unit = Try(closeable.close()) match {
+      case Failure(ex) => printErrorMessage(ex)
+      case _ =>
+    }
+
     Ui(
       recycler foreach { _.getAdapter match {
-        case a: AppsAdapter => a.close()
-        case a: ContactsAdapter => a.close()
+        case a: Closeable => safeClose(a)
         case _ =>
       }})
+  }
 
   private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] = {
     val maybeDrawable = appTabs.lift(AppsMenuOption(option)) map (_.drawable)
@@ -255,7 +265,7 @@ trait DrawerUiActions
     longClickListener: (View, App) => Unit,
     getAppOrder: GetAppOrder = GetByName,
     counters: Seq[TermCounter] = Seq.empty): Ui[_] = {
-    val appsAdapter = new AppsAdapter(
+    val appsAdapter = AppsAdapter(
       apps = apps,
       clickListener = clickListener,
       longClickListener = Option(longClickListener))
@@ -303,7 +313,7 @@ trait DrawerUiActions
     clickListener: (Contact) => Unit,
     longClickListener: (View, Contact) => Unit,
     counters: Seq[TermCounter] = Seq.empty): Ui[_] = {
-    val contactAdapter = new ContactsAdapter(
+    val contactAdapter = ContactsAdapter(
       contacts = contacts,
       clickListener = clickListener,
       longClickListener = Some(longClickListener))
@@ -314,7 +324,7 @@ trait DrawerUiActions
   }
 
   def addLastCallContacts(contacts: Seq[LastCallsContact], clickListener: (LastCallsContact) => Unit): Ui[_] = {
-    val contactAdapter = new LastCallsAdapter(
+    val contactAdapter = LastCallsAdapter(
       contacts = contacts,
       clickListener = clickListener)
     swipeAdapter(
@@ -333,7 +343,7 @@ trait DrawerUiActions
       case AppsView => vAddField(SelectedItemDecoration.showLine, true)
       case ContactView => vAddField(SelectedItemDecoration.showLine, false)
     } getOrElse Tweak.blank
-    (recycler <~
+    closeCursorAdapter ~ (recycler <~
       rvLayoutManager(layoutManager) <~
       (if (searchIsEmpty) rvLayoutAnimation(R.anim.list_slide_in_bottom_animation) else Tweak.blank) <~
       addFieldTweaks <~
