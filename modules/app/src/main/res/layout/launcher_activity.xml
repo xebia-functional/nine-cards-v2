@@ -62,6 +62,10 @@
 
         </LinearLayout>
 
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.EditWidgetsBottomPanelLayout
+            style="@style/LauncherEditWidgetsBottomBarPanel"
+            android:id="@+id/launcher_edit_widgets_bottom_panel"/>
+
         <include layout="@layout/workspace_menu_layout"/>
 
         <include layout="@layout/app_drawer_layout"/>

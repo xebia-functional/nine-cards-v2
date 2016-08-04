@@ -11,7 +11,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceMomentMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
@@ -65,10 +65,10 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     (iconContent <~ vPadding(paddingTop = paddingTop)) ~
       (appsContent <~ vPadding(paddingBottom = paddingBottom))
 
-  private[this] def createIconCard(card: Card, moment: Option[NineCardsMoment])(implicit presenter: LauncherPresenter): WorkSpaceMomentIcon =
-    (w[WorkSpaceMomentIcon] <~
+  private[this] def createIconCard(card: Card, moment: Option[NineCardsMoment])(implicit presenter: LauncherPresenter): WorkSpaceButton =
+    (w[WorkSpaceButton] <~
       vWrapContent <~
-      wmmPopulateCard(card) <~
+      wbPopulateCard(card) <~
       On.click {
         Ui(presenter.openMomentIntent(card, moment))
       }).get

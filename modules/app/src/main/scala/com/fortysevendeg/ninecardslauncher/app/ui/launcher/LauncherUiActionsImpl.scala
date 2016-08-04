@@ -107,6 +107,7 @@ trait LauncherUiActionsImpl
       (paginationPanel <~ applyFadeOut()) ~
       (topBarPanel <~ applyFadeOut()) ~
       (editWidgetsTopPanel <~ ewlInit <~ applyFadeIn()) ~
+      (editWidgetsBottomPanel <~ applyFadeIn()) ~
       (workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
       (drawerLayout <~ dlLockedClosed)
 
@@ -115,6 +116,7 @@ trait LauncherUiActionsImpl
       (paginationPanel <~ applyFadeIn()) ~
       (topBarPanel <~ applyFadeIn()) ~
       (editWidgetsTopPanel <~ applyFadeOut()) ~
+      (editWidgetsBottomPanel <~ applyFadeOut()) ~
       (workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
       (drawerLayout <~ dlUnlocked)
 
@@ -410,6 +412,7 @@ trait LauncherUiActionsImpl
       Ui(activity.getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
         (content <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (menuCollectionRoot <~ vPadding(0, sbHeight, 0, nbHeight)) ~
+        (editWidgetsBottomPanel <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (drawerContent <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (appsMoment <~ amlPaddingTopAndBottom(sbHeight, nbHeight)) ~
         (actionFragmentContent <~

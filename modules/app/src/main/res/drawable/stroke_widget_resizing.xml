@@ -4,7 +4,7 @@
        android:shape="rectangle">
 
     <stroke
-        android:color="@color/stroke_widget_resizing"
+        android:color="@color/edit_widget_resize"
         android:width="@dimen/stroke_thin"/>
 
 </shape>

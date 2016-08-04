@@ -163,12 +163,17 @@ object WorkSpaceItemMenuTweaks {
 
 }
 
-object WorkSpaceMomentMenuTweaks {
-  type W = WorkSpaceMomentIcon
+object WorkSpaceButtonTweaks {
+  type W = WorkSpaceButton
 
-  def wmmPopulateCollection(collection: Collection) = Tweak[W](_.populateCollection(collection).run)
+  def wbInit(t: WorkSpaceButtonType) = Tweak[W](_.init(t).run)
 
-  def wmmPopulateCard(card: Card) = Tweak[W](_.populateCard(card).run)
+  def wbPopulateCollection(collection: Collection) = Tweak[W](_.populateCollection(collection).run)
+
+  def wbPopulateCard(card: Card) = Tweak[W](_.populateCard(card).run)
+
+  def wbPopulateIcon(resIcon: Int, resTitle: Int, resColor: Int) =
+    Tweak[W](_.populateIcon(resIcon, resTitle, resColor).run)
 
 }
 

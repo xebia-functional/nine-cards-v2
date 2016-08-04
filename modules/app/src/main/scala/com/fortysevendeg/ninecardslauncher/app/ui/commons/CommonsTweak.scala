@@ -38,17 +38,20 @@ object CommonsTweak {
     }
   }
 
-  def vBackgroundCollection(indexColor: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
-    def createShapeDrawable(color: Int) = {
+  def vBackgroundCollection(indexColor: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] =
+    vBackgroundCircle(resGetColor(getIndexColor(indexColor)))
+
+  def vBackgroundCircle(color: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
+    def createShapeDrawable(c: Int) = {
       val drawableColor = new ShapeDrawable(new OvalShape())
-      drawableColor.getPaint.setColor(color)
+      drawableColor.getPaint.setColor(c)
       drawableColor.getPaint.setStyle(Paint.Style.FILL)
       drawableColor.getPaint.setAntiAlias(true)
       drawableColor
     }
 
-    def getDrawable(color: Int): Drawable = {
-      val drawableColor = createShapeDrawable(color)
+    def getDrawable(c: Int): Drawable = {
+      val drawableColor = createShapeDrawable(c)
       val padding = resGetDimensionPixelSize(R.dimen.elevation_default)
       val drawableShadow = createShapeDrawable(resGetColor(R.color.shadow_default))
       val layer = new LayerDrawable(Array(drawableShadow, drawableColor))
@@ -56,8 +59,6 @@ object CommonsTweak {
       layer.setLayerInset(1, padding, 0, padding, padding)
       layer
     }
-
-    val color = resGetColor(getIndexColor(indexColor))
     val elevation = resGetDimensionPixelSize(R.dimen.elevation_default)
 
     vBackground(Lollipop ifSupportedThen {

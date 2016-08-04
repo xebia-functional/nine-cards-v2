@@ -99,6 +99,8 @@ trait CollectionsUiActions
 
   lazy val editWidgetsTopPanel = Option(findView(TR.launcher_edit_widgets_top_panel))
 
+  lazy val editWidgetsBottomPanel = Option(findView(TR.launcher_edit_widgets_bottom_panel))
+
   lazy val collectionActionsPanel = Option(findView(TR.launcher_collections_actions_panel))
 
   lazy val actionFragmentContent = Option(findView(TR.action_fragment_content))

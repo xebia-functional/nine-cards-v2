@@ -16,6 +16,10 @@
     <string name="sendTo">Enviar a</string>
     <string name="buttonErrorReload">Recargar</string>
 
+    <string name="resize">Redimensionar</string>
+    <string name="move">Mover</string>
+    <string name="delete">Eliminar</string>
+
     <string name="atHour">a las</string>
 
     <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a la collectión %1$s</string>

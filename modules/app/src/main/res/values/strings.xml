@@ -20,6 +20,10 @@
     <string name="todo">TODO. Sorry. We are working in that</string>
     <string name="buttonErrorReload">Reload</string>
 
+    <string name="resize">Resize</string>
+    <string name="move">Move</string>
+    <string name="delete">Delete</string>
+
     <string name="atHour">at</string>
 
     <string name="itemAddedToCollectionSuccessful">Item added to <xliff:g id="collection" example="Social">%1$s</xliff:g> collection</string>

@@ -453,4 +453,35 @@
         <item name="android:textSize">@dimen/text_xlarge</item>
     </style>
 
+    <!-- Edit Widgets Bottom Bar -->
+
+    <style name="LauncherEditWidgetsBottomBarPanel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+        <item name="android:layout_gravity">bottom</item>
+        <item name="android:gravity">center</item>
+        <item name="android:visibility">invisible</item>
+    </style>
+
+    <style name="LauncherEditWidgetsBottomBarRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="LauncherEditWidgetsBottomBarActions">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="LauncherEditWidgetsBottomBarIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">@dimen/padding_xlarge</item>
+        <item name="android:layout_marginRight">@dimen/padding_xlarge</item>
+    </style>
+
 </resources>
