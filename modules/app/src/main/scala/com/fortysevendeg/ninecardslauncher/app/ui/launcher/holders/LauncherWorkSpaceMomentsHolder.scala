@@ -7,6 +7,7 @@ import android.view.ViewGroup.LayoutParams._
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -66,6 +67,16 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     case widget: LauncherWidgetView => widget.deactivateSelected()
   }
 
+  def resizeCurrentWidget = this <~ Transformer {
+    case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeResizing()
+    case widget: LauncherWidgetView => widget.deactivateSelected()
+  }
+
+  def moveCurrentWidget = this <~ Transformer {
+    case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeMoving()
+    case widget: LauncherWidgetView => widget.deactivateSelected()
+  }
+
   def addWidget(widgetView: View, cell: Cell): Ui[Any] = {
     val (width, height) = cell.getSize
     val params = new LayoutParams(width, height)
@@ -93,7 +104,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       params.leftMargin = paddingDefault
       params.rightMargin = paddingDefault
       params.topMargin = (pos * spaceHeight) + paddingDefault - size
-      vgAddView(createView(), params)
+      vgAddViewByIndexParams(createView(), 0, params)
     }
 
     def verticalRules(pos: Int) = {
@@ -101,7 +112,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       params.topMargin = paddingDefault
       params.bottomMargin = paddingDefault
       params.leftMargin = (pos * spaceWidth) + paddingDefault - size
-      vgAddView(createView(horizontal = false), params)
+      vgAddViewByIndexParams(createView(horizontal = false), 0, params)
     }
 
     val tweaks = ((1 until WidgetsOps.rows) map horizontalRules) ++ ((1 until WidgetsOps.columns) map verticalRules)

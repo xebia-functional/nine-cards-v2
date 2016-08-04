@@ -40,10 +40,12 @@ class WorkSpaceButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private[this] val icon = Option(findView(TR.workspace_moment_icon))
 
-  def init(t: WorkSpaceButtonType): Ui[Any] = title <~ tvColorResource(t match {
-    case WorkSpaceAppMomentButton => R.color.menu_apps_moment_item_title
-    case WorkSpaceActionWidgetButton => R.color.widgets_text
-  })
+  def init(t: WorkSpaceButtonType): Ui[Any] = t match {
+    case WorkSpaceAppMomentButton => title <~ tvColorResource(R.color.menu_apps_moment_item_title)
+    case WorkSpaceActionWidgetButton =>
+      (this <~ vBlankBackground) ~
+        (title <~ tvColorResource(R.color.widgets_text))
+  }
 
   def populateCollection(collection: Collection): Ui[Any] = {
     val resIcon = iconCollectionDetail(collection.icon)

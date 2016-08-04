@@ -107,6 +107,16 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ =>
   }
 
+  def resizeCurrentWidget(): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.resizeCurrentWidget.run
+    case _ =>
+  }
+
+  def moveCurrentWidget(): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.moveCurrentWidget.run
+    case _ =>
+  }
+
   def openMenu(): Unit = {
     workSpacesStatuses = workSpacesStatuses.startLaunchedOpen()
     (uiVibrate() ~

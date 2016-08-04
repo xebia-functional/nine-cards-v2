@@ -6,7 +6,7 @@ import android.graphics.Paint
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable._
 import android.os.Vibrator
-import android.view.View
+import android.view.{View, ViewGroup}
 import ColorOps._
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -14,7 +14,7 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
-import android.widget.{Spinner, EditText, ImageView, TextView}
+import android.widget.{EditText, ImageView, Spinner, TextView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -97,6 +97,9 @@ object CommonsTweak {
 object ExtraTweaks {
 
   // TODO - Move to macroid extras
+
+  def vgAddViewByIndexParams[V <: View](view: V, index: Int, params: ViewGroup.LayoutParams): Tweak[ViewGroup] =
+    Tweak[ViewGroup](_.addView(view, index, params))
 
   def ivBlank: Tweak[ImageView] = Tweak[ImageView](_.setImageBitmap(javaNull))
 

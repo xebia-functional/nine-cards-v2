@@ -303,6 +303,22 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     actions.openModeEditWidgets().run
   }
 
+  def resizeWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
+    statuses = statuses.copy(transformation = ResizeTransformation)
+    actions.resizeWidget().run
+  }
+
+  def moveWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
+    statuses = statuses.copy(transformation = MoveTransformation)
+    actions.moveWidget().run
+  }
+
+  def deleteWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
+    actions.deleteWidget().run
+  }
+
+  def editWidgetsShowActions(): Unit = actions.editWidgetsShowActions().run
+
   def closeModeEditWidgets(): Unit = {
     statuses = statuses.copy(mode = NormalMode, idWidget = None)
     actions.closeModeEditWidgets().run
@@ -647,6 +663,14 @@ trait LauncherUiActions {
 
   def openModeEditWidgets(): Ui[Any]
 
+  def resizeWidget(): Ui[Any]
+
+  def moveWidget(): Ui[Any]
+
+  def deleteWidget(): Ui[Any]
+
+  def editWidgetsShowActions(): Ui[Any]
+
   def closeModeEditWidgets(): Ui[Any]
 
   def showAddItemMessage(nameCollection: String): Ui[Any]
@@ -730,6 +754,7 @@ object Statuses {
   case class LauncherPresenterStatuses(
     touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
     mode: LauncherMode = NormalMode,
+    transformation: EditWidgetTransformation = ResizeTransformation,
     idWidget: Option[Int] = None,
     cardAddItemMode: Option[AddCardRequest] = None,
     collectionReorderMode: Option[Collection] = None,
@@ -770,4 +795,10 @@ object Statuses {
   case object ReorderMode extends LauncherMode
 
   case object EditWidgetsMode extends LauncherMode
+
+  sealed trait EditWidgetTransformation
+
+  case object ResizeTransformation extends EditWidgetTransformation
+
+  case object MoveTransformation extends EditWidgetTransformation
 }

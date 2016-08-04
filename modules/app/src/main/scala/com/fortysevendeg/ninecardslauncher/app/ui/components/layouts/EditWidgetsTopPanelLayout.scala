@@ -39,4 +39,12 @@ class EditWidgetsTopPanelLayout(context: Context, attrs: AttributeSet, defStyle:
     (this <~ On.click(Ui(presenter.closeModeEditWidgets()))) ~
       (text <~ tvText(R.string.editingWidgets))
 
+  def resizing(implicit presenter: LauncherPresenter): Ui[Any] =
+    (this <~ On.click(Ui(presenter.editWidgetsShowActions()))) ~
+      (text <~ tvText(R.string.resizingWidgets))
+
+  def moving(implicit presenter: LauncherPresenter): Ui[Any] =
+    (this <~ On.click(Ui(presenter.editWidgetsShowActions()))) ~
+      (text <~ tvText(R.string.movingWidgets))
+
 }

@@ -56,8 +56,8 @@ case class LauncherWidgetView(id: Int, widgetView: View, presenter: LauncherPres
       case ACTION_MOVE =>
         val xDiff = math.abs(event.getX - lastMotionX)
         val yDiff = math.abs(event.getY - lastMotionY)
-        val xMoved = xDiff > 0
-        val yMoved = yDiff > 0
+        val xMoved = xDiff > 8
+        val yMoved = yDiff > 8
         if (xMoved || yMoved) resetLongClick()
       case ACTION_CANCEL | ACTION_UP =>
         resetLongClick()

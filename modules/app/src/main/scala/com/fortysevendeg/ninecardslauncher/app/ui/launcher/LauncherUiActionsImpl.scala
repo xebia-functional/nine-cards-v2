@@ -13,6 +13,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
@@ -106,8 +107,8 @@ trait LauncherUiActionsImpl
       (dockAppsPanel <~ applyFadeOut()) ~
       (paginationPanel <~ applyFadeOut()) ~
       (topBarPanel <~ applyFadeOut()) ~
-      (editWidgetsTopPanel <~ ewlInit <~ applyFadeIn()) ~
-      (editWidgetsBottomPanel <~ applyFadeIn()) ~
+      (editWidgetsTopPanel <~ ewtInit <~ applyFadeIn()) ~
+      (editWidgetsBottomPanel <~ ewbShowActions <~ applyFadeIn()) ~
       (workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
       (drawerLayout <~ dlLockedClosed)
 
@@ -119,6 +120,23 @@ trait LauncherUiActionsImpl
       (editWidgetsBottomPanel <~ applyFadeOut()) ~
       (workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
       (drawerLayout <~ dlUnlocked)
+
+  override def resizeWidget(): Ui[Any] =
+    (workspaces <~ lwsResizeCurrentWidget()) ~
+      (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
+      (editWidgetsTopPanel <~ ewtResizing)
+
+  override def moveWidget(): Ui[Any] =
+    (workspaces <~ lwsMoveCurrentWidget()) ~
+      (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
+      (editWidgetsTopPanel <~ ewtMoving)
+
+  override def deleteWidget(): Ui[Any] = Ui.nop
+
+  override def editWidgetsShowActions(): Ui[Any] =
+    (workspaces <~ lwsReloadSelectedWidget) ~
+      (editWidgetsTopPanel <~ ewtInit) ~
+      (editWidgetsBottomPanel <~ ewbAnimateActions)
 
   override def showAddItemMessage(nameCollection: String): Ui[Any] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
 

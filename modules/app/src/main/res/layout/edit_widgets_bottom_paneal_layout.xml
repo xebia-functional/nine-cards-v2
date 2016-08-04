@@ -21,4 +21,26 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/edit_widget_bottom_cursors_content"
+        style="@style/LauncherEditWidgetsBottomBarActions">
+
+        <ImageView
+            android:id="@+id/edit_widget_bottom_cursor_up"
+            style="@style/LauncherEditWidgetsBottomBarCursor" />
+
+        <ImageView
+            android:id="@+id/edit_widget_bottom_cursor_down"
+            style="@style/LauncherEditWidgetsBottomBarCursor" />
+
+        <ImageView
+            android:id="@+id/edit_widget_bottom_cursor_left"
+            style="@style/LauncherEditWidgetsBottomBarCursor" />
+
+        <ImageView
+            android:id="@+id/edit_widget_bottom_cursor_right"
+            style="@style/LauncherEditWidgetsBottomBarCursor" />
+
+    </LinearLayout>
+
 </FrameLayout>

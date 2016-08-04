@@ -62,6 +62,10 @@ object LauncherWorkSpacesTweaks {
 
   def lwsReloadSelectedWidget() = Tweak[W] (_.reloadSelectedWidget())
 
+  def lwsResizeCurrentWidget() = Tweak[W] (_.resizeCurrentWidget())
+
+  def lwsMoveCurrentWidget() = Tweak[W] (_.moveCurrentWidget())
+
   def lwsClearWidgets() = Tweak[W] (_.clearWidgets())
 
   def lwsClean = Tweak[W] (_.clean())
@@ -407,7 +411,22 @@ object EditWidgetsTopPanelLayoutTweaks {
 
   type W = EditWidgetsTopPanelLayout
 
-  def ewlInit(implicit presenter: LauncherPresenter) =
-    Tweak[W] (_.init.run)
+  def ewtInit(implicit presenter: LauncherPresenter) = Tweak[W] (_.init.run)
 
+  def ewtResizing(implicit presenter: LauncherPresenter) = Tweak[W] (_.resizing.run)
+
+  def ewtMoving(implicit presenter: LauncherPresenter) = Tweak[W] (_.moving.run)
+
+}
+
+object EditWidgetsBottomPanelLayoutTweaks {
+  type W = EditWidgetsBottomPanelLayout
+
+  def ewbInit(implicit presenter: LauncherPresenter) = Tweak[W] (_.init.run)
+
+  def ewbShowActions = Tweak[W] (_.showActions().run)
+
+  def ewbAnimateActions = Tweak[W] (_.animateActions().run)
+
+  def ewbAnimateCursors(implicit launcherPresenter: LauncherPresenter) = Tweak[W] (_.animateCursors.run)
 }

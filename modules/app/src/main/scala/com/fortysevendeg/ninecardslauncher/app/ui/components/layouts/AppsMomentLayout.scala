@@ -67,7 +67,7 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   private[this] def createIconCard(card: Card, moment: Option[NineCardsMoment])(implicit presenter: LauncherPresenter): WorkSpaceButton =
     (w[WorkSpaceButton] <~
-      vWrapContent <~
+      vMatchWidth <~
       wbPopulateCard(card) <~
       On.click {
         Ui(presenter.openMomentIntent(card, moment))

@@ -86,6 +86,9 @@
     <dimen name="width_widget_menu_small">58dp</dimen>
     <dimen name="width_widget_menu_large">160dp</dimen>
 
+    <dimen name="height_edit_widgets_bottom">180dp</dimen>
+    <dimen name="size_widget_cursor">40dp</dimen>
+
     <!-- App Drawer -->
     <dimen name="drawer_size_pager">6dp</dimen>
     <dimen name="margin_pager_drawer">2dp</dimen>
