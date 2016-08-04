@@ -9,7 +9,6 @@
     <string name="api_google_play_url">${googleplay.url}</string>
 
     <!-- Google -->
-    <string name="client_client_id">${google_client_id}</string>
     <string name="oauth_scopes">${google_oauth_scopes}</string>
 
     <!-- Google Play -->
