@@ -12,7 +12,7 @@ import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
-trait ContactsDeviceProcessImpl {
+trait ContactsDeviceProcessImpl extends DeviceProcess {
 
   self: DeviceConversions
     with DeviceProcessDependencies

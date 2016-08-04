@@ -9,14 +9,13 @@
     <string name="api_google_play_url">${googleplay.url}</string>
 
     <!-- Google -->
-    <string name="client_client_id">${google_client_id}</string>
     <string name="oauth_scopes">${google_oauth_scopes}</string>
 
     <!-- Google Play -->
     <string name="google_play_url">http://play.google.com/store/apps/details?id=%1$s</string>
 
     <!-- Google Analytics -->
-    <string name="google_analytics_id">${google_analytics_id}</string>
+    <string name="ga_trackingId">${google_analytics_id}</string>
 
     <!-- 9Cards -->
     <string name="icons_apps_folder">icons_apps</string>
@@ -42,5 +41,14 @@
     <string name="send_feedback">http://www.47deg.com</string>
     <string name="ninecards_tutorial">http://www.9cards.io</string>
     <string name="ninecards_tos">http://www.9cards.io</string>
+
+    <!-- Firebase -->
+    <string name="google_app_id" translatable="false">${google_app_id}</string>
+    <string name="gcm_defaultSenderId" translatable="false">${gcm_defaultSenderId}</string>
+    <string name="default_web_client_id" translatable="false">${default_web_client_id}</string>
+    <string name="firebase_database_url" translatable="false">${firebase_database_url}</string>
+    <string name="google_api_key" translatable="false">${google_api_key}</string>
+    <string name="google_crash_reporting_api_key" translatable="false">${google_crash_reporting_api_key}</string>
+
 
 </resources>

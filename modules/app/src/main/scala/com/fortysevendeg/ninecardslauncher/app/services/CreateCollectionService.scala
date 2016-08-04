@@ -8,10 +8,11 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
+import com.fortysevendeg.ninecardslauncher.app.services.commons.FirebaseExtensions._
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState.{stateFailure => _, stateSuccess => _, _}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState.{stateFailure => _, stateSuccess => _}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
@@ -126,7 +127,11 @@ class CreateCollectionService
   override def onBind(intent: Intent): IBinder = javaNull
 
   override def connected(client: GoogleApiClient): Unit = {
-    val service = selectedCloudId map (loadConfiguration(client, _)) getOrElse createNewConfiguration(client)
+
+    val service = selectedCloudId match {
+      case Some(cloudId) => loadConfiguration(client, readToken, cloudId)
+      case _ => createNewConfiguration(client, readToken)
+    }
 
     Task.fork(service.run).resolveAsync(
       onResult = collections => {

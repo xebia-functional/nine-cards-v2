@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts
 
+import java.io.Closeable
+
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -22,7 +24,8 @@ case class ContactsAdapter(
   longClickListener: Option[(View, Contact) => Unit])
   (implicit val activityContext: ActivityContextWrapper, implicit val uiContext: UiContext[_])
   extends RecyclerView.Adapter[ContactsIterableHolder]
-  with FastScrollerListener {
+  with FastScrollerListener
+  with Closeable {
 
   val columnsLists = 1
 
@@ -46,7 +49,7 @@ case class ContactsAdapter(
     notifyDataSetChanged()
   }
 
-  def close() = contacts.close()
+  override def close() = contacts.close()
 
   override def getHeightAllRows: Int = contacts.count() / columnsLists * getHeightItem
 
