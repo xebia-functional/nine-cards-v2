@@ -9,11 +9,13 @@ class NineCardsFirebaseMessagingService extends FirebaseMessagingService {
 
     // TODO - 584 (https://github.com/47deg/nine-cards-v2/issues/584)
     android.util.Log.d("9Cards", s"From: ${remoteMessage.getFrom}")
-    if (remoteMessage.getData.size() > 0) {
-      android.util.Log.d("9Cards", s"Message data payload: ${remoteMessage.getData}")
+    Option(remoteMessage.getData) foreach { data =>
+      if (data.size() > 0) {
+        android.util.Log.d("9Cards", s"Message data payload: $data")
+      }
     }
-    if (remoteMessage.getNotification != null) {
-      android.util.Log.d("9Cards", s"Message Notification Body: ${remoteMessage.getNotification.getBody}")
+    Option(remoteMessage.getNotification) foreach { notification =>
+      android.util.Log.d("9Cards", s"Message Notification Body: ${notification.getBody}")
     }
   }
 }
