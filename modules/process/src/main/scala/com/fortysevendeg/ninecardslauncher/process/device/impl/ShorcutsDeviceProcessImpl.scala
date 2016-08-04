@@ -3,10 +3,10 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import android.graphics.Bitmap
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.device.{ImplicitsDeviceException, DeviceConversions, ShortcutException}
+import com.fortysevendeg.ninecardslauncher.process.device.{DeviceConversions, DeviceProcess, IconResize, ImplicitsDeviceException, ShortcutException}
 import com.fortysevendeg.ninecardslauncher.services.image.SaveBitmap
 
-trait ShorcutsDeviceProcessImpl {
+trait ShorcutsDeviceProcessImpl extends DeviceProcess {
 
   self: DeviceConversions
     with DeviceProcessDependencies
@@ -17,9 +17,9 @@ trait ShorcutsDeviceProcessImpl {
       shortcuts <- shortcutsServices.getShortcuts
     } yield toShortcutSeq(shortcuts)).resolve[ShortcutException]
 
-  def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport) =
+  def saveShortcutIcon(bitmap: Bitmap, iconResize: Option[IconResize] = None)(implicit context: ContextSupport) =
     (for {
-      saveBitmapPath <- imageServices.saveBitmap(SaveBitmap(name, bitmap))
+      saveBitmapPath <- imageServices.saveBitmap(SaveBitmap(bitmap, iconResize map toBitmapResize))
     } yield saveBitmapPath.path).resolve[ShortcutException]
 
 }

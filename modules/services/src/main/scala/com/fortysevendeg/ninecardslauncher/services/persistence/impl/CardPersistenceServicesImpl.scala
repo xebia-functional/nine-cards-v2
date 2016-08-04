@@ -10,7 +10,7 @@ import rapture.core.Result
 
 import scalaz.concurrent.Task
 
-trait CardPersistenceServicesImpl {
+trait CardPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 

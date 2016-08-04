@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.user._
 import com.fortysevendeg.ninecardslauncher.process.user.models.Device
-import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
+import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, InstallationResponse}
 import com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
@@ -38,7 +38,13 @@ class UserProcessImpl(
           permissions = permissions)
         loginResponse <- apiServices.login(email, toGoogleDevice(device))
         Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
-        _ <- persistenceServices.updateUser(toUpdateRequest(id, email, userDB, loginResponse, device))
+        updateUser = userDB.copy(
+          email = Option(email),
+          userId = loginResponse.user.id,
+          sessionToken = loginResponse.user.sessionToken,
+          androidToken = Some(device.secretToken),
+          deviceName = Some(device.name))
+        _ <- persistenceServices.updateUser(toUpdateRequest(id, updateUser))
         _ <- syncInstallation(id, None, loginResponse.user.id, None)
       } yield SignInResponse(loginResponse.statusCode)).resolve[UserException]
     }
@@ -75,11 +81,26 @@ class UserProcessImpl(
 
   override def updateUserDevice(
     deviceName: String,
-    deviceCloudId: String)(implicit context: ContextSupport) =
+    deviceCloudId: String,
+    deviceToken: Option[String] = None)(implicit context: ContextSupport) =
     withActiveUser { id =>
       (for {
         Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(id))
-        _ <- persistenceServices.updateUser(toUpdateRequest(id, user, deviceName, deviceCloudId))
+        _ <- persistenceServices.updateUser(toUpdateRequest(
+          id = id,
+          user = user.copy(
+            deviceName = Option(deviceName),
+            deviceCloudId = Option(deviceCloudId),
+            deviceToken = deviceToken orElse user.deviceToken)))
+      } yield ()).resolve[UserException]
+    }
+
+  override def updateDeviceToken(
+    deviceToken: String)(implicit context: ContextSupport) =
+    withActiveUser { id =>
+      (for {
+        Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(id))
+        _ <- persistenceServices.updateUser(toUpdateRequest(id, user.copy(deviceToken = Option(deviceToken))))
       } yield ()).resolve[UserException]
     }
 
@@ -124,13 +145,13 @@ class UserProcessImpl(
       }
     } getOrElse {
       (for {
-        installationResponse <- apiServices.createInstallation(
+        InstallationResponse(statusCode, installation) <- apiServices.createInstallation(
           deviceType = Some(AndroidDevice),
           deviceToken = deviceToken,
           userId = userId)
         Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
-        _ <- persistenceServices.updateUser(toUpdateRequest(id, userDB, installationResponse))
-      } yield installationResponse.statusCode).resolve[UserException]
+        _ <- persistenceServices.updateUser(toUpdateRequest(id, userDB.copy(installationId = installation.id)))
+      } yield statusCode).resolve[UserException]
     }
 
 }

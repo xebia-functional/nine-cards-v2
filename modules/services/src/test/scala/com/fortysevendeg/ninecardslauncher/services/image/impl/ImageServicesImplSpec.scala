@@ -43,9 +43,7 @@ trait ImageServicesImplSpecification
     val resources = mock[Resources]
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
-    val saveBitmap = SaveBitmap(
-      name = bitmapName,
-      bitmap = mock[Bitmap])
+    val saveBitmap = SaveBitmap(bitmap = mock[Bitmap], bitmapResize = None)
 
     val fileExistsTask = Service(Task {
       Result.catching[FileException] {
@@ -85,9 +83,6 @@ trait ImageServicesImplSpecification
     mockTasks.saveBitmap(any[File], any[Bitmap]) returns
       Service(Task(Result.catching[FileException](())))
 
-    mockTasks.getPathByName(appWebsite.packageName)(contextSupport) returns
-      fileNotExistsTask
-
     val mockImageService = new ImageServicesImpl(imageServiceConfig, mockTasks)
 
   }
@@ -96,8 +91,7 @@ trait ImageServicesImplSpecification
 
     self: ImageServicesScope =>
 
-    mockTasks.getPathByName(bitmapName)(contextSupport) returns
-      saveBitmapTask
+    mockTasks.getPathByName(any)(any) returns saveBitmapTask
   }
 
   trait SaveBitmapErrorImageServicesScope {

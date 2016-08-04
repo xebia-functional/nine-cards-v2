@@ -70,7 +70,7 @@ trait DeviceProcess {
    * @return the String contains the path where the icon was stored
    * @throws ShortcutException if exist some problem storing icon
    */
-  def saveShortcutIcon(name: String, bitmap: Bitmap)(implicit context: ContextSupport): ServiceDef2[String, ShortcutException]
+  def saveShortcutIcon(bitmap: Bitmap, iconResize: Option[IconResize] = None)(implicit context: ContextSupport): ServiceDef2[String, ShortcutException]
 
   /**
    * Get the favorite contacts if they exist and fill all their data
@@ -151,10 +151,10 @@ trait DeviceProcess {
 
   /**
    * Get the widgets available on the phone
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Widget]
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.AppsWithWidgets]
    * @throws WidgetException if exist some problem to get the widgets
    */
-  def getWidgets(implicit context: ContextSupport): ServiceDef2[Seq[Widget], WidgetException]
+  def getWidgets(implicit context: ContextSupport): ServiceDef2[Seq[AppsWithWidgets], WidgetException]
 
   /**
     * Get the last calls available on the phone

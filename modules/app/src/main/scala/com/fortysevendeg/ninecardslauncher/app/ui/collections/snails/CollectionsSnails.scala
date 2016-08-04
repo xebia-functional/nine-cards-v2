@@ -33,7 +33,7 @@ object CollectionsSnails {
               super.onAnimationEnd(animation)
               view.setRotation(0)
               view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-              animPromise.trySuccess()
+              animPromise.trySuccess(())
             }
           }).start()
         }
@@ -74,7 +74,7 @@ object CollectionsSnails {
           override def onAnimationEnd(animation: Animator): Unit = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess()
+            animPromise.trySuccess(())
           }
         }).start()
       animPromise.future
@@ -96,7 +96,7 @@ object CollectionsSnails {
           override def onAnimationEnd(animation: Animator): Unit = {
             super.onAnimationEnd(animation)
             view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess()
+            animPromise.trySuccess(())
           }
         }).start()
       animPromise.future

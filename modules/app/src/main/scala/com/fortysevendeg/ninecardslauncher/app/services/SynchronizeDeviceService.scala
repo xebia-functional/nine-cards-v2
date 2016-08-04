@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.IBinder
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
+import com.fortysevendeg.ninecardslauncher.app.services.commons.FirebaseExtensions._
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState
@@ -59,32 +60,29 @@ class SynchronizeDeviceService
     case _ => None
   }
 
-  override def connected(client: GoogleApiClient): Unit =
+  override def connected(client: GoogleApiClient): Unit = {
+
+    def sync(
+      client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException with UserException] = {
+      val cloudStorageProcess = di.createCloudStorageProcess(client)
+      for {
+        collections <- di.collectionProcess.getCollections
+        moments <- di.momentProcess.getMoments
+        savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+          collections = collections map toCloudStorageCollection,
+          moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
+        _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId)
+      } yield ()
+    }
+
     Task.fork(sync(client).run).resolveAsync(
-      _ => success(),
+      _ => sendStateAndFinish(stateSuccess),
       throwable => {
         error(
           message = getString(R.string.errorConnectingGoogle),
           maybeException = Some(throwable))
       })
-
-  private[this] def sync(
-    client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException with UserException] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client)
-    for {
-      collections <- di.collectionProcess.getCollections
-      moments <- di.momentProcess.getMoments
-      savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-        collections = addMomentsToCollections(collections, moments),
-        moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
-      _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId)
-    } yield ()
   }
-
-  private[this] def addMomentsToCollections(collections: Seq[Collection], moments: Seq[Moment]) =
-    collections map (collection => toCloudStorageCollection(collection, moments.find(_.collectionId == Option(collection.id))))
-
-  private[this] def success() = sendStateAndFinish(stateSuccess)
 
   override def error(message: String, maybeException: Option[Throwable] = None) = {
     maybeException foreach (ex => printErrorMessage(ex))
@@ -92,14 +90,15 @@ class SynchronizeDeviceService
   }
 
   private[this] def sendStateAndFinish(state: String) = {
+
+    def closeService() = {
+      stopForeground(true)
+      stopSelf()
+    }
+
     currentState = Option(state)
     self ! BroadAction(SyncStateActionFilter.action, currentState)
     closeService()
   }
 
-
-  private[this] def closeService() = {
-    stopForeground(true)
-    stopSelf()
-  }
 }

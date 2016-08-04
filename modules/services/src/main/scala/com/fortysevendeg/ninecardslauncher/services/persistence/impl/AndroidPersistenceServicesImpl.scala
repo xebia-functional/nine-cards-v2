@@ -4,12 +4,12 @@ import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.services.persistence.AndroidIdNotFoundException
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, PersistenceServices}
 import rapture.core.Result
 
 import scalaz.concurrent.Task
 
-trait AndroidPersistenceServicesImpl {
+trait AndroidPersistenceServicesImpl extends PersistenceServices {
 
   val androidId = "android_id"
 

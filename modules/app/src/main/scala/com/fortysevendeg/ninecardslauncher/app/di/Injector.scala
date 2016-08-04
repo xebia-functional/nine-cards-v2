@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.di
 
 import android.content.res.Resources
-import com.facebook.stetho.okhttp.StethoInterceptor
+import android.support.v4.content.ContextCompat
+import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
@@ -46,7 +47,6 @@ import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.google.android.gms.common.api.GoogleApiClient
-import com.squareup.{okhttp => okHttp}
 
 trait Injector {
 
@@ -79,11 +79,11 @@ trait Injector {
 class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] def createHttpClient = {
-    val okHttpClient = new okHttp.OkHttpClient
+    val okHttpClientBuilder = new okhttp3.OkHttpClient.Builder()
     if (BuildConfig.DEBUG) {
-      okHttpClient.networkInterceptors().add(new StethoInterceptor())
+      okHttpClientBuilder.addInterceptor(new StethoInterceptor)
     }
-    new OkHttpClient(okHttpClient)
+    new OkHttpClient(okHttpClientBuilder.build())
   }
 
   val resources = contextSupport.getResources
@@ -133,14 +133,19 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val contactsServices = new ContactsServicesImpl(contentResolverWrapper)
 
-  private[this] lazy val imageServicesConfig = ImageServicesConfig(
-    colors = List(
-      resources.getColor(R.color.background_default_1),
-      resources.getColor(R.color.background_default_2),
-      resources.getColor(R.color.background_default_3),
-      resources.getColor(R.color.background_default_4),
-      resources.getColor(R.color.background_default_5)
-    ))
+  private[this] lazy val imageServicesConfig = {
+
+    def getColor(colorResource: Int): Int = ContextCompat.getColor(contextSupport.context, colorResource)
+
+    ImageServicesConfig(
+      colors = List(
+        getColor(R.color.background_default_1),
+        getColor(R.color.background_default_2),
+        getColor(R.color.background_default_3),
+        getColor(R.color.background_default_4),
+        getColor(R.color.background_default_5)
+      ))
+  }
 
   private[this] lazy val imageServices = new ImageServicesImpl(
     config = imageServicesConfig)
