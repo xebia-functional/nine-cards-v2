@@ -70,7 +70,6 @@ class MomentProcessImpl(
       moments = serviceMoments map toMoment
       momentWithCollection = moments filter (m => collections.exists(col => m.collectionId.contains(col.id)))
       momentsPrior = momentWithCollection sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
-      _ = println(s"---------------> momentsPrior: ${momentsPrior.head}")
     } yield momentsPrior.headOption).resolve[MomentException]
 
   override def getAvailableMoments(implicit context: ContextSupport) =
@@ -155,7 +154,7 @@ class MomentProcessImpl(
         case HomeMorningMoment => homeApps.contains(app.packageName)
         case WorkMoment => workApps.contains(app.packageName)
         case HomeNightMoment => nightApps.contains(app.packageName)
-        case TransitMoment => nightApps.contains(app.packageName)
+        case TransitMoment => transitApps.contains(app.packageName)
       }
     }.take(numSpaces)
 

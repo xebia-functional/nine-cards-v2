@@ -261,6 +261,7 @@
     <string name="home">Hogar</string>
     <string name="work">Trabajo</string>
     <string name="night">Noche</string>
+    <string name="transit">Tránsito</string>
 
     <!-- Profile -->
     <string name="publications">Publicaciones</string>
