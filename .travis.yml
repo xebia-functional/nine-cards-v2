@@ -8,10 +8,10 @@ addons:
       - libc6-i386
       - lib32z1
       - lib32stdc++6
-env:
-  global:
-    secure: yqc4Hn9yZBsc9OLJLTyYRRzhPwxwgpOCPAexhm9GBkbutRXDpiCmVwlr2kngAiDGW6vlKucCEBo1ond2tA+fx5e78c03iRg8GH0N78OkKdswQtYjBte0H00yZ/G2NdN98pP8KAH3xFEVIzZL+TfvNe/55lbaG6AJRmoGzZpdaU0=
 before_install:
+  - openssl aes-256-cbc -k "$encrypted_key" -in debug-keys.tar.enc -out debug-keys.tar -d
+  - tar xvf debug-keys.tar
+  - mv local.properties modules/app/local.properties
   - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
   - tar xf android-sdk_r24-linux.tgz
   - export ANDROID_HOME=$PWD/android-sdk-linux
@@ -23,9 +23,6 @@ before_install:
   - echo yes | android update sdk --all --filter extra-android-support --no-ui
   - echo yes | android update sdk --all --filter extra-android-m2repository --no-ui
   - echo yes | android update sdk --all --filter extra-google-m2repository --no-ui
-  - openssl aes-256-cbc -k "$encrypted_key" -in debug-keys.tar.enc -out debug-keys.tar -d
-  - tar xvf debug-keys.tar
-  - mv local.properties modules/app/local.properties
   - export GIT_BRANCH=${TRAVIS_BRANCH}
   - export GIT_PR=${TRAVIS_PULL_REQUEST}
   - export GIT_COMMIT=${TRAVIS_COMMIT}
