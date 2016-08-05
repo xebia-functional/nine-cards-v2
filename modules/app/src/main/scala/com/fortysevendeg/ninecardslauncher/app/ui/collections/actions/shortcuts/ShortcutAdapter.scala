@@ -7,11 +7,12 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
 case class ShortcutAdapter(shortcuts: Seq[Shortcut])
-  (implicit activityContext: ActivityContextWrapper, presenter: ShortcutPresenter)
+  (implicit activityContext: ActivityContextWrapper, presenter: ShortcutPresenter, theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderShortcutLayoutAdapter] {
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderShortcutLayoutAdapter = {
@@ -19,7 +20,7 @@ case class ShortcutAdapter(shortcuts: Seq[Shortcut])
     view.setOnClickListener(new OnClickListener {
       override def onClick(v: View): Unit = Option(v.getTag) foreach (tag => presenter.configureShortcut(shortcuts(Int.unbox(tag))))
     })
-    new ViewHolderShortcutLayoutAdapter(view)
+    ViewHolderShortcutLayoutAdapter(view)
   }
 
   override def getItemCount: Int = shortcuts.size
@@ -33,7 +34,7 @@ case class ShortcutAdapter(shortcuts: Seq[Shortcut])
 
 }
 
-case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper)
+case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
     with TypedFindView {
 
@@ -43,7 +44,7 @@ case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context:
 
   def bind(shortcut: Shortcut, position: Int): Ui[_] =
     (icon <~ (shortcut.icon map ivSrc getOrElse Tweak.blank)) ~
-      (name <~ tvText(shortcut.title)) ~
+      (name <~ tvText(shortcut.title) + tvColor(theme.get(DrawerTextColor))) ~
       (content <~ vTag(position))
 
   override def findViewById(id: Int): View = content.findViewById(id)

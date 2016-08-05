@@ -16,7 +16,7 @@ class AppsFragment(implicit collectionsPagerPresenter: CollectionsPagerPresenter
 
   val allApps = AllAppsCategory
 
-  override lazy val presenter = new AppsPresenter(
+  override lazy val presenter = AppsPresenter(
     category = NineCardCategory(getString(Seq(getArguments), AppsFragment.categoryKey, AllAppsCategory.name)),
     actions = self)
 

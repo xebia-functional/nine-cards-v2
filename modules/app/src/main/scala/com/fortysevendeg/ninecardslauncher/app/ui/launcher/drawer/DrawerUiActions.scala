@@ -84,7 +84,6 @@ trait DrawerUiActions
   def showGeneralError: Ui[_] = drawerContent <~ vSnackbarShort(R.string.contactUsError)
 
   def initDrawerUi: Ui[_] = {
-    val colorPrimary = theme.get(PrimaryColor)
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
     (searchBoxView <~
       sbvUpdateContentView(AppsView) <~
@@ -118,9 +117,7 @@ trait DrawerUiActions
           changeContentView = changeContentView
         )) <~
         rvAddItemDecoration(new SelectedItemDecoration)) ~
-      (scrollerLayout <~
-        fslMarginRightBarContent(padding) <~
-        scrollableStyle) ~
+      (scrollerLayout <~ scrollableStyle) ~
       (pullToTabsView <~
         pdvHorizontalEnable(true) <~
         (recycler map (rv => pdvHorizontalListener(rv.horizontalMovementListener)) getOrElse Tweak.blank) <~

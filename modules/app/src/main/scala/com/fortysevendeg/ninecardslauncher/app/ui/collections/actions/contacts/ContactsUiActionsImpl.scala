@@ -49,17 +49,18 @@ trait ContactsUiActionsImpl
   )
 
   override def initialize(): Ui[Any] =
-    (toolbar <~
-      dtbInit(colorPrimary) <~
-      dtvInflateMenu(R.menu.contact_dialog_menu) <~
-      dtvOnMenuItemClickListener(onItem = {
-        case R.id.action_filter =>
-          (if (isTabsOpened) closeTabs() else openTabs()).run
-          true
-        case _ => false
-      }) <~
-      dtbChangeText(R.string.allContacts) <~
-      dtbNavigationOnClickListener((_) => unreveal())) ~
+    (scrollerLayout <~ scrollableStyle) ~
+      (toolbar <~
+        dtbInit(colorPrimary) <~
+        dtvInflateMenu(R.menu.contact_dialog_menu) <~
+        dtvOnMenuItemClickListener(onItem = {
+          case R.id.action_filter =>
+            (if (isTabsOpened) closeTabs() else openTabs()).run
+            true
+          case _ => false
+        }) <~
+        dtbChangeText(R.string.allContacts) <~
+        dtbNavigationOnClickListener((_) => unreveal())) ~
       (pullToTabsView <~
         ptvLinkTabs(
           tabs = tabs,
@@ -73,8 +74,7 @@ trait ContactsUiActionsImpl
           }
         ))) ~
       (recycler <~ recyclerStyle) ~
-      (tabs <~ tvClose) ~
-      (scrollerLayout <~ fslColor(colorPrimary, theme.get(DrawerTabsBackgroundColor)))
+      (tabs <~ tvClose)
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ hideError
 

@@ -71,15 +71,15 @@ trait AppsIuActionsImpl
           case _ => false
         })
     }
-    (toolbar <~
-      dtbInit(colorPrimary) <~
-      dtbChangeText(R.string.applications) <~
-      menuTweak <~
-      dtbNavigationOnClickListener((_) => unreveal())) ~
+    (scrollerLayout <~ scrollableStyle) ~
+      (toolbar <~
+        dtbInit(colorPrimary) <~
+        dtbChangeText(R.string.applications) <~
+        menuTweak <~
+        dtbNavigationOnClickListener((_) => unreveal())) ~
       (pullToTabsView <~ pullToTabsTweaks) ~
       (recycler <~ recyclerStyle) ~
-      (tabs <~ tvClose) ~
-      (scrollerLayout <~ fslColor(colorPrimary, theme.get(DrawerTabsBackgroundColor)))
+      (tabs <~ tvClose)
   }
 
   override def showLoading(): Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)

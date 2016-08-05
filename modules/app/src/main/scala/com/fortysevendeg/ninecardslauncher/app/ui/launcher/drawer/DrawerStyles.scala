@@ -25,7 +25,8 @@ trait DrawerStyles {
   def scrollableStyle(implicit context: ContextWrapper, theme: NineCardsTheme) = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
     vBackgroundBoxWorkspace(color = theme.get(DrawerBackgroundColor), horizontalPadding = padding) +
-      fslColor(theme.get(PrimaryColor), theme.get(DrawerTabsBackgroundColor))
+      fslColor(theme.get(PrimaryColor), theme.get(DrawerTabsBackgroundColor)) +
+      fslMarginRightBarContent(padding)
   }
 
   def appDrawerMainStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] = {
