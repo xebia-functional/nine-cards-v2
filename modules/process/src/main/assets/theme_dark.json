@@ -43,15 +43,15 @@
     },
     {
       "styleType": "CollectionDetailBackgroundColor",
-      "color": "#ffa3a3a3"
+      "color": "#222222"
     },
     {
       "styleType": "CollectionDetailTextCardColor",
-      "color": "#eeeeee"
+      "color": "#ffffff"
     },
     {
       "styleType": "CollectionDetailCardBackgroundColor",
-      "color": "#ff545454"
+      "color": "#444444"
     },
     {
       "styleType": "CollectionDetailCardBackgroundPressedColor",
@@ -59,11 +59,11 @@
     },
     {
       "styleType": "CollectionDetailTextTabSelectedColor",
-      "color": "#666666"
+      "color": "#ffffff"
     },
     {
       "styleType": "CollectionDetailTextTabDefaultColor",
-      "color": "#80666666"
+      "color": "#80ffffff"
     }
   ]
 }

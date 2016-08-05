@@ -25,7 +25,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.card_item, parent, false)
-    new ViewHolderCollectionAdapter(
+    ViewHolderCollectionAdapter(
       content = view,
       heightCard = heightCard,
       onClick = (position: Int) => Ui {
