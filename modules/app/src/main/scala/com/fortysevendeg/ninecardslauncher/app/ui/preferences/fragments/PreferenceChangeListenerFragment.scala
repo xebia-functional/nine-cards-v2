@@ -20,7 +20,7 @@ trait PreferenceChangeListenerFragment
   }
 
   override def onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String): Unit =
-    withActivity(_.preferenceChanged())
+    withActivity(_.preferenceChanged(key))
 
   protected def withActivity[T](f: (NineCardsPreferencesActivity) => T): Option[T] =
     Option(getActivity) match {

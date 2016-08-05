@@ -71,7 +71,7 @@ trait AppsIuActionsImpl
           case _ => false
         })
     }
-    (scrollerLayout <~ scrollableStyle) ~
+    (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
         dtbInit(colorPrimary) <~
         dtbChangeText(R.string.applications) <~

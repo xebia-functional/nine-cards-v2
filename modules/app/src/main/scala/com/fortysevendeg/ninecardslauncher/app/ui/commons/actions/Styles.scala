@@ -26,9 +26,9 @@ trait Styles {
       fbaColor(color, darkColor)
   }
 
-  def scrollableStyle(implicit context: ContextWrapper, theme: NineCardsTheme) = {
+  def scrollableStyle(color: Int)(implicit context: ContextWrapper, theme: NineCardsTheme) = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
-      fslColor(theme.get(PrimaryColor), theme.get(DrawerTabsBackgroundColor)) +
+      fslColor(color, theme.get(DrawerTabsBackgroundColor)) +
       fslMarginRightBarContent(padding)
   }
 

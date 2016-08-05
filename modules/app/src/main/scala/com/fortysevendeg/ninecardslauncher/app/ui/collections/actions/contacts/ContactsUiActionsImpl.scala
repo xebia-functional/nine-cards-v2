@@ -48,7 +48,7 @@ trait ContactsUiActionsImpl
   )
 
   override def initialize(): Ui[Any] =
-    (scrollerLayout <~ scrollableStyle) ~
+    (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
         dtbInit(colorPrimary) <~
         dtvInflateMenu(R.menu.contact_dialog_menu) <~
@@ -104,7 +104,7 @@ trait ContactsUiActionsImpl
     val ft = getFragmentManager.beginTransaction()
     Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
     ft.addToBackStack(javaNull)
-    val dialog = new SelectInfoContactDialogFragment(contact)
+    val dialog = SelectInfoContactDialogFragment(contact)
     dialog.setTargetFragment(this, RequestCodes.selectInfoContact)
     dialog.show(ft, tagDialog)
   }
@@ -120,7 +120,7 @@ trait ContactsUiActionsImpl
 
   private[this] def generateContactsAdapter(contacts: IterableContacts, counters: Seq[TermCounter], clickListener: (Contact) => Unit)
     (implicit uiContext: UiContext[_]): Ui[Any] = {
-    val adapter = new ContactsAdapter(contacts, clickListener, None)
+    val adapter = ContactsAdapter(contacts, clickListener, None)
     showData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~

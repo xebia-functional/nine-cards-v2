@@ -72,6 +72,12 @@ object ResultCodes {
 
 }
 
+object ResultData {
+
+  val preferencesResultData = "preferences-result-data"
+
+}
+
 object WizardState {
   val stateCreatingCollections = "wizard-state-creating-collections"
   val stateSuccess = "wizard-state-success"
@@ -105,8 +111,10 @@ object AppUtils {
       ThemeStyle(SearchGoogleColor, Color.parseColor("#a3a3a3")),
       ThemeStyle(SearchIconsColor, Color.parseColor("#646464")),
       ThemeStyle(SearchTextColor, Color.parseColor("#646464")),
+      ThemeStyle(EditCollectionNameTextColor, Color.parseColor("#33000000")),
       ThemeStyle(EditCollectionNameTextColor, Color.parseColor("#ffffff")),
-      ThemeStyle(EditCollectionNameHintTextColor, Color.parseColor("#80ffffff"))))
+      ThemeStyle(EditCollectionNameHintTextColor, Color.parseColor("#80ffffff")),
+      ThemeStyle(CollectionCardIconsColor, Color.parseColor("#000000"))))
 
   // TODO We should move this colors to theme
   def getIndexColor(index: Int): Int = index match {

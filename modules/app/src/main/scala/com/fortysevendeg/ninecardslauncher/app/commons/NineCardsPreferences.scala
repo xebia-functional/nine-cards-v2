@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.commons
 
 import PreferencesKeys._
-import PreferencesStates._
-import android.content.{Context, SharedPreferences}
+import PreferencesValuesKeys._
+import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import macroid.ContextWrapper
 
@@ -74,7 +74,7 @@ case object ThemeFile
     case 1 => themeLight
     case 2 => themeLight
     case 3 => themeLight
-    case _ => throw new IllegalArgumentException(s"Illegal value $prefValue for $themesKey")
+    case _ => throw new IllegalArgumentException(s"Illegal value $prefValue for $themeFile")
   }
 
   override def readValue(pref: NineCardsPreferencesValue): String = parseThemeJson(pref.getString(name, "0").toInt)
@@ -93,22 +93,7 @@ class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
 
 }
 
-class NineCardsPreferencesStatus(implicit contextWrapper: ContextWrapper) {
-
-  private[this] val defaultState = false
-
-  private[this] val preferences = contextWrapper.application.getSharedPreferences(namePreferencesState, Context.MODE_PRIVATE)
-
-  def setMoments(state: Boolean): Unit = {
-    val editor = preferences.edit()
-    editor.putBoolean(momentsState, state)
-    editor.apply()
-  }
-
-  def momentsWasChanged: Boolean = preferences.getBoolean(momentsState, defaultState)
-}
-
-// This values should be the same that the keys used in XML Preferences
+// This values should be the same that the keys used in XML preferences_headers
 object PreferencesKeys {
   val defaultLauncherKey = "defaultLauncherKey"
   val themesKey = "themesKey"
@@ -121,16 +106,12 @@ object PreferencesKeys {
   val helpKey = "helpKey"
   val appInfoKey = "appInfoKey"
 
-  val showClockMoment = "showClockMoment"
-  val themeFile = "theme"
 }
 
-object PreferencesStates {
-
-  val namePreferencesState = "NineCardsPreferencesState"
-
-  val momentsState = "NineCardsPreferencesState"
-
+// Values for all preference keys used for values
+object PreferencesValuesKeys {
+  val showClockMoment = "showClockMoment"
+  val themeFile = "theme"
 }
 
 

@@ -1,12 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.preferences
 
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.preference.Preference.OnPreferenceClickListener
 import android.preference.{Preference, PreferenceActivity, PreferenceFragment}
 import android.view.MenuItem
 import com.fortysevendeg.ninecardslauncher.app.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, ResultCodes}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, ResultCodes, ResultData}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
@@ -17,6 +18,8 @@ class NineCardsPreferencesActivity
   with LauncherExecutor {
 
   lazy val actionBar = Option(getActionBar)
+
+  private[this] var changedPreferences: Set[String] = Set.empty
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -43,7 +46,14 @@ class NineCardsPreferencesActivity
     actionBar foreach(_.setTitle(R.string.nineCardsSettingsTitle))
   }
 
-  def preferenceChanged(): Unit = setResult(ResultCodes.preferencesChanged)
+  def preferenceChanged(prefName: String): Unit = {
+    changedPreferences = changedPreferences + prefName
+    if (changedPreferences.nonEmpty) {
+      val data = new Intent()
+      data.putExtra(ResultData.preferencesResultData, changedPreferences.toArray)
+      setResult(ResultCodes.preferencesChanged, data)
+    }
+  }
 
   class NineCardsPreferenceFragment
     extends PreferenceFragment {

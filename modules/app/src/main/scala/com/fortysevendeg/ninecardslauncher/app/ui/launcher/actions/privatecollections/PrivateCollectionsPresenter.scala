@@ -46,36 +46,23 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
 
   private[this] def getPrivateCollections:
   ServiceDef2[Seq[PrivateCollection], AppException with CollectionException with MomentException] =
-    Service(Task(Answer(Seq(PrivateCollection(
-    "Collection Name",
-    AppsCollectionType,
-    "social",
-    1,
-    Some(Social),
-    Seq(PrivateCard(
-      "Instagram",
-      Some("com.instagram.android"),
-      AppCardType,
-      NineCardIntent(NineCardIntentExtras(package_name = Some("com.instagram.android"))),
-      "")),
-    None)))))
-//    for {
-//      collections <- di.collectionProcess.getCollections
-//      moments <- di.momentProcess.getMoments
-//      apps <- di.deviceProcess.getSavedApps(GetByName)
-//      unformedApps = toSeqUnformedApp(apps)
-//      newCollections <- di.collectionProcess.generatePrivateCollections(unformedApps)
-//      newMomentCollections <- di.momentProcess.generatePrivateMoments(unformedApps map toApp, newCollections.length)
-//    } yield {
-//      val privateCollections = newCollections filterNot { newCollection =>
-//        newCollection.appsCategory match {
-//          case Some(category) => (collections flatMap (_.appsCategory)) contains category
-//          case _ => false
-//        }
-//      }
-//      val privateMoments = newMomentCollections filterNot (newMomentCollection => moments map (_.momentType) contains newMomentCollection.moment)
-//      privateCollections ++ privateMoments
-//    }
+    for {
+      collections <- di.collectionProcess.getCollections
+      moments <- di.momentProcess.getMoments
+      apps <- di.deviceProcess.getSavedApps(GetByName)
+      unformedApps = toSeqUnformedApp(apps)
+      newCollections <- di.collectionProcess.generatePrivateCollections(unformedApps)
+      newMomentCollections <- di.momentProcess.generatePrivateMoments(unformedApps map toApp, newCollections.length)
+    } yield {
+      val privateCollections = newCollections filterNot { newCollection =>
+        newCollection.appsCategory match {
+          case Some(category) => (collections flatMap (_.appsCategory)) contains category
+          case _ => false
+        }
+      }
+      val privateMoments = newMomentCollections filterNot (newMomentCollection => moments map (_.momentType) contains newMomentCollection.moment)
+      privateCollections ++ privateMoments
+    }
 
 }
 
