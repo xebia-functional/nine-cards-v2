@@ -26,6 +26,10 @@
       "color": "#ffffff"
     },
     {
+      "styleType": "DrawerTabsBackgroundColor",
+      "color": "#16ffffff"
+    },
+    {
       "styleType": "DrawerBackgroundColor",
       "color": "#333333"
     },

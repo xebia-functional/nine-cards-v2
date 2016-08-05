@@ -27,6 +27,8 @@ case object CollectionDetailTextTabDefaultColor extends ThemeStyleType
 
 case object CollectionDetailTextTabSelectedColor extends ThemeStyleType
 
+case object DrawerTabsBackgroundColor extends ThemeStyleType
+
 case object DrawerBackgroundColor extends ThemeStyleType
 
 case object DrawerTextColor extends ThemeStyleType
@@ -54,6 +56,7 @@ object NineCardsThemeImplicits {
       case "CollectionDetailTextCardColor" => JsSuccess(CollectionDetailTextCardColor)
       case "CollectionDetailTextTabDefaultColor" => JsSuccess(CollectionDetailTextTabDefaultColor)
       case "CollectionDetailTextTabSelectedColor" => JsSuccess(CollectionDetailTextTabSelectedColor)
+      case "DrawerTabsBackgroundColor" => JsSuccess(DrawerTabsBackgroundColor)
       case "DrawerBackgroundColor" => JsSuccess(DrawerBackgroundColor)
       case "DrawerTextColor" => JsSuccess(DrawerTextColor)
       case "SearchBackgroundColor" => JsSuccess(SearchBackgroundColor)
@@ -76,6 +79,7 @@ object NineCardsThemeImplicits {
       case CollectionDetailTextCardColor => Json.toJson("CollectionDetailTextCardColor")
       case CollectionDetailTextTabDefaultColor => Json.toJson("CollectionDetailTextTabDefaultColor")
       case CollectionDetailTextTabSelectedColor => Json.toJson("CollectionDetailTextTabSelectedColor")
+      case DrawerTabsBackgroundColor => Json.toJson("DrawerTabsBackgroundColor")
       case DrawerBackgroundColor => Json.toJson("DrawerBackgroundColor")
       case DrawerTextColor => Json.toJson("DrawerTextColor")
       case SearchBackgroundColor => Json.toJson("SearchBackgroundColor")

@@ -103,6 +103,7 @@ trait Styles {
 
   def searchBoxNameStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[EditText] =
     tvHint(resourceId) +
+      tvColor(theme.get(SearchTextColor)) +
       tvHintColor(theme.get(SearchTextColor))
 
   def searchBoxButtonStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
