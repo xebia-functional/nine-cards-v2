@@ -64,6 +64,14 @@
     {
       "styleType": "CollectionDetailTextTabDefaultColor",
       "color": "#80ffffff"
+    },
+    {
+      "styleType": "EditCollectionNameTextColor",
+      "color": "#ffffff"
+    },
+    {
+      "styleType": "EditCollectionNameHintTextColor",
+      "color": "#80ffffff"
     }
   ]
 }

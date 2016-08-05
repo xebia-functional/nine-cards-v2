@@ -104,7 +104,9 @@ object AppUtils {
       ThemeStyle(SearchPressedColor, Color.parseColor("#ff59afdd")),
       ThemeStyle(SearchGoogleColor, Color.parseColor("#a3a3a3")),
       ThemeStyle(SearchIconsColor, Color.parseColor("#646464")),
-      ThemeStyle(SearchTextColor, Color.parseColor("#646464"))))
+      ThemeStyle(SearchTextColor, Color.parseColor("#646464")),
+      ThemeStyle(EditCollectionNameTextColor, Color.parseColor("#ffffff")),
+      ThemeStyle(EditCollectionNameHintTextColor, Color.parseColor("#80ffffff"))))
 
   // TODO We should move this colors to theme
   def getIndexColor(index: Int): Int = index match {
