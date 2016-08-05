@@ -124,7 +124,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
     dockAppRepository = new DockAppRepository(contentResolverWrapper, uriCreator),
     momentRepository = new MomentRepository(contentResolverWrapper, uriCreator),
-    userRepository = new UserRepository(contentResolverWrapper, uriCreator))
+    userRepository = new UserRepository(contentResolverWrapper, uriCreator),
+    widgetRepository = new WidgetRepository(contentResolverWrapper, uriCreator))
 
   private[this] lazy val appsServices = new AppsServicesImpl()
 
