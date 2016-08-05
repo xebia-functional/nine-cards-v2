@@ -52,6 +52,8 @@ case object EditCollectionNameTextColor extends ThemeStyleType
 
 case object EditCollectionNameHintTextColor extends ThemeStyleType
 
+case object CollectionCardIconsColor extends ThemeStyleType
+
 object NineCardsThemeImplicits {
 
   implicit val themeStyleTypeReads = new Reads[ThemeStyleType] {
@@ -76,6 +78,7 @@ object NineCardsThemeImplicits {
       case "ErrorMessageTextColor" => JsSuccess(ErrorMessageTextColor)
       case "EditCollectionNameTextColor" => JsSuccess(EditCollectionNameTextColor)
       case "EditCollectionNameHintTextColor" => JsSuccess(EditCollectionNameHintTextColor)
+      case "CollectionCardIconsColor" => JsSuccess(CollectionCardIconsColor)
       case _ => JsError("Theme style type not allowed")
     }
   }
@@ -102,6 +105,7 @@ object NineCardsThemeImplicits {
       case ErrorMessageTextColor => Json.toJson("ErrorMessageTextColor")
       case EditCollectionNameTextColor => Json.toJson("EditCollectionNameTextColor")
       case EditCollectionNameHintTextColor => Json.toJson("EditCollectionNameHintTextColor")
+      case CollectionCardIconsColor => Json.toJson("CollectionCardIconsColor")
     }
   }
 

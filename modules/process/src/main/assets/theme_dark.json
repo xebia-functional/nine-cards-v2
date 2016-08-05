@@ -76,6 +76,10 @@
     {
       "styleType": "EditCollectionNameHintTextColor",
       "color": "#80ffffff"
+    },
+    {
+      "styleType": "CollectionCardIconsColor",
+      "color": "#ffffff"
     }
   ]
 }

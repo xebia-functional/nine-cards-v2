@@ -7,6 +7,7 @@ import android.support.v7.widget.CardView
 import android.widget.{Button, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
@@ -28,6 +29,12 @@ trait CollectionCardsStyles {
 
   def buttonStyle(implicit context: ContextWrapper): Tweak[Button] =
     tvColor(themeTextColor) + vBackground(createBackground)
+
+  def leftDrawableTextStyle(resourceId: Int)(implicit context: ContextWrapper): Tweak[TextView] =
+    tvColor(themeTextColor) + tvCompoundDrawablesWithIntrinsicBounds(left = Some(tintDrawable(resourceId)))
+
+  private[this] def tintDrawable(resouceId: Int)(implicit context: ContextWrapper): Drawable =
+    resGetDrawable(resouceId).colorize(theme.get(CollectionCardIconsColor))
 
   private[this] def createBackground(implicit context: ContextWrapper): Drawable = {
     val alphaDefault = .1f

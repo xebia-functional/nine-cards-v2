@@ -19,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
@@ -26,6 +27,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{LatestSharedCollection, TopSharedCollection, TypeSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -38,11 +40,13 @@ trait PublicCollectionsActionsImpl
 
   self: TypedFindView with BaseActionFragment with Contexts[Fragment] =>
 
-  lazy val recycler = Option(findView(TR.actions_recycler))
-
   val launcherPresenter: LauncherPresenter
 
   implicit val collectionPresenter: PublicCollectionsPresenter
+
+  lazy val recycler = Option(findView(TR.actions_recycler))
+
+  def loadBackgroundColor = theme.get(CollectionDetailBackgroundColor)
 
   var typeFilter = slot[TextView]
 
@@ -101,7 +105,7 @@ trait PublicCollectionsActionsImpl
 
   override def loadPublicCollections(
     sharedCollections: Seq[SharedCollection]): Ui[Any] = {
-    val adapter = new PublicCollectionsAdapter(sharedCollections)
+    val adapter = PublicCollectionsAdapter(sharedCollections)
     (recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -128,29 +132,39 @@ trait PublicCollectionsActionsImpl
 }
 
 case class ViewHolderPublicCollectionsLayoutAdapter(
-  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: PublicCollectionsPresenter)
+  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: PublicCollectionsPresenter, val theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+  with TypedFindView
+  with CollectionCardsStyles {
 
   val appsByRow = 5
 
-  lazy val iconContent = Option(findView(TR.public_collections_item_content))
+  lazy val root = findView(TR.public_collections_item_layout)
 
-  lazy val icon = Option(findView(TR.public_collections_item_icon))
+  lazy val iconContent = findView(TR.public_collections_item_content)
 
-  lazy val name = Option(findView(TR.public_collections_item_name))
+  lazy val icon = findView(TR.public_collections_item_icon)
 
-  lazy val author = Option(findView(TR.public_collections_item_author))
+  lazy val name = findView(TR.public_collections_item_name)
 
-  lazy val downloads = Option(findView(TR.public_collections_item_downloads))
+  lazy val author = findView(TR.public_collections_item_author)
 
-  lazy val description = Option(findView(TR.public_collections_item_description))
+  lazy val downloads = findView(TR.public_collections_item_downloads)
 
-  lazy val appsIcons = Option(findView(TR.public_collections_item_apps))
+  lazy val description = findView(TR.public_collections_item_description)
 
-  lazy val addCollection = Option(findView(TR.public_collections_item_add_collection))
+  lazy val appsIcons = findView(TR.public_collections_item_apps)
 
-  lazy val shareCollection = Option(findView(TR.public_collections_item_share_collection))
+  lazy val addCollection = findView(TR.public_collections_item_add_collection)
+
+  lazy val shareCollection = findView(TR.public_collections_item_share_collection)
+
+  ((root <~ cardRootStyle) ~
+    (name <~ textStyle) ~
+    (author <~ textStyle) ~
+    (downloads <~ leftDrawableTextStyle(R.drawable.icon_dialog_collection_downloaded)) ~
+    (description <~ textStyle) ~
+    (addCollection <~ buttonStyle)).run
 
   def bind(collection: SharedCollection, position: Int): Ui[Any] = {
     val background = new ShapeDrawable(new OvalShape)
@@ -175,7 +189,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
   override def findViewById(id: Int): View = content.findViewById(id)
 
   private[this] def automaticAlignment(packages: Seq[SharedCollectionPackage], plus: Int): Tweak[LinearLayout] = {
-    val width = appsIcons.map(_.getWidth) getOrElse 0
+    val width = appsIcons.getWidth
     if (width > 0) {
       vgAddViews(getViewsByCards(packages, width, plus))
     } else {
@@ -206,6 +220,6 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
     val color = resGetColor(R.color.background_count_public_collection_dialog)
     (w[ImageView] <~
       lp[ViewGroup](size, size) <~
-      ivSrc(new CharDrawable(s"+$plus", circle = true, Some(color)))).get
+      ivSrc(CharDrawable(s"+$plus", circle = true, Some(color)))).get
   }
 }
