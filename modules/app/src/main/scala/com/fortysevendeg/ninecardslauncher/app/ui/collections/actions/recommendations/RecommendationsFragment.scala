@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 
 class RecommendationsFragment(implicit collectionsPagerPresenter: CollectionsPagerPresenter)
   extends BaseActionFragment
-  with RecommendationsIuActionsImpl
+  with RecommendationsUiActionsImpl
   with NineCardIntentConversions { self =>
 
   override val collectionsPresenter: CollectionsPagerPresenter = collectionsPagerPresenter
@@ -22,6 +22,8 @@ class RecommendationsFragment(implicit collectionsPagerPresenter: CollectionsPag
   lazy val presenter = new RecommendationsPresenter(nineCardCategory, packages, self)
 
   override def getLayoutId: Int = R.layout.list_action_fragment
+
+  override protected lazy val backgroundColor: Int = loadBackgroundColor
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)

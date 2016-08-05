@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations
 
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
-import android.view.{View, LayoutInflater, ViewGroup}
+import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -9,17 +9,18 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView, R}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailTextCardColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
 
 case class RecommendationsAdapter(recommendations: Seq[RecommendedApp])
-  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], presenter: RecommendationsPresenter)
+  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], presenter: RecommendationsPresenter, theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderRecommendationsLayoutAdapter] {
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderRecommendationsLayoutAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(R.layout.recommendations_item, parent, false).asInstanceOf[ViewGroup]
-    new ViewHolderRecommendationsLayoutAdapter(view)
+    ViewHolderRecommendationsLayoutAdapter(view)
   }
 
   override def getItemCount: Int = recommendations.size
@@ -34,28 +35,40 @@ case class RecommendationsAdapter(recommendations: Seq[RecommendedApp])
 }
 
 case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
-  (implicit context: ActivityContextWrapper, presenter: RecommendationsPresenter)
+  (implicit context: ActivityContextWrapper, presenter: RecommendationsPresenter, theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
-    with TypedFindView {
+  with TypedFindView
+  with RecommendationsAdapterStyles {
 
-  lazy val icon = Option(findView(TR.recommendation_item_icon))
+  lazy val root = findView(TR.recommendation_item_layout)
 
-  lazy val name = Option(findView(TR.recommendation_item_name))
+  lazy val icon = findView(TR.recommendation_item_icon)
 
-  lazy val downloads = Option(findView(TR.recommendation_item_downloads))
+  lazy val name = findView(TR.recommendation_item_name)
 
-  lazy val tag = Option(findView(TR.recommendation_item_tag))
+  lazy val downloads = findView(TR.recommendation_item_downloads)
 
-  lazy val stars = Option(findView(TR.recommendation_item_stars))
+  lazy val tag = findView(TR.recommendation_item_tag)
+
+  lazy val stars = findView(TR.recommendation_item_stars)
 
   lazy val screenshots = Seq(
-    Option(findView(TR.recommendation_item_screenshot1)),
-    Option(findView(TR.recommendation_item_screenshot2)),
-    Option(findView(TR.recommendation_item_screenshot3)))
+    findView(TR.recommendation_item_screenshot1),
+    findView(TR.recommendation_item_screenshot2),
+    findView(TR.recommendation_item_screenshot3))
 
-  lazy val description = Option(findView(TR.recommendation_item_description))
+  lazy val description = findView(TR.recommendation_item_description)
 
-  lazy val installNow = Option(findView(TR.recommendation_item_install_now))
+  lazy val installNow = findView(TR.recommendation_item_install_now)
+
+  val themeTextColor = theme.get(CollectionDetailTextCardColor)
+
+  ((root <~ cardRootStyle) ~
+    (name <~ tvColor(themeTextColor)) ~
+    (downloads <~ tvColor(themeTextColor)) ~
+    (description <~ tvColor(themeTextColor)) ~
+    (tag <~ tvColor(themeTextColor)) ~
+    (installNow <~ installNowStyle)).run
 
   def bind(recommendedApp: RecommendedApp, position: Int)(implicit uiContext: UiContext[_]): Ui[_] = {
     val screensUi: Seq[Ui[_]] = (screenshots zip recommendedApp.screenshots) map {

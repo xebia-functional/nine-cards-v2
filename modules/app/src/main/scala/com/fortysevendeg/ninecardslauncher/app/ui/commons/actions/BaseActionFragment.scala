@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ActionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -68,6 +68,8 @@ trait BaseActionFragment
 
   protected lazy val colorPrimary = getInt(Seq(getArguments), BaseActionFragment.colorPrimary, defaultColor)
 
+  protected lazy val backgroundColor = theme.get(DrawerBackgroundColor)
+
   protected lazy val toolbar = Option(findView(TR.actions_toolbar))
 
   protected lazy val loading = Option(findView(TR.action_loading))
@@ -98,7 +100,10 @@ trait BaseActionFragment
     val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, container, false).asInstanceOf[FrameLayout]
     val layout = LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
     rootView = Option(baseView)
-    ((content <~ vgAddView(layout))  ~
+    ((transitionView <~ vBackgroundColor(backgroundColor)) ~
+      (rootView <~ vBackgroundColor(backgroundColor)) ~
+      (errorContent <~ vBackgroundColor(backgroundColor)) ~
+      (content <~ vgAddView(layout))  ~
       (loading <~ pbColor(colorPrimary)) ~
       (transitionView <~ vBackgroundColor(colorPrimary)) ~
       (rootContent <~ vInvisible) ~
