@@ -22,12 +22,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToClos
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchGoogleColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{ErrorMessageTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
-import scala.language.postfixOps
 
+import scala.language.postfixOps
 import scala.language.postfixOps
 
 trait CollectionUiActionsImpl
@@ -147,7 +147,7 @@ trait CollectionUiActionsImpl
   override def showMessageNotImplemented(): Ui[Any] = Ui(collectionsPresenter.showMessageNotImplemented())
 
   override def showEmptyCollection(): Ui[Any] = {
-    val color = theme.get(SearchGoogleColor)
+    val color = theme.get(ErrorMessageTextColor)
     (emptyCollectionMessage <~ tvColor(color)) ~
       (emptyCollectionImage <~ tivDefaultColor(color)) ~
       (emptyCollectionLayout <~ vVisible) ~
