@@ -50,6 +50,12 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     notifyItemRemoved(position)
   }
 
+  def updateCard(card: Card) = {
+    val position = card.position
+    collection = collection.copy(cards = collection.cards.updated(position, card))
+    notifyItemChanged(position, card)
+  }
+
   def updateCards(cards: Seq[Card]) = {
     collection = collection.copy(cards = cards)
     notifyItemRangeChanged(0, cards.length)
