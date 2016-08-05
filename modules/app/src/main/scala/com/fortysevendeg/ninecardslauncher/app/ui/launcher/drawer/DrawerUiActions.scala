@@ -255,7 +255,7 @@ trait DrawerUiActions
     longClickListener: (View, App) => Unit,
     getAppOrder: GetAppOrder = GetByName,
     counters: Seq[TermCounter] = Seq.empty): Ui[_] = {
-    val appsAdapter = new AppsAdapter(
+    val appsAdapter = AppsAdapter(
       apps = apps,
       clickListener = clickListener,
       longClickListener = Option(longClickListener))

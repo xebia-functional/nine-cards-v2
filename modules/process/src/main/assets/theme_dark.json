@@ -3,11 +3,11 @@
   "styles": [
     {
       "styleType": "PrimaryColor",
-      "color": "#3F51B5"
+      "color": "#FF9800"
     },
     {
       "styleType": "SearchBackgroundColor",
-      "color": "#ff545454"
+      "color": "#333333"
     },
     {
       "styleType": "SearchPressedColor",
@@ -19,6 +19,18 @@
     },
     {
       "styleType": "SearchIconsColor",
+      "color": "#ffffff"
+    },
+    {
+      "styleType": "SearchTextColor",
+      "color": "#ffffff"
+    },
+    {
+      "styleType": "DrawerBackgroundColor",
+      "color": "#333333"
+    },
+    {
+      "styleType": "DrawerTextColor",
       "color": "#ffffff"
     },
     {

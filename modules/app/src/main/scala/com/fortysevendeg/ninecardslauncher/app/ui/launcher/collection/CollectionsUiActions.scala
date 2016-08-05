@@ -23,6 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
@@ -145,7 +146,9 @@ trait CollectionsUiActions
         closeCollectionMenu() ~~ Ui(presenter.goToWidgets())
       }) ~
       (menuLauncherSettings <~ On.click {
-        closeCollectionMenu() ~~ uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
+        closeCollectionMenu() ~~ uiStartIntentForResult(
+          intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
+          result = goToPreferences)
       })
 
   def showEditCollection(collection: Collection): Ui[Any] = {

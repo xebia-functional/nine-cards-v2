@@ -6,7 +6,7 @@ import android.preference.Preference.OnPreferenceClickListener
 import android.preference.{Preference, PreferenceActivity, PreferenceFragment}
 import android.view.MenuItem
 import com.fortysevendeg.ninecardslauncher.app.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
@@ -42,6 +42,8 @@ class NineCardsPreferencesActivity
     super.onBackPressed()
     actionBar foreach(_.setTitle(R.string.nineCardsSettingsTitle))
   }
+
+  def preferenceChanged(): Unit = setResult(ResultCodes.preferencesChanged)
 
   class NineCardsPreferenceFragment
     extends PreferenceFragment {

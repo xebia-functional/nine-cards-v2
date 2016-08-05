@@ -68,6 +68,8 @@ object ResultCodes {
 
   val logoutSuccessful = 10
 
+  val preferencesChanged = 20
+
 }
 
 object WizardState {

@@ -22,6 +22,18 @@
       "color": "#646464"
     },
     {
+      "styleType": "SearchTextColor",
+      "color": "#646464"
+    },
+    {
+      "styleType": "DrawerBackgroundColor",
+      "color": "#ffffff"
+    },
+    {
+      "styleType": "DrawerTextColor",
+      "color": "#ffffff"
+    },
+    {
       "styleType": "AppDrawerPressedColor",
       "color": "#ffd5f2fa"
     },

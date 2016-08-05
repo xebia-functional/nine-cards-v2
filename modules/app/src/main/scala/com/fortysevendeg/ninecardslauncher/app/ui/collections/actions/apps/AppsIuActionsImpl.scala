@@ -122,7 +122,7 @@ trait AppsIuActionsImpl
     category: NineCardCategory,
     clickListener: (App) => Unit) = {
     val categoryName = resGetString(category.getStringResource) getOrElse category.getStringResource
-    val adapter = new AppsAdapter(
+    val adapter = AppsAdapter(
       apps = apps,
       clickListener = clickListener,
       longClickListener = None)

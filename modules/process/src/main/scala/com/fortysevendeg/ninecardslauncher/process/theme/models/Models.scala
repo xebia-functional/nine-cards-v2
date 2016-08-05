@@ -27,11 +27,17 @@ case object CollectionDetailTextTabDefaultColor extends ThemeStyleType
 
 case object CollectionDetailTextTabSelectedColor extends ThemeStyleType
 
+case object DrawerBackgroundColor extends ThemeStyleType
+
+case object DrawerTextColor extends ThemeStyleType
+
 case object SearchBackgroundColor extends ThemeStyleType
 
 case object SearchGoogleColor extends ThemeStyleType
 
 case object SearchIconsColor extends ThemeStyleType
+
+case object SearchTextColor extends ThemeStyleType
 
 case object SearchPressedColor extends ThemeStyleType
 
@@ -48,9 +54,12 @@ object NineCardsThemeImplicits {
       case "CollectionDetailTextCardColor" => JsSuccess(CollectionDetailTextCardColor)
       case "CollectionDetailTextTabDefaultColor" => JsSuccess(CollectionDetailTextTabDefaultColor)
       case "CollectionDetailTextTabSelectedColor" => JsSuccess(CollectionDetailTextTabSelectedColor)
+      case "DrawerBackgroundColor" => JsSuccess(DrawerBackgroundColor)
+      case "DrawerTextColor" => JsSuccess(DrawerTextColor)
       case "SearchBackgroundColor" => JsSuccess(SearchBackgroundColor)
       case "SearchGoogleColor" => JsSuccess(SearchGoogleColor)
       case "SearchIconsColor" => JsSuccess(SearchIconsColor)
+      case "SearchTextColor" => JsSuccess(SearchTextColor)
       case "SearchPressedColor" => JsSuccess(SearchPressedColor)
       case _ => JsError("Theme style type not allowed")
     }
@@ -67,9 +76,12 @@ object NineCardsThemeImplicits {
       case CollectionDetailTextCardColor => Json.toJson("CollectionDetailTextCardColor")
       case CollectionDetailTextTabDefaultColor => Json.toJson("CollectionDetailTextTabDefaultColor")
       case CollectionDetailTextTabSelectedColor => Json.toJson("CollectionDetailTextTabSelectedColor")
+      case DrawerBackgroundColor => Json.toJson("DrawerBackgroundColor")
+      case DrawerTextColor => Json.toJson("DrawerTextColor")
       case SearchBackgroundColor => Json.toJson("SearchBackgroundColor")
       case SearchGoogleColor => Json.toJson("SearchGoogleColor")
       case SearchIconsColor => Json.toJson("SearchIconsColor")
+      case SearchTextColor => Json.toJson("SearchTextColor")
       case SearchPressedColor => Json.toJson("SearchPressedColor")
     }
   }

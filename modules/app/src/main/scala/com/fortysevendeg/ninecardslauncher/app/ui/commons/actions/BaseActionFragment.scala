@@ -8,7 +8,7 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportProvider, NineCardsPreferencesValue, ThemeFile}
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -38,10 +38,13 @@ trait BaseActionFragment
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
-  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
-    case Answer(t) => t
-    case _ => getDefaultTheme
-  }
+  lazy val preferenceValues = new NineCardsPreferencesValue
+
+  implicit lazy val theme: NineCardsTheme =
+    di.themeProcess.getTheme(ThemeFile.readValue(preferenceValues)).run.run match {
+      case Answer(t) => t
+      case _ => getDefaultTheme
+    }
 
   private[this] lazy val defaultColor = theme.get(PrimaryColor)
 

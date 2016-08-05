@@ -431,6 +431,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def configureOrAddWidget(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map actions.configureWidget getOrElse actions.showContactUsError()).run
 
+  def preferencesChanged(): Unit =
+    contextWrapper.original.get match {
+      case Some(activity) => activity.recreate()
+      case _ =>
+    }
+
   private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
 

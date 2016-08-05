@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.commons
 
 import PreferencesKeys._
 import PreferencesStates._
-import android.content.Context
+import android.content.{Context, SharedPreferences}
 import android.preference.PreferenceManager
 import macroid.ContextWrapper
 
@@ -50,24 +50,46 @@ sealed trait NineCardsPreferenceValue[T]
   extends NineCardsPreferences {
   val name: String
   val default: T
+  def readValue(pref: NineCardsPreferencesValue): T
 }
 
 case object ShowClockMoment
   extends NineCardsPreferenceValue[Boolean] {
   override val name: String = showClockMoment
   override val default: Boolean = false
+
+  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+}
+
+case object ThemeFile
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = themeFile
+  override val default: String = "theme_light"
+
+  private[this] val themeDark = "theme_dark"
+  private[this] val themeLight = "theme_light"
+
+  private[this] def parseThemeJson(prefValue: Int): String = prefValue match {
+    case 0 => themeDark
+    case 1 => themeLight
+    case 2 => themeLight
+    case 3 => themeLight
+    case _ => throw new IllegalArgumentException(s"Illegal value $prefValue for $themesKey")
+  }
+
+  override def readValue(pref: NineCardsPreferencesValue): String = parseThemeJson(pref.getString(name, "0").toInt)
 }
 
 class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
 
-  def getInt(pref: NineCardsPreferenceValue[Int]): Int =
-    PreferenceManager.getDefaultSharedPreferences(contextWrapper.application).getString(pref.name, pref.default.toString).toInt
+  private[this] def get[T](f: (SharedPreferences) => T) =
+    f(PreferenceManager.getDefaultSharedPreferences(contextWrapper.application))
 
-  def getString(pref: NineCardsPreferenceValue[String]): String =
-    PreferenceManager.getDefaultSharedPreferences(contextWrapper.application).getString(pref.name, pref.default)
+  def getInt(name: String, defaultValue: Int): Int = get(_.getInt(name, defaultValue))
 
-  def getBoolean(pref: NineCardsPreferenceValue[Boolean]): Boolean =
-    PreferenceManager.getDefaultSharedPreferences(contextWrapper.application).getBoolean(pref.name, pref.default)
+  def getString(name: String, defaultValue: String): String = get(_.getString(name, defaultValue))
+
+  def getBoolean(name: String, defaultValue: Boolean): Boolean = get(_.getBoolean(name, defaultValue))
 
 }
 
@@ -100,6 +122,7 @@ object PreferencesKeys {
   val appInfoKey = "appInfoKey"
 
   val showClockMoment = "showClockMoment"
+  val themeFile = "theme"
 }
 
 object PreferencesStates {

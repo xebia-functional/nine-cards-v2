@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -20,7 +21,7 @@ case class ContactsAdapter(
   var contacts: IterableContacts,
   clickListener: (Contact) => Unit,
   longClickListener: Option[(View, Contact) => Unit])
-  (implicit val activityContext: ActivityContextWrapper, implicit val uiContext: UiContext[_])
+  (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ContactsIterableHolder]
   with FastScrollerListener {
 
@@ -59,7 +60,7 @@ case class ContactsAdapter(
 case class ContactsIterableHolder(
   content: View,
   clickListener: (Contact) => Unit,
-  longClickListener: Option[(View, Contact) => Unit])(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
+  longClickListener: Option[(View, Contact) => Unit])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -74,7 +75,7 @@ case class ContactsIterableHolder(
   def bind(contact: Contact, position: Int): Ui[_] = {
     val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
     (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
-      (name <~ tvText(contactName)) ~
+      (name <~ tvText(contactName) + tvColor(theme.get(DrawerTextColor))) ~
       (favorite <~ (if (contact.favorite) vVisible else vGone)) ~
       (content <~
         On.click {
