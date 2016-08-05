@@ -8,6 +8,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailTextCardColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -35,10 +36,10 @@ case class RecommendationsAdapter(recommendations: Seq[RecommendedApp])
 }
 
 case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
-  (implicit context: ActivityContextWrapper, presenter: RecommendationsPresenter, theme: NineCardsTheme)
+  (implicit context: ActivityContextWrapper, presenter: RecommendationsPresenter, val theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView
-  with RecommendationsAdapterStyles {
+  with CollectionCardsStyles {
 
   lazy val root = findView(TR.recommendation_item_layout)
 
@@ -61,14 +62,12 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
 
   lazy val installNow = findView(TR.recommendation_item_install_now)
 
-  val themeTextColor = theme.get(CollectionDetailTextCardColor)
-
   ((root <~ cardRootStyle) ~
-    (name <~ tvColor(themeTextColor)) ~
-    (downloads <~ tvColor(themeTextColor)) ~
-    (description <~ tvColor(themeTextColor)) ~
-    (tag <~ tvColor(themeTextColor)) ~
-    (installNow <~ installNowStyle)).run
+    (name <~ textStyle) ~
+    (downloads <~ textStyle) ~
+    (description <~ textStyle) ~
+    (tag <~ textStyle) ~
+    (installNow <~ buttonStyle)).run
 
   def bind(recommendedApp: RecommendedApp, position: Int)(implicit uiContext: UiContext[_]): Ui[_] = {
     val screensUi: Seq[Ui[_]] = (screenshots zip recommendedApp.screenshots) map {

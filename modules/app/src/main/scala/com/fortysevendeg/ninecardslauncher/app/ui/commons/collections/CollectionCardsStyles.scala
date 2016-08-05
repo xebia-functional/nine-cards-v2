@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.collections
 
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.{ColorDrawable, Drawable, RippleDrawable, StateListDrawable}
 import android.support.v7.widget.CardView
-import android.widget.Button
+import android.widget.{Button, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -14,15 +14,22 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import macroid.{ContextWrapper, Tweak}
 
-trait RecommendationsAdapterStyles {
+trait CollectionCardsStyles {
 
-  def cardRootStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
+  implicit val theme: NineCardsTheme
+
+  val themeTextColor = theme.get(CollectionDetailTextCardColor)
+
+  def cardRootStyle(implicit context: ContextWrapper): Tweak[CardView] =
     cvCardBackgroundColor(theme.get(CollectionDetailCardBackgroundColor))
 
-  def installNowStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[Button] =
-    tvColor(theme.get(CollectionDetailTextCardColor)) + vBackground(createBackground)
+  def textStyle(implicit context: ContextWrapper): Tweak[TextView] =
+    tvColor(themeTextColor)
 
-  private[this] def createBackground(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable = {
+  def buttonStyle(implicit context: ContextWrapper): Tweak[Button] =
+    tvColor(themeTextColor) + vBackground(createBackground)
+
+  private[this] def createBackground(implicit context: ContextWrapper): Drawable = {
     val alphaDefault = .1f
     val color = theme.get(CollectionDetailCardBackgroundPressedColor)
     Lollipop ifSupportedThen {

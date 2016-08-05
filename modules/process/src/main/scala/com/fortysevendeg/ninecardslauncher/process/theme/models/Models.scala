@@ -4,7 +4,10 @@ import android.graphics.Color
 import play.api.libs.json._
 
 case class NineCardsTheme(name: String, styles: Seq[ThemeStyle]) {
-  def get(style: ThemeStyleType): Int = styles.find(_.styleType == style) map (_.color) getOrElse Color.TRANSPARENT
+  def get(style: ThemeStyleType): Int = styles.find(_.styleType == style) map (_.color) getOrElse {
+    android.util.Log.i("9Cards", s"The selected theme doesn't have the $style property")
+    Color.TRANSPARENT
+  }
 }
 
 case class ThemeStyle(styleType: ThemeStyleType, color: Int)
@@ -43,6 +46,8 @@ case object SearchTextColor extends ThemeStyleType
 
 case object SearchPressedColor extends ThemeStyleType
 
+case object ErrorMessageTextColor extends ThemeStyleType
+
 case object EditCollectionNameTextColor extends ThemeStyleType
 
 case object EditCollectionNameHintTextColor extends ThemeStyleType
@@ -68,6 +73,7 @@ object NineCardsThemeImplicits {
       case "SearchIconsColor" => JsSuccess(SearchIconsColor)
       case "SearchTextColor" => JsSuccess(SearchTextColor)
       case "SearchPressedColor" => JsSuccess(SearchPressedColor)
+      case "ErrorMessageTextColor" => JsSuccess(ErrorMessageTextColor)
       case "EditCollectionNameTextColor" => JsSuccess(EditCollectionNameTextColor)
       case "EditCollectionNameHintTextColor" => JsSuccess(EditCollectionNameHintTextColor)
       case _ => JsError("Theme style type not allowed")
@@ -93,6 +99,7 @@ object NineCardsThemeImplicits {
       case SearchIconsColor => Json.toJson("SearchIconsColor")
       case SearchTextColor => Json.toJson("SearchTextColor")
       case SearchPressedColor => Json.toJson("SearchPressedColor")
+      case ErrorMessageTextColor => Json.toJson("ErrorMessageTextColor")
       case EditCollectionNameTextColor => Json.toJson("EditCollectionNameTextColor")
       case EditCollectionNameHintTextColor => Json.toJson("EditCollectionNameHintTextColor")
     }

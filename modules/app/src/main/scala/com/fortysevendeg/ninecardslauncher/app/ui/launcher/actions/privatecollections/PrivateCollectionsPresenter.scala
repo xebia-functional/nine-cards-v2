@@ -1,14 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{UiContext, Presenter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Presenter, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, Social}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentConversions, MomentException}
 import macroid.{ActivityContextWrapper, Ui}
+import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
@@ -43,23 +46,36 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
 
   private[this] def getPrivateCollections:
   ServiceDef2[Seq[PrivateCollection], AppException with CollectionException with MomentException] =
-    for {
-      collections <- di.collectionProcess.getCollections
-      moments <- di.momentProcess.getMoments
-      apps <- di.deviceProcess.getSavedApps(GetByName)
-      unformedApps = toSeqUnformedApp(apps)
-      newCollections <- di.collectionProcess.generatePrivateCollections(unformedApps)
-      newMomentCollections <- di.momentProcess.generatePrivateMoments(unformedApps map toApp, newCollections.length)
-    } yield {
-      val privateCollections = newCollections filterNot { newCollection =>
-        newCollection.appsCategory match {
-          case Some(category) => (collections flatMap (_.appsCategory)) contains category
-          case _ => false
-        }
-      }
-      val privateMoments = newMomentCollections filterNot (newMomentCollection => moments map (_.momentType) contains newMomentCollection.moment)
-      privateCollections ++ privateMoments
-    }
+    Service(Task(Answer(Seq(PrivateCollection(
+    "Collection Name",
+    AppsCollectionType,
+    "social",
+    1,
+    Some(Social),
+    Seq(PrivateCard(
+      "Instagram",
+      Some("com.instagram.android"),
+      AppCardType,
+      NineCardIntent(NineCardIntentExtras(package_name = Some("com.instagram.android"))),
+      "")),
+    None)))))
+//    for {
+//      collections <- di.collectionProcess.getCollections
+//      moments <- di.momentProcess.getMoments
+//      apps <- di.deviceProcess.getSavedApps(GetByName)
+//      unformedApps = toSeqUnformedApp(apps)
+//      newCollections <- di.collectionProcess.generatePrivateCollections(unformedApps)
+//      newMomentCollections <- di.momentProcess.generatePrivateMoments(unformedApps map toApp, newCollections.length)
+//    } yield {
+//      val privateCollections = newCollections filterNot { newCollection =>
+//        newCollection.appsCategory match {
+//          case Some(category) => (collections flatMap (_.appsCategory)) contains category
+//          case _ => false
+//        }
+//      }
+//      val privateMoments = newMomentCollections filterNot (newMomentCollection => moments map (_.momentType) contains newMomentCollection.moment)
+//      privateCollections ++ privateMoments
+//    }
 
 }
 

@@ -66,6 +66,10 @@
       "color": "#80ffffff"
     },
     {
+      "styleType": "ErrorMessageTextColor",
+      "color": "#33000000"
+    },
+    {
       "styleType": "EditCollectionNameTextColor",
       "color": "#ffffff"
     },
