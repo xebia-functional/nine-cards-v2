@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GenericUiContext, UiC
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -34,24 +35,12 @@ class WorkSpaceMomentIcon(context: Context, attr: AttributeSet, defStyleAttr: In
 
   val padding = resGetDimensionPixelSize(R.dimen.padding_small)
 
-  private[this] val content = Option(findView(TR.workspace_moment_icon_content))
+  private[this] lazy val title = findView(TR.workspace_moment_title)
 
-  private[this] val title = Option(findView(TR.workspace_moment_title))
+  private[this] lazy val icon = findView(TR.workspace_moment_icon)
 
-  private[this] val icon = Option(findView(TR.workspace_moment_icon))
-
-  def populateCollection(collection: Collection): Ui[Any] = {
-    val resIcon = iconCollectionDetail(collection.icon)
-    (title <~ tvText(collection.name)) ~
-      (content <~ vPaddings(padding)) ~
-      (icon <~
-        ivScaleType(ScaleType.CENTER_INSIDE) <~
-        vBackgroundCollection(collection.themedColorIndex) <~
-        ivSrc(resIcon))
-  }
-
-  def populateCard(card: Card): Ui[Any] =
-    (title <~ tvText(card.term)) ~
+  def populateCard(card: Card)(implicit theme: NineCardsTheme): Ui[Any] =
+    (title <~ tvColor(theme.get(DrawerTextColor)) <~ tvText(card.term)) ~
       (icon <~
         (card.cardType match {
           case cardType if cardType.isContact => ivUriContact(card.imagePath, card.term, circular = true)

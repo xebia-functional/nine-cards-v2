@@ -350,12 +350,6 @@ trait LauncherUiActionsImpl
 
   override def canRemoveCollections: Boolean = getCountCollections > 1
 
-  override def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])] =
-    moments map {
-      case Moment(Some(collectionId: Int), _, _, _, Some(m: NineCardsMoment)) =>
-        (m, getCollections.find(_.id == collectionId))
-    }
-
   override def getCollection(position: Int): Option[Collection] = getCollections.lift(position)
 
   override def isEmptyCollectionsInWorkspace: Boolean = isEmptyCollections

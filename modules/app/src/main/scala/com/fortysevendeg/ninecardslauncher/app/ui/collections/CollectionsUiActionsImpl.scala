@@ -91,7 +91,8 @@ trait CollectionsUiActionsImpl
     getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
   override def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): Ui[Any] =
-    (tabs <~ tabsStyle) ~
+    (root <~ vBackgroundColor(theme.get(CollectionDetailBackgroundColor))) ~
+      (tabs <~ tabsStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
@@ -115,15 +116,16 @@ trait CollectionsUiActionsImpl
     activityContextWrapper.getOriginal match {
       case fragmentActivity: FragmentActivity =>
         val adapter = CollectionsPagerAdapter(fragmentActivity.getSupportFragmentManager, collections, position)
-        (root <~ SnailsCommons.fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
-          (viewPager <~ vpAdapter(adapter)) ~
+        (viewPager <~ vpAdapter(adapter)) ~
           Ui(adapter.activateFragment(position)) ~
           (tabs <~
             stlViewPager(viewPager) <~
             stlOnPageChangeListener(
               new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
           uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
-          uiHandlerDelayed(Ui { getActivePresenter foreach (_.bindAnimatedAdapter()) }, 100) ~
+          uiHandlerDelayed(Ui {
+            getActivePresenter foreach (_.bindAnimatedAdapter())
+          }, 100) ~
           (tabs <~ vVisible <~~ enterViews) ~
           elevationsDefault
       case _ => Ui.nop

@@ -156,9 +156,7 @@ object WorkSpaceItemMenuTweaks {
 object WorkSpaceMomentMenuTweaks {
   type W = WorkSpaceMomentIcon
 
-  def wmmPopulateCollection(collection: Collection) = Tweak[W](_.populateCollection(collection).run)
-
-  def wmmPopulateCard(card: Card) = Tweak[W](_.populateCard(card).run)
+  def wmmPopulateCard(card: Card)(implicit theme: NineCardsTheme) = Tweak[W](_.populateCard(card).run)
 
 }
 

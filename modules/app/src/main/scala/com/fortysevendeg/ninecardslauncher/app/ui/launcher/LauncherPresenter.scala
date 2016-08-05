@@ -697,8 +697,6 @@ trait LauncherUiActions {
 
   def canRemoveCollections: Boolean
 
-  def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])]
-
   def getCollection(position: Int): Option[Collection]
 
   def isTabsOpened: Boolean

@@ -34,9 +34,6 @@ import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 
 trait Styles {
 
-  def rootStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FrameLayout] =
-    vBackgroundColor(theme.get(CollectionDetailBackgroundColor))
-
   def tabsStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[SlidingTabLayout] =
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
