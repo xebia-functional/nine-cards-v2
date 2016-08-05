@@ -205,7 +205,6 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     // scrollable widgets works fine
     if (isVerticalMoving(x, y) && !touchingWidget && statuses.enabled) {
       workSpacesListener.onStartOpenMenu().run
-      resetLongClick()
       workSpacesStatuses = workSpacesStatuses.start()
     } else {
       super.setStateIfNeeded(x, y)
