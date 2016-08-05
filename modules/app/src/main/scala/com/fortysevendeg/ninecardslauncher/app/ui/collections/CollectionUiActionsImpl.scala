@@ -27,6 +27,8 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
 
+import scala.language.postfixOps
+
 trait CollectionUiActionsImpl
   extends CollectionUiActions {
 
@@ -303,7 +305,7 @@ trait CollectionUiActionsImpl
   private[this] def createAdapter(collection: Collection) = {
     // In Android Design Library 23.0.1 has a problem calculating the height. We have to subtract 25 dp. We should to check this when we'll change to a new version
     val heightCard = recyclerView map (view => (view.getHeight - (25 dp) - (view.getPaddingBottom + view.getPaddingTop)) / numInLine) getOrElse 0
-    new CollectionAdapter(collection, heightCard)
+    CollectionAdapter(collection, heightCard)
   }
 
 }

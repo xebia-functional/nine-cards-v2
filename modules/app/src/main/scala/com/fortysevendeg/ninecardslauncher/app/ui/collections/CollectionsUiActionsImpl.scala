@@ -59,7 +59,7 @@ trait CollectionsUiActionsImpl
 
   val resistanceScale = .05f
 
-  lazy val iconIndicatorDrawable = new PathMorphDrawable(
+  lazy val iconIndicatorDrawable = PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
@@ -246,7 +246,7 @@ trait CollectionsUiActionsImpl
         val ft = fragmentManager.beginTransaction()
         Option(fragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
         ft.addToBackStack(javaNull)
-        val dialog = new PublishCollectionFragment(collection)
+        val dialog = PublishCollectionFragment(collection)
         dialog.show(ft, tagDialog)
       }
       case _ =>

@@ -21,6 +21,7 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.language.postfixOps
 
 class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
@@ -189,7 +190,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def closeMenu(): Ui[Future[Any]] = if (workSpacesStatuses.openedMenu) {
     setOpenedMenu(false)
     animateViewsMenuMovement(0, durationAnimation)
-  } else Ui(Future.successful())
+  } else Ui(Future.successful(()))
 
   private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
     action match {
