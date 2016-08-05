@@ -90,19 +90,21 @@ object AppUtils {
   def getDefaultTheme = NineCardsTheme(
     name = "light",
     styles = Seq(
-      ThemeStyle(SearchBackgroundColor, Color.parseColor("#ffffff")),
-      ThemeStyle(SearchPressedColor, Color.parseColor("#ff59afdd")),
-      ThemeStyle(SearchGoogleColor, Color.parseColor("#a3a3a3")),
-      ThemeStyle(SearchIconsColor, Color.parseColor("#646464")),
       ThemeStyle(AppDrawerPressedColor, Color.parseColor("#ffd5f2fa")),
       ThemeStyle(CollectionDetailBackgroundColor, Color.parseColor("#eeeeee")),
       ThemeStyle(CollectionDetailTextCardColor, Color.parseColor("#000000")),
       ThemeStyle(CollectionDetailCardBackgroundColor, Color.parseColor("#ffffff")),
       ThemeStyle(CollectionDetailCardBackgroundPressedColor, Color.parseColor("#000000")),
       ThemeStyle(CollectionDetailTextTabSelectedColor, Color.parseColor("#ffffff")),
-      ThemeStyle(CollectionDetailTextTabDefaultColor, Color.parseColor("#80ffffff"))
-    )
-  )
+      ThemeStyle(CollectionDetailTextTabDefaultColor, Color.parseColor("#80ffffff")),
+      ThemeStyle(DrawerTabsBackgroundColor, Color.parseColor("#16000000")),
+      ThemeStyle(DrawerBackgroundColor, Color.parseColor("#ffffff")),
+      ThemeStyle(DrawerTextColor, Color.parseColor("#ffffff")),
+      ThemeStyle(SearchBackgroundColor, Color.parseColor("#ffffff")),
+      ThemeStyle(SearchPressedColor, Color.parseColor("#ff59afdd")),
+      ThemeStyle(SearchGoogleColor, Color.parseColor("#a3a3a3")),
+      ThemeStyle(SearchIconsColor, Color.parseColor("#646464")),
+      ThemeStyle(SearchTextColor, Color.parseColor("#646464"))))
 
   // TODO We should move this colors to theme
   def getIndexColor(index: Int): Int = index match {
