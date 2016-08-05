@@ -106,15 +106,15 @@ trait WizardPresenterSpecification
 
     mockContextActivity.getResources returns mockResources
 
-    mockActions.initialize(any) returns Ui[Any]()
-    mockActions.showLoading() returns Ui[Any]()
-    mockActions.goToUser() returns Ui[Any]()
-    mockActions.goToWizard() returns Ui[Any]()
-    mockActions.showErrorConnectingGoogle() returns Ui[Any]()
-    mockActions.showErrorLoginUser() returns Ui[Any]()
-    mockActions.showErrorAcceptTerms() returns Ui[Any]()
-    mockActions.showErrorSelectUser() returns Ui[Any]()
-    mockActions.showDiveIn() returns Ui[Any]()
+    mockActions.initialize(any) returns Ui[Any](())
+    mockActions.showLoading() returns Ui[Any](())
+    mockActions.goToUser() returns Ui[Any](())
+    mockActions.goToWizard() returns Ui[Any](())
+    mockActions.showErrorConnectingGoogle() returns Ui[Any](())
+    mockActions.showErrorLoginUser() returns Ui[Any](())
+    mockActions.showErrorAcceptTerms() returns Ui[Any](())
+    mockActions.showErrorSelectUser() returns Ui[Any](())
+    mockActions.showDiveIn() returns Ui[Any](())
 
     val presenter = new WizardPresenter(mockActions) {
 

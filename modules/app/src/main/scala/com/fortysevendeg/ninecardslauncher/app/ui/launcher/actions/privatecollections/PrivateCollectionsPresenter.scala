@@ -1,17 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Presenter, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, Social}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentConversions, MomentException}
 import macroid.{ActivityContextWrapper, Ui}
-import rapture.core.Answer
 
 import scalaz.concurrent.Task
 

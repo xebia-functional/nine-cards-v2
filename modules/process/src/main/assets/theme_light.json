@@ -71,11 +71,11 @@
     },
     {
       "styleType": "EditCollectionNameTextColor",
-      "color": "#ffffff"
+      "color": "#646464"
     },
     {
       "styleType": "EditCollectionNameHintTextColor",
-      "color": "#80ffffff"
+      "color": "#80646464"
     },
     {
       "styleType": "CollectionCardIconsColor",
