@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DottedDrawable
@@ -18,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, Lau
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -67,14 +69,19 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     case widget: LauncherWidgetView => widget.deactivateSelected()
   }
 
-  def resizeCurrentWidget = this <~ Transformer {
+  def resizeCurrentWidget: Ui[Any] = this <~ Transformer {
     case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeResizing()
     case widget: LauncherWidgetView => widget.deactivateSelected()
   }
 
-  def moveCurrentWidget = this <~ Transformer {
+  def moveCurrentWidget: Ui[Any] = this <~ Transformer {
     case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeMoving()
     case widget: LauncherWidgetView => widget.deactivateSelected()
+  }
+
+  def arrowWidget(arrow: Arrow): Ui[Any] = (presenter.statuses.idWidget, presenter.statuses.transformation) match {
+    case (Some(id), ResizeTransformation) => applyResize(id, arrow)
+    case (Some(id), MoveTransformation) => applyMove(id, arrow)
   }
 
   def addWidget(widgetView: View, cell: Cell): Ui[Any] = {
@@ -124,4 +131,31 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     case i: ImageView if i.getTag == ruleTag => this <~ vgRemoveView(i)
   }
 
+  private[this] def applyMove(id: Int, arrow: Arrow) = this <~ Transformer {
+    case i: LauncherWidgetView if i.id == id =>
+      arrow match {
+        case ArrowUp => uiShortToast("Move Up")
+        case ArrowDown => uiShortToast("Move Down")
+        case ArrowLeft => uiShortToast("Move Left")
+        case ArrowRight => uiShortToast("Move Right")
+      }
+  }
+
+  private[this] def applyResize(id: Int, arrow: Arrow) = this <~ Transformer {
+    case i: LauncherWidgetView if i.id == id =>
+      arrow match {
+        case ArrowUp => uiShortToast("Resize Up")
+        case ArrowDown => uiShortToast("Resize Down")
+        case ArrowLeft => uiShortToast("Resize Left")
+        case ArrowRight => uiShortToast("Resize Right")
+      }
+  }
+
 }
+
+sealed trait Arrow
+
+case object ArrowUp extends Arrow
+case object ArrowDown extends Arrow
+case object ArrowLeft extends Arrow
+case object ArrowRight extends Arrow

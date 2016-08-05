@@ -40,6 +40,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets.Widge
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.Arrow
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection}
@@ -130,6 +131,8 @@ trait LauncherUiActionsImpl
     (workspaces <~ lwsMoveCurrentWidget()) ~
       (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
       (editWidgetsTopPanel <~ ewtMoving)
+
+  override def arrowWidget(arrow: Arrow): Ui[Any] = workspaces <~ lwsArrowWidget(arrow)
 
   override def deleteWidget(): Ui[Any] = Ui.nop
 

@@ -19,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialog
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.Arrow
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
@@ -311,6 +312,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def moveWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
     statuses = statuses.copy(transformation = MoveTransformation)
     actions.moveWidget().run
+  }
+
+  def arrowWidget(arrow: Arrow): Unit = if (statuses.mode == EditWidgetsMode) {
+    actions.arrowWidget(arrow).run
   }
 
   def deleteWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
@@ -666,6 +671,8 @@ trait LauncherUiActions {
   def resizeWidget(): Ui[Any]
 
   def moveWidget(): Ui[Any]
+
+  def arrowWidget(arrow: Arrow): Ui[Any]
 
   def deleteWidget(): Ui[Any]
 

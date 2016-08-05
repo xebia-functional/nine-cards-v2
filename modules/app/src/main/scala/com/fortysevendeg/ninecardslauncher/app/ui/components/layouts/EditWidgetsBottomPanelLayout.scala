@@ -14,6 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.PathMorph
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -54,18 +55,18 @@ class EditWidgetsBottomPanelLayout(context: Context, attrs: AttributeSet, defSty
 
   lazy val deleteAction = findView(TR.edit_widget_bottom_action_delete)
 
-  lazy val cursorUp = findView(TR.edit_widget_bottom_cursor_up)
+  lazy val arrowUp = findView(TR.edit_widget_bottom_cursor_up)
 
-  lazy val cursorDown = findView(TR.edit_widget_bottom_cursor_down)
+  lazy val arrowDown = findView(TR.edit_widget_bottom_cursor_down)
 
-  lazy val cursorLeft = findView(TR.edit_widget_bottom_cursor_left)
+  lazy val arrowLeft = findView(TR.edit_widget_bottom_cursor_left)
 
-  lazy val cursorRight = findView(TR.edit_widget_bottom_cursor_right)
+  lazy val arrowRight = findView(TR.edit_widget_bottom_cursor_right)
 
-  ((cursorUp <~ ivSrc(iconUp)) ~
-    (cursorDown <~ ivSrc(iconDown)) ~
-    (cursorLeft <~ ivSrc(iconBack)) ~
-    (cursorRight <~ ivSrc(iconNext)) ~
+  ((arrowUp <~ ivSrc(iconUp)) ~
+    (arrowDown <~ ivSrc(iconDown)) ~
+    (arrowLeft <~ ivSrc(iconBack)) ~
+    (arrowRight <~ ivSrc(iconNext)) ~
     (resizeAction <~
     wbInit(WorkSpaceActionWidgetButton) <~
     wbPopulateIcon(R.drawable.icon_edit_widgets_resize, R.string.resize, R.color.edit_widget_resize)) ~
@@ -90,10 +91,10 @@ class EditWidgetsBottomPanelLayout(context: Context, attrs: AttributeSet, defSty
       case ResizeTransformation => resizeColor
       case MoveTransformation => moveColor
     }
-    (cursorUp <~ vBackgroundCircle(color)) ~
-      (cursorDown <~ vBackgroundCircle(color)) ~
-      (cursorLeft <~ vBackgroundCircle(color)) ~
-      (cursorRight <~ vBackgroundCircle(color)) ~
+    (arrowUp <~ vBackgroundCircle(color) <~ On.click(Ui(launcherPresenter.arrowWidget(ArrowUp)))) ~
+      (arrowDown <~ vBackgroundCircle(color) <~ On.click(Ui(launcherPresenter.arrowWidget(ArrowDown)))) ~
+      (arrowLeft <~ vBackgroundCircle(color) <~ On.click(Ui(launcherPresenter.arrowWidget(ArrowLeft)))) ~
+      (arrowRight <~ vBackgroundCircle(color) <~ On.click(Ui(launcherPresenter.arrowWidget(ArrowRight)))) ~
       (actionsContent <~ applyFadeOut()) ~
       (cursorContent <~ applyFadeIn())
   }

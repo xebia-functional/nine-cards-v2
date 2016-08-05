@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -114,6 +114,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def moveCurrentWidget(): Unit = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.moveCurrentWidget.run
+    case _ =>
+  }
+
+  def arrowWidget(arrow: Arrow): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.arrowWidget(arrow).run
     case _ =>
   }
 
