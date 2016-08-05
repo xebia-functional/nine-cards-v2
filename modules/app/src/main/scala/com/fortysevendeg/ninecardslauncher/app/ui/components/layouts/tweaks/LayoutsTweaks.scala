@@ -261,7 +261,7 @@ object FastScrollerLayoutTweak {
   // We should launch this tweak when the adapter has been added
   def fslLinkRecycler(recyclerView: RecyclerView) = Tweak[FastScrollerLayout](_.linkRecycler(recyclerView))
 
-  def fslColor(color: Int) = Tweak[FastScrollerLayout](_.setColor(color))
+  def fslColor(color: Int, backgroundColor: Int) = Tweak[FastScrollerLayout](_.setColor(color, backgroundColor))
 
   def fslMarginRightBarContent(pixels: Int) = Tweak[FastScrollerLayout](_.setMarginRightBarContent(pixels))
 

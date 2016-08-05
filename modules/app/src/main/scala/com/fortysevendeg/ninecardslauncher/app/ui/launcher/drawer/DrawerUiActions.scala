@@ -120,7 +120,7 @@ trait DrawerUiActions
         rvAddItemDecoration(new SelectedItemDecoration)) ~
       (scrollerLayout <~
         fslMarginRightBarContent(padding) <~
-        scrollableStyle(colorPrimary)) ~
+        scrollableStyle) ~
       (pullToTabsView <~
         pdvHorizontalEnable(true) <~
         (recycler map (rv => pdvHorizontalListener(rv.horizontalMovementListener)) getOrElse Tweak.blank) <~
@@ -303,7 +303,7 @@ trait DrawerUiActions
     clickListener: (Contact) => Unit,
     longClickListener: (View, Contact) => Unit,
     counters: Seq[TermCounter] = Seq.empty): Ui[_] = {
-    val contactAdapter = new ContactsAdapter(
+    val contactAdapter = ContactsAdapter(
       contacts = contacts,
       clickListener = clickListener,
       longClickListener = Some(longClickListener))
@@ -314,7 +314,7 @@ trait DrawerUiActions
   }
 
   def addLastCallContacts(contacts: Seq[LastCallsContact], clickListener: (LastCallsContact) => Unit): Ui[_] = {
-    val contactAdapter = new LastCallsAdapter(
+    val contactAdapter = LastCallsAdapter(
       contacts = contacts,
       clickListener = clickListener)
     swipeAdapter(

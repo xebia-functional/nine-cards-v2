@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPr
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{TabInfo, PullToTabsListener}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
@@ -14,9 +14,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Tabs
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.device.models.{TermCounter, Contact, IterableContacts}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.DrawerTabsBackgroundColor
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -73,7 +74,7 @@ trait ContactsUiActionsImpl
         ))) ~
       (recycler <~ recyclerStyle) ~
       (tabs <~ tvClose) ~
-      (scrollerLayout <~ fslColor(colorPrimary))
+      (scrollerLayout <~ fslColor(colorPrimary, theme.get(DrawerTabsBackgroundColor)))
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ hideError
 

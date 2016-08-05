@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabs
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps, TermCounter}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.DrawerTabsBackgroundColor
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -78,7 +79,7 @@ trait AppsIuActionsImpl
       (pullToTabsView <~ pullToTabsTweaks) ~
       (recycler <~ recyclerStyle) ~
       (tabs <~ tvClose) ~
-      (scrollerLayout <~ fslColor(colorPrimary))
+      (scrollerLayout <~ fslColor(colorPrimary, theme.get(DrawerTabsBackgroundColor)))
   }
 
   override def showLoading(): Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
