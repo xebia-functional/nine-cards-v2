@@ -10,7 +10,8 @@ class PersistenceServicesImpl(
   val collectionRepository: CollectionRepository,
   val dockAppRepository: DockAppRepository,
   val momentRepository: MomentRepository,
-  val userRepository: UserRepository)
+  val userRepository: UserRepository,
+  val widgetRepository: WidgetRepository)
   extends PersistenceServices
   with Conversions
   with PersistenceDependencies
@@ -20,5 +21,6 @@ class PersistenceServicesImpl(
   with DockAppPersistenceServicesImpl
   with MomentPersistenceServicesImpl
   with UserPersistenceServicesImpl
+  with WidgetPersistenceServicesImpl
   with AndroidPersistenceServicesImpl
   with ImplicitsPersistenceServiceExceptions

@@ -28,6 +28,8 @@ class NineCardsContentProvider extends ContentProvider {
       case `codeMomentSingleItem` => (MomentEntity.table, MimeTypeSingleItem)
       case `codeUserAllItems` => (UserEntity.table, MimeTypeAllItems)
       case `codeUserSingleItem` => (UserEntity.table, MimeTypeSingleItem)
+      case `codeWidgetAllItems` => (WidgetEntity.table, MimeTypeAllItems)
+      case `codeWidgetSingleItem` => (WidgetEntity.table, MimeTypeSingleItem)
 
       case _ => throw new IllegalArgumentException(invalidUri + uri)
     }
@@ -136,6 +138,8 @@ object NineCardsContentProvider {
   val codeMomentSingleItem = 10
   val codeUserAllItems = 11
   val codeUserSingleItem = 12
+  val codeWidgetAllItems = 13
+  val codeWidgetSingleItem = 14
   val mimeTypeAllItemsValue = "vnd.android.cursor.dir/vnd.com.fortysevendeg.ninecardslauncher"
   val mimeTypeSingleItemValue = "vnd.android.cursor.item/vnd.com.fortysevendeg.ninecardslauncher"
 
@@ -152,6 +156,8 @@ object NineCardsContentProvider {
   uriMatcher.addURI(authorityPart, s"${MomentEntity.table}/#", codeMomentSingleItem)
   uriMatcher.addURI(authorityPart, UserEntity.table, codeUserAllItems)
   uriMatcher.addURI(authorityPart, s"${UserEntity.table}/#", codeUserSingleItem)
+  uriMatcher.addURI(authorityPart, WidgetEntity.table, codeWidgetAllItems)
+  uriMatcher.addURI(authorityPart, s"${WidgetEntity.table}/#", codeWidgetSingleItem)
 }
 
 sealed trait MimeType

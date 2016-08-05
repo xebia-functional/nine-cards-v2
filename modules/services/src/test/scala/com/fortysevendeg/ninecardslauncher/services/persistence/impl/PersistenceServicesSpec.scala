@@ -1,11 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence
+package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntity, CardEntity, MomentEntity}
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
-import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.persistence.data.PersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
+import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByCategory, OrderByInstallDate, OrderByName, PersistenceServiceException}
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -18,30 +19,6 @@ trait PersistenceServicesSpecification
   extends Specification
   with DisjunctionMatchers
   with Mockito {
-
-  trait RepositoryServicesScope
-    extends Scope {
-
-    val mockAppRepository = mock[AppRepository]
-
-    val mockCardRepository = mock[CardRepository]
-
-    val mockCollectionRepository = mock[CollectionRepository]
-
-    val mockDockAppRepository = mock[DockAppRepository]
-
-    val mockMomentRepository = mock[MomentRepository]
-
-    val mockUserRepository = mock[UserRepository]
-
-    val persistenceServices = new PersistenceServicesImpl(
-      appRepository = mockAppRepository,
-      cardRepository = mockCardRepository,
-      collectionRepository = mockCollectionRepository,
-      dockAppRepository = mockDockAppRepository,
-      momentRepository = mockMomentRepository,
-      userRepository = mockUserRepository)
-  }
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
 

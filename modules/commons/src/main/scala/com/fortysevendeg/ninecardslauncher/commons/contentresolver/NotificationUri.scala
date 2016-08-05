@@ -20,4 +20,6 @@ object NotificationUri {
 
   val userUriNotificationString = s"$baseUriNotificationString/user"
 
+  val widgetUriNotificationString = s"$baseUriNotificationString/widget"
+
 }
