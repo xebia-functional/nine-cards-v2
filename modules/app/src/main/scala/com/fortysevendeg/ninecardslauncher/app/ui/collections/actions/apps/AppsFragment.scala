@@ -11,8 +11,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 class AppsFragment(implicit collectionsPagerPresenter: CollectionsPagerPresenter)
   extends BaseActionFragment
   with AppsIuActionsImpl
-  with UiExtensions
-  with AppsTasks { self =>
+  with UiExtensions { self =>
 
   val allApps = AllAppsCategory
 

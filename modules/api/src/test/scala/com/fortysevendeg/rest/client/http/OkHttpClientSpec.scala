@@ -1,7 +1,7 @@
 package com.fortysevendeg.rest.client.http
 
 import com.fortysevendeg.rest.client.SampleRequest
-import com.squareup.{okhttp => okHttp}
+import okhttp3.Request
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -26,7 +26,7 @@ trait OkHttpClientSpecification
 
     val acceptedBody: Option[SampleRequest] = None
 
-    val request = new okHttp.Request.Builder()
+    val request = new okhttp3.Request.Builder()
       .url(baseUrl)
       .build()
 
@@ -38,18 +38,18 @@ trait OkHttpClientSpecification
 
     val baseException = new IllegalArgumentException("")
 
-    val okHttpResponse = new okHttp.Response.Builder()
-      .protocol(okHttp.Protocol.HTTP_1_1)
+    val okHttpResponse = new okhttp3.Response.Builder()
+      .protocol(okhttp3.Protocol.HTTP_1_1)
       .request(request)
       .code(statusCode)
       .message("Alright")
-      .body(okHttp.ResponseBody.create(okHttp.MediaType.parse("application/json"), json))
+      .body(okhttp3.ResponseBody.create(okhttp3.MediaType.parse("application/json"), json))
       .build()
 
-    private def isValidMethod(req: okHttp.Request): Boolean =
+    private def isValidMethod(req: okhttp3.Request): Boolean =
       acceptedMethod.getOrElse(req.method) == req.method
 
-    private def isValidBody(req: okHttp.Request): Boolean =
+    private def isValidBody(req: okhttp3.Request): Boolean =
       acceptedBody match {
         case Some(r) =>
           val buffer = new okio.Buffer()
@@ -58,17 +58,22 @@ trait OkHttpClientSpecification
         case _ => true
       }
 
-    val okHttpClient = new OkHttpClient(new okHttp.OkHttpClient() {
-      override def newCall(request: okHttp.Request): okHttp.Call = {
-        new okHttp.Call(this, request) {
+    val okHttpClient = new OkHttpClient(new okhttp3.OkHttpClient() {
+      override def newCall(theRequest: okhttp3.Request): okhttp3.Call = {
+        new okhttp3.Call {
+
+          override def request(): Request = theRequest
+
           override def cancel(): Unit = {}
 
           override def isCanceled: Boolean = false
 
-          override def enqueue(responseCallback: okHttp.Callback): Unit = {}
+          override def isExecuted: Boolean = false
 
-          override def execute(): okHttp.Response = {
-            if (isValidMethod(request) && isValidBody(request))
+          override def enqueue(responseCallback: okhttp3.Callback): Unit = {}
+
+          override def execute(): okhttp3.Response = {
+            if (isValidMethod(theRequest) && isValidBody(theRequest))
               okHttpResponse
             else
               throw baseException

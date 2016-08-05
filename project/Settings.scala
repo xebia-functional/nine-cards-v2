@@ -6,7 +6,7 @@ import Libraries.graphics._
 import Libraries.json._
 import Libraries.macroid._
 import Libraries.net._
-import Libraries.playServices._
+import Libraries.google._
 import Libraries.scala._
 import Libraries.date._
 import Libraries.test._
@@ -54,7 +54,7 @@ object Settings {
       useProguardInDebug in Android := true,
       versionName in Android := Some(s"${versionName.value.getOrElse("")}-$versionNameSuffix"),
       proguardOptions in Android ++= proguardCommons,
-      proguardCache in Android := proguardCacheList)
+      proguardCache in Android := Seq.empty)
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++
@@ -121,6 +121,8 @@ object Settings {
     aar(playServicesPlus),
     aar(multiDexLib),
     aar(crashlytics),
+    aar(firebaseCore),
+    aar(firebaseMessaging),
     prettyTime,
     glide,
     okHttp,

@@ -196,7 +196,10 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
           case _ =>
         }
       }
-    } else if (connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED) {
+    } else if (
+      connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||
+      connectionResult.getErrorCode == ConnectionResult.SERVICE_MISSING ||
+      connectionResult.getErrorCode == ConnectionResult.SERVICE_DISABLED) {
       actions.goToUser().run
       withActivity { activity =>
         GoogleApiAvailability.getInstance()
@@ -306,15 +309,14 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     maybeClient: Option[GoogleApiClient],
     maybeProfileName: Option[String],
     maybeEmail: Option[String],
-    maybeUserPermissions: Option[UserPermissions]
-  ): Unit = {
+    maybeUserPermissions: Option[UserPermissions]): Unit = {
 
     def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = Service {
       val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).run)
       Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
     }
 
-    def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer()))
+    def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer(())))
 
     def verifyAndUpdate(
       cloudStorageProcess: CloudStorageProcess,

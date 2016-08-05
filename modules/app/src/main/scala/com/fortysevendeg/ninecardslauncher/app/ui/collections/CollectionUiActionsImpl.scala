@@ -26,6 +26,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme,
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
+import scala.language.postfixOps
 
 import scala.language.postfixOps
 

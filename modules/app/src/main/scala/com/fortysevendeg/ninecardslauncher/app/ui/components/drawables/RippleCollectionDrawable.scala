@@ -54,7 +54,7 @@ class RippleCollectionDrawable(
     animator.addListener(new AnimatorListenerAdapter() {
       override def onAnimationEnd(animation: Animator): Unit = {
         super.onAnimationEnd(animation)
-        promise.trySuccess()
+        promise.trySuccess(())
       }
     })
     animator.setFloatValues(0f, 1f)

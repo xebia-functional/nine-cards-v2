@@ -9,4 +9,5 @@ trait PersistenceDependencies {
   val dockAppRepository: DockAppRepository
   val momentRepository: MomentRepository
   val userRepository: UserRepository
+  val widgetRepository: WidgetRepository
 }

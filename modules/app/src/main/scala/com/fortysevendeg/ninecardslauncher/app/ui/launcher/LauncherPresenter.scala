@@ -33,10 +33,12 @@ import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
+import com.google.firebase.analytics.FirebaseAnalytics
 import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.Result
 
 import scala.concurrent.Future
+import scala.util.Try
 import scalaz.concurrent.Task
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -59,6 +61,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   override def getApplicationContext: Context = contextWrapper.application
 
   def initialize(): Unit = {
+    Try(FirebaseAnalytics.getInstance(contextWrapper.bestAvailable))
     Task.fork(di.userProcess.register.run).resolveAsync()
     actions.initialize.run
   }
