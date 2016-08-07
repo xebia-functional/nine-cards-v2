@@ -22,6 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -84,13 +85,13 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     case (Some(id), MoveTransformation) => applyMove(id, arrow)
   }
 
-  def addWidget(widgetView: View, cell: Cell): Ui[Any] = {
+  def addWidget(widgetView: View, cell: Cell, widget: AppWidget): Ui[Any] = {
     val (width, height) = cell.getSize
     val params = new LayoutParams(width, height)
     params.setMargins(paddingDefault, paddingDefault, paddingDefault, paddingDefault)
     widgets <~
       vgRemoveAllViews <~
-      vgAddView(LauncherWidgetView(1, widgetView, presenter), params) // Id is 1 for now, we only have one widget
+      vgAddView(LauncherWidgetView(widget.id, widgetView, presenter), params)
   }
 
   def clearWidgets(): Ui[Any] = widgets <~ vgRemoveAllViews

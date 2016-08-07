@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.widget.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, _}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.Widget
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteWidgetRequest => ServicesDeleteWidgetRequest, _}
 
 class WidgetProcessImpl(
@@ -74,7 +74,7 @@ class WidgetProcessImpl(
       widget <- persistenceServices.findWidgetById(widgetId)
     } yield widget).resolve[WidgetException]
 
-  private[this] def updateWidget(widget: Widget) =
+  private[this] def updateWidget(widget: AppWidget) =
     (for {
       _ <- persistenceServices.updateWidget(toServicesUpdateWidgetRequest(widget))
     } yield ()).resolve[WidgetException]

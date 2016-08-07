@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.widget
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
-import com.fortysevendeg.ninecardslauncher.process.widget.models.Widget
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddWidgetRequest => ServicesAddWidgetRequest, UpdateWidgetRequest => ServicesUpdateWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Widget => ServicesWidget}
 
@@ -23,7 +23,7 @@ trait WidgetConversions {
     imagePath = addWidgetRequest.imagePath,
     intent = addWidgetRequest.intent)
 
-  def toWidget(servicesWidget: ServicesWidget): Widget = Widget(
+  def toWidget(servicesWidget: ServicesWidget): AppWidget = AppWidget(
     id = servicesWidget.id,
     momentId = servicesWidget.momentId,
     packageName = servicesWidget.packageName,
@@ -38,7 +38,7 @@ trait WidgetConversions {
     imagePath = servicesWidget.imagePath,
     intent = servicesWidget.intent)
 
-  def toUpdatedWidget(widget: Widget, moveWidgetRequest: MoveWidgetRequest): Widget =  Widget(
+  def toUpdatedWidget(widget: AppWidget, moveWidgetRequest: MoveWidgetRequest): AppWidget =  AppWidget(
     id = widget.id,
     momentId = widget.momentId,
     packageName = widget.packageName,
@@ -53,7 +53,7 @@ trait WidgetConversions {
     imagePath = widget.imagePath,
     intent = widget.intent)
 
-  def toUpdatedWidget(widget: Widget, resizeWidgetRequest: ResizeWidgetRequest): Widget =  Widget(
+  def toUpdatedWidget(widget: AppWidget, resizeWidgetRequest: ResizeWidgetRequest): AppWidget =  AppWidget(
     id = widget.id,
     momentId = widget.momentId,
     packageName = widget.packageName,
@@ -68,7 +68,7 @@ trait WidgetConversions {
     imagePath = widget.imagePath,
     intent = widget.intent)
 
-  def toServicesUpdateWidgetRequest(widget: Widget): ServicesUpdateWidgetRequest = ServicesUpdateWidgetRequest(
+  def toServicesUpdateWidgetRequest(widget: AppWidget): ServicesUpdateWidgetRequest = ServicesUpdateWidgetRequest(
     id = widget.id,
     momentId = widget.momentId,
     packageName = widget.packageName,

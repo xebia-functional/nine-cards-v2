@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.process.moment.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
@@ -29,7 +28,10 @@ class MomentProcessImpl(
   with ImplicitsPersistenceServiceExceptions
   with MomentConversions {
 
-  override def getMoments: ServiceDef2[Seq[Moment], MomentException] = (persistenceServices.fetchMoments map toMomentSeq).resolve[MomentException]
+  override def getMoments = (persistenceServices.fetchMoments map toMomentSeq).resolve[MomentException]
+
+  override def getMomentByType(momentType: NineCardsMoment) =
+    (persistenceServices.fetchMomentByType(momentType.name) map toMoment).resolve[MomentException]
 
   override def createMoments(implicit context: ContextSupport) =
     (for {
@@ -44,7 +46,7 @@ class MomentProcessImpl(
       moments <- persistenceServices.addCollections(collections)
     } yield moments map toCollection).resolve[MomentException]
 
-  override def saveMoments(items: Seq[Moment])(implicit context: ContextSupport) =
+  override def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport) =
     (for {
       moments <- persistenceServices.addMoments(items map toAddMomentRequest)
     } yield moments map toMoment).resolve[MomentException]
@@ -79,7 +81,7 @@ class MomentProcessImpl(
       collections = serviceCollections map toCollection
       moments = serviceMoments map toMoment
       momentWithCollection = moments flatMap {
-        case moment @ Moment(Some(collectionId), _, _, _, _) =>
+        case moment @ Moment(_, Some(collectionId), _, _, _, _) =>
           collections find (_.id == collectionId) match {
             case Some(collection: Collection) =>
               Some(toMomentWithCollection(moment, collection))

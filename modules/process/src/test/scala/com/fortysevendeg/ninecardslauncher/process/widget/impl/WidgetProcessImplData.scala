@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.widget.impl
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType._
 import com.fortysevendeg.ninecardslauncher.process.widget.{ResizeWidgetRequest, MoveWidgetRequest, AddWidgetRequest}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.Widget
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Widget => ServicesWidget}
 
 import scala.util.Random
@@ -56,7 +56,7 @@ trait WidgetProcessImplData {
    intent: Option[String] = widgetIntentOption) =
     (0 until 5) map (
       item =>
-        Widget(
+        AppWidget(
           id = id,
           momentId = momentId,
           packageName = packageName,

@@ -99,7 +99,7 @@ trait CollectionProcessImplData {
     to = "19:00",
     days = Seq(0, 1, 1, 1, 1, 1, 0))
 
-  val moment = Moment(
+  val formedMoment = FormedMoment(
     collectionId = Option(collectionId1),
     timeslot = Seq(momentTimeSlot),
     wifi = Seq.empty,
@@ -286,7 +286,7 @@ trait CollectionProcessImplData {
         collectionType = collectionType,
         icon = icon,
         category = Option(appsCategory),
-        moment = Option(moment))
+        moment = Option(formedMoment))
     }
 
   val seqFormedCollection = createSeqFormedCollection()

@@ -20,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -54,7 +55,7 @@ object LauncherWorkSpacesTweaks {
     view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
   }
 
-  def lwsAddWidget(widgetView: View, cell: Cell) = Tweak[W] (_.addWidget(widgetView, cell))
+  def lwsAddWidget(widgetView: View, cell: Cell, widget: AppWidget) = Tweak[W] (_.addWidget(widgetView, cell, widget))
 
   def lwsShowRules() = Tweak[W] (_.showRulesInMoment())
 

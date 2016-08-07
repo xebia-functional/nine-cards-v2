@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -79,11 +80,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ => Ui.nop
   }
 
-  def addWidget(widgetView: View, cell: Cell): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView, cell).run
+  def addWidget(widgetView: View, cell: Cell, widget: AppWidget): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView, cell, widget).run
     case None =>
       // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
-      uiHandlerDelayed(Ui(addWidget(widgetView, cell)), 200).run
+      uiHandlerDelayed(Ui(addWidget(widgetView, cell, widget)), 200).run
     case _ =>
   }
 
@@ -228,15 +229,6 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
           p.statuses = p.statuses.copy(touchingWidget = false)
         }
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-//      case ACTION_MOVE =>
-//        if (!statuses.enabled) {
-//          if (isVerticalMoving(x, y)) {
-//            resetLongClick()
-//            statuses = statuses.copy(enabled = true)
-//            workSpacesStatuses = workSpacesStatuses.start()
-//          }
-//          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-//        }
       case _ =>
     }
   }

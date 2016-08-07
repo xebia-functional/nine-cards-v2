@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models
 import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
+import com.fortysevendeg.ninecardslauncher.process.moment.SaveMomentRequest
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 
@@ -173,7 +174,7 @@ trait NineCardIntentConversions {
   }
 
   def toNineCardIntent(intent: Intent): NineCardIntent = {
-    val i = new NineCardIntent(NineCardIntentExtras())
+    val i = NineCardIntent(NineCardIntentExtras())
     i.fill(intent)
     i
   }
@@ -187,8 +188,16 @@ trait NineCardIntentConversions {
     intent
   }
 
-  def toMoment(cloudStorageMoment: CloudStorageMoment): Moment =
-    Moment(
+  def toMoment(cloudStorageMoment: CloudStorageMoment): FormedMoment =
+    FormedMoment(
+      collectionId = None,
+      timeslot = cloudStorageMoment.timeslot map toTimeSlot,
+      wifi = cloudStorageMoment.wifi,
+      headphone = cloudStorageMoment.headphones,
+      momentType = cloudStorageMoment.momentType)
+
+  def toSaveMomentRequest(cloudStorageMoment: CloudStorageMoment): SaveMomentRequest =
+    SaveMomentRequest(
       collectionId = None,
       timeslot = cloudStorageMoment.timeslot map toTimeSlot,
       wifi = cloudStorageMoment.wifi,

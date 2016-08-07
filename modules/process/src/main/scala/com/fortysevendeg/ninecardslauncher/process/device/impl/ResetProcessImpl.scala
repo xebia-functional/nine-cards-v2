@@ -14,6 +14,7 @@ trait ResetProcessImpl extends DeviceProcess {
   def resetSavedItems() =
     (for {
       _ <- persistenceServices.deleteAllApps()
+      _ <- persistenceServices.deleteAllWidgets()
       _ <- persistenceServices.deleteAllCollections()
       _ <- persistenceServices.deleteAllCards()
       _ <- persistenceServices.deleteAllDockApps()
