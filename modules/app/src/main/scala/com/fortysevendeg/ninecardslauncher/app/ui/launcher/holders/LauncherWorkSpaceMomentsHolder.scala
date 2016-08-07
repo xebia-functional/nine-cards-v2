@@ -8,16 +8,19 @@ import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DottedDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -86,12 +89,11 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   }
 
   def addWidget(widgetView: View, cell: Cell, widget: AppWidget): Ui[Any] = {
-    val (width, height) = cell.getSize
-    val params = new LayoutParams(width, height)
-    params.setMargins(paddingDefault, paddingDefault, paddingDefault, paddingDefault)
+    val params = createParams(cell, widget)
+    val launcherWidgetView = (LauncherWidgetView(widget.id, widgetView, presenter) <~ saveInfoInTag(cell, widget)).get
     widgets <~
       vgRemoveAllViews <~
-      vgAddView(LauncherWidgetView(widget.id, widgetView, presenter), params)
+      vgAddView(launcherWidgetView, params)
   }
 
   def clearWidgets(): Ui[Any] = widgets <~ vgRemoveAllViews
@@ -134,12 +136,19 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
 
   private[this] def applyMove(id: Int, arrow: Arrow) = this <~ Transformer {
     case i: LauncherWidgetView if i.id == id =>
-      arrow match {
-        case ArrowUp => uiShortToast("Move Up")
-        case ArrowDown => uiShortToast("Move Down")
-        case ArrowLeft => uiShortToast("Move Left")
-        case ArrowRight => uiShortToast("Move Right")
-      }
+      (for {
+        cell <- i.getField[Cell](cellKey)
+        widget <- i.getField[AppWidget](widgetKey)
+      } yield {
+        val newWidget = arrow match {
+          case ArrowUp => widget.copy(startY = widget.startY - 1)
+          case ArrowDown => widget.copy(startY = widget.startY + 1)
+          case ArrowLeft => widget.copy(startX = widget.startX - 1)
+          case ArrowRight => widget.copy(startX = widget.startX + 1)
+        }
+        (i <~ vAddField(widgetKey, newWidget)) ~
+          Ui(i.setLayoutParams(createParams(cell, newWidget)))
+      }) getOrElse Ui.nop
   }
 
   private[this] def applyResize(id: Int, arrow: Arrow) = this <~ Transformer {
@@ -151,6 +160,20 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
         case ArrowRight => uiShortToast("Resize Right")
       }
   }
+
+  private[this] def createParams(cell: Cell, widget: AppWidget) = {
+    val (width, height) = cell.getSize(widget.spanX, widget.spanY)
+    val (startX, startY) = cell.getSize(widget.startX, widget.startY)
+    val params = new LayoutParams(width, height)
+    val left = paddingDefault + startX
+    val top = paddingDefault + startY
+    params.setMargins(left, top, paddingDefault, paddingDefault)
+    params
+  }
+
+  private[this] def saveInfoInTag(cell: Cell, widget: AppWidget) =
+    vAddField(cellKey, cell) +
+      vAddField(widgetKey, widget)
 
 }
 

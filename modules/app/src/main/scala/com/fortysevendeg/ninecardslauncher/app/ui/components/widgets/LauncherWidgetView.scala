@@ -47,3 +47,8 @@ case class LauncherWidgetView(id: Int, widgetView: View, presenter: LauncherPres
   def deactivateSelected(): Ui[Any] = this <~ vBlankBackground
 
 }
+
+object LauncherWidgetView {
+  val cellKey = "cell"
+  val widgetKey = "widget"
+}
