@@ -79,7 +79,7 @@ trait ThemeProcessSpecification
 class ThemeProcessImplSpec
   extends ThemeProcessSpecification {
 
-  "getSelectedTheme" should {
+  "getTheme" should {
 
     "return a valid NineCardsTheme object for a valid request" in
       new ThemeProcessScope with ValidFileUtilsResponses {

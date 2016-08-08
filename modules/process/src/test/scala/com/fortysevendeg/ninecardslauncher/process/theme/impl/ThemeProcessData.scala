@@ -17,60 +17,11 @@ trait ThemeProcessData {
       |  "name": "$defaultThemeName",
       |  "styles": [
       |    {
+      |      "styleType": "PrimaryColor",
+      |      "color": "#3F51B5"
+      |    },
+      |    {
       |      "styleType": "SearchBackgroundColor",
-      |      "color": "$sampleColorWithoutAlpha"
-      |    },
-      |    {
-      |      "styleType": "SearchPressedColor",
-      |      "color": "$sampleColorWithAlpha"
-      |    },
-      |    {
-      |      "styleType": "SearchGoogleColor",
-      |      "color": "#a3a3a3"
-      |    },
-      |    {
-      |      "styleType": "SearchIconsColor",
-      |      "color": "#646464"
-      |    },
-      |    {
-      |      "styleType": "AppDrawerPressedColor",
-      |      "color": "#ffd5f2fa"
-      |    },
-      |    {
-      |      "styleType": "CardLayoutBackgroundColor",
-      |      "color": "#eeeeee"
-      |    },
-      |    {
-      |      "styleType": "CardTextColor",
-      |      "color": "#000000"
-      |    },
-      |    {
-      |      "styleType": "CardBackgroundColor",
-      |      "color": "#ffffff"
-      |    },
-      |    {
-      |      "styleType": "CardBackgroundPressedColor",
-      |      "color": "#000000"
-      |    },
-      |    {
-      |      "styleType": "CollectionDetailTextTabSelectedColor",
-      |      "color": "#ffffff"
-      |    },
-      |    {
-      |      "styleType": "CollectionDetailTextTabDefaultColor",
-      |      "color": "#80ffffff"
-      |    }
-      |  ]
-      |}
-    """.stripMargin
-
-  val wrongThemeStyleTypeJson =
-    """
-      |{
-      |  "name": "light",
-      |  "styles": [
-      |    {
-      |      "styleType": "UnknowStyleType",
       |      "color": "#ffffff"
       |    },
       |    {
@@ -86,7 +37,23 @@ trait ThemeProcessData {
       |      "color": "#646464"
       |    },
       |    {
-      |      "styleType": "AppDrawerPressedColor",
+      |      "styleType": "SearchTextColor",
+      |      "color": "#646464"
+      |    },
+      |    {
+      |      "styleType": "DrawerTabsBackgroundColor",
+      |      "color": "#16000000"
+      |    },
+      |    {
+      |      "styleType": "DrawerBackgroundColor",
+      |      "color": "#ffffff"
+      |    },
+      |    {
+      |      "styleType": "DrawerTextColor",
+      |      "color": "#000000"
+      |    },
+      |    {
+      |      "styleType": "DockPressedColor",
       |      "color": "#ffd5f2fa"
       |    },
       |    {
@@ -112,6 +79,91 @@ trait ThemeProcessData {
       |    {
       |      "styleType": "CollectionDetailTextTabDefaultColor",
       |      "color": "#80ffffff"
+      |    },
+      |    {
+      |      "styleType": "DrawerIconColor",
+      |      "color": "#000000"
+      |    }
+      |  ]
+      |}
+    """.stripMargin
+
+  val wrongThemeStyleTypeJson =
+    """
+      |{
+      |  "name": "light",
+      |  "styles": [
+      |    {
+      |      "styleType": "UnknowStyleType",
+      |      "color": "#ffffff"
+      |    },
+      |    {
+      |      "styleType": "PrimaryColor",
+      |      "color": "#3F51B5"
+      |    },
+      |    {
+      |      "styleType": "SearchBackgroundColor",
+      |      "color": "#ffffff"
+      |    },
+      |    {
+      |      "styleType": "SearchPressedColor",
+      |      "color": "#ff59afdd"
+      |    },
+      |    {
+      |      "styleType": "SearchGoogleColor",
+      |      "color": "#a3a3a3"
+      |    },
+      |    {
+      |      "styleType": "SearchIconsColor",
+      |      "color": "#646464"
+      |    },
+      |    {
+      |      "styleType": "SearchTextColor",
+      |      "color": "#646464"
+      |    },
+      |    {
+      |      "styleType": "DrawerTabsBackgroundColor",
+      |      "color": "#16000000"
+      |    },
+      |    {
+      |      "styleType": "DrawerBackgroundColor",
+      |      "color": "#ffffff"
+      |    },
+      |    {
+      |      "styleType": "DrawerTextColor",
+      |      "color": "#000000"
+      |    },
+      |    {
+      |      "styleType": "DockPressedColor",
+      |      "color": "#ffd5f2fa"
+      |    },
+      |    {
+      |      "styleType": "CardLayoutBackgroundColor",
+      |      "color": "#eeeeee"
+      |    },
+      |    {
+      |      "styleType": "CardTextColor",
+      |      "color": "#000000"
+      |    },
+      |    {
+      |      "styleType": "CardBackgroundColor",
+      |      "color": "#ffffff"
+      |    },
+      |    {
+      |      "styleType": "CardBackgroundPressedColor",
+      |      "color": "#000000"
+      |    },
+      |    {
+      |      "styleType": "CollectionDetailTextTabSelectedColor",
+      |      "color": "#ffffff"
+      |    },
+      |    {
+      |      "styleType": "CollectionDetailTextTabDefaultColor",
+      |      "color": "#80ffffff"
+      |    },
+      |    {
+      |      "styleType": "DrawerIconColor",
+      |      "color": "#000000"
       |    }
       |  ]
       |}
@@ -122,6 +174,10 @@ trait ThemeProcessData {
       |{
       |  "name": "light",
       |  "styles": [
+      |    {
+      |      "styleType": "PrimaryColor",
+      |      "color": "#3F51B5"
+      |    },
       |    {
       |      "styleType": "SearchBackgroundColor",
       |      "color": "#fff"
@@ -139,7 +195,23 @@ trait ThemeProcessData {
       |      "color": "#646464"
       |    },
       |    {
-      |      "styleType": "AppDrawerPressedColor",
+      |      "styleType": "SearchTextColor",
+      |      "color": "#646464"
+      |    },
+      |    {
+      |      "styleType": "DrawerTabsBackgroundColor",
+      |      "color": "#16000000"
+      |    },
+      |    {
+      |      "styleType": "DrawerBackgroundColor",
+      |      "color": "#ffffff"
+      |    },
+      |    {
+      |      "styleType": "DrawerTextColor",
+      |      "color": "#000000"
+      |    },
+      |    {
+      |      "styleType": "DockPressedColor",
       |      "color": "#ffd5f2fa"
       |    },
       |    {
@@ -165,6 +237,10 @@ trait ThemeProcessData {
       |    {
       |      "styleType": "CollectionDetailTextTabDefaultColor",
       |      "color": "#80ffffff"
+      |    },
+      |    {
+      |      "styleType": "DrawerIconColor",
+      |      "color": "#000000"
       |    }
       |  ]
       |}
