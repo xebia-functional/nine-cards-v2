@@ -17,4 +17,9 @@ object DefaultApps {
       "com.amazon.mShop.android.shopping", "com.projectsexception.weather", "com.google.android.apps.translate", "com.rerware.android.MyBackup",
       "com.android.providers.downloads.ui", "com.arron.taskManager", "com.google.android.street", "net.sourceforge.opencamera", "com.niksoftware.snapseed")
 
+  val transitApps = Seq("com.google.android.apps.maps", "com.google.android.maps.mytracks", "com.spotify.music", "com.airbnb.android", "com.google.android.play.games", "com.mxtech.videoplayer.ad",
+    "com.google.android.youtube", "com.google.android.videos", "com.ubercab", "com.google.android.GoogleCamera",
+    "com.amazon.mShop.android.shopping", "com.projectsexception.weather", "com.google.android.apps.translate", "com.rerware.android.MyBackup",
+    "com.netflix.mediaclient", "com.fortysevendeg.translatebubble", "com.google.android.street", "net.sourceforge.opencamera", "com.google.android.dialer")
+
 }

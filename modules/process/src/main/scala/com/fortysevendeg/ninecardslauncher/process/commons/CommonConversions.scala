@@ -89,6 +89,7 @@ trait CommonConversions extends NineCardIntentConversions {
       case HomeMorningMoment => Seq.empty
       case WorkMoment => Seq.empty
       case HomeNightMoment => Seq.empty
+      case TransitMoment => Seq.empty
     }
 
   def toServicesMomentTimeSlotSeq(moment: NineCardsMoment): Seq[ServicesMomentTimeSlot] =
@@ -96,6 +97,7 @@ trait CommonConversions extends NineCardIntentConversions {
       case HomeMorningMoment => Seq(ServicesMomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
       case WorkMoment => Seq(ServicesMomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
       case HomeNightMoment => Seq(ServicesMomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), ServicesMomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+      case TransitMoment => Seq(ServicesMomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
     }
 
 }
