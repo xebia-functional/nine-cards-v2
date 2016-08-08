@@ -24,4 +24,5 @@ object Versions {
   val crashlyticsV = "2.5.2"
   val jodaTimeV = "2.9.2"
   val gfcTimeUUIDV = "0.0.6"
+  val catsV = "0.6.1"
 }

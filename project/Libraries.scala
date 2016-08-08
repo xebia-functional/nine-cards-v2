@@ -14,6 +14,10 @@ object Libraries {
     lazy val scalazConcurrent = "org.scalaz" %% "scalaz-concurrent" % scalaZV
   }
 
+  object cats {
+    lazy val cats = "org.typelevel" %% "cats" % Versions.catsV
+  }
+
   object android {
 
     def androidDep(module: String) = "com.android.support" % module % androidV
