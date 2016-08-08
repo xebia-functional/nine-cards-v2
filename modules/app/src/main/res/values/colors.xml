@@ -61,9 +61,7 @@
     <color name="divider_color_search_box">#1f000000</color>
 
     <!-- Menu -->
-    <color name="background_menu">#ffffff</color>
     <color name="background_menu_header">#3F51B5</color>
-    <color name="background_menu_content">#29000000</color>
     <color name="text_menu_name">#ffffff</color>
     <color name="text_menu_email">#b5ffffff</color>
 

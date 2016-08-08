@@ -70,7 +70,7 @@ trait CollectionsUiActions
 
   lazy val drawerLayout = Option(findView(TR.launcher_drawer_layout))
 
-  lazy val navigationView = Option(findView(TR.launcher_navigation_view))
+  lazy val navigationView = findView(TR.launcher_navigation_view)
 
   lazy val menuName = Option(findView(TR.menu_name))
 
@@ -116,10 +116,12 @@ trait CollectionsUiActions
 
   def initCollectionsUi: Ui[Any] =
     (drawerLayout <~ dlStatusBarBackground(R.color.primary)) ~
-      (navigationView <~ nvNavigationItemSelectedListener(itemId => {
-        (goToMenuOption(itemId) ~ closeMenu()).run
-        true
-      })) ~
+      (navigationView <~
+        navigationViewStyle <~
+        nvNavigationItemSelectedListener(itemId => {
+          (goToMenuOption(itemId) ~ closeMenu()).run
+          true
+        })) ~
       (paginationPanel <~ On.longClick((workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
       (topBarPanel <~ tblInit) ~
       (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
@@ -182,7 +184,7 @@ trait CollectionsUiActions
       (menuAvatar <~
         ((maybeAvatarUrl, maybeName) match {
           case (Some(url), _) => ivUri(url)
-          case (_, Some(name)) => ivSrc(new CharDrawable(name.substring(0, 1).toUpperCase))
+          case (_, Some(name)) => ivSrc(CharDrawable(name.substring(0, 1).toUpperCase))
           case _ => ivBlank
         }) <~
         menuAvatarStyle) ~
