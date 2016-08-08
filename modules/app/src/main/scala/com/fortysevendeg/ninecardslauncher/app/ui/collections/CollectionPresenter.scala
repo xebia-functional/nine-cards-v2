@@ -39,7 +39,7 @@ case class CollectionPresenter(
 
   def moveToCard(): Unit = actions.showMessageNotImplemented().run // TODO change that
 
-  def editCard(): Unit = actions.showMessageNotImplemented().run // TODO change that
+  def editCard(collectionId: Int, cardId: Int, cardName: String): Unit = actions.editCard(collectionId, cardId, cardName)
 
   def addCards(cards: Seq[Card]): Unit = {
     cards foreach (card => trackCard(card, AddedToCollectionAction))
@@ -55,6 +55,22 @@ case class CollectionPresenter(
 
   def bindAnimatedAdapter(): Unit = maybeCollection foreach { collection =>
     actions.bindAnimatedAdapter(animateCards, collection).run
+  }
+
+  def saveEditedCard(collectionId: Int, cardId: Int, cardName: Option[String]): Unit = {
+
+    def saveCard(collectionId: Int, cardId: Int, name: String) =
+      for {
+        card <- di.collectionProcess.editCard(collectionId, cardId, name)
+      } yield card
+
+    cardName match {
+      case Some(name) if name.length > 0 =>
+          Task.fork(saveCard(collectionId, cardId, name).run).resolveAsyncUi(
+            onResult = (card) => actions.reloadCard(card),
+            onException = (_) => actions.showContactUsError())
+      case _ => actions.showMessageFormFieldError.run
+    }
   }
 
   def showData(): Unit = maybeCollection foreach (c => actions.showData(c.cards.isEmpty).run)
@@ -100,11 +116,19 @@ trait CollectionUiActions {
 
   def showMessageNotImplemented(): Ui[Any]
 
+  def showContactUsError(): Ui[Any]
+
+  def showMessageFormFieldError: Ui[Any]
+
   def showEmptyCollection(): Ui[Any]
+
+  def editCard(collectionId: Int, cardId: Int, cardName: String): Unit
 
   def addCards(cards: Seq[Card]): Ui[Any]
 
   def removeCard(card: Card): Ui[Any]
+
+  def reloadCard(card: Card): Ui[Any]
 
   def reloadCards(cards: Seq[Card]): Ui[Any]
 
