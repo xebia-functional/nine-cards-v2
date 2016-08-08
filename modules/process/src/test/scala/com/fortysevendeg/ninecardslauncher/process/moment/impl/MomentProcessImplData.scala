@@ -315,7 +315,7 @@ trait MomentProcessImplData {
     timeslot = createSeqMomentTimeSlot(),
     wifi = Seq.empty,
     headphone = false,
-    momentType = Option(NineCardsMoment(momentType1)))
+    momentType = Option(NineCardsMoment(momentType(1))))
 
   val now = DateTime.now()
 
@@ -447,8 +447,7 @@ trait MomentProcessImplData {
       headphone = false,
       momentType = Option(NineCardsMoment(momentType(2))))
 
-  val dayNoWifiId = 4
-  val dayNoWifiCollectionId = Option(4)
+  val transitId = 4
   val transitCollectionId = Option(4)
   val transitWifi = Seq.empty
   val transitFrom1 = "00:00"
@@ -464,7 +463,7 @@ trait MomentProcessImplData {
 
   val transitServicesMoment =
     ServicesMoment(
-      id = dayNoWifiId,
+      id = transitId,
       collectionId = transitCollectionId,
       timeslot = transitServicesTimeSlot,
       wifi = transitWifi,
@@ -480,12 +479,14 @@ trait MomentProcessImplData {
 
   val transitMoment =
     Moment(
+      id = transitId,
       collectionId = transitCollectionId,
       timeslot = transitTimeSlot,
       wifi = transitWifi,
       headphone = false,
       momentType = Option(NineCardsMoment(momentType(3))))
 
+  val dayNoWifiId = 5
   val dayNoWifiCollectionId = Option(5)
   val dayNoWifiWifi = Seq.empty
   val dayNoWifiFrom1 = "8:00"
