@@ -251,9 +251,11 @@ trait LauncherUiActionsImpl
 
     val cell = appWidgetInfo.getCell(widthContent, heightContent)
 
-    val hostView = appWidgetHost.createView(activityContextWrapper.application, widget.appWidgetId, appWidgetInfo)
-    hostView.setAppWidget(widget.appWidgetId, appWidgetInfo)
-    workspaces <~ lwsAddWidget(hostView, cell, widget)
+    Ui {
+      val hostView = appWidgetHost.createView(activityContextWrapper.application, widget.appWidgetId, appWidgetInfo)
+      hostView.setAppWidget(widget.appWidgetId, appWidgetInfo)
+      (workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+    }
   }
 
   override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()

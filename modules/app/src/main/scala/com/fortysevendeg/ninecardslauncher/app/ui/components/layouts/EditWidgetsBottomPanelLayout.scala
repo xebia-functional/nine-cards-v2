@@ -29,7 +29,7 @@ class EditWidgetsBottomPanelLayout(context: Context, attrs: AttributeSet, defSty
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
-  LayoutInflater.from(context).inflate(R.layout.edit_widgets_bottom_paneal_layout, this)
+  LayoutInflater.from(context).inflate(R.layout.edit_widgets_bottom_panel_layout, this)
 
   val resizeColor = resGetColor(R.color.edit_widget_resize)
 

@@ -14,6 +14,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DottedDrawable
@@ -48,6 +49,8 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   val radius = resGetDimensionPixelSize(R.dimen.radius_default)
 
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
+
+  val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin)
 
   val drawable = {
     val s = 0 until 8 map (_ => radius.toFloat)
@@ -99,7 +102,6 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   def clearWidgets(): Ui[Any] = widgets <~ vgRemoveAllViews
 
   def createRules(): Ui[Any] = {
-    val size = resGetDimensionPixelSize(R.dimen.stroke_thin)
     val spaceWidth = (getWidth - (paddingDefault * 2)) / WidgetsOps.columns
     val spaceHeight = (getHeight - (paddingDefault * 2)) / WidgetsOps.rows
 
@@ -110,18 +112,18 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
         vBackground(new DottedDrawable(horizontal))).get
 
     def horizontalRules(pos: Int) = {
-      val params = new LayoutParams(MATCH_PARENT, size)
+      val params = new LayoutParams(MATCH_PARENT, stroke)
       params.leftMargin = paddingDefault
       params.rightMargin = paddingDefault
-      params.topMargin = (pos * spaceHeight) + paddingDefault - size
+      params.topMargin = (pos * spaceHeight) + paddingDefault
       vgAddViewByIndexParams(createView(), 0, params)
     }
 
     def verticalRules(pos: Int) = {
-      val params = new LayoutParams(size, MATCH_PARENT)
+      val params = new LayoutParams(stroke, MATCH_PARENT)
       params.topMargin = paddingDefault
       params.bottomMargin = paddingDefault
-      params.leftMargin = (pos * spaceWidth) + paddingDefault - size
+      params.leftMargin = (pos * spaceWidth) + paddingDefault
       vgAddViewByIndexParams(createView(horizontal = false), 0, params)
     }
 
@@ -153,18 +155,25 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
 
   private[this] def applyResize(id: Int, arrow: Arrow) = this <~ Transformer {
     case i: LauncherWidgetView if i.id == id =>
-      arrow match {
-        case ArrowUp => uiShortToast("Resize Up")
-        case ArrowDown => uiShortToast("Resize Down")
-        case ArrowLeft => uiShortToast("Resize Left")
-        case ArrowRight => uiShortToast("Resize Right")
-      }
+      (for {
+        cell <- i.getField[Cell](cellKey)
+        widget <- i.getField[AppWidget](widgetKey)
+      } yield {
+        val newWidget = arrow match {
+          case ArrowUp => widget.copy(spanY = widget.spanY - 1)
+          case ArrowDown => widget.copy(spanY = widget.spanY + 1)
+          case ArrowLeft => widget.copy(spanX = widget.spanX - 1)
+          case ArrowRight => widget.copy(spanX = widget.spanX + 1)
+        }
+        (i <~ vAddField(widgetKey, newWidget)) ~
+          Ui(i.setLayoutParams(createParams(cell, newWidget)))
+      }) getOrElse Ui.nop
   }
 
   private[this] def createParams(cell: Cell, widget: AppWidget) = {
     val (width, height) = cell.getSize(widget.spanX, widget.spanY)
     val (startX, startY) = cell.getSize(widget.startX, widget.startY)
-    val params = new LayoutParams(width, height)
+    val params = new LayoutParams(width  + stroke, height + stroke)
     val left = paddingDefault + startX
     val top = paddingDefault + startY
     params.setMargins(left, top, paddingDefault, paddingDefault)

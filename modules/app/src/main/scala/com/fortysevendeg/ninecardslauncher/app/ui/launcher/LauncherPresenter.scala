@@ -20,7 +20,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialog
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.Arrow
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
@@ -34,7 +34,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentExceptionImpl}
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
-import com.fortysevendeg.ninecardslauncher.process.widget.AddWidgetRequest
+import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -318,7 +318,30 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def arrowWidget(arrow: Arrow): Unit = if (statuses.mode == EditWidgetsMode) {
-    actions.arrowWidget(arrow).run
+
+    def getService = (statuses.idWidget, statuses.transformation, arrow) match {
+      case (Some(id), ResizeTransformation, ArrowUp) =>
+        di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest(0, -1))
+      case (Some(id), ResizeTransformation, ArrowDown) =>
+        di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest(0, 1))
+      case (Some(id), ResizeTransformation, ArrowRight) =>
+        di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest(1, 0))
+      case (Some(id), ResizeTransformation, ArrowLeft) =>
+        di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest(-1, 0))
+      case (Some(id), MoveTransformation, ArrowUp) =>
+        di.widgetsProcess.moveWidget(id, MoveWidgetRequest(0, -1))
+      case (Some(id), MoveTransformation, ArrowDown) =>
+        di.widgetsProcess.moveWidget(id, MoveWidgetRequest(0, 1))
+      case (Some(id), MoveTransformation, ArrowRight) =>
+        di.widgetsProcess.moveWidget(id, MoveWidgetRequest(1, 0))
+      case (Some(id), MoveTransformation, ArrowLeft) =>
+        di.widgetsProcess.moveWidget(id, MoveWidgetRequest(-1, 0))
+    }
+
+    Task.fork(getService.run).resolveAsyncUi(
+      onResult = (_) => actions.arrowWidget(arrow),
+      onException = (_) => actions.showContactUsError()
+    )
   }
 
   def deleteWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
@@ -463,11 +486,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     } yield widgets
 
     Task.fork(getWidgets.run).resolveAsyncUi(
+      onPreTask = actions.clearWidgets,
       onResult = {
-        case Nil => actions.clearWidgets()
+        case Nil => Ui.nop
         case head :: tail => actions.addWidget(head)
+        case _ => Ui.nop
       },
-      onException = (_) => actions.clearWidgets() ~ actions.showContactUsError()
+      onException = (_) => actions.showContactUsError()
     )
 
   }

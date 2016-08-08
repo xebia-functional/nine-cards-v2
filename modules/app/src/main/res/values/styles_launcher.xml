@@ -477,6 +477,13 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <style name="LauncherEditWidgetsBottomBarVerticalButtons">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <style name="LauncherEditWidgetsBottomBarIcon">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -487,8 +494,7 @@
     <style name="LauncherEditWidgetsBottomBarCursor">
         <item name="android:layout_width">@dimen/size_widget_cursor</item>
         <item name="android:layout_height">@dimen/size_widget_cursor</item>
-        <item name="android:layout_marginLeft">@dimen/padding_xlarge</item>
-        <item name="android:layout_marginRight">@dimen/padding_xlarge</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
     </style>
 
 </resources>
