@@ -19,10 +19,10 @@ trait CollectionCardsStyles {
 
   implicit val theme: NineCardsTheme
 
-  val themeTextColor = theme.get(CollectionDetailTextCardColor)
+  val themeTextColor = theme.get(CardTextColor)
 
   def cardRootStyle(implicit context: ContextWrapper): Tweak[CardView] =
-    cvCardBackgroundColor(theme.get(CollectionDetailCardBackgroundColor))
+    cvCardBackgroundColor(theme.get(CardBackgroundColor))
 
   def textStyle(implicit context: ContextWrapper): Tweak[TextView] =
     tvColor(themeTextColor)
@@ -33,12 +33,12 @@ trait CollectionCardsStyles {
   def leftDrawableTextStyle(resourceId: Int)(implicit context: ContextWrapper): Tweak[TextView] =
     tvColor(themeTextColor) + tvCompoundDrawablesWithIntrinsicBounds(left = Some(tintDrawable(resourceId)))
 
-  private[this] def tintDrawable(resouceId: Int)(implicit context: ContextWrapper): Drawable =
-    resGetDrawable(resouceId).colorize(theme.get(CollectionCardIconsColor))
+  def tintDrawable(resourceId: Int)(implicit context: ContextWrapper): Drawable =
+    resGetDrawable(resourceId).colorize(theme.get(DrawerIconColor))
 
   private[this] def createBackground(implicit context: ContextWrapper): Drawable = {
     val alphaDefault = .1f
-    val color = theme.get(CollectionDetailCardBackgroundPressedColor)
+    val color = theme.get(CardBackgroundPressedColor)
     Lollipop ifSupportedThen {
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(color)),

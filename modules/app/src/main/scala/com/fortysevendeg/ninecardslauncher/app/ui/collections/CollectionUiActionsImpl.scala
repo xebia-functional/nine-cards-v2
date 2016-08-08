@@ -13,6 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
@@ -22,7 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToClos
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{ErrorMessageTextColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
@@ -147,9 +148,9 @@ trait CollectionUiActionsImpl
   override def showMessageNotImplemented(): Ui[Any] = Ui(collectionsPresenter.showMessageNotImplemented())
 
   override def showEmptyCollection(): Ui[Any] = {
-    val color = theme.get(ErrorMessageTextColor)
+    val color = theme.get(DrawerTextColor).alpha(0.8f)
     (emptyCollectionMessage <~ tvColor(color)) ~
-      (emptyCollectionImage <~ tivDefaultColor(color)) ~
+      (emptyCollectionImage <~ tivDefaultColor(theme.get(DrawerIconColor))) ~
       (emptyCollectionLayout <~ vVisible) ~
       (recyclerView <~ vGone)
   }

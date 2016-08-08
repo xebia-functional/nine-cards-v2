@@ -37,19 +37,19 @@ trait ThemeProcessData {
       |      "color": "#ffd5f2fa"
       |    },
       |    {
-      |      "styleType": "CollectionDetailBackgroundColor",
+      |      "styleType": "CardLayoutBackgroundColor",
       |      "color": "#eeeeee"
       |    },
       |    {
-      |      "styleType": "CollectionDetailTextCardColor",
+      |      "styleType": "CardTextColor",
       |      "color": "#000000"
       |    },
       |    {
-      |      "styleType": "CollectionDetailCardBackgroundColor",
+      |      "styleType": "CardBackgroundColor",
       |      "color": "#ffffff"
       |    },
       |    {
-      |      "styleType": "CollectionDetailCardBackgroundPressedColor",
+      |      "styleType": "CardBackgroundPressedColor",
       |      "color": "#000000"
       |    },
       |    {
@@ -90,19 +90,19 @@ trait ThemeProcessData {
       |      "color": "#ffd5f2fa"
       |    },
       |    {
-      |      "styleType": "CollectionDetailBackgroundColor",
+      |      "styleType": "CardLayoutBackgroundColor",
       |      "color": "#eeeeee"
       |    },
       |    {
-      |      "styleType": "CollectionDetailTextCardColor",
+      |      "styleType": "CardTextColor",
       |      "color": "#000000"
       |    },
       |    {
-      |      "styleType": "CollectionDetailCardBackgroundColor",
+      |      "styleType": "CardBackgroundColor",
       |      "color": "#ffffff"
       |    },
       |    {
-      |      "styleType": "CollectionDetailCardBackgroundPressedColor",
+      |      "styleType": "CardBackgroundPressedColor",
       |      "color": "#000000"
       |    },
       |    {
@@ -143,19 +143,19 @@ trait ThemeProcessData {
       |      "color": "#ffd5f2fa"
       |    },
       |    {
-      |      "styleType": "CollectionDetailBackgroundColor",
+      |      "styleType": "CardLayoutBackgroundColor",
       |      "color": "#eeeeee"
       |    },
       |    {
-      |      "styleType": "CollectionDetailTextCardColor",
+      |      "styleType": "CardTextColor",
       |      "color": "#000000"
       |    },
       |    {
-      |      "styleType": "CollectionDetailCardBackgroundColor",
+      |      "styleType": "CardBackgroundColor",
       |      "color": "#ffffff"
       |    },
       |    {
-      |      "styleType": "CollectionDetailCardBackgroundPressedColor",
+      |      "styleType": "CardBackgroundPressedColor",
       |      "color": "#000000"
       |    },
       |    {

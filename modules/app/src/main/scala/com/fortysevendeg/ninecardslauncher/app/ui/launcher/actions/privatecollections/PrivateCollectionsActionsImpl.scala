@@ -23,7 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.Collection
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCard, PrivateCollection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailBackgroundColor, CollectionDetailTextCardColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, CardTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -41,7 +41,7 @@ trait PrivateCollectionsActionsImpl
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
-  def loadBackgroundColor = theme.get(CollectionDetailBackgroundColor)
+  def loadBackgroundColor = theme.get(CardLayoutBackgroundColor)
 
   override def initialize(): Ui[Any] =
     (toolbar <~

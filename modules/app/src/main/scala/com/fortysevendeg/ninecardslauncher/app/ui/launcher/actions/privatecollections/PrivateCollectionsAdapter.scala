@@ -14,7 +14,7 @@ case class PrivateCollectionsAdapter(privateCollections: Seq[PrivateCollection])
   extends RecyclerView.Adapter[ViewHolderPrivateCollectionsLayoutAdapter] {
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderPrivateCollectionsLayoutAdapter = {
-    val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.private_collections_item, parent, false).asInstanceOf[ViewGroup]
+    val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.private_collections_item, parent, false)
     ViewHolderPrivateCollectionsLayoutAdapter(view)
   }
 

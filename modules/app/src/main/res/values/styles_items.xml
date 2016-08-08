@@ -283,7 +283,6 @@
         <item name="android:lines">1</item>
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/text_medium</item>
-        <item name="android:drawableLeft">@drawable/icon_download</item>
         <item name="android:textColor">@color/text_default_subtitle</item>
     </style>
 
@@ -549,7 +548,6 @@
         <item name="android:paddingTop">@dimen/padding_small</item>
         <item name="android:paddingBottom">@dimen/padding_small</item>
         <item name="android:gravity">center</item>
-        <item name="android:src">@drawable/icon_dialog_collection_share</item>
     </style>
 
     <!-- Widget Items -->

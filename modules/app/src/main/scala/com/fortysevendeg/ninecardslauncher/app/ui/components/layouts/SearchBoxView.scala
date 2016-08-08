@@ -10,6 +10,7 @@ import com.fortysevendeg.macroid.extras.EditTextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{AppsView, ContactView, ContentView, TintableImageView}
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -104,7 +105,7 @@ trait Styles {
   def searchBoxNameStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[EditText] =
     tvHint(resourceId) +
       tvColor(theme.get(SearchTextColor)) +
-      tvHintColor(theme.get(SearchTextColor))
+      tvHintColor(theme.get(SearchTextColor).alpha(0.8f))
 
   def searchBoxButtonStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
     ivSrc(resourceId) +

@@ -35,7 +35,7 @@ trait DrawerStyles {
       vStateListAnimator(R.anim.elevation_transition) +
         vPaddings(elevation) +
         vCircleOutlineProvider(elevation)
-    } getOrElse tivPressedColor(theme.get(AppDrawerPressedColor))
+    } getOrElse tivPressedColor(theme.get(DockPressedColor))
   }
 
   def recyclerStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[RecyclerView] = rvFixedSize

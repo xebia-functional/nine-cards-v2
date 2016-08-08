@@ -36,7 +36,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Slid
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailBackgroundColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -91,7 +91,7 @@ trait CollectionsUiActionsImpl
     getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
   override def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): Ui[Any] =
-    (root <~ vBackgroundColor(theme.get(CollectionDetailBackgroundColor))) ~
+    (root <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
       (tabs <~ tabsStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~

@@ -96,11 +96,11 @@ object AppUtils {
   def getDefaultTheme = NineCardsTheme(
     name = "light",
     styles = Seq(
-      ThemeStyle(AppDrawerPressedColor, Color.parseColor("#ffd5f2fa")),
-      ThemeStyle(CollectionDetailBackgroundColor, Color.parseColor("#eeeeee")),
-      ThemeStyle(CollectionDetailTextCardColor, Color.parseColor("#000000")),
-      ThemeStyle(CollectionDetailCardBackgroundColor, Color.parseColor("#ffffff")),
-      ThemeStyle(CollectionDetailCardBackgroundPressedColor, Color.parseColor("#000000")),
+      ThemeStyle(DockPressedColor, Color.parseColor("#ffd5f2fa")),
+      ThemeStyle(CardLayoutBackgroundColor, Color.parseColor("#eeeeee")),
+      ThemeStyle(CardTextColor, Color.parseColor("#000000")),
+      ThemeStyle(CardBackgroundColor, Color.parseColor("#ffffff")),
+      ThemeStyle(CardBackgroundPressedColor, Color.parseColor("#000000")),
       ThemeStyle(CollectionDetailTextTabSelectedColor, Color.parseColor("#ffffff")),
       ThemeStyle(CollectionDetailTextTabDefaultColor, Color.parseColor("#80ffffff")),
       ThemeStyle(DrawerTabsBackgroundColor, Color.parseColor("#16000000")),
@@ -111,10 +111,7 @@ object AppUtils {
       ThemeStyle(SearchGoogleColor, Color.parseColor("#a3a3a3")),
       ThemeStyle(SearchIconsColor, Color.parseColor("#646464")),
       ThemeStyle(SearchTextColor, Color.parseColor("#646464")),
-      ThemeStyle(EditCollectionNameTextColor, Color.parseColor("#33000000")),
-      ThemeStyle(EditCollectionNameTextColor, Color.parseColor("#ffffff")),
-      ThemeStyle(EditCollectionNameHintTextColor, Color.parseColor("#80ffffff")),
-      ThemeStyle(CollectionCardIconsColor, Color.parseColor("#000000"))))
+      ThemeStyle(DrawerIconColor, Color.parseColor("#000000"))))
 
   // TODO We should move this colors to theme
   def getIndexColor(index: Int): Int = index match {

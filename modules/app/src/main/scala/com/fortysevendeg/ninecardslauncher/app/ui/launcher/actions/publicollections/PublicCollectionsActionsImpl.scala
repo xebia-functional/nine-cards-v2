@@ -27,7 +27,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{LatestSharedCollection, TopSharedCollection, TypeSharedCollection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailBackgroundColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -46,7 +46,7 @@ trait PublicCollectionsActionsImpl
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
-  def loadBackgroundColor = theme.get(CollectionDetailBackgroundColor)
+  def loadBackgroundColor = theme.get(CardLayoutBackgroundColor)
 
   var typeFilter = slot[TextView]
 
@@ -164,7 +164,8 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
     (author <~ textStyle) ~
     (downloads <~ leftDrawableTextStyle(R.drawable.icon_dialog_collection_downloaded)) ~
     (description <~ textStyle) ~
-    (addCollection <~ buttonStyle)).run
+    (addCollection <~ buttonStyle) ~
+    (shareCollection <~ ivSrc(tintDrawable(R.drawable.icon_dialog_collection_share)))).run
 
   def bind(collection: SharedCollection, position: Int): Ui[Any] = {
     val background = new ShapeDrawable(new OvalShape)

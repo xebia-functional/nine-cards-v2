@@ -63,21 +63,25 @@ case object ShowClockMoment
 
 case object ThemeFile
   extends NineCardsPreferenceValue[String] {
-  override val name: String = themeFile
-  override val default: String = "theme_light"
 
   private[this] val themeDark = "theme_dark"
   private[this] val themeLight = "theme_light"
+  private[this] val defaultValue = "1"
 
-  private[this] def parseThemeJson(prefValue: Int): String = prefValue match {
-    case 0 => themeDark
-    case 1 => themeLight
-    case 2 => themeLight
-    case 3 => themeLight
-    case _ => throw new IllegalArgumentException(s"Illegal value $prefValue for $themeFile")
+  override val name: String = themeFile
+  override val default: String = themeLight
+
+  private[this] def parseThemeJson(prefValue: Int): Option[String] = prefValue match {
+    case 0 => Some(themeDark)
+    case 1 => Some(themeLight)
+    case _ => None
   }
 
-  override def readValue(pref: NineCardsPreferencesValue): String = parseThemeJson(pref.getString(name, "0").toInt)
+  override def readValue(pref: NineCardsPreferencesValue): String =
+    parseThemeJson(pref.getString(name, defaultValue).toInt) match {
+      case Some(s) => s
+      case _ => default
+    }
 }
 
 class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {

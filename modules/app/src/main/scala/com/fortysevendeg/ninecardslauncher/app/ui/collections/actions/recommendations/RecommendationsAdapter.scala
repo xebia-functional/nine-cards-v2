@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailTextCardColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
@@ -64,7 +64,7 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
 
   ((root <~ cardRootStyle) ~
     (name <~ textStyle) ~
-    (downloads <~ textStyle) ~
+    (downloads <~ leftDrawableTextStyle(R.drawable.icon_download)) ~
     (description <~ textStyle) ~
     (tag <~ textStyle) ~
     (installNow <~ buttonStyle)).run
@@ -74,7 +74,7 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
       case (view, screenshot) => view <~ ivUri(screenshot)
     }
     (icon <~ ivUri(recommendedApp.icon getOrElse "")) ~ // If icon don't exist ivUri will solve the problem
-      (stars <~ ivSrc(getStarDrawable(recommendedApp.stars))) ~
+      (stars <~ ivSrc(tintDrawable(getStarDrawable(recommendedApp.stars)))) ~
       (name <~ tvText(recommendedApp.title)) ~
       (downloads <~ tvText(recommendedApp.downloads)) ~
       (description <~ (recommendedApp.description map (d => tvText(d) + vVisible) getOrElse vGone)) ~
@@ -86,7 +86,7 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
-  private[this] def getStarDrawable(value: Double) = value match {
+  private[this] def getStarDrawable(value: Double): Int = value match {
     case v if v < 1.1 => R.drawable.recommendations_starts_01
     case v if v < 1.6 => R.drawable.recommendations_starts_01_5
     case v if v < 2.1 => R.drawable.recommendations_starts_02

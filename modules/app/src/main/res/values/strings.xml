@@ -321,8 +321,6 @@
 
     <string name="themesDark">Dark</string>
     <string name="themesLight">Light</string>
-    <string name="themesMaterial">Material</string>
-    <string name="themes9Cards">9Cards</string>
 
     <string name="googleLogoTitle">Google Logo</string>
     <string name="googleLogoSummary">Google Logo Summary</string>

@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFra
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailBackgroundColor, DrawerBackgroundColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, DrawerBackgroundColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -23,7 +23,7 @@ trait RecommendationsUiActionsImpl
 
   lazy val recycler = Option(findView(TR.actions_recycler))
 
-  def loadBackgroundColor = theme.get(CollectionDetailBackgroundColor)
+  def loadBackgroundColor = theme.get(CardLayoutBackgroundColor)
 
   override def initialize(): Ui[Any] =
     (toolbar <~

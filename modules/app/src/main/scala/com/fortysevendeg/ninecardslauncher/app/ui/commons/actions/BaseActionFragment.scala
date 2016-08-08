@@ -13,11 +13,12 @@ import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportProvider, 
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ActionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, ErrorMessageTextColor, NineCardsTheme, PrimaryColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -109,7 +110,7 @@ trait BaseActionFragment
       (transitionView <~ vBackgroundColor(colorPrimary)) ~
       (rootContent <~ vInvisible) ~
       (errorContent <~ vGone) ~
-      (errorMessage <~ tvColor(theme.get(ErrorMessageTextColor))) ~
+      (errorMessage <~ tvColor(theme.get(DrawerTextColor).alpha(0.8f))) ~
       (errorButton <~ vBackgroundTint(colorPrimary))).run
     baseView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
       override def onLayoutChange(v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int): Unit = {

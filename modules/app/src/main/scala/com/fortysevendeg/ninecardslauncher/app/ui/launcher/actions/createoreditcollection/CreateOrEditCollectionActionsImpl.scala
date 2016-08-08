@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
 
-import android.graphics.Color
 import android.graphics.Paint.Style
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -21,7 +20,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{EditCollectionNameHintTextColor, EditCollectionNameTextColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -57,10 +56,10 @@ trait CreateOrEditCollectionActionsImpl
   val collectionPresenter: CreateOrEditCollectionPresenter
 
   override def initialize(): Ui[Any] = {
-    val textColor = theme.get(EditCollectionNameTextColor)
+    val textColor = theme.get(DrawerTextColor)
     (toolbar <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
-      (name <~ tvColor(textColor) <~ tvHintColor(theme.get(EditCollectionNameHintTextColor))) ~
+      (name <~ tvColor(textColor) <~ tvHintColor(textColor.alpha(0.8f))) ~
       (colorText <~ tvColor(textColor)) ~
       (iconText <~ tvColor(textColor)) ~
       (colorContent <~ On.click(Ui(collectionPresenter.changeColor(getColor)))) ~
@@ -133,7 +132,7 @@ trait CreateOrEditCollectionActionsImpl
   private[this] def setIcon(iconName: String): Ui[Any] =
     iconImage <~
       vTag(iconName) <~
-      ivSrc(resGetDrawable(iconCollectionDetail(iconName)).colorize(Color.GRAY))
+      ivSrc(resGetDrawable(iconCollectionDetail(iconName)).colorize(theme.get(DrawerIconColor)))
 
   private[this] def setIndexColor(index: Int): Ui[Any] = {
     val color = resGetColor(getIndexColor(index))

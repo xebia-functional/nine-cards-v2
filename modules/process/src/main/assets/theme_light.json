@@ -38,23 +38,23 @@
       "color": "#000000"
     },
     {
-      "styleType": "AppDrawerPressedColor",
+      "styleType": "DockPressedColor",
       "color": "#ffd5f2fa"
     },
     {
-      "styleType": "CollectionDetailBackgroundColor",
+      "styleType": "CardLayoutBackgroundColor",
       "color": "#eeeeee"
     },
     {
-      "styleType": "CollectionDetailTextCardColor",
+      "styleType": "CardTextColor",
       "color": "#000000"
     },
     {
-      "styleType": "CollectionDetailCardBackgroundColor",
+      "styleType": "CardBackgroundColor",
       "color": "#ffffff"
     },
     {
-      "styleType": "CollectionDetailCardBackgroundPressedColor",
+      "styleType": "CardBackgroundPressedColor",
       "color": "#000000"
     },
     {
@@ -66,19 +66,7 @@
       "color": "#80ffffff"
     },
     {
-      "styleType": "ErrorMessageTextColor",
-      "color": "#33000000"
-    },
-    {
-      "styleType": "EditCollectionNameTextColor",
-      "color": "#646464"
-    },
-    {
-      "styleType": "EditCollectionNameHintTextColor",
-      "color": "#80646464"
-    },
-    {
-      "styleType": "CollectionCardIconsColor",
+      "styleType": "DrawerIconColor",
       "color": "#000000"
     }
   ]

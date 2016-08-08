@@ -16,15 +16,15 @@ sealed trait ThemeStyleType
 
 case object PrimaryColor extends ThemeStyleType
 
-case object AppDrawerPressedColor extends ThemeStyleType
+case object DockPressedColor extends ThemeStyleType
 
-case object CollectionDetailBackgroundColor extends ThemeStyleType
+case object CardLayoutBackgroundColor extends ThemeStyleType
 
-case object CollectionDetailCardBackgroundColor extends ThemeStyleType
+case object CardBackgroundColor extends ThemeStyleType
 
-case object CollectionDetailCardBackgroundPressedColor extends ThemeStyleType
+case object CardBackgroundPressedColor extends ThemeStyleType
 
-case object CollectionDetailTextCardColor extends ThemeStyleType
+case object CardTextColor extends ThemeStyleType
 
 case object CollectionDetailTextTabDefaultColor extends ThemeStyleType
 
@@ -46,13 +46,7 @@ case object SearchTextColor extends ThemeStyleType
 
 case object SearchPressedColor extends ThemeStyleType
 
-case object ErrorMessageTextColor extends ThemeStyleType
-
-case object EditCollectionNameTextColor extends ThemeStyleType
-
-case object EditCollectionNameHintTextColor extends ThemeStyleType
-
-case object CollectionCardIconsColor extends ThemeStyleType
+case object DrawerIconColor extends ThemeStyleType
 
 object NineCardsThemeImplicits {
 
@@ -60,11 +54,11 @@ object NineCardsThemeImplicits {
 
     def reads(js: JsValue) = js.as[String] match {
       case "PrimaryColor" => JsSuccess(PrimaryColor)
-      case "AppDrawerPressedColor" => JsSuccess(AppDrawerPressedColor)
-      case "CollectionDetailBackgroundColor" => JsSuccess(CollectionDetailBackgroundColor)
-      case "CollectionDetailCardBackgroundColor" => JsSuccess(CollectionDetailCardBackgroundColor)
-      case "CollectionDetailCardBackgroundPressedColor" => JsSuccess(CollectionDetailCardBackgroundPressedColor)
-      case "CollectionDetailTextCardColor" => JsSuccess(CollectionDetailTextCardColor)
+      case "DockPressedColor" => JsSuccess(DockPressedColor)
+      case "CardLayoutBackgroundColor" => JsSuccess(CardLayoutBackgroundColor)
+      case "CardBackgroundColor" => JsSuccess(CardBackgroundColor)
+      case "CardBackgroundPressedColor" => JsSuccess(CardBackgroundPressedColor)
+      case "CardTextColor" => JsSuccess(CardTextColor)
       case "CollectionDetailTextTabDefaultColor" => JsSuccess(CollectionDetailTextTabDefaultColor)
       case "CollectionDetailTextTabSelectedColor" => JsSuccess(CollectionDetailTextTabSelectedColor)
       case "DrawerTabsBackgroundColor" => JsSuccess(DrawerTabsBackgroundColor)
@@ -75,10 +69,7 @@ object NineCardsThemeImplicits {
       case "SearchIconsColor" => JsSuccess(SearchIconsColor)
       case "SearchTextColor" => JsSuccess(SearchTextColor)
       case "SearchPressedColor" => JsSuccess(SearchPressedColor)
-      case "ErrorMessageTextColor" => JsSuccess(ErrorMessageTextColor)
-      case "EditCollectionNameTextColor" => JsSuccess(EditCollectionNameTextColor)
-      case "EditCollectionNameHintTextColor" => JsSuccess(EditCollectionNameHintTextColor)
-      case "CollectionCardIconsColor" => JsSuccess(CollectionCardIconsColor)
+      case "DrawerIconColor" => JsSuccess(DrawerIconColor)
       case _ => JsError("Theme style type not allowed")
     }
   }
@@ -87,11 +78,11 @@ object NineCardsThemeImplicits {
 
     def writes(styleType: ThemeStyleType) = styleType match {
       case PrimaryColor => Json.toJson("PrimaryColor")
-      case AppDrawerPressedColor => Json.toJson("AppDrawerPressedColor")
-      case CollectionDetailBackgroundColor => Json.toJson("CollectionDetailBackgroundColor")
-      case CollectionDetailCardBackgroundColor => Json.toJson("CollectionDetailCardBackgroundColor")
-      case CollectionDetailCardBackgroundPressedColor => Json.toJson("CollectionDetailCardBackgroundPressedColor")
-      case CollectionDetailTextCardColor => Json.toJson("CollectionDetailTextCardColor")
+      case DockPressedColor => Json.toJson("DockPressedColor")
+      case CardLayoutBackgroundColor => Json.toJson("CardLayoutBackgroundColor")
+      case CardBackgroundColor => Json.toJson("CardBackgroundColor")
+      case CardBackgroundPressedColor => Json.toJson("CardBackgroundPressedColor")
+      case CardTextColor => Json.toJson("CardTextColor")
       case CollectionDetailTextTabDefaultColor => Json.toJson("CollectionDetailTextTabDefaultColor")
       case CollectionDetailTextTabSelectedColor => Json.toJson("CollectionDetailTextTabSelectedColor")
       case DrawerTabsBackgroundColor => Json.toJson("DrawerTabsBackgroundColor")
@@ -102,10 +93,7 @@ object NineCardsThemeImplicits {
       case SearchIconsColor => Json.toJson("SearchIconsColor")
       case SearchTextColor => Json.toJson("SearchTextColor")
       case SearchPressedColor => Json.toJson("SearchPressedColor")
-      case ErrorMessageTextColor => Json.toJson("ErrorMessageTextColor")
-      case EditCollectionNameTextColor => Json.toJson("EditCollectionNameTextColor")
-      case EditCollectionNameHintTextColor => Json.toJson("EditCollectionNameHintTextColor")
-      case CollectionCardIconsColor => Json.toJson("CollectionCardIconsColor")
+      case DrawerIconColor => Json.toJson("DrawerIconColor")
     }
   }
 

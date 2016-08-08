@@ -39,10 +39,10 @@ trait ShortcutUiActionsImpl
   override def loadShortcuts(shortcuts: Seq[Shortcut]): Ui[Any] = {
     val sortedShortcuts = shortcuts sortBy sortByTitle
     val adapter = ShortcutAdapter(sortedShortcuts)
-      (recycler <~
-        vVisible <~
-        rvLayoutManager(adapter.getLayoutManager) <~
-        rvAdapter(adapter)) ~
+    (recycler <~
+      vVisible <~
+      rvLayoutManager(adapter.getLayoutManager) <~
+      rvAdapter(adapter)) ~
       (loading <~ vGone)
   }
 
