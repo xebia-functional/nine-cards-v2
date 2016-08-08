@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/ProfileConfigurationNameDialog">
+
+    <android.support.design.widget.TextInputLayout
+        style="@style/EditCardNameWrapper">
+
+        <EditText
+            android:id="@+id/dialog_edit_card_name"
+            style="@style/EditCardName"/>
+
+    </android.support.design.widget.TextInputLayout>
+
+</LinearLayout>

@@ -108,6 +108,8 @@ class MomentProcessImpl(
     (isHappening(moment1, now), isHappening(moment2, now), wifi) match {
       case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.contains(w) => true
       case (h1, h2, Some(w)) if h1 == h2 && moment2.wifi.contains(w) => false
+      case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.isEmpty && moment2.wifi.nonEmpty => true
+      case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.nonEmpty && moment2.wifi.isEmpty => false
       case (true, false, _) => true
       case (false, true, _) => false
       case (h1, h2, _) if h1 == h2 => prioritizedByTime()
@@ -152,6 +154,7 @@ class MomentProcessImpl(
         case HomeMorningMoment => homeApps.contains(app.packageName)
         case WorkMoment => workApps.contains(app.packageName)
         case HomeNightMoment => nightApps.contains(app.packageName)
+        case TransitMoment => transitApps.contains(app.packageName)
       }
     }.take(numSpaces)
 
