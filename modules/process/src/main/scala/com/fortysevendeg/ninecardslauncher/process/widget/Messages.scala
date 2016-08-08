@@ -17,9 +17,9 @@ case class AddWidgetRequest(
   intent: Option[String] = None)
 
 case class MoveWidgetRequest(
-  startX: Int,
-  startY: Int)
+  displaceX: Int,
+  displaceY: Int)
 
 case class ResizeWidgetRequest(
-  spanX: Int,
-  spanY: Int)
+  increaseX: Int,
+  increaseY: Int)

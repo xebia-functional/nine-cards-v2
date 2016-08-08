@@ -132,12 +132,25 @@ trait WidgetProcessImplData {
         imagePath = imagePath,
         intent = intent))
 
+  val moveStartX: Int = Random.nextInt(8)
+  val moveStartY: Int = Random.nextInt(8)
+
   val moveWidgetRequest = MoveWidgetRequest(
-    startX = startX,
-    startY = startY)
+    displaceX = moveStartX,
+    displaceY = moveStartY)
+
+  val moveWidgetResponse = widget.copy(
+    startX = widget.startX + moveWidgetRequest.displaceX,
+    startY = widget.startY + moveWidgetRequest.displaceY)
+
+  val resizeSpanX: Int = Random.nextInt(8)
+  val resizeSpanY: Int = Random.nextInt(8)
 
   val resizeWidgetRequest = ResizeWidgetRequest(
-    spanX = spanX,
-    spanY = spanY)
+    increaseX = resizeSpanX,
+    increaseY = resizeSpanY)
 
+  val resizeWidgetResponse = widget.copy(
+    spanX = widget.spanX + resizeWidgetRequest.increaseX,
+    spanY = widget.spanY + resizeWidgetRequest.increaseY)
 }

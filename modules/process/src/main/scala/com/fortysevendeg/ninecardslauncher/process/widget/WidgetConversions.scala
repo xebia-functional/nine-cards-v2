@@ -38,35 +38,15 @@ trait WidgetConversions {
     imagePath = servicesWidget.imagePath,
     intent = servicesWidget.intent)
 
-  def toUpdatedWidget(widget: AppWidget, moveWidgetRequest: MoveWidgetRequest): AppWidget =  AppWidget(
-    id = widget.id,
-    momentId = widget.momentId,
-    packageName = widget.packageName,
-    className = widget.className,
-    appWidgetId = widget.appWidgetId,
-    startX = widget.startX + moveWidgetRequest.startX,
-    startY = widget.startY + moveWidgetRequest.startY,
-    spanX = widget.spanX,
-    spanY = widget.spanY,
-    widgetType = widget.widgetType,
-    label = widget.label,
-    imagePath = widget.imagePath,
-    intent = widget.intent)
+  def toUpdatedWidget(widget: AppWidget, moveWidgetRequest: MoveWidgetRequest): AppWidget =
+    widget.copy(
+      startX = widget.startX + moveWidgetRequest.displaceX,
+      startY = widget.startY + moveWidgetRequest.displaceY)
 
-  def toUpdatedWidget(widget: AppWidget, resizeWidgetRequest: ResizeWidgetRequest): AppWidget =  AppWidget(
-    id = widget.id,
-    momentId = widget.momentId,
-    packageName = widget.packageName,
-    className = widget.className,
-    appWidgetId = widget.appWidgetId,
-    startX = widget.startX,
-    startY = widget.startY,
-    spanX = widget.spanX + resizeWidgetRequest.spanX,
-    spanY = widget.spanY + resizeWidgetRequest.spanY,
-    widgetType = widget.widgetType,
-    label = widget.label,
-    imagePath = widget.imagePath,
-    intent = widget.intent)
+  def toUpdatedWidget(widget: AppWidget, resizeWidgetRequest: ResizeWidgetRequest): AppWidget =
+    widget.copy(
+      spanX = widget.spanX + resizeWidgetRequest.increaseX,
+      spanY = widget.spanY + resizeWidgetRequest.increaseY)
 
   def toServicesUpdateWidgetRequest(widget: AppWidget): ServicesUpdateWidgetRequest = ServicesUpdateWidgetRequest(
     id = widget.id,
