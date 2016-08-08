@@ -17,6 +17,7 @@ class NineCardsSqlHelper(context: Context)
     db.execSQL(DockAppEntity.createTableSQL)
     db.execSQL(MomentEntity.createTableSQL)
     db.execSQL(UserEntity.createTableSQL)
+    db.execSQL(WidgetEntity.createTableSQL)
 
     new Handler().postDelayed(() => execAllVersionsDB(), 0)
   }
@@ -47,6 +48,8 @@ class NineCardsSqlHelper(context: Context)
       case 11 =>
         db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.deviceName} TEXT")
         db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.deviceCloudId} TEXT")
+      case 12 =>
+        db.execSQL(WidgetEntity.createTableSQL)
     }
 
     new Handler().post(() => execVersionsDB(oldVersion, newVersion))
@@ -56,5 +59,5 @@ class NineCardsSqlHelper(context: Context)
 object NineCardsSqlHelper {
   val id = "_id"
   val databaseName = "nineCards"
-  val databaseVersion = 11
+  val databaseVersion = 12
 }

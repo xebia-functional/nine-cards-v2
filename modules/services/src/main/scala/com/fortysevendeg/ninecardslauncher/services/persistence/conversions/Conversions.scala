@@ -9,7 +9,8 @@ trait Conversions
   with CollectionConversions
   with UserConversions
   with MomentConversions
-  with DockAppConversions {
+  with DockAppConversions
+  with WidgetConversions {
 
   def toDataCounterSeq(items: Seq[RepoDataCounter]): Seq[DataCounter] = items map toDataCounter
 

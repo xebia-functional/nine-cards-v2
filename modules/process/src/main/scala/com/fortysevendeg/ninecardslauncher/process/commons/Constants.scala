@@ -81,6 +81,10 @@ object DockAppTypes {
   val collection = "COLLECTION"
 }
 
+object WidgetTypes {
+  val app = "APP"
+}
+
 object NineCardsMoments {
   val homeMorningMoment = "HOME"
   val workMoment = "WORK"

@@ -86,5 +86,23 @@ case class UserData(
   deviceName: Option[String],
   deviceCloudId: Option[String])
 
+case class Widget(
+  id: Int,
+  data: WidgetData)
+
+case class WidgetData(
+  momentId: Int,
+  packageName: String,
+  className: String,
+  appWidgetId: Int,
+  startX: Int,
+  startY: Int,
+  spanX: Int,
+  spanY: Int,
+  widgetType: String,
+  label: Option[String],
+  imagePath: Option[String],
+  intent: Option[String])
+
 case class DataCounter(term: String, count: Int)
 

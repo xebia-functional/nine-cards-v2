@@ -125,6 +125,8 @@
     <string name="unnamed">Unnamed</string>
 
     <string name="removeCardMessage">Are you sure that you want remove this card?</string>
+    <string name="editCardDialogTitle">Edit card</string>
+    <string name="editCardDialogName">Name</string>
 
     <!-- Publish Collections Wizard -->
 

@@ -516,4 +516,16 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
+    <style name="EditCardNameWrapper">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="EditCardName">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:inputType">textAutoComplete</item>
+        <item name="android:hint">@string/editCardDialogName</item>
+    </style>
+
 </resources>
