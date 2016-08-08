@@ -65,13 +65,13 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     } yield {
       (message <~ vGone) ~
         (widgets <~ vVisible) ~
-        (moment.momentType map (moment => Ui(presenter.loadWidgetsForMoment(moment))) getOrElse clearWidgets())
+        (moment.momentType map (moment => Ui(presenter.loadWidgetsForMoment(moment))) getOrElse clearWidgets)
     }) getOrElse
       ((message <~ vVisible) ~
         (widgets <~ vGone))
   }
 
-  def reloadSelectedWidget(): Ui[Any] = this <~ Transformer {
+  def reloadSelectedWidget: Ui[Any] = this <~ Transformer {
     case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeSelected()
     case widget: LauncherWidgetView => widget.deactivateSelected()
   }
@@ -99,9 +99,9 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       vgAddView(launcherWidgetView, params)
   }
 
-  def clearWidgets(): Ui[Any] = widgets <~ vgRemoveAllViews
+  def clearWidgets: Ui[Any] = widgets <~ vgRemoveAllViews
 
-  def createRules(): Ui[Any] = {
+  def createRules: Ui[Any] = {
     val spaceWidth = (getWidth - (paddingDefault * 2)) / WidgetsOps.columns
     val spaceHeight = (getHeight - (paddingDefault * 2)) / WidgetsOps.rows
 
@@ -132,7 +132,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     Ui.sequence(uis: _*)
   }
 
-  def removeRules(): Ui[Any] = this <~ Transformer {
+  def removeRules: Ui[Any] = this <~ Transformer {
     case i: ImageView if i.getTag == ruleTag => this <~ vgRemoveView(i)
   }
 

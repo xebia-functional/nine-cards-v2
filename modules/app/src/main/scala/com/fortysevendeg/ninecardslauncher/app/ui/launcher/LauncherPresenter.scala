@@ -319,23 +319,21 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def arrowWidget(arrow: Arrow): Unit = if (statuses.mode == EditWidgetsMode) {
 
-    def getService = (statuses.idWidget, statuses.transformation, arrow) match {
-      case (Some(id), ResizeTransformation, ArrowUp) =>
-        di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest(0, -1))
-      case (Some(id), ResizeTransformation, ArrowDown) =>
-        di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest(0, 1))
-      case (Some(id), ResizeTransformation, ArrowRight) =>
-        di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest(1, 0))
-      case (Some(id), ResizeTransformation, ArrowLeft) =>
-        di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest(-1, 0))
-      case (Some(id), MoveTransformation, ArrowUp) =>
-        di.widgetsProcess.moveWidget(id, MoveWidgetRequest(0, -1))
-      case (Some(id), MoveTransformation, ArrowDown) =>
-        di.widgetsProcess.moveWidget(id, MoveWidgetRequest(0, 1))
-      case (Some(id), MoveTransformation, ArrowRight) =>
-        di.widgetsProcess.moveWidget(id, MoveWidgetRequest(1, 0))
-      case (Some(id), MoveTransformation, ArrowLeft) =>
-        di.widgetsProcess.moveWidget(id, MoveWidgetRequest(-1, 0))
+    def widgetOperation(id: Int) = statuses.transformation match {
+      case ResizeTransformation => di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest.tupled(operationArgs))
+      case MoveTransformation => di.widgetsProcess.moveWidget(id, MoveWidgetRequest.tupled(operationArgs))
+    }
+
+    def operationArgs = arrow match {
+      case ArrowUp => (0, -1)
+      case ArrowDown => (0, 1)
+      case ArrowRight => (1, 0)
+      case ArrowLeft => (-1, 0)
+    }
+
+    def getService = statuses.idWidget match {
+      case Some(id) => widgetOperation(id)
+      case None => Service(Task(Errata[Widget, WidgetException](WidgetException("Widget id is empty"))))
     }
 
     Task.fork(getService.run).resolveAsyncUi(
@@ -500,9 +498,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def addWidget(maybeAppWidgetId: Option[Int]): Unit = {
 
     def getWidgetInfoById(appWidgetId: Int): ServiceDef2[(ComponentName, Cell), MomentException]=
-      actions.getWidgetInfoById(appWidgetId) map { info =>
-        Service(Task(Answer[(ComponentName, Cell), MomentException](info)))
-      } getOrElse Service(Task(Errata(MomentExceptionImpl("Info widget not found"))))
+      actions.getWidgetInfoById(appWidgetId) match {
+        case Some(info) => Service(Task(Answer[(ComponentName, Cell), MomentException](info)))
+        case _ => Service(Task(Errata(MomentExceptionImpl("Info widget not found"))))
+      }
 
     def createWidget(appWidgetId: Int, nineCardsMoment: NineCardsMoment) = for {
       moment <- di.momentProcess.getMomentByType(nineCardsMoment)

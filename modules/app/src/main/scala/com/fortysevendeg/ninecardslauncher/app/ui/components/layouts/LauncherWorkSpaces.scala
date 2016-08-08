@@ -88,38 +88,22 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ =>
   }
 
-  def clearWidgets(): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.clearWidgets().run
-    case _ =>
-  }
+  def clearWidgets(): Unit = uiWithView(_.clearWidgets)
 
-  def showRulesInMoment(): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.createRules().run
-    case _ =>
-  }
+  def showRulesInMoment(): Unit = uiWithView(_.createRules)
 
-  def hideRulesInMoment(): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.removeRules().run
-    case _ =>
-  }
+  def hideRulesInMoment(): Unit = uiWithView(_.removeRules)
 
-  def reloadSelectedWidget(): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.reloadSelectedWidget().run
-    case _ =>
-  }
+  def reloadSelectedWidget(): Unit = uiWithView(_.reloadSelectedWidget)
 
-  def resizeCurrentWidget(): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.resizeCurrentWidget.run
-    case _ =>
-  }
+  def resizeCurrentWidget(): Unit = uiWithView(_.resizeCurrentWidget)
 
-  def moveCurrentWidget(): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.moveCurrentWidget.run
-    case _ =>
-  }
+  def moveCurrentWidget(): Unit = uiWithView(_.moveCurrentWidget)
 
-  def arrowWidget(arrow: Arrow): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.arrowWidget(arrow).run
+  def arrowWidget(arrow: Arrow): Unit = uiWithView(_.arrowWidget(arrow))
+
+  private[this] def uiWithView(f: (LauncherWorkSpaceMomentsHolder) => Ui[_]) = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => f(momentWorkSpace).run
     case _ =>
   }
 

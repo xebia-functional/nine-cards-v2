@@ -23,17 +23,10 @@ class DottedDrawable(horizontal: Boolean = true)(implicit contextWrapper: Contex
 
   override def draw(canvas: Canvas): Unit = {
     val bounds = getBounds
-    canvas.drawPath(if (horizontal) {
-      val path = new Path()
-      path.moveTo(0, 0)
-      path.lineTo(bounds.width(), 0)
-      path
-    } else {
-      val path = new Path()
-      path.moveTo(0, 0)
-      path.lineTo(0, bounds.height())
-      path
-    }, paint)
+    val path = new Path()
+    path.moveTo(0, 0)
+    if (horizontal) path.lineTo(bounds.width(), 0) else path.lineTo(0, bounds.height())
+    canvas.drawPath(path, paint)
   }
 
   override def setColorFilter(cf: ColorFilter): Unit = paint.setColorFilter(cf)
