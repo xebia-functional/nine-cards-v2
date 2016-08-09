@@ -39,13 +39,3 @@ case class AppiaAd(
     impressionTrackingURL: String,
     bidRate: Double,
     rating: Double)
-
-case class CollectionRecommendations(items: CollectionRecommendation)
-
-case class CollectionRecommendation(
-    _id: String,
-    name: String,
-    description: String,
-    packages: Seq[String])
-
-case class CollectionSponsored(items: Seq[UserConfigCollectionItem])

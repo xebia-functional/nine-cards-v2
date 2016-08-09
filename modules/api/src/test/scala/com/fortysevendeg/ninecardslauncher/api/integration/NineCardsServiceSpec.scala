@@ -277,17 +277,6 @@ class NineCardsServiceSpec
           case Answer(r) => r.data must beSome[GooglePlayRecommendation].which(_.items must have size 6)
         }
       }
-
-    "return the CollectionSponsored for a getSponsoredCollections get call" in
-      new NineCardsServiceScope {
-
-        val result =
-          apiRecommendationService.getSponsoredCollections(Seq.empty).run.run
-
-        result must beLike {
-          case Answer(r) => r.data must beSome[CollectionSponsored].which(_.items must have size 3)
-        }
-      }
   }
 
 }

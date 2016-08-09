@@ -12,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.AppDockType
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServices, CallsServicesException}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
@@ -77,9 +76,6 @@ trait DeviceProcessSpecification
       Service(Task(Result.answer(applications)))
 
     val mockApiServices = mock[ApiServices]
-
-    mockApiServices.googlePlaySimplePackages(any)(any) returns
-      Service(Task(Result.answer(GooglePlaySimplePackagesResponse(statusCodeOk, GooglePlaySimplePackages(Seq.empty, Seq.empty)))))
 
     mockApiServices.googlePlayPackages(any)(any) returns
       Service(Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))

@@ -268,15 +268,6 @@ trait DeviceProcessData
       className = className3,
       path = path3))
 
-  val googlePlaySimplePackageNoCached = GooglePlaySimplePackage(
-    packageName = packageName4,
-    appType = "APP",
-    appCategory = "SOCIAL",
-    starRating = 4.5,
-    numDownloads = "+100.000",
-    ratingCount = 5000,
-    commentCount = 40000)
-
   val requestConfig = RequestConfig("fake-device-id", "fake-token", Some("fake-android-token"))
 
   val packageNameForCreateImage = "com.example"
