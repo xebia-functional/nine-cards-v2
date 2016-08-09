@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GenericUiContext, UiC
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -34,14 +35,14 @@ class WorkSpaceButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   val padding = resGetDimensionPixelSize(R.dimen.padding_small)
 
-  private[this] val content = Option(findView(TR.workspace_moment_icon_content))
+  private[this] lazy val content = findView(TR.workspace_moment_icon_content)
 
-  private[this] val title = Option(findView(TR.workspace_moment_title))
+  private[this] lazy val title = findView(TR.workspace_moment_title)
 
-  private[this] val icon = Option(findView(TR.workspace_moment_icon))
+  private[this] lazy val icon = findView(TR.workspace_moment_icon)
 
-  def init(t: WorkSpaceButtonType): Ui[Any] = t match {
-    case WorkSpaceAppMomentButton => title <~ tvColorResource(R.color.menu_apps_moment_item_title)
+  def init(t: WorkSpaceButtonType)(implicit theme: NineCardsTheme): Ui[Any] = t match {
+    case WorkSpaceAppMomentButton => title <~ tvColor(theme.get(DrawerTextColor))
     case WorkSpaceActionWidgetButton =>
       (this <~ vBlankBackground) ~
         (title <~ tvColorResource(R.color.widgets_text))

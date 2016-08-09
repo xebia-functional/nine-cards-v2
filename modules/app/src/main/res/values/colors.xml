@@ -68,14 +68,9 @@
     <color name="divider_color_search_box">#1f000000</color>
 
     <!-- Menu -->
-    <color name="background_menu">#ffffff</color>
     <color name="background_menu_header">#3F51B5</color>
-    <color name="background_menu_content">#29000000</color>
     <color name="text_menu_name">#ffffff</color>
     <color name="text_menu_email">#b5ffffff</color>
-
-    <!-- Menu Apps Moment -->
-    <color name="menu_apps_moment_item_title">#292929</color>
 
     <!-- WorkSpace -->
     <color name="collection_workspace_button_item_title">#ffffff</color>
@@ -128,7 +123,6 @@
     <color name="background_icon_collection_detail">#4bffffff</color>
     <color name="text_tab_color_default">#77ffffff</color>
     <color name="text_tab_color_selected">#ffffff</color>
-    <color name="text_empty_collection">#ffffff</color>
 
     <color name="actions_bar_background">#ffffff</color>
     <color name="actions_bar_default">#727272</color>
@@ -156,7 +150,6 @@
     <!-- Contact Info Dialog -->
     <color name="divider_color_info_dialog_no_alpha">#00d6d6d6</color>
     <color name="divider_color_info_dialog">#d6d6d6</color>
-    <color name="text_selected_color_dialog">#4285F4</color>
     <color name="color_selected_color_dialog">#ffffff</color>
     <color name="text_item_value">#000000</color>
     <color name="text_item_category">#89000000</color>
@@ -180,7 +173,6 @@
     <color name="item_list_popup_moments_menu">#747474</color>
 
     <!-- Error Dialog -->
-    <color name="error_dialog_text">#33000000</color>
     <color name="error_dialog_text_button">#ffffff</color>
 
     <!-- Theme Light -->

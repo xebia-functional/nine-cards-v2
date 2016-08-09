@@ -79,11 +79,11 @@ trait ThemeProcessSpecification
 class ThemeProcessImplSpec
   extends ThemeProcessSpecification {
 
-  "getSelectedTheme" should {
+  "getTheme" should {
 
     "return a valid NineCardsTheme object for a valid request" in
       new ThemeProcessScope with ValidFileUtilsResponses {
-        val result = themeProcess.getSelectedTheme(mockContextSupport).run.run
+        val result = themeProcess.getTheme("")(mockContextSupport).run.run
 
         result must beLike {
           case Answer(theme) =>
@@ -95,7 +95,7 @@ class ThemeProcessImplSpec
 
     "return a ThemeException if the JSON is not valid" in
       new ThemeProcessScope with WrongJsonFileUtilsResponses {
-        val result = themeProcess.getSelectedTheme(mockContextSupport).run.run
+        val result = themeProcess.getTheme("")(mockContextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ThemeException]
@@ -105,7 +105,7 @@ class ThemeProcessImplSpec
 
     "return a ThemeException if a wrong theme style type is included in the JSON" in
       new ThemeProcessScope with WrongThemeStyleTypeFileUtilsResponses {
-        val result = themeProcess.getSelectedTheme(mockContextSupport).run.run
+        val result = themeProcess.getTheme("")(mockContextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ThemeException]
@@ -115,7 +115,7 @@ class ThemeProcessImplSpec
 
     "return a ThemeException if a wrong theme style color is included in the JSON" in
       new ThemeProcessScope with WrongThemeStyleColorFileUtilsResponses {
-        val result = themeProcess.getSelectedTheme(mockContextSupport).run.run
+        val result = themeProcess.getTheme("")(mockContextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ThemeException]
@@ -125,7 +125,7 @@ class ThemeProcessImplSpec
 
     "return a AssetException if getJsonFromFile throws a exception" in
       new ThemeProcessScope with ErrorFileUtilsResponses {
-        val result = themeProcess.getSelectedTheme(mockContextSupport).run.run
+        val result = themeProcess.getTheme("")(mockContextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[AssetException]
