@@ -1,9 +1,9 @@
 package com.fortysevendeg.repository.card
 
 import android.net.Uri
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
@@ -13,14 +13,12 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
-
 import scala.language.postfixOps
 
 trait CardRepositorySpecification
   extends Specification
-  with DisjunctionMatchers
-  with Mockito {
+    with DisjunctionMatchers
+    with Mockito {
 
   trait CardRepositoryScope
     extends Scope {
@@ -28,7 +26,7 @@ trait CardRepositorySpecification
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
 
     lazy val uriCreator = mock[UriCreator]
-    
+
     lazy val cardRepository = new CardRepository(contentResolverWrapper, uriCreator)
 
     lazy val mockUri = mock[Uri]
@@ -60,13 +58,13 @@ trait CardRepositorySpecification
       uri = mockUri,
       id = testCardId,
       projection = allFields)(
-        f = getEntityFromCursor(cardEntityFromCursor)) returns Some(cardEntity)
+      f = getEntityFromCursor(cardEntityFromCursor)) returns Some(cardEntity)
 
     contentResolverWrapper.findById(
       uri = mockUri,
       id = testNonExistingCardId,
       projection = allFields)(
-        f = getEntityFromCursor(cardEntityFromCursor)) returns None
+      f = getEntityFromCursor(cardEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -74,7 +72,7 @@ trait CardRepositorySpecification
       where = s"$collectionId = ?",
       whereParams = Seq(testCollectionId.toString),
       orderBy = s"${CardEntity.position} asc")(
-        f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
+      f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -82,7 +80,7 @@ trait CardRepositorySpecification
       where = s"$collectionId = ?",
       whereParams = Seq(testNonExistingCollectionId.toString),
       orderBy = s"${CardEntity.position} asc")(
-        f = getListFromCursor(cardEntityFromCursor)) returns Seq.empty
+      f = getListFromCursor(cardEntityFromCursor)) returns Seq.empty
 
     contentResolverWrapper.updateById(
       uri = mockUri,
@@ -130,7 +128,7 @@ trait CardRepositorySpecification
       uri = mockUri,
       id = testCardId,
       projection = allFields)(
-        f = getEntityFromCursor(cardEntityFromCursor)) throws contentResolverException
+      f = getEntityFromCursor(cardEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -138,7 +136,7 @@ trait CardRepositorySpecification
       where = s"$collectionId = ?",
       whereParams = Seq(testCollectionId.toString),
       orderBy = s"${CardEntity.position} asc")(
-        f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
+      f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.updateById(
       uri = mockUri,
@@ -162,7 +160,7 @@ trait CardRepositorySpecification
 
 trait CardMockCursor
   extends MockCursor
-  with CardRepositoryTestData {
+    with CardRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, cardSeq map (_.id), IntDataType),
@@ -181,7 +179,7 @@ trait CardMockCursor
 
 trait EmptyCardMockCursor
   extends MockCursor
-  with CardRepositoryTestData {
+    with CardRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -209,10 +207,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run.run
+          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).value.run
 
           result must beLike {
-            case Answer(cardResult) =>
+            case Xor.Right(cardResult) =>
               cardResult.id shouldEqual testCardId
               cardResult.data.intent shouldEqual testIntent
           }
@@ -222,17 +220,15 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).run.run
+          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
+
+
 
     "deleteCards" should {
 
@@ -240,10 +236,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.deleteCards().run.run
+          val result = cardRepository.deleteCards().value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -252,14 +248,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.deleteCards().run.run
+          val result = cardRepository.deleteCards().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -270,10 +262,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.deleteCard(card = card).run.run
+          val result = cardRepository.deleteCard(card = card).value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -282,14 +274,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.deleteCard(card = card).run.run
+          val result = cardRepository.deleteCard(card = card).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -300,10 +288,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.findCardById(id = testCardId).run.run
+          val result = cardRepository.findCardById(id = testCardId).value.run
 
           result must beLike {
-            case Answer(maybeCard) =>
+            case Xor.Right(maybeCard) =>
               maybeCard must beSome[Card].which { card =>
                 card.id shouldEqual testCardId
                 card.data.intent shouldEqual testIntent
@@ -315,10 +303,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.findCardById(id = testNonExistingCardId).run.run
+          val result = cardRepository.findCardById(id = testNonExistingCardId).value.run
 
           result must beLike {
-            case Answer(maybeCard) =>
+            case Xor.Right(maybeCard) =>
               maybeCard must beNone
           }
         }
@@ -327,14 +315,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.findCardById(id = testCardId).run.run
+          val result = cardRepository.findCardById(id = testCardId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -345,10 +329,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run.run
+          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).value.run
 
           result must beLike {
-            case Answer(cards) =>
+            case Xor.Right(cards) =>
               cards shouldEqual cardSeq
           }
         }
@@ -357,10 +341,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = testNonExistingCollectionId).run.run
+          val result = cardRepository.fetchCardsByCollection(collectionId = testNonExistingCollectionId).value.run
 
           result must beLike {
-            case Answer(cards) =>
+            case Xor.Right(cards) =>
               cards should beEmpty
           }
         }
@@ -369,14 +353,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).run.run
+          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -387,10 +367,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidAllCardsRepositoryResponses {
 
-          val result = cardRepository.fetchCards.run.run
+          val result = cardRepository.fetchCards.value.run
 
           result must beLike {
-            case Answer(cards) =>
+            case Xor.Right(cards) =>
               cards shouldEqual cardSeq
           }
         }
@@ -399,14 +379,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorAllCardsRepositoryResponses {
 
-          val result = cardRepository.fetchCards.run.run
+          val result = cardRepository.fetchCards.value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -417,10 +393,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.updateCard(card = card).run.run
+          val result = cardRepository.updateCard(card = card).value.run
 
           result must beLike {
-            case Answer(updated) =>
+            case Xor.Right(updated) =>
               updated shouldEqual 1
           }
         }
@@ -429,14 +405,10 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.updateCard(card = card).run.run
+          val result = cardRepository.updateCard(card = card).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
