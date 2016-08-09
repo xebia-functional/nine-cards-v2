@@ -314,8 +314,6 @@
 
     <string name="themesDark">Oscuro</string>
     <string name="themesLight">Claro</string>
-    <string name="themesMaterial">Material</string>
-    <string name="themes9Cards">9Cards</string>
 
     <string name="googleLogoTitle">Logo de Google</string>
     <string name="googleLogoSummary">Resumen de Logo de Google</string>

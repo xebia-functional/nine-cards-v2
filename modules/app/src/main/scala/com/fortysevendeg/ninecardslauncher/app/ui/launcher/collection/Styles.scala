@@ -1,16 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
 
-import android.widget.{ImageView, LinearLayout}
+import android.content.res.ColorStateList
+import android.support.design.widget.NavigationView
+import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkspaceItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
@@ -53,5 +52,12 @@ trait Styles {
     wimPopulate(resGetColor(R.color.collection_fab_button_item_edit_moment),
       R.drawable.fab_menu_icon_edit_moment,
       R.string.editMoment)
+
+  def navigationViewStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[NavigationView] =
+    Tweak[NavigationView] { view =>
+      view.setBackgroundColor(theme.get(DrawerBackgroundColor))
+      view.setItemTextColor(ColorStateList.valueOf(theme.get(DrawerTextColor)))
+      view.setItemIconTintList(ColorStateList.valueOf(theme.get(DrawerIconColor)))
+    }
 
 }

@@ -23,6 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
@@ -70,7 +71,7 @@ trait CollectionsUiActions
 
   lazy val drawerLayout = Option(findView(TR.launcher_drawer_layout))
 
-  lazy val navigationView = Option(findView(TR.launcher_navigation_view))
+  lazy val navigationView = findView(TR.launcher_navigation_view)
 
   lazy val menuName = Option(findView(TR.menu_name))
 
@@ -120,10 +121,12 @@ trait CollectionsUiActions
 
   def initCollectionsUi: Ui[Any] =
     (drawerLayout <~ dlStatusBarBackground(R.color.primary)) ~
-      (navigationView <~ nvNavigationItemSelectedListener(itemId => {
-        (goToMenuOption(itemId) ~ closeMenu()).run
-        true
-      })) ~
+      (navigationView <~
+        navigationViewStyle <~
+        nvNavigationItemSelectedListener(itemId => {
+          (goToMenuOption(itemId) ~ closeMenu()).run
+          true
+        })) ~
       (paginationPanel <~ On.longClick((workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
       (topBarPanel <~ tblInit) ~
       (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
@@ -151,7 +154,9 @@ trait CollectionsUiActions
         closeCollectionMenu() ~~ Ui(presenter.goToWidgets())
       }) ~
       (menuLauncherSettings <~ On.click {
-        closeCollectionMenu() ~~ uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
+        closeCollectionMenu() ~~ uiStartIntentForResult(
+          intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
+          result = goToPreferences)
       })
 
   def showEditCollection(collection: Collection): Ui[Any] = {
@@ -185,7 +190,7 @@ trait CollectionsUiActions
       (menuAvatar <~
         ((maybeAvatarUrl, maybeName) match {
           case (Some(url), _) => ivUri(url)
-          case (_, Some(name)) => ivSrc(new CharDrawable(name.substring(0, 1).toUpperCase))
+          case (_, Some(name)) => ivSrc(CharDrawable(name.substring(0, 1).toUpperCase))
           case _ => ivBlank
         }) <~
         menuAvatarStyle) ~

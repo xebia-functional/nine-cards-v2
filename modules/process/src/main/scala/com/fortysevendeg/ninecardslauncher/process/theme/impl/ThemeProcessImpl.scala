@@ -19,10 +19,8 @@ class ThemeProcessImpl
 
   val fileUtils = new FileUtils()
 
-  val defaultTheme = "theme_light"
-
-  override def getSelectedTheme(implicit context: ContextSupport) = for {
-    json <- getJsonFromThemeFile(defaultTheme)
+  override def getTheme(themeFile: String)(implicit context: ContextSupport) = for {
+    json <- getJsonFromThemeFile(themeFile)
     theme <- getNineCardsThemeFromJson(json)
   } yield theme
 

@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -20,7 +21,7 @@ case class AppsAdapter(
   var apps: IterableApps,
   clickListener: (App) => Unit,
   longClickListener: Option[(View, App) => Unit])
-  (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_])
+  (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[AppsIterableHolder]
   with FastScrollerListener
   with Closeable {
@@ -59,7 +60,7 @@ case class AppsAdapter(
 case class AppsIterableHolder(
   content: ViewGroup,
   clickListener: (App) => Unit,
-  longClickListener: Option[(View, App) => Unit])(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
+  longClickListener: Option[(View, App) => Unit])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -69,7 +70,7 @@ case class AppsIterableHolder(
 
   def bind(app: App): Ui[_] =
     (icon <~ ivSrcByPackageName(Some(app.packageName), app.name)) ~
-      (name <~ tvText(app.name)) ~
+      (name <~ tvText(app.name) + tvColor(theme.get(DrawerTextColor))) ~
       (content <~
         On.click {
           Ui(clickListener(app))

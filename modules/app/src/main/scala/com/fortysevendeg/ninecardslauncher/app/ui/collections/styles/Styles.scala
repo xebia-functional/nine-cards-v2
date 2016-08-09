@@ -34,9 +34,6 @@ import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 
 trait Styles {
 
-  def rootStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[FrameLayout] =
-    vBackgroundColor(theme.get(CollectionDetailBackgroundColor))
-
   def tabsStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[SlidingTabLayout] =
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
@@ -75,12 +72,12 @@ trait CollectionAdapterStyles {
     Tweak[CardView] { view =>
       view.getLayoutParams.height = heightCard
     } +
-      cvCardBackgroundColor(theme.get(CollectionDetailCardBackgroundColor)) +
+      cvCardBackgroundColor(theme.get(CardBackgroundColor)) +
       flForeground(createBackground) +
       vDisableHapticFeedback
 
   private[this] def createBackground(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable = {
-    val color = theme.get(CollectionDetailCardBackgroundPressedColor)
+    val color = theme.get(CardBackgroundPressedColor)
     Lollipop ifSupportedThen {
       new RippleDrawable(
         new ColorStateList(Array(Array()), Array(color)),
@@ -104,7 +101,7 @@ trait CollectionAdapterStyles {
       case NoInstalledAppCardType =>
         tvColor(colorAllNotInstalled)
       case _ =>
-        tvColor(theme.get(CollectionDetailTextCardColor))
+        tvColor(theme.get(CardTextColor))
     }
 
   def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) =

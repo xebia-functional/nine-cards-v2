@@ -1,34 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/menu_1"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/menu_collections"
+            android:icon="@drawable/menu_icon_collections"
+            android:title="@string/collectionsTitle"/>
 
-    <item
-        android:id="@+id/menu_collections"
-        android:icon="@drawable/menu_icon_collections"
-        android:title="@string/collectionsTitle"/>
+        <item
+            android:id="@+id/menu_moments"
+            android:icon="@drawable/menu_icon_moments"
+            android:title="@string/momentsTitle"/>
 
-    <item
-        android:id="@+id/menu_moments"
-        android:icon="@drawable/menu_icon_moments"
-        android:title="@string/momentsTitle"/>
+        <item
+            android:id="@+id/menu_profile"
+            android:icon="@drawable/menu_icon_profile"
+            android:title="@string/profileTitle"/>
+    </group>
 
-    <item
-        android:id="@+id/menu_profile"
-        android:icon="@drawable/menu_icon_profile"
-        android:title="@string/profileTitle"/>
+    <group
+        android:id="@+id/menu_2"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/menu_send_feedback"
+            android:title="@string/sendFeedbackTitle"
+            android:visible="true"/>
 
-    <item
-        android:title="@string/configurationTitle"
-        android:showAsAction="ifRoom">
-        <menu>
-            <item
-                android:id="@+id/menu_send_feedback"
-                android:title="@string/sendFeedbackTitle"/>
-
-            <item
-                android:id="@+id/menu_help"
-                android:title="@string/helpTitle"/>
-
-        </menu>
-    </item>
+        <item
+            android:id="@+id/menu_help"
+            android:title="@string/helpTitle"
+            android:visible="true"/>
+    </group>
 
 </menu>

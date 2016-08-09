@@ -2,6 +2,7 @@
 
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/public_collections_item_layout"
     style="@style/PublicCollectionsItemRoot">
 
     <LinearLayout

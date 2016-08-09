@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppDockType, ContactDockType}
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{AppDrawerPressedColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DockPressedColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -107,7 +107,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   private[this] def populate(position: Int)
     (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Tweak[TintableImageView] =
-    tivPressedColor(theme.get(AppDrawerPressedColor)) +
+    tivPressedColor(theme.get(DockPressedColor)) +
       vSetPosition(position) +
       (dockApps.lift(position) map { app =>
         (app.dockType match {

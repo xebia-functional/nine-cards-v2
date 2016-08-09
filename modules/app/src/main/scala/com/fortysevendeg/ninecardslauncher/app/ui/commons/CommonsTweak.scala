@@ -154,4 +154,6 @@ object ExtraTweaks {
 
   def sSelection(position: Int) = Tweak[Spinner](_.setSelection(position))
 
+  def tvHintColor(color: Int): Tweak[TextView] = Tweak[TextView](_.setHintTextColor(color))
+
 }
