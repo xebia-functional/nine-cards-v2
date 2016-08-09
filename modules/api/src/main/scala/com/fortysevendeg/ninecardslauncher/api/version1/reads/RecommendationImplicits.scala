@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.api.reads
+package com.fortysevendeg.ninecardslauncher.api.version1.reads
 
-import com.fortysevendeg.ninecardslauncher.api.model._
+import com.fortysevendeg.ninecardslauncher.api.version1.model._
 import GooglePlayImplicits._
 import UserConfigImplicits._
 import play.api.libs.json._

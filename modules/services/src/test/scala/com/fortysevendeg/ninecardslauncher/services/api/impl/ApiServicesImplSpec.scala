@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.model.{GooglePlayPackage => ApiGooglePlayPackage, GooglePlayPackages => ApiGooglePlayPackages, GooglePlayRecommendation => ApiGooglePlayRecommendation, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, SharedCollectionList => ApiSharedCollectionList, User => ApiUser, UserConfig => ApiUserConfig}
-import com.fortysevendeg.ninecardslauncher.api.services._
+import com.fortysevendeg.ninecardslauncher.api.version1.model.{GooglePlayPackage => ApiGooglePlayPackage, GooglePlayPackages => ApiGooglePlayPackages, GooglePlayRecommendation => ApiGooglePlayRecommendation, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, SharedCollectionList => ApiSharedCollectionList, User => ApiUser, UserConfig => ApiUserConfig}
+import com.fortysevendeg.ninecardslauncher.api.version1.services._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._

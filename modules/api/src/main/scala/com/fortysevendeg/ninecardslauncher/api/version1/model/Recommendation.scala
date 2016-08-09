@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.api.model
+package com.fortysevendeg.ninecardslauncher.api.version1.model
 
 case class RecommendationRequest(
     collectionId: Option[String],

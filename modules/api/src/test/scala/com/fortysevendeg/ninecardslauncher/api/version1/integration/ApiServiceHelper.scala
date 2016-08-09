@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.api.integration
+package com.fortysevendeg.ninecardslauncher.api.version1.integration
 
-import com.fortysevendeg.ninecardslauncher.api.model._
+import com.fortysevendeg.ninecardslauncher.api.version1.model.{AdsRequest, RecommendationRequest, ShareCollection}
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 

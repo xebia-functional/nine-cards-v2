@@ -1,20 +1,19 @@
-package com.fortysevendeg.ninecardslauncher.api.integration
+package com.fortysevendeg.ninecardslauncher.api.version1.integration
 
-import com.fortysevendeg.ninecardslauncher.api.integration.ApiServiceHelper._
-import com.fortysevendeg.ninecardslauncher.api.model._
-import com.fortysevendeg.ninecardslauncher.api.services.{ApiGooglePlayService, ApiRecommendationService, ApiSharedCollectionsService, ApiUserConfigService}
-import com.fortysevendeg.rest.client.http.{HttpClientException, OkHttpClient}
-import com.fortysevendeg.rest.client.messages.ServiceClientResponse
-import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}
+import ApiServiceHelper._
+import com.fortysevendeg.ninecardslauncher.api.version1.model._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.GooglePlayImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.RecommendationImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.SharedCollectionImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserConfigImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.services.{ApiGooglePlayService, ApiRecommendationService, ApiSharedCollectionsService, ApiUserConfigService}
+import com.fortysevendeg.rest.client.ServiceClient
+import com.fortysevendeg.rest.client.http.OkHttpClient
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
 import org.specs2.specification._
 import org.specs2.specification.core.Fragments
-import rapture.core.{Answer, Result}
-import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.RecommendationImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
+import rapture.core.Answer
 
 trait NineCardsServiceSpecification
   extends Specification

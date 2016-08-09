@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.model._
+import com.fortysevendeg.ninecardslauncher.api.version1.model._
 
 import scala.util.Random
 

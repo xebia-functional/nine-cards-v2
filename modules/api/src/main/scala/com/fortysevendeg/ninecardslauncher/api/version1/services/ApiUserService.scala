@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.api.services
+package com.fortysevendeg.ninecardslauncher.api.version1.services
 
-import com.fortysevendeg.ninecardslauncher.api.model.{AuthData, Installation, User}
+import com.fortysevendeg.ninecardslauncher.api.version1.model.{AuthData, Installation, User}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.rest.client.http.HttpClientException
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse

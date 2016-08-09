@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.di
 import android.content.res.Resources
 import android.support.v4.content.ContextCompat
 import com.facebook.stetho.okhttp3.StethoInterceptor
-import com.fortysevendeg.ninecardslauncher.api.services._
+import com.fortysevendeg.ninecardslauncher.api.version1.services._
 import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport

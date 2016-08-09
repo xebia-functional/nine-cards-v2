@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.api.integration
+package com.fortysevendeg.ninecardslauncher.api.version1.integration
 
 import org.mockserver.integration.ClientAndServer._
 import org.mockserver.logging.Logging

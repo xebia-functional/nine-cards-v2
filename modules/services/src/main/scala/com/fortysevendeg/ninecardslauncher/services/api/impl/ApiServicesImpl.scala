@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
-import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.RecommendationImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
-import com.fortysevendeg.ninecardslauncher.api.services._
+import com.fortysevendeg.ninecardslauncher.api.version1.model.PackagesRequest
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.GooglePlayImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.RecommendationImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.SharedCollectionImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserConfigImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.services._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
