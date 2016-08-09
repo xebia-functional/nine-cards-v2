@@ -32,9 +32,6 @@ class AppRepository(
 
   val game = "GAME"
 
-  implicit val exceptionConverter: (Throwable => RepositoryException) =
-    ex => RepositoryException(ex.getMessage, Some(ex))
-
   def addApp(data: AppData): CatsService[RepositoryException, App] =
     CatsService {
       Task {

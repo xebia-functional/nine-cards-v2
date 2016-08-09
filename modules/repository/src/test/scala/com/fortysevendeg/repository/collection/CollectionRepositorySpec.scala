@@ -1,6 +1,7 @@
 package com.fortysevendeg.repository.collection
 
 import android.net.Uri
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
@@ -13,12 +14,11 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 trait CollectionRepositorySpecification
   extends Specification
-  with DisjunctionMatchers
-  with Mockito {
+    with DisjunctionMatchers
+    with Mockito {
 
   trait CollectionRepositoryScope
     extends Scope {
@@ -58,13 +58,13 @@ trait CollectionRepositorySpecification
       uri = mockUri,
       id = testCollectionId,
       projection = allFields)(
-        f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
+      f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
 
     contentResolverWrapper.findById(
       uri = mockUri,
       id = testNonExistingCollectionId,
       projection = allFields)(
-        f = getEntityFromCursor(collectionEntityFromCursor)) returns None
+      f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -72,7 +72,7 @@ trait CollectionRepositorySpecification
       where = "",
       whereParams = Seq.empty,
       orderBy = s"$position asc")(
-        f = getListFromCursor(collectionEntityFromCursor)) returns collectionEntitySeq
+      f = getListFromCursor(collectionEntityFromCursor)) returns collectionEntitySeq
 
     contentResolverWrapper.fetch(
       uri = mockUri,
@@ -80,7 +80,7 @@ trait CollectionRepositorySpecification
       where = s"$position = ?",
       whereParams = Seq(testPosition.toString),
       orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
+      f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
 
     contentResolverWrapper.fetch(
       uri = mockUri,
@@ -88,7 +88,7 @@ trait CollectionRepositorySpecification
       where = s"$position = ?",
       whereParams = Seq(testNonExistingPosition.toString),
       orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor)) returns None
+      f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
     contentResolverWrapper.fetch(
       uri = mockUri,
@@ -96,7 +96,7 @@ trait CollectionRepositorySpecification
       where = s"$originalSharedCollectionId = ?",
       whereParams = Seq(testSharedCollectionId),
       orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
+      f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
 
     contentResolverWrapper.fetch(
       uri = mockUri,
@@ -104,7 +104,7 @@ trait CollectionRepositorySpecification
       where = s"$originalSharedCollectionId = ?",
       whereParams = Seq(testNonExistingSharedCollectionId),
       orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor)) returns None
+      f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
     contentResolverWrapper.updateById(
       uri = mockUri,
@@ -141,7 +141,7 @@ trait CollectionRepositorySpecification
       uri = mockUri,
       id = testCollectionId,
       projection = allFields)(
-        f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
+      f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -149,7 +149,7 @@ trait CollectionRepositorySpecification
       where = "",
       whereParams = Seq.empty,
       orderBy = s"$position asc")(
-        f = getListFromCursor(collectionEntityFromCursor)) throws contentResolverException
+      f = getListFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       uri = mockUri,
@@ -157,7 +157,7 @@ trait CollectionRepositorySpecification
       where = s"$position = ?",
       whereParams = Seq(testPosition.toString),
       orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
+      f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       uri = mockUri,
@@ -165,7 +165,7 @@ trait CollectionRepositorySpecification
       where = s"$originalSharedCollectionId = ?",
       whereParams = Seq(testSharedCollectionId),
       orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
+      f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.updateById(
       uri = mockUri,
@@ -178,7 +178,7 @@ trait CollectionRepositorySpecification
 
 trait CollectionMockCursor
   extends MockCursor
-  with CollectionRepositoryTestData {
+    with CollectionRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, collectionSeq map (_.id), IntDataType),
@@ -198,7 +198,7 @@ trait CollectionMockCursor
 
 trait EmptyCollectionMockCursor
   extends MockCursor
-  with CollectionRepositoryTestData {
+    with CollectionRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -227,10 +227,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.addCollection(data = createCollectionData).run.run
+          val result = collectionRepository.addCollection(data = createCollectionData).value.run
 
           result must beLike {
-            case Answer(collection) =>
+            case Xor.Right(collection) =>
               collection.id shouldEqual testCollectionId
               collection.data.name shouldEqual testName
           }
@@ -240,14 +240,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.addCollection(data = createCollectionData).run.run
+          val result = collectionRepository.addCollection(data = createCollectionData).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -258,10 +254,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.deleteCollections().run.run
+          val result = collectionRepository.deleteCollections().value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -270,14 +266,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.deleteCollections().run.run
+          val result = collectionRepository.deleteCollections().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -288,10 +280,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.deleteCollection(collection).run.run
+          val result = collectionRepository.deleteCollection(collection).value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -300,14 +292,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.deleteCollection(collection).run.run
+          val result = collectionRepository.deleteCollection(collection).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -318,10 +306,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.findCollectionById(id = testCollectionId).run.run
+          val result = collectionRepository.findCollectionById(id = testCollectionId).value.run
 
           result must beLike {
-            case Answer(maybeCollection) =>
+            case Xor.Right(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
                 collection.data.name shouldEqual testName
@@ -332,10 +320,10 @@ class CollectionRepositorySpec
       "return None when a non-existing id is given" in
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
-          val result = collectionRepository.findCollectionById(id = testNonExistingCollectionId).run.run
+          val result = collectionRepository.findCollectionById(id = testNonExistingCollectionId).value.run
 
           result must beLike {
-            case Answer(maybeCollection) =>
+            case Xor.Right(maybeCollection) =>
               maybeCollection must beNone
           }
         }
@@ -344,14 +332,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.findCollectionById(id = testCollectionId).run.run
+          val result = collectionRepository.findCollectionById(id = testCollectionId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -362,10 +346,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).run.run
+          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).value.run
 
           result must beLike {
-            case Answer(maybeCollection) =>
+            case Xor.Right(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
                 collection.data.name shouldEqual testName
@@ -377,10 +361,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testNonExistingSharedCollectionId).run.run
+          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testNonExistingSharedCollectionId).value.run
 
           result must beLike {
-            case Answer(maybeCollection) =>
+            case Xor.Right(maybeCollection) =>
               maybeCollection must beNone
           }
         }
@@ -389,14 +373,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).run.run
+          val result = collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId = testSharedCollectionId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -407,10 +387,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).run.run
+          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).value.run
 
           result must beLike {
-            case Answer(maybeCollection) =>
+            case Xor.Right(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
                 collection.data.position shouldEqual testPosition
@@ -421,10 +401,10 @@ class CollectionRepositorySpec
       "return None when a non-existing position is given" in
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
-          val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).run.run
+          val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).value.run
 
           result must beLike {
-            case Answer(maybeCollection) =>
+            case Xor.Right(maybeCollection) =>
               maybeCollection must beNone
           }
         }
@@ -433,14 +413,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).run.run
+          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -451,10 +427,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchSortedCollections.run.run
+          val result = collectionRepository.fetchSortedCollections.value.run
 
           result must beLike {
-            case Answer(collections) =>
+            case Xor.Right(collections) =>
               collections shouldEqual collectionSeq
           }
         }
@@ -463,14 +439,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchSortedCollections.run.run
+          val result = collectionRepository.fetchSortedCollections.value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -481,10 +453,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.updateCollection(collection = collection).run.run
+          val result = collectionRepository.updateCollection(collection = collection).value.run
 
           result must beLike {
-            case Answer(updated) =>
+            case Xor.Right(updated) =>
               updated shouldEqual 1
           }
         }
@@ -493,14 +465,10 @@ class CollectionRepositorySpec
         new CollectionRepositoryScope
           with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.updateCollection(collection = collection).run.run
+          val result = collectionRepository.updateCollection(collection = collection).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }

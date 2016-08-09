@@ -27,9 +27,6 @@ class CardRepository(
 
   val cardNotificationUri = uriCreator.parse(cardUriNotificationString)
 
-  implicit val exceptionConverter: (Throwable => RepositoryException) =
-    ex => RepositoryException(ex.getMessage, Some(ex))
-
   def addCard(collectionId: Int, data: CardData): CatsService[RepositoryException, Card] =
     CatsService {
       Task {
