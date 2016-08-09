@@ -26,12 +26,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToClos
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
-
-import scala.language.postfixOps
 import macroid._
 
 import scala.language.postfixOps
@@ -164,7 +161,8 @@ trait CollectionUiActionsImpl
 
   override def showEmptyCollection(): Ui[Any] =
     (emptyCollectionMessage <~
-      tvText(messageText)) ~
+      tvText(messageText) <~
+      tvColor(theme.get(DrawerTextColor).alpha(0.8f))) ~
       (emptyCollectionView <~ vVisible) ~
       (recyclerView <~ vGone)
 
@@ -325,10 +323,8 @@ trait CollectionUiActionsImpl
 
   private[this] def startScroll(): Ui[_] =
     (statuses.canScroll, statuses.scrollType) match {
-      case (true, ScrollUp) =>
-        recyclerView <~ vScrollBy(0, spaceMove)
-      case (true, ScrollDown) =>
-        recyclerView <~ vScrollBy(0, 0)
+      case (true, ScrollUp) => recyclerView <~ vScrollBy(0, spaceMove)
+      case (true, ScrollDown) => Ui.nop
       case (false, ScrollUp) =>
         (recyclerView <~ vPadding(paddingSmall, paddingSmall, paddingSmall, paddingSmall)) ~
           (emptyCollectionView <~ vMargin(paddingDefault, paddingDefault, paddingDefault, paddingDefault))
