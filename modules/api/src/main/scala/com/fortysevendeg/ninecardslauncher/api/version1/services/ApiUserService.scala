@@ -41,9 +41,6 @@ class ApiUserService(serviceClient: ServiceClient) {
       reads = Some(reads))
   }
 
-  /**
-    * @deprecated v1
-    */
   def updateInstallation(
     installation: Installation,
     headers: Seq[(String, String)]
