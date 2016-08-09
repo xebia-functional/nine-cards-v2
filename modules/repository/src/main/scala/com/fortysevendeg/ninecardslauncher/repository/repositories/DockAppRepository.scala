@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toDockApp
 import com.fortysevendeg.ninecardslauncher.repository.model.{DockApp, DockAppData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{DockAppEntity, NineCardsUri}
@@ -25,10 +25,10 @@ class DockAppRepository(
 
   val dockAppNotificationUri = uriCreator.parse(dockAppUriNotificationString)
 
-  def addDockApp(data: DockAppData): ServiceDef2[DockApp, RepositoryException] =
-    Service {
+  def addDockApp(data: DockAppData): CatsService[RepositoryException, DockApp] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
@@ -41,10 +41,10 @@ class DockAppRepository(
       }
     }
 
-  def addDockApps(datas: Seq[DockAppData]): ServiceDef2[Seq[DockApp], RepositoryException] =
-    Service {
+  def addDockApps(datas: Seq[DockAppData]): CatsService[RepositoryException, Seq[DockApp]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
 
           val values = datas map createMapValues
 
@@ -61,10 +61,10 @@ class DockAppRepository(
       }
     }
 
-  def deleteDockApps(where: String = ""): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def deleteDockApps(where: String = ""): CatsService[RepositoryException,Int] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = dockAppUri,
             where = where,
@@ -73,10 +73,10 @@ class DockAppRepository(
       }
     }
 
-  def deleteDockApp(dockApp: DockApp): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def deleteDockApp(dockApp: DockApp): CatsService[RepositoryException,Int] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = dockAppUri,
             id = dockApp.id,
@@ -85,10 +85,10 @@ class DockAppRepository(
       }
     }
 
-  def findDockAppById(id: Int): ServiceDef2[Option[DockApp], RepositoryException] =
-    Service {
+  def findDockAppById(id: Int): CatsService[RepositoryException,Option[DockApp]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.findById(
             uri = dockAppUri,
             id = id,
@@ -100,10 +100,10 @@ class DockAppRepository(
   def fetchDockApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = s"${DockAppEntity.position} asc"): ServiceDef2[Seq[DockApp], RepositoryException] =
-    Service {
+    orderBy: String = s"${DockAppEntity.position} asc"): CatsService[RepositoryException, Seq[DockApp]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = dockAppUri,
             projection = allFields,
@@ -117,10 +117,10 @@ class DockAppRepository(
   def fetchIterableDockApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = s"${DockAppEntity.position} asc"): ServiceDef2[IterableCursor[DockApp], RepositoryException] =
-    Service {
+    orderBy: String = s"${DockAppEntity.position} asc"): CatsService[ RepositoryException,IterableCursor[DockApp]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
             uri = dockAppUri,
             projection = allFields,
@@ -131,10 +131,10 @@ class DockAppRepository(
       }
     }
 
-  def updateDockApp(item: DockApp): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def updateDockApp(item: DockApp): CatsService[ RepositoryException,Int] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = createMapValues(item.data)
 
           contentResolverWrapper.updateById(
@@ -146,10 +146,10 @@ class DockAppRepository(
       }
     }
 
-  def updateDockApps(items: Seq[DockApp]): ServiceDef2[Seq[Int], RepositoryException] =
-    Service {
+  def updateDockApps(items: Seq[DockApp]): CatsService[RepositoryException,Seq[Int]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = items map { item =>
             (item.id, createMapValues(item.data))
           }
