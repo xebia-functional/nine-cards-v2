@@ -11,6 +11,9 @@ class ApiUserConfigService(serviceClient: ServiceClient) {
 
   val prefixPathUserConfig = "/ninecards/userconfig"
 
+  /**
+    * @deprecated v1
+    */
   def getUserConfig(
     headers: Seq[(String, String)]
     )(implicit reads: Reads[UserConfig]): ServiceDef2[ServiceClientResponse[UserConfig], HttpClientException with ServiceClientException] =

@@ -10,26 +10,6 @@ trait ApiServiceHelper {
 
   val serviceOkHttpClient = new ServiceClient(new OkHttpClient, fakeBaseUrl)
 
-  def createUserConfigDevice(
-    deviceId: String = "",
-    deviceName: String = "",
-    collections: Seq[UserConfigCollection] = Seq.empty) =
-    UserConfigDevice(
-      deviceId = deviceId,
-      deviceName = deviceName,
-      collections = collections)
-
-  def createUserConfigGeoInfo(
-    homeMorning: Option[UserConfigUserLocation] = None,
-    homeNight: Option[UserConfigUserLocation] = None,
-    work: Option[UserConfigUserLocation] = None,
-    current: Option[UserConfigUserLocation] = None) =
-    UserConfigGeoInfo(
-      homeMorning = homeMorning,
-      homeNight = homeNight,
-      work = work,
-      current = current)
-
   def createShareCollection(
     sharedCollectionId: Option[String] = None,
     description: String = "",

@@ -11,9 +11,6 @@ trait MockServerService
     extends BeforeAfterEach {
 
   val userConfigIdFirst = "12345678"
-  val productId = "987654321"
-  val joinedById = "13579"
-  val testerValues = Map("key1" -> "value1", "key2" -> "value2")
   val packageName1 = "com.fortysevendeg.scala.android"
   val packageName2 = "com.fortysevendeg.android.scaladays"
 
@@ -22,20 +19,17 @@ trait MockServerService
   val sharedCollectionSize = 2
   val sharedCollectionType = "collectionType"
   val sharedCollectionCategory = "collectionCategory"
-  val sharedCollectionKeywords = "keyword1,keyword2"
 
   val userConfigPathPrefix = "/ninecards/userconfig"
   val sharedCollectionPathPrefix = "/ninecards/collections"
   val googlePlayPathPrefix = "/googleplay/package"
   val googlePlayPackagesPathPrefix = "/googleplay/packages/detailed"
-  val recommendationSponsoredPathPrefix = "/ninecards/collections/items/sponsored"
   val recommendationsPathPrefix = "/collections"
   val regexpPath = "[a-zA-Z0-9,\\.\\/]*"
   val jsonHeader = new Header("Content-Type", "application/json; charset=utf-8")
   val userConfigJson = "userConfig.json"
   val sharedCollectionJsonSingle = "sharedCollection.json"
   val sharedCollectionJsonList = "sharedCollectionList.json"
-  val sharedCollectionJsonSubscription = "sharedCollectionSubscription.json"
   val googlePlayPackageJsonSingle = "googlePlayPackage.json"
   val googlePlayPackageJsonList = "googlePlayPackageList.json"
   // TODO
@@ -86,27 +80,7 @@ trait SharedCollectionsServer {
   mockServer.when(
     request()
         .withMethod("GET")
-        .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(sharedCollectionJsonSingle)))
-
-  mockServer.when(
-    request()
-        .withMethod("GET")
         .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionType/$regexpPath"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(sharedCollectionJsonList)))
-
-  mockServer.when(
-    request()
-        .withMethod("GET")
-        .withPath(s"$sharedCollectionPathPrefix/search/$regexpPath"))
       .respond(
         response()
             .withStatusCode(200)
@@ -122,36 +96,6 @@ trait SharedCollectionsServer {
             .withStatusCode(200)
             .withHeader(jsonHeader)
             .withBody(loadJson(sharedCollectionJsonSingle)))
-
-  mockServer.when(
-    request()
-        .withMethod("POST")
-        .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst/rate/$regexpPath"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(sharedCollectionJsonSingle)))
-
-  mockServer.when(
-    request()
-        .withMethod("PUT")
-        .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst/subscribe"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(sharedCollectionJsonSubscription)))
-
-  mockServer.when(
-    request()
-        .withMethod("DELETE")
-        .withPath(s"$sharedCollectionPathPrefix/$sharedCollectionIdFirst/subscribe"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withBody(" "))
-
 }
 
 trait GooglePlayServer {

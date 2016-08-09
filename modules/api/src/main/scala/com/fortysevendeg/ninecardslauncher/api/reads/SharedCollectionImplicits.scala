@@ -11,7 +11,6 @@ object SharedCollectionImplicits {
   implicit val assetResponseReads = Json.reads[AssetResponse]
   implicit val sharedCollectionReads = Json.reads[SharedCollection]
   implicit val sharedCollectionListReads = Json.reads[SharedCollectionList]
-  implicit val sharedCollectionSubscriptionReads = Json.reads[SharedCollectionSubscription]
 
   implicit val sharedCollectionPackageWrites = Json.writes[SharedCollectionPackage]
   implicit val assetThumbResponseWrites = Json.writes[AssetThumbResponse]

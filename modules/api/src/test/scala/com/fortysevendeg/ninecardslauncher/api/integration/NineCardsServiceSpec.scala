@@ -68,52 +68,11 @@ class NineCardsServiceSpec
 
   "Shared Collections Service component with OkHttpClient" should {
 
-    "return the SharedCollection for a getSharedCollection get call" in
-      new NineCardsServiceScope {
-
-        val result =
-          apiSharedCollectionsService.getSharedCollection(sharedCollectionIdFirst, Seq.empty).run.run
-
-        result must beLike {
-          case Answer(r) => r.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
-        }
-      }
-
-    "return the SharedCollectionList for a getSharedCollectionList get call" in
-      new NineCardsServiceScope {
-
-        val result =
-          apiSharedCollectionsService.getSharedCollectionList(sharedCollectionType, 0, 0, Seq.empty).run.run
-
-        result must beLike {
-          case Answer(r) => r.data must beSome[SharedCollectionList].which { collectionList =>
-            collectionList.items must have size sharedCollectionSize
-            collectionList.items.headOption map (_.sharedCollectionId) must beSome(sharedCollectionIdFirst)
-            collectionList.items.lastOption map (_.sharedCollectionId) must beSome(sharedCollectionIdLast)
-          }
-        }
-      }
-
     "return the SharedCollectionList for a getSharedCollectionListByCategory get call" in
       new NineCardsServiceScope {
 
         val result =
           apiSharedCollectionsService.getSharedCollectionListByCategory(sharedCollectionType, sharedCollectionCategory, 0, 0, Seq.empty).run.run
-
-        result must beLike {
-          case Answer(r) => r.data must beSome[SharedCollectionList].which { collectionList =>
-            collectionList.items must have size sharedCollectionSize
-            collectionList.items.headOption map (_.sharedCollectionId) must beSome(sharedCollectionIdFirst)
-            collectionList.items.lastOption map (_.sharedCollectionId) must beSome(sharedCollectionIdLast)
-          }
-        }
-      }
-
-    "return the searchSharedCollection for a getSharedCollectionListByCategory get call" in
-      new NineCardsServiceScope {
-
-        val result =
-          apiSharedCollectionsService.searchSharedCollection(sharedCollectionKeywords, 0, 0, Seq.empty).run.run
 
         result must beLike {
           case Answer(r) => r.data must beSome[SharedCollectionList].which { collectionList =>
@@ -132,39 +91,6 @@ class NineCardsServiceSpec
 
         result must beLike {
           case Answer(r) => r.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
-        }
-      }
-
-    "return the SharedCollection for a rateSharedCollection post call" in
-      new NineCardsServiceScope {
-
-        val result =
-          apiSharedCollectionsService.rateSharedCollection(sharedCollectionIdFirst, 0.0, Seq.empty).run.run
-
-        result must beLike {
-          case Answer(r) => r.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
-        }
-      }
-
-    "return the SharedCollection for a subscribeSharedCollection put call" in
-      new NineCardsServiceScope {
-
-        val result =
-          apiSharedCollectionsService.subscribeSharedCollection(sharedCollectionIdFirst, Seq.empty).run.run
-
-        result must beLike {
-          case Answer(r) => r.data must beSome[SharedCollectionSubscription].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
-        }
-      }
-
-    "return the SharedCollection for a unsubscribeSharedCollection delete call" in
-      new NineCardsServiceScope {
-
-        val result =
-          apiSharedCollectionsService.unsubscribeSharedCollection(sharedCollectionIdFirst, Seq.empty).run.run
-
-        result must beLike {
-          case Answer(r) => r.data must beNone
         }
       }
 

@@ -12,6 +12,9 @@ class ApiUserService(serviceClient: ServiceClient) {
   val prefixPathUser = "/users"
   val prefixPathInstallation = "/installations"
 
+  /**
+    * @deprecated v1
+    */
   def login(
     user: User,
     headers: Seq[(String, String)]
@@ -23,6 +26,9 @@ class ApiUserService(serviceClient: ServiceClient) {
       body = user,
       reads = Some(reads))
 
+  /**
+    * @deprecated v1
+    */
   def linkAuthData(
     authData: AuthData,
     headers: Seq[(String, String)]
@@ -34,6 +40,9 @@ class ApiUserService(serviceClient: ServiceClient) {
       body = authData,
       reads = Some(reads))
 
+  /**
+    * @deprecated v1
+    */
   def createInstallation(
     installation: Installation,
     headers: Seq[(String, String)]
@@ -52,6 +61,9 @@ class ApiUserService(serviceClient: ServiceClient) {
       reads = Some(reads))
   }
 
+  /**
+    * @deprecated v1
+    */
   def updateInstallation(
     installation: Installation,
     headers: Seq[(String, String)]
