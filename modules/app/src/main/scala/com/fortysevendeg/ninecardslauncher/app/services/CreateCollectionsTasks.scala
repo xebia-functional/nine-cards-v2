@@ -58,7 +58,7 @@ trait CreateCollectionsTasks
       _ = setProcess(LoadingConfigProcess)
       _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))
-      momentSeq = device.data.moments map (_ map toMoment) getOrElse Seq.empty
+      momentSeq = device.data.moments map (_ map toSaveMomentRequest) getOrElse Seq.empty
       _ <- di.momentProcess.saveMoments(momentSeq)
       _ <- di.userProcess.updateUserDevice(device.data.deviceName, device.cloudId, deviceToken)
     } yield collections

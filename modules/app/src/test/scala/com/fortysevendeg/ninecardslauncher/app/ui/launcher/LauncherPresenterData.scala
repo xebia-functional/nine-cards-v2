@@ -43,21 +43,13 @@ trait LauncherPresenterData {
 
   val momentType = Option("HOME")
 
-  val momentCollection = Moment(
-    collectionId = Some(1),
-    timeslot = Seq(MomentTimeSlot(from = "from-1", to = "to-1", days = 0 to 4)),
-    wifi = Seq("wifi-1"),
-    headphone = true,
-    momentType = momentType map (NineCardsMoment(_)))
-
   val moment = Moment(
+    id = 1,
     collectionId = None,
     timeslot = Seq(MomentTimeSlot(from = "from-2", to = "to-2", days = 5 to 6)),
     wifi = Seq("wifi-2"),
     headphone = false,
     momentType = momentType map (NineCardsMoment(_)))
-
-  val moments = Seq(momentCollection, moment)
 
   val collection = Collection(
     id = collectionId,

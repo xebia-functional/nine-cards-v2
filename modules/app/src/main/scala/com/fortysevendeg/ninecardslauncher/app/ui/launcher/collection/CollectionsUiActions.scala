@@ -31,6 +31,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDraw
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
@@ -97,6 +98,10 @@ trait CollectionsUiActions
 
   lazy val topBarPanel = Option(findView(TR.launcher_top_bar_panel))
 
+  lazy val editWidgetsTopPanel = Option(findView(TR.launcher_edit_widgets_top_panel))
+
+  lazy val editWidgetsBottomPanel = Option(findView(TR.launcher_edit_widgets_bottom_panel))
+
   lazy val collectionActionsPanel = Option(findView(TR.launcher_collections_actions_panel))
 
   lazy val actionFragmentContent = Option(findView(TR.action_fragment_content))
@@ -124,6 +129,7 @@ trait CollectionsUiActions
       (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (menuCollectionRoot <~ vGone) ~
+      (editWidgetsBottomPanel <~ ewbInit) ~
       (workspaces <~
         lwsInitialize(presenter, theme) <~
         lwsListener(

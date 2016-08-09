@@ -11,7 +11,7 @@ trait WidgetProcess {
     * @return the Seq[Widget] of existing widgets
     * @throws WidgetException if there was an error getting the existing widgets
     */
-  def getWidgets: ServiceDef2[Seq[Widget], WidgetException]
+  def getWidgets: ServiceDef2[Seq[AppWidget], WidgetException]
 
   /**
     * Gets a widget by a given Id
@@ -20,7 +20,7 @@ trait WidgetProcess {
     * @return the Option[Widget] corresponding with the Id
     * @throws WidgetException if there was an error getting the widget
     */
-  def getWidgetById(widgetId: Int): ServiceDef2[Option[Widget], WidgetException]
+  def getWidgetById(widgetId: Int): ServiceDef2[Option[AppWidget], WidgetException]
 
   /**
     * Gets a widget by a given appWidgetId
@@ -29,7 +29,7 @@ trait WidgetProcess {
     * @return the Option[Widget] corresponding with the appWidgetId
     * @throws WidgetException if there was an error getting the widget
     */
-  def getWidgetByAppWidgetId(appWidgetId: Int): ServiceDef2[Option[Widget], WidgetException]
+  def getWidgetByAppWidgetId(appWidgetId: Int): ServiceDef2[Option[AppWidget], WidgetException]
 
   /**
     * Gets the existing widgets related with a given moment
@@ -38,16 +38,16 @@ trait WidgetProcess {
     * @return the Seq[Widget] of existing widgets related with the moment
     * @throws WidgetException if there was an error getting the existing widgets
     */
-  def getWidgetsByMoment(momentId: Int): ServiceDef2[Seq[Widget], WidgetException]
+  def getWidgetsByMoment(momentId: Int): ServiceDef2[Seq[AppWidget], WidgetException]
 
   /**
     * Adds a new widget
     *
     * @param addWidgetRequest includes the necessary data to create a new widget
-    * @return the new [[Widget]] added
+    * @return the new [[AppWidget]] added
     * @throws WidgetException if there was an error adding the new widget
     */
-  def addWidget(addWidgetRequest: AddWidgetRequest): ServiceDef2[Widget, WidgetException]
+  def addWidget(addWidgetRequest: AddWidgetRequest): ServiceDef2[AppWidget, WidgetException]
 
   /**
     * Adds a sequence of new widgets
@@ -56,27 +56,27 @@ trait WidgetProcess {
     * @return the Seq[Widget] of new widgets added
     * @throws WidgetException if there was an error adding the new widget
     */
-  def addWidgets(request: Seq[AddWidgetRequest]): ServiceDef2[Seq[Widget], WidgetException]
+  def addWidgets(request: Seq[AddWidgetRequest]): ServiceDef2[Seq[AppWidget], WidgetException]
 
   /**
     * Moves an existing widget in the workspace
     *
     * @param widgetId the Id of the Widget
     * @param moveWidgetRequest includes the new startX and startY coordenates
-    * @return the [[Widget]] with the new position
+    * @return the [[AppWidget]] with the new position
     * @throws WidgetException if there was an error finding the widget or moving it
     */
-  def moveWidget(widgetId: Int, moveWidgetRequest: MoveWidgetRequest): ServiceDef2[Widget, WidgetException]
+  def moveWidget(widgetId: Int, moveWidgetRequest: MoveWidgetRequest): ServiceDef2[AppWidget, WidgetException]
 
   /**
     * Resizes an existing widget in the workspace
     *
     * @param widgetId the Id of the Widget
     * @param resizeWidgetRequest includes the new spanX and spanY coordenates
-    * @return the [[Widget]] with the new position
+    * @return the [[AppWidget]] with the new position
     * @throws WidgetException if there was an error finding the widget or resizing it
     */
-  def resizeWidget(widgetId: Int, resizeWidgetRequest: ResizeWidgetRequest): ServiceDef2[Widget, WidgetException]
+  def resizeWidget(widgetId: Int, resizeWidgetRequest: ResizeWidgetRequest): ServiceDef2[AppWidget, WidgetException]
 
   /**
     * Delete all widgets in database

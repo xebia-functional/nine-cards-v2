@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Moment
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory, NineCardsMoment}
 
 case class UnformedApp(
   name: String,
@@ -37,10 +37,17 @@ case class FormedCollection(
    collectionType: CollectionType,
    icon: String,
    category: Option[NineCardCategory],
-   moment: Option[Moment])
+   moment: Option[FormedMoment])
 
 case class FormedItem(
   itemType: String,
   title: String,
   intent: String,
   uriImage: Option[String] = None)
+
+case class FormedMoment(
+  collectionId: Option[Int],
+  timeslot: Seq[MomentTimeSlot],
+  wifi: Seq[String],
+  headphone: Boolean,
+  momentType: Option[NineCardsMoment])

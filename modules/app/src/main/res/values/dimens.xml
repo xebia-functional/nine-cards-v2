@@ -59,6 +59,8 @@
     <dimen name="max_width_launcher_menu_item">100dp</dimen>
     <dimen name="size_edge_between_workspaces">15dp</dimen>
 
+    <dimen name="size_launcher_pager">12dp</dimen>
+
     <!-- FAB -->
     <dimen name="margin_fab_button">0dp</dimen>
     <dimen name="margin_horizontal_fab_button_item">23dp</dimen>
@@ -83,6 +85,9 @@
     <dimen name="size_widget_icon">54dp</dimen>
     <dimen name="width_widget_menu_small">58dp</dimen>
     <dimen name="width_widget_menu_large">160dp</dimen>
+
+    <dimen name="height_edit_widgets_bottom">180dp</dimen>
+    <dimen name="size_widget_cursor">40dp</dimen>
 
     <!-- App Drawer -->
     <dimen name="drawer_size_pager">6dp</dimen>
@@ -220,5 +225,8 @@
     <dimen name="publish_collection_footer_end_height">50dp</dimen>
     <dimen name="publish_collection_size_pager">8dp</dimen>
     <dimen name="publish_collection_margin_pager">4dp</dimen>
+
+    <!-- Edit Widgets -->
+    <dimen name="edit_widgets_size_icon">48dp</dimen>
 
 </resources>

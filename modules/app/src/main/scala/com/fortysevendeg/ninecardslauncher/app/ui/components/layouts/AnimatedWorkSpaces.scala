@@ -25,8 +25,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   (context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr)
-  with Contexts[View]
-  with ClicksHandler { self =>
+  with Contexts[View] { self =>
 
   // First parameter  [Data]    : Current data of the screen
   // Second parameter [Data]    : The data where you go
@@ -37,6 +36,15 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
+
+  val gestureDetector = new GestureDetector(getContext, new GestureDetector.SimpleOnGestureListener() {
+    override def onLongPress(e: MotionEvent): Unit = listener.onLongClick()
+
+    override def onSingleTapConfirmed(e: MotionEvent): Boolean = {
+      listener.onClick()
+      true
+    }
+  })
 
   val minimumViews = 3
 
@@ -91,8 +99,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (w[FrameLayout] <~
       wire(parentViewThree) <~
       vAddField(positionViewKey, FrontView)).get), params)).run
-
-  override def onLongClick(): Unit = listener.onLongClick()
 
   def createEmptyView(): Holder
 
@@ -314,6 +320,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   override def onTouchEvent(event: MotionEvent): Boolean = {
     super.onTouchEvent(event)
     val (action, x, y) = updateTouch(event)
+    gestureDetector.onTouchEvent(event)
     (action, statuses.touchState) match {
       case (ACTION_MOVE, Scrolling) =>
         requestDisallowInterceptTouchEvent(true)
@@ -328,10 +335,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       case (ACTION_MOVE, Stopped) => setStateIfNeeded(x, y)
       case (ACTION_DOWN, _) =>
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        startClicks()
       case (ACTION_CANCEL | ACTION_UP, _) =>
-        if (isClick && action == ACTION_UP) listener.onClick()
-        resetClicks()
         computeFling()
         statuses = statuses.copy(touchState = Stopped)
       case _ =>
@@ -369,7 +373,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       val yMoved = yDiff > touchSlop
 
       if (xMoved || yMoved) {
-        resetClicks()
         val penultimate = data.length - 2
         val isScrolling = (statuses.infinite, statuses.horizontalGallery, xDiff > yDiff, moveItemsAnimator.isRunning) match {
           case (true, true, true, _) => true

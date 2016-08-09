@@ -33,6 +33,13 @@
 
     <color name="text_launcher_moment_panel">#ffffff</color>
 
+    <color name="stroke_rules_moment">#a0ffffff</color>
+
+    <color name="stroke_widget_selected">#ffffff</color>
+    <color name="edit_widget_move">#3f51b5</color>
+    <color name="edit_widget_resize">#009688</color>
+    <color name="edit_widget_delete">#f44336</color>
+
     <!-- Wizard -->
 
     <color name="wizard_text_button_on">#ffffff</color>

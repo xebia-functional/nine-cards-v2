@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.widget.impl
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType._
 import com.fortysevendeg.ninecardslauncher.process.widget.{ResizeWidgetRequest, MoveWidgetRequest, AddWidgetRequest}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.Widget
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Widget => ServicesWidget}
 
 import scala.util.Random
@@ -56,7 +56,7 @@ trait WidgetProcessImplData {
    intent: Option[String] = widgetIntentOption) =
     (0 until 5) map (
       item =>
-        Widget(
+        AppWidget(
           id = id,
           momentId = momentId,
           packageName = packageName,
@@ -132,12 +132,25 @@ trait WidgetProcessImplData {
         imagePath = imagePath,
         intent = intent))
 
+  val moveStartX: Int = Random.nextInt(8)
+  val moveStartY: Int = Random.nextInt(8)
+
   val moveWidgetRequest = MoveWidgetRequest(
-    startX = startX,
-    startY = startY)
+    displaceX = moveStartX,
+    displaceY = moveStartY)
+
+  val moveWidgetResponse = widget.copy(
+    startX = widget.startX + moveWidgetRequest.displaceX,
+    startY = widget.startY + moveWidgetRequest.displaceY)
+
+  val resizeSpanX: Int = Random.nextInt(8)
+  val resizeSpanY: Int = Random.nextInt(8)
 
   val resizeWidgetRequest = ResizeWidgetRequest(
-    spanX = spanX,
-    spanY = spanY)
+    increaseX = resizeSpanX,
+    increaseY = resizeSpanY)
 
+  val resizeWidgetResponse = widget.copy(
+    spanX = widget.spanX + resizeWidgetRequest.increaseX,
+    spanY = widget.spanY + resizeWidgetRequest.increaseY)
 }

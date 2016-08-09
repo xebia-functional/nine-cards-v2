@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.widget
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
-import com.fortysevendeg.ninecardslauncher.process.widget.models.Widget
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddWidgetRequest => ServicesAddWidgetRequest, UpdateWidgetRequest => ServicesUpdateWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Widget => ServicesWidget}
 
@@ -23,7 +23,7 @@ trait WidgetConversions {
     imagePath = addWidgetRequest.imagePath,
     intent = addWidgetRequest.intent)
 
-  def toWidget(servicesWidget: ServicesWidget): Widget = Widget(
+  def toWidget(servicesWidget: ServicesWidget): AppWidget = AppWidget(
     id = servicesWidget.id,
     momentId = servicesWidget.momentId,
     packageName = servicesWidget.packageName,
@@ -38,37 +38,17 @@ trait WidgetConversions {
     imagePath = servicesWidget.imagePath,
     intent = servicesWidget.intent)
 
-  def toUpdatedWidget(widget: Widget, moveWidgetRequest: MoveWidgetRequest): Widget =  Widget(
-    id = widget.id,
-    momentId = widget.momentId,
-    packageName = widget.packageName,
-    className = widget.className,
-    appWidgetId = widget.appWidgetId,
-    startX = moveWidgetRequest.startX,
-    startY = moveWidgetRequest.startY,
-    spanX = widget.spanX,
-    spanY = widget.spanY,
-    widgetType = widget.widgetType,
-    label = widget.label,
-    imagePath = widget.imagePath,
-    intent = widget.intent)
+  def toUpdatedWidget(widget: AppWidget, moveWidgetRequest: MoveWidgetRequest): AppWidget =
+    widget.copy(
+      startX = widget.startX + moveWidgetRequest.displaceX,
+      startY = widget.startY + moveWidgetRequest.displaceY)
 
-  def toUpdatedWidget(widget: Widget, resizeWidgetRequest: ResizeWidgetRequest): Widget =  Widget(
-    id = widget.id,
-    momentId = widget.momentId,
-    packageName = widget.packageName,
-    className = widget.className,
-    appWidgetId = widget.appWidgetId,
-    startX = widget.startX,
-    startY = widget.startY,
-    spanX = resizeWidgetRequest.spanX,
-    spanY = resizeWidgetRequest.spanY,
-    widgetType = widget.widgetType,
-    label = widget.label,
-    imagePath = widget.imagePath,
-    intent = widget.intent)
+  def toUpdatedWidget(widget: AppWidget, resizeWidgetRequest: ResizeWidgetRequest): AppWidget =
+    widget.copy(
+      spanX = widget.spanX + resizeWidgetRequest.increaseX,
+      spanY = widget.spanY + resizeWidgetRequest.increaseY)
 
-  def toServicesUpdateWidgetRequest(widget: Widget): ServicesUpdateWidgetRequest = ServicesUpdateWidgetRequest(
+  def toServicesUpdateWidgetRequest(widget: AppWidget): ServicesUpdateWidgetRequest = ServicesUpdateWidgetRequest(
     id = widget.id,
     momentId = widget.momentId,
     packageName = widget.packageName,

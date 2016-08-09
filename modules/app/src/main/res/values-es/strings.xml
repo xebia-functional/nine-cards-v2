@@ -16,6 +16,10 @@
     <string name="sendTo">Enviar a</string>
     <string name="buttonErrorReload">Recargar</string>
 
+    <string name="resize">Redimensionar</string>
+    <string name="move">Mover</string>
+    <string name="delete">Eliminar</string>
+
     <string name="atHour">a las</string>
 
     <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a la collectión %1$s</string>
@@ -462,6 +466,11 @@
     <string name="sendFeedback">Envíanos tus opiniones (Lanza AppTentive)</string>
     <string name="tutorial">Revisa el Tutorial</string>
     <string name="tos">Términos de Uso</string>
+
+    <!-- Edit Widgets -->
+    <string name="editingWidgets">Editando widgets</string>
+    <string name="movingWidgets">Moviendo widgets</string>
+    <string name="resizingWidgets">Resimensionando widgets</string>
 
     <!-- Shared Content -->
     <string name="sharedIntentLabel">Añadir tarjeta</string>
