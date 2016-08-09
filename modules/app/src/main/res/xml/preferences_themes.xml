@@ -4,7 +4,7 @@
 
     <ListPreference
             android:key="theme"
-            android:defaultValue="3"
+            android:defaultValue="1"
             android:entries="@array/themes"
             android:entryValues="@array/themesValues"
             android:title="@string/selectThemeTitle"
