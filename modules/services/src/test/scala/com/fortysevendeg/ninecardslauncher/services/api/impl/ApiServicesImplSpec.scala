@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.model.{GooglePlayPackage => ApiGooglePlayPackage, GooglePlayPackages => ApiGooglePlayPackages, GooglePlayRecommendation => ApiGooglePlayRecommendation, GooglePlaySimplePackages => ApiGooglePlaySimplePackages, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, SharedCollectionList => ApiSharedCollectionList, User => ApiUser, UserConfig => ApiUserConfig}
+import com.fortysevendeg.ninecardslauncher.api.model.{GooglePlayPackage => ApiGooglePlayPackage, GooglePlayPackages => ApiGooglePlayPackages, GooglePlayRecommendation => ApiGooglePlayRecommendation, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, SharedCollectionList => ApiSharedCollectionList, User => ApiUser, UserConfig => ApiUserConfig}
 import com.fortysevendeg.ninecardslauncher.api.services._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.api._
@@ -90,11 +90,6 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[ApiGooglePlayPackages](statusCode, Some(googlePlayPackages))))
       }
 
-    googlePlayService.getGooglePlaySimplePackages(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiGooglePlaySimplePackages](statusCode, Some(googlePlaySimplePackages))))
-      }
-
     userConfigService.getUserConfig(any)(any) returns
       Service {
         Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
@@ -175,10 +170,6 @@ trait ApiServicesSpecification
     }
 
     googlePlayService.getGooglePlayPackages(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
-
-    googlePlayService.getGooglePlaySimplePackages(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
 
@@ -370,32 +361,6 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.googlePlayPackages(Seq.empty).run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "googlePlaySimplePackages" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.googlePlaySimplePackages(Seq.empty).run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.apps shouldEqual toGooglePlaySimplePackages(googlePlaySimplePackages)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.googlePlaySimplePackages(Seq.empty).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {

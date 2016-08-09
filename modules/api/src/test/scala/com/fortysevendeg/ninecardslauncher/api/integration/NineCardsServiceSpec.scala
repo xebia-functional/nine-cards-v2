@@ -263,32 +263,6 @@ class NineCardsServiceSpec
           }
         }
       }
-
-    "return the GooglePlaySimplePackages for a getGooglePlaySimplePackages post call" in
-      new NineCardsServiceScope {
-
-        val result =
-          apiGooglePlayService.getGooglePlaySimplePackages(PackagesRequest(Seq(packageName1, packageName2)), Seq.empty).run.run
-
-        result must beLike {
-          case Answer(r) => r.data must beSome[GooglePlaySimplePackages].which { packages =>
-            packages.items must have size 2
-            packages.items.headOption map (_.packageName) must beSome(packageName1)
-            packages.items.lastOption map (_.packageName) must beSome(packageName2)
-          }
-        }
-      }
-
-    "return the GooglePlaySearch for a search get call" in
-      new NineCardsServiceScope {
-
-        val result =
-          apiGooglePlayService.searchGooglePlay(searchQuery, searchOffset, searchLimit, Seq.empty).run.run
-
-        result must beLike {
-          case Answer(r) => r.data must beSome[GooglePlaySearch].which(_.originalQuery shouldEqual searchQuery)
-        }
-      }
   }
 
   "Recommendation Service component with OkHttpClient" should {

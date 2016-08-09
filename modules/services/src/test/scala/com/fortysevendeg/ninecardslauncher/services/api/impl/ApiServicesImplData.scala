@@ -94,23 +94,6 @@ trait ApiServicesImplData {
       fiveStarRatings = Random.nextInt(10),
       starRating = Random.nextDouble())
 
-  def generateGooglePlaySimplePackages =
-    GooglePlaySimplePackages(
-      Seq.empty,
-      generateGooglePlaySimplePackageSeq())
-
-  def generateGooglePlaySimplePackageSeq(num: Int = 10) =
-    1 to num map { _ =>
-      GooglePlaySimplePackage(
-        packageName = Random.nextString(10),
-        appType = Random.nextString(10),
-        appCategory = Random.nextString(10),
-        numDownloads = Random.nextInt(10).toString,
-        starRating = Random.nextDouble(),
-        ratingCount = Random.nextInt(10),
-        commentCount = Random.nextInt(10))
-    }
-
   def generateUserConfig =
     UserConfig(
       Random.nextString(10),
@@ -216,8 +199,6 @@ trait ApiServicesImplData {
   val installation = generateInstallation
 
   val googlePlayPackages = generateGooglePlayPackages
-
-  val googlePlaySimplePackages = generateGooglePlaySimplePackages
 
   val googlePlayApps = 1 to 10 map (_ => generateGooglePlayApp)
 

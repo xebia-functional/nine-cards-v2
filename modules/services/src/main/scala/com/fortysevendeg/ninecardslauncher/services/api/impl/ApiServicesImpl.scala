@@ -109,17 +109,6 @@ class ApiServicesImpl(
         statusCode = response.statusCode,
         packages = response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)).resolve[ApiServiceException]
 
-  override def googlePlaySimplePackages(
-    packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(packageNames), requestConfig.toGooglePlayHeader)
-    } yield {
-        val packages = response.data.map(playApp => toGooglePlaySimplePackages(playApp))
-        GooglePlaySimplePackagesResponse(
-          statusCode = response.statusCode,
-          apps = packages getOrElse GooglePlaySimplePackages(Seq.empty, Seq.empty))
-      }).resolve[ApiServiceException]
-
   override def getUserConfig()(implicit requestConfig: RequestConfig) =
     (for {
       response <- userConfigService.getUserConfig(requestConfig.toHeader)

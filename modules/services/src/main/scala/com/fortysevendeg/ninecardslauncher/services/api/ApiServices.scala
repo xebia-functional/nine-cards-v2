@@ -81,16 +81,6 @@ trait ApiServices {
     packageNames: Seq[String])(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlayPackagesResponse, ApiServiceException]
 
   /**
-   * Simplified version of the {@link #googlePlayPackages(Seq[String])(RequestConfig) googlePlayPackages}
-   * @param packageNames a sequence of package identifiers
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlaySimplePackagesResponse]] with the HTTP Code
-   *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages]]
-   * @throws ApiServiceException if there was an error in the request
-   */
-  def googlePlaySimplePackages(
-    packageNames: Seq[String])(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlaySimplePackagesResponse, ApiServiceException]
-
-  /**
    * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfig]]
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigResponse]] with the HTTP Code
    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserConfig]]

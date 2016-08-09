@@ -23,10 +23,6 @@ case class GooglePlayPackagesResponse(
   statusCode: Int,
   packages: Seq[GooglePlayPackage])
 
-case class GooglePlaySimplePackagesResponse(
-  statusCode: Int,
-  apps: GooglePlaySimplePackages)
-
 trait UserConfigResponse {
   def statusCode: Int
 

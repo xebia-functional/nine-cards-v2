@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
-import com.fortysevendeg.ninecardslauncher.api.model.{AuthData => ApiAuthData, AuthGoogle => ApiAuthGoogle, AuthGoogleDevice => ApiAuthGoogleDevice, GooglePlayAggregateRating => ApiGooglePlayAggregateRating, GooglePlayApp => ApiGooglePlayApp, GooglePlayAppDetails => ApiGooglePlayAppDetails, GooglePlayDetails => ApiGooglePlayDetails, GooglePlayImage => ApiGooglePlayImage, GooglePlayOffer => ApiGooglePlayOffer, GooglePlayPackage => ApiGooglePlayPackage, GooglePlayRecommendation, GooglePlaySimplePackage => ApiGooglePlaySimplePackage, GooglePlaySimplePackages => ApiGooglePlaySimplePackages, Installation => ApiInstallation, RecommendationRequest => ApiRecommendationRequest, ShareCollection => ApiShareCollection, SharedCollection, SharedCollectionPackage, User => ApiUser, UserConfig => ApiUserConfig, UserConfigCollection => ApiUserConfigCollection, UserConfigCollectionItem => ApiUserConfigCollectionItem, UserConfigDevice => ApiUserConfigDevice, UserConfigPlusProfile => ApiUserConfigPlusProfile, UserConfigProfileImage => ApiUserConfigProfileImage, UserConfigStatusInfo => ApiUserConfigStatusInfo, UserConfigTimeSlot => ApiUserConfigTimeSlot, UserConfigUserLocation => ApiUserConfigUserLocation}
+import com.fortysevendeg.ninecardslauncher.api.model.{AuthData => ApiAuthData, AuthGoogle => ApiAuthGoogle, AuthGoogleDevice => ApiAuthGoogleDevice, GooglePlayAggregateRating => ApiGooglePlayAggregateRating, GooglePlayApp => ApiGooglePlayApp, GooglePlayAppDetails => ApiGooglePlayAppDetails, GooglePlayDetails => ApiGooglePlayDetails, GooglePlayImage => ApiGooglePlayImage, GooglePlayOffer => ApiGooglePlayOffer, GooglePlayPackage => ApiGooglePlayPackage, GooglePlayRecommendation, Installation => ApiInstallation, RecommendationRequest => ApiRecommendationRequest, ShareCollection => ApiShareCollection, SharedCollection, SharedCollectionPackage, User => ApiUser, UserConfig => ApiUserConfig, UserConfigCollection => ApiUserConfigCollection, UserConfigCollectionItem => ApiUserConfigCollectionItem, UserConfigDevice => ApiUserConfigDevice, UserConfigPlusProfile => ApiUserConfigPlusProfile, UserConfigProfileImage => ApiUserConfigProfileImage, UserConfigStatusInfo => ApiUserConfigStatusInfo, UserConfigTimeSlot => ApiUserConfigTimeSlot, UserConfigUserLocation => ApiUserConfigUserLocation}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import play.api.libs.json._
 
@@ -166,23 +166,6 @@ trait Conversions {
       versionString = googlePlayAppDetails.versionString,
       appType = googlePlayAppDetails.appType,
       permission = googlePlayAppDetails.permission)
-
-  def toGooglePlaySimplePackages(googlePlaySimplePackages: ApiGooglePlaySimplePackages): GooglePlaySimplePackages =
-    GooglePlaySimplePackages(
-      errors = googlePlaySimplePackages.errors,
-      items = googlePlaySimplePackages.items map toGooglePlaySimplePackage
-    )
-
-  def toGooglePlaySimplePackage(googlePlaySimplePackage: ApiGooglePlaySimplePackage): GooglePlaySimplePackage =
-    GooglePlaySimplePackage(
-      packageName = googlePlaySimplePackage.packageName,
-      appType = googlePlaySimplePackage.appType,
-      appCategory = googlePlaySimplePackage.appCategory,
-      numDownloads = googlePlaySimplePackage.numDownloads,
-      starRating = googlePlaySimplePackage.starRating,
-      ratingCount = googlePlaySimplePackage.ratingCount,
-      commentCount = googlePlaySimplePackage.commentCount
-    )
 
   def toUserConfig(apiUserConfig: ApiUserConfig): UserConfig =
     UserConfig(

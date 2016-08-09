@@ -54,16 +54,3 @@ case class GooglePlayAggregateRating(
   fiveStarRatings: Int,
   starRating: Double)
 
-case class GooglePlaySimplePackages(
-  errors: Seq[String],
-  items: Seq[GooglePlaySimplePackage])
-
-case class GooglePlaySimplePackage(
-  packageName: String,
-  appType: String,
-  appCategory: String,
-  numDownloads: String,
-  starRating: Double,
-  ratingCount: Int,
-  commentCount: Int)
-

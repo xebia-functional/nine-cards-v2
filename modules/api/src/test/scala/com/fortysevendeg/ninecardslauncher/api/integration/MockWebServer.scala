@@ -16,9 +16,6 @@ trait MockServerService
   val testerValues = Map("key1" -> "value1", "key2" -> "value2")
   val packageName1 = "com.fortysevendeg.scala.android"
   val packageName2 = "com.fortysevendeg.android.scaladays"
-  val searchQuery = "scala"
-  val searchOffset = 0
-  val searchLimit = 10
 
   val sharedCollectionIdFirst = "12345678"
   val sharedCollectionIdLast = "87654321"
@@ -31,8 +28,6 @@ trait MockServerService
   val sharedCollectionPathPrefix = "/ninecards/collections"
   val googlePlayPathPrefix = "/googleplay/package"
   val googlePlayPackagesPathPrefix = "/googleplay/packages/detailed"
-  val googlePlaySearchPathPrefix = "/googleplay/search"
-  val googlePlaySimplePackagesPathPrefix = "/googleplay/packages/simple"
   val recommendationSponsoredPathPrefix = "/ninecards/collections/items/sponsored"
   val recommendationsPathPrefix = "/collections"
   val regexpPath = "[a-zA-Z0-9,\\.\\/]*"
@@ -43,8 +38,6 @@ trait MockServerService
   val sharedCollectionJsonSubscription = "sharedCollectionSubscription.json"
   val googlePlayPackageJsonSingle = "googlePlayPackage.json"
   val googlePlayPackageJsonList = "googlePlayPackageList.json"
-  val googlePlaySimplePackageJsonList = "googlePlaySimplePackageList.json"
-  val googlePlaySearchJson = "googlePlaySearch.json"
   // TODO
   val recommendedCollectionsJson = ""
   val recommendedCollectionAppsJson = ""
@@ -247,26 +240,6 @@ trait GooglePlayServer {
             .withStatusCode(200)
             .withHeader(jsonHeader)
             .withBody(loadJson(googlePlayPackageJsonList)))
-
-  mockServer.when(
-    request()
-        .withMethod("POST")
-        .withPath(googlePlaySimplePackagesPathPrefix))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(googlePlaySimplePackageJsonList)))
-
-  mockServer.when(
-    request()
-        .withMethod("GET")
-        .withPath(s"$googlePlaySearchPathPrefix/$searchQuery/$searchOffset/$searchLimit"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(googlePlaySearchJson)))
 
 }
 
