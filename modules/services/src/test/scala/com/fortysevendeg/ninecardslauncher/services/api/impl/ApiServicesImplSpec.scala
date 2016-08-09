@@ -65,11 +65,6 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[ApiUser](statusCode, Some(user))))
       }
 
-    apiUserService.linkAuthData(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUser](statusCode, Some(user))))
-      }
-
     apiUserService.createInstallation(any, any)(any, any) returns
       Service {
         Task(Answer(ServiceClientResponse[ApiInstallation](statusCode, Some(installation))))
@@ -128,10 +123,6 @@ trait ApiServicesSpecification
       Task(Errata(exception))
     }
 
-    apiUserService.linkAuthData(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
-
     apiUserService.createInstallation(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
@@ -187,32 +178,6 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.login("", GoogleDevice("", "", "", Seq.empty)).run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "linkGoogleAccount" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.linkGoogleAccount("", Seq(GoogleDevice("", "", "", Seq.empty))).run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.user shouldEqual toUser(user)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.linkGoogleAccount("", Seq(GoogleDevice("", "", "", Seq.empty))).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {

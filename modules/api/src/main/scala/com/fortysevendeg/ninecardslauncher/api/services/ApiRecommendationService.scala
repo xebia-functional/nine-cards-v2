@@ -13,9 +13,6 @@ class ApiRecommendationService(serviceClient: ServiceClient) {
   private[this] val recommendationsPath = "recommendations"
   private[this] val appsPath = "apps"
 
-  /**
-    * @deprecated v1
-    */
   def getRecommendedApps(
     recommendationRequest: RecommendationRequest,
     headers: Seq[(String, String)]

@@ -11,9 +11,6 @@ class ApiSharedCollectionsService(serviceClient: ServiceClient) {
 
   val prefixPathCollections = "/ninecards/collections"
 
-  /**
-    * @deprecated v1
-    */
   def shareCollection(
     sharedCollection: ShareCollection,
     headers: Seq[(String, String)]
@@ -25,9 +22,6 @@ class ApiSharedCollectionsService(serviceClient: ServiceClient) {
       body = sharedCollection,
       Some(reads))
 
-  /**
-    * @deprecated v1
-    */
   def getSharedCollectionListByCategory(
     collectionType: String,
     category: String,

@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.api.model.{AuthData => ApiAuthData, AuthGoogle => ApiAuthGoogle, AuthGoogleDevice => ApiAuthGoogleDevice, GooglePlayAggregateRating => ApiGooglePlayAggregateRating, GooglePlayApp => ApiGooglePlayApp, GooglePlayAppDetails => ApiGooglePlayAppDetails, GooglePlayDetails => ApiGooglePlayDetails, GooglePlayImage => ApiGooglePlayImage, GooglePlayOffer => ApiGooglePlayOffer, GooglePlayPackage => ApiGooglePlayPackage, GooglePlayRecommendation, Installation => ApiInstallation, RecommendationRequest => ApiRecommendationRequest, ShareCollection => ApiShareCollection, SharedCollection, SharedCollectionPackage, User => ApiUser, UserConfig => ApiUserConfig, UserConfigCollection => ApiUserConfigCollection, UserConfigCollectionItem => ApiUserConfigCollectionItem, UserConfigDevice => ApiUserConfigDevice, UserConfigPlusProfile => ApiUserConfigPlusProfile, UserConfigProfileImage => ApiUserConfigProfileImage, UserConfigStatusInfo => ApiUserConfigStatusInfo, UserConfigTimeSlot => ApiUserConfigTimeSlot, UserConfigUserLocation => ApiUserConfigUserLocation}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
-import play.api.libs.json._
 
 trait Conversions {
 
@@ -50,19 +49,6 @@ trait Conversions {
       deviceId = device.deviceId,
       secretToken = device.secretToken,
       permissions = device.permissions)
-
-  def toAuthData(
-    email: String,
-    devices: Seq[GoogleDevice]
-    ): ApiAuthData =
-    ApiAuthData(
-      google = Some(ApiAuthGoogle(
-        email = email,
-        devices = devices map fromGoogleDevice
-      )),
-      facebook = None,
-      twitter = None,
-      anonymous = None)
 
   def toInstallation(
     id: Option[String],
@@ -129,12 +115,6 @@ trait Conversions {
 
   def getVideo(images: Seq[ApiGooglePlayImage]): Option[String] =
     images.find(_.imageType == iconVideoType) map (_.imageUrl)
-
-  def toGooglePlayImage(googlePlayImage: ApiGooglePlayImage): GooglePlayImage =
-    GooglePlayImage(
-      imageType = googlePlayImage.imageType,
-      imageUrl = googlePlayImage.imageUrl,
-      creator = googlePlayImage.creator)
 
   def toGooglePlayOffer(googlePlayOffer: ApiGooglePlayOffer): GooglePlayOffer =
     GooglePlayOffer(
@@ -240,26 +220,6 @@ trait Conversions {
       communityMember = apiStatusInfo.communityMember,
       joinedThrough = apiStatusInfo.joinedThrough,
       tester = apiStatusInfo.tester)
-
-  def fromUserConfigCollectionItem(collectionItem: UserConfigCollectionItem): ApiUserConfigCollectionItem =
-    ApiUserConfigCollectionItem(
-      itemType = collectionItem.itemType,
-      title = collectionItem.title,
-      metadata = Json.parse("{\"name\": \"test\"}"), // TODO Create metadata for item
-      categories = collectionItem.categories)
-
-  def fromUserConfigUserLocation(apiUserLocation: UserConfigUserLocation): ApiUserConfigUserLocation =
-    ApiUserConfigUserLocation(
-      wifi = apiUserLocation.wifi,
-      lat = apiUserLocation.lat,
-      lng = apiUserLocation.lng,
-      occurrence = apiUserLocation.occurrence map fromUserConfigTimeSlot)
-
-  def fromUserConfigTimeSlot(apiTimeSlot: UserConfigTimeSlot): ApiUserConfigTimeSlot =
-    ApiUserConfigTimeSlot(
-      from = apiTimeSlot.from,
-      to = apiTimeSlot.to,
-      days = apiTimeSlot.days)
 
   def toRecommendationRequest(
     categories: Seq[String],

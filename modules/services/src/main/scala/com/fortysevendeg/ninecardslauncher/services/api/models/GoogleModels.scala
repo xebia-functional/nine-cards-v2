@@ -21,11 +21,6 @@ case class GooglePlayApp(
   offer: Seq[GooglePlayOffer],
   aggregateRating: GooglePlayAggregateRating)
 
-case class GooglePlayImage(
-  imageType: Int,
-  imageUrl: String,
-  creator: Option[String])
-
 case class GooglePlayDetails(
   appDetails: GooglePlayAppDetails)
 

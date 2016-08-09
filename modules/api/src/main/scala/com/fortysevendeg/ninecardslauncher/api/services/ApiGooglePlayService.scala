@@ -14,9 +14,6 @@ class ApiGooglePlayService(serviceClient: ServiceClient) {
   private[this] val PackagesPath = "packages"
   private[this] val DetailedPackagesPath = "detailed"
 
-  /**
-    * @deprecated v1
-    */
   def getGooglePlayPackage(
     packageName: String,
     headers: Seq[(String, String)])
@@ -26,9 +23,6 @@ class ApiGooglePlayService(serviceClient: ServiceClient) {
       headers = headers,
       reads = Some(reads))
 
-  /**
-    * @deprecated v1
-    */
   def getGooglePlayPackages(
     packageRequest: PackagesRequest,
     headers: Seq[(String, String)]

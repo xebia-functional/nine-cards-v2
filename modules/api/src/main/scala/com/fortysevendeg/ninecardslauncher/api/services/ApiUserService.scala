@@ -12,9 +12,6 @@ class ApiUserService(serviceClient: ServiceClient) {
   val prefixPathUser = "/users"
   val prefixPathInstallation = "/installations"
 
-  /**
-    * @deprecated v1
-    */
   def login(
     user: User,
     headers: Seq[(String, String)]
@@ -26,23 +23,6 @@ class ApiUserService(serviceClient: ServiceClient) {
       body = user,
       reads = Some(reads))
 
-  /**
-    * @deprecated v1
-    */
-  def linkAuthData(
-    authData: AuthData,
-    headers: Seq[(String, String)]
-    )(implicit reads: Reads[User],
-    writes: Writes[AuthData]): ServiceDef2[ServiceClientResponse[User], HttpClientException with ServiceClientException] =
-    serviceClient.put[AuthData, User](
-      path = s"$prefixPathUser/link",
-      headers = headers,
-      body = authData,
-      reads = Some(reads))
-
-  /**
-    * @deprecated v1
-    */
   def createInstallation(
     installation: Installation,
     headers: Seq[(String, String)]

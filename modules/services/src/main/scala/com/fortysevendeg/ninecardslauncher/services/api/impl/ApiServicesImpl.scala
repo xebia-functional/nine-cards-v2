@@ -68,14 +68,6 @@ class ApiServicesImpl(
       user <- readOption(response.data, userNotFoundMessage)
     } yield LoginResponse(response.statusCode, toUser(user))).resolve[ApiServiceException]
 
-  override def linkGoogleAccount(
-    email: String,
-    devices: Seq[GoogleDevice])(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiUserService.linkAuthData(toAuthData(email, devices), requestConfig.toHeader)
-      user <- readOption(response.data, userNotFoundMessage)
-    } yield LoginResponse(response.statusCode, toUser(user))).resolve[ApiServiceException]
-
   override def createInstallation(
     deviceType: Option[DeviceType],
     deviceToken: Option[String],

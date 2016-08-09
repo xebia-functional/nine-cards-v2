@@ -18,18 +18,6 @@ trait ApiServices {
     device: GoogleDevice): ServiceDef2[LoginResponse, ApiServiceException]
 
   /**
-   * Links the devices with the email
-   * @param email user email
-   * @param devices user devices
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponse]] with the HTTP Code
-   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.User]]
-   * @throws ApiServiceException if the user is not found or the request throws an Exception
-   */
-  def linkGoogleAccount(
-    email: String,
-    devices: Seq[GoogleDevice])(implicit requestConfig: RequestConfig): ServiceDef2[LoginResponse, ApiServiceException]
-
-  /**
    * Creates a new user installation based on the provided params
    * @param deviceType the device type. Actually only [[com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice]] is supported
    * @param deviceToken the token used by the device
