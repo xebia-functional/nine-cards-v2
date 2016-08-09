@@ -115,39 +115,6 @@ class ApiServicesImpl(
       userConfig <- readOption(response.data, userConfigNotFoundMessage)
     } yield GetUserConfigResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
-  override def saveDevice(userConfigDevice: UserConfigDevice)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.saveDevice(
-        toConfigDevice(userConfigDevice),
-        requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield SaveDeviceResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
-  override def checkpointPurchaseProduct(productId: String)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.checkpointPurchaseProduct(
-        productId, requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield CheckpointPurchaseProductResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
-  override def checkpointCustomCollection()(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.checkpointCustomCollection(requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield CheckpointCustomCollectionResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
-  override def checkpointJoinedBy(otherConfigId: String)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.checkpointJoinedBy(otherConfigId, requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield CheckpointJoinedByResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
-  override def tester(replace: Map[String, String])(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.tester(replace, requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield TesterResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
   override def getRecommendedApps(
     categories: Seq[String],
     likePackages: Seq[String],

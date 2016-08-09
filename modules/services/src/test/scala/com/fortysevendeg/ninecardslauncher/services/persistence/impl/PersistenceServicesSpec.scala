@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntity, CardEntity, MomentEntity}
-import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.PersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByCategory, OrderByInstallDate, OrderByName, PersistenceServiceException}

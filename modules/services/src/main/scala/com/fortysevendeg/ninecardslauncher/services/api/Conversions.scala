@@ -241,30 +241,6 @@ trait Conversions {
       joinedThrough = apiStatusInfo.joinedThrough,
       tester = apiStatusInfo.tester)
 
-  def toConfigDevice(device: UserConfigDevice): ApiUserConfigDevice =
-    ApiUserConfigDevice(
-      deviceId = device.deviceId,
-      deviceName = device.deviceName,
-      collections = device.collections map fromUserConfigCollection)
-
-  def fromUserConfigCollection(collection: UserConfigCollection): ApiUserConfigCollection =
-    ApiUserConfigCollection(
-      name = collection.name,
-      originalSharedCollectionId = collection.originalSharedCollectionId,
-      sharedCollectionId = collection.sharedCollectionId,
-      sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
-      items = collection.items map fromUserConfigCollectionItem,
-      collectionType = collection.collectionType,
-      constrains = collection.constrains,
-      wifi = collection.wifi,
-      occurrence = collection.occurrence,
-      icon = collection.icon,
-      radius = collection.radius,
-      lat = collection.lat,
-      lng = collection.lng,
-      alt = collection.alt,
-      category = collection.category)
-
   def fromUserConfigCollectionItem(collectionItem: UserConfigCollectionItem): ApiUserConfigCollectionItem =
     ApiUserConfigCollectionItem(
       itemType = collectionItem.itemType,

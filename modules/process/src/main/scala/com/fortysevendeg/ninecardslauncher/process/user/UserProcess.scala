@@ -2,8 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.user
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.user.models.{User, Device}
-import com.fortysevendeg.ninecardslauncher.services.persistence.AndroidIdNotFoundException
+import com.fortysevendeg.ninecardslauncher.process.user.models.User
 
 trait UserProcess {
 

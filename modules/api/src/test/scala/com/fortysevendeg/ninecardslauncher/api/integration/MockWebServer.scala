@@ -42,7 +42,6 @@ trait MockServerService
   val recommendedCollectionsJson = ""
   val recommendedCollectionAppsJson = ""
   val recommendedAppsJson = "recommendationApps.json"
-  val recommendationSponsoredJson = "recommendationSponsored.json"
 
   lazy val mockServer = startClientAndServer(9999)
 
@@ -70,66 +69,6 @@ trait UserConfigServer {
     request()
         .withMethod("GET")
         .withPath(s"$userConfigPathPrefix"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(userConfigJson)))
-
-  mockServer.when(
-    request()
-        .withMethod("PUT")
-        .withPath(s"$userConfigPathPrefix/device"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(userConfigJson)))
-
-  mockServer.when(
-    request()
-        .withMethod("PUT")
-        .withPath(s"$userConfigPathPrefix/geoInfo"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(userConfigJson)))
-
-  mockServer.when(
-    request()
-        .withMethod("PUT")
-        .withPath(s"$userConfigPathPrefix/checkpoint/purchase/$productId"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(userConfigJson)))
-
-  mockServer.when(
-    request()
-        .withMethod("PUT")
-        .withPath(s"$userConfigPathPrefix/checkpoint/collection"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(userConfigJson)))
-
-  mockServer.when(
-    request()
-        .withMethod("PUT")
-        .withPath(s"$userConfigPathPrefix/checkpoint/joined/$joinedById"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(userConfigJson)))
-
-  mockServer.when(
-    request()
-        .withMethod("PUT")
-        .withPath(s"$userConfigPathPrefix/tester"))
       .respond(
         response()
             .withStatusCode(200)
@@ -248,16 +187,6 @@ trait RecommendationsServer {
   self: MockServerService =>
 
   Logging.overrideLogLevel("ERROR")
-
-  mockServer.when(
-    request()
-        .withMethod("GET")
-        .withPath(s"$recommendationSponsoredPathPrefix"))
-      .respond(
-        response()
-            .withStatusCode(200)
-            .withHeader(jsonHeader)
-            .withBody(loadJson(recommendationSponsoredJson)))
 
   mockServer.when(
     request()

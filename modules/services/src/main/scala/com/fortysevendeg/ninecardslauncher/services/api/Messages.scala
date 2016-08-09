@@ -33,26 +33,6 @@ case class GetUserConfigResponse(
   statusCode: Int,
   userConfig: UserConfig) extends UserConfigResponse
 
-case class SaveDeviceResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
-case class CheckpointPurchaseProductResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
-case class CheckpointCustomCollectionResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
-case class CheckpointJoinedByResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
-case class TesterResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
 case class RecommendationResponse(
   statusCode: Int,
   seq: Seq[GooglePlayApp])

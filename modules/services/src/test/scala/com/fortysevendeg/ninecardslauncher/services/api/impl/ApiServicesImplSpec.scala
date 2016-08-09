@@ -95,31 +95,6 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
       }
 
-    userConfigService.saveDevice(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    userConfigService.checkpointPurchaseProduct(any, any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    userConfigService.checkpointCustomCollection(any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    userConfigService.checkpointJoinedBy(any, any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    userConfigService.tester(any, any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
     apiRecommendationService.getRecommendedApps(any, any)(any, any) returns
       Service {
         Task(Answer(ServiceClientResponse[ApiGooglePlayRecommendation](statusCode, Some(googlePlayRecommendation))))
@@ -174,26 +149,6 @@ trait ApiServicesSpecification
     }
 
     userConfigService.getUserConfig(any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.saveDevice(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.checkpointPurchaseProduct(any, any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.checkpointCustomCollection(any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.checkpointJoinedBy(any, any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.tester(any, any)(any) returns Service {
       Task(Errata(exception))
     }
 
@@ -387,136 +342,6 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.getUserConfig().run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "saveDevice" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.saveDevice(UserConfigDevice("", "", Seq.empty)).run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.saveDevice(UserConfigDevice("", "", Seq.empty)).run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "checkpointPurchaseProduct" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.checkpointPurchaseProduct("").run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.checkpointPurchaseProduct("").run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "checkpointCustomCollection" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.checkpointCustomCollection().run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.checkpointCustomCollection().run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "checkpointJoinedBy" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.checkpointJoinedBy("").run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.checkpointJoinedBy("").run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "tester" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.tester(Map.empty).run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.tester(Map.empty).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
