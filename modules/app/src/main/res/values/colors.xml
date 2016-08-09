@@ -33,6 +33,13 @@
 
     <color name="text_launcher_moment_panel">#ffffff</color>
 
+    <color name="stroke_rules_moment">#a0ffffff</color>
+
+    <color name="stroke_widget_selected">#ffffff</color>
+    <color name="edit_widget_move">#3f51b5</color>
+    <color name="edit_widget_resize">#009688</color>
+    <color name="edit_widget_delete">#f44336</color>
+
     <!-- Wizard -->
 
     <color name="wizard_text_button_on">#ffffff</color>
@@ -64,9 +71,6 @@
     <color name="background_menu_header">#3F51B5</color>
     <color name="text_menu_name">#ffffff</color>
     <color name="text_menu_email">#b5ffffff</color>
-
-    <!-- Menu Apps Moment -->
-    <color name="menu_apps_moment_item_title">#292929</color>
 
     <!-- WorkSpace -->
     <color name="collection_workspace_button_item_title">#ffffff</color>

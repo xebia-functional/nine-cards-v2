@@ -11,7 +11,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceMomentMenuTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
@@ -67,11 +67,11 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (appsContent <~ vPadding(paddingBottom = paddingBottom))
 
   private[this] def createIconCard(
-    card: Card,
-    moment: Option[NineCardsMoment])(implicit theme: NineCardsTheme, presenter: LauncherPresenter): WorkSpaceMomentIcon =
-    (w[WorkSpaceMomentIcon] <~
-      vWrapContent <~
-      wmmPopulateCard(card) <~
+    card: Card, moment: Option[NineCardsMoment])(implicit presenter: LauncherPresenter, theme: NineCardsTheme): WorkSpaceButton =
+    (w[WorkSpaceButton] <~
+      vMatchWidth <~
+      wbInit(WorkSpaceAppMomentButton) <~
+      wbPopulateCard(card) <~
       On.click {
         Ui(presenter.openMomentIntent(card, moment))
       }).get

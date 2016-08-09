@@ -105,8 +105,6 @@ trait WidgetProcessImplSpecification
   }
 }
 
-
-
 class WidgetProcessImplSpec
   extends WidgetProcessImplSpecification
   with WidgetProcessImplData {
@@ -311,7 +309,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.moveWidget(widgetId, moveWidgetRequest).run.run
         result must beLike {
           case Answer(resultWidget) =>
-            resultWidget shouldEqual widget
+            resultWidget shouldEqual moveWidgetResponse
         }
       }
 
@@ -353,7 +351,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.resizeWidget(widgetId, resizeWidgetRequest).run.run
         result must beLike {
           case Answer(resultWidget) =>
-            resultWidget shouldEqual widget
+            resultWidget shouldEqual resizeWidgetResponse
         }
       }
 

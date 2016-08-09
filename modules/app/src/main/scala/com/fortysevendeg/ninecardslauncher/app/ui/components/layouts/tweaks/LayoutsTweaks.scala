@@ -13,13 +13,14 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -54,7 +55,19 @@ object LauncherWorkSpacesTweaks {
     view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
   }
 
-  def lwsAddWidget(widgetView: View, cell: Cell) = Tweak[W] (_.addWidget(widgetView, cell))
+  def lwsAddWidget(widgetView: View, cell: Cell, widget: AppWidget) = Tweak[W] (_.addWidget(widgetView, cell, widget))
+
+  def lwsShowRules() = Tweak[W] (_.showRulesInMoment())
+
+  def lwsHideRules() = Tweak[W] (_.hideRulesInMoment())
+
+  def lwsReloadSelectedWidget() = Tweak[W] (_.reloadSelectedWidget())
+
+  def lwsResizeCurrentWidget() = Tweak[W] (_.resizeCurrentWidget())
+
+  def lwsMoveCurrentWidget() = Tweak[W] (_.moveCurrentWidget())
+
+  def lwsArrowWidget(arrow: Arrow) = Tweak[W] (_.arrowWidget(arrow))
 
   def lwsClearWidgets() = Tweak[W] (_.clearWidgets())
 
@@ -129,6 +142,10 @@ object AnimatedWorkSpacesTweaks {
 
   def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
+  def awsDisabled() = Tweak[W] (aws => aws.statuses = aws.statuses.copy(enabled = false))
+
+  def awsEnabled() = Tweak[W] (aws => aws.statuses = aws.statuses.copy(enabled = true))
+
   def awsAddPageChangedObserver(observer: PageChangedObserver) = Tweak[W](_.addPageChangedObservers(observer))
 
   def awsCurrentWorkSpace() = Excerpt[W, Int] (_.statuses.currentItem)
@@ -153,10 +170,17 @@ object WorkSpaceItemMenuTweaks {
 
 }
 
-object WorkSpaceMomentMenuTweaks {
-  type W = WorkSpaceMomentIcon
+object WorkSpaceButtonTweaks {
+  type W = WorkSpaceButton
 
-  def wmmPopulateCard(card: Card)(implicit theme: NineCardsTheme) = Tweak[W](_.populateCard(card).run)
+  def wbInit(t: WorkSpaceButtonType)(implicit theme: NineCardsTheme) = Tweak[W](_.init(t).run)
+
+  def wbPopulateCollection(collection: Collection) = Tweak[W](_.populateCollection(collection).run)
+
+  def wbPopulateCard(card: Card) = Tweak[W](_.populateCard(card).run)
+
+  def wbPopulateIcon(resIcon: Int, resTitle: Int, resColor: Int) =
+    Tweak[W](_.populateIcon(resIcon, resTitle, resColor).run)
 
 }
 
@@ -384,4 +408,28 @@ object AppsMomentLayoutTweaks {
   def amlPaddingTopAndBottom(paddingTop: Int, paddingBottom: Int)(implicit theme: NineCardsTheme, presenter: LauncherPresenter) =
     Tweak[W] (_.setPaddingTopAndBottom(paddingTop, paddingBottom).run)
 
+}
+
+object EditWidgetsTopPanelLayoutTweaks {
+
+  type W = EditWidgetsTopPanelLayout
+
+  def ewtInit(implicit presenter: LauncherPresenter) = Tweak[W] (_.init.run)
+
+  def ewtResizing(implicit presenter: LauncherPresenter) = Tweak[W] (_.resizing.run)
+
+  def ewtMoving(implicit presenter: LauncherPresenter) = Tweak[W] (_.moving.run)
+
+}
+
+object EditWidgetsBottomPanelLayoutTweaks {
+  type W = EditWidgetsBottomPanelLayout
+
+  def ewbInit(implicit presenter: LauncherPresenter, theme: NineCardsTheme) = Tweak[W] (_.init.run)
+
+  def ewbShowActions = Tweak[W] (_.showActions().run)
+
+  def ewbAnimateActions = Tweak[W] (_.animateActions().run)
+
+  def ewbAnimateCursors(implicit launcherPresenter: LauncherPresenter) = Tweak[W] (_.animateCursors.run)
 }

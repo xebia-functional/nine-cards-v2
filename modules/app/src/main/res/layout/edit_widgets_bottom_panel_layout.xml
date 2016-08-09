@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LauncherEditWidgetsBottomBarRoot">
+
+    <LinearLayout
+        android:id="@+id/edit_widget_bottom_actions_content"
+        style="@style/LauncherEditWidgetsBottomBarActions">
+
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceButton
+            android:id="@+id/edit_widget_bottom_action_resize"
+            style="@style/LauncherEditWidgetsBottomBarIcon" />
+
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceButton
+            android:id="@+id/edit_widget_bottom_action_move"
+            style="@style/LauncherEditWidgetsBottomBarIcon" />
+
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceButton
+            android:id="@+id/edit_widget_bottom_action_delete"
+            style="@style/LauncherEditWidgetsBottomBarIcon" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/edit_widget_bottom_cursors_content"
+        style="@style/LauncherEditWidgetsBottomBarActions">
+
+        <ImageView
+            android:id="@+id/edit_widget_bottom_cursor_left"
+            style="@style/LauncherEditWidgetsBottomBarCursor" />
+
+        <LinearLayout
+            style="@style/LauncherEditWidgetsBottomBarVerticalButtons">
+
+            <ImageView
+                android:id="@+id/edit_widget_bottom_cursor_up"
+                style="@style/LauncherEditWidgetsBottomBarCursor" />
+
+            <ImageView
+                android:id="@+id/edit_widget_bottom_cursor_down"
+                style="@style/LauncherEditWidgetsBottomBarCursor" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/edit_widget_bottom_cursor_right"
+            style="@style/LauncherEditWidgetsBottomBarCursor" />
+
+    </LinearLayout>
+
+</FrameLayout>

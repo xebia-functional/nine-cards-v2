@@ -97,6 +97,9 @@ trait DeviceProcessSpecification
     mockPersistenceServices.deleteAllApps() returns
       Service(Task(Result.answer(items)))
 
+    mockPersistenceServices.deleteAllWidgets() returns
+      Service(Task(Result.answer(items)))
+
     mockPersistenceServices.deleteAllCollections() returns
       Service(Task(Result.answer(items)))
 
@@ -257,10 +260,25 @@ trait DeviceProcessSpecification
     }
   }
 
+  trait ErrorPersistenceServicesDeleteWidgetsProcessScope {
+    self: DeviceProcessScope =>
+
+    mockPersistenceServices.deleteAllApps returns
+      Service(Task(Result.answer(items)))
+
+    mockPersistenceServices.deleteAllWidgets() returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+  }
+
   trait ErrorPersistenceServicesDeleteCollectionsProcessScope {
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
+      Service(Task(Result.answer(items)))
+
+    mockPersistenceServices.deleteAllWidgets() returns
       Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCollections returns Service {
@@ -273,6 +291,9 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
+      Service(Task(Result.answer(items)))
+
+    mockPersistenceServices.deleteAllWidgets() returns
       Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCollections returns
@@ -288,6 +309,9 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps() returns
+      Service(Task(Result.answer(items)))
+
+    mockPersistenceServices.deleteAllWidgets() returns
       Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCollections() returns
@@ -515,6 +539,16 @@ class DeviceProcessImplSpec
 
     "returns ResetException when persistence service fails deleting the apps" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteAppsProcessScope {
+        val result = deviceProcess.resetSavedItems().run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
+          }
+        }
+      }
+
+    "returns ResetException when persistence service fails deleting widgets" in
+      new DeviceProcessScope with ErrorPersistenceServicesDeleteWidgetsProcessScope {
         val result = deviceProcess.resetSavedItems().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {

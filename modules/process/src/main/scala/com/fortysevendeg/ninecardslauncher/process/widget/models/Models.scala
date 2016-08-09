@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.widget.models
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
 
-case class Widget(
+case class AppWidget(
   id: Int,
   momentId: Int,
   packageName: String,

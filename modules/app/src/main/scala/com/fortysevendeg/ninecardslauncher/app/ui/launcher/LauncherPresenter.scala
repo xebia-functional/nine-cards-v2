@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
-import android.content.{Context, Intent}
+import android.content.{ComponentName, Context, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -14,11 +14,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetails
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
@@ -29,13 +31,15 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
+import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentExceptionImpl}
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
+import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import macroid.{ActivityContextWrapper, Ui}
-import rapture.core.Result
+import rapture.core.{Answer, Errata, Result}
 
 import scala.concurrent.Future
 import scala.util.Try
@@ -226,7 +230,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def goToMomentWorkspace(): Unit = (actions.goToMomentWorkspace() ~ actions.closeAppsMoment()).run
 
-  def clickWorkspaceBackground(): Unit = actions.openAppsMoment().run
+  def clickWorkspaceBackground(): Unit = {
+    statuses.mode match {
+      case NormalMode => actions.openAppsMoment().run
+      case EditWidgetsMode => closeModeEditWidgets()
+      case _ =>
+    }
+  }
 
   def clickMomentTopBar(): Unit = actions.openAppsMoment().run
 
@@ -288,6 +298,57 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       },
       onException = (_) => actions.showContactUsError()
     )
+  }
+
+  def openModeEditWidgets(id: Int): Unit = {
+    statuses = statuses.copy(mode = EditWidgetsMode, idWidget = Some(id))
+    actions.openModeEditWidgets().run
+  }
+
+  def resizeWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
+    statuses = statuses.copy(transformation = ResizeTransformation)
+    actions.resizeWidget().run
+  }
+
+  def moveWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
+    statuses = statuses.copy(transformation = MoveTransformation)
+    actions.moveWidget().run
+  }
+
+  def arrowWidget(arrow: Arrow): Unit = if (statuses.mode == EditWidgetsMode) {
+
+    def widgetOperation(id: Int) = statuses.transformation match {
+      case ResizeTransformation => di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest.tupled(operationArgs))
+      case MoveTransformation => di.widgetsProcess.moveWidget(id, MoveWidgetRequest.tupled(operationArgs))
+    }
+
+    def operationArgs = arrow match {
+      case ArrowUp => (0, -1)
+      case ArrowDown => (0, 1)
+      case ArrowRight => (1, 0)
+      case ArrowLeft => (-1, 0)
+    }
+
+    def getService = statuses.idWidget match {
+      case Some(id) => widgetOperation(id)
+      case None => Service(Task(Errata[Widget, WidgetException](WidgetException("Widget id is empty"))))
+    }
+
+    Task.fork(getService.run).resolveAsyncUi(
+      onResult = (_) => actions.arrowWidget(arrow),
+      onException = (_) => actions.showContactUsError()
+    )
+  }
+
+  def deleteWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
+    actions.deleteWidget().run
+  }
+
+  def editWidgetsShowActions(): Unit = actions.editWidgetsShowActions().run
+
+  def closeModeEditWidgets(): Unit = {
+    statuses = statuses.copy(mode = NormalMode, idWidget = None)
+    actions.closeModeEditWidgets().run
   }
 
   def goToChangeMoment(): Unit = {
@@ -413,19 +474,63 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def deleteWidget(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map actions.deleteWidget getOrElse Ui.nop).run
 
-  def loadWidgetsForMoment(nineCardMoment: NineCardsMoment): Unit =
-    (cache.getWidgetId(nineCardMoment) map actions.addWidget getOrElse actions.clearWidgets()).run
+  def loadWidgetsForMoment(nineCardsMoment: NineCardsMoment): Unit = {
 
-  def addWidget(maybeAppWidgetId: Option[Int]): Unit =
-    ((for {
+    def getWidgets = for {
+      moment <- di.momentProcess.getMomentByType(nineCardsMoment)
+      widgets <- di.widgetsProcess.getWidgetsByMoment(moment.id)
+    } yield widgets
+
+    Task.fork(getWidgets.run).resolveAsyncUi(
+      onPreTask = actions.clearWidgets,
+      onResult = {
+        case Nil => Ui.nop
+        case head :: tail => actions.addWidget(head)
+        case _ => Ui.nop
+      },
+      onException = (_) => actions.showContactUsError()
+    )
+
+  }
+
+  def addWidget(maybeAppWidgetId: Option[Int]): Unit = {
+
+    def getWidgetInfoById(appWidgetId: Int): ServiceDef2[(ComponentName, Cell), MomentException]=
+      actions.getWidgetInfoById(appWidgetId) match {
+        case Some(info) => Service(Task(Answer[(ComponentName, Cell), MomentException](info)))
+        case _ => Service(Task(Errata(MomentExceptionImpl("Info widget not found"))))
+      }
+
+    def createWidget(appWidgetId: Int, nineCardsMoment: NineCardsMoment) = for {
+      moment <- di.momentProcess.getMomentByType(nineCardsMoment)
+      (provider, cell) <- getWidgetInfoById(appWidgetId)
+      appWidgetRequest = AddWidgetRequest(
+        momentId = moment.id,
+        packageName = provider.getPackageName,
+        className = provider.getClassName,
+        appWidgetId = appWidgetId,
+        startX = 0,
+        startY = 0,
+        spanX = cell.spanX,
+        spanY = cell.spanY,
+        widgetType = AppWidgetType
+      )
+      _ <- di.widgetsProcess.deleteWidgetsByMoment(moment.id)
+      widget <- di.widgetsProcess.addWidget(appWidgetRequest)
+    } yield widget
+
+    (for {
       appWidgetId <- maybeAppWidgetId
       data <- actions.getData.headOption
       moment <- data.moment
       nineCardMoment <- moment.momentType
     } yield {
-      cache.setWidgetId(nineCardMoment, appWidgetId)
-      actions.addWidget(appWidgetId)
-    }) getOrElse actions.showContactUsError()).run
+      Task.fork(createWidget(appWidgetId, nineCardMoment).run).resolveAsyncUi(
+        onResult = (widget: AppWidget) => actions.addWidget(widget),
+        onException = (_) => actions.showContactUsError()
+      )
+    }) getOrElse actions.showContactUsError().run
+  }
 
   def hostWidget(widget: Widget): Unit = actions.hostWidget(widget).run
 
@@ -639,6 +744,20 @@ trait LauncherUiActions {
 
   def reloadDockApps(dockApp: DockApp): Ui[Any]
 
+  def openModeEditWidgets(): Ui[Any]
+
+  def resizeWidget(): Ui[Any]
+
+  def moveWidget(): Ui[Any]
+
+  def arrowWidget(arrow: Arrow): Ui[Any]
+
+  def deleteWidget(): Ui[Any]
+
+  def editWidgetsShowActions(): Ui[Any]
+
+  def closeModeEditWidgets(): Ui[Any]
+
   def showAddItemMessage(nameCollection: String): Ui[Any]
 
   def showContactUsError(): Ui[Any]
@@ -680,13 +799,15 @@ trait LauncherUiActions {
 
   def editCollection(collection: Collection): Ui[Any]
 
-  def addWidget(widgetViewId: Int): Ui[Any]
+  def addWidget(widget: AppWidget): Ui[Any]
 
   def deleteWidget(widgetViewId: Int): Ui[Any]
 
   def hostWidget(widget: Widget): Ui[Any]
 
   def configureWidget(appWidgetId: Int): Ui[Any]
+
+  def getWidgetInfoById(appWidgetId: Int): Option[(ComponentName, Cell)]
 
   def clearWidgets(): Ui[Any]
 
@@ -704,6 +825,8 @@ trait LauncherUiActions {
 
   def canRemoveCollections: Boolean
 
+  def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])]
+
   def getCollection(position: Int): Option[Collection]
 
   def isTabsOpened: Boolean
@@ -718,6 +841,8 @@ object Statuses {
   case class LauncherPresenterStatuses(
     touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
     mode: LauncherMode = NormalMode,
+    transformation: EditWidgetTransformation = ResizeTransformation,
+    idWidget: Option[Int] = None,
     cardAddItemMode: Option[AddCardRequest] = None,
     collectionReorderMode: Option[Collection] = None,
     startPositionReorderMode: Int = 0,
@@ -755,4 +880,12 @@ object Statuses {
   case object AddItemMode extends LauncherMode
 
   case object ReorderMode extends LauncherMode
+
+  case object EditWidgetsMode extends LauncherMode
+
+  sealed trait EditWidgetTransformation
+
+  case object ResizeTransformation extends EditWidgetTransformation
+
+  case object MoveTransformation extends EditWidgetTransformation
 }

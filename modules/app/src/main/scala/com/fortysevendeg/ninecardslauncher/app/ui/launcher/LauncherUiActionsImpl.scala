@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import android.app.Activity
-import android.appwidget.{AppWidgetHost, AppWidgetManager}
+import android.appwidget.{AppWidgetHost, AppWidgetManager, AppWidgetProviderInfo}
 import android.content.{ClipData, ComponentName, Intent}
 import android.graphics.Point
 import android.support.v4.app.{Fragment, FragmentManager}
@@ -13,6 +13,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
@@ -29,6 +30,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
@@ -38,6 +40,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets.Widge
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.Arrow
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection}
@@ -45,6 +48,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, C
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -99,6 +103,44 @@ trait LauncherUiActionsImpl
     (workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager
 
   override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
+
+  override def openModeEditWidgets(): Ui[Any] =
+    uiVibrate() ~
+      (dockAppsPanel <~ applyFadeOut()) ~
+      (paginationPanel <~ applyFadeOut()) ~
+      (topBarPanel <~ applyFadeOut()) ~
+      (editWidgetsTopPanel <~ ewtInit <~ applyFadeIn()) ~
+      (editWidgetsBottomPanel <~ ewbShowActions <~ applyFadeIn()) ~
+      (workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
+      (drawerLayout <~ dlLockedClosed)
+
+  def closeModeEditWidgets(): Ui[Any] =
+    (dockAppsPanel <~ applyFadeIn()) ~
+      (paginationPanel <~ applyFadeIn()) ~
+      (topBarPanel <~ applyFadeIn()) ~
+      (editWidgetsTopPanel <~ applyFadeOut()) ~
+      (editWidgetsBottomPanel <~ applyFadeOut()) ~
+      (workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
+      (drawerLayout <~ dlUnlocked)
+
+  override def resizeWidget(): Ui[Any] =
+    (workspaces <~ lwsResizeCurrentWidget()) ~
+      (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
+      (editWidgetsTopPanel <~ ewtResizing)
+
+  override def moveWidget(): Ui[Any] =
+    (workspaces <~ lwsMoveCurrentWidget()) ~
+      (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
+      (editWidgetsTopPanel <~ ewtMoving)
+
+  override def arrowWidget(arrow: Arrow): Ui[Any] = workspaces <~ lwsArrowWidget(arrow)
+
+  override def deleteWidget(): Ui[Any] = Ui.nop
+
+  override def editWidgetsShowActions(): Ui[Any] =
+    (workspaces <~ lwsReloadSelectedWidget) ~
+      (editWidgetsTopPanel <~ ewtInit) ~
+      (editWidgetsBottomPanel <~ ewbAnimateActions)
 
   override def showAddItemMessage(nameCollection: String): Ui[Any] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
 
@@ -201,17 +243,19 @@ trait LauncherUiActionsImpl
 
   override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
 
-  override def addWidget(widgetViewId: Int): Ui[Any] = {
-    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widgetViewId)
+  override def addWidget(widget: AppWidget): Ui[Any] = {
+    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
 
     val widthContent = workspaces map (_.getWidth) getOrElse 0
     val heightContent = workspaces map (_.getHeight) getOrElse 0
 
     val cell = appWidgetInfo.getCell(widthContent, heightContent)
 
-    val hostView = appWidgetHost.createView(activityContextWrapper.application, widgetViewId, appWidgetInfo)
-    hostView.setAppWidget(widgetViewId, appWidgetInfo)
-    workspaces <~ lwsAddWidget(hostView, cell)
+    Ui {
+      val hostView = appWidgetHost.createView(activityContextWrapper.application, widget.appWidgetId, appWidgetInfo)
+      hostView.setAppWidget(widget.appWidgetId, appWidgetInfo)
+      (workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+    }
   }
 
   override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()
@@ -243,6 +287,12 @@ trait LauncherUiActionsImpl
       case _ => Ui(presenter.addWidget(Some(appWidgetId)))
     }
   }
+
+  override def getWidgetInfoById(appWidgetId: Int): Option[(ComponentName, Cell)] =
+    for {
+      ws <- workspaces
+      info <- Option(appWidgetManager.getAppWidgetInfo(appWidgetId))
+    } yield (info.provider, info.getCell(ws.getWidth, ws.getHeight))
 
   override def showWidgetsDialog(): Ui[Any] = {
     val widthContent = workspaces map (_.getWidth) getOrElse 0
@@ -350,6 +400,12 @@ trait LauncherUiActionsImpl
 
   override def canRemoveCollections: Boolean = getCountCollections > 1
 
+  override def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])] =
+    moments map {
+      case Moment(_, Some(collectionId: Int), _, _, _, Some(m: NineCardsMoment)) =>
+        (m, getCollections.find(_.id == collectionId))
+    }
+
   override def getCollection(position: Int): Option[Collection] = getCollections.lift(position)
 
   override def isEmptyCollectionsInWorkspace: Boolean = isEmptyCollections
@@ -386,6 +442,7 @@ trait LauncherUiActionsImpl
       Ui(activity.getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
         (content <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (menuCollectionRoot <~ vPadding(0, sbHeight, 0, nbHeight)) ~
+        (editWidgetsBottomPanel <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (drawerContent <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (appsMoment <~ amlPaddingTopAndBottom(sbHeight, nbHeight)) ~
         (actionFragmentContent <~

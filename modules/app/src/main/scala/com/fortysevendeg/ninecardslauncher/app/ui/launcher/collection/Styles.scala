@@ -24,7 +24,7 @@ trait Styles {
   def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
     val margin = resGetDimensionPixelSize(R.dimen.margin_pager_collection)
     vWrapContent +
-      llLayoutMargin(margin, margin, margin, margin) +
+      llLayoutMargin(marginLeft = margin, marginTop = 0, marginRight = margin, marginBottom = 0) +
       ivSrc(R.drawable.workspaces_pager)
   }
 
