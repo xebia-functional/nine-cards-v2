@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions, NineCardsPreferencesStatus}
+import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions, PreferencesValuesKeys}
 import com.fortysevendeg.ninecardslauncher.app.ui.CachePreferences
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
@@ -57,8 +57,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   val defaultPage = 1
 
   lazy val cache = new CachePreferences
-
-  lazy val preferenceStatus = new NineCardsPreferencesStatus
 
   var statuses = LauncherPresenterStatuses()
 
@@ -539,6 +537,26 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def configureOrAddWidget(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map actions.configureWidget getOrElse actions.showContactUsError()).run
 
+  def preferencesChanged(changedPreferences: Array[String]): Unit = {
+
+    def needToRecreate(array: Array[String]): Boolean = array.contains(PreferencesValuesKeys.themeFile)
+
+    def uiAction(prefKey: String): Ui[_] = prefKey match {
+      case PreferencesValuesKeys.showClockMoment => actions.reloadMomentTopBar()
+      case _ => Ui.nop
+    }
+
+    (contextWrapper.original.get, Option(changedPreferences)) match {
+        case (Some(activity), Some(array)) if array.nonEmpty =>
+          if (needToRecreate(array)) {
+            activity.recreate()
+          } else {
+            (array map uiAction reduce (_ ~ _)).run
+          }
+        case _ =>
+      }
+    }
+
   private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
 
@@ -577,22 +595,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   // Check if there is a new best available moment. If not, we check if the current moment was changed
-  private[this] def checkMoment(): Unit = {
+  private[this] def checkMoment(): Unit =
     Task.fork(getCheckMoment.run).resolveAsyncUi(
       onResult = (launcherMoment) => {
         launcherMoment map { _ =>
           val data = LauncherData(MomentWorkSpace, launcherMoment)
           actions.reloadMoment(data)
-        } getOrElse {
-          if (preferenceStatus.momentsWasChanged) {
-            preferenceStatus.setMoments(false)
-            actions.reloadMomentTopBar()
-          } else {
-            Ui.nop
-          }
-        }
+        } getOrElse Ui.nop
       })
-  }
 
   protected def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
     for {

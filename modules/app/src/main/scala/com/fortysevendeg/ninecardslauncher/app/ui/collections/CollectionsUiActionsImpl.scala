@@ -36,7 +36,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Slid
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailBackgroundColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -59,7 +59,7 @@ trait CollectionsUiActionsImpl
 
   val resistanceScale = .05f
 
-  lazy val iconIndicatorDrawable = new PathMorphDrawable(
+  lazy val iconIndicatorDrawable = PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
@@ -91,7 +91,8 @@ trait CollectionsUiActionsImpl
     getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
   override def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): Ui[Any] =
-    (tabs <~ tabsStyle) ~
+    (root <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
+      (tabs <~ tabsStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
@@ -115,15 +116,16 @@ trait CollectionsUiActionsImpl
     activityContextWrapper.getOriginal match {
       case fragmentActivity: FragmentActivity =>
         val adapter = CollectionsPagerAdapter(fragmentActivity.getSupportFragmentManager, collections, position)
-        (root <~ SnailsCommons.fadeBackground(theme.get(CollectionDetailBackgroundColor))) ~
-          (viewPager <~ vpAdapter(adapter)) ~
+        (viewPager <~ vpAdapter(adapter)) ~
           Ui(adapter.activateFragment(position)) ~
           (tabs <~
             stlViewPager(viewPager) <~
             stlOnPageChangeListener(
               new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
           uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
-          uiHandlerDelayed(Ui { getActivePresenter foreach (_.bindAnimatedAdapter()) }, 100) ~
+          uiHandlerDelayed(Ui {
+            getActivePresenter foreach (_.bindAnimatedAdapter())
+          }, 100) ~
           (tabs <~ vVisible <~~ enterViews) ~
           elevationsDefault
       case _ => Ui.nop
@@ -246,7 +248,7 @@ trait CollectionsUiActionsImpl
         val ft = fragmentManager.beginTransaction()
         Option(fragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
         ft.addToBackStack(javaNull)
-        val dialog = new PublishCollectionFragment(collection)
+        val dialog = PublishCollectionFragment(collection)
         dialog.show(ft, tagDialog)
       }
       case _ =>

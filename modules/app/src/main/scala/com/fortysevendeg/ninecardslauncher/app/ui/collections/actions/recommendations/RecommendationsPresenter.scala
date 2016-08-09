@@ -13,7 +13,7 @@ import scalaz.concurrent.Task
 class RecommendationsPresenter(
   category: NineCardCategory,
   packages: Seq[String],
-  actions: RecommendationsIuActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  actions: RecommendationsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Presenter
   with NineCardIntentConversions
   with LauncherExecutor {
@@ -48,7 +48,7 @@ class RecommendationsPresenter(
 
 }
 
-trait RecommendationsIuActions {
+trait RecommendationsUiActions {
 
   def initialize(): Ui[Any]
 

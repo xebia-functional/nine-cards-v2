@@ -19,9 +19,11 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCard, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, CardTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -33,11 +35,13 @@ trait PrivateCollectionsActionsImpl
 
   self: TypedFindView with BaseActionFragment with Contexts[Fragment] =>
 
-  lazy val recycler = Option(findView(TR.actions_recycler))
-
   val launcherPresenter: LauncherPresenter
 
   implicit val collectionPresenter: PrivateCollectionsPresenter
+
+  lazy val recycler = Option(findView(TR.actions_recycler))
+
+  def loadBackgroundColor = theme.get(CardLayoutBackgroundColor)
 
   override def initialize(): Ui[Any] =
     (toolbar <~
@@ -47,7 +51,7 @@ trait PrivateCollectionsActionsImpl
       (recycler <~ recyclerStyle)
 
   override def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any] = {
-    val adapter = new PrivateCollectionsAdapter(privateCollections)
+    val adapter = PrivateCollectionsAdapter(privateCollections)
     (recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -72,23 +76,30 @@ trait PrivateCollectionsActionsImpl
 }
 
 case class ViewHolderPrivateCollectionsLayoutAdapter(
-  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: PrivateCollectionsPresenter)
+  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: PrivateCollectionsPresenter, val theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+  with TypedFindView
+  with CollectionCardsStyles {
 
   val appsByRow = 5
 
-  lazy val iconContent = Option(findView(TR.private_collections_item_content))
+  lazy val root = findView(TR.private_collections_item_layout)
 
-  lazy val icon = Option(findView(TR.private_collections_item_icon))
+  lazy val iconContent = findView(TR.private_collections_item_content)
 
-  lazy val name = Option(findView(TR.private_collections_item_name))
+  lazy val icon = findView(TR.private_collections_item_icon)
 
-  lazy val appsRow1 = Option(findView(TR.private_collections_item_row1))
+  lazy val name = findView(TR.private_collections_item_name)
 
-  lazy val appsRow2 = Option(findView(TR.private_collections_item_row2))
+  lazy val appsRow1 = findView(TR.private_collections_item_row1)
 
-  lazy val addCollection = Option(findView(TR.private_collections_item_add_collection))
+  lazy val appsRow2 = findView(TR.private_collections_item_row2)
+
+  lazy val addCollection = findView(TR.private_collections_item_add_collection)
+
+  ((root <~ cardRootStyle) ~
+    (name <~ textStyle) ~
+    (addCollection <~ buttonStyle)).run
 
   def bind(privateCollection: PrivateCollection, position: Int): Ui[_] = {
     val d = new ShapeDrawable(new OvalShape)
@@ -110,8 +121,8 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
-  private[this] def automaticAlignment(view: Option[LinearLayout], cards: Seq[PrivateCard]): Tweak[LinearLayout] = {
-    val width = view.map(_.getWidth) getOrElse 0
+  private[this] def automaticAlignment(view: LinearLayout, cards: Seq[PrivateCard]): Tweak[LinearLayout] = {
+    val width = view.getWidth
     if (width > 0) {
       val uisRow1 = getViewsByCards(cards, width)
       vgAddViews(uisRow1)

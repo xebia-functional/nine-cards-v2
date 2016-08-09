@@ -20,6 +20,8 @@ class PublicCollectionsFragment(implicit lPresenter: LauncherPresenter)
 
   override def getLayoutId: Int = R.layout.list_action_fragment
 
+  override protected lazy val backgroundColor: Int = loadBackgroundColor
+
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     collectionPresenter.initialize()

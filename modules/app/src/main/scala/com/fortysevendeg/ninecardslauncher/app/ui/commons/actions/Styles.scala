@@ -8,6 +8,8 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTabsBackgroundColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
 
@@ -16,12 +18,18 @@ trait Styles {
   def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = rvFixedSize
 
   def fabButtonMenuStyle(color: Int)(implicit context: ContextWrapper): Tweak[FloatingActionButton] = {
-    val iconFabButton = new PathMorphDrawable(
+    val iconFabButton = PathMorphDrawable(
       defaultIcon = IconTypes.CHECK,
       defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default))
     val darkColor = color.dark()
     ivSrc(iconFabButton) +
       fbaColor(color, darkColor)
+  }
+
+  def scrollableStyle(color: Int)(implicit context: ContextWrapper, theme: NineCardsTheme) = {
+    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
+      fslColor(color, theme.get(DrawerTabsBackgroundColor)) +
+      fslMarginRightBarContent(padding)
   }
 
 }

@@ -93,7 +93,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:textColor">@color/error_dialog_text</item>
     </style>
 
     <style name="BaseActionsErrorIcon">

@@ -6,5 +6,5 @@ import com.fortysevendeg.ninecardslauncher.commons.utils.AssetException
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 
 trait ThemeProcess {
-  def getSelectedTheme(implicit context: ContextSupport): ServiceDef2[NineCardsTheme, AssetException with ThemeException]
+  def getTheme(themeFile: String)(implicit context: ContextSupport): ServiceDef2[NineCardsTheme, AssetException with ThemeException]
 }

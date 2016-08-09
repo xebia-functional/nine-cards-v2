@@ -81,7 +81,6 @@
         <item name="android:paddingTop">@dimen/padding_empty_collection_message</item>
         <item name="android:text">@string/collectionDetailAddCardsMessage</item>
         <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:textColor">@color/text_empty_collection</item>
         <item name="android:fontFamily">sans-serif-regular</item>
     </style>
 
