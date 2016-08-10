@@ -22,23 +22,39 @@
       "color": "#646464"
     },
     {
-      "styleType": "AppDrawerPressedColor",
-      "color": "#ffd5f2fa"
+      "styleType": "SearchTextColor",
+      "color": "#646464"
     },
     {
-      "styleType": "CollectionDetailBackgroundColor",
-      "color": "#eeeeee"
+      "styleType": "DrawerTabsBackgroundColor",
+      "color": "#16000000"
     },
     {
-      "styleType": "CollectionDetailTextCardColor",
-      "color": "#000000"
-    },
-    {
-      "styleType": "CollectionDetailCardBackgroundColor",
+      "styleType": "DrawerBackgroundColor",
       "color": "#ffffff"
     },
     {
-      "styleType": "CollectionDetailCardBackgroundPressedColor",
+      "styleType": "DrawerTextColor",
+      "color": "#000000"
+    },
+    {
+      "styleType": "DockPressedColor",
+      "color": "#ffd5f2fa"
+    },
+    {
+      "styleType": "CardLayoutBackgroundColor",
+      "color": "#eeeeee"
+    },
+    {
+      "styleType": "CardTextColor",
+      "color": "#000000"
+    },
+    {
+      "styleType": "CardBackgroundColor",
+      "color": "#ffffff"
+    },
+    {
+      "styleType": "CardBackgroundPressedColor",
       "color": "#000000"
     },
     {
@@ -48,6 +64,10 @@
     {
       "styleType": "CollectionDetailTextTabDefaultColor",
       "color": "#80ffffff"
+    },
+    {
+      "styleType": "DrawerIconColor",
+      "color": "#000000"
     }
   ]
 }

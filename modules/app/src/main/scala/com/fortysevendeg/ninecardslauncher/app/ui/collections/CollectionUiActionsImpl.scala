@@ -15,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
@@ -25,10 +26,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.Coll
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchGoogleColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
+
+import scala.language.postfixOps
 import scala.language.postfixOps
 
 trait CollectionUiActionsImpl
@@ -154,9 +157,9 @@ trait CollectionUiActionsImpl
   override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
 
   override def showEmptyCollection(): Ui[Any] = {
-    val color = theme.get(SearchGoogleColor)
+    val color = theme.get(DrawerTextColor).alpha(0.8f)
     (emptyCollectionMessage <~ tvColor(color)) ~
-      (emptyCollectionImage <~ tivDefaultColor(color)) ~
+      (emptyCollectionImage <~ tivDefaultColor(theme.get(DrawerIconColor))) ~
       (emptyCollectionLayout <~ vVisible) ~
       (recyclerView <~ vGone)
   }
@@ -335,7 +338,7 @@ trait CollectionUiActionsImpl
   private[this] def createAdapter(collection: Collection) = {
     // In Android Design Library 23.0.1 has a problem calculating the height. We have to subtract 25 dp. We should to check this when we'll change to a new version
     val heightCard = recyclerView map (view => (view.getHeight - (25 dp) - (view.getPaddingBottom + view.getPaddingTop)) / numInLine) getOrElse 0
-    new CollectionAdapter(collection, heightCard)
+    CollectionAdapter(collection, heightCard)
   }
 
 }

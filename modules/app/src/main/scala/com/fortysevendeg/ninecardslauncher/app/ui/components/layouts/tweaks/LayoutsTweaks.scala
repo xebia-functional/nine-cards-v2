@@ -175,7 +175,7 @@ object WorkSpaceItemMenuTweaks {
 object WorkSpaceButtonTweaks {
   type W = WorkSpaceButton
 
-  def wbInit(t: WorkSpaceButtonType) = Tweak[W](_.init(t).run)
+  def wbInit(t: WorkSpaceButtonType)(implicit theme: NineCardsTheme) = Tweak[W](_.init(t).run)
 
   def wbPopulateCollection(collection: Collection) = Tweak[W](_.populateCollection(collection).run)
 
@@ -285,7 +285,7 @@ object FastScrollerLayoutTweak {
   // We should launch this tweak when the adapter has been added
   def fslLinkRecycler(recyclerView: RecyclerView) = Tweak[FastScrollerLayout](_.linkRecycler(recyclerView))
 
-  def fslColor(color: Int) = Tweak[FastScrollerLayout](_.setColor(color))
+  def fslColor(color: Int, backgroundColor: Int) = Tweak[FastScrollerLayout](_.setColor(color, backgroundColor))
 
   def fslMarginRightBarContent(pixels: Int) = Tweak[FastScrollerLayout](_.setMarginRightBarContent(pixels))
 
@@ -427,7 +427,7 @@ object EditWidgetsTopPanelLayoutTweaks {
 object EditWidgetsBottomPanelLayoutTweaks {
   type W = EditWidgetsBottomPanelLayout
 
-  def ewbInit(implicit presenter: LauncherPresenter) = Tweak[W] (_.init.run)
+  def ewbInit(implicit presenter: LauncherPresenter, theme: NineCardsTheme) = Tweak[W] (_.init.run)
 
   def ewbShowActions = Tweak[W] (_.showActions().run)
 

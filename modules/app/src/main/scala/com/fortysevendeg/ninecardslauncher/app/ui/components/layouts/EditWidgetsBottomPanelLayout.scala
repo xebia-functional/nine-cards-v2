@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -66,21 +67,21 @@ class EditWidgetsBottomPanelLayout(context: Context, attrs: AttributeSet, defSty
   ((arrowUp <~ ivSrc(iconUp)) ~
     (arrowDown <~ ivSrc(iconDown)) ~
     (arrowLeft <~ ivSrc(iconBack)) ~
-    (arrowRight <~ ivSrc(iconNext)) ~
-    (resizeAction <~
-    wbInit(WorkSpaceActionWidgetButton) <~
-    wbPopulateIcon(R.drawable.icon_edit_widgets_resize, R.string.resize, R.color.edit_widget_resize)) ~
-    (moveAction <~
-      wbInit(WorkSpaceActionWidgetButton) <~
-      wbPopulateIcon(R.drawable.icon_edit_widgets_move, R.string.move, R.color.edit_widget_move)) ~
-    (deleteAction <~
-      wbInit(WorkSpaceActionWidgetButton) <~
-      wbPopulateIcon(R.drawable.icon_edit_widgets_delete, R.string.delete, R.color.edit_widget_delete))).run
+    (arrowRight <~ ivSrc(iconNext))).run
 
-  def init(implicit launcherPresenter: LauncherPresenter): Ui[Any] =
-    (resizeAction <~ On.click(Ui(launcherPresenter.resizeWidget()))) ~
-      (moveAction <~ On.click(Ui(launcherPresenter.moveWidget()))) ~
-      (deleteAction <~ On.click(Ui(launcherPresenter.deleteWidget())))
+  def init(implicit launcherPresenter: LauncherPresenter, theme: NineCardsTheme): Ui[Any] =
+    (resizeAction <~
+      wbInit(WorkSpaceActionWidgetButton) <~
+      wbPopulateIcon(R.drawable.icon_edit_widgets_resize, R.string.resize, R.color.edit_widget_resize) <~
+      On.click(Ui(launcherPresenter.resizeWidget()))) ~
+      (moveAction <~
+        wbInit(WorkSpaceActionWidgetButton) <~
+        wbPopulateIcon(R.drawable.icon_edit_widgets_move, R.string.move, R.color.edit_widget_move) <~
+        On.click(Ui(launcherPresenter.moveWidget()))) ~
+      (deleteAction <~
+        wbInit(WorkSpaceActionWidgetButton) <~
+        wbPopulateIcon(R.drawable.icon_edit_widgets_delete, R.string.delete, R.color.edit_widget_delete) <~
+        On.click(Ui(launcherPresenter.deleteWidget())))
 
   def showActions(): Ui[Any] = (actionsContent <~ vVisible) ~ (cursorContent <~ vInvisible)
 

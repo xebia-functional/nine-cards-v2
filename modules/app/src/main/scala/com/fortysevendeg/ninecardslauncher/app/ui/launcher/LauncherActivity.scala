@@ -93,6 +93,9 @@ class LauncherActivity
         presenter.addWidget(getExtraAppWidgetId)
       case (RequestCodes.goToConfigureWidgets | RequestCodes.goToWidgets, Activity.RESULT_CANCELED) =>
         presenter.cancelWidget(getExtraAppWidgetId)
+        presenter.deleteWidget(getExtraAppWidgetId)
+      case (RequestCodes.goToPreferences, ResultCodes.preferencesChanged) =>
+        presenter.preferencesChanged(data.getStringArrayExtra(ResultData.preferencesResultData))
       case _ =>
     }
   }

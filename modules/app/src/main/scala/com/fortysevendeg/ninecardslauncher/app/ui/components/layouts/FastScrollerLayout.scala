@@ -47,7 +47,7 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def linkRecycler(recyclerView: RecyclerView) = (fastScroller <~ fsRecyclerView(recyclerView)).run
 
-  def setColor(color: Int) = (fastScroller <~ fsColor(color)).run
+  def setColor(color: Int, backgroundColor: Int) = (fastScroller <~ fsColor(color) + fsBackgroundColor(backgroundColor)).run
 
   def setMarginRightBarContent(pixels: Int) = (fastScroller <~ fsMarginRightBarContent(pixels)).run
 
@@ -77,6 +77,10 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
   private[this] def fsColor(color: Int) = Tweak[FastScrollerView] { view =>
     ((view.bar <~ ivSrc(changeColor(R.drawable.fastscroller_bar, color))) ~
       (view.signal <~ Tweak[FrameLayout](_.setBackground(changeColor(R.drawable.fastscroller_signal, color))))).run
+  }
+
+  private[this] def fsBackgroundColor(color: Int) = Tweak[FastScrollerView] { view =>
+    (view.barContent <~ vBackgroundColor(color)).run
   }
 
   private[this] def fsShow = Tweak[FastScrollerView] (_.show.run)

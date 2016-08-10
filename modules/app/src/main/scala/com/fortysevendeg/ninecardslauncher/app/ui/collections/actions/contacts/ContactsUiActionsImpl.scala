@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPr
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{TabInfo, PullToTabsListener}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Tabs
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.device.models.{TermCounter, Contact, IterableContacts}
+import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -48,17 +48,18 @@ trait ContactsUiActionsImpl
   )
 
   override def initialize(): Ui[Any] =
-    (toolbar <~
-      dtbInit(colorPrimary) <~
-      dtvInflateMenu(R.menu.contact_dialog_menu) <~
-      dtvOnMenuItemClickListener(onItem = {
-        case R.id.action_filter =>
-          (if (isTabsOpened) closeTabs() else openTabs()).run
-          true
-        case _ => false
-      }) <~
-      dtbChangeText(R.string.allContacts) <~
-      dtbNavigationOnClickListener((_) => unreveal())) ~
+    (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
+      (toolbar <~
+        dtbInit(colorPrimary) <~
+        dtvInflateMenu(R.menu.contact_dialog_menu) <~
+        dtvOnMenuItemClickListener(onItem = {
+          case R.id.action_filter =>
+            (if (isTabsOpened) closeTabs() else openTabs()).run
+            true
+          case _ => false
+        }) <~
+        dtbChangeText(R.string.allContacts) <~
+        dtbNavigationOnClickListener((_) => unreveal())) ~
       (pullToTabsView <~
         ptvLinkTabs(
           tabs = tabs,
@@ -72,8 +73,7 @@ trait ContactsUiActionsImpl
           }
         ))) ~
       (recycler <~ recyclerStyle) ~
-      (tabs <~ tvClose) ~
-      (scrollerLayout <~ fslColor(colorPrimary))
+      (tabs <~ tvClose)
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ hideError
 
@@ -104,7 +104,7 @@ trait ContactsUiActionsImpl
     val ft = getFragmentManager.beginTransaction()
     Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
     ft.addToBackStack(javaNull)
-    val dialog = new SelectInfoContactDialogFragment(contact)
+    val dialog = SelectInfoContactDialogFragment(contact)
     dialog.setTargetFragment(this, RequestCodes.selectInfoContact)
     dialog.show(ft, tagDialog)
   }
@@ -120,7 +120,7 @@ trait ContactsUiActionsImpl
 
   private[this] def generateContactsAdapter(contacts: IterableContacts, counters: Seq[TermCounter], clickListener: (Contact) => Unit)
     (implicit uiContext: UiContext[_]): Ui[Any] = {
-    val adapter = new ContactsAdapter(contacts, clickListener, None)
+    val adapter = ContactsAdapter(contacts, clickListener, None)
     showData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~

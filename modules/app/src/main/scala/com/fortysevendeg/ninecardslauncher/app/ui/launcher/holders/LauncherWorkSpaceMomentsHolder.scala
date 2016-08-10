@@ -87,6 +87,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   def arrowWidget(arrow: Arrow): Ui[Any] = (presenter.statuses.idWidget, presenter.statuses.transformation) match {
     case (Some(id), ResizeTransformation) => applyResize(id, arrow)
     case (Some(id), MoveTransformation) => applyMove(id, arrow)
+    case _ => Ui.nop
   }
 
   def addWidget(widgetView: View, cell: Cell, widget: AppWidget): Ui[Any] = {

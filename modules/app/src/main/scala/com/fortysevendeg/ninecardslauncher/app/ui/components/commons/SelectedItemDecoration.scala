@@ -10,7 +10,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerView
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CollectionDetailTextCardColor, NineCardsTheme, SearchBackgroundColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardTextColor, NineCardsTheme, SearchBackgroundColor}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
@@ -23,7 +23,7 @@ class SelectedItemDecoration(implicit contextWrapper: ContextWrapper, theme: Nin
 
   val line = {
     val d = new ShapeDrawable(new RectShape)
-    d.getPaint.setColor(theme.get(CollectionDetailTextCardColor))
+    d.getPaint.setColor(theme.get(CardTextColor))
     d
   }
 
