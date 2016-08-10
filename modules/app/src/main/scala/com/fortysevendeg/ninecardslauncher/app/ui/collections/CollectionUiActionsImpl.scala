@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
 import android.text.Html
+import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -26,7 +27,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToClos
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardBackgroundColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -163,7 +164,7 @@ trait CollectionUiActionsImpl
     (emptyCollectionMessage <~
       tvText(messageText) <~
       tvColor(theme.get(DrawerTextColor).alpha(0.8f))) ~
-      (emptyCollectionView <~ vVisible) ~
+      (emptyCollectionView <~ vVisible <~ cvCardBackgroundColor(theme.get(CardBackgroundColor))) ~
       (recyclerView <~ vGone)
 
   override def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): Ui[Any] =
