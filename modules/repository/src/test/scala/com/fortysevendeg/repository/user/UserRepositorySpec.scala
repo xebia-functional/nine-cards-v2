@@ -1,6 +1,7 @@
 package com.fortysevendeg.repository.user
 
 import android.net.Uri
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
@@ -13,14 +14,13 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 import scala.language.postfixOps
 
 trait UserRepositorySpecification
   extends Specification
-  with DisjunctionMatchers
-  with Mockito {
+    with DisjunctionMatchers
+    with Mockito {
 
   val contentResolverException = new RuntimeException("Irrelevant message")
 
@@ -42,7 +42,7 @@ trait UserRepositorySpecification
 
 trait UserMockCursor
   extends MockCursor
-  with UserRepositoryTestData {
+    with UserRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, userSeq map (_.id), IntDataType),
@@ -63,7 +63,7 @@ trait UserMockCursor
 
 trait EmptyUserMockCursor
   extends MockCursor
-  with UserRepositoryTestData {
+    with UserRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -84,7 +84,7 @@ trait EmptyUserMockCursor
 
 class UserRepositorySpec
   extends UserRepositorySpecification
-  with UserRepositoryTestData {
+    with UserRepositoryTestData {
 
   "UserRepositoryClient component" should {
 
@@ -95,10 +95,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.insert(any, any, any) returns testId
 
-          val result = userRepository.addUser(data = createUserData).run.run
+          val result = userRepository.addUser(data = createUserData).value.run
 
           result must beLike {
-            case Answer(userResponse) =>
+            case Xor.Right(userResponse) =>
               userResponse.id shouldEqual testId
               userResponse.data.userId should beSome(testUserId)
           }
@@ -111,14 +111,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.insert(any, any, any) throws contentResolverException
 
-          val result = userRepository.addUser(data = createUserData).run.run
+          val result = userRepository.addUser(data = createUserData).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
 
           there was one(contentResolverWrapper).insert(mockUri, createUserValues, Some(mockUri))
@@ -132,10 +128,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.delete(any, any, any, any) returns 1
 
-          val result = userRepository.deleteUsers().run.run
+          val result = userRepository.deleteUsers().value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
 
@@ -150,14 +146,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.delete(any, any, any, any) throws contentResolverException thenReturn 1
 
-          val result = userRepository.deleteUsers().run.run
+          val result = userRepository.deleteUsers().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
 
           there was one(contentResolverWrapper).delete(
@@ -174,10 +166,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
 
-          val result = userRepository.deleteUser(user).run.run
+          val result = userRepository.deleteUser(user).value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
 
@@ -192,14 +184,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException thenReturn 1
 
-          val result = userRepository.deleteUser(user).run.run
+          val result = userRepository.deleteUser(user).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
 
           there were one(contentResolverWrapper).deleteById(
@@ -216,10 +204,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.findById[UserEntity](any, any, any, any, any, any)(any) returns Some(userEntity)
 
-          val result = userRepository.findUserById(id = testId).run.run
+          val result = userRepository.findUserById(id = testId).value.run
 
           result must beLike {
-            case Answer(maybeUser) =>
+            case Xor.Right(maybeUser) =>
               maybeUser must beSome[User].which { user =>
                 user.id shouldEqual testId
                 user.data.userId should beSome(testUserId)
@@ -238,10 +226,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.findById(any, any, any, any, any, any)(any) returns None
 
-          val result = userRepository.findUserById(id = testNonExistingId).run.run
+          val result = userRepository.findUserById(id = testNonExistingId).value.run
 
           result must beLike {
-            case Answer(maybeUser) =>
+            case Xor.Right(maybeUser) =>
               maybeUser must beNone
           }
 
@@ -257,14 +245,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.findById(any, any, any, any, any, any)(any) throws contentResolverException thenReturn None
 
-          val result = userRepository.findUserById(id = testId).run.run
+          val result = userRepository.findUserById(id = testId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
 
           there was one(contentResolverWrapper).findById(
@@ -282,10 +266,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.updateById(any, any, any, any) returns 1
 
-          val result = userRepository.updateUser(item = user).run.run
+          val result = userRepository.updateUser(item = user).value.run
 
           result must beLike {
-            case Answer(updated) =>
+            case Xor.Right(updated) =>
               updated shouldEqual 1
           }
 
@@ -301,14 +285,10 @@ class UserRepositorySpec
 
           contentResolverWrapper.updateById(any, any, any, any) throws contentResolverException thenReturn 1
 
-          val result = userRepository.updateUser(item = user).run.run
+          val result = userRepository.updateUser(item = user).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
 
           there was one(contentResolverWrapper).updateById(
