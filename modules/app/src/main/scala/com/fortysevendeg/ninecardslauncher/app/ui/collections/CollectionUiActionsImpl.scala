@@ -10,15 +10,16 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.CollectionDialog
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullingListener}
@@ -28,10 +29,9 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid._
 import macroid.FullDsl._
+import macroid._
 
-import scala.language.postfixOps
 import scala.language.postfixOps
 
 trait CollectionUiActionsImpl
@@ -110,8 +110,9 @@ trait CollectionUiActionsImpl
                   card <- collection.cards.lift(position)
                 } yield {
                   presenter.reorderCard(collection.id, card.id, position)
-                  presenter.moveToCard()
+                  presenter.moveToCollection(card)
                 }
+                updateScroll(-1)
               case NoAction =>
                 for {
                   adapter <- getAdapter
@@ -170,6 +171,13 @@ trait CollectionUiActionsImpl
         rvAdapter(createAdapter(collection)) <~
         nrvScheduleLayoutAnimation <~
         getScrollListener(spaceMove)).ifUi(animateCards)
+    }
+
+  override def moveToCollection(collections: Seq[Collection], card: Card): Ui[Any] =
+    fragmentContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) =>
+        Ui(new CollectionDialog(collections, c => collectionsPresenter.moveToCollection(c, collections.indexWhere(_.id == c), card), () => ()).show())
+      case _ => Ui.nop
     }
 
   override def editCard(collectionId: Int, cardId: Int, cardName: String): Unit =

@@ -15,7 +15,6 @@ import com.fortysevendeg.ninecardslauncher.process.device.ShortcutException
 import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.Result
 
-import scala.util.Random
 import scalaz.concurrent.Task
 
 class CollectionsPagerPresenter(
@@ -54,6 +53,25 @@ class CollectionsPagerPresenter(
         actions.reloadCards(newCollection.cards, reloadFragment).run
       })
     )
+  }
+
+  def moveToCollection(collectionId: Int, collectionPosition: Int, card: Card): Unit = {
+
+    def createAddCardRequest(card: Card): AddCardRequest = {
+
+      AddCardRequest(
+        term = card.term,
+        packageName = card.packageName,
+        cardType =card.cardType,
+        intent = card.intent,
+        imagePath = card.imagePath)
+    }
+
+    removeCard(card)
+
+    Task.fork(di.collectionProcess.addCards(collectionId, Seq(createAddCardRequest(card))).run).resolveAsyncUi(
+      onResult = actions.addCardsToCollection(collectionPosition, _))
+
   }
 
   def showMessageNotImplemented(): Unit = actions.showMessageNotImplemented.run
@@ -162,6 +180,8 @@ trait CollectionsUiActions {
   def reloadCards(cards: Seq[Card], reloadFragments: Boolean): Ui[Any]
 
   def addCards(cards: Seq[Card]): Ui[Any]
+
+  def addCardsToCollection(collectionPosition: Int, cards: Seq[Card]): Ui[Any]
 
   def removeCards(card: Card): Ui[Any]
 
