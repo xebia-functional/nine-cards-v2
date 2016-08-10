@@ -17,16 +17,21 @@ import macroid._
 import macroid.FullDsl._
 
 class MomentDialog(moments: Seq[MomentWithCollection])(implicit contextWrapper: ContextWrapper, presenter: LauncherPresenter)
-  extends BottomSheetDialog(contextWrapper.getOriginal) { dialog =>
+  extends BottomSheetDialog(contextWrapper.getOriginal)
+  with TypedFindView { dialog =>
+
+  lazy val selectMomentList = findView(TR.select_moment_list)
 
   val sheetView = getLayoutInflater.inflate(TR.layout.select_moment_dialog)
 
+  setContentView(sheetView)
+
   val views = moments map (moment => new MomentItem(moment))
 
-  (sheetView <~
-    vgAddViews(views)).run
-
-  setContentView(sheetView)
+  ((selectMomentList <~
+    vgAddViews(views)) ~
+    (sheetView <~
+      vgAddView(selectMomentList))).run
 
   class MomentItem(moment: MomentWithCollection)
     extends LinearLayout(contextWrapper.getOriginal)
