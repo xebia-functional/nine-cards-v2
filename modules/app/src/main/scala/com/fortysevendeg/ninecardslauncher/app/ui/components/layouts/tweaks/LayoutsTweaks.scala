@@ -71,6 +71,8 @@ object LauncherWorkSpacesTweaks {
 
   def lwsClearWidgets() = Tweak[W] (_.clearWidgets())
 
+  def lwsUnhostWidget(id: Int) = Tweak[W] (_.unhostWidget(id))
+
   def lwsClean = Tweak[W] (_.clean())
 
   def lwsOpenMenu = Tweak[W] (_.openMenu())

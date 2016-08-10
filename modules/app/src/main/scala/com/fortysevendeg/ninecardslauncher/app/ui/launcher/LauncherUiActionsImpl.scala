@@ -24,7 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.MomentDialog
+import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
@@ -43,6 +43,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiAction
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.Arrow
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
@@ -86,6 +87,8 @@ trait LauncherUiActionsImpl
   lazy val actionForApps = Seq(
     CollectionActionItem(resGetString(R.string.appInfo), R.drawable.icon_launcher_action_info_app, CollectionActionAppInfo),
     CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall))
+
+  val tagDialog = "dialog"
 
   override def initialize: Ui[Any] =
     Ui {
@@ -135,7 +138,7 @@ trait LauncherUiActionsImpl
 
   override def arrowWidget(arrow: Arrow): Ui[Any] = workspaces <~ lwsArrowWidget(arrow)
 
-  override def deleteWidget(): Ui[Any] = Ui.nop
+  override def cancelWidget(appWidgetId: Int): Ui[Any] = Ui(appWidgetHost.deleteAppWidgetId(appWidgetId))
 
   override def editWidgetsShowActions(): Ui[Any] =
     (workspaces <~ lwsReloadSelectedWidget) ~
@@ -143,6 +146,12 @@ trait LauncherUiActionsImpl
       (editWidgetsBottomPanel <~ ewbAnimateActions)
 
   override def showAddItemMessage(nameCollection: String): Ui[Any] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
+
+  override def showWidgetCantResizeMessage(): Ui[Any] = showMessage(R.string.noResizeForWidget)
+
+  override def showWidgetCantMoveMessage(): Ui[Any] = showMessage(R.string.noMoveForWidget)
+
+  override def showWidgetNoHaveSpaceMessage(): Ui[Any] = showMessage(R.string.noSpaceForWidget)
 
   override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
 
@@ -243,24 +252,41 @@ trait LauncherUiActionsImpl
 
   override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
 
-  override def addWidget(widget: AppWidget): Ui[Any] = {
-    val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
+  override def addWidgets(widgets: Seq[AppWidget]): Ui[Any] = {
+    val uiWidgets = widgets map { widget =>
+      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
 
-    val widthContent = workspaces map (_.getWidth) getOrElse 0
-    val heightContent = workspaces map (_.getHeight) getOrElse 0
+      val widthContent = workspaces map (_.getWidth) getOrElse 0
+      val heightContent = workspaces map (_.getHeight) getOrElse 0
 
-    val cell = appWidgetInfo.getCell(widthContent, heightContent)
+      val cell = appWidgetInfo.getCell(widthContent, heightContent)
 
-    Ui {
-      val hostView = appWidgetHost.createView(activityContextWrapper.application, widget.appWidgetId, appWidgetInfo)
-      hostView.setAppWidget(widget.appWidgetId, appWidgetInfo)
-      (workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+      Ui {
+        val hostView = appWidgetHost.createView(activityContextWrapper.application, widget.appWidgetId, appWidgetInfo)
+        hostView.setAppWidget(widget.appWidgetId, appWidgetInfo)
+        (workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+      }
     }
+    Ui.sequence(uiWidgets: _*)
   }
 
   override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()
 
-  override def deleteWidget(widgetViewId: Int): Ui[Any] = Ui(appWidgetHost.deleteAppWidgetId(widgetViewId))
+  override def deleteSelectedWidget(): Ui[Any] = Ui {
+    activityContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) =>
+        val ft = activity.getSupportFragmentManager.beginTransaction()
+        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+        ft.addToBackStack(javaNull)
+        val dialog = new AlertDialogFragment(
+          message = R.string.removeWidgetMessage,
+          positiveAction = () => presenter.deleteDBWidget())
+        dialog.show(ft, tagDialog)
+      case _ =>
+    }
+  }
+
+  def unhostWidget(id: Int): Ui[Any] = workspaces <~ lwsUnhostWidget(id)
 
   override def hostWidget(widget: Widget): Ui[Any] = {
     val appWidgetId = appWidgetHost.allocateAppWidgetId()

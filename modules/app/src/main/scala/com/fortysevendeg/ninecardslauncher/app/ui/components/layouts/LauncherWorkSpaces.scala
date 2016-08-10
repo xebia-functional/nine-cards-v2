@@ -90,6 +90,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def clearWidgets(): Unit = uiWithView(_.clearWidgets)
 
+  def unhostWidget(id: Int): Unit = uiWithView(_.unhostWiget(id))
+
   def showRulesInMoment(): Unit = uiWithView(_.createRules)
 
   def hideRulesInMoment(): Unit = uiWithView(_.removeRules)

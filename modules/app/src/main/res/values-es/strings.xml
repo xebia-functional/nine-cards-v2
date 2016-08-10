@@ -467,11 +467,6 @@
     <string name="tutorial">Revisa el Tutorial</string>
     <string name="tos">Términos de Uso</string>
 
-    <!-- Edit Widgets -->
-    <string name="editingWidgets">Editando widgets</string>
-    <string name="movingWidgets">Moviendo widgets</string>
-    <string name="resizingWidgets">Resimensionando widgets</string>
-
     <!-- Shared Content -->
     <string name="sharedIntentLabel">Añadir tarjeta</string>
     <string name="sharedContentDefaultTitle">Página web</string>
@@ -479,5 +474,14 @@
     <string name="sharedContentErrorEmpty">Sin contenido</string>
     <string name="sharedContentErrorNotSupported">Contenido compartido no soportado</string>
     <string name="sharedContentErrorUnexpected">Error inesperado</string>
+
+    <!-- Edit Widgets -->
+    <string name="editingWidgets">Editando widgets</string>
+    <string name="movingWidgets">Moviendo widgets</string>
+    <string name="resizingWidgets">Resimensionando widgets</string>
+    <string name="removeWidgetMessage">¿Estás seguro que quieres borrar este widget?</string>
+    <string name="noSpaceForWidget">El widget no tiene espacio actualmente</string>
+    <string name="noMoveForWidget">El widget no puede moverse ahí</string>
+    <string name="noResizeForWidget">El widget no puede redimensionarse ahí</string>
 
 </resources>
