@@ -36,12 +36,11 @@ import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentExceptionImpl}
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
-import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest, WidgetExceptionImpl, WidgetException => ProcessWidgetException}
+import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest, AppWidgetException}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import macroid.{ActivityContextWrapper, Ui}
-import rapture.core.scalazInterop.ResultT
 import rapture.core.{Answer, Errata, Result}
 
 import scala.concurrent.Future
@@ -321,7 +320,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def arrowWidget(arrow: Arrow): Unit = if (statuses.mode == EditWidgetsMode) {
 
-    def getIntersect(idWidget: Int): ServiceDef2[Boolean, ProcessWidgetException] =
+    def getIntersect(idWidget: Int): ServiceDef2[Boolean, AppWidgetException] =
       for {
         widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption()
         widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.widget
 
 import scalaz.Scalaz._
 
-trait WidgetException
+trait AppWidgetException
   extends RuntimeException {
 
   val message: String
@@ -11,12 +11,12 @@ trait WidgetException
 
 }
 
-case class WidgetExceptionImpl(message: String, cause : Option[Throwable] = None)
+case class AppWidgetExceptionImpl(message: String, cause : Option[Throwable] = None)
   extends RuntimeException(message)
-  with WidgetException {
+  with AppWidgetException {
   cause map initCause
 }
 
 trait ImplicitsWidgetException {
-  implicit def widgetException = (t: Throwable) => WidgetExceptionImpl(t.getMessage, t.some)
+  implicit def widgetException = (t: Throwable) => AppWidgetExceptionImpl(t.getMessage, t.some)
 }
