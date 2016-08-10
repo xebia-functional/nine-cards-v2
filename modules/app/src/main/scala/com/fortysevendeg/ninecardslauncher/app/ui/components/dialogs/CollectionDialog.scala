@@ -11,7 +11,6 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.share.SharedContentPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -22,16 +21,21 @@ class CollectionDialog(
   moments: Seq[Collection],
   onCollection: (Int) => Any,
   onDismissDialog: () => Any)(implicit contextWrapper: ContextWrapper)
-  extends BottomSheetDialog(contextWrapper.getOriginal) { dialog =>
+  extends BottomSheetDialog(contextWrapper.getOriginal)
+  with TypedFindView { dialog =>
+
+  lazy val selectCollectionList = findView(TR.select_collection_list)
 
   val sheetView = getLayoutInflater.inflate(TR.layout.select_collection_dialog)
 
+  setContentView(sheetView)
+
   val views = moments map (moment => new CollectionItem(moment))
 
-  (sheetView <~
-    vgAddViews(views)).run
-
-  setContentView(sheetView)
+  ((selectCollectionList <~
+    vgAddViews(views)) ~
+    (sheetView <~
+      vgAddView(selectCollectionList))).run
 
   setOnDismissListener(new OnDismissListener {
     override def onDismiss(dialog: DialogInterface): Unit = onDismissDialog()
