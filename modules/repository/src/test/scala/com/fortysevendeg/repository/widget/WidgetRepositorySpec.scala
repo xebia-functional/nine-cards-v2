@@ -1,10 +1,10 @@
 package com.fortysevendeg.repository.widget
 
 import android.net.Uri
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.Widget
 import com.fortysevendeg.ninecardslauncher.repository.provider.WidgetEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
@@ -14,12 +14,11 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 trait WidgetRepositorySpecification
   extends Specification
-  with DisjunctionMatchers
-  with Mockito {
+    with DisjunctionMatchers
+    with Mockito {
 
   trait WidgetRepositoryScope
     extends Scope {
@@ -65,13 +64,13 @@ trait WidgetRepositorySpecification
       uri = mockUri,
       id = testWidgetId,
       projection = allFields)(
-        f = getEntityFromCursor(widgetEntityFromCursor)) returns Some(widgetEntity)
+      f = getEntityFromCursor(widgetEntityFromCursor)) returns Some(widgetEntity)
 
     contentResolverWrapper.findById(
       uri = mockUri,
       id = testNonExistingWidgetId,
       projection = allFields)(
-        f = getEntityFromCursor(widgetEntityFromCursor)) returns None
+      f = getEntityFromCursor(widgetEntityFromCursor)) returns None
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -79,7 +78,7 @@ trait WidgetRepositorySpecification
       where = "",
       whereParams = Seq.empty,
       orderBy = s"$momentId asc")(
-        f = getListFromCursor(widgetEntityFromCursor)) returns widgetEntitySeq
+      f = getListFromCursor(widgetEntityFromCursor)) returns widgetEntitySeq
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -111,7 +110,7 @@ trait WidgetRepositorySpecification
       where = s"$appWidgetId = ?",
       whereParams = Seq(testAppWidgetId.toString),
       orderBy = "")(
-        f = getEntityFromCursor(widgetEntityFromCursor)) returns Some(widgetEntity)
+      f = getEntityFromCursor(widgetEntityFromCursor)) returns Some(widgetEntity)
 
     contentResolverWrapper.fetch(
       uri = mockUri,
@@ -119,7 +118,7 @@ trait WidgetRepositorySpecification
       where = s"$appWidgetId = ?",
       whereParams = Seq(testNonExistingAppWidgetId.toString),
       orderBy = "")(
-        f = getEntityFromCursor(widgetEntityFromCursor)) returns None
+      f = getEntityFromCursor(widgetEntityFromCursor)) returns None
 
     contentResolverWrapper.updateById(
       uri = mockUri,
@@ -179,7 +178,7 @@ trait WidgetRepositorySpecification
       uri = mockUri,
       id = testWidgetId,
       projection = allFields)(
-        f = getEntityFromCursor(widgetEntityFromCursor)) throws contentResolverException
+      f = getEntityFromCursor(widgetEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -187,7 +186,7 @@ trait WidgetRepositorySpecification
       where = "",
       whereParams = Seq.empty,
       orderBy = s"$momentId asc")(
-        f = getListFromCursor(widgetEntityFromCursor)) throws contentResolverException
+      f = getListFromCursor(widgetEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -211,7 +210,7 @@ trait WidgetRepositorySpecification
       where = s"$momentId = ?",
       whereParams = Seq(testMomentId.toString),
       orderBy = "")(
-        f = getEntityFromCursor(widgetEntityFromCursor)) throws contentResolverException
+      f = getEntityFromCursor(widgetEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       uri = mockUri,
@@ -219,7 +218,7 @@ trait WidgetRepositorySpecification
       where = s"$appWidgetId = ?",
       whereParams = Seq(testAppWidgetId.toString),
       orderBy = "")(
-        f = getEntityFromCursor(widgetEntityFromCursor)) throws contentResolverException
+      f = getEntityFromCursor(widgetEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.updateById(
       uri = mockUri,
@@ -249,7 +248,7 @@ trait WidgetRepositorySpecification
 
 trait WidgetMockCursor
   extends MockCursor
-  with WidgetRepositoryTestData {
+    with WidgetRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, widgetSeq map (_.id), IntDataType),
@@ -271,7 +270,7 @@ trait WidgetMockCursor
 
 trait EmptyWidgetMockCursor
   extends MockCursor
-  with WidgetRepositoryTestData {
+    with WidgetRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -302,10 +301,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
 
-          val result = widgetRepository.addWidget(data = createWidgetData).run.run
+          val result = widgetRepository.addWidget(data = createWidgetData).value.run
 
           result must beLike {
-            case Answer(widget) =>
+            case Xor.Right(widget) =>
               widget.id shouldEqual testWidgetId
               widget.data.packageName shouldEqual testPackageName
           }
@@ -315,14 +314,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorWidgetRepositoryResponses {
 
-          val result = widgetRepository.addWidget(data = createWidgetData).run.run
+          val result = widgetRepository.addWidget(data = createWidgetData).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -333,10 +328,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
 
-          val result = widgetRepository.addWidgets(datas = widgetDataSeq).run.run
+          val result = widgetRepository.addWidgets(datas = widgetDataSeq).value.run
 
           result must beLike {
-            case Answer(widgets) =>
+            case Xor.Right(widgets) =>
               widgets map (_.id) shouldEqual widgetIdSeq
               widgets map (_.data.packageName) shouldEqual (widgetSeq map (_.data.packageName))
           }
@@ -346,14 +341,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorWidgetRepositoryResponses {
 
-          val result = widgetRepository.addWidgets(datas = widgetDataSeq).run.run
+          val result = widgetRepository.addWidgets(datas = widgetDataSeq).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -364,10 +355,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
 
-          val result = widgetRepository.deleteWidgets().run.run
+          val result = widgetRepository.deleteWidgets().value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -376,14 +367,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorWidgetRepositoryResponses {
 
-          val result = widgetRepository.deleteWidgets().run.run
+          val result = widgetRepository.deleteWidgets().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -394,10 +381,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
 
-          val result = widgetRepository.deleteWidget(widget).run.run
+          val result = widgetRepository.deleteWidget(widget).value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -406,14 +393,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorWidgetRepositoryResponses {
 
-          val result = widgetRepository.deleteWidget(widget).run.run
+          val result = widgetRepository.deleteWidget(widget).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -424,10 +407,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
 
-          val result = widgetRepository.findWidgetById(id = testWidgetId).run.run
+          val result = widgetRepository.findWidgetById(id = testWidgetId).value.run
 
           result must beLike {
-            case Answer(maybeWidget) =>
+            case Xor.Right(maybeWidget) =>
               maybeWidget must beSome[Widget].which { widget =>
                 widget.id shouldEqual testWidgetId
                 widget.data.packageName shouldEqual testPackageName
@@ -438,10 +421,10 @@ class WidgetRepositorySpec
       "return None when a non-existing id is given" in
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
-          val result = widgetRepository.findWidgetById(id = testNonExistingWidgetId).run.run
+          val result = widgetRepository.findWidgetById(id = testNonExistingWidgetId).value.run
 
           result must beLike {
-            case Answer(maybeWidget) =>
+            case Xor.Right(maybeWidget) =>
               maybeWidget must beNone
           }
         }
@@ -450,14 +433,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorWidgetRepositoryResponses {
 
-          val result = widgetRepository.findWidgetById(id = testWidgetId).run.run
+          val result = widgetRepository.findWidgetById(id = testWidgetId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -468,10 +447,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
 
-          val result = widgetRepository.fetchWidgetByAppWidgetId(appWidgetId = testAppWidgetId).run.run
+          val result = widgetRepository.fetchWidgetByAppWidgetId(appWidgetId = testAppWidgetId).value.run
 
           result must beLike {
-            case Answer(maybeWidget) =>
+            case Xor.Right(maybeWidget) =>
               maybeWidget must beSome[Widget].which { widget =>
                 widget.id shouldEqual testWidgetId
                 widget.data.appWidgetId shouldEqual testAppWidgetId
@@ -482,10 +461,10 @@ class WidgetRepositorySpec
       "return None when a non-existing appWidgetId is given" in
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
-          val result = widgetRepository.fetchWidgetByAppWidgetId(appWidgetId = testNonExistingAppWidgetId).run.run
+          val result = widgetRepository.fetchWidgetByAppWidgetId(appWidgetId = testNonExistingAppWidgetId).value.run
 
           result must beLike {
-            case Answer(maybeWidget) =>
+            case Xor.Right(maybeWidget) =>
               maybeWidget must beNone
           }
         }
@@ -494,14 +473,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorWidgetRepositoryResponses {
 
-          val result = widgetRepository.fetchWidgetByAppWidgetId(appWidgetId = testAppWidgetId).run.run
+          val result = widgetRepository.fetchWidgetByAppWidgetId(appWidgetId = testAppWidgetId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -512,10 +487,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
 
-          val result = widgetRepository.fetchWidgetsByMoment(momentId = testMomentId).run.run
+          val result = widgetRepository.fetchWidgetsByMoment(momentId = testMomentId).value.run
 
           result must beLike {
-            case Answer(widgets) =>
+            case Xor.Right(widgets) =>
               widgets shouldEqual widgetSeq
           }
         }
@@ -524,10 +499,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
 
-          val result = widgetRepository.fetchWidgetsByMoment(momentId = testNonExistingMomentId).run.run
+          val result = widgetRepository.fetchWidgetsByMoment(momentId = testNonExistingMomentId).value.run
 
           result must beLike {
-            case Answer(widgets) =>
+            case Xor.Right(widgets) =>
               widgets should beEmpty
           }
         }
@@ -536,14 +511,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorWidgetRepositoryResponses {
 
-          val result = widgetRepository.fetchWidgetsByMoment(momentId = testMomentId).run.run
+          val result = widgetRepository.fetchWidgetsByMoment(momentId = testMomentId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -554,10 +525,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidAllWidgetsRepositoryResponses {
 
-          val result = widgetRepository.fetchWidgets().run.run
+          val result = widgetRepository.fetchWidgets().value.run
 
           result must beLike {
-            case Answer(widgets) =>
+            case Xor.Right(widgets) =>
               widgets shouldEqual widgetSeq
           }
         }
@@ -566,14 +537,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorAllWidgetsRepositoryResponses {
 
-          val result = widgetRepository.fetchWidgets().run.run
+          val result = widgetRepository.fetchWidgets().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -584,10 +551,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
 
-          val result = widgetRepository.updateWidget(widget = widget).run.run
+          val result = widgetRepository.updateWidget(widget = widget).value.run
 
           result must beLike {
-            case Answer(updated) =>
+            case Xor.Right(updated) =>
               updated shouldEqual 1
           }
         }
@@ -596,14 +563,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorWidgetRepositoryResponses {
 
-          val result = widgetRepository.updateWidget(widget = widget).run.run
+          val result = widgetRepository.updateWidget(widget = widget).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -614,10 +577,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ValidWidgetRepositoryResponses {
 
-          val result = widgetRepository.updateWidgets(widgets = widgetSeq).run.run
+          val result = widgetRepository.updateWidgets(widgets = widgetSeq).value.run
 
           result must beLike {
-            case Answer(updated) =>
+            case Xor.Right(updated) =>
               updated shouldEqual Seq(5)
           }
         }
@@ -626,14 +589,10 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope
           with ErrorWidgetRepositoryResponses {
 
-          val result = widgetRepository.updateWidgets(widgets = widgetSeq).run.run
+          val result = widgetRepository.updateWidgets(widgets = widgetSeq).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
