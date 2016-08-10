@@ -36,6 +36,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Laun
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.EditWidgetsMode
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets.WidgetsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
@@ -117,7 +118,9 @@ trait LauncherUiActionsImpl
       (workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
       (drawerLayout <~ dlLockedClosed)
 
-  def closeModeEditWidgets(): Ui[Any] =
+  override def backToActionEditWidgets(): Ui[Any] = editWidgetsBottomPanel <~ ewbShowActions
+
+  override def closeModeEditWidgets(): Ui[Any] =
     (dockAppsPanel <~ applyFadeIn()) ~
       (paginationPanel <~ applyFadeIn()) ~
       (topBarPanel <~ applyFadeIn()) ~
@@ -345,7 +348,12 @@ trait LauncherUiActionsImpl
   override def closeAppsMoment(): Ui[Any] = drawerLayout <~ dlCloseDrawerEnd
 
   override def back: Ui[Any] =
-    if (isDrawerTabsOpened) {
+    if (presenter.statuses.mode == EditWidgetsMode) {
+      Ui(presenter.statuses.transformation match {
+        case Some(_) => presenter.backToActionEditWidgets()
+        case _ => presenter.closeModeEditWidgets()
+      })
+    } else if (isDrawerTabsOpened) {
       closeDrawerTabs
     } else if (isMenuVisible) {
       closeMenu()

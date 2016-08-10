@@ -234,9 +234,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def goToMomentWorkspace(): Unit = (actions.goToMomentWorkspace() ~ actions.closeAppsMoment()).run
 
   def clickWorkspaceBackground(): Unit = {
-    statuses.mode match {
-      case NormalMode => actions.openAppsMoment().run
-      case EditWidgetsMode => closeModeEditWidgets()
+    (statuses.mode, statuses.transformation) match {
+      case (NormalMode, _) => actions.openAppsMoment().run
+      case (EditWidgetsMode, Some(_)) => backToActionEditWidgets()
+      case (EditWidgetsMode, None) => closeModeEditWidgets()
       case _ =>
     }
   }
@@ -304,17 +305,17 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def openModeEditWidgets(id: Int): Unit = {
-    statuses = statuses.copy(mode = EditWidgetsMode, idWidget = Some(id))
+    statuses = statuses.copy(mode = EditWidgetsMode, transformation = None, idWidget = Some(id))
     actions.openModeEditWidgets().run
   }
 
   def resizeWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
-    statuses = statuses.copy(transformation = ResizeTransformation)
+    statuses = statuses.copy(transformation = Some(ResizeTransformation))
     actions.resizeWidget().run
   }
 
   def moveWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
-    statuses = statuses.copy(transformation = MoveTransformation)
+    statuses = statuses.copy(transformation = Some(MoveTransformation))
     actions.moveWidget().run
   }
 
@@ -328,12 +329,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       } yield widgetsByMoment.filterNot(_.id == widget.id).exists(_.area.intersect(newSpace))
 
     def convertSpace(widgetArea: WidgetArea) = statuses.transformation match {
-      case ResizeTransformation =>
+      case Some(ResizeTransformation) =>
         val r = ResizeWidgetRequest.tupled(operationArgs)
         widgetArea.copy(
           spanX = widgetArea.spanX + r.increaseX,
           spanY = widgetArea.spanY + r.increaseY)
-      case MoveTransformation =>
+      case Some(MoveTransformation) =>
         val r = MoveWidgetRequest.tupled(operationArgs)
         widgetArea.copy(
           startX = widgetArea.startX + r.displaceX,
@@ -341,8 +342,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
 
     def widgetOperation(id: Int) = statuses.transformation match {
-      case ResizeTransformation => di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest.tupled(operationArgs))
-      case MoveTransformation => di.widgetsProcess.moveWidget(id, MoveWidgetRequest.tupled(operationArgs))
+      case Some(ResizeTransformation) => di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest.tupled(operationArgs))
+      case Some(MoveTransformation) => di.widgetsProcess.moveWidget(id, MoveWidgetRequest.tupled(operationArgs))
     }
 
     def operationArgs = arrow match {
@@ -356,8 +357,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case Some(id) =>
         Task.fork(getIntersect(id).run).resolveAsync(
           onResult = (intersect: Boolean) => (intersect, statuses.transformation) match {
-            case (true, ResizeTransformation) => actions.showWidgetCantResizeMessage().run
-            case (true, MoveTransformation) => actions.showWidgetCantMoveMessage().run
+            case (true, Some(ResizeTransformation)) => actions.showWidgetCantResizeMessage().run
+            case (true, Some(MoveTransformation)) => actions.showWidgetCantMoveMessage().run
             case (false, _) =>
               Task.fork(widgetOperation(id).run).resolveAsyncUi(
                 onResult = (_) => actions.arrowWidget(arrow),
@@ -379,6 +380,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def editWidgetsShowActions(): Unit = actions.editWidgetsShowActions().run
+
+  def backToActionEditWidgets(): Unit = {
+    statuses = statuses.copy(transformation = None)
+    actions.backToActionEditWidgets().run
+  }
 
   def closeModeEditWidgets(): Unit = {
     statuses = statuses.copy(mode = NormalMode, idWidget = None)
@@ -834,6 +840,8 @@ trait LauncherUiActions {
 
   def editWidgetsShowActions(): Ui[Any]
 
+  def backToActionEditWidgets(): Ui[Any]
+
   def closeModeEditWidgets(): Ui[Any]
 
   def showAddItemMessage(nameCollection: String): Ui[Any]
@@ -928,7 +936,7 @@ object Statuses {
   case class LauncherPresenterStatuses(
     touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
     mode: LauncherMode = NormalMode,
-    transformation: EditWidgetTransformation = ResizeTransformation,
+    transformation: Option[EditWidgetTransformation] = None,
     idWidget: Option[Int] = None,
     cardAddItemMode: Option[AddCardRequest] = None,
     collectionReorderMode: Option[Collection] = None,
