@@ -242,8 +242,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  def clickMomentTopBar(): Unit = actions.openAppsMoment().run
-
   def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
     self !>>
       TrackEvent(
@@ -307,6 +305,21 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def openModeEditWidgets(id: Int): Unit = {
     statuses = statuses.copy(mode = EditWidgetsMode, transformation = None, idWidget = Some(id))
     actions.openModeEditWidgets().run
+  }
+
+  def backToActionEditWidgets(): Unit = {
+    statuses = statuses.copy(transformation = None)
+    actions.reloadViewEditWidgets().run
+  }
+
+  def loadViewEditWidgets(id: Int): Unit = {
+    statuses = statuses.copy(idWidget = Some(id), transformation = None)
+    actions.reloadViewEditWidgets().run
+  }
+
+  def closeModeEditWidgets(): Unit = {
+    statuses = statuses.copy(mode = NormalMode, idWidget = None)
+    actions.closeModeEditWidgets().run
   }
 
   def resizeWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
@@ -426,15 +439,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def editWidgetsShowActions(): Unit = actions.editWidgetsShowActions().run
 
-  def backToActionEditWidgets(): Unit = {
-    statuses = statuses.copy(transformation = None)
-    actions.backToActionEditWidgets().run
-  }
-
-  def closeModeEditWidgets(): Unit = {
-    statuses = statuses.copy(mode = NormalMode, idWidget = None)
-    actions.closeModeEditWidgets().run
-  }
+  def goToEditMoment(): Unit = actions.showNoImplementedYetMessage().run
 
   def goToChangeMoment(): Unit = {
     Task.fork(di.momentProcess.getAvailableMoments.run).resolveAsyncUi(
@@ -889,7 +894,7 @@ trait LauncherUiActions {
 
   def editWidgetsShowActions(): Ui[Any]
 
-  def backToActionEditWidgets(): Ui[Any]
+  def reloadViewEditWidgets(): Ui[Any]
 
   def closeModeEditWidgets(): Ui[Any]
 

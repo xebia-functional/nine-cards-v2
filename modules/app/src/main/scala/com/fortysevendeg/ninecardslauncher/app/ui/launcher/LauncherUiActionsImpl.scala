@@ -119,7 +119,10 @@ trait LauncherUiActionsImpl
       (workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
       (drawerLayout <~ dlLockedClosed)
 
-  override def backToActionEditWidgets(): Ui[Any] = editWidgetsBottomPanel <~ ewbShowActions
+  override def reloadViewEditWidgets(): Ui[Any] =
+    (editWidgetsTopPanel <~ ewtInit) ~
+      (editWidgetsBottomPanel <~ ewbShowActions) ~
+      (workspaces <~ lwsReloadSelectedWidget)
 
   override def closeModeEditWidgets(): Ui[Any] =
     (dockAppsPanel <~ applyFadeIn()) ~
