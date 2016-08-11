@@ -440,7 +440,11 @@
     <string name="collectionDetailCardAnimationsTBD">TBD</string>
     <string name="collectionDetailCardAnimationsNoAnimation">No Animation</string>
 
-    <string name="collectionDetailAddCardsMessage">Add new cards to this collection</string>
+    <string name="collectionDetailAddCardsMessage">
+        <![CDATA[
+            This collection doesn\'t have cards. You can add <b>apps, contacts, recommendations or shortcuts</b> from the + button
+        ]]>
+    </string>
 
     <!-- New App Preferences -->
 
