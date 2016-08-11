@@ -25,7 +25,7 @@ class DockAppRepository(
 
   val dockAppNotificationUri = uriCreator.parse(dockAppUriNotificationString)
 
-  def addDockApp(data: DockAppData): CatsService[RepositoryException, DockApp] =
+  def addDockApp(data: DockAppData): CatsService[DockApp] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -41,7 +41,7 @@ class DockAppRepository(
       }
     }
 
-  def addDockApps(datas: Seq[DockAppData]): CatsService[RepositoryException, Seq[DockApp]] =
+  def addDockApps(datas: Seq[DockAppData]): CatsService[Seq[DockApp]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -61,7 +61,7 @@ class DockAppRepository(
       }
     }
 
-  def deleteDockApps(where: String = ""): CatsService[RepositoryException,Int] =
+  def deleteDockApps(where: String = ""): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -73,7 +73,7 @@ class DockAppRepository(
       }
     }
 
-  def deleteDockApp(dockApp: DockApp): CatsService[RepositoryException,Int] =
+  def deleteDockApp(dockApp: DockApp): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -85,7 +85,7 @@ class DockAppRepository(
       }
     }
 
-  def findDockAppById(id: Int): CatsService[RepositoryException,Option[DockApp]] =
+  def findDockAppById(id: Int): CatsService[Option[DockApp]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -100,7 +100,7 @@ class DockAppRepository(
   def fetchDockApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = s"${DockAppEntity.position} asc"): CatsService[RepositoryException, Seq[DockApp]] =
+    orderBy: String = s"${DockAppEntity.position} asc"): CatsService[Seq[DockApp]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -117,7 +117,7 @@ class DockAppRepository(
   def fetchIterableDockApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = s"${DockAppEntity.position} asc"): CatsService[ RepositoryException,IterableCursor[DockApp]] =
+    orderBy: String = s"${DockAppEntity.position} asc"): CatsService[IterableCursor[DockApp]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -131,7 +131,7 @@ class DockAppRepository(
       }
     }
 
-  def updateDockApp(item: DockApp): CatsService[ RepositoryException,Int] =
+  def updateDockApp(item: DockApp): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -146,7 +146,7 @@ class DockAppRepository(
       }
     }
 
-  def updateDockApps(items: Seq[DockApp]): CatsService[RepositoryException,Seq[Int]] =
+  def updateDockApps(items: Seq[DockApp]): CatsService[Seq[Int]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {

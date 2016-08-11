@@ -27,7 +27,7 @@ class MomentRepository(
 
   val momentNotificationUri = uriCreator.parse(momentUriNotificationString)
 
-  def addMoment(data: MomentData): CatsService[RepositoryException,Moment] =
+  def addMoment(data: MomentData): CatsService[Moment] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -43,7 +43,7 @@ class MomentRepository(
       }
     }
 
-  def addMoments(datas: Seq[MomentData]): CatsService[ RepositoryException,Seq[Moment]] =
+  def addMoments(datas: Seq[MomentData]): CatsService[Seq[Moment]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -63,7 +63,7 @@ class MomentRepository(
       }
     }
 
-  def deleteMoments(where: String = ""): CatsService[RepositoryException,Int] =
+  def deleteMoments(where: String = ""): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -75,7 +75,7 @@ class MomentRepository(
       }
     }
 
-  def deleteMoment(moment: Moment): CatsService[RepositoryException,Int] =
+  def deleteMoment(moment: Moment): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -87,7 +87,7 @@ class MomentRepository(
       }
     }
 
-  def findMomentById(id: Int): CatsService[RepositoryException,Option[Moment]] =
+  def findMomentById(id: Int): CatsService[Option[Moment]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -102,7 +102,7 @@ class MomentRepository(
   def fetchMoments(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[RepositoryException,Seq[Moment]] =
+    orderBy: String = ""): CatsService[Seq[Moment]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -119,7 +119,7 @@ class MomentRepository(
   def fetchIterableMoments(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[ RepositoryException,IterableCursor[Moment]] =
+    orderBy: String = ""): CatsService[IterableCursor[Moment]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -133,7 +133,7 @@ class MomentRepository(
       }
     }
 
-  def updateMoment(item: Moment): CatsService[RepositoryException,Int] =
+  def updateMoment(item: Moment): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {

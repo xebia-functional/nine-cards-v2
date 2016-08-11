@@ -28,7 +28,7 @@ class CollectionRepository(
 
   val collectionNotificationUri = uriCreator.parse(collectionUriNotificationString)
 
-  def addCollection(data: CollectionData): CatsService[RepositoryException, Collection] =
+  def addCollection(data: CollectionData): CatsService[Collection] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -44,7 +44,7 @@ class CollectionRepository(
       }
     }
 
-  def addCollections(datas: Seq[CollectionData]): CatsService[RepositoryException, Seq[Collection]] =
+  def addCollections(datas: Seq[CollectionData]): CatsService[Seq[Collection]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -64,7 +64,7 @@ class CollectionRepository(
       }
     }
 
-  def deleteCollections(where: String = ""): CatsService[RepositoryException, Int] =
+  def deleteCollections(where: String = ""): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -76,7 +76,7 @@ class CollectionRepository(
       }
     }
 
-  def deleteCollection(collection: Collection): CatsService[RepositoryException, Int] =
+  def deleteCollection(collection: Collection): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -88,7 +88,7 @@ class CollectionRepository(
       }
     }
 
-  def findCollectionById(id: Int): CatsService[RepositoryException, Option[Collection]] =
+  def findCollectionById(id: Int): CatsService[Option[Collection]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -100,7 +100,7 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionBySharedCollectionId(sharedCollectionId: String): CatsService[RepositoryException, Option[Collection]] =
+  def fetchCollectionBySharedCollectionId(sharedCollectionId: String): CatsService[Option[Collection]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -111,7 +111,7 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionByPosition(position: Int): CatsService[RepositoryException,Option[Collection]] =
+  def fetchCollectionByPosition(position: Int): CatsService[Option[Collection]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -123,7 +123,7 @@ class CollectionRepository(
   def fetchIterableCollections(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[RepositoryException, IterableCursor[Collection]] =
+    orderBy: String = ""): CatsService[IterableCursor[Collection]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -137,7 +137,7 @@ class CollectionRepository(
       }
     }
 
-  def fetchSortedCollections: CatsService[RepositoryException, Seq[Collection]] =
+  def fetchSortedCollections: CatsService[Seq[Collection]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -146,7 +146,7 @@ class CollectionRepository(
       }
     }
 
-  def updateCollection(collection: Collection): CatsService[RepositoryException,Int] =
+  def updateCollection(collection: Collection): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -161,7 +161,7 @@ class CollectionRepository(
       }
     }
 
-  def updateCollections(collections: Seq[Collection]): CatsService[RepositoryException, Seq[Int]] =
+  def updateCollections(collections: Seq[Collection]): CatsService[Seq[Int]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {

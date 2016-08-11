@@ -28,7 +28,7 @@ class WidgetRepository(
 
   val widgetNotificationUri = uriCreator.parse(widgetUriNotificationString)
 
-  def addWidget(data: WidgetData): CatsService[RepositoryException, Widget] =
+  def addWidget(data: WidgetData): CatsService[Widget] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -44,7 +44,7 @@ class WidgetRepository(
       }
     }
 
-  def addWidgets(datas: Seq[WidgetData]): CatsService[RepositoryException, Seq[Widget]] =
+  def addWidgets(datas: Seq[WidgetData]): CatsService[Seq[Widget]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -64,7 +64,7 @@ class WidgetRepository(
       }
     }
 
-  def deleteWidgets(where: String = ""): CatsService[RepositoryException, Int] =
+  def deleteWidgets(where: String = ""): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -76,7 +76,7 @@ class WidgetRepository(
       }
     }
 
-  def deleteWidget(widget: Widget): CatsService[RepositoryException, Int] =
+  def deleteWidget(widget: Widget): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -88,7 +88,7 @@ class WidgetRepository(
       }
     }
 
-  def findWidgetById(id: Int): CatsService[RepositoryException, Option[Widget]] =
+  def findWidgetById(id: Int): CatsService[Option[Widget]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -100,7 +100,7 @@ class WidgetRepository(
       }
     }
 
-  def fetchWidgetByAppWidgetId(appWidgetId: Int): CatsService[RepositoryException,Option[Widget]] =
+  def fetchWidgetByAppWidgetId(appWidgetId: Int): CatsService[Option[Widget]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -109,7 +109,7 @@ class WidgetRepository(
       }
     }
 
-  def fetchWidgetsByMoment(momentId: Int): CatsService[RepositoryException,Seq[Widget]] =
+  def fetchWidgetsByMoment(momentId: Int): CatsService[Seq[Widget]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -126,7 +126,7 @@ class WidgetRepository(
   def fetchWidgets(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[RepositoryException, Seq[Widget]] =
+    orderBy: String = ""): CatsService[Seq[Widget]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -143,7 +143,7 @@ class WidgetRepository(
   def fetchIterableWidgets(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[RepositoryException,IterableCursor[Widget]] =
+    orderBy: String = ""): CatsService[IterableCursor[Widget]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -157,7 +157,7 @@ class WidgetRepository(
       }
     }
 
-  def updateWidget(widget: Widget): CatsService[RepositoryException,Int] =
+  def updateWidget(widget: Widget): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -172,7 +172,7 @@ class WidgetRepository(
       }
     }
 
-  def updateWidgets(widgets: Seq[Widget]): CatsService[RepositoryException, Seq[Int]] =
+  def updateWidgets(widgets: Seq[Widget]): CatsService[Seq[Int]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {

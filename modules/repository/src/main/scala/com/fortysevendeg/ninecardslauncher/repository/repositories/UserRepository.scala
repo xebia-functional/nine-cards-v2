@@ -26,7 +26,7 @@ class UserRepository(
 
   val userNotificationUri = uriCreator.parse(userUriNotificationString)
 
-  def addUser(data: UserData): CatsService[RepositoryException, User] =
+  def addUser(data: UserData): CatsService[User] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -42,7 +42,7 @@ class UserRepository(
       }
     }
 
-  def deleteUsers(where: String = ""): CatsService[RepositoryException, Int] =
+  def deleteUsers(where: String = ""): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -54,7 +54,7 @@ class UserRepository(
       }
     }
 
-  def deleteUser(user: User): CatsService[RepositoryException, Int] =
+  def deleteUser(user: User): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -66,7 +66,7 @@ class UserRepository(
       }
     }
 
-  def findUserById(id: Int): CatsService[RepositoryException, Option[User]] =
+  def findUserById(id: Int): CatsService[Option[User]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -78,7 +78,7 @@ class UserRepository(
       }
     }
 
-  def fetchUsers: CatsService[RepositoryException, Seq[User]] =
+  def fetchUsers: CatsService[Seq[User]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -92,7 +92,7 @@ class UserRepository(
   def fetchIterableUsers(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[RepositoryException, IterableCursor[User]] =
+    orderBy: String = ""): CatsService[IterableCursor[User]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -106,7 +106,7 @@ class UserRepository(
       }
     }
 
-  def updateUser(item: User): CatsService[RepositoryException, Int] =
+  def updateUser(item: User): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {

@@ -27,7 +27,7 @@ class CardRepository(
 
   val cardNotificationUri = uriCreator.parse(cardUriNotificationString)
 
-  def addCard(collectionId: Int, data: CardData): CatsService[RepositoryException, Card] =
+  def addCard(collectionId: Int, data: CardData): CatsService[Card] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -43,7 +43,7 @@ class CardRepository(
       }
     }
 
-  def addCards(datas: Seq[CardsWithCollectionId]): CatsService[RepositoryException, Seq[Card]] =
+  def addCards(datas: Seq[CardsWithCollectionId]): CatsService[Seq[Card]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -66,7 +66,7 @@ class CardRepository(
       }
     }
 
-  def deleteCards(where: String = ""): CatsService[RepositoryException, Int] =
+  def deleteCards(where: String = ""): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -78,7 +78,7 @@ class CardRepository(
       }
     }
 
-  def deleteCard(card: Card): CatsService[RepositoryException, Int] =
+  def deleteCard(card: Card): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -90,7 +90,7 @@ class CardRepository(
       }
     }
 
-  def findCardById(id: Int): CatsService[RepositoryException, Option[Card]] =
+  def findCardById(id: Int): CatsService[Option[Card]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -102,7 +102,7 @@ class CardRepository(
       }
     }
 
-  def fetchCardsByCollection(collectionId: Int): CatsService[RepositoryException, Seq[Card]] =
+  def fetchCardsByCollection(collectionId: Int): CatsService[Seq[Card]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -116,7 +116,7 @@ class CardRepository(
       }
     }
 
-  def fetchCards: CatsService[RepositoryException, Seq[Card]] =
+  def fetchCards: CatsService[Seq[Card]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -130,7 +130,7 @@ class CardRepository(
   def fetchIterableCards(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[RepositoryException, IterableCursor[Card]] =
+    orderBy: String = ""): CatsService[IterableCursor[Card]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -144,7 +144,7 @@ class CardRepository(
       }
     }
 
-  def updateCard(card: Card): CatsService[RepositoryException, Int] =
+  def updateCard(card: Card): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -159,7 +159,7 @@ class CardRepository(
       }
     }
 
-  def updateCards(cards: Seq[Card]): CatsService[RepositoryException, Seq[Int]] =
+  def updateCards(cards: Seq[Card]): CatsService[Seq[Int]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
