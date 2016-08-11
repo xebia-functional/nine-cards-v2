@@ -20,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import macroid._
 
@@ -68,6 +69,10 @@ object LauncherWorkSpacesTweaks {
   def lwsMoveCurrentWidget() = Tweak[W] (_.moveCurrentWidget())
 
   def lwsArrowWidget(arrow: Arrow) = Tweak[W] (_.arrowWidget(arrow))
+
+  def lwsResizeWidgetById(id: Int, resize: ResizeWidgetRequest) = Tweak[W] (_.resizeWidgetById(id, resize))
+
+  def lwsMoveWidgetById(id: Int, move: MoveWidgetRequest) = Tweak[W] (_.moveWidgetById(id, move))
 
   def lwsClearWidgets() = Tweak[W] (_.clearWidgets())
 

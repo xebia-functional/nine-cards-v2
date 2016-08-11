@@ -20,7 +20,7 @@ case class WidgetArea (
   spanX: Int,
   spanY: Int) {
 
-  def intersect(other: WidgetArea): Boolean = {
+  def intersect(other: WidgetArea, limits: Option[(Int, Int)] = None): Boolean = {
     def valueInRange(value: Int, min: Int, max: Int) = (value >= min) && (value < max)
 
     val xOverlap = valueInRange(startX, other.startX, other.startX + other.spanX) ||
@@ -29,8 +29,11 @@ case class WidgetArea (
     val yOverlap = valueInRange(startY, other.startY, other.startY + other.spanY) ||
       valueInRange(other.startY, startY, startY + spanY)
 
-    xOverlap && yOverlap
+    val outOfLimits = limits exists {
+      case (x, y) => (startX < 0) || (startY < 0) || (startX + spanX > x) || (startY + spanY > y)
+    }
 
+    (xOverlap && yOverlap) || outOfLimits
   }
 
 }

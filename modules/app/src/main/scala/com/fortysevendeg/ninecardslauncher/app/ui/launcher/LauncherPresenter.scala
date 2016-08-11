@@ -321,52 +321,97 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def arrowWidget(arrow: Arrow): Unit = if (statuses.mode == EditWidgetsMode) {
 
-    def getIntersect(idWidget: Int): ServiceDef2[Boolean, AppWidgetException] =
-      for {
-        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption()
-        widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
-        newSpace = convertSpace(widget.area)
-      } yield widgetsByMoment.filterNot(_.id == widget.id).exists(_.area.intersect(newSpace))
+    type WidgetMovement = (Int, MoveWidgetRequest)
 
-    def convertSpace(widgetArea: WidgetArea) = statuses.transformation match {
-      case Some(ResizeTransformation) =>
+    val limits = Option((WidgetsOps.rows, WidgetsOps.columns))
+
+    def resizeIntersect(idWidget: Int): ServiceDef2[Boolean, AppWidgetException] = {
+
+      def convertSpace(widgetArea: WidgetArea) = {
         val r = ResizeWidgetRequest.tupled(operationArgs)
         widgetArea.copy(
           spanX = widgetArea.spanX + r.increaseX,
           spanY = widgetArea.spanY + r.increaseY)
-      case Some(MoveTransformation) =>
-        val r = MoveWidgetRequest.tupled(operationArgs)
-        widgetArea.copy(
-          startX = widgetArea.startX + r.displaceX,
-          startY = widgetArea.startY + r.displaceY)
+      }
+
+      for {
+        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption()
+        widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
+        newSpace = convertSpace(widget.area)
+      } yield {
+        newSpace.spanX <= 0 ||
+          newSpace.spanY <= 0 ||
+          widgetsByMoment.filterNot(_.id == widget.id).exists(w => newSpace.intersect(w.area, limits))
+      }
     }
 
-    def widgetOperation(id: Int) = statuses.transformation match {
-      case Some(ResizeTransformation) => di.widgetsProcess.resizeWidget(id, ResizeWidgetRequest.tupled(operationArgs))
-      case Some(MoveTransformation) => di.widgetsProcess.moveWidget(id, MoveWidgetRequest.tupled(operationArgs))
-    }
+    @scala.annotation.tailrec
+    def searchSpaceForMoveWidget(
+      movements: List[MoveWidgetRequest],
+      widget: AppWidget,
+      otherWidgets: Seq[AppWidget]): Option[WidgetMovement] =
+      movements match {
+        case Nil => None
+        case head :: tail =>
+          val newPosition = widget.area.copy(
+            startX = widget.area.startX + head.displaceX,
+            startY = widget.area.startY + head.displaceY)
+          val widgetsIntersected = otherWidgets.filter(w => newPosition.intersect(w.area, limits))
+          widgetsIntersected match {
+            case Nil => Option((widget.id, head))
+            case intersected =>
+              searchSpaceForMoveWidget(tail, widget, otherWidgets)
+          }
+      }
 
-    def operationArgs = arrow match {
+    def moveIntersect(idWidget: Int): ServiceDef2[Option[WidgetMovement], AppWidgetException] =
+      for {
+        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption()
+        widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
+      } yield {
+        val otherWidgets = widgetsByMoment.filterNot(_.id == widget.id)
+        searchSpaceForMoveWidget(steps(widget.area), widget, otherWidgets)
+      }
+
+    def operationArgs: (Int, Int) = arrow match {
       case ArrowUp => (0, -1)
       case ArrowDown => (0, 1)
       case ArrowRight => (1, 0)
       case ArrowLeft => (-1, 0)
     }
 
-    statuses.idWidget match {
-      case Some(id) =>
-        Task.fork(getIntersect(id).run).resolveAsync(
-          onResult = (intersect: Boolean) => (intersect, statuses.transformation) match {
-            case (true, Some(ResizeTransformation)) => actions.showWidgetCantResizeMessage().run
-            case (true, Some(MoveTransformation)) => actions.showWidgetCantMoveMessage().run
-            case (false, _) =>
-              Task.fork(widgetOperation(id).run).resolveAsyncUi(
-                onResult = (_) => actions.arrowWidget(arrow),
+    def steps(area: WidgetArea): List[MoveWidgetRequest] = (arrow match {
+      case ArrowUp => 1 to area.startY map (p => MoveWidgetRequest(0, -p))
+      case ArrowDown => 1 until (WidgetsOps.columns - area.startY) map (p => MoveWidgetRequest(0, p))
+      case ArrowRight => 1 until (WidgetsOps.rows - area.startX) map (p => MoveWidgetRequest(p, 0))
+      case ArrowLeft => 1 to area.startX map (p => MoveWidgetRequest(-p, 0))
+    }).toList
+
+    (statuses.idWidget, statuses.transformation) match {
+      case (Some(id), Some(ResizeTransformation)) =>
+        Task.fork(resizeIntersect(id).run).resolveAsync(
+          onResult = (intersect: Boolean) => {
+            if (intersect) {
+              actions.showWidgetCantResizeMessage().run
+            } else {
+              val resizeRequest= ResizeWidgetRequest.tupled(operationArgs)
+              Task.fork(di.widgetsProcess.resizeWidget(id, resizeRequest).run).resolveAsyncUi(
+                onResult = (_) => actions.resizeWidgetById(id, resizeRequest),
                 onException = (_) => actions.showContactUsError()
               )
+            }
           },
-          onException = (_) => actions.showContactUsError().run
-        )
+          onException = (_) => actions.showContactUsError().run)
+      case (Some(id), Some(MoveTransformation)) =>
+        Task.fork(moveIntersect(id).run).resolveAsync(
+          onResult = {
+            case Some((idWidget, moveWidgetRequest)) =>
+              Task.fork(di.widgetsProcess.moveWidget(id, moveWidgetRequest).run).resolveAsyncUi(
+                onResult = (_) => actions.moveWidgetById(idWidget, moveWidgetRequest),
+                onException = (_) => actions.showContactUsError())
+            case _ => actions.showWidgetCantMoveMessage().run
+          },
+          onException = (_) => actions.showContactUsError())
       case _ => actions.showContactUsError().run
     }
 
@@ -772,7 +817,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           startY = row,
           spanX = spanX,
           spanY = spanY)
-        val hasConflict = widgets find (widget => widget.area.intersect(area))
+        val hasConflict = widgets find (widget => widget.area.intersect(area, Option((WidgetsOps.rows, WidgetsOps.columns))))
         if (hasConflict.isEmpty) Some(area) else None
       }).flatten
       emptySpaces.headOption match {
@@ -835,6 +880,10 @@ trait LauncherUiActions {
   def moveWidget(): Ui[Any]
 
   def arrowWidget(arrow: Arrow): Ui[Any]
+
+  def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any]
+
+  def moveWidgetById(id: Int, move: MoveWidgetRequest): Ui[Any]
 
   def cancelWidget(appWidgetId: Int): Ui[Any]
 

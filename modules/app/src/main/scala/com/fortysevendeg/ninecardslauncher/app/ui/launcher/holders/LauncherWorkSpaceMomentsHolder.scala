@@ -24,6 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -88,6 +89,34 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     case (Some(id), Some(ResizeTransformation)) => applyResize(id, arrow)
     case (Some(id), Some(MoveTransformation)) => applyMove(id, arrow)
     case _ => Ui.nop
+  }
+
+  def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any] = this <~ Transformer {
+    case i: LauncherWidgetView if i.id == id =>
+      (for {
+        cell <- i.getField[Cell](cellKey)
+        widget <- i.getField[AppWidget](widgetKey)
+      } yield {
+        val newWidget = widget.copy(area = widget.area.copy(
+          spanX = widget.area.spanX + resize.increaseX,
+          spanY = widget.area.spanY + resize.increaseY))
+        (i <~ vAddField(widgetKey, newWidget)) ~
+          Ui(i.setLayoutParams(createParams(cell, newWidget)))
+      }) getOrElse Ui.nop
+  }
+
+  def moveWidgetById(id: Int, move: MoveWidgetRequest): Ui[Any] = this <~ Transformer {
+    case i: LauncherWidgetView if i.id == id =>
+      (for {
+        cell <- i.getField[Cell](cellKey)
+        widget <- i.getField[AppWidget](widgetKey)
+      } yield {
+        val newWidget = widget.copy(area = widget.area.copy(
+          startX = widget.area.startX + move.displaceX,
+          startY = widget.area.startY + move.displaceY))
+        (i <~ vAddField(widgetKey, newWidget)) ~
+          Ui(i.setLayoutParams(createParams(cell, newWidget)))
+      }) getOrElse Ui.nop
   }
 
   def addWidget(widgetView: View, cell: Cell, widget: AppWidget): Ui[Any] = {
