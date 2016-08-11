@@ -68,9 +68,8 @@
 
     <style name="LauncherSearchPanel">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/height_search_box</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:layout_margin">@dimen/padding_default</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:padding">0dp</item>
     </style>
@@ -108,11 +107,16 @@
 
     <!-- Collections Panel -->
 
+    <style name="LauncherCollectionsContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
     <style name="LauncherCollectionsPanel">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/height_search_box</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:layout_margin">@dimen/padding_default</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:padding">0dp</item>
     </style>
@@ -147,9 +151,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/height_search_box</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:layout_margin">@dimen/padding_default</item>
         <item name="android:gravity">center_vertical</item>
-        <item name="android:padding">0dp</item>
+        <item name="android:padding">@dimen/padding_default</item>
     </style>
 
     <style name="LauncherMomentInfoContent">
