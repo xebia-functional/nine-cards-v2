@@ -35,7 +35,7 @@ trait DockAppsDeviceProcessImpl extends DeviceProcess {
       _ <- persistenceServices.createOrUpdateDockApp(Seq(toCreateOrUpdateDockAppRequest(name, dockType, intent, imagePath, position)))
     } yield ()).resolve[DockAppException]
 
-  def saveDockApps(items: Seq[SaveDockAppRequest])(implicit context: ContextSupport) =
+  def saveDockApps(items: Seq[SaveDockAppRequest]) =
     (for {
       dockApps <- persistenceServices.createOrUpdateDockApp(items map toCreateOrUpdateDockAppRequest)
     } yield dockApps map toDockApp).resolve[DockAppException]

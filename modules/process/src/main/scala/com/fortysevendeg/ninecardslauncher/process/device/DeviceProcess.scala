@@ -189,7 +189,7 @@ trait DeviceProcess {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest]
     * @throws DockAppException if there was an error creating the moments' collections
     */
-  def saveDockApps(items: Seq[SaveDockAppRequest])(implicit context: ContextSupport): ServiceDef2[Seq[DockApp], DockAppException]
+  def saveDockApps(items: Seq[SaveDockAppRequest]): ServiceDef2[Seq[DockApp], DockAppException]
 
   /**
     * Get the docks apps available for user
