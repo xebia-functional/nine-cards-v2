@@ -145,6 +145,7 @@ trait DeviceProcessData
 
   val category = "GAME"
 
+  val dockType = AppDockType
   val dockTypeName = AppDockType.name
 
   val applicationNoCached = Application(
@@ -608,7 +609,7 @@ trait DeviceProcessData
   def createSaveDockAppRequestSeq(
      num: Int = 4,
      name: String = name1,
-     dockType: String = dockTypeName,
+     dockType: DockType = dockType,
      intent: String = intentStr,
      imagePath: String = imagePath1,
      position: Int = 0) =

@@ -125,7 +125,7 @@ trait CloudStorageProcessImplData {
   def generateDockApps(num: Int): Seq[CloudStorageDockApp] = 1 to num map { i =>
     CloudStorageDockApp(
       name = s"DockApp $num",
-      dockType = AppDockType.name,
+      dockType = AppDockType,
       intent = s"Item intent $num",
       imagePath = s"/path/to/image/$num",
       position = num)
