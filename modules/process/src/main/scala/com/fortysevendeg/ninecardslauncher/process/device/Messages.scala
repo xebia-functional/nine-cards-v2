@@ -26,3 +26,10 @@ case class GetByCategory(ascending: Boolean) extends GetAppOrder
 object GetByCategory extends GetByCategory(true)
 
 case class IconResize(width: Int, height: Int)
+
+case class SaveDockAppRequest(
+  name: String,
+  dockType: String,
+  intent: String,
+  imagePath: String,
+  position: Int)

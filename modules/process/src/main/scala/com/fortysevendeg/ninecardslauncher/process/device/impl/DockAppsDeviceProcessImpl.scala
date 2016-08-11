@@ -27,13 +27,18 @@ trait DockAppsDeviceProcessImpl extends DeviceProcess {
       images = defaultApps map (app => (app.packageName, app.imagePath))
       apps = matchAppsWithImages(allDefaultApps, images).take(size)
       requests = apps map (app => toCreateOrUpdateDockAppRequest(app.name, AppDockType, app.intent, app.imagePath, app.position))
-      _ <- persistenceServices.createOrUpdateDockApp(requests)
-    } yield ()).resolve[DockAppException]
+      dockApps <- persistenceServices.createOrUpdateDockApp(requests)
+    } yield dockApps map toDockApp).resolve[DockAppException]
 
   def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int) =
     (for {
       _ <- persistenceServices.createOrUpdateDockApp(Seq(toCreateOrUpdateDockAppRequest(name, dockType, intent, imagePath, position)))
     } yield ()).resolve[DockAppException]
+
+  def saveDockApps(items: Seq[SaveDockAppRequest])(implicit context: ContextSupport) =
+    (for {
+      dockApps <- persistenceServices.createOrUpdateDockApp(items map toCreateOrUpdateDockAppRequest)
+    } yield dockApps map toDockApp).resolve[DockAppException]
 
   def getDockApps =
     (for {

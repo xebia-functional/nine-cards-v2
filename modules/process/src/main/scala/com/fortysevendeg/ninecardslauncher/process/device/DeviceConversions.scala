@@ -91,6 +91,14 @@ trait DeviceConversions extends NineCardIntentConversions {
       imagePath = imagePath,
       position = position)
 
+  def toCreateOrUpdateDockAppRequest(dockApp: SaveDockAppRequest): CreateOrUpdateDockAppRequest =
+    CreateOrUpdateDockAppRequest(
+      name = dockApp.name,
+      dockType = dockApp.dockType,
+      intent = dockApp.intent,
+      imagePath = dockApp.imagePath,
+      position = dockApp.position)
+
   def toDockApp(app: ServicesDockApp): DockApp = DockApp(
     name = app.name,
     dockType = DockType(app.dockType),
