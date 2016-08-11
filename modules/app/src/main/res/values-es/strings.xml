@@ -426,7 +426,11 @@
     <string name="collectionDetailCardAnimationsTBD">TBD</string>
     <string name="collectionDetailCardAnimationsNoAnimation">Sin Animación</string>
 
-    <string name="collectionDetailAddCardsMessage">Añade nuevas tarjetas a esta colección</string>
+    <string name="collectionDetailAddCardsMessage">
+        <![CDATA[
+            Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +
+        ]]>
+    </string>
 
     <!-- New App Preferences -->
 
