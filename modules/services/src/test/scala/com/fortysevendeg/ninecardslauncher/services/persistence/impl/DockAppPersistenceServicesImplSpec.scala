@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServiceException
-import com.fortysevendeg.ninecardslauncher.services.persistence.data.{DockAppPersistenceServicesData, WidgetPersistenceServicesData}
+import com.fortysevendeg.ninecardslauncher.services.persistence.data.DockAppPersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
