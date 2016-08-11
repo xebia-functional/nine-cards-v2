@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/SelectMomentDialogContent" />
+    style="@style/SelectMomentDialogRoot">
+
+    <LinearLayout
+            android:id="@+id/select_moment_list"
+            style="@style/SelectMomentDialogContent"/>
+
+</ScrollView>

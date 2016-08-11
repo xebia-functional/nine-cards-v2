@@ -21,6 +21,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.CollectionDialog
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullingListener}
@@ -116,8 +117,9 @@ trait CollectionUiActionsImpl
                   card <- collection.cards.lift(position)
                 } yield {
                   presenter.reorderCard(collection.id, card.id, position)
-                  presenter.moveToCard()
+                  presenter.moveToCollection(card)
                 }
+                updateScroll(-1)
               case NoAction =>
                 for {
                   adapter <- getAdapter
@@ -172,6 +174,13 @@ trait CollectionUiActionsImpl
       rvAdapter(createAdapter(collection)) <~
       nrvScheduleLayoutAnimation <~
       getScrollListener(spaceMove)).ifUi(animateCards)
+
+  override def moveToCollection(collections: Seq[Collection], card: Card): Ui[Any] =
+    fragmentContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) =>
+        Ui(new CollectionDialog(collections, c => collectionsPresenter.moveToCollection(c, collections.indexWhere(_.id == c), card), () => ()).show())
+      case _ => showContactUsError()
+    }
 
   override def editCard(collectionId: Int, cardId: Int, cardName: String): Unit =
     showDialog(new EditCardDialogFragment(collectionId, cardId, cardName))
