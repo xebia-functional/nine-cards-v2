@@ -302,7 +302,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
-  def openModeEditWidgets(id: Int): Unit = {
+  def openModeEditWidgets(id: Int): Unit = if (!actions.isWorkspaceScrolling) {
     statuses = statuses.copy(mode = EditWidgetsMode, transformation = None, idWidget = Some(id))
     actions.openModeEditWidgets().run
   }
@@ -972,6 +972,8 @@ trait LauncherUiActions {
   def isEmptyCollectionsInWorkspace: Boolean
 
   def canRemoveCollections: Boolean
+
+  def isWorkspaceScrolling: Boolean
 
   def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])]
 

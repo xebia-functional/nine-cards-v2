@@ -442,6 +442,8 @@ trait LauncherUiActionsImpl
 
   override def canRemoveCollections: Boolean = getCountCollections > 1
 
+  override def isWorkspaceScrolling: Boolean = workspaces exists(_.statuses.isScrolling)
+
   override def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])] =
     moments map {
       case Moment(_, Some(collectionId: Int), _, _, _, Some(m: NineCardsMoment)) =>

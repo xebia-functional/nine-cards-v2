@@ -19,10 +19,7 @@ case class LauncherWidgetView(id: Int, widgetView: View, presenter: LauncherPres
     override def onLongPress(e: MotionEvent): Unit = presenter.openModeEditWidgets(id)
   })
 
-  override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
-    gestureDetector.onTouchEvent(event)
-    false
-  }
+  override def onInterceptTouchEvent(event: MotionEvent): Boolean = gestureDetector.onTouchEvent(event)
 
   override def onTouchEvent(event: MotionEvent): Boolean = true
 
