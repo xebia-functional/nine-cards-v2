@@ -114,15 +114,11 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.addDockApp(repoDockAppData) returns Service(Task(Result.answer(repoDockApp)))
 
-    mockDockAppRepository.addDockApps(any) returns Service(Task(Result.answer(Seq(repoDockApp))))
-
     mockDockAppRepository.deleteDockApps() returns Service(Task(Result.answer(items)))
 
     mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
 
     mockDockAppRepository.fetchDockApps() returns Service(Task(Result.answer(seqRepoDockApp)))
-
-    mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns Service(Task(Result.answer(seqRepoDockApp)))
 
     mockDockAppRepository.fetchIterableDockApps(any, any, any) returns Service(Task(Result.answer(iterableCursorDockApps)))
 
@@ -131,8 +127,6 @@ trait PersistenceServicesSpecification
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.answer(None)))
 
     mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.answer(item)))
-
-    mockDockAppRepository.updateDockApps(any) returns Service(Task(Result.answer(Seq(item))))
 
     mockMomentRepository.addMoment(repoMomentData) returns Service(Task(Result.answer(repoMoment)))
 
@@ -253,15 +247,11 @@ trait PersistenceServicesSpecification
 
     mockDockAppRepository.addDockApp(repoDockAppData) returns Service(Task(Result.errata(exception)))
 
-    mockDockAppRepository.addDockApps(any) returns Service(Task(Result.errata(exception)))
-
     mockDockAppRepository.deleteDockApps() returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.deleteDockApp(repoDockApp) returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.fetchDockApps() returns Service(Task(Result.errata(exception)))
-
-    mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})")  returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.fetchIterableDockApps(any, any, any) returns Service(Task(Result.errata(exception)))
 
@@ -270,8 +260,6 @@ trait PersistenceServicesSpecification
     mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns Service(Task(Result.errata(exception)))
 
     mockDockAppRepository.updateDockApp(repoDockApp) returns Service(Task(Result.errata(exception)))
-
-    mockDockAppRepository.updateDockApps(any) returns Service(Task(Result.errata(exception)))
 
     mockMomentRepository.addMoment(repoMomentData) returns Service(Task(Result.errata(exception)))
 
@@ -1355,16 +1343,78 @@ class PersistenceServicesSpec
 
   "createOrUpdateDockApp" should {
 
-    "return a DockApp value for a valid request" in new ValidRepositoryServicesResponses {
+    "return a DockApp value for a valid request creating a dockApp" in new ValidRepositoryServicesResponses {
+
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns Service(Task(Result.answer(Seq.empty)))
+
+      mockDockAppRepository.addDockApps(any) returns Service(Task(Result.answer(Seq(repoDockApp))))
+
+      mockDockAppRepository.updateDockApps(any) returns Service(Task(Result.answer(Seq.empty)))
+
       val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).run.run
 
       result must beLike {
         case Answer(a) =>
-          a shouldEqual ((): Unit)
+          a shouldEqual Seq(dockApp)
       }
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
+    "return a DockApp value for a valid request updating a dockApp" in new ValidRepositoryServicesResponses {
+
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns Service(Task(Result.answer(seqRepoDockApp)))
+
+      mockDockAppRepository.addDockApps(any) returns Service(Task(Result.answer(Seq.empty)))
+
+      mockDockAppRepository.updateDockApps(any) returns Service(Task(Result.answer(Seq(item))))
+
+      val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).run.run
+
+      result must beLike {
+        case Answer(a) =>
+          a shouldEqual Seq(dockApp)
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception fetching the dockApps" in new ErrorRepositoryServicesResponses {
+
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})")  returns Service(Task(Result.errata(exception)))
+
+      val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception adding the dockApps" in new ErrorRepositoryServicesResponses {
+
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns Service(Task(Result.answer(Seq.empty)))
+
+      mockDockAppRepository.addDockApps(any) returns Service(Task(Result.errata(exception)))
+
+      val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).run.run
+
+      result must beLike {
+        case Errata(e) => e.headOption must beSome.which {
+          case (_, (_, persistenceServiceException)) => persistenceServiceException must beLike {
+            case e: PersistenceServiceException => e.cause must beSome.which(_ shouldEqual exception)
+          }
+        }
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception updating the dockApps" in new ErrorRepositoryServicesResponses {
+
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns Service(Task(Result.answer(seqRepoDockApp)))
+
+      mockDockAppRepository.addDockApps(any) returns Service(Task(Result.answer(Seq.empty)))
+
+      mockDockAppRepository.updateDockApps(any) returns Service(Task(Result.errata(exception)))
+
       val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).run.run
 
       result must beLike {
