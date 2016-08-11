@@ -338,6 +338,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     val limits = Option((WidgetsOps.rows, WidgetsOps.columns))
 
+    def outOfTheLimit(area: WidgetArea) =
+      area.spanX <= 0 ||
+        area.spanY <= 0 ||
+        area.startX + area.spanX > WidgetsOps.columns ||
+        area.startY + area.spanY > WidgetsOps.rows
+
     def resizeIntersect(idWidget: Int): ServiceDef2[Boolean, AppWidgetException] = {
 
       def convertSpace(widgetArea: WidgetArea) = {
@@ -352,8 +358,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
         newSpace = convertSpace(widget.area)
       } yield {
-        newSpace.spanX <= 0 ||
-          newSpace.spanY <= 0 ||
+        outOfTheLimit(newSpace) ||
           widgetsByMoment.filterNot(_.id == widget.id).exists(w => newSpace.intersect(w.area, limits))
       }
     }
@@ -369,11 +374,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           val newPosition = widget.area.copy(
             startX = widget.area.startX + head.displaceX,
             startY = widget.area.startY + head.displaceY)
-          val widgetsIntersected = otherWidgets.filter(w => newPosition.intersect(w.area, limits))
-          widgetsIntersected match {
-            case Nil => Option((widget.id, head))
-            case intersected =>
-              searchSpaceForMoveWidget(tail, widget, otherWidgets)
+          if (outOfTheLimit(newPosition)) {
+            None
+          } else {
+            val widgetsIntersected = otherWidgets.filter(w => newPosition.intersect(w.area, limits))
+            widgetsIntersected match {
+              case Nil => Option((widget.id, head))
+              case intersected =>
+                searchSpaceForMoveWidget(tail, widget, otherWidgets)
+            }
           }
       }
 
