@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.device
 
+import com.fortysevendeg.ninecardslauncher.process.commons.types.DockType
+
 sealed trait ContactsFilter
 
 case object AllContacts extends ContactsFilter
@@ -29,7 +31,7 @@ case class IconResize(width: Int, height: Int)
 
 case class SaveDockAppRequest(
   name: String,
-  dockType: String,
+  dockType: DockType,
   intent: String,
   imagePath: String,
   position: Int)

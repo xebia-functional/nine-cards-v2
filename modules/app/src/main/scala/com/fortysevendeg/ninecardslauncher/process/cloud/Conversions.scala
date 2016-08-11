@@ -81,7 +81,7 @@ object Conversions {
   def toCloudStorageDockApp(dockApp: DockApp) =
     CloudStorageDockApp(
       name = dockApp.name,
-      dockType = dockApp.dockType.name,
+      dockType = dockApp.dockType,
       intent = Json.toJson(dockApp.intent).toString(),
       imagePath = dockApp.imagePath,
       position = dockApp.position)
