@@ -220,6 +220,11 @@
 
     <!-- SelectMomentDialog -->
 
+    <style name="SelectMomentDialogRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <style name="SelectMomentDialogContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -254,6 +259,11 @@
     </style>
 
     <!-- SelectCollectionDialog -->
+
+    <style name="SelectCollectionDialogRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
 
     <style name="SelectCollectionDialogContent">
         <item name="android:layout_width">match_parent</item>

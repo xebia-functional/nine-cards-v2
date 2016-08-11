@@ -83,6 +83,14 @@ trait Conversions
       intent = privateCard.intent,
       imagePath = privateCard.imagePath)
 
+  def toAddCardRequest(card: Card): AddCardRequest =
+    AddCardRequest(
+      term = card.term,
+      packageName = card.packageName,
+      cardType = card.cardType,
+      intent = card.intent,
+      imagePath = card.imagePath)
+
   def toAddCardRequest(contact: Contact): AddCardRequest =
     AddCardRequest(
       term = contact.name,
