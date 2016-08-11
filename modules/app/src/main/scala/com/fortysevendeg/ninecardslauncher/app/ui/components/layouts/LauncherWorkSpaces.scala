@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import macroid._
 
@@ -90,6 +91,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def clearWidgets(): Unit = uiWithView(_.clearWidgets)
 
+  def unhostWidget(id: Int): Unit = uiWithView(_.unhostWiget(id))
+
   def showRulesInMoment(): Unit = uiWithView(_.createRules)
 
   def hideRulesInMoment(): Unit = uiWithView(_.removeRules)
@@ -101,6 +104,10 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def moveCurrentWidget(): Unit = uiWithView(_.moveCurrentWidget)
 
   def arrowWidget(arrow: Arrow): Unit = uiWithView(_.arrowWidget(arrow))
+
+  def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Unit = uiWithView(_.resizeWidgetById(id, resize))
+
+  def moveWidgetById(id: Int, move: MoveWidgetRequest): Unit = uiWithView(_.moveWidgetById(id, move))
 
   private[this] def uiWithView(f: (LauncherWorkSpaceMomentsHolder) => Ui[_]) = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => f(momentWorkSpace).run

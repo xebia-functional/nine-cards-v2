@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.EditWidgetsMode
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
@@ -18,10 +19,7 @@ case class LauncherWidgetView(id: Int, widgetView: View, presenter: LauncherPres
     override def onLongPress(e: MotionEvent): Unit = presenter.openModeEditWidgets(id)
   })
 
-  override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
-    gestureDetector.onTouchEvent(event)
-    false
-  }
+  override def onInterceptTouchEvent(event: MotionEvent): Boolean = gestureDetector.onTouchEvent(event)
 
   override def onTouchEvent(event: MotionEvent): Boolean = true
 
@@ -29,7 +27,9 @@ case class LauncherWidgetView(id: Int, widgetView: View, presenter: LauncherPres
   viewBlockTouch.setOnTouchListener(new OnTouchListener {
     override def onTouch(v: View, event: MotionEvent): Boolean = {
       event.getAction match {
-        case ACTION_DOWN => presenter.statuses = presenter.statuses.copy(touchingWidget = true)
+        case ACTION_DOWN =>
+          presenter.statuses = presenter.statuses.copy(touchingWidget = true)
+          if (presenter.statuses.mode == EditWidgetsMode) presenter.loadViewEditWidgets(id)
         case _ =>
       }
       false
