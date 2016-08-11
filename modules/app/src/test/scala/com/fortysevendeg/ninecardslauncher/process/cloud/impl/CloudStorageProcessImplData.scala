@@ -64,6 +64,8 @@ trait CloudStorageProcessImplData {
 
   val numTimeSlot = 2
 
+  val numDockApps = 4
+
   val momentType = Option("HOME")
 
   def generateCloudStorageDeviceData(deviceId: String = deviceId) =
@@ -72,7 +74,8 @@ trait CloudStorageProcessImplData {
       deviceName,
       documentVersion,
       generateCollections(numCollections, numItemsPerCollection),
-      Some(generateMoments(numMoments, numTimeSlot)))
+      Some(generateMoments(numMoments, numTimeSlot)),
+      Some(generateDockApps(numDockApps)))
 
   def generateCloudStorageDevice(
     cloudId: String = cloudId,
@@ -106,7 +109,7 @@ trait CloudStorageProcessImplData {
 
   def generateMoments(num: Int, numItems: Int): Seq[CloudStorageMoment] = 1 to num map { i =>
     CloudStorageMoment(
-      timeslot = generateTimeSlots(num: Int),
+      timeslot = generateTimeSlots(numItems),
       wifi = Seq(s"Wifi_Network $num", s"Mobile $num "),
       headphones = false,
       momentType = momentType map (NineCardsMoment(_)))
@@ -119,6 +122,15 @@ trait CloudStorageProcessImplData {
       Seq(0, 1, 1, 1, 1, 1, 0))
   }
 
+  def generateDockApps(num: Int): Seq[CloudStorageDockApp] = 1 to num map { i =>
+    CloudStorageDockApp(
+      name = s"DockApp $num",
+      dockType = AppDockType.name,
+      intent = s"Item intent $num",
+      imagePath = s"/path/to/image/$num",
+      position = num)
+  }
+
   val validCloudStorageDeviceJson =
     s"""
       |{
@@ -126,7 +138,8 @@ trait CloudStorageProcessImplData {
       | "deviceName": "$deviceName",
       | "documentVersion": $documentVersion,
       | "collections": [${generateCollectionsJson(numCollections, numItemsPerCollection).mkString(",")}],
-      | "moments": [${generateMomentsJson(numMoments, numTimeSlot).mkString(",")}]
+      | "moments": [${generateMomentsJson(numMoments, numTimeSlot).mkString(",")}],
+      | "dockApps": [${generateDockAppsJson(numDockApps).mkString(",")}]
       |}
     """.stripMargin
 
@@ -172,6 +185,18 @@ trait CloudStorageProcessImplData {
        | "from": "8:00",
        | "to": "19:00",
        | "days": [0, 1, 1, 1, 1, 1, 0]
+       |}
+    """.stripMargin
+  }
+
+  def generateDockAppsJson(num: Int): Seq[String] = 1 to num map { i =>
+    s"""
+       |{
+       | "name": "DockApp $num",
+       | "dockType": "APP",
+       | "intent": "Item intent $num",
+       | "imagePath": "/path/to/image/$num",
+       | "position": $num
        |}
     """.stripMargin
   }
