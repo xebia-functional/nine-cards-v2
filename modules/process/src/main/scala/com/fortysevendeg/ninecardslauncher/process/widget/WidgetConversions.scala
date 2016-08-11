@@ -43,15 +43,13 @@ trait WidgetConversions {
     widget.copy(
       area = widget.area.copy(
         startX = widget.area.startX + moveWidgetRequest.displaceX,
-        startY = widget.area.startY + moveWidgetRequest.displaceY
-      ))
+        startY = widget.area.startY + moveWidgetRequest.displaceY))
 
   def toUpdatedWidget(widget: AppWidget, resizeWidgetRequest: ResizeWidgetRequest): AppWidget =
     widget.copy(
       area = widget.area.copy(
         spanX = widget.area.spanX + resizeWidgetRequest.increaseX,
-        spanY = widget.area.spanY + resizeWidgetRequest.increaseY
-      ))
+        spanY = widget.area.spanY + resizeWidgetRequest.increaseY))
 
   def toServicesUpdateWidgetRequest(widget: AppWidget): ServicesUpdateWidgetRequest = ServicesUpdateWidgetRequest(
     id = widget.id,

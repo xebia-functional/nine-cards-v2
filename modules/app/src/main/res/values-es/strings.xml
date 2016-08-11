@@ -480,8 +480,8 @@
     <!-- Edit Widgets -->
     <string name="editingWidgets">Editando widgets</string>
     <string name="movingWidgets">Moviendo widgets</string>
-    <string name="resizingWidgets">Resimensionando widgets</string>
-    <string name="removeWidgetMessage">¿Estás seguro que quieres borrar este widget?</string>
+    <string name="resizingWidgets">Redimensionando widgets</string>
+    <string name="removeWidgetMessage">¿Estás seguro de que quieres borrar este widget?</string>
     <string name="noSpaceForWidget">El widget no tiene espacio actualmente</string>
     <string name="noMoveForWidget">El widget no puede moverse ahí</string>
     <string name="noResizeForWidget">El widget no puede redimensionarse ahí</string>

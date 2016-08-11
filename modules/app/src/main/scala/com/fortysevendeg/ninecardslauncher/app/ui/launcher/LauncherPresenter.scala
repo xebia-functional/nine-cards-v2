@@ -410,8 +410,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
               val resizeRequest= ResizeWidgetRequest.tupled(operationArgs)
               Task.fork(di.widgetsProcess.resizeWidget(id, resizeRequest).run).resolveAsyncUi(
                 onResult = (_) => actions.resizeWidgetById(id, resizeRequest),
-                onException = (_) => actions.showContactUsError()
-              )
+                onException = (_) => actions.showContactUsError())
             }
           },
           onException = (_) => actions.showContactUsError().run)
@@ -635,8 +634,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         onException = (ex) => ex match {
           case ex: SpaceException => actions.showWidgetNoHaveSpaceMessage()
           case _ => actions.showContactUsError()
-        }
-      )
+        })
     }) getOrElse actions.showContactUsError().run
   }
 

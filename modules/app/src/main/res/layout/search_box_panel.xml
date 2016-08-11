@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/LauncherSearchPanel"
+    style="@style/LauncherSearchDrawerPanel"
     android:id="@+id/launcher_search_box_panel">
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
