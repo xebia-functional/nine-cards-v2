@@ -3,19 +3,24 @@
              android:id="@+id/collection_detail_layout"
              style="@style/CollectionDetailLayout">
 
-    <LinearLayout
+    <android.support.v7.widget.CardView
             android:id="@+id/collection_detail_empty"
             style="@style/CollectionDetailEmpty">
 
-        <TextView
-                android:id="@+id/collection_empty_message"
-                style="@style/CollectionEmptyMessage"/>
+        <LinearLayout
+                android:id="@+id/collection_detail_empty_content"
+                style="@style/CollectionDetailEmptyContent">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
-                android:id="@+id/collection_empty_image"
-                style="@style/CollectionEmptyImage"/>
+            <TextView
+                    android:id="@+id/collection_empty_message"
+                    style="@style/CollectionEmptyMessage"/>
 
-    </LinearLayout>
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/collection_empty_image"
+                    style="@style/CollectionEmptyImage"/>
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToCloseView
             android:id="@+id/collection_detail_pull_to_close"

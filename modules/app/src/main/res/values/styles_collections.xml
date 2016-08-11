@@ -68,27 +68,39 @@
     </style>
 
     <style name="CollectionDetailEmpty">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/space_moving_collection_details</item>
+        <item name="android:layout_marginLeft">@dimen/padding_default</item>
+        <item name="android:layout_marginRight">@dimen/padding_default</item>
+        <item name="android:layout_marginBottom">@dimen/padding_default</item>
+    </style>
+
+    <style name="CollectionDetailEmptyContent">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:paddingTop">@dimen/space_enter_views_collection_detail</item>
+        <item name="android:paddingTop">@dimen/padding_empty_collection</item>
+        <item name="android:paddingBottom">@dimen/padding_empty_collection</item>
         <item name="android:gravity">center_horizontal</item>
     </style>
 
     <style name="CollectionEmptyMessage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/padding_empty_collection_message</item>
-        <item name="android:text">@string/collectionDetailAddCardsMessage</item>
         <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:text">@string/collectionDetailAddCardsMessage</item>
+        <item name="android:paddingLeft">@dimen/padding_empty_collection_message</item>
+        <item name="android:paddingRight">@dimen/padding_empty_collection_message</item>
+        <item name="android:gravity">center_horizontal</item>
         <item name="android:fontFamily">sans-serif-regular</item>
     </style>
 
     <style name="CollectionEmptyImage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/padding_empty_collection_image</item>
-        <item name="android:src">@drawable/placeholder_empty_collection</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
+        <item name="android:src">@drawable/empty_collection</item>
     </style>
 
     <style name="CollectionDetailPullToClose">
