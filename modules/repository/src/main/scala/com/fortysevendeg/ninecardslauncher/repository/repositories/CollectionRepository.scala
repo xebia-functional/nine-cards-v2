@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCurso
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CollectionEntity, NineCardsUri}

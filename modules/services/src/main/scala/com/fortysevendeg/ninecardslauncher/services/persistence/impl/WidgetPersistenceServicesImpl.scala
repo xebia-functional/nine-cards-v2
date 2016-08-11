@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.repository.provider.WidgetEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -8,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conv
 trait WidgetPersistenceServicesImpl {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
-  
+
   def addWidget(request: AddWidgetRequest) =
     (for {
       widget <- widgetRepository.addWidget(toRepositoryWidgetData(request))

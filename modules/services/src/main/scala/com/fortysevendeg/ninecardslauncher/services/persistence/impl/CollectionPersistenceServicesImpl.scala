@@ -1,15 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, Moment => RepositoryMoment}
 import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card, Collection, Moment}
-import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
 
@@ -95,51 +95,51 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       updated <- collectionRepository.updateCollections(request.updateCollectionsRequests map toRepositoryCollection)
     } yield updated).resolve[PersistenceServiceException]
 
-  private[this] def deleteCards(cards: Seq[Card]): ServiceDef2[Int, PersistenceServiceException] = {
+  private[this] def deleteCards(cards: Seq[Card]): CatsService[Int] = {
     val deletedCards = cards map {
       card =>
-        cardRepository.deleteCard(toRepositoryCard(card)).run
+        cardRepository.deleteCard(toRepositoryCard(card)).value
     }
 
-    Service(
+    CatsService(
       Task.gatherUnordered(deletedCards) map (
         list =>
-          CatchAll[PersistenceServiceException](list.collect { case Answer(value) => value }.sum)))
+          XorCatchAll[PersistenceServiceException](list.collect { case Xor.Right(value) => value }.sum)))
   }
 
-  private[this] def fetchCards(maybeCollection: Option[RepositoryCollection]): ServiceDef2[Seq[RepositoryCard], RepositoryException] = {
+  private[this] def fetchCards(maybeCollection: Option[RepositoryCollection]): CatsService[Seq[RepositoryCard]] = {
     maybeCollection match {
       case Some(collection) => cardRepository.fetchCardsByCollection(collection.id)
-      case None => Service(Task(Result.answer[Seq[RepositoryCard], RepositoryException](Seq.empty)))
+      case None => CatsService(Task(Xor.Right(Seq.empty)))
     }
   }
 
-  private[this] def fetchCards(collections: Seq[RepositoryCollection]): ServiceDef2[Seq[Collection], PersistenceServiceException] = {
+  private[this] def fetchCards(collections: Seq[RepositoryCollection]): CatsService[Seq[Collection]] = {
     val result = collections map {
       collection =>
         (for {
           cards <- cardRepository.fetchCardsByCollection(collection.id)
           moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
-        } yield toCollection(collection, cards, moments.headOption)).run
+        } yield toCollection(collection, cards, moments.headOption)).value
     }
 
-    Service(
+    CatsService(
       Task.gatherUnordered(result) map (
         list =>
-          CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => collection })))
+          XorCatchAll[PersistenceServiceException](list.collect { case Xor.Right(collection) => collection })))
   }
 
-  private[this] def deleteMoment(maybeMoment: Option[Moment]): ServiceDef2[Unit, RepositoryException] = {
+  private[this] def deleteMoment(maybeMoment: Option[Moment]): CatsService[Unit] = {
     maybeMoment match {
       case Some(moment) => momentRepository.deleteMoment(toRepositoryMoment(moment)) map (_ => ())
-      case None => Service(Task(Result.answer[Unit, RepositoryException]((): Unit)))
+      case None => CatsService(Task(Xor.right((): Unit)))
     }
   }
 
-  private[this] def getMomentsByCollection(maybeCollection: Option[RepositoryCollection]): ServiceDef2[Seq[RepositoryMoment], RepositoryException] = {
+  private[this] def getMomentsByCollection(maybeCollection: Option[RepositoryCollection]): CatsService[Seq[RepositoryMoment]] = {
     maybeCollection match {
       case Some(collection) => momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
-      case None => Service(Task(Result.answer[Seq[RepositoryMoment], RepositoryException](Seq.empty)))
+      case None => CatsService(Task(Xor.Right(Seq.empty)))
     }
   }
 

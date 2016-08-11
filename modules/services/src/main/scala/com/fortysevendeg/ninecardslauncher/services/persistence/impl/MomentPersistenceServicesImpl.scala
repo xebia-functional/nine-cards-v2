@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
@@ -7,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conv
 trait MomentPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
-  
+
   def addMoment(request: AddMomentRequest) =
     (for {
       moment <- momentRepository.addMoment(toRepositoryMomentData(request))
