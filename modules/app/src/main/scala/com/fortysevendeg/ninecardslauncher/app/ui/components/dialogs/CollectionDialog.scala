@@ -32,10 +32,8 @@ class CollectionDialog(
 
   val views = moments map (moment => new CollectionItem(moment))
 
-  ((selectCollectionList <~
-    vgAddViews(views)) ~
-    (sheetView <~
-      vgAddView(selectCollectionList))).run
+  (selectCollectionList <~
+    vgAddViews(views)).run
 
   setOnDismissListener(new OnDismissListener {
     override def onDismiss(dialog: DialogInterface): Unit = onDismissDialog()

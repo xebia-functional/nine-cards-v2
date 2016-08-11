@@ -28,10 +28,8 @@ class MomentDialog(moments: Seq[MomentWithCollection])(implicit contextWrapper: 
 
   val views = moments map (moment => new MomentItem(moment))
 
-  ((selectMomentList <~
-    vgAddViews(views)) ~
-    (sheetView <~
-      vgAddView(selectMomentList))).run
+  (selectMomentList <~
+    vgAddViews(views)).run
 
   class MomentItem(moment: MomentWithCollection)
     extends LinearLayout(contextWrapper.getOriginal)

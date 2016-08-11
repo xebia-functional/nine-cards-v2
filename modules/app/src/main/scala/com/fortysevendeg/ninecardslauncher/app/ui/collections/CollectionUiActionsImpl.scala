@@ -179,7 +179,7 @@ trait CollectionUiActionsImpl
     fragmentContextWrapper.original.get match {
       case Some(activity: AppCompatActivity) =>
         Ui(new CollectionDialog(collections, c => collectionsPresenter.moveToCollection(c, collections.indexWhere(_.id == c), card), () => ()).show())
-      case _ => Ui.nop
+      case _ => showContactUsError()
     }
 
   override def editCard(collectionId: Int, cardId: Int, cardName: String): Unit =

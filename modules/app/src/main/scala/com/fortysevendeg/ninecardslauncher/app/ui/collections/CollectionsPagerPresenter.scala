@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.graphics.Bitmap
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
@@ -21,6 +21,7 @@ class CollectionsPagerPresenter(
   actions: CollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Presenter
   with LauncherExecutor
+  with Conversions
   with NineCardIntentConversions { self =>
 
   val delay = 200
@@ -57,19 +58,9 @@ class CollectionsPagerPresenter(
 
   def moveToCollection(collectionId: Int, collectionPosition: Int, card: Card): Unit = {
 
-    def createAddCardRequest(card: Card): AddCardRequest = {
-
-      AddCardRequest(
-        term = card.term,
-        packageName = card.packageName,
-        cardType =card.cardType,
-        intent = card.intent,
-        imagePath = card.imagePath)
-    }
-
     removeCard(card)
 
-    Task.fork(di.collectionProcess.addCards(collectionId, Seq(createAddCardRequest(card))).run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.addCards(collectionId, Seq(toAddCardRequest(card))).run).resolveAsyncUi(
       onResult = actions.addCardsToCollection(collectionPosition, _))
 
   }
