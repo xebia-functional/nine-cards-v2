@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoredit
 
 import android.app.{Activity, Dialog}
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
@@ -11,6 +10,7 @@ import android.widget.{LinearLayout, ScrollView}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
@@ -19,11 +19,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconType
 import com.fortysevendeg.ninecardslauncher.process.commons.types.ContactsCategory
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
+import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: ContextWrapper)
+case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends DialogFragment
   with NineCardIntentConversions {
 
@@ -51,7 +52,7 @@ case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: Con
 
     val views = icons map { ic => new ItemView(ic, ic.icon == iconSelected) }
 
-    ((rootView <~ vgAddView(contentView)) ~
+    ((rootView <~ vBackgroundColor(theme.get(DrawerBackgroundColor)) <~ vgAddView(contentView)) ~
       (contentView <~ vgAddViews(views))).run
 
     new AlertDialog.Builder(getActivity).setView(rootView).create()
@@ -66,15 +67,17 @@ case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: Con
     lazy val text = Option(findView(TR.icon_dialog_name))
     lazy val icon = Option(findView(TR.icon_dialog_select))
 
-    val colorizeDrawable = resGetDrawable(iconCollectionDetail(data.icon)).colorize(Color.GRAY)
+    val primaryColor = theme.get(PrimaryColor)
 
-    val drawable = new PathMorphDrawable(
+    val colorizeDrawable = resGetDrawable(iconCollectionDetail(data.icon)).colorize(theme.get(DrawerIconColor))
+
+    val drawable = PathMorphDrawable(
       defaultIcon = IconTypes.CHECK,
       defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
-      defaultColor = resGetColor(R.color.text_selected_color_dialog))
+      defaultColor = primaryColor)
 
     ((text <~
-      (if (select) tvColorResource(R.color.text_selected_color_dialog) else Tweak.blank) <~
+      tvColor(if (select) primaryColor else theme.get(DrawerTextColor)) <~
       tvText(data.name) <~
       tvCompoundDrawablesWithIntrinsicBounds(left = Some(colorizeDrawable))) ~
       (icon <~ (if (select) ivSrc(drawable) else Tweak.blank)) ~

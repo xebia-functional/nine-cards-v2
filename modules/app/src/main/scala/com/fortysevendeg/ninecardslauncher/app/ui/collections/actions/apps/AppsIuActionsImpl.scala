@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabs
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps, TermCounter}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.DrawerTabsBackgroundColor
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -70,15 +71,15 @@ trait AppsIuActionsImpl
           case _ => false
         })
     }
-    (toolbar <~
-      dtbInit(colorPrimary) <~
-      dtbChangeText(R.string.applications) <~
-      menuTweak <~
-      dtbNavigationOnClickListener((_) => unreveal())) ~
+    (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
+      (toolbar <~
+        dtbInit(colorPrimary) <~
+        dtbChangeText(R.string.applications) <~
+        menuTweak <~
+        dtbNavigationOnClickListener((_) => unreveal())) ~
       (pullToTabsView <~ pullToTabsTweaks) ~
       (recycler <~ recyclerStyle) ~
-      (tabs <~ tvClose) ~
-      (scrollerLayout <~ fslColor(colorPrimary))
+      (tabs <~ tvClose)
   }
 
   override def showLoading(): Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
@@ -122,7 +123,7 @@ trait AppsIuActionsImpl
     category: NineCardCategory,
     clickListener: (App) => Unit) = {
     val categoryName = resGetString(category.getStringResource) getOrElse category.getStringResource
-    val adapter = new AppsAdapter(
+    val adapter = AppsAdapter(
       apps = apps,
       clickListener = clickListener,
       longClickListener = None)

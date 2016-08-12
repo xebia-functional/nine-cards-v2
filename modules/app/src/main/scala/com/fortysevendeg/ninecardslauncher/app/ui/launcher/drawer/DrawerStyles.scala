@@ -22,10 +22,11 @@ trait DrawerStyles {
 
   def contentStyle = vGone
 
-  def scrollableStyle(color: Int)(implicit context: ContextWrapper, theme: NineCardsTheme) = {
+  def scrollableStyle(implicit context: ContextWrapper, theme: NineCardsTheme) = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
-    vBackgroundBoxWorkspace(color = theme.get(SearchBackgroundColor), horizontalPadding = padding) +
-      fslColor(color)
+    vBackgroundBoxWorkspace(color = theme.get(DrawerBackgroundColor), horizontalPadding = padding) +
+      fslColor(theme.get(PrimaryColor), theme.get(DrawerTabsBackgroundColor)) +
+      fslMarginRightBarContent(padding)
   }
 
   def appDrawerMainStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] = {
@@ -34,7 +35,7 @@ trait DrawerStyles {
       vStateListAnimator(R.anim.elevation_transition) +
         vPaddings(elevation) +
         vCircleOutlineProvider(elevation)
-    } getOrElse tivPressedColor(theme.get(AppDrawerPressedColor))
+    } getOrElse tivPressedColor(theme.get(DockPressedColor))
   }
 
   def recyclerStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[RecyclerView] = rvFixedSize

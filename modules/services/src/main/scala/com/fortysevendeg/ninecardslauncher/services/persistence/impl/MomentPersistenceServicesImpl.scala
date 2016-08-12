@@ -2,8 +2,16 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
+import com.fortysevendeg.ninecardslauncher.repository.model.Moment
+import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
+import rapture.core.{Answer, Errata}
+
+import scalaz.concurrent.Task
 
 trait MomentPersistenceServicesImpl extends PersistenceServices {
 
@@ -39,8 +47,19 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
       maybeMoment <- momentRepository.findMomentById(request.id)
     } yield maybeMoment map toMoment).resolve[PersistenceServiceException]
 
+  def fetchMomentByType(momentType: String) =
+    (for {
+      moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType))
+      moment <- getHead(moments.headOption)
+    } yield toMoment(moment)).resolve[PersistenceServiceException]
+
   def updateMoment(request: UpdateMomentRequest) =
     (for {
       updated <- momentRepository.updateMoment(toRepositoryMoment(request))
     } yield updated).resolve[PersistenceServiceException]
+
+  private[this] def getHead(maybeMoment: Option[Moment]): ServiceDef2[Moment, RepositoryException]=
+    maybeMoment map { m =>
+      Service(Task(Answer[Moment, RepositoryException](m)))
+    } getOrElse Service(Task(Errata(RepositoryException("Moment not found"))))
 }

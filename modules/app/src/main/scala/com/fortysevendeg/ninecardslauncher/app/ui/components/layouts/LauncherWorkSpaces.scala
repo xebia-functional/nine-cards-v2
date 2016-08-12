@@ -12,11 +12,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
+import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -79,16 +81,36 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ => Ui.nop
   }
 
-  def addWidget(widgetView: View, cell: Cell): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView, cell).run
+  def addWidget(widgetView: View, cell: Cell, widget: AppWidget): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView, cell, widget).run
     case None =>
       // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
-      uiHandlerDelayed(Ui(addWidget(widgetView, cell)), 200).run
+      uiHandlerDelayed(Ui(addWidget(widgetView, cell, widget)), 200).run
     case _ =>
   }
 
-  def clearWidgets(): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.clearWidgets().run
+  def clearWidgets(): Unit = uiWithView(_.clearWidgets)
+
+  def unhostWidget(id: Int): Unit = uiWithView(_.unhostWiget(id))
+
+  def showRulesInMoment(): Unit = uiWithView(_.createRules)
+
+  def hideRulesInMoment(): Unit = uiWithView(_.removeRules)
+
+  def reloadSelectedWidget(): Unit = uiWithView(_.reloadSelectedWidget)
+
+  def resizeCurrentWidget(): Unit = uiWithView(_.resizeCurrentWidget)
+
+  def moveCurrentWidget(): Unit = uiWithView(_.moveCurrentWidget)
+
+  def arrowWidget(arrow: Arrow): Unit = uiWithView(_.arrowWidget(arrow))
+
+  def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Unit = uiWithView(_.resizeWidgetById(id, resize))
+
+  def moveWidgetById(id: Int, move: MoveWidgetRequest): Unit = uiWithView(_.moveWidgetById(id, move))
+
+  private[this] def uiWithView(f: (LauncherWorkSpaceMomentsHolder) => Ui[_]) = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => f(momentWorkSpace).run
     case _ =>
   }
 
@@ -178,9 +200,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     // We check that the user is doing up vertical swipe
     // If the user is touching a widget, we don't do a vertical movement in order to the
     // scrollable widgets works fine
-    if (isVerticalMoving(x, y) && !touchingWidget) {
+    if (isVerticalMoving(x, y) && !touchingWidget && statuses.enabled) {
       workSpacesListener.onStartOpenMenu().run
-      resetLongClick()
       workSpacesStatuses = workSpacesStatuses.start()
     } else {
       super.setStateIfNeeded(x, y)
@@ -190,7 +211,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def closeMenu(): Ui[Future[Any]] = if (workSpacesStatuses.openedMenu) {
     setOpenedMenu(false)
     animateViewsMenuMovement(0, durationAnimation)
-  } else Ui(Future.successful(Unit))
+  } else Ui(Future.successful(()))
 
   private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
     action match {
@@ -199,15 +220,6 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
           p.statuses = p.statuses.copy(touchingWidget = false)
         }
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-      case ACTION_MOVE =>
-        if (!statuses.enabled) {
-          if (isVerticalMoving(x, y)) {
-            resetLongClick()
-            statuses = statuses.copy(enabled = true)
-            workSpacesStatuses = workSpacesStatuses.start()
-          }
-          statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        }
       case _ =>
     }
   }

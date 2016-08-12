@@ -3,11 +3,11 @@
   "styles": [
     {
       "styleType": "PrimaryColor",
-      "color": "#3F51B5"
+      "color": "#FF9800"
     },
     {
       "styleType": "SearchBackgroundColor",
-      "color": "#ff545454"
+      "color": "#333333"
     },
     {
       "styleType": "SearchPressedColor",
@@ -22,32 +22,52 @@
       "color": "#ffffff"
     },
     {
-      "styleType": "AppDrawerPressedColor",
+      "styleType": "SearchTextColor",
+      "color": "#ffffff"
+    },
+    {
+      "styleType": "DrawerTabsBackgroundColor",
+      "color": "#16ffffff"
+    },
+    {
+      "styleType": "DrawerBackgroundColor",
+      "color": "#333333"
+    },
+    {
+      "styleType": "DrawerTextColor",
+      "color": "#ffffff"
+    },
+    {
+      "styleType": "DockPressedColor",
       "color": "#ffd5f2fa"
     },
     {
-      "styleType": "CollectionDetailBackgroundColor",
-      "color": "#ffa3a3a3"
+      "styleType": "CardLayoutBackgroundColor",
+      "color": "#222222"
     },
     {
-      "styleType": "CollectionDetailTextCardColor",
-      "color": "#eeeeee"
+      "styleType": "CardTextColor",
+      "color": "#ffffff"
     },
     {
-      "styleType": "CollectionDetailCardBackgroundColor",
-      "color": "#ff545454"
+      "styleType": "CardBackgroundColor",
+      "color": "#444444"
     },
     {
-      "styleType": "CollectionDetailCardBackgroundPressedColor",
+      "styleType": "CardBackgroundPressedColor",
       "color": "#ffffff"
     },
     {
       "styleType": "CollectionDetailTextTabSelectedColor",
-      "color": "#666666"
+      "color": "#ffffff"
     },
     {
       "styleType": "CollectionDetailTextTabDefaultColor",
-      "color": "#80666666"
+      "color": "#80ffffff"
+    },
+    {
+      "styleType": "DrawerIconColor",
+      "color": "#ffffff"
     }
   ]
 }

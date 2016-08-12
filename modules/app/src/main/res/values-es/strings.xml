@@ -16,6 +16,10 @@
     <string name="sendTo">Enviar a</string>
     <string name="buttonErrorReload">Recargar</string>
 
+    <string name="resize">Redimensionar</string>
+    <string name="move">Mover</string>
+    <string name="delete">Eliminar</string>
+
     <string name="atHour">a las</string>
 
     <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a la collectión %1$s</string>
@@ -261,6 +265,7 @@
     <string name="home">Hogar</string>
     <string name="work">Trabajo</string>
     <string name="night">Noche</string>
+    <string name="transit">Tránsito</string>
 
     <!-- Profile -->
     <string name="publications">Publicaciones</string>
@@ -309,8 +314,6 @@
 
     <string name="themesDark">Oscuro</string>
     <string name="themesLight">Claro</string>
-    <string name="themesMaterial">Material</string>
-    <string name="themes9Cards">9Cards</string>
 
     <string name="googleLogoTitle">Logo de Google</string>
     <string name="googleLogoSummary">Resumen de Logo de Google</string>
@@ -423,7 +426,11 @@
     <string name="collectionDetailCardAnimationsTBD">TBD</string>
     <string name="collectionDetailCardAnimationsNoAnimation">Sin Animación</string>
 
-    <string name="collectionDetailAddCardsMessage">Añade nuevas tarjetas a esta colección</string>
+    <string name="collectionDetailAddCardsMessage">
+        <![CDATA[
+            Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +
+        ]]>
+    </string>
 
     <!-- New App Preferences -->
 
@@ -469,5 +476,14 @@
     <string name="sharedContentErrorEmpty">Sin contenido</string>
     <string name="sharedContentErrorNotSupported">Contenido compartido no soportado</string>
     <string name="sharedContentErrorUnexpected">Error inesperado</string>
+
+    <!-- Edit Widgets -->
+    <string name="editingWidgets">Editando widgets</string>
+    <string name="movingWidgets">Moviendo widgets</string>
+    <string name="resizingWidgets">Redimensionando widgets</string>
+    <string name="removeWidgetMessage">¿Estás seguro de que quieres borrar este widget?</string>
+    <string name="noSpaceForWidget">El widget no tiene espacio actualmente</string>
+    <string name="noMoveForWidget">El widget no puede moverse ahí</string>
+    <string name="noResizeForWidget">El widget no puede redimensionarse ahí</string>
 
 </resources>

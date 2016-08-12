@@ -26,7 +26,7 @@ object NineCardExtensions {
 
   }
 
-  implicit class ResultTExtensions[A, B <: Exception : ClassTag](r: ResultT[Task, A, B]) {
+  implicit class ResultTExtensions[A, B <: Exception : ClassTag](r : ResultT[Task, A, B]) {
 
     def resolve[E <: Exception : ClassTag](implicit cv: Exception => E) = {
       val task: Task[Result[A, B]] = r.run
@@ -52,6 +52,23 @@ object NineCardExtensions {
 
   }
 
+  implicit class ResultTOptionExtensions[A, B <: Exception : ClassTag](r : ResultT[Task, Option[A], B]) {
+
+    def resolveOption() = {
+      val task: Task[Result[Option[A], B]] = r.run
+
+      val innerResult: Task[Result[A, B]] = task.map {
+        case Errata(errors) => Errata(errors)
+        case Unforeseen(u) => Unforeseen(u)
+        case Answer(result) => result match {
+          case Some(a) => Answer(a)
+          case _ => Errata(Seq.empty)
+        }
+      }
+      ResultT(innerResult)
+    }
+
+  }
   implicit class XorTExtensions[Val](r: XorT[Task, NineCardException, Val]) {
 
     def resolve[E <: NineCardException](implicit converter: Throwable => E): XorT[Task, NineCardException, Val] =

@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.{AccountManager, AccountManagerFuture, OperationCanceledException}
 import android.app.Activity
-import android.content.{ComponentName, Intent, SharedPreferences}
 import android.content.res.Resources
+import android.content.{ComponentName, Intent, SharedPreferences}
 import android.os.Bundle
 import android.support.v4.app.{DialogFragment, Fragment, FragmentManager, FragmentTransaction}
 import android.support.v7.app.AppCompatActivity
@@ -13,21 +13,18 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.Statuses.WizardPresenterStatuses
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionExceptionImpl, CollectionProcess}
-import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentExceptionImpl, MomentProcess}
+import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcess
+import com.fortysevendeg.ninecardslauncher.process.moment.MomentProcess
 import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigProcess
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 import scala.concurrent.duration._
 import scala.ref.WeakReference
-import scalaz.concurrent.Task
 
 trait WizardPresenterSpecification
   extends Specification
@@ -106,15 +103,15 @@ trait WizardPresenterSpecification
 
     mockContextActivity.getResources returns mockResources
 
-    mockActions.initialize(any) returns Ui[Any]()
-    mockActions.showLoading() returns Ui[Any]()
-    mockActions.goToUser() returns Ui[Any]()
-    mockActions.goToWizard() returns Ui[Any]()
-    mockActions.showErrorConnectingGoogle() returns Ui[Any]()
-    mockActions.showErrorLoginUser() returns Ui[Any]()
-    mockActions.showErrorAcceptTerms() returns Ui[Any]()
-    mockActions.showErrorSelectUser() returns Ui[Any]()
-    mockActions.showDiveIn() returns Ui[Any]()
+    mockActions.initialize(any) returns Ui[Any](())
+    mockActions.showLoading() returns Ui[Any](())
+    mockActions.goToUser() returns Ui[Any](())
+    mockActions.goToWizard() returns Ui[Any](())
+    mockActions.showErrorConnectingGoogle() returns Ui[Any](())
+    mockActions.showErrorLoginUser() returns Ui[Any](())
+    mockActions.showErrorAcceptTerms() returns Ui[Any](())
+    mockActions.showErrorSelectUser() returns Ui[Any](())
+    mockActions.showDiveIn() returns Ui[Any](())
 
     val presenter = new WizardPresenter(mockActions) {
 

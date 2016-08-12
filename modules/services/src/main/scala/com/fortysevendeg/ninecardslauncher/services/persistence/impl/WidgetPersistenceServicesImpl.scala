@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.WidgetEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 
-trait WidgetPersistenceServicesImpl {
+trait WidgetPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 

@@ -16,10 +16,11 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GenericUiContext, UiC
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
-class WorkSpaceMomentIcon(context: Context, attr: AttributeSet, defStyleAttr: Int)
+class WorkSpaceButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attr, defStyleAttr)
   with Contexts[View]
   with TypedFindView {
@@ -30,15 +31,22 @@ class WorkSpaceMomentIcon(context: Context, attr: AttributeSet, defStyleAttr: In
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
-  LayoutInflater.from(context).inflate(R.layout.workspace_moment_menu, this)
+  LayoutInflater.from(context).inflate(R.layout.workspace_button, this)
 
   val padding = resGetDimensionPixelSize(R.dimen.padding_small)
 
-  private[this] val content = Option(findView(TR.workspace_moment_icon_content))
+  private[this] lazy val content = findView(TR.workspace_moment_icon_content)
 
-  private[this] val title = Option(findView(TR.workspace_moment_title))
+  private[this] lazy val title = findView(TR.workspace_moment_title)
 
-  private[this] val icon = Option(findView(TR.workspace_moment_icon))
+  private[this] lazy val icon = findView(TR.workspace_moment_icon)
+
+  def init(t: WorkSpaceButtonType)(implicit theme: NineCardsTheme): Ui[Any] = t match {
+    case WorkSpaceAppMomentButton => title <~ tvColor(theme.get(DrawerTextColor))
+    case WorkSpaceActionWidgetButton =>
+      (this <~ vBlankBackground) ~
+        (title <~ tvColorResource(R.color.widgets_text))
+  }
 
   def populateCollection(collection: Collection): Ui[Any] = {
     val resIcon = iconCollectionDetail(collection.icon)
@@ -59,5 +67,19 @@ class WorkSpaceMomentIcon(context: Context, attr: AttributeSet, defStyleAttr: In
           case _ => ivCardUri(card.imagePath, card.term, circular = true)
         }))
 
+  def populateIcon(resIcon: Int, resTitle: Int, resColor: Int): Ui[Any] = {
+    (title <~ tvText(resTitle)) ~
+      (content <~ vPaddings(padding)) ~
+      (icon <~
+        ivScaleType(ScaleType.CENTER_INSIDE) <~
+        vBackgroundCircle(resGetColor(resColor)) <~
+        ivSrc(resIcon))
+  }
+
 }
 
+sealed trait WorkSpaceButtonType
+
+case object WorkSpaceAppMomentButton extends WorkSpaceButtonType
+
+case object WorkSpaceActionWidgetButton extends WorkSpaceButtonType

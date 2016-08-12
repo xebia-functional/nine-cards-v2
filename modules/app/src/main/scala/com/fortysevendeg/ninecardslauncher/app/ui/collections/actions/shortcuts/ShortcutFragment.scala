@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 
 class ShortcutFragment
   extends BaseActionFragment
-  with ShortcutIuActionsImpl
+  with ShortcutUiActionsImpl
   with NineCardIntentConversions { self =>
 
   override lazy val presenter = new ShortcutPresenter(self)

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.widget.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.process.widget.WidgetExceptionImpl
+import com.fortysevendeg.ninecardslauncher.process.widget.AppWidgetExceptionImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
 import org.specs2.mock.Mockito
@@ -105,8 +105,6 @@ trait WidgetProcessImplSpecification
   }
 }
 
-
-
 class WidgetProcessImplSpec
   extends WidgetProcessImplSpecification
   with WidgetProcessImplData {
@@ -138,7 +136,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.getWidgets.run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -173,7 +171,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.getWidgetById(widgetId).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -208,7 +206,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.getWidgetByAppWidgetId(appWidgetId).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -242,7 +240,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.getWidgetsByMoment(momentId).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -270,7 +268,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.addWidget(addWidgetRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -298,7 +296,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.addWidgets(seqAddWidgetRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -311,7 +309,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.moveWidget(widgetId, moveWidgetRequest).run.run
         result must beLike {
           case Answer(resultWidget) =>
-            resultWidget shouldEqual widget
+            resultWidget shouldEqual moveWidgetResponse
         }
       }
 
@@ -320,7 +318,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.moveWidget(widgetId, moveWidgetRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -330,7 +328,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.moveWidget(widgetId, moveWidgetRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -340,7 +338,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.moveWidget(widgetId, moveWidgetRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -353,7 +351,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.resizeWidget(widgetId, resizeWidgetRequest).run.run
         result must beLike {
           case Answer(resultWidget) =>
-            resultWidget shouldEqual widget
+            resultWidget shouldEqual resizeWidgetResponse
         }
       }
 
@@ -362,7 +360,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.resizeWidget(widgetId, resizeWidgetRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -372,7 +370,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.resizeWidget(widgetId, resizeWidgetRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -382,7 +380,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.resizeWidget(widgetId, resizeWidgetRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -410,7 +408,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.deleteAllWidgets().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -436,7 +434,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.resizeWidget(widgetId, resizeWidgetRequest).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -450,7 +448,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.deleteWidget(widgetId).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }
@@ -478,7 +476,7 @@ class WidgetProcessImplSpec
         val result = widgetProcess.deleteWidgetsByMoment(momentId).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[AppWidgetExceptionImpl]
           }
         }
       }

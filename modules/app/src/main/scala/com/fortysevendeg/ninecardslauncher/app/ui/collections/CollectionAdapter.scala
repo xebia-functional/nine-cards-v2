@@ -25,7 +25,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.card_item, parent, false)
-    new ViewHolderCollectionAdapter(
+    ViewHolderCollectionAdapter(
       content = view,
       heightCard = heightCard,
       onClick = (position: Int) => Ui {
@@ -94,11 +94,10 @@ case class ViewHolderCollectionAdapter(
 
   def bind(card: Card)(implicit uiContext: UiContext[_]): Ui[_] =
     (icon <~ iconCardTransform(card)) ~
-      (name <~ tvText(card.term)) ~
+      (name <~ tvText(card.term) <~ nameStyle(card.cardType)) ~
       (badge <~ (getBadge(card.cardType) map {
         ivSrc(_) + vVisible
-      } getOrElse vGone)) ~
-      (name <~ nameStyle(card.cardType))
+      } getOrElse vGone))
 
   private[this] def getBadge(cardType: CardType): Option[Int] = cardType match {
     case PhoneCardType => Option(R.drawable.badge_phone)

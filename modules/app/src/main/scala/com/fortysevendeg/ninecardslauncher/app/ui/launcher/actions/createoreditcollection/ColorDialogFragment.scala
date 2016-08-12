@@ -18,11 +18,12 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapper)
+case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends DialogFragment
   with NineCardIntentConversions {
 
@@ -44,7 +45,7 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
     val params = new LinearLayout.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
     params.gravity = Gravity.CENTER
 
-    (rootView <~ vgAddViews(views, params)).run
+    (rootView <~ vBackgroundColor(theme.get(DrawerBackgroundColor)) <~ vgAddViews(views, params)).run
 
     new AlertDialog.Builder(getActivity).setView(rootView).create()
   }
@@ -57,7 +58,7 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
 
     lazy val color = Option(findView(TR.color_info_image))
 
-    val icon = new PathMorphDrawable(
+    val icon = PathMorphDrawable(
       defaultIcon = IconTypes.CHECK,
       defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_large),
       defaultColor = resGetColor(R.color.color_selected_color_dialog),

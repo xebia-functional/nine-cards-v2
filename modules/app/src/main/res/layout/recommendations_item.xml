@@ -2,6 +2,7 @@
 
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recommendation_item_layout"
     style="@style/RecommendationsItemRoot">
 
     <LinearLayout
