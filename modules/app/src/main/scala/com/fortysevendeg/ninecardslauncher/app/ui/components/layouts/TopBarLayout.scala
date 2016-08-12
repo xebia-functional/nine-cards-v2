@@ -104,7 +104,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       s"${collection.name} ${resGetString(R.string.atHour)}"
     } else collection.name
     (momentContent <~
-      On.click(Ui(presenter.clickMomentTopBar()))) ~
+      On.click(Ui(presenter.goToChangeMoment())) <~
+      On.longClick(Ui(presenter.goToEditMoment()) ~ Ui(true))) ~
       (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~
       (momentClock <~ (if (showClock) vVisible else vGone)) ~
       (momentIcon <~

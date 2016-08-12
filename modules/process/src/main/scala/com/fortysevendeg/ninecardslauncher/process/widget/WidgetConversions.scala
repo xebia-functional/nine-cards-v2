@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.widget
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddWidgetRequest => ServicesAddWidgetRequest, UpdateWidgetRequest => ServicesUpdateWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Widget => ServicesWidget}
 
@@ -29,10 +29,11 @@ trait WidgetConversions {
     packageName = servicesWidget.packageName,
     className = servicesWidget.className,
     appWidgetId = servicesWidget.appWidgetId,
-    startX = servicesWidget.startX,
-    startY = servicesWidget.startY,
-    spanX = servicesWidget.spanX,
-    spanY = servicesWidget.spanY,
+    area = WidgetArea(
+      startX = servicesWidget.startX,
+      startY = servicesWidget.startY,
+      spanX = servicesWidget.spanX,
+      spanY = servicesWidget.spanY),
     widgetType = WidgetType(servicesWidget.widgetType),
     label = servicesWidget.label,
     imagePath = servicesWidget.imagePath,
@@ -40,13 +41,15 @@ trait WidgetConversions {
 
   def toUpdatedWidget(widget: AppWidget, moveWidgetRequest: MoveWidgetRequest): AppWidget =
     widget.copy(
-      startX = widget.startX + moveWidgetRequest.displaceX,
-      startY = widget.startY + moveWidgetRequest.displaceY)
+      area = widget.area.copy(
+        startX = widget.area.startX + moveWidgetRequest.displaceX,
+        startY = widget.area.startY + moveWidgetRequest.displaceY))
 
   def toUpdatedWidget(widget: AppWidget, resizeWidgetRequest: ResizeWidgetRequest): AppWidget =
     widget.copy(
-      spanX = widget.spanX + resizeWidgetRequest.increaseX,
-      spanY = widget.spanY + resizeWidgetRequest.increaseY)
+      area = widget.area.copy(
+        spanX = widget.area.spanX + resizeWidgetRequest.increaseX,
+        spanY = widget.area.spanY + resizeWidgetRequest.increaseY))
 
   def toServicesUpdateWidgetRequest(widget: AppWidget): ServicesUpdateWidgetRequest = ServicesUpdateWidgetRequest(
     id = widget.id,
@@ -54,10 +57,10 @@ trait WidgetConversions {
     packageName = widget.packageName,
     className = widget.className,
     appWidgetId = widget.appWidgetId,
-    startX = widget.startX,
-    startY = widget.startY,
-    spanX = widget.spanX,
-    spanY = widget.spanY,
+    startX = widget.area.startX,
+    startY = widget.area.startY,
+    spanX = widget.area.spanX,
+    spanY = widget.area.spanY,
     widgetType = widget.widgetType.name,
     label = widget.label,
     imagePath = widget.imagePath,

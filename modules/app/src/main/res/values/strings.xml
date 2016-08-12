@@ -495,5 +495,9 @@
     <string name="editingWidgets">Editing widgets</string>
     <string name="movingWidgets">Moving widgets</string>
     <string name="resizingWidgets">Resizing widgets</string>
+    <string name="removeWidgetMessage">Are you sure you want remove this widget?</string>
+    <string name="noSpaceForWidget">The widget don\'t currently have space</string>
+    <string name="noMoveForWidget">The widget can\'t be moved there</string>
+    <string name="noResizeForWidget">The widget can\'t be resized there</string>
 
 </resources>
