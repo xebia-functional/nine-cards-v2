@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.widget.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType._
-import com.fortysevendeg.ninecardslauncher.process.widget.{ResizeWidgetRequest, MoveWidgetRequest, AddWidgetRequest}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.Widget
+import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
+import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Widget => ServicesWidget}
 
 import scala.util.Random
@@ -56,16 +56,17 @@ trait WidgetProcessImplData {
    intent: Option[String] = widgetIntentOption) =
     (0 until 5) map (
       item =>
-        Widget(
+        AppWidget(
           id = id,
           momentId = momentId,
           packageName = packageName,
           className = className,
           appWidgetId = appWidgetId,
-          startX = startX,
-          startY = startY,
-          spanX = spanX,
-          spanY = spanY,
+          WidgetArea(
+            startX = startX,
+            startY = startY,
+            spanX = spanX,
+            spanY = spanY),
           widgetType = widgetType,
           label = label,
           imagePath = imagePath,
@@ -132,12 +133,28 @@ trait WidgetProcessImplData {
         imagePath = imagePath,
         intent = intent))
 
+  val moveStartX: Int = Random.nextInt(8)
+  val moveStartY: Int = Random.nextInt(8)
+
   val moveWidgetRequest = MoveWidgetRequest(
-    startX = startX,
-    startY = startY)
+    displaceX = moveStartX,
+    displaceY = moveStartY)
+
+  val moveWidgetResponse = widget.copy(
+    area = widget.area.copy(
+      startX = widget.area.startX + moveWidgetRequest.displaceX,
+      startY = widget.area.startY + moveWidgetRequest.displaceY))
+
+
+  val resizeSpanX: Int = Random.nextInt(8)
+  val resizeSpanY: Int = Random.nextInt(8)
 
   val resizeWidgetRequest = ResizeWidgetRequest(
-    spanX = spanX,
-    spanY = spanY)
+    increaseX = resizeSpanX,
+    increaseY = resizeSpanY)
 
+  val resizeWidgetResponse = widget.copy(
+    area = widget.area.copy(
+      spanX = widget.area.spanX + resizeWidgetRequest.increaseX,
+      spanY = widget.area.spanY + resizeWidgetRequest.increaseY))
 }

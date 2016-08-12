@@ -39,12 +39,14 @@ trait CloudStorageProcess {
   def createCloudStorageDevice(cloudStorageDevice: CloudStorageDeviceData): ServiceDef2[CloudStorageDevice, CloudStorageProcessException]
 
   /**
-    * Create or update a device the collections using as actual devices
+    * Create or update a device the collections, moments and dockApps using as actual devices
     * @param collections the collections to be overwritten in the actual devices
+    * @param moments the moments to be overwritten in the actual devices
+    * @param dockApps the dockApps to be overwritten in the actual devices
     * @return the saved device
     * @throws CloudStorageProcessException if the services throws an error
     */
-  def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection], moments: Seq[CloudStorageMoment])(implicit context: ContextSupport): ServiceDef2[CloudStorageDevice, CloudStorageProcessException]
+  def createOrUpdateActualCloudStorageDevice(collections: Seq[CloudStorageCollection], moments: Seq[CloudStorageMoment], dockApps: Seq[CloudStorageDockApp])(implicit context: ContextSupport): ServiceDef2[CloudStorageDevice, CloudStorageProcessException]
 
   /**
     * Delete a `CloudStorageDevice` by his id

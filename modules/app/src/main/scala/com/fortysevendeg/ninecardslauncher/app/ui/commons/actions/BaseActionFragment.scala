@@ -5,18 +5,20 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.FrameLayout
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportProvider, NineCardsPreferencesValue, ThemeFile}
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ActionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -38,10 +40,13 @@ trait BaseActionFragment
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
-  implicit lazy val theme: NineCardsTheme = di.themeProcess.getSelectedTheme.run.run match {
-    case Answer(t) => t
-    case _ => getDefaultTheme
-  }
+  lazy val preferenceValues = new NineCardsPreferencesValue
+
+  implicit lazy val theme: NineCardsTheme =
+    di.themeProcess.getTheme(ThemeFile.readValue(preferenceValues)).run.run match {
+      case Answer(t) => t
+      case _ => getDefaultTheme
+    }
 
   private[this] lazy val defaultColor = theme.get(PrimaryColor)
 
@@ -64,6 +69,8 @@ trait BaseActionFragment
   protected lazy val endPosY = getInt(Seq(getArguments), BaseActionFragment.endRevealPosY, defaultValue)
 
   protected lazy val colorPrimary = getInt(Seq(getArguments), BaseActionFragment.colorPrimary, defaultColor)
+
+  protected lazy val backgroundColor = theme.get(DrawerBackgroundColor)
 
   protected lazy val toolbar = Option(findView(TR.actions_toolbar))
 
@@ -95,11 +102,15 @@ trait BaseActionFragment
     val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, container, false).asInstanceOf[FrameLayout]
     val layout = LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
     rootView = Option(baseView)
-    ((content <~ vgAddView(layout))  ~
+    ((transitionView <~ vBackgroundColor(backgroundColor)) ~
+      (rootView <~ vBackgroundColor(backgroundColor)) ~
+      (errorContent <~ vBackgroundColor(backgroundColor)) ~
+      (content <~ vgAddView(layout))  ~
       (loading <~ pbColor(colorPrimary)) ~
       (transitionView <~ vBackgroundColor(colorPrimary)) ~
       (rootContent <~ vInvisible) ~
       (errorContent <~ vGone) ~
+      (errorMessage <~ tvColor(theme.get(DrawerTextColor).alpha(0.8f))) ~
       (errorButton <~ vBackgroundTint(colorPrimary))).run
     baseView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
       override def onLayoutChange(v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int): Unit = {

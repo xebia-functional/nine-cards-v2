@@ -99,12 +99,13 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def reloadMoment(collection: Collection)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
     val resIcon = iconCollectionDetail(collection.icon)
-    val showClock = preferenceValues.getBoolean(ShowClockMoment)
+    val showClock = ShowClockMoment.readValue(preferenceValues)
     val text = if (showClock) {
       s"${collection.name} ${resGetString(R.string.atHour)}"
     } else collection.name
     (momentContent <~
-      On.click(Ui(presenter.clickMomentTopBar()))) ~
+      On.click(Ui(presenter.goToChangeMoment())) <~
+      On.longClick(Ui(presenter.goToEditMoment()) ~ Ui(true))) ~
       (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~
       (momentClock <~ (if (showClock) vVisible else vGone)) ~
       (momentIcon <~

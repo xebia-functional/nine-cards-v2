@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/LauncherEditWidgetsTopBarRoot">
+
+    <ImageView
+        android:id="@+id/launcher_edit_widgets_icon"
+        style="@style/LauncherEditWidgetsTopBarIcon"/>
+
+    <TextView
+        android:id="@+id/launcher_edit_widgets_text"
+        style="@style/LauncherEditWidgetsTopBarText"/>
+
+</LinearLayout>

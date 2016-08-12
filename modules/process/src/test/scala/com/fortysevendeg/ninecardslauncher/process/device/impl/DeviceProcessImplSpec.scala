@@ -97,6 +97,9 @@ trait DeviceProcessSpecification
     mockPersistenceServices.deleteAllApps() returns
       Service(Task(Result.answer(items)))
 
+    mockPersistenceServices.deleteAllWidgets() returns
+      Service(Task(Result.answer(items)))
+
     mockPersistenceServices.deleteAllCollections() returns
       Service(Task(Result.answer(items)))
 
@@ -257,10 +260,25 @@ trait DeviceProcessSpecification
     }
   }
 
+  trait ErrorPersistenceServicesDeleteWidgetsProcessScope {
+    self: DeviceProcessScope =>
+
+    mockPersistenceServices.deleteAllApps returns
+      Service(Task(Result.answer(items)))
+
+    mockPersistenceServices.deleteAllWidgets() returns Service {
+      Task(Errata(persistenceServiceException))
+    }
+
+  }
+
   trait ErrorPersistenceServicesDeleteCollectionsProcessScope {
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
+      Service(Task(Result.answer(items)))
+
+    mockPersistenceServices.deleteAllWidgets() returns
       Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCollections returns Service {
@@ -273,6 +291,9 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
+      Service(Task(Result.answer(items)))
+
+    mockPersistenceServices.deleteAllWidgets() returns
       Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCollections returns
@@ -288,6 +309,9 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps() returns
+      Service(Task(Result.answer(items)))
+
+    mockPersistenceServices.deleteAllWidgets() returns
       Service(Task(Result.answer(items)))
 
     mockPersistenceServices.deleteAllCollections() returns
@@ -461,7 +485,7 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.createOrUpdateDockApp(any) returns
-      Service(Task(Result.answer((): Unit)))
+      Service(Task(Result.answer(dockAppSeq)))
 
     mockPersistenceServices.fetchDockApps returns
       Service(Task(Result.answer(dockAppSeq)))
@@ -473,12 +497,12 @@ trait DeviceProcessSpecification
   trait DockAppsFindErrorScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.findAppByPackage(any) returns Service {
+    mockPersistenceServices.fetchAppByPackages(any) returns Service {
       Task(Errata(persistenceServiceException))
     }
 
     mockPersistenceServices.createOrUpdateDockApp(any) returns
-      Service(Task(Result.answer((): Unit)))
+      Service(Task(Result.answer(dockAppSeq)))
   }
 
   trait DockAppsErrorScope {
@@ -515,6 +539,16 @@ class DeviceProcessImplSpec
 
     "returns ResetException when persistence service fails deleting the apps" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteAppsProcessScope {
+        val result = deviceProcess.resetSavedItems().run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
+          }
+        }
+      }
+
+    "returns ResetException when persistence service fails deleting widgets" in
+      new DeviceProcessScope with ErrorPersistenceServicesDeleteWidgetsProcessScope {
         val result = deviceProcess.resetSavedItems().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -1211,7 +1245,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
         result must beLike {
           case Answer(resultDockApp) =>
-            resultDockApp shouldEqual ((): Unit)
+            resultDockApp shouldEqual dockAppProcessSeq
         }
       }
 
@@ -1225,12 +1259,13 @@ class DeviceProcessImplSpec
         }
       }
 
-    "returns an empty answer when PersistenceService fails finding the apps" in
+    "returns DockAppException when PersistenceService fails fetching the apps" in
       new DeviceProcessScope with DockAppsFindErrorScope {
         val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
         result must beLike {
-          case Answer(resultApps) =>
-            resultApps shouldEqual ((): Unit)
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+          }
         }
       }
 
@@ -1262,6 +1297,33 @@ class DeviceProcessImplSpec
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+          }
+        }
+      }
+
+  }
+
+  "Save DockApps" should {
+
+    "return the three dockApps saved" in
+      new DeviceProcessScope with DockAppsScope {
+
+        mockPersistenceServices.createOrUpdateDockApp(any) returns Service(Task(Result.answer(dockAppSeq)))
+
+        val result = deviceProcess.saveDockApps(saveDockAppRequestSeq).run.run
+        result must beLike {
+          case Answer(resultSeqDockApp) =>
+            resultSeqDockApp.size shouldEqual saveDockAppRequestSeq.size
+        }
+      }
+
+    "returns DockAppException when PersistenceService fails" in
+      new DeviceProcessScope with DockAppsErrorScope {
+
+        val result = deviceProcess.saveDockApps(saveDockAppRequestSeq).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
           }
         }
       }

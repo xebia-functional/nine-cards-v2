@@ -50,5 +50,22 @@ object NineCardExtensions {
 
   }
 
+  implicit class ResultTOptionExtensions[A, B <: Exception : ClassTag](r : ResultT[Task, Option[A], B]) {
+
+    def resolveOption() = {
+      val task: Task[Result[Option[A], B]] = r.run
+
+      val innerResult: Task[Result[A, B]] = task.map {
+        case Errata(errors) => Errata(errors)
+        case Unforeseen(u) => Unforeseen(u)
+        case Answer(result) => result match {
+          case Some(a) => Answer(a)
+          case _ => Errata(Seq.empty)
+        }
+      }
+      ResultT(innerResult)
+    }
+
+  }
 
 }

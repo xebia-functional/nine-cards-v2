@@ -18,6 +18,8 @@ class WidgetsFragment(implicit lPresenter: LauncherPresenter)
 
   override def getLayoutId: Int = R.layout.widgets_action_fragment
 
+  override protected lazy val backgroundColor: Int = loadBackgroundColor
+
   override lazy val widgetsPresenter = new WidgetsPresenter(this)
 
   override val launcherPresenter: LauncherPresenter = lPresenter

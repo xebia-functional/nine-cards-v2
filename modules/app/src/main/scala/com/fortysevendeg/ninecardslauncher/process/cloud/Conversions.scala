@@ -4,6 +4,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevice
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
+import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem, UserDevice}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
@@ -25,7 +26,8 @@ object Conversions {
       deviceName = userDevice.deviceName,
       documentVersion = CloudStorageProcess.actualDocumentVersion,
       userDevice.collections map toCloudStorageCollection,
-      moments = None)
+      moments = None,
+      dockApps = None)
 
   def toCloudStorageCollection(userCollection: UserCollection) =
     CloudStorageCollection(
@@ -75,6 +77,14 @@ object Conversions {
       from = timeSlot.from,
       to = timeSlot.to,
       days = timeSlot.days)
+
+  def toCloudStorageDockApp(dockApp: DockApp) =
+    CloudStorageDockApp(
+      name = dockApp.name,
+      dockType = dockApp.dockType,
+      intent = Json.toJson(dockApp.intent).toString(),
+      imagePath = dockApp.imagePath,
+      position = dockApp.position)
 
   def toUserCloudDevice(device: CloudStorageDeviceSummary) =
     UserCloudDevice(

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.graphics.Bitmap
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
@@ -15,13 +15,13 @@ import com.fortysevendeg.ninecardslauncher.process.device.ShortcutException
 import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.Result
 
-import scala.util.Random
 import scalaz.concurrent.Task
 
 class CollectionsPagerPresenter(
   actions: CollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Presenter
   with LauncherExecutor
+  with Conversions
   with NineCardIntentConversions { self =>
 
   val delay = 200
@@ -54,6 +54,15 @@ class CollectionsPagerPresenter(
         actions.reloadCards(newCollection.cards, reloadFragment).run
       })
     )
+  }
+
+  def moveToCollection(collectionId: Int, collectionPosition: Int, card: Card): Unit = {
+
+    removeCard(card)
+
+    Task.fork(di.collectionProcess.addCards(collectionId, Seq(toAddCardRequest(card))).run).resolveAsyncUi(
+      onResult = actions.addCardsToCollection(collectionPosition, _))
+
   }
 
   def showMessageNotImplemented(): Unit = actions.showMessageNotImplemented.run
@@ -162,6 +171,8 @@ trait CollectionsUiActions {
   def reloadCards(cards: Seq[Card], reloadFragments: Boolean): Ui[Any]
 
   def addCards(cards: Seq[Card]): Ui[Any]
+
+  def addCardsToCollection(collectionPosition: Int, cards: Seq[Card]): Ui[Any]
 
   def removeCards(card: Card): Ui[Any]
 

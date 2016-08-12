@@ -23,6 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
@@ -31,6 +32,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDraw
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
@@ -69,7 +71,7 @@ trait CollectionsUiActions
 
   lazy val drawerLayout = Option(findView(TR.launcher_drawer_layout))
 
-  lazy val navigationView = Option(findView(TR.launcher_navigation_view))
+  lazy val navigationView = findView(TR.launcher_navigation_view)
 
   lazy val menuName = Option(findView(TR.menu_name))
 
@@ -97,6 +99,10 @@ trait CollectionsUiActions
 
   lazy val topBarPanel = Option(findView(TR.launcher_top_bar_panel))
 
+  lazy val editWidgetsTopPanel = Option(findView(TR.launcher_edit_widgets_top_panel))
+
+  lazy val editWidgetsBottomPanel = Option(findView(TR.launcher_edit_widgets_bottom_panel))
+
   lazy val collectionActionsPanel = Option(findView(TR.launcher_collections_actions_panel))
 
   lazy val actionFragmentContent = Option(findView(TR.action_fragment_content))
@@ -115,15 +121,18 @@ trait CollectionsUiActions
 
   def initCollectionsUi: Ui[Any] =
     (drawerLayout <~ dlStatusBarBackground(R.color.primary)) ~
-      (navigationView <~ nvNavigationItemSelectedListener(itemId => {
-        (goToMenuOption(itemId) ~ closeMenu()).run
-        true
-      })) ~
+      (navigationView <~
+        navigationViewStyle <~
+        nvNavigationItemSelectedListener(itemId => {
+          (goToMenuOption(itemId) ~ closeMenu()).run
+          true
+        })) ~
       (paginationPanel <~ On.longClick((workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
       (topBarPanel <~ tblInit) ~
       (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (menuCollectionRoot <~ vGone) ~
+      (editWidgetsBottomPanel <~ ewbInit) ~
       (workspaces <~
         lwsInitialize(presenter, theme) <~
         lwsListener(
@@ -145,7 +154,9 @@ trait CollectionsUiActions
         closeCollectionMenu() ~~ Ui(presenter.goToWidgets())
       }) ~
       (menuLauncherSettings <~ On.click {
-        closeCollectionMenu() ~~ uiStartIntent(new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]))
+        closeCollectionMenu() ~~ uiStartIntentForResult(
+          intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
+          result = goToPreferences)
       })
 
   def showEditCollection(collection: Collection): Ui[Any] = {
@@ -179,7 +190,7 @@ trait CollectionsUiActions
       (menuAvatar <~
         ((maybeAvatarUrl, maybeName) match {
           case (Some(url), _) => ivUri(url)
-          case (_, Some(name)) => ivSrc(new CharDrawable(name.substring(0, 1).toUpperCase))
+          case (_, Some(name)) => ivSrc(CharDrawable(name.substring(0, 1).toUpperCase))
           case _ => ivBlank
         }) <~
         menuAvatarStyle) ~
@@ -264,7 +275,7 @@ trait CollectionsUiActions
       workspaceButtonEditMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       On.click {
-        closeCollectionMenu() ~~ showNoImplementedYetMessage()
+        closeCollectionMenu() ~~ Ui(presenter.goToEditMoment())
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonChangeMomentStyle <~

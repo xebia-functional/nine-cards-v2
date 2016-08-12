@@ -342,9 +342,10 @@ trait PersistenceServices {
   /**
     * Creates or updates dock app to the repository
     * @param requests includes the necessary data to create a sequence of new dock apps in the repository
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem creating or updating the dock app
     */
-  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): ServiceDef2[Unit, PersistenceServiceException]
+  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): ServiceDef2[Seq[DockApp], PersistenceServiceException]
 
   /**
     * Deletes all dock apps from the repository by the where clause
@@ -428,6 +429,14 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
   def findMomentById(request: FindMomentByIdRequest): ServiceDef2[Option[Moment], PersistenceServiceException]
+
+  /**
+    * Obtains an moment from the repository by type. Return exception if the type doesn't exist
+    * @param momentType type of the moment
+    * @return an com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment
+    * @throws PersistenceServiceException if exist some problem obtaining the moment
+    */
+  def fetchMomentByType(momentType: String): ServiceDef2[Moment, PersistenceServiceException]
 
   /**
     * Updates the data of an moment from the repository

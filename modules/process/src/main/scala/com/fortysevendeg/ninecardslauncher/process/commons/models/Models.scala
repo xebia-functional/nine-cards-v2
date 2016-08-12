@@ -43,6 +43,7 @@ case class PrivateCard(
   imagePath: String)
 
 case class Moment(
+  id: Int,
   collectionId: Option[Int],
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],

@@ -8,6 +8,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
@@ -30,24 +31,25 @@ trait WidgetsUiActionsImpl
 
   val selectedAlpha = 1
 
+  implicit val widgetsPresenter: WidgetsPresenter
+
+  implicit val launcherPresenter: LauncherPresenter
+
   lazy val recycler = findView(TR.widgets_actions_recycler)
 
   lazy val menu = findView(TR.widgets_actions_menu)
 
-  implicit val widgetsPresenter: WidgetsPresenter
-
-  implicit val launcherPresenter: LauncherPresenter
+  def loadBackgroundColor = resGetColor(R.color.widgets_background)
 
   val widgetContentWidth: Int
 
   val widgetContentHeight: Int
 
   override def initialize(): Ui[Any] =
-    (rootView <~ vBackgroundColorResource(R.color.widgets_background)) ~
-      (toolbar <~
-        dtbInit(colorPrimary) <~
-        dtbChangeText(R.string.widgetsTitle) <~
-        dtbNavigationOnClickListener((_) => unreveal())) ~
+    (toolbar <~
+      dtbInit(colorPrimary) <~
+      dtbChangeText(R.string.widgetsTitle) <~
+      dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
 
   override def loadWidgets(appsWithWidgets: Seq[AppsWithWidgets]): Ui[Any] = {

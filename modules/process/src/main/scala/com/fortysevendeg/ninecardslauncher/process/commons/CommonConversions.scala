@@ -1,7 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.process.commons
 
+import com.fortysevendeg.ninecardslauncher.process.collection.models.FormedMoment
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot, _}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import com.fortysevendeg.ninecardslauncher.process.moment.SaveMomentRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.AddMomentRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 
@@ -32,6 +34,7 @@ trait CommonConversions extends NineCardIntentConversions {
     notification = servicesCard.notification)
 
   def toMoment(servicesMoment: ServicesMoment): Moment = Moment(
+    id = servicesMoment.id,
     collectionId = servicesMoment.collectionId,
     timeslot = servicesMoment.timeslot map toTimeSlot,
     wifi = servicesMoment.wifi,
@@ -43,7 +46,23 @@ trait CommonConversions extends NineCardIntentConversions {
     to = servicesMomentTimeSlot.to,
     days = servicesMomentTimeSlot.days)
 
+  def toAddMomentRequest(moment: SaveMomentRequest): AddMomentRequest =
+    AddMomentRequest(
+      collectionId = moment.collectionId,
+      timeslot = moment.timeslot map toServicesMomentTimeSlot,
+      wifi = moment.wifi,
+      headphone = moment.headphone,
+      momentType = moment.momentType map (_.name))
+
   def toAddMomentRequest(moment: Moment): AddMomentRequest =
+    AddMomentRequest(
+      collectionId = moment.collectionId,
+      timeslot = moment.timeslot map toServicesMomentTimeSlot,
+      wifi = moment.wifi,
+      headphone = moment.headphone,
+      momentType = moment.momentType map (_.name))
+
+  def toAddMomentRequest(moment: FormedMoment): AddMomentRequest =
     AddMomentRequest(
       collectionId = moment.collectionId,
       timeslot = moment.timeslot map toServicesMomentTimeSlot,
@@ -70,6 +89,7 @@ trait CommonConversions extends NineCardIntentConversions {
       case HomeMorningMoment => Seq.empty
       case WorkMoment => Seq.empty
       case HomeNightMoment => Seq.empty
+      case TransitMoment => Seq.empty
     }
 
   def toServicesMomentTimeSlotSeq(moment: NineCardsMoment): Seq[ServicesMomentTimeSlot] =
@@ -77,6 +97,7 @@ trait CommonConversions extends NineCardIntentConversions {
       case HomeMorningMoment => Seq(ServicesMomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
       case WorkMoment => Seq(ServicesMomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
       case HomeNightMoment => Seq(ServicesMomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), ServicesMomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+      case TransitMoment => Seq(ServicesMomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
     }
 
 }
