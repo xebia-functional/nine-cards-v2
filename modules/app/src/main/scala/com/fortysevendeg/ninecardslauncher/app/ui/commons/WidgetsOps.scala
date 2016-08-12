@@ -33,13 +33,7 @@ object WidgetsOps {
     val spanX = math.max(1, math.ceil(widthWidget / smallestCellWidth).toInt)
     val spanY = math.max(1, math.ceil(heightWidget / smallestCellHeight).toInt)
 
-    val widthResizeWidget = minResizeWidth.toFloat + (padding * 2)
-    val heightResizeWidget = minResizeHeight.toFloat + (padding * 2)
-
-    val spanResizeX = math.max(1, math.ceil(widthResizeWidget / smallestCellWidth).toInt)
-    val spanResizeY = math.max(1, math.ceil(heightResizeWidget / smallestCellHeight).toInt)
-
-    Cell(spanX, spanY, spanResizeX, spanResizeY, smallestCellWidth.toInt, smallestCellHeight.toInt)
+    Cell(spanX, spanY, smallestCellWidth.toInt, smallestCellHeight.toInt)
   }
 
   implicit class AppWidgetProviderInfoOp(info: AppWidgetProviderInfo) {
@@ -57,10 +51,6 @@ object WidgetsOps {
 
   implicit class WidgetsOp(widget: Widget) {
 
-    val rows = 5
-
-    val columns = 5
-
     def getCell(widthContent: Int, heightContent: Int)(implicit contextWrapper: ContextWrapper): Cell =
       dimensionToCell(
         widthContent = widthContent,
@@ -75,14 +65,10 @@ object WidgetsOps {
   case class Cell(
     spanX: Int,
     spanY: Int,
-    spanResizeX: Int,
-    spanResizeY: Int,
     widthCell: Int,
     heightCell: Int) {
 
-    def getSize: (Int, Int) = (spanX * widthCell, spanY * heightCell)
-
-    def getResizeSize: (Int, Int) = (spanResizeX * widthCell, spanResizeY * heightCell)
+    def getSize(sX: Int, sY: Int): (Int, Int) = (sX * widthCell, sY * heightCell)
 
   }
 

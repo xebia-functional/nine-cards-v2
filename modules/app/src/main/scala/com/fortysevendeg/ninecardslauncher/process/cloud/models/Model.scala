@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.cloud.models
 
 import java.util.Date
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardsMoment, NineCardCategory, CollectionType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{DockType, NineCardsMoment, NineCardCategory, CollectionType}
 
 trait CloudStorageResource {
   def cloudId: String
@@ -36,7 +36,8 @@ case class CloudStorageDeviceData(
   deviceName: String,
   documentVersion: Int,
   collections: Seq[CloudStorageCollection],
-  moments: Option[Seq[CloudStorageMoment]])
+  moments: Option[Seq[CloudStorageMoment]],
+  dockApps: Option[Seq[CloudStorageDockApp]])
 
 case class CloudStorageCollection(
   name: String,
@@ -64,3 +65,10 @@ case class CloudStorageMomentTimeSlot(
   from: String,
   to: String,
   days: Seq[Int])
+
+case class CloudStorageDockApp(
+  name: String,
+  dockType: DockType,
+  intent: String,
+  imagePath: String,
+  position: Int)

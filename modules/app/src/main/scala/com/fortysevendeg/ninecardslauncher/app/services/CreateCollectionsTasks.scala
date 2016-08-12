@@ -28,7 +28,7 @@ trait CreateCollectionsTasks
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps
       _ = setProcess(GettingAppsProcess)
-      _ <- di.deviceProcess.generateDockApps(dockAppsSize)
+      dockApps <- di.deviceProcess.generateDockApps(dockAppsSize)
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ = setProcess(LoadingConfigProcess)
       contacts <- di.deviceProcess.getFavoriteContacts
@@ -38,7 +38,8 @@ trait CreateCollectionsTasks
       storedCollections <- di.collectionProcess.getCollections
       savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
         collections = storedCollections map toCloudStorageCollection,
-        moments = Seq.empty)
+        moments = Seq.empty,
+        dockApps = dockApps map toCloudStorageDockApp)
       _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId, deviceToken)
     } yield collections ++ momentCollections
   }
@@ -51,15 +52,16 @@ trait CreateCollectionsTasks
     for {
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps
-      _ <- di.deviceProcess.generateDockApps(dockAppsSize)
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ = setProcess(GettingAppsProcess)
       device <- cloudStorageProcess.getCloudStorageDevice(cloudId)
       _ = setProcess(LoadingConfigProcess)
       _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))
-      momentSeq = device.data.moments map (_ map toMoment) getOrElse Seq.empty
+      momentSeq = device.data.moments map (_ map toSaveMomentRequest) getOrElse Seq.empty
+      dockAppSeq = device.data.dockApps map (_ map toSaveDockAppRequest) getOrElse Seq.empty
       _ <- di.momentProcess.saveMoments(momentSeq)
+      _ <- di.deviceProcess.saveDockApps(dockAppSeq)
       _ <- di.userProcess.updateUserDevice(device.data.deviceName, device.cloudId, deviceToken)
     } yield collections
   }

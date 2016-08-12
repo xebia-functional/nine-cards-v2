@@ -21,9 +21,13 @@ case object HomeNightMoment extends NineCardsMoment {
   override val name: String = homeNightMoment
 }
 
+case object TransitMoment extends NineCardsMoment {
+  override val name: String = transitMoment
+}
+
 object NineCardsMoment {
 
-  val moments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment)
+  val moments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment, TransitMoment)
 
   def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse
     (throw new IllegalArgumentException(s"$name not found"))

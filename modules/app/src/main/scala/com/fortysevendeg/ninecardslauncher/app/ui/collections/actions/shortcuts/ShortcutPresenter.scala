@@ -8,7 +8,7 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class ShortcutPresenter(actions: ShortcutIuActions)(implicit activityContextWrapper: ActivityContextWrapper)
+class ShortcutPresenter(actions: ShortcutUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Presenter {
 
   def initialize(): Unit = {
@@ -30,7 +30,7 @@ class ShortcutPresenter(actions: ShortcutIuActions)(implicit activityContextWrap
 
 }
 
-trait ShortcutIuActions {
+trait ShortcutUiActions {
 
   def initialize(): Ui[Any]
 

@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.moment
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.moment.models._
 
 trait MomentProcess {
@@ -14,6 +15,15 @@ trait MomentProcess {
     * @throws MomentException if there was an error getting the existing moments
     */
   def getMoments: ServiceDef2[Seq[Moment], MomentException]
+
+  /**
+    * Get moment by type, if the moment don't exist return an exception
+    *
+    * @param momentType type of moment
+    * @return the com.fortysevendeg.ninecardslauncher.process.moment.models.Moment
+    * @throws MomentException if there was an error getting the existing moments
+    */
+  def getMomentByType(momentType: NineCardsMoment): ServiceDef2[Moment, MomentException]
 
   /**
     * Creates Moments and their associated Collections with the apps installed in the device
@@ -30,7 +40,7 @@ trait MomentProcess {
     * @return the List[com.fortysevendeg.ninecardslauncherprocess.moment.models.Moment]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def saveMoments(items: Seq[Moment])(implicit context: ContextSupport): ServiceDef2[Seq[Moment], MomentException]
+  def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport): ServiceDef2[Seq[Moment], MomentException]
 
   /**
     * Generate Private Moments Collections with the apps installed in the device

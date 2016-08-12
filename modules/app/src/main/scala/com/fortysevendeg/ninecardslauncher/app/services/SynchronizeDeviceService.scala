@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessExce
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
+import com.fortysevendeg.ninecardslauncher.process.device.DockAppException
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher2.R
@@ -63,14 +64,16 @@ class SynchronizeDeviceService
   override def connected(client: GoogleApiClient): Unit = {
 
     def sync(
-      client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with CloudStorageProcessException with UserException] = {
+      client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with DockAppException with CloudStorageProcessException with UserException] = {
       val cloudStorageProcess = di.createCloudStorageProcess(client)
       for {
         collections <- di.collectionProcess.getCollections
         moments <- di.momentProcess.getMoments
+        dockApps <- di.deviceProcess.getDockApps
         savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
           collections = collections map toCloudStorageCollection,
-          moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment)
+          moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment,
+          dockApps = dockApps map toCloudStorageDockApp)
         _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId)
       } yield ()
     }

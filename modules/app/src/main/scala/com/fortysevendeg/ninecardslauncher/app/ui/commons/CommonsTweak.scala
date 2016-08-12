@@ -6,7 +6,7 @@ import android.graphics.Paint
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable._
 import android.os.Vibrator
-import android.view.View
+import android.view.{View, ViewGroup}
 import ColorOps._
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -14,7 +14,7 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
-import android.widget.{Spinner, EditText, ImageView, TextView}
+import android.widget.{EditText, ImageView, Spinner, TextView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -38,17 +38,20 @@ object CommonsTweak {
     }
   }
 
-  def vBackgroundCollection(indexColor: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
-    def createShapeDrawable(color: Int) = {
+  def vBackgroundCollection(indexColor: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] =
+    vBackgroundCircle(resGetColor(getIndexColor(indexColor)))
+
+  def vBackgroundCircle(color: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
+    def createShapeDrawable(c: Int) = {
       val drawableColor = new ShapeDrawable(new OvalShape())
-      drawableColor.getPaint.setColor(color)
+      drawableColor.getPaint.setColor(c)
       drawableColor.getPaint.setStyle(Paint.Style.FILL)
       drawableColor.getPaint.setAntiAlias(true)
       drawableColor
     }
 
-    def getDrawable(color: Int): Drawable = {
-      val drawableColor = createShapeDrawable(color)
+    def getDrawable(c: Int): Drawable = {
+      val drawableColor = createShapeDrawable(c)
       val padding = resGetDimensionPixelSize(R.dimen.elevation_default)
       val drawableShadow = createShapeDrawable(resGetColor(R.color.shadow_default))
       val layer = new LayerDrawable(Array(drawableShadow, drawableColor))
@@ -56,8 +59,6 @@ object CommonsTweak {
       layer.setLayerInset(1, padding, 0, padding, padding)
       layer
     }
-
-    val color = resGetColor(getIndexColor(indexColor))
     val elevation = resGetDimensionPixelSize(R.dimen.elevation_default)
 
     vBackground(Lollipop ifSupportedThen {
@@ -96,6 +97,9 @@ object CommonsTweak {
 object ExtraTweaks {
 
   // TODO - Move to macroid extras
+
+  def vgAddViewByIndexParams[V <: View](view: V, index: Int, params: ViewGroup.LayoutParams): Tweak[ViewGroup] =
+    Tweak[ViewGroup](_.addView(view, index, params))
 
   def ivBlank: Tweak[ImageView] = Tweak[ImageView](_.setImageBitmap(javaNull))
 
@@ -149,5 +153,7 @@ object ExtraTweaks {
   }
 
   def sSelection(position: Int) = Tweak[Spinner](_.setSelection(position))
+
+  def tvHintColor(color: Int): Tweak[TextView] = Tweak[TextView](_.setHintTextColor(color))
 
 }
