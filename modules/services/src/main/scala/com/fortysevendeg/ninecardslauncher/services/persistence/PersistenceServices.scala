@@ -436,7 +436,7 @@ trait PersistenceServices {
     * @return an com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
-  def fetchMomentByType(momentType: String): ServiceDef2[Moment, PersistenceServiceException]
+  def fetchMomentByType(momentType: String): CatsService[Moment]
 
   /**
     * Updates the data of an moment from the repository
