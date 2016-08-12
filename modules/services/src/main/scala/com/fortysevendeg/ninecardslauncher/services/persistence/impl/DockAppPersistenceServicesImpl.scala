@@ -21,9 +21,10 @@ trait DockAppPersistenceServicesImpl extends PersistenceServices {
         }
       }
       (toAdd, toUpdate) = items.partition(_._2.isEmpty)
-      _ <- dockAppRepository.addDockApps(toAdd.map(req => toRepositoryDockAppData(req._1)))
-      _ <- dockAppRepository.updateDockApps(toUpdate.flatMap(req => req._2 map (id => toRepositoryDockApp(id, req._1))))
-    } yield ()).resolve[PersistenceServiceException]
+      addedDockapps <- dockAppRepository.addDockApps(toAdd.map(req => toRepositoryDockAppData(req._1)))
+      toUpdateDockApps = toUpdate.flatMap(req => req._2 map (id => toRepositoryDockApp(id, req._1)))
+      _ <- dockAppRepository.updateDockApps(toUpdateDockApps)
+    } yield (addedDockapps ++ toUpdateDockApps) map toDockApp).resolve[PersistenceServiceException]
 
   def deleteAllDockApps() =
     (for {

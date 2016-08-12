@@ -2,12 +2,13 @@ package com.fortysevendeg.ninecardslauncher.app.commons
 
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageCollection, CloudStorageCollectionItem, CloudStorageMoment, CloudStorageMomentTimeSlot}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.models
 import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
 import com.fortysevendeg.ninecardslauncher.process.moment.SaveMomentRequest
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
@@ -125,6 +126,14 @@ trait Conversions
       cardType = AppCardType,
       intent = toNineCardIntent(app),
       imagePath = app.imagePath)
+
+  def toSaveDockAppRequest(cloudStorageDockApp: CloudStorageDockApp): SaveDockAppRequest =
+    SaveDockAppRequest(
+      name = cloudStorageDockApp.name,
+      dockType = cloudStorageDockApp.dockType,
+      intent = cloudStorageDockApp.intent,
+      imagePath = cloudStorageDockApp.imagePath,
+      position = cloudStorageDockApp.position)
 
 }
 
