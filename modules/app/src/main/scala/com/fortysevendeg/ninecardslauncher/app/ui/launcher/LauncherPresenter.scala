@@ -36,11 +36,12 @@ import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentExceptionImpl}
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
-import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest, AppWidgetException}
+import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, AppWidgetException, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import macroid.{ActivityContextWrapper, Ui}
+import rapture.core.scalazInterop.ResultT
 import rapture.core.{Answer, Errata, Result}
 
 import scala.concurrent.Future
@@ -465,6 +466,28 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     cache.updateTimeMomentChangedManually()
     val data = LauncherData(MomentWorkSpace, Some(LauncherMoment(moment.momentType, Some(moment.collection))))
     actions.reloadMoment(data).run
+  }
+
+  def reloadAppsMomentBar(): Unit = {
+
+    def selectMoment(moments: Seq[Moment]) = for {
+      data <- actions.getData.headOption
+      currentMoment <- data.moment
+      moment <- moments.find(_.momentType == currentMoment.momentType)
+    } yield moment
+
+    def getCollection: ServiceDef2[LauncherMoment, MomentException with CollectionException] = for {
+      moments <- di.momentProcess.getMoments
+      moment = selectMoment(moments)
+      collectionId = moment flatMap (_.collectionId)
+      collection <- di.collectionProcess.getCollectionById(collectionId.get)
+    } yield LauncherMoment(moment flatMap (_.momentType), collection)
+
+    Task.fork(getCollection.run).resolveAsyncUi(
+      onResult = {
+        case launcherMoment: LauncherMoment => actions.reloadBarMoment(launcherMoment)
+        case _ => Ui.nop
+      })
   }
 
   def loadLauncherInfo(): Unit = {
@@ -934,6 +957,8 @@ trait LauncherUiActions {
   def reloadMomentTopBar(): Ui[Any]
 
   def reloadMoment(moment: LauncherData): Ui[Any]
+
+  def reloadBarMoment(data: LauncherMoment): Ui[Any]
 
   def reloadAppsInDrawer(
     apps: IterableApps,

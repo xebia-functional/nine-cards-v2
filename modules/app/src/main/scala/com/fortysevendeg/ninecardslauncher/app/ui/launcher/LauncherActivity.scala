@@ -7,9 +7,10 @@ import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentsActionFilter, MomentsReloadedActionFilter}
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 
@@ -20,7 +21,8 @@ class LauncherActivity
   with TypedFindView
   with ActionsScreenListener
   with LauncherUiActionsImpl
-  with SystemBarsTint { self =>
+  with SystemBarsTint
+  with BroadcastDispatcher { self =>
 
   lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
 
@@ -29,6 +31,14 @@ class LauncherActivity
   lazy val managerContext: FragmentManagerContext[Fragment, FragmentManager] = activityManagerContext
 
   private[this] var hasFocus = false
+
+  override val actionsFilters: Seq[String] = MomentsActionFilter.cases map (_.action)
+
+  override def manageCommand(action: String, data: Option[String]): Unit = (MomentsActionFilter(action), data) match {
+    case (MomentsReloadedActionFilter, None) =>
+      presenter.reloadAppsMomentBar()
+    case _ =>
+  }
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
