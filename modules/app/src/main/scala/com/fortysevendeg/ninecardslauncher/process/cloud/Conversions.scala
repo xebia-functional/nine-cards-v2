@@ -4,8 +4,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevice
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem, UserDevice}
+import com.fortysevendeg.ninecardslauncher.process.widget.models.{WidgetArea, AppWidget}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
 
@@ -47,7 +49,7 @@ object Conversions {
       title = userCollectionItem.title,
       intent = userCollectionItem.intent)
 
-  def toCloudStorageCollection(collection: Collection) =
+  def toCloudStorageCollection(collection: Collection, widgets: Option[Seq[AppWidget]]) =
     CloudStorageCollection(
       name = collection.name,
       originalSharedCollectionId = collection.originalSharedCollectionId,
@@ -57,7 +59,7 @@ object Conversions {
       collectionType = collection.collectionType,
       icon = collection.icon,
       category = collection.appsCategory,
-      moment = collection.moment map toCloudStorageMoment)
+      moment = collection.moment map (moment => toCloudStorageMoment(moment, widgets)))
 
   def toCloudStorageCollectionItem(card: Card) =
     CloudStorageCollectionItem(
@@ -65,12 +67,33 @@ object Conversions {
       title = card.term,
       intent = Json.toJson(card.intent).toString())
 
-  def toCloudStorageMoment(moment: Moment) =
+  def toCloudStorageMoment(moment: Moment, widgets: Option[Seq[AppWidget]]) =
     CloudStorageMoment(
       timeslot = moment.timeslot map toCloudStorageMomentTimeSlot,
       wifi = moment.wifi,
       headphones = moment.headphone,
-      momentType = moment.momentType)
+      momentType = moment.momentType,
+      widgets = widgets map toCloudStorageWidgetSeq)
+
+  def toCloudStorageWidgetSeq(widgets: Seq[AppWidget]) =
+    widgets map toCloudStorageWidget
+
+  def toCloudStorageWidget(widget: AppWidget) =
+    CloudStorageWidget(
+      packageName = widget.packageName,
+      className = widget.packageName,
+      area = toCloudStorageWidgetArea(widget.area),
+      widgetType = widget.widgetType,
+      label = widget.label,
+      imagePath = widget.imagePath,
+      intent = widget.intent)
+
+  def toCloudStorageWidgetArea(area: WidgetArea) =
+    CloudStorageWidgetArea(
+      startX = area.startX,
+      startY = area.startY,
+      spanX = area.spanX,
+      spanY = area.spanY)
 
   def toCloudStorageMomentTimeSlot(timeSlot: MomentTimeSlot) =
     CloudStorageMomentTimeSlot(

@@ -37,7 +37,7 @@ trait CreateCollectionsTasks
       momentCollections <- di.momentProcess.createMoments
       storedCollections <- di.collectionProcess.getCollections
       savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-        collections = storedCollections map toCloudStorageCollection,
+        collections = storedCollections map (collection => toCloudStorageCollection(collection, None)),
         moments = Seq.empty,
         dockApps = dockApps map toCloudStorageDockApp)
       _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId, deviceToken)
