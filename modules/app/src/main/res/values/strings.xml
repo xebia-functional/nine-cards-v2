@@ -440,7 +440,11 @@
     <string name="collectionDetailCardAnimationsTBD">TBD</string>
     <string name="collectionDetailCardAnimationsNoAnimation">No Animation</string>
 
-    <string name="collectionDetailAddCardsMessage">Add new cards to this collection</string>
+    <string name="collectionDetailAddCardsMessage">
+        <![CDATA[
+            This collection doesn\'t have cards. You can add <b>apps, contacts, recommendations or shortcuts</b> from the + button
+        ]]>
+    </string>
 
     <!-- New App Preferences -->
 
@@ -491,5 +495,9 @@
     <string name="editingWidgets">Editing widgets</string>
     <string name="movingWidgets">Moving widgets</string>
     <string name="resizingWidgets">Resizing widgets</string>
+    <string name="removeWidgetMessage">Are you sure you want remove this widget?</string>
+    <string name="noSpaceForWidget">The widget don\'t currently have space</string>
+    <string name="noMoveForWidget">The widget can\'t be moved there</string>
+    <string name="noResizeForWidget">The widget can\'t be resized there</string>
 
 </resources>

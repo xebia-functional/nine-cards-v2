@@ -275,7 +275,7 @@ trait CollectionsUiActions
       workspaceButtonEditMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       On.click {
-        closeCollectionMenu() ~~ showNoImplementedYetMessage()
+        closeCollectionMenu() ~~ Ui(presenter.goToEditMoment())
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonChangeMomentStyle <~

@@ -153,6 +153,20 @@ trait CollectionsUiActionsImpl
     }
   }
 
+  override def addCardsToCollection(collectionPosition: Int, cards: Seq[Card]): Ui[Any] = Ui {
+    for {
+      adapter <- getAdapter
+    } yield {
+      adapter.addCardsToCollection(collectionPosition, cards)
+      adapter.fragments.find(_._1 == collectionPosition).map(_._2).foreach { fragment =>
+        fragment.getAdapter foreach { adapter =>
+          adapter.addCards(cards)
+        }
+        fragment.presenter.showData()
+      }
+    }
+  }
+
   override def removeCards(card: Card): Ui[Any] = Ui {
     for {
       adapter <- getAdapter
