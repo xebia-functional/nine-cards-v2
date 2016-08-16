@@ -12,12 +12,15 @@ import scalaz.concurrent.Task
 
 trait ApiServiceSpecification
   extends Specification
-  with Mockito {
+  with Mockito
+  with ApiServiceData {
 
   trait ApiServiceScope
     extends Scope {
 
     val mockedServiceClient = mock[ServiceClient]
+
+    mockedServiceClient.baseUrl returns baseUrl
 
     val apiService = new ApiService(mockedServiceClient)
 
@@ -26,17 +29,18 @@ trait ApiServiceSpecification
 }
 
 class ApiServiceSpec
-  extends ApiServiceSpecification
-  with ApiServiceData {
+  extends ApiServiceSpecification {
 
   import JsonImplicits._
 
   "login" should {
 
-    "return the status code and empty response" in new ApiServiceScope {
+    "return the status code and the response" in new ApiServiceScope {
+
+      val response = LoginResponse(apiKey, sessionToken)
 
       mockedServiceClient.post[LoginRequest, LoginResponse](any, any, any, any, any)(any) returns
-        Service(Task(Answer(ServiceClientResponse(statusCodeNotFound, None))))
+        Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
 
       val request = LoginRequest(email, loginId, tokenId)
 
@@ -44,8 +48,8 @@ class ApiServiceSpec
 
       serviceResponse must beLike {
         case Answer(r) =>
-          r.statusCode shouldEqual statusCodeNotFound
-          r.data must beNone
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(response)
       }
 
       there was one(mockedServiceClient).post(
@@ -57,29 +61,39 @@ class ApiServiceSpec
 
     }
 
+  }
+
+  "installations" should {
+
     "return the status code and the response" in new ApiServiceScope {
 
-      val response = LoginResponse(apiKey, sessionToken)
+      val response = InstallationResponse(androidId, deviceToken)
 
-      mockedServiceClient.post[LoginRequest, LoginResponse](any, any, any, any, any)(any) returns
+      mockedServiceClient.put[InstallationRequest, InstallationResponse](any, any, any, any, any)(any) returns
         Service(Task(Answer(ServiceClientResponse(statusCodeNotFound, Some(response)))))
 
-      val request = LoginRequest(email, loginId, tokenId)
+      val request = InstallationRequest(deviceToken)
 
-      val serviceResponse = apiService.login(request).run.run
+      val serviceClientResponse = apiService.installations(request, apiKey, sessionToken, androidId).run.run
 
-      serviceResponse must beLike {
+      serviceClientResponse must beLike {
         case Answer(r) =>
           r.statusCode shouldEqual statusCodeNotFound
           r.data must beSome(response)
       }
 
-      there was one(mockedServiceClient).post(
-        path = "/login",
-        headers = Seq.empty,
+      val headers = Seq(
+        (headerAuthToken, installationAuthToken),
+        (headerSessionToken, sessionToken),
+        (headerAndroidId, androidId),
+        (headerMarketLocalization, headerMarketLocalizationValue))
+
+      there was one(mockedServiceClient).put(
+        path = "/installations",
+        headers = headers,
         body = request,
-        reads = Some(JsonImplicits.loginResponseReads),
-        emptyResponse = false)(JsonImplicits.loginRequestWrites)
+        reads = Some(JsonImplicits.installationResponseReads),
+        emptyResponse = false)(JsonImplicits.installationRequestWrites)
 
     }
 

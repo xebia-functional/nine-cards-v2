@@ -10,7 +10,7 @@ import rapture.core.{Answer, Errata, Result}
 import scala.util.{Failure, Success, Try}
 import scalaz.concurrent.Task
 
-class ServiceClient(httpClient: HttpClient, baseUrl: String) {
+class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
 
   def get[Res](
     path: String,
@@ -89,6 +89,9 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     emptyResponse: Boolean
     ): ServiceDef2[Option[T], ServiceClientException] = Service {
     Task {
+
+      println(s"Response ------> ${clientResponse.body}")
+
       (clientResponse.body, emptyResponse, maybeReads) match {
         case (Some(d), false, Some(r)) => transformResponse[T](d, r)
         case (None, false, _) => Errata(ServiceClientExceptionImpl("No content"))
