@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData}
+
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -17,7 +17,6 @@ trait PersistenceServicesData extends Conversions {
   val items = 5
   val item = 1
 
-  val appId: Int =  Random.nextInt(10)
   val className: String = Random.nextString(5)
   val resourceIcon: Int = Random.nextInt(10)
   val dateInstalled: Long = Random.nextLong()
@@ -88,55 +87,6 @@ trait PersistenceServicesData extends Conversions {
   val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
   val repoMoment: RepositoryMoment = seqRepoMoment(0)
 
-  def createSeqApp(
-    num: Int = 5,
-    id: Int = appId,
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    imagePath: String = imagePath,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[App] = List.tabulate(num)(
-    item => App(
-      id = id + item,
-      name = name,
-      packageName = packageName,
-      className = className,
-      category = category,
-      imagePath = imagePath,
-      dateInstalled = dateInstalled,
-      dateUpdate = dateUpdate,
-      version = version,
-      installedFromGooglePlay = installedFromGooglePlay))
-
-  def createSeqRepoApp(
-    num: Int = 5,
-    id: Int = appId,
-    data: RepositoryAppData = createRepoAppData()): Seq[RepositoryApp] =
-    List.tabulate(num)(item => RepositoryApp(id = id + item, data = data))
-
-  def createRepoAppData(
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    imagePath: String = imagePath,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): RepositoryAppData = RepositoryAppData(
-    name = name,
-    packageName = packageName,
-    className = className,
-    category = category,
-    imagePath = imagePath,
-    dateInstalled = dateInstalled,
-    dateUpdate = dateUpdate,
-    version = version,
-    installedFromGooglePlay = installedFromGooglePlay)
 
   def createSeqCollection(
     num: Int = 5,
@@ -353,11 +303,7 @@ trait PersistenceServicesData extends Conversions {
       headphone = headphone,
       momentType = momentType)
 
-  val seqApp: Seq[App] = createSeqApp()
-  val app: App = seqApp(0)
-  val repoAppData: RepositoryAppData = createRepoAppData()
-  val seqRepoApp: Seq[RepositoryApp] = createSeqRepoApp(data = repoAppData)
-  val repoApp: RepositoryApp = seqRepoApp(0)
+
 
   val seqCard: Seq[Card] = createSeqCard()
   val card: Card = seqCard(0)
@@ -379,49 +325,6 @@ trait PersistenceServicesData extends Conversions {
 
   val where: String = ""
 
-  def createAddAppRequest(
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    imagePath: String = imagePath,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): AddAppRequest =
-    AddAppRequest(
-      name = name,
-      packageName = packageName,
-      className = className,
-      category = category,
-      imagePath = imagePath,
-      dateInstalled = dateInstalled,
-      dateUpdate = dateUpdate,
-      version = version,
-      installedFromGooglePlay = installedFromGooglePlay)
-
-  def createUpdateAppRequest(
-    id: Int = appId,
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    imagePath: String = imagePath,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): UpdateAppRequest =
-    UpdateAppRequest(
-      id = id,
-      name = name,
-      packageName = packageName,
-      className = className,
-      category = category,
-      imagePath = imagePath,
-      dateInstalled = dateInstalled,
-      dateUpdate = dateUpdate,
-      version = version,
-      installedFromGooglePlay = installedFromGooglePlay)
 
   def createAddCardRequest(
     collectionId: Int = collectionId,
@@ -597,13 +500,6 @@ trait PersistenceServicesData extends Conversions {
       term = s"$i - $termDataCounter",
       count = countDataCounter
     )
-
-  val iterableCursorApp = new IterableCursor[RepositoryApp] {
-    override def count(): Int = seqRepoApp.length
-    override def moveToPosition(pos: Int): RepositoryApp = seqRepoApp(pos)
-    override def close(): Unit = ()
-  }
-  val iterableApps = new IterableApps(iterableCursorApp)
 
   val keyword = "fake-keyword"
 
