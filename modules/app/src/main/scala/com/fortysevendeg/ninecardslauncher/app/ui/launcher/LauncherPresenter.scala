@@ -7,7 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions, PreferencesValuesKeys}
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions, PreferencesValuesKeys}
 import com.fortysevendeg.ninecardslauncher.app.ui.CachePreferences
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentsReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, RequestCodes, WidgetsOps}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
@@ -119,7 +120,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     (actions.getCollection(statuses.currentDraggingPosition), statuses.cardAddItemMode) match {
       case (Some(collection: Collection), Some(request: AddCardRequest)) =>
         Task.fork(di.collectionProcess.addCards(collection.id, Seq(request)).run).resolveAsyncUi(
-          onResult = (_) => actions.showAddItemMessage(collection.name),
+          onResult = (_) => {
+            momentReloadBroadCastIfNecessary(collection)
+            actions.showAddItemMessage(collection.name)
+          },
           onException = (_) => actions.showContactUsError())
       case _ =>
     }
@@ -696,6 +700,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         case _ =>
       }
     }
+
+  private[this] def momentReloadBroadCastIfNecessary(collection: Collection) = {
+    val maybeMoment = collection.moment flatMap (_.momentType)
+    maybeMoment foreach (moment => sendBroadCast(BroadAction(MomentsReloadedActionFilter.action, Option(moment.name))))
+  }
 
   private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
