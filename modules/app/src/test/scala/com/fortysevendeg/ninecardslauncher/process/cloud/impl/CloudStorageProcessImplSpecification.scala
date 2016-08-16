@@ -403,7 +403,8 @@ class CloudStorageProcessImplSpec
 
           cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
-            cloudStorageServiceData.moments getOrElse Seq.empty).run.run
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
         }
 
       "call to update file in Service with a valid Json when the file does exists" in
@@ -423,7 +424,8 @@ class CloudStorageProcessImplSpec
 
           cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
-            cloudStorageServiceData.moments getOrElse Seq.empty).run.run
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
         }
 
       "call to create file in Service with a valid Json when the file doesn't exists" in
@@ -446,7 +448,8 @@ class CloudStorageProcessImplSpec
 
           cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
-            cloudStorageServiceData.moments getOrElse Seq.empty).run.run
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
         }
 
       "return a CloudStorageProcessException when the user does exists" in
@@ -460,7 +463,8 @@ class CloudStorageProcessImplSpec
 
           val result = cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
-            cloudStorageServiceData.moments getOrElse Seq.empty).run.run
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {
@@ -480,7 +484,8 @@ class CloudStorageProcessImplSpec
 
           val result = cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
-            cloudStorageServiceData.moments getOrElse Seq.empty).run.run
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {
@@ -501,7 +506,8 @@ class CloudStorageProcessImplSpec
 
           val result = cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
-            cloudStorageServiceData.moments getOrElse Seq.empty).run.run
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {
@@ -522,7 +528,8 @@ class CloudStorageProcessImplSpec
 
           val result = cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
-            cloudStorageServiceData.moments getOrElse Seq.empty).run.run
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

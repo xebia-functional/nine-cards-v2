@@ -308,7 +308,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
         !statuses.enabled || statuses.isScrolling
       case (ACTION_DOWN, _) =>
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        !statuses.enabled || statuses.isScrolling
+        statuses.isScrolling
       case (ACTION_CANCEL | ACTION_UP, _) =>
         computeFling()
         statuses = statuses.copy(touchState = Stopped)

@@ -166,9 +166,10 @@ trait DeviceProcess {
   /**
     * Generate the docks apps available for user
     * @param size of the dock apps needed
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.DockApp]
     * @throws DockAppException if exist some problem to get the app or storing it
     */
-  def generateDockApps(size: Int)(implicit context: ContextSupport): ServiceDef2[Unit, DockAppException]
+  def generateDockApps(size: Int)(implicit context: ContextSupport): ServiceDef2[Seq[DockApp], DockAppException]
 
   /**
     * Create or update a dock app
@@ -180,6 +181,15 @@ trait DeviceProcess {
     * @throws DockAppException if exist some problem to get the app or storing it
     */
   def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): ServiceDef2[Unit, DockAppException]
+
+  /**
+    * Creates DockApps from some already formed and given DockApps
+    *
+    * @param items the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.DockApp] of DockApps
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest]
+    * @throws DockAppException if there was an error creating the moments' collections
+    */
+  def saveDockApps(items: Seq[SaveDockAppRequest]): ServiceDef2[Seq[DockApp], DockAppException]
 
   /**
     * Get the docks apps available for user

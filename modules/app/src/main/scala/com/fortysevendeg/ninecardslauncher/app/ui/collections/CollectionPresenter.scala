@@ -3,12 +3,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.content.Context
 import android.support.v7.widget.RecyclerView.ViewHolder
 import com.fortysevendeg.ninecardslauncher.app.analytics.{NoValue, RemovedInCollectionAction, RemovedInCollectionValue, _}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import macroid.{ActivityContextWrapper, Ui}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
@@ -37,7 +37,10 @@ case class CollectionPresenter(
     )
   }
 
-  def moveToCard(): Unit = actions.showMessageNotImplemented().run // TODO change that
+  def moveToCollection(card: Card): Unit =
+    Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
+      onResult = (collections) => actions.moveToCollection(collections, card),
+      onException = (_) => actions.showContactUsError())
 
   def editCard(collectionId: Int, cardId: Int, cardName: String): Unit = actions.editCard(collectionId, cardId, cardName)
 
@@ -121,6 +124,8 @@ trait CollectionUiActions {
   def showMessageFormFieldError: Ui[Any]
 
   def showEmptyCollection(): Ui[Any]
+
+  def moveToCollection(collections: Seq[Collection], card: Card): Ui[Any]
 
   def editCard(collectionId: Int, cardId: Int, cardName: String): Unit
 

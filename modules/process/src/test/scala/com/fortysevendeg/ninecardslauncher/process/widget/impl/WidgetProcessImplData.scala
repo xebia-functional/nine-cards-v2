@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.widget.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType._
-import com.fortysevendeg.ninecardslauncher.process.widget.{ResizeWidgetRequest, MoveWidgetRequest, AddWidgetRequest}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
+import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Widget => ServicesWidget}
 
 import scala.util.Random
@@ -62,10 +62,11 @@ trait WidgetProcessImplData {
           packageName = packageName,
           className = className,
           appWidgetId = appWidgetId,
-          startX = startX,
-          startY = startY,
-          spanX = spanX,
-          spanY = spanY,
+          WidgetArea(
+            startX = startX,
+            startY = startY,
+            spanX = spanX,
+            spanY = spanY),
           widgetType = widgetType,
           label = label,
           imagePath = imagePath,
@@ -140,8 +141,10 @@ trait WidgetProcessImplData {
     displaceY = moveStartY)
 
   val moveWidgetResponse = widget.copy(
-    startX = widget.startX + moveWidgetRequest.displaceX,
-    startY = widget.startY + moveWidgetRequest.displaceY)
+    area = widget.area.copy(
+      startX = widget.area.startX + moveWidgetRequest.displaceX,
+      startY = widget.area.startY + moveWidgetRequest.displaceY))
+
 
   val resizeSpanX: Int = Random.nextInt(8)
   val resizeSpanY: Int = Random.nextInt(8)
@@ -151,6 +154,7 @@ trait WidgetProcessImplData {
     increaseY = resizeSpanY)
 
   val resizeWidgetResponse = widget.copy(
-    spanX = widget.spanX + resizeWidgetRequest.increaseX,
-    spanY = widget.spanY + resizeWidgetRequest.increaseY)
+    area = widget.area.copy(
+      spanX = widget.area.spanX + resizeWidgetRequest.increaseX,
+      spanY = widget.area.spanY + resizeWidgetRequest.increaseY))
 }

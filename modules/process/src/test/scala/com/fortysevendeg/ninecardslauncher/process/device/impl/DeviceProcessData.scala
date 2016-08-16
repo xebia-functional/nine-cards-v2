@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConvers
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, CallData, LastCallsContact, Widget, _}
 import com.fortysevendeg.ninecardslauncher.process.device.types._
 import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp}
@@ -143,6 +144,9 @@ trait DeviceProcessData
   val dockAppsRemoved = 4
 
   val category = "GAME"
+
+  val dockType = AppDockType
+  val dockTypeName = AppDockType.name
 
   val applicationNoCached = Application(
     name = name4,
@@ -561,24 +565,58 @@ trait DeviceProcessData
   val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val intent = Json.parse(intentStr).as[NineCardIntent]
 
-  val dockApp1 = ServicesDockApp(
-    id = 1,
-    name = packageName1,
-    dockType = AppDockType.name,
-    intent = intentStr,
-    imagePath = imagePath1,
-    position = 0)
+  def createDockAppServiceSeq(
+    num: Int = 4,
+    id: Int = 0,
+    name: String = name1,
+    dockType: String = dockTypeName,
+    intent: String = intentStr,
+    imagePath: String = imagePath1,
+    position: Int = 0) =
+    (0 until num) map (item =>
+      ServicesDockApp(
+        id = id + num,
+        name = name,
+        dockType = dockType,
+        intent = intent,
+        imagePath = imagePath,
+        position = position + num))
 
-  val dockAppSeq = Seq(dockApp1)
+  def createDockAppProcessSeq(
+    num: Int = 4,
+    name: String = name1,
+    dockType: String = dockTypeName,
+    intent: String = intentStr,
+    imagePath: String = imagePath1,
+    position: Int = 0) =
+    (0 until num) map (item =>
+      DockApp(
+        name = name,
+        dockType = DockType(dockType),
+        intent = jsonToNineCardIntent(intent),
+        imagePath = imagePath,
+        position = position + num))
 
-  val dockAppProcess1 = DockApp(
-    name = dockApp1.name,
-    dockType = DockType(dockApp1.dockType),
-    intent = jsonToNineCardIntent(dockApp1.intent),
-    imagePath = dockApp1.imagePath,
-    position = dockApp1.position)
+  def createSaveDockAppRequestSeq(
+     num: Int = 4,
+     name: String = name1,
+     dockType: DockType = dockType,
+     intent: String = intentStr,
+     imagePath: String = imagePath1,
+     position: Int = 0) =
+    (0 until num) map (item =>
+      SaveDockAppRequest(
+        name = name,
+        dockType = dockType,
+        intent = intent,
+        imagePath = imagePath,
+        position = position + num))
 
-  val dockAppProcessSeq = Seq(dockAppProcess1)
+  val dockAppSeq = createDockAppServiceSeq()
+  val dockApp1 = dockAppSeq(0)
+  val dockAppProcessSeq = createDockAppProcessSeq()
+  val dockAppProcess1 = dockAppProcessSeq(0)
+  val saveDockAppRequestSeq = createSaveDockAppRequestSeq()
 
   val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = contacts.length

@@ -95,7 +95,8 @@ class CloudStorageProcessImpl(
 
   override def createOrUpdateActualCloudStorageDevice(
     collections: Seq[CloudStorageCollection],
-    moments: Seq[CloudStorageMoment])(implicit context: ContextSupport) = {
+    moments: Seq[CloudStorageMoment],
+    dockApps: Seq[CloudStorageDockApp])(implicit context: ContextSupport) = {
 
     def deviceExists(
       maybeCloudId: Option[String]): ServiceDef2[Boolean, DriveServicesException] =
@@ -116,7 +117,8 @@ class CloudStorageProcessImpl(
           deviceName = Build.MODEL,
           documentVersion = CloudStorageProcess.actualDocumentVersion,
           collections = collections,
-          moments = Some(moments))
+          moments = Some(moments),
+          dockApps = Some(dockApps))
         device <- createOrUpdateCloudStorageDevice(
           maybeCloudId = if (exists) maybeCloudId else None,
           cloudStorageDeviceData = cloudStorageDeviceData)

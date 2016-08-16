@@ -2,10 +2,10 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/launcher_drawer_content"
-    style="@style/LauncherDrawerContent">
+    style="@style/LauncherDrawerParent">
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SearchBoxView
-        style="@style/LauncherTopBox"
+        style="@style/LauncherDrawerContent"
         android:id="@+id/launcher_search_box_content" />
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout
