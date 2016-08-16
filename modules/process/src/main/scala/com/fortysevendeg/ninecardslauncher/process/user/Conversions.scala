@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.process.user
 
 import com.fortysevendeg.ninecardslauncher.process.user.models.{Device, User, UserProfile}
 import com.fortysevendeg.ninecardslauncher.services.api.models.GoogleDevice
-import com.fortysevendeg.ninecardslauncher.services.api.{InstallationResponse, LoginResponse}
 import com.fortysevendeg.ninecardslauncher.services.persistence.UpdateUserRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 

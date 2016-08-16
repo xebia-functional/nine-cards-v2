@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.model.{GooglePlayPackage => ApiGooglePlayPackage, GooglePlayPackages => ApiGooglePlayPackages, GooglePlayRecommendation => ApiGooglePlayRecommendation, GooglePlaySimplePackages => ApiGooglePlaySimplePackages, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, SharedCollectionList => ApiSharedCollectionList, User => ApiUser, UserConfig => ApiUserConfig}
-import com.fortysevendeg.ninecardslauncher.api.services._
+import com.fortysevendeg.ninecardslauncher.api.version1.model.{GooglePlayPackage => ApiGooglePlayPackage, GooglePlayPackages => ApiGooglePlayPackages, GooglePlayRecommendation => ApiGooglePlayRecommendation, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, SharedCollectionList => ApiSharedCollectionList, User => ApiUser, UserConfig => ApiUserConfig}
+import com.fortysevendeg.ninecardslauncher.api.version1.services._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
@@ -65,11 +65,6 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[ApiUser](statusCode, Some(user))))
       }
 
-    apiUserService.linkAuthData(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUser](statusCode, Some(user))))
-      }
-
     apiUserService.createInstallation(any, any)(any, any) returns
       Service {
         Task(Answer(ServiceClientResponse[ApiInstallation](statusCode, Some(installation))))
@@ -90,37 +85,7 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[ApiGooglePlayPackages](statusCode, Some(googlePlayPackages))))
       }
 
-    googlePlayService.getGooglePlaySimplePackages(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiGooglePlaySimplePackages](statusCode, Some(googlePlaySimplePackages))))
-      }
-
     userConfigService.getUserConfig(any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    userConfigService.saveDevice(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    userConfigService.checkpointPurchaseProduct(any, any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    userConfigService.checkpointCustomCollection(any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    userConfigService.checkpointJoinedBy(any, any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    userConfigService.tester(any, any)(any) returns
       Service {
         Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
       }
@@ -158,10 +123,6 @@ trait ApiServicesSpecification
       Task(Errata(exception))
     }
 
-    apiUserService.linkAuthData(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
-
     apiUserService.createInstallation(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
@@ -178,31 +139,7 @@ trait ApiServicesSpecification
       Task(Errata(exception))
     }
 
-    googlePlayService.getGooglePlaySimplePackages(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
-
     userConfigService.getUserConfig(any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.saveDevice(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.checkpointPurchaseProduct(any, any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.checkpointCustomCollection(any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.checkpointJoinedBy(any, any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.tester(any, any)(any) returns Service {
       Task(Errata(exception))
     }
 
@@ -241,32 +178,6 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.login("", GoogleDevice("", "", "", Seq.empty)).run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "linkGoogleAccount" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.linkGoogleAccount("", Seq(GoogleDevice("", "", "", Seq.empty))).run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.user shouldEqual toUser(user)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.linkGoogleAccount("", Seq(GoogleDevice("", "", "", Seq.empty))).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
@@ -381,32 +292,6 @@ class ApiServicesImplSpec
 
   }
 
-  "googlePlaySimplePackages" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.googlePlaySimplePackages(Seq.empty).run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.apps shouldEqual toGooglePlaySimplePackages(googlePlaySimplePackages)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.googlePlaySimplePackages(Seq.empty).run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
   "getUserConfig" should {
 
     "return a valid response if the services returns a valid response" in
@@ -422,136 +307,6 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.getUserConfig().run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "saveDevice" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.saveDevice(UserConfigDevice("", "", Seq.empty)).run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.saveDevice(UserConfigDevice("", "", Seq.empty)).run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "checkpointPurchaseProduct" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.checkpointPurchaseProduct("").run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.checkpointPurchaseProduct("").run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "checkpointCustomCollection" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.checkpointCustomCollection().run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.checkpointCustomCollection().run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "checkpointJoinedBy" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.checkpointJoinedBy("").run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.checkpointJoinedBy("").run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
-  "tester" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.tester(Map.empty).run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.tester(Map.empty).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {

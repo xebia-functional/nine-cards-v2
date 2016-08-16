@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.api.model
+package com.fortysevendeg.ninecardslauncher.api.version1.model
 
 import play.api.libs.json._
 

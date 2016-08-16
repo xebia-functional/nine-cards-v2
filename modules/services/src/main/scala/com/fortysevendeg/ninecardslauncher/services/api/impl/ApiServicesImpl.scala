@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.model.PackagesRequest
-import com.fortysevendeg.ninecardslauncher.api.reads.GooglePlayImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.RecommendationImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.SharedCollectionImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.UserConfigImplicits._
-import com.fortysevendeg.ninecardslauncher.api.reads.UserImplicits._
-import com.fortysevendeg.ninecardslauncher.api.services._
+import com.fortysevendeg.ninecardslauncher.api.version1.model.PackagesRequest
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.GooglePlayImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.RecommendationImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.SharedCollectionImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserConfigImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserImplicits._
+import com.fortysevendeg.ninecardslauncher.api.version1.services._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
@@ -68,14 +68,6 @@ class ApiServicesImpl(
       user <- readOption(response.data, userNotFoundMessage)
     } yield LoginResponse(response.statusCode, toUser(user))).resolve[ApiServiceException]
 
-  override def linkGoogleAccount(
-    email: String,
-    devices: Seq[GoogleDevice])(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiUserService.linkAuthData(toAuthData(email, devices), requestConfig.toHeader)
-      user <- readOption(response.data, userNotFoundMessage)
-    } yield LoginResponse(response.statusCode, toUser(user))).resolve[ApiServiceException]
-
   override def createInstallation(
     deviceType: Option[DeviceType],
     deviceToken: Option[String],
@@ -109,55 +101,11 @@ class ApiServicesImpl(
         statusCode = response.statusCode,
         packages = response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)).resolve[ApiServiceException]
 
-  override def googlePlaySimplePackages(
-    packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- googlePlayService.getGooglePlaySimplePackages(PackagesRequest(packageNames), requestConfig.toGooglePlayHeader)
-    } yield {
-        val packages = response.data.map(playApp => toGooglePlaySimplePackages(playApp))
-        GooglePlaySimplePackagesResponse(
-          statusCode = response.statusCode,
-          apps = packages getOrElse GooglePlaySimplePackages(Seq.empty, Seq.empty))
-      }).resolve[ApiServiceException]
-
   override def getUserConfig()(implicit requestConfig: RequestConfig) =
     (for {
       response <- userConfigService.getUserConfig(requestConfig.toHeader)
       userConfig <- readOption(response.data, userConfigNotFoundMessage)
     } yield GetUserConfigResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
-  override def saveDevice(userConfigDevice: UserConfigDevice)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.saveDevice(
-        toConfigDevice(userConfigDevice),
-        requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield SaveDeviceResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
-  override def checkpointPurchaseProduct(productId: String)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.checkpointPurchaseProduct(
-        productId, requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield CheckpointPurchaseProductResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
-  override def checkpointCustomCollection()(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.checkpointCustomCollection(requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield CheckpointCustomCollectionResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
-  override def checkpointJoinedBy(otherConfigId: String)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.checkpointJoinedBy(otherConfigId, requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield CheckpointJoinedByResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
-
-  override def tester(replace: Map[String, String])(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- userConfigService.tester(replace, requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield TesterResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def getRecommendedApps(
     categories: Seq[String],

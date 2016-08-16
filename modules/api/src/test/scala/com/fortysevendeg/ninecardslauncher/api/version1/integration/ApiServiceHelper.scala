@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.api.integration
+package com.fortysevendeg.ninecardslauncher.api.version1.integration
 
-import com.fortysevendeg.ninecardslauncher.api.model._
+import com.fortysevendeg.ninecardslauncher.api.version1.model.{AdsRequest, RecommendationRequest, ShareCollection}
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 
@@ -9,26 +9,6 @@ trait ApiServiceHelper {
   val fakeBaseUrl = "http://localhost:9999"
 
   val serviceOkHttpClient = new ServiceClient(new OkHttpClient, fakeBaseUrl)
-
-  def createUserConfigDevice(
-    deviceId: String = "",
-    deviceName: String = "",
-    collections: Seq[UserConfigCollection] = Seq.empty) =
-    UserConfigDevice(
-      deviceId = deviceId,
-      deviceName = deviceName,
-      collections = collections)
-
-  def createUserConfigGeoInfo(
-    homeMorning: Option[UserConfigUserLocation] = None,
-    homeNight: Option[UserConfigUserLocation] = None,
-    work: Option[UserConfigUserLocation] = None,
-    current: Option[UserConfigUserLocation] = None) =
-    UserConfigGeoInfo(
-      homeMorning = homeMorning,
-      homeNight = homeNight,
-      work = work,
-      current = current)
 
   def createShareCollection(
     sharedCollectionId: Option[String] = None,

@@ -32,8 +32,4 @@ class AppWidgetManagerImplDefault(implicit contextSupport: ContextSupport)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) Option(android.os.Process.myUserHandle.hashCode)
     else None
 
-  private[this] def getFullResIcon(packageName: String, iconId: Int) = packageManager.getResourcesForApplication(packageName).
-      getDrawableForDensity(iconId, getActivityManager.getLauncherLargeIconDensity)
-
-  private[this] def getActivityManager = contextSupport.context.getSystemService(Context.ACTIVITY_SERVICE).asInstanceOf[ActivityManager]
 }
