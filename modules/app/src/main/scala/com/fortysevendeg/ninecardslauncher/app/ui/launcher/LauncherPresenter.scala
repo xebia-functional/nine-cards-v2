@@ -41,7 +41,6 @@ import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, Wid
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import macroid.{ActivityContextWrapper, Ui}
-import rapture.core.scalazInterop.ResultT
 import rapture.core.{Answer, Errata, Result}
 
 import scala.concurrent.Future

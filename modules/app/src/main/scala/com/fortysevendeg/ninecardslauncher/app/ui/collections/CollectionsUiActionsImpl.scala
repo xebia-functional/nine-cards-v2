@@ -15,7 +15,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, BroadcastDispatcher}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
@@ -139,7 +139,6 @@ trait CollectionsUiActionsImpl
       presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
-      momentReloadBroadCastIfNecessary()
       adapter.updateCardFromCollection(currentPosition, cards)
       if (reloadFragments) presenter.reloadCards(cards)
     }
@@ -151,7 +150,6 @@ trait CollectionsUiActionsImpl
       presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
-      momentReloadBroadCastIfNecessary()
       adapter.addCardsToCollection(currentPosition, cards)
       presenter.addCards(cards)
     }
@@ -161,7 +159,6 @@ trait CollectionsUiActionsImpl
     for {
       adapter <- getAdapter
     } yield {
-      momentReloadBroadCastIfNecessary(Some(collectionPosition))
       adapter.addCardsToCollection(collectionPosition, cards)
       adapter.fragments.find(_._1 == collectionPosition).map(_._2).foreach { fragment =>
         fragment.getAdapter foreach { adapter =>
@@ -178,7 +175,6 @@ trait CollectionsUiActionsImpl
       presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
-      momentReloadBroadCastIfNecessary()
       adapter.removeCardFromCollection(currentPosition, card)
       presenter.removeCard(card)
     }
@@ -191,6 +187,8 @@ trait CollectionsUiActionsImpl
   override def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
     adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
   }
+
+  override def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
 
   override def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[Any] = {
     val displacement = scroll * resistanceDisplacement
@@ -271,21 +269,12 @@ trait CollectionsUiActionsImpl
         val dialog = PublishCollectionFragment(collection)
         dialog.show(ft, tagDialog)
       }
-      case _ =>
-        showContactUsError
+      case _ => showContactUsError
     }
 
   override def showMessagePublishContactsCollectionError: Ui[Any] = showError(R.string.publishCollectionError)
 
   override def showMessageNotPublishedCollectionError: Ui[Any] = showError(R.string.notPublishedCollectionError)
-
-  private[this] def momentReloadBroadCastIfNecessary(collectionPosition: Option[Int] = None) = {
-    val maybeMoment = (collectionPosition match {
-      case Some(position) => getCollection(position)
-      case _ => getCurrentCollection
-    }) flatMap (_.moment) flatMap (_.momentType)
-    maybeMoment foreach (moment => self ! BroadAction(MomentsReloadedActionFilter.action, Option(moment.name)))
-  }
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = root <~ vSnackbarShort(error)
 
@@ -346,8 +335,6 @@ trait CollectionsUiActionsImpl
   }
 
   def getCurrentPosition: Option[Int] = getAdapter flatMap ( _.getCurrentFragmentPosition )
-
-  private[this] def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
 
   private[this] def getActivePresenter: Option[CollectionPresenter] = for {
     adapter <- getAdapter
