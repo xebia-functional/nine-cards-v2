@@ -185,11 +185,11 @@ trait LauncherUiActionsImpl
   }
 
   override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] = {
-    val collectionMoment = data.headOption.flatMap(_.moment).flatMap(_.collection)
+    val momentType = data.headOption.flatMap(_.moment).flatMap(_.momentType)
     val launcherMoment = data.headOption.flatMap(_.moment)
     (loading <~ vGone) ~
       (appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
-      (topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank)) ~
+      (topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank)) ~
       (dockAppsPanel <~ daplInit(apps)) ~
       (workspaces <~
         vGlobalLayoutListener(_ =>
@@ -206,19 +206,23 @@ trait LauncherUiActionsImpl
   override def reloadCurrentMoment(): Ui[Any] = workspaces <~ lwsDataForceReloadMoment()
 
   override def reloadMomentTopBar(): Ui[Any] = {
-    val collectionMoment = getData.headOption.flatMap(_.moment).flatMap(_.collection)
-    topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank)
+    val momentType = getData.headOption.flatMap(_.moment).flatMap(_.momentType)
+    topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank)
   }
 
   override def reloadMoment(data: LauncherData): Ui[Any] = {
-    val collectionMoment = data.moment.flatMap(_.collection)
+    val momentType = data.moment.flatMap(_.momentType)
     val launcherMoment = data.moment
     (workspaces <~ lwsDataMoment(data)) ~
       (appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
-      (topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank))
+      (topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))
   }
 
-  override def reloadBarMoment(data: LauncherMoment): Ui[Any] = appsMoment <~ amlPopulate(data)
+  override def reloadBarMoment(data: LauncherMoment): Ui[Any] =
+    (appsMoment <~ amlPopulate(data)) ~ (drawerLayout <~ (data.collection match {
+      case Some(_) => dlUnlockedEnd
+      case None => dlLockedClosedEnd
+    }))
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =
     userProfileMenu(email, name, avatarUrl, coverPhotoUrl)
@@ -343,9 +347,9 @@ trait LauncherUiActionsImpl
     showAction(f[WidgetsFragment], None, resGetColor(R.color.primary), map)
   }
 
-  override def showSelectMomentDialog(moments: Seq[MomentWithCollection]): Ui[Any] = activityContextWrapper.original.get match {
+  override def showSelectMomentDialog(): Ui[Any] = activityContextWrapper.original.get match {
     case Some(activity: Activity) => Ui {
-      val momentDialog = new MomentDialog(moments)
+      val momentDialog = new MomentDialog()
       momentDialog.show()
     }
     case _ => Ui.nop

@@ -26,12 +26,29 @@ trait MomentProcess {
   def getMomentByType(momentType: NineCardsMoment): ServiceDef2[Moment, MomentException]
 
   /**
+    * Get moment by type, if the moment don't exist return None
+    *
+    * @param momentType type of moment
+    * @return the com.fortysevendeg.ninecardslauncher.process.moment.models.Moment
+    * @throws MomentException if there was an error getting the existing moments
+    */
+  def fetchMomentByType(momentType: NineCardsMoment): ServiceDef2[Option[Moment], MomentException]
+
+  /**
     * Creates Moments and their associated Collections with the apps installed in the device
     *
     * @return the List[com.fortysevendeg.ninecardslauncher.process.commons.models.Collection]
     * @throws MomentException if there was an error creating the moments' collections
     */
   def createMoments(implicit context: ContextSupport): ServiceDef2[Seq[Collection], MomentException]
+
+  /**
+    * Create new Moment without collection by type
+    *
+    * @return the List[com.fortysevendeg.ninecardslauncher.process.commons.models.Collection]
+    * @throws MomentException if there was an error creating the moments' collections
+    */
+  def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport): ServiceDef2[Moment, MomentException]
 
   /**
     * Creates Moments from some already formed and given Moments

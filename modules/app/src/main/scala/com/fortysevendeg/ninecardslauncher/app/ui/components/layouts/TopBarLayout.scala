@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
-import android.content.{Context, Intent}
-import android.net.Uri
+import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
@@ -18,7 +17,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{Collections
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardsMomentOps._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -97,19 +97,18 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           vVisible)).run
     }
 
-  def reloadMoment(collection: Collection)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
-    val resIcon = iconCollectionDetail(collection.icon)
+  def reloadMoment(moment: NineCardsMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
     val showClock = ShowClockMoment.readValue(preferenceValues)
     val text = if (showClock) {
-      s"${collection.name} ${resGetString(R.string.atHour)}"
-    } else collection.name
+      s"${moment.getName} ${resGetString(R.string.atHour)}"
+    } else moment.getName
     (momentContent <~
       On.click(Ui(presenter.goToChangeMoment())) <~
       On.longClick(Ui(presenter.goToEditMoment()) ~ Ui(true))) ~
       (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~
       (momentClock <~ (if (showClock) vVisible else vGone)) ~
       (momentIcon <~
-        ivSrc(resIcon)) ~
+        ivSrc(moment.getIconCollectionDetail)) ~
       (momentText <~
         tvText(text)) ~
       (momentWeather <~

@@ -54,7 +54,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     (for {
       deletedCards <- deleteCards(request.collection.cards)
       deletedCollection <- collectionRepository.deleteCollection(toRepositoryCollection(request.collection))
-      _ <- deleteMoment(request.collection.moment)
+      _ <- unlinkCollectionInMoment(request.collection.moment)
     } yield deletedCollection).resolve[PersistenceServiceException]
   }
 
@@ -129,9 +129,9 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
           CatchAll[PersistenceServiceException](list.collect { case Answer(collection) => collection })))
   }
 
-  private[this] def deleteMoment(maybeMoment: Option[Moment]): ServiceDef2[Unit, RepositoryException] = {
+  private[this] def unlinkCollectionInMoment(maybeMoment: Option[Moment]): ServiceDef2[Unit, RepositoryException] = {
     maybeMoment match {
-      case Some(moment) => momentRepository.deleteMoment(toRepositoryMoment(moment)) map (_ => ())
+      case Some(moment) => momentRepository.updateMoment(toRepositoryMomentWithoutCollection(moment)) map (_ => ())
       case None => Service(Task(Result.answer[Unit, RepositoryException]((): Unit)))
     }
   }

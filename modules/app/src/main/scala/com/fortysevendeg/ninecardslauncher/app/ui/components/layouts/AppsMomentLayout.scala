@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
@@ -15,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Work
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -41,25 +42,28 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   (Lollipop.ifSupportedThen(iconContent <~ vElevation(resGetDimensionPixelSize(R.dimen.elevation_default))) getOrElse Ui.nop).run
 
-  def populate(moment: LauncherMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
-    (for {
-      collection <- moment.collection
-    } yield {
+  def populate(moment: LauncherMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = moment.collection match {
+    case Some(collection: Collection) =>
       val resIcon = iconCollectionDetail(collection.icon)
       val color = resGetColor(getIndexColor(collection.themedColorIndex))
-      (iconContent <~
-        vBackgroundColor(color) <~
-        On.click {
-          Ui(presenter.goToMomentWorkspace())
-        }) ~
+      (this <~
+        vBackgroundColor(theme.get(DrawerBackgroundColor))) ~
+        (iconContent <~
+          vBackgroundColor(color) <~
+          On.click {
+            Ui(presenter.goToMomentWorkspace())
+          }) ~
         (icon <~
           ivSrc(resIcon)) ~
         (appsContent <~
-          vBackgroundColor(theme.get(DrawerBackgroundColor)) <~
           vgRemoveAllViews <~
           vgAddViews(collection.cards map (createIconCard(_, moment.momentType))))
-    }) getOrElse
-      Ui.nop
+    case _ =>
+      val blank: Drawable = javaNull
+      (this <~ vBlankBackground) ~
+        (iconContent <~ vBlankBackground) ~
+        (appsContent <~ vgRemoveAllViews) ~
+        (icon <~ ivSrc(blank))
   }
 
   def setPaddingTopAndBottom(paddingTop: Int, paddingBottom: Int) =

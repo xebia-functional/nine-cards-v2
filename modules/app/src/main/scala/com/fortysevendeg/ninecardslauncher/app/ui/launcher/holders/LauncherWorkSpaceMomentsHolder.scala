@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
 import android.content.Context
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
+import android.view.View
 import android.view.ViewGroup.LayoutParams._
-import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -24,9 +24,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
+import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
@@ -35,15 +35,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   with Contexts[View]
   with TypedFindView {
 
-  LayoutInflater.from(context).inflate(R.layout.moment_workspace_layout, this)
-
   val ruleTag = "rule"
-
-  val content = findView(TR.launcher_moment_content)
-
-  val widgets = findView(TR.launcher_moment_widgets)
-
-  val message = findView(TR.launcher_moment_message)
 
   val radius = resGetDimensionPixelSize(R.dimen.radius_default)
 
@@ -58,17 +50,8 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     d
   }
 
-  def populate(moment: LauncherMoment): Ui[Any] = {
-    (for {
-      collection <- moment.collection
-    } yield {
-      (message <~ vGone) ~
-        (widgets <~ vVisible) ~
-        (moment.momentType map (moment => Ui(presenter.loadWidgetsForMoment(moment))) getOrElse clearWidgets)
-    }) getOrElse
-      ((message <~ vVisible) ~
-        (widgets <~ vGone))
-  }
+  def populate(moment: LauncherMoment): Ui[Any] =
+     moment.momentType map (moment => Ui(presenter.loadWidgetsForMoment(moment))) getOrElse clearWidgets
 
   def reloadSelectedWidget: Ui[Any] = this <~ Transformer {
     case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeSelected()
@@ -122,13 +105,13 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   def addWidget(widgetView: View, cell: Cell, widget: AppWidget): Ui[Any] = {
     val params = createParams(cell, widget)
     val launcherWidgetView = (LauncherWidgetView(widget.id, widgetView, presenter) <~ saveInfoInTag(cell, widget)).get
-    widgets <~ vgAddView(launcherWidgetView, params)
+    this <~ vgAddView(launcherWidgetView, params)
   }
 
-  def clearWidgets: Ui[Any] = widgets <~ vgRemoveAllViews
+  def clearWidgets: Ui[Any] = this <~ vgRemoveAllViews
 
-  def unhostWiget(id: Int): Ui[Any] = widgets <~ Transformer {
-    case i: LauncherWidgetView if i.id == id => widgets <~ vgRemoveView(i)
+  def unhostWiget(id: Int): Ui[Any] = this <~ Transformer {
+    case i: LauncherWidgetView if i.id == id => this <~ vgRemoveView(i)
   }
 
   def createRules: Ui[Any] = {
