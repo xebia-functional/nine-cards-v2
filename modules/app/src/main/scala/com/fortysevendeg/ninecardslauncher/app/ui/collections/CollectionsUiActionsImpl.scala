@@ -15,6 +15,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
@@ -29,13 +30,14 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentsReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -49,7 +51,7 @@ trait CollectionsUiActionsImpl
   with ActionsBehaviours
   with FabButtonBehaviour {
 
-  self: SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] =>
+  self: SystemBarsTint with TypedFindView with Contexts[AppCompatActivity] with BroadcastDispatcher =>
 
   implicit val collectionsPagerPresenter: CollectionsPagerPresenter
 
@@ -137,6 +139,7 @@ trait CollectionsUiActionsImpl
       presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
+      momentReloadBroadCastIfNecessary()
       adapter.updateCardFromCollection(currentPosition, cards)
       if (reloadFragments) presenter.reloadCards(cards)
     }
@@ -148,6 +151,7 @@ trait CollectionsUiActionsImpl
       presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
+      momentReloadBroadCastIfNecessary()
       adapter.addCardsToCollection(currentPosition, cards)
       presenter.addCards(cards)
     }
@@ -157,6 +161,7 @@ trait CollectionsUiActionsImpl
     for {
       adapter <- getAdapter
     } yield {
+      momentReloadBroadCastIfNecessary(Some(collectionPosition))
       adapter.addCardsToCollection(collectionPosition, cards)
       adapter.fragments.find(_._1 == collectionPosition).map(_._2).foreach { fragment =>
         fragment.getAdapter foreach { adapter =>
@@ -173,6 +178,7 @@ trait CollectionsUiActionsImpl
       presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
+      momentReloadBroadCastIfNecessary()
       adapter.removeCardFromCollection(currentPosition, card)
       presenter.removeCard(card)
     }
@@ -272,6 +278,14 @@ trait CollectionsUiActionsImpl
   override def showMessagePublishContactsCollectionError: Ui[Any] = showError(R.string.publishCollectionError)
 
   override def showMessageNotPublishedCollectionError: Ui[Any] = showError(R.string.notPublishedCollectionError)
+
+  private[this] def momentReloadBroadCastIfNecessary(collectionPosition: Option[Int] = None) = {
+    val maybeMoment = (collectionPosition match {
+      case Some(position) => getCollection(position)
+      case _ => getCurrentCollection
+    }) flatMap (_.moment) flatMap (_.momentType)
+    maybeMoment foreach (moment => self ! BroadAction(MomentsReloadedActionFilter.action, Option(moment.name)))
+  }
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = root <~ vSnackbarShort(error)
 

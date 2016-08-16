@@ -28,7 +28,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException, CollectionExceptionImpl}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, MomentWithCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
@@ -476,11 +476,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       moment <- moments.find(_.momentType == currentMoment.momentType)
     } yield moment
 
+    def getCollectionById(collectionId: Option[Int]): ServiceDef2[Option[Collection], CollectionException] =
+      collectionId map di.collectionProcess.getCollectionById getOrElse
+        Service(Task(Errata(CollectionExceptionImpl(""))))
+
     def getCollection: ServiceDef2[LauncherMoment, MomentException with CollectionException] = for {
       moments <- di.momentProcess.getMoments
       moment = selectMoment(moments)
-      collectionId = moment flatMap (_.collectionId)
-      collection <- di.collectionProcess.getCollectionById(collectionId.get)
+      collection <- getCollectionById(moment flatMap (_.collectionId))
     } yield LauncherMoment(moment flatMap (_.momentType), collection)
 
     Task.fork(getCollection.run).resolveAsyncUi(

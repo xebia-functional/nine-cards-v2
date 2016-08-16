@@ -35,14 +35,14 @@ class LauncherActivity
   override val actionsFilters: Seq[String] = MomentsActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (MomentsActionFilter(action), data) match {
-    case (MomentsReloadedActionFilter, None) =>
-      presenter.reloadAppsMomentBar()
+    case (MomentsReloadedActionFilter, Some(moment)) => presenter.reloadAppsMomentBar()
     case _ =>
   }
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     setContentView(R.layout.launcher_activity)
+    registerDispatchers
     presenter.initialize()
   }
 
@@ -58,6 +58,7 @@ class LauncherActivity
 
   override def onDestroy(): Unit = {
     super.onDestroy()
+    unregisterDispatcher
     presenter.destroy()
   }
 
