@@ -1,8 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
-import com.fortysevendeg.ninecardslauncher.api.model.{AuthData => ApiAuthData, AuthGoogle => ApiAuthGoogle, AuthGoogleDevice => ApiAuthGoogleDevice, GooglePlayAggregateRating => ApiGooglePlayAggregateRating, GooglePlayApp => ApiGooglePlayApp, GooglePlayAppDetails => ApiGooglePlayAppDetails, GooglePlayDetails => ApiGooglePlayDetails, GooglePlayImage => ApiGooglePlayImage, GooglePlayOffer => ApiGooglePlayOffer, GooglePlayPackage => ApiGooglePlayPackage, GooglePlayRecommendation, GooglePlaySimplePackage => ApiGooglePlaySimplePackage, GooglePlaySimplePackages => ApiGooglePlaySimplePackages, Installation => ApiInstallation, RecommendationRequest => ApiRecommendationRequest, ShareCollection => ApiShareCollection, SharedCollection, SharedCollectionPackage, User => ApiUser, UserConfig => ApiUserConfig, UserConfigCollection => ApiUserConfigCollection, UserConfigCollectionItem => ApiUserConfigCollectionItem, UserConfigDevice => ApiUserConfigDevice, UserConfigPlusProfile => ApiUserConfigPlusProfile, UserConfigProfileImage => ApiUserConfigProfileImage, UserConfigStatusInfo => ApiUserConfigStatusInfo, UserConfigTimeSlot => ApiUserConfigTimeSlot, UserConfigUserLocation => ApiUserConfigUserLocation}
+import com.fortysevendeg.ninecardslauncher.api.version1.model.{AuthData => ApiAuthData, AuthGoogle => ApiAuthGoogle, AuthGoogleDevice => ApiAuthGoogleDevice, GooglePlayAggregateRating => ApiGooglePlayAggregateRating, GooglePlayApp => ApiGooglePlayApp, GooglePlayAppDetails => ApiGooglePlayAppDetails, GooglePlayDetails => ApiGooglePlayDetails, GooglePlayImage => ApiGooglePlayImage, GooglePlayOffer => ApiGooglePlayOffer, GooglePlayPackage => ApiGooglePlayPackage, GooglePlayRecommendation, Installation => ApiInstallation, RecommendationRequest => ApiRecommendationRequest, ShareCollection => ApiShareCollection, SharedCollection, SharedCollectionPackage, User => ApiUser, UserConfig => ApiUserConfig, UserConfigCollection => ApiUserConfigCollection, UserConfigCollectionItem => ApiUserConfigCollectionItem, UserConfigDevice => ApiUserConfigDevice, UserConfigPlusProfile => ApiUserConfigPlusProfile, UserConfigProfileImage => ApiUserConfigProfileImage, UserConfigStatusInfo => ApiUserConfigStatusInfo, UserConfigTimeSlot => ApiUserConfigTimeSlot, UserConfigUserLocation => ApiUserConfigUserLocation}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
-import play.api.libs.json._
 
 trait Conversions {
 
@@ -50,19 +49,6 @@ trait Conversions {
       deviceId = device.deviceId,
       secretToken = device.secretToken,
       permissions = device.permissions)
-
-  def toAuthData(
-    email: String,
-    devices: Seq[GoogleDevice]
-    ): ApiAuthData =
-    ApiAuthData(
-      google = Some(ApiAuthGoogle(
-        email = email,
-        devices = devices map fromGoogleDevice
-      )),
-      facebook = None,
-      twitter = None,
-      anonymous = None)
 
   def toInstallation(
     id: Option[String],
@@ -130,12 +116,6 @@ trait Conversions {
   def getVideo(images: Seq[ApiGooglePlayImage]): Option[String] =
     images.find(_.imageType == iconVideoType) map (_.imageUrl)
 
-  def toGooglePlayImage(googlePlayImage: ApiGooglePlayImage): GooglePlayImage =
-    GooglePlayImage(
-      imageType = googlePlayImage.imageType,
-      imageUrl = googlePlayImage.imageUrl,
-      creator = googlePlayImage.creator)
-
   def toGooglePlayOffer(googlePlayOffer: ApiGooglePlayOffer): GooglePlayOffer =
     GooglePlayOffer(
       formattedAmount = googlePlayOffer.formattedAmount,
@@ -166,23 +146,6 @@ trait Conversions {
       versionString = googlePlayAppDetails.versionString,
       appType = googlePlayAppDetails.appType,
       permission = googlePlayAppDetails.permission)
-
-  def toGooglePlaySimplePackages(googlePlaySimplePackages: ApiGooglePlaySimplePackages): GooglePlaySimplePackages =
-    GooglePlaySimplePackages(
-      errors = googlePlaySimplePackages.errors,
-      items = googlePlaySimplePackages.items map toGooglePlaySimplePackage
-    )
-
-  def toGooglePlaySimplePackage(googlePlaySimplePackage: ApiGooglePlaySimplePackage): GooglePlaySimplePackage =
-    GooglePlaySimplePackage(
-      packageName = googlePlaySimplePackage.packageName,
-      appType = googlePlaySimplePackage.appType,
-      appCategory = googlePlaySimplePackage.appCategory,
-      numDownloads = googlePlaySimplePackage.numDownloads,
-      starRating = googlePlaySimplePackage.starRating,
-      ratingCount = googlePlaySimplePackage.ratingCount,
-      commentCount = googlePlaySimplePackage.commentCount
-    )
 
   def toUserConfig(apiUserConfig: ApiUserConfig): UserConfig =
     UserConfig(
@@ -257,50 +220,6 @@ trait Conversions {
       communityMember = apiStatusInfo.communityMember,
       joinedThrough = apiStatusInfo.joinedThrough,
       tester = apiStatusInfo.tester)
-
-  def toConfigDevice(device: UserConfigDevice): ApiUserConfigDevice =
-    ApiUserConfigDevice(
-      deviceId = device.deviceId,
-      deviceName = device.deviceName,
-      collections = device.collections map fromUserConfigCollection)
-
-  def fromUserConfigCollection(collection: UserConfigCollection): ApiUserConfigCollection =
-    ApiUserConfigCollection(
-      name = collection.name,
-      originalSharedCollectionId = collection.originalSharedCollectionId,
-      sharedCollectionId = collection.sharedCollectionId,
-      sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
-      items = collection.items map fromUserConfigCollectionItem,
-      collectionType = collection.collectionType,
-      constrains = collection.constrains,
-      wifi = collection.wifi,
-      occurrence = collection.occurrence,
-      icon = collection.icon,
-      radius = collection.radius,
-      lat = collection.lat,
-      lng = collection.lng,
-      alt = collection.alt,
-      category = collection.category)
-
-  def fromUserConfigCollectionItem(collectionItem: UserConfigCollectionItem): ApiUserConfigCollectionItem =
-    ApiUserConfigCollectionItem(
-      itemType = collectionItem.itemType,
-      title = collectionItem.title,
-      metadata = Json.parse("{\"name\": \"test\"}"), // TODO Create metadata for item
-      categories = collectionItem.categories)
-
-  def fromUserConfigUserLocation(apiUserLocation: UserConfigUserLocation): ApiUserConfigUserLocation =
-    ApiUserConfigUserLocation(
-      wifi = apiUserLocation.wifi,
-      lat = apiUserLocation.lat,
-      lng = apiUserLocation.lng,
-      occurrence = apiUserLocation.occurrence map fromUserConfigTimeSlot)
-
-  def fromUserConfigTimeSlot(apiTimeSlot: UserConfigTimeSlot): ApiUserConfigTimeSlot =
-    ApiUserConfigTimeSlot(
-      from = apiTimeSlot.from,
-      to = apiTimeSlot.to,
-      days = apiTimeSlot.days)
 
   def toRecommendationRequest(
     categories: Seq[String],

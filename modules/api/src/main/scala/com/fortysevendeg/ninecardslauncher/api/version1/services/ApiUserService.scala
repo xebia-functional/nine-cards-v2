@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.api.services
+package com.fortysevendeg.ninecardslauncher.api.version1.services
 
-import com.fortysevendeg.ninecardslauncher.api.model.{AuthData, Installation, User}
+import com.fortysevendeg.ninecardslauncher.api.version1.model.{AuthData, Installation, User}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.rest.client.http.HttpClientException
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
@@ -21,17 +21,6 @@ class ApiUserService(serviceClient: ServiceClient) {
       path = prefixPathUser,
       headers = headers,
       body = user,
-      reads = Some(reads))
-
-  def linkAuthData(
-    authData: AuthData,
-    headers: Seq[(String, String)]
-    )(implicit reads: Reads[User],
-    writes: Writes[AuthData]): ServiceDef2[ServiceClientResponse[User], HttpClientException with ServiceClientException] =
-    serviceClient.put[AuthData, User](
-      path = s"$prefixPathUser/link",
-      headers = headers,
-      body = authData,
       reads = Some(reads))
 
   def createInstallation(

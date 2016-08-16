@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.MomentTimeSlot
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory, NineCardsMoment}
 
 case class UnformedApp(
