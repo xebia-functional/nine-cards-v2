@@ -6,11 +6,8 @@ import android.graphics.Paint.Style
 import android.graphics._
 import android.graphics.drawable.{Animatable, Drawable}
 import android.view.animation.DecelerateInterpolator
-import android.widget.ImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.IconTypes._
-import macroid.{ContextWrapper, Tweak}
-
-import scala.util.Try
+import macroid.ContextWrapper
 
 case class PathMorphDrawable(
   defaultIcon: Int = BACK,
@@ -24,49 +21,41 @@ case class PathMorphDrawable(
   implicit var size: Option[Dim] = None
 
   lazy val burgerIcon = List(
-    new Segment().fromRatios(0.2f, 0.3f, 0.8f, 0.3f),
-    new Segment().fromRatios(0.2f, 0.5f, 0.8f, 0.5f),
-    new Segment().fromRatios(0.2f, 0.7f, 0.8f, 0.7f)
-  )
+    Segment().fromRatios(0.2f, 0.3f, 0.8f, 0.3f),
+    Segment().fromRatios(0.2f, 0.5f, 0.8f, 0.5f),
+    Segment().fromRatios(0.2f, 0.7f, 0.8f, 0.7f))
 
   lazy val backIcon = List(
-    new Segment().fromRatios(0.3f, 0.51f, 0.5f, 0.3f),
-    new Segment().fromRatios(0.33f, 0.5f, 0.7f, 0.5f),
-    new Segment().fromRatios(0.3f, 0.49f, 0.5f, 0.7f)
-  )
+    Segment().fromRatios(0.3f, 0.51f, 0.5f, 0.3f),
+    Segment().fromRatios(0.33f, 0.5f, 0.7f, 0.5f),
+    Segment().fromRatios(0.3f, 0.49f, 0.5f, 0.7f))
 
   lazy val upIcon = List(
-    new Segment().fromRatios(0.49f, 0.3f, 0.7f, 0.5f),
-    new Segment().fromRatios(0.5f, 0.33f, 0.5f, 0.7f),
-    new Segment().fromRatios(0.51f, 0.3f, 0.3f, 0.5f)
-  )
+    Segment().fromRatios(0.49f, 0.3f, 0.7f, 0.5f),
+    Segment().fromRatios(0.5f, 0.33f, 0.5f, 0.7f),
+    Segment().fromRatios(0.51f, 0.3f, 0.3f, 0.5f))
 
   lazy val downIcon = List(
-    new Segment().fromRatios(0.51f, 0.7f, 0.3f, 0.5f),
-    new Segment().fromRatios(0.5f, 0.67f, 0.5f, 0.3f),
-    new Segment().fromRatios(0.49f, 0.7f, 0.7f, 0.5f)
-  )
+    Segment().fromRatios(0.51f, 0.7f, 0.3f, 0.5f),
+    Segment().fromRatios(0.5f, 0.67f, 0.5f, 0.3f),
+    Segment().fromRatios(0.49f, 0.7f, 0.7f, 0.5f))
 
   lazy val nextIcon = List(
-    new Segment().fromRatios(0.7f, 0.49f, 0.5f, 0.7f),
-    new Segment().fromRatios(0.67f, 0.5f, 0.3f, 0.5f),
-    new Segment().fromRatios(0.7f, 0.51f, 0.5f, 0.3f)
-  )
+    Segment().fromRatios(0.7f, 0.49f, 0.5f, 0.7f),
+    Segment().fromRatios(0.67f, 0.5f, 0.3f, 0.5f),
+    Segment().fromRatios(0.7f, 0.51f, 0.5f, 0.3f))
 
   lazy val checkIcon = List(
-    new Segment().fromRatios(0.2f, 0.6f, 0.4f, 0.8f),
-    new Segment().fromRatios(0.4f, 0.8f, 0.8f, 0.2f)
-  )
+    Segment().fromRatios(0.2f, 0.6f, 0.4f, 0.8f),
+    Segment().fromRatios(0.4f, 0.8f, 0.8f, 0.2f))
 
   lazy val addIcon = List(
-    new Segment().fromRatios(0.5f, 0.2f, 0.5f, 0.8f),
-    new Segment().fromRatios(0.2f, 0.5f, 0.8f, 0.5f)
-  )
+    Segment().fromRatios(0.5f, 0.2f, 0.5f, 0.8f),
+    Segment().fromRatios(0.2f, 0.5f, 0.8f, 0.5f))
 
   lazy val closeIcon = List(
-    new Segment().fromRatios(0.662f, 0.338f, 0.338f, 0.662f),
-    new Segment().fromRatios(0.338f, 0.338f, 0.662f, 0.662f)
-  )
+    Segment().fromRatios(0.662f, 0.338f, 0.338f, 0.662f),
+    Segment().fromRatios(0.338f, 0.338f, 0.662f, 0.662f))
 
   val noIcon = List.empty
 
@@ -91,7 +80,7 @@ case class PathMorphDrawable(
 
   override def onBoundsChange(bounds: Rect): Unit = {
     super.onBoundsChange(bounds)
-    size = Some(new Dim(bounds.width(), bounds.height()))
+    size = Some(Dim(bounds.width(), bounds.height()))
     setTypeIcon(defaultIcon)
   }
 
@@ -117,8 +106,12 @@ case class PathMorphDrawable(
   override def isRunning: Boolean = running
 
   override def start(): Unit = (toIcon, currentIcon) match {
-    case (Some(to), Some(current)) => running = true; moveIcon(current, to)
-    case (Some(to), None) => setIcon(to); toIcon = None
+    case (Some(to), Some(current)) =>
+      running = true
+      moveIcon(current, to)
+    case (Some(to), None) =>
+      setIcon(to)
+      toIcon = None
     case _ => ()
   }
 
@@ -195,7 +188,7 @@ case class PathMorphDrawable(
       val newH = s.height - (padding * 2)
       val newX = (newW * pos.x) / s.wight
       val newY = (newH * pos.y) / s.height
-      new Point(newX + padding, newY + padding)
+      Point(newX + padding, newY + padding)
   } getOrElse pos
 
   def moveIcon(from: Icon, to: Icon) = {
@@ -214,7 +207,7 @@ case class PathMorphDrawable(
         val segmentFromOver = fromOver map (_.copy(alpha = 1 - fraction))
 
         val segmentToOver = toOver map { segment =>
-          transformSegment(new Segment(
+          transformSegment(Segment(
             Point(segment.point1.x + 1, segment.point1.y + 1),
             Point(segment.point1.x, segment.point1.y)), segment, fraction)
         }
