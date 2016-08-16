@@ -439,7 +439,7 @@ trait PersistenceServices {
   def getMomentByType(momentType: String): ServiceDef2[Moment, PersistenceServiceException]
 
   /**
-    * Obtains an moment from the repository by type. Return exception if the type doesn't exist
+    * Obtains an moment from the repository by type. Return None if the type doesn't exist
     * @param momentType type of the moment
     * @return an com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment
     * @throws PersistenceServiceException if exist some problem obtaining the moment

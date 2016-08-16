@@ -168,8 +168,6 @@ trait LauncherUiActionsImpl
 
   override def showMinimumOneCollectionMessage(): Ui[Any] = showMessage(R.string.minimumOneCollectionMessage)
 
-  override def showEmptyMoments(): Ui[Any] = showMessage(R.string.emptyMoment)
-
   override def showNoImplementedYetMessage(): Ui[Any] = showMessage(R.string.todo)
 
   override def showLoading(): Ui[Any] = showCollectionsLoading

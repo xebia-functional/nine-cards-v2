@@ -967,8 +967,6 @@ trait LauncherUiActions {
 
   def showMinimumOneCollectionMessage(): Ui[Any]
 
-  def showEmptyMoments(): Ui[Any]
-
   def showNoImplementedYetMessage(): Ui[Any]
 
   def showLoading(): Ui[Any]
