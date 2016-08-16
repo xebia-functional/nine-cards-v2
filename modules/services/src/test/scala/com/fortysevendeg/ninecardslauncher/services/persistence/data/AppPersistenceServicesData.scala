@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.data
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateAppRequest, AddAppRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, DataCounter => RepositoryDataCounter}
 
 import scala.util.Random
 
@@ -119,6 +119,14 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
   }
   val iterableApps = new IterableApps(iterableCursorApp)
 
+  def createDataCounter(i: Int): RepositoryDataCounter =
+    RepositoryDataCounter(
+      term = s"$i - $termDataCounter",
+      count = countDataCounter
+    )
 
+  val keyword = "fake-keyword"
+
+  val dataCounters = 1 to 10 map createDataCounter
 
 }
