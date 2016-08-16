@@ -87,16 +87,24 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     clientResponse: HttpClientResponse,
     maybeReads: Option[Reads[T]],
     emptyResponse: Boolean
-    ): ServiceDef2[Option[T], ServiceClientException] = Service {
-    Task {
+    ): ServiceDef2[Option[T], ServiceClientException] = {
 
-      println(s"Response ------> ${clientResponse.body}")
+    def isError: Boolean =
+      clientResponse.statusCode >= 400 && clientResponse.statusCode < 600
 
-      (clientResponse.body, emptyResponse, maybeReads) match {
-        case (Some(d), false, Some(r)) => transformResponse[T](d, r)
-        case (None, false, _) => Errata(ServiceClientExceptionImpl("No content"))
-        case (Some(d), false, None) => Errata(ServiceClientExceptionImpl("No transformer found for type"))
-        case _ => Answer(None)
+    Service {
+      Task {
+        if (isError) {
+          val errorMessage = clientResponse.body getOrElse "No content"
+          Errata(ServiceClientExceptionImpl(s"Status code ${clientResponse.statusCode}. $errorMessage"))
+        } else {
+          (clientResponse.body, emptyResponse, maybeReads) match {
+            case (Some(d), false, Some(r)) => transformResponse[T](d, r)
+            case (None, false, _) => Errata(ServiceClientExceptionImpl("No content"))
+            case (Some(d), false, None) => Errata(ServiceClientExceptionImpl("No transformer found for type"))
+            case _ => Answer(None)
+          }
+        }
       }
     }
   }
