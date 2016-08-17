@@ -21,11 +21,6 @@ case class GooglePlayApp(
   offer: Seq[GooglePlayOffer],
   aggregateRating: GooglePlayAggregateRating)
 
-case class GooglePlayImage(
-  imageType: Int,
-  imageUrl: String,
-  creator: Option[String])
-
 case class GooglePlayDetails(
   appDetails: GooglePlayAppDetails)
 
@@ -53,17 +48,4 @@ case class GooglePlayAggregateRating(
   fourStarRatings: Int,
   fiveStarRatings: Int,
   starRating: Double)
-
-case class GooglePlaySimplePackages(
-  errors: Seq[String],
-  items: Seq[GooglePlaySimplePackage])
-
-case class GooglePlaySimplePackage(
-  packageName: String,
-  appType: String,
-  appCategory: String,
-  numDownloads: String,
-  starRating: Double,
-  ratingCount: Int,
-  commentCount: Int)
 
