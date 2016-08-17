@@ -453,7 +453,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def editWidgetsShowActions(): Unit = actions.editWidgetsShowActions().run
 
-  def goToEditMoment(): Unit = actions.showNoImplementedYetMessage().run
+  def goToEditMoment(): Unit = {
+    val momentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
+    (momentType match {
+      case Some(moment) => actions.editMoment(moment.name)
+      case _ => actions.showContactUsError()
+    }).run
+  }
 
   def goToChangeMoment(): Unit = actions.showSelectMomentDialog().run
 
@@ -997,6 +1003,8 @@ trait LauncherUiActions {
   def resetFromCollection(): Ui[Any]
 
   def editCollection(collection: Collection): Ui[Any]
+
+  def editMoment(momentType: String): Ui[Any]
 
   def addWidgets(widgets: Seq[AppWidget]): Ui[Any]
 

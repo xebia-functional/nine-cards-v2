@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/EditMomentRoot">
+
+
+    <LinearLayout
+        style="@style/EditMomentHeaderContent">
+
+        <ImageView
+            style="@style/EditMomentHeaderIconCollection"/>
+
+        <TextView
+            style="@style/EditMomentHeaderCollectionName"/>
+
+    </LinearLayout>
+
+    <ImageView
+        style="@style/ActionsLine"/>
+
+    <Spinner
+        android:id="@+id/edit_moment_collection"
+        style="@style/EditMomentHeaderSelectCollection" />
+
+</LinearLayout>

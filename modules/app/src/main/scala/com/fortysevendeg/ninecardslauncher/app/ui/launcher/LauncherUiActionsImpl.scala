@@ -267,6 +267,8 @@ trait LauncherUiActionsImpl
 
   override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
 
+  override def editMoment(momentType: String): Ui[Any] = showEditMoment(momentType)
+
   override def addWidgets(widgets: Seq[AppWidget]): Ui[Any] = {
     val uiWidgets = widgets map { widget =>
       val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)

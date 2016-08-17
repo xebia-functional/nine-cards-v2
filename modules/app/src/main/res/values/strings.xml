@@ -95,6 +95,10 @@
     <string name="editMoment">Edit Moment</string>
     <string name="changeMoment">Change Moment</string>
 
+    <string name="linkCollection">Link Collection</string>
+    <string name="hours">Hours</string>
+    <string name="wifi">Wifi</string>
+
     <string name="widgetsErrorMessage">We have had problems loading the widgets. Please try again</string>
 
     <!-- Collections -->
