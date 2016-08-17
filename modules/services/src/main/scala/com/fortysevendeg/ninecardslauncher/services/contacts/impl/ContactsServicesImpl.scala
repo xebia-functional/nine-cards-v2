@@ -1,13 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.{CatsService, Service}
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{ContactCounter, ContactInfo}
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 
 import scalaz.concurrent.Task
 
@@ -22,9 +22,9 @@ class ContactsServicesImpl(
   val wildcard = "#"
 
   override def getContacts =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           contentResolverWrapper.fetchAll(
             uri = Fields.CONTENT_URI,
             projection = allFields,
@@ -35,9 +35,9 @@ class ContactsServicesImpl(
     }
 
   override def getAlphabeticalCounterContacts =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           val iterator = getNamesAlphabetically
           iterator.foldLeft(Seq.empty[ContactCounter]) { (acc, name) =>
             val term = name.substring(0, 1).toUpperCase match {
@@ -57,9 +57,9 @@ class ContactsServicesImpl(
     }
 
   override def getIterableContacts =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           contentResolverWrapper.getCursor(
             uri = Fields.CONTENT_URI,
             projection = allFields,
@@ -70,9 +70,9 @@ class ContactsServicesImpl(
     }
 
   override def getIterableContactsByKeyword(keyword: String) =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           contentResolverWrapper.getCursor(
             uri = Fields.CONTENT_URI,
             projection = allFields,
@@ -84,9 +84,9 @@ class ContactsServicesImpl(
     }
 
   override def fetchContactByEmail(email: String) =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           contentResolverWrapper.fetch(
             uri = Fields.EMAIL_CONTENT_URI,
             projection = allEmailContactFields,
@@ -97,9 +97,9 @@ class ContactsServicesImpl(
     }
 
   override def fetchContactByPhoneNumber(phoneNumber: String) =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           contentResolverWrapper.fetch(
             uri = uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, phoneNumber),
             projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor))
@@ -108,9 +108,9 @@ class ContactsServicesImpl(
     }
 
   override def findContactByLookupKey(lookupKey: String) =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           contentResolverWrapper.fetch(
             uri = Fields.CONTENT_URI,
             projection = allFields,
@@ -139,9 +139,9 @@ class ContactsServicesImpl(
     }
 
   override def getFavoriteContacts =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           contentResolverWrapper.fetchAll(
             uri = Fields.CONTENT_URI,
             projection = allFields,
@@ -152,9 +152,9 @@ class ContactsServicesImpl(
     }
 
   override def getIterableFavoriteContacts =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           contentResolverWrapper.getCursor(
             uri = Fields.CONTENT_URI,
             projection = allFields,
@@ -165,9 +165,9 @@ class ContactsServicesImpl(
     }
 
   override def getContactsWithPhone =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           contentResolverWrapper.fetchAll(
             uri = Fields.CONTENT_URI,
             projection = allFields,
@@ -178,9 +178,9 @@ class ContactsServicesImpl(
     }
 
   override def getIterableContactsWithPhone =
-    Service {
+    CatsService {
       Task {
-        CatchAll[ContactsServiceException] {
+        XorCatchAll[ContactsServiceException] {
           contentResolverWrapper.getCursor(
             uri = Fields.CONTENT_URI,
             projection = allFields,
