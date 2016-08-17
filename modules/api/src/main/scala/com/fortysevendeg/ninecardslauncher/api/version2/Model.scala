@@ -1,28 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.api.version2
 
-trait Header {
-
-  def apiKey: String
-  def sessionToken: String
-  def androidId: String
-  def androidMarketToken: Option[String]
-
-}
-
-case class SimpleHeader(
-  apiKey: String,
-  sessionToken: String,
-  androidId: String) extends Header {
-  override def androidMarketToken: Option[String] = None
-}
-
-case class HeaderWithMarketToken(
+case class ServiceHeader(
   apiKey: String,
   sessionToken: String,
   androidId: String,
-  marketToken: String) extends Header {
-  override def androidMarketToken: Option[String] = Some(marketToken)
-}
+  androidMarketToken: Option[String])
 
 case class LoginRequest(email: String, androidId: String, tokenId: String)
 
