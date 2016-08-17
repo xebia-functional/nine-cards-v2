@@ -46,6 +46,8 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
 
   var task: Option[Runnable] = None
 
+  var moveTask: Option[Runnable] = None
+
   val sizeEdgeBetweenWorkspaces = resGetDimensionPixelSize(R.dimen.size_edge_between_workspaces)
 
   val widthSpace = parentDimen.width / numInLine
@@ -148,11 +150,13 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
         val (canMoveToLeft, canMoveToRight) = canMove
         (calculateEdge(x), canMoveToLeft, canMoveToRight) match {
           case (LeftEdge, true, _) =>
+            clearMoveTask()
             delayedTask(() => {
               resetAllPositions().run
               presenter.draggingReorderToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces)
             })
           case (RightEdge, _, true) =>
+            clearMoveTask()
             delayedTask(() => {
               resetAllPositions().run
               presenter.draggingReorderToNextScreen(toPositionCollection(0) + numSpaces)
@@ -163,8 +167,10 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
             val existCollectionInSpace = (views.lift(space) flatMap (_.collection)).isDefined
             val currentPosition = toPositionCollection(space)
             if (existCollectionInSpace && lastCurrentPosition != currentPosition) {
-              reorder(lastCurrentPosition, currentPosition).run
-              presenter.draggingReorderTo(currentPosition)
+              delayedMoveTask(() => {
+                reorder(lastCurrentPosition, currentPosition).run
+                presenter.draggingReorderTo(currentPosition)
+              })
             }
           case _ => clearTask()
         }
@@ -173,6 +179,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
       case (ACTION_DROP | ACTION_DRAG_ENDED, true, true) =>
         // we are waiting that the animation is finished in order to reset views
         delayedTask(dragEnded, resGetInteger(R.integer.anim_duration_normal))
+      case (ACTION_DRAG_EXITED, _, _) => clearMoveTask()
       case _ =>
     }
   }
@@ -293,6 +300,20 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
   private[this] def toPositionGrid(position: Int) = position - (positionScreen * numSpaces)
 
   private[this] def isRunningReorderAnimation: Boolean = views exists (_.isRunningAnimation)
+
+  private[this] def delayedMoveTask(runTask: () => Unit, duration: Int = 200): Unit = {
+    moveTask foreach handler.removeCallbacks
+    val runnable = new Runnable {
+      override def run(): Unit = runTask()
+    }
+    moveTask = Option(runnable)
+    handler.postDelayed(runnable, duration)
+  }
+
+  private[this] def clearMoveTask(): Unit = if (moveTask.isDefined) {
+    moveTask foreach handler.removeCallbacks
+    moveTask = None
+  }
 
   private[this] def delayedTask(runTask: () => Unit, duration: Int = 500): Unit = if (task.isEmpty) {
     val runnable = new Runnable {
