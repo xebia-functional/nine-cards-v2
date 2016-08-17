@@ -51,11 +51,10 @@ import scalaz.concurrent.Task
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
-    with Conversions
-    with NineCardIntentConversions
-    with LauncherExecutor
-    with AnalyticDispatcher {
-  self =>
+  with Conversions
+  with NineCardIntentConversions
+  with LauncherExecutor
+  with AnalyticDispatcher { self =>
 
   val tagDialog = "dialog"
 

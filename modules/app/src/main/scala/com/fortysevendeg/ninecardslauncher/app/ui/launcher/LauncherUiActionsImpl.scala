@@ -117,7 +117,7 @@ trait LauncherUiActionsImpl
       (editWidgetsTopPanel <~ ewtInit <~ applyFadeIn()) ~
       (editWidgetsBottomPanel <~ ewbShowActions <~ applyFadeIn()) ~
       (workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
-      (drawerLayout <~ dlLockedClosed)
+      (drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)
 
   override def reloadViewEditWidgets(): Ui[Any] =
     (editWidgetsTopPanel <~ ewtInit) ~
@@ -131,7 +131,7 @@ trait LauncherUiActionsImpl
       (editWidgetsTopPanel <~ applyFadeOut()) ~
       (editWidgetsBottomPanel <~ applyFadeOut()) ~
       (workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
-      (drawerLayout <~ dlUnlocked)
+      (drawerLayout <~ dlUnlockedStart <~ dlUnlockedEnd)
 
   override def resizeWidget(): Ui[Any] =
     (workspaces <~ lwsResizeCurrentWidget()) ~
@@ -460,7 +460,7 @@ trait LauncherUiActionsImpl
 
   def turnOffFragmentContent: Ui[Any] =
     (fragmentContent <~ vClickable(false)) ~
-      (drawerLayout <~ dlUnlocked)
+      (drawerLayout <~ dlUnlockedStart <~ dlUnlockedEnd)
 
   def reloadPager(currentPage: Int) = Transformer {
     case imageView: TintableImageView if imageView.isPosition(currentPage) =>
