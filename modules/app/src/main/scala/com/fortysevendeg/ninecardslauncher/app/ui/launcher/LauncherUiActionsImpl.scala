@@ -124,14 +124,16 @@ trait LauncherUiActionsImpl
       (editWidgetsBottomPanel <~ ewbShowActions) ~
       (workspaces <~ lwsReloadSelectedWidget)
 
-  override def closeModeEditWidgets(): Ui[Any] =
+  override def closeModeEditWidgets(): Ui[Any] = {
+    val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
     (dockAppsPanel <~ applyFadeIn()) ~
       (paginationPanel <~ applyFadeIn()) ~
       (topBarPanel <~ applyFadeIn()) ~
       (editWidgetsTopPanel <~ applyFadeOut()) ~
       (editWidgetsBottomPanel <~ applyFadeOut()) ~
       (workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
-      (drawerLayout <~ dlUnlockedStart <~ dlUnlockedEnd)
+      (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))
+  }
 
   override def resizeWidget(): Ui[Any] =
     (workspaces <~ lwsResizeCurrentWidget()) ~
@@ -462,9 +464,11 @@ trait LauncherUiActionsImpl
 
   override def isEmptyCollectionsInWorkspace: Boolean = isEmptyCollections
 
-  def turnOffFragmentContent: Ui[Any] =
+  def turnOffFragmentContent: Ui[Any] = {
+    val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
     (fragmentContent <~ vClickable(false)) ~
-      (drawerLayout <~ dlUnlockedStart <~ dlUnlockedEnd)
+      (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))
+  }
 
   def reloadPager(currentPage: Int) = Transformer {
     case imageView: TintableImageView if imageView.isPosition(currentPage) =>
