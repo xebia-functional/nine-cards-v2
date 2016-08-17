@@ -82,8 +82,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
       val result = persistenceServices.deleteAllUsers().value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual items
+        case Xor.Right(deleted) => deleted shouldEqual items
       }
     }
 
@@ -102,8 +101,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
       val result = persistenceServices.deleteUser(createDeleteUserRequest(user = user)).value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual item
+        case Xor.Right(deleted) => deleted shouldEqual item
       }
     }
 
@@ -122,8 +120,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
       val result = persistenceServices.fetchUsers.value.run
 
       result must beLike {
-        case Xor.Right(userItems) =>
-          userItems.size shouldEqual seqUser.size
+        case Xor.Right(userItems) => userItems.size shouldEqual seqUser.size
       }
     }
 
@@ -153,8 +150,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
       val result = persistenceServices.findUserById(createFindUserByIdRequest(id = nonExistentUserId)).value.run
 
       result must beLike {
-        case Xor.Right(maybeUser) =>
-          maybeUser must beNone
+        case Xor.Right(maybeUser) => maybeUser must beNone
       }
     }
 
@@ -173,8 +169,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
       val result = persistenceServices.updateUser(createUpdateUserRequest()).value.run
 
       result must beLike {
-        case Xor.Right(updated) =>
-          updated shouldEqual item
+        case Xor.Right(updated) => updated shouldEqual item
       }
     }
 

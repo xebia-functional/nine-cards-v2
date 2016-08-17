@@ -9,7 +9,7 @@ import scala.util.Random
 
 trait AppPersistenceServicesData extends PersistenceServicesData {
 
-  val appId: Int =  Random.nextInt(10)
+  val appId: Int = Random.nextInt(10)
 
   def createSeqApp(
     num: Int = 5,
@@ -50,16 +50,17 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): RepositoryAppData = RepositoryAppData(
-    name = name,
-    packageName = packageName,
-    className = className,
-    category = category,
-    imagePath = imagePath,
-    dateInstalled = dateInstalled,
-    dateUpdate = dateUpdate,
-    version = version,
-    installedFromGooglePlay = installedFromGooglePlay)
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): RepositoryAppData =
+    RepositoryAppData(
+      name = name,
+      packageName = packageName,
+      className = className,
+      category = category,
+      imagePath = imagePath,
+      dateInstalled = dateInstalled,
+      dateUpdate = dateUpdate,
+      version = version,
+      installedFromGooglePlay = installedFromGooglePlay)
 
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp(0)
@@ -113,7 +114,9 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
 
   val iterableCursorApp = new IterableCursor[RepositoryApp] {
     override def count(): Int = seqRepoApp.length
+
     override def moveToPosition(pos: Int): RepositoryApp = seqRepoApp(pos)
+
     override def close(): Unit = ()
   }
   val iterableApps = new IterableApps(iterableCursorApp)

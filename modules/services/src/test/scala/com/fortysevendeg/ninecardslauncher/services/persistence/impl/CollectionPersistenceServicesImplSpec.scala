@@ -147,8 +147,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       val result = persistenceServices.deleteAllCollections().value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual items
+        case Xor.Right(deleted) => deleted shouldEqual items
       }
     }
 
@@ -167,8 +166,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual item
+        case Xor.Right(deleted) => deleted shouldEqual item
       }
     }
 
@@ -199,8 +197,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(nonExistentPosition)).value.run
 
       result must beLike {
-        case Xor.Right(maybeCollection) =>
-          maybeCollection must beNone
+        case Xor.Right(maybeCollection) => maybeCollection must beNone
       }
     }
 
@@ -231,8 +228,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(nonExistentSharedCollectionId)).value.run
 
       result must beLike {
-        case Xor.Right(maybeCollection) =>
-          maybeCollection must beNone
+        case Xor.Right(maybeCollection) => maybeCollection must beNone
       }
     }
 
@@ -251,8 +247,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       val result = persistenceServices.fetchCollections.value.run
 
       result must beLike {
-        case Xor.Right(collections) =>
-          collections.size shouldEqual seqCollection.size
+        case Xor.Right(collections) => collections.size shouldEqual seqCollection.size
       }
     }
 
@@ -282,8 +277,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = nonExistentCollectionId)).value.run
 
       result must beLike {
-        case Xor.Right(maybeCollection) =>
-          maybeCollection must beNone
+        case Xor.Right(maybeCollection) => maybeCollection must beNone
       }
     }
 
@@ -302,8 +296,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).value.run
 
       result must beLike {
-        case Xor.Right(updated) =>
-          updated shouldEqual item
+        case Xor.Right(updated) => updated shouldEqual item
       }
     }
 

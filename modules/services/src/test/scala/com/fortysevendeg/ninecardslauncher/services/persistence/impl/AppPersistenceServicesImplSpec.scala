@@ -90,8 +90,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchApps(OrderByName, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(apps) =>
-          apps shouldEqual seqApp
+        case Xor.Right(apps) => apps shouldEqual seqApp
       }
 
       there was one(mockAppRepository).fetchApps(contain(AppEntity.name))
@@ -101,8 +100,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchApps(OrderByName, ascending = false).value.run
 
       result must beLike {
-        case Xor.Right(apps) =>
-          apps shouldEqual seqApp
+        case Xor.Right(apps) => apps shouldEqual seqApp
       }
 
       there was one(mockAppRepository).fetchApps(contain(AppEntity.name).and(contain("DESC")))
@@ -112,8 +110,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchApps(OrderByInstallDate, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(apps) =>
-          apps shouldEqual seqApp
+        case Xor.Right(apps) => apps shouldEqual seqApp
       }
 
       there was one(mockAppRepository).fetchApps(contain(AppEntity.dateInstalled))
@@ -123,8 +120,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchApps(OrderByCategory, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(apps) =>
-          apps shouldEqual seqApp
+        case Xor.Right(apps) => apps shouldEqual seqApp
       }
 
       there was one(mockAppRepository).fetchApps(contain(AppEntity.category))
@@ -157,8 +153,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.findAppByPackage(nonExistentPackageName).value.run
 
       result must beLike {
-        case Xor.Right(maybeApp) =>
-          maybeApp must beNone
+        case Xor.Right(maybeApp) => maybeApp must beNone
       }
     }
 
@@ -198,8 +193,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.addApps(Seq(createAddAppRequest())).value.run
 
       result must beLike {
-        case Xor.Right(a) =>
-          a shouldEqual ((): Unit)
+        case Xor.Right(a) => a shouldEqual ((): Unit)
       }
     }
 
@@ -218,8 +212,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.deleteAllApps().value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual items
+        case Xor.Right(deleted) => deleted shouldEqual items
       }
     }
 
@@ -238,8 +231,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.deleteAppByPackage(packageName).value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual 1
+        case Xor.Right(deleted) => deleted shouldEqual 1
       }
     }
 
@@ -258,8 +250,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.updateApp(createUpdateAppRequest()).value.run
 
       result must beLike {
-        case Xor.Right(updated) =>
-          updated shouldEqual 1
+        case Xor.Right(updated) => updated shouldEqual 1
       }
     }
 
@@ -279,8 +270,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchIterableApps(OrderByName, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(iter) =>
-          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
       }
     }
 
@@ -288,8 +278,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchIterableApps(OrderByInstallDate, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(iter) =>
-          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
       }
     }
 
@@ -297,8 +286,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchIterableApps(OrderByCategory, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(iter) =>
-          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
       }
     }
 
@@ -317,8 +305,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(iter) =>
-          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
       }
     }
 
@@ -326,8 +313,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(iter) =>
-          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
       }
     }
 
@@ -335,8 +321,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByCategory, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(iter) =>
-          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
       }
     }
 
@@ -355,8 +340,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchAppsByCategory(category, OrderByName, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(apps) =>
-          apps shouldEqual seqApp
+        case Xor.Right(apps) => apps shouldEqual seqApp
       }
 
       there was one(mockAppRepository).fetchAppsByCategory(contain(category), contain(AppEntity.name))
@@ -366,8 +350,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchAppsByCategory(category, OrderByInstallDate, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(apps) =>
-          apps shouldEqual seqApp
+        case Xor.Right(apps) => apps shouldEqual seqApp
       }
 
       there was one(mockAppRepository).fetchAppsByCategory(contain(category), contain(AppEntity.dateInstalled))
@@ -388,8 +371,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchIterableAppsByCategory(category, OrderByName, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(iter) =>
-          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
       }
     }
 
@@ -397,8 +379,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchIterableAppsByCategory(category, OrderByInstallDate, ascending = true).value.run
 
       result must beLike {
-        case Xor.Right(iter) =>
-          iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+        case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
       }
     }
 
@@ -417,8 +398,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchAlphabeticalAppsCounter.value.run
 
       result must beLike {
-        case Xor.Right(counters) =>
-          counters map (_.term) shouldEqual (dataCounters map (_.term))
+        case Xor.Right(counters) => counters map (_.term) shouldEqual (dataCounters map (_.term))
       }
     }
 
@@ -437,8 +417,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchCategorizedAppsCounter.value.run
 
       result must beLike {
-        case Xor.Right(counters) =>
-          counters map (_.term) shouldEqual (dataCounters map (_.term))
+        case Xor.Right(counters) => counters map (_.term) shouldEqual (dataCounters map (_.term))
       }
     }
 
@@ -457,8 +436,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       val result = persistenceServices.fetchInstallationDateAppsCounter.value.run
 
       result must beLike {
-        case Xor.Right(counters) =>
-          counters map (_.term) shouldEqual (dataCounters map (_.term))
+        case Xor.Right(counters) => counters map (_.term) shouldEqual (dataCounters map (_.term))
       }
     }
 

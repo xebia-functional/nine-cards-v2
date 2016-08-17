@@ -124,8 +124,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.addWidgets(Seq(createAddWidgetRequest())).value.run
 
       result must beLike {
-        case Xor.Right(widgets) =>
-          widgets shouldEqual seqWidget
+        case Xor.Right(widgets) => widgets shouldEqual seqWidget
       }
     }
 
@@ -144,8 +143,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.deleteAllWidgets().value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual items
+        case Xor.Right(deleted) => deleted shouldEqual items
       }
     }
 
@@ -164,8 +162,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.deleteWidget(createDeleteWidgetRequest(widget = servicesWidget)).value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual item
+        case Xor.Right(deleted) => deleted shouldEqual item
       }
     }
 
@@ -184,8 +181,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.deleteWidgetsByMoment(momentId).value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual items
+        case Xor.Right(deleted) => deleted shouldEqual items
       }
     }
 
@@ -204,8 +200,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.fetchWidgetByAppWidgetId(appWidgetId).value.run
 
       result must beLike {
-        case Xor.Right(cards) =>
-          cards.size shouldEqual item
+        case Xor.Right(cards) => cards.size shouldEqual item
       }
     }
 
@@ -224,8 +219,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.fetchWidgetsByMoment(momentId).value.run
 
       result must beLike {
-        case Xor.Right(cards) =>
-          cards.size shouldEqual items
+        case Xor.Right(cards) => cards.size shouldEqual items
       }
     }
 
@@ -244,8 +238,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.fetchWidgets.value.run
 
       result must beLike {
-        case Xor.Right(collections) =>
-          collections.size shouldEqual seqWidget.size
+        case Xor.Right(collections) => collections.size shouldEqual seqWidget.size
       }
     }
 
@@ -275,8 +268,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.findWidgetById(nonExistentWidgetId).value.run
 
       result must beLike {
-        case Xor.Right(maybeWidget) =>
-          maybeWidget must beNone
+        case Xor.Right(maybeWidget) => maybeWidget must beNone
       }
     }
 
@@ -295,8 +287,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.updateWidget(createUpdateWidgetRequest()).value.run
 
       result must beLike {
-        case Xor.Right(updated) =>
-          updated shouldEqual item
+        case Xor.Right(updated) => updated shouldEqual item
       }
     }
 
@@ -315,8 +306,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.updateWidgets(createUpdateWidgetsRequest()).value.run
 
       result must beLike {
-        case Xor.Right(updated) =>
-          updated shouldEqual (item to items)
+        case Xor.Right(updated) => updated shouldEqual (item to items)
       }
     }
 

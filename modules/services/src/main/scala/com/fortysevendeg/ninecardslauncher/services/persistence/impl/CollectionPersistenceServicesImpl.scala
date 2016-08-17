@@ -102,8 +102,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     }
 
     CatsService(
-      Task.gatherUnordered(deletedCards) map (
-        list =>
+      Task.gatherUnordered(deletedCards) map (list =>
           XorCatchAll[PersistenceServiceException](list.collect { case Xor.Right(value) => value }.sum)))
   }
 
@@ -124,8 +123,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     }
 
     CatsService(
-      Task.gatherUnordered(result) map (
-        list =>
+      Task.gatherUnordered(result) map (list =>
           XorCatchAll[PersistenceServiceException](list.collect { case Xor.Right(collection) => collection })))
   }
 

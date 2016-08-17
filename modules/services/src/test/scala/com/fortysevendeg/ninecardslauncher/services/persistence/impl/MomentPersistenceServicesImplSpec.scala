@@ -134,8 +134,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
       val result = persistenceServices.deleteAllMoments().value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual items
+        case Xor.Right(deleted) => deleted shouldEqual items
       }
     }
 
@@ -154,8 +153,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
       val result = persistenceServices.deleteMoment(createDeleteMomentRequest(moment = servicesMoment)).value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual item
+        case Xor.Right(deleted) => deleted shouldEqual item
       }
     }
 
@@ -174,8 +172,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
       val result = persistenceServices.fetchMoments.value.run
 
       result must beLike {
-        case Xor.Right(momentItems) =>
-          momentItems.size shouldEqual seqMoment.size
+        case Xor.Right(momentItems) => momentItems.size shouldEqual seqMoment.size
       }
     }
 
@@ -205,8 +202,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
       val result = persistenceServices.findMomentById(createFindMomentByIdRequest(id = nonExistentMomentId)).value.run
 
       result must beLike {
-        case Xor.Right(maybeMoment) =>
-          maybeMoment must beNone
+        case Xor.Right(maybeMoment) => maybeMoment must beNone
       }
     }
 
@@ -225,8 +221,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
       val result = persistenceServices.updateMoment(createUpdateMomentRequest()).value.run
 
       result must beLike {
-        case Xor.Right(updated) =>
-          updated shouldEqual item
+        case Xor.Right(updated) => updated shouldEqual item
       }
     }
 

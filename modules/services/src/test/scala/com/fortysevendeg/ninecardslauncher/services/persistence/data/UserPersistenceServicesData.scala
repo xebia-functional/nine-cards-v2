@@ -36,20 +36,19 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
     cover: String = cover,
     deviceName: String = deviceName,
     deviceCloudId: String = deviceCloudId): Seq[User] = List.tabulate(num)(
-    item =>
-      User(
-        id = id + item,
-        userId = Option(userId),
-        email = Option(email),
-        sessionToken = Option(sessionToken),
-        installationId = Option(installationId),
-        deviceToken = Option(deviceToken),
-        androidToken = Option(androidToken),
-        name = Option(name),
-        avatar = Option(avatar),
-        cover = Option(cover),
-        deviceName = Option(deviceName),
-        deviceCloudId = Option(deviceCloudId)))
+    item => User(
+      id = id + item,
+      userId = Option(userId),
+      email = Option(email),
+      sessionToken = Option(sessionToken),
+      installationId = Option(installationId),
+      deviceToken = Option(deviceToken),
+      androidToken = Option(androidToken),
+      name = Option(name),
+      avatar = Option(avatar),
+      cover = Option(cover),
+      deviceName = Option(deviceName),
+      deviceCloudId = Option(deviceCloudId)))
 
   def createSeqRepoUser(
     num: Int = 5,
