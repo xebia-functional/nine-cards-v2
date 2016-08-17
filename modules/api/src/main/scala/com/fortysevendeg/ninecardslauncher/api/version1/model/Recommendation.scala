@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.api.model
+package com.fortysevendeg.ninecardslauncher.api.version1.model
 
 case class RecommendationRequest(
     collectionId: Option[String],
@@ -39,13 +39,3 @@ case class AppiaAd(
     impressionTrackingURL: String,
     bidRate: Double,
     rating: Double)
-
-case class CollectionRecommendations(items: CollectionRecommendation)
-
-case class CollectionRecommendation(
-    _id: String,
-    name: String,
-    description: String,
-    packages: Seq[String])
-
-case class CollectionSponsored(items: Seq[UserConfigCollectionItem])

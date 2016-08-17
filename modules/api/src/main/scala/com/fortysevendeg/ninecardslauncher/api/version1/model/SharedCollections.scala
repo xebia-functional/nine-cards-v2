@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.api.model
+package com.fortysevendeg.ninecardslauncher.api.version1.model
 
 case class ShareCollection(
   sharedCollectionId: Option[String],
@@ -57,8 +57,3 @@ case class SharedCollectionPackage(
   stars: Double,
   downloads: String,
   free: Boolean)
-
-case class SharedCollectionSubscription(
-  _id: String,
-  sharedCollectionId: String,
-  userId: String)

@@ -47,10 +47,10 @@ package object services {
       def cause: Option[Throwable]
     }
 
-    type CatsService[Val] = XorT[Task, NineCardException, Val]
+    type CatsService[A] = XorT[Task, NineCardException, A]
 
-    def apply[Val](f: Task[NineCardException Xor Val]) : CatsService[Val] = {
-      XorT[Task, NineCardException, Val](f)
+    def apply[A](f: Task[NineCardException Xor A]) : CatsService[A] = {
+      XorT[Task, NineCardException, A](f)
     }
 
   }
