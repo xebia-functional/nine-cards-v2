@@ -1,14 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets.impl
 
 import android.content.pm.PackageManager
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetServicesException
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Errata, Answer}
 
 trait WidgetsImplSpecification
   extends Specification
@@ -50,22 +49,18 @@ class WidgetsServicesImplSpec
 
   "returns the list of widgets" in
     new WidgetsImplScope {
-      val result = widgetsServicesImpl.getWidgets(mockContextSupport).run.run
+      val result = widgetsServicesImpl.getWidgets(mockContextSupport).value.run
       result must beLike {
-        case Answer(resultWidgetsList) => resultWidgetsList shouldEqual seqWidget
+        case Xor.Right(resultWidgetsList) => resultWidgetsList shouldEqual seqWidget
       }
     }
 
   "returns an WidgetException when no widgets exist" in
     new WidgetsImplScope with WidgetsErrorScope {
-      val result = widgetsServicesImpl.getWidgets(mockContextSupport).run.run
+      val result = widgetsServicesImpl.getWidgets(mockContextSupport).value.run
       result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, widgetsException)) => widgetsException must beLike {
-            case e: WidgetServicesException => e.cause must beSome.which(_ shouldEqual exception)
+        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
           }
-        }
-      }
     }
 
 }

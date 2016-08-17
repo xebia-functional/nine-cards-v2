@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets.impl
 
 import android.os.Build
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.impl.{AppWidgetManagerImplDefault, AppWidgetManagerImplLollipop}
@@ -15,9 +15,9 @@ class WidgetsServicesImpl
   extends WidgetsServices
   with ImplicitsWidgetsExceptions {
 
-  override def getWidgets(implicit context: ContextSupport) = Service {
+  override def getWidgets(implicit context: ContextSupport) = CatsService {
     Task {
-      CatchAll[WidgetServicesException] {
+      XorCatchAll[WidgetServicesException] {
         val appWidgetManager = getAppWidgetManager
         appWidgetManager.getAllProviders
       }
