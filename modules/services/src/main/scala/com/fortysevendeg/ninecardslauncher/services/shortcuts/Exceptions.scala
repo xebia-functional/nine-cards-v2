@@ -1,11 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.services.shortcuts
 
-import scalaz.Scalaz._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
 
-case class ShortcutServicesException(message: String, cause : Option[Throwable] = None) extends RuntimeException(message) {
+case class ShortcutServicesException(message: String, cause : Option[Throwable] = None)
+  extends RuntimeException(message)
+  with NineCardException{
   cause map initCause
 }
 
 trait ImplicitsShortcutsExceptions {
-  implicit def shortcutServicesException = (t: Throwable) => ShortcutServicesException(t.getMessage, t.some)
+  implicit def shortcutServicesException = (t: Throwable) => ShortcutServicesException(t.getMessage, Option(t))
 }
