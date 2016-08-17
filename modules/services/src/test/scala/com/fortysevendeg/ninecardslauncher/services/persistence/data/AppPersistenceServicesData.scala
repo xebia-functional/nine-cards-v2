@@ -61,7 +61,6 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
     version = version,
     installedFromGooglePlay = installedFromGooglePlay)
 
-
   val seqApp: Seq[App] = createSeqApp()
   val app: App = seqApp(0)
   val repoAppData: RepositoryAppData = createRepoAppData()
@@ -126,7 +125,6 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
     )
 
   val keyword = "fake-keyword"
-
   val dataCounters = 1 to 10 map createDataCounter
 
 }

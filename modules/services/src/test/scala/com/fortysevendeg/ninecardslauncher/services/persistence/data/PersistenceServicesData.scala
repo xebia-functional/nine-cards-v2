@@ -72,7 +72,6 @@ trait PersistenceServicesData extends Conversions {
   val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
   val repoMoment: RepositoryMoment = seqRepoMoment(0)
 
-
   def createSeqCollection(
     num: Int = 5,
     id: Int = collectionId,
@@ -227,7 +226,6 @@ trait PersistenceServicesData extends Conversions {
       wifi = wifiString,
       headphone = headphone,
       momentType = momentType)
-
 
   val seqCard: Seq[Card] = createSeqCard()
   val card: Card = seqCard(0)
