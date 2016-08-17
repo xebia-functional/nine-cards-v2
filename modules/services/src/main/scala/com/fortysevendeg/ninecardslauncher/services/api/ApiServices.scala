@@ -13,7 +13,7 @@ trait ApiServices {
    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.User]]
    * @throws ApiServiceException if the user is not found or the request throws an Exception
    */
-  def login(
+  def loginV1(
     email: String,
     device: GoogleDevice): ServiceDef2[LoginResponse, ApiServiceException]
 

@@ -60,7 +60,7 @@ class ApiServicesImpl(
 
   val createSharedCollectionNotFoundMessage = "Shared Collection not found"
 
-  override def login(
+  override def loginV1(
     email: String,
     device: GoogleDevice) =
     (for {

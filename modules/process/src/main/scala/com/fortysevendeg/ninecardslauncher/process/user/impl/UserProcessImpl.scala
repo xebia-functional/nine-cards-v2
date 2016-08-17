@@ -36,7 +36,7 @@ class UserProcessImpl(
           deviceId = androidId,
           secretToken = token,
           permissions = permissions)
-        loginResponse <- apiServices.login(email, toGoogleDevice(device))
+        loginResponse <- apiServices.loginV1(email, toGoogleDevice(device))
         Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
         updateUser = userDB.copy(
           email = Option(email),

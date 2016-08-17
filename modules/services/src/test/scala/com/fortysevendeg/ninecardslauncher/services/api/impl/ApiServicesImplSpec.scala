@@ -167,7 +167,7 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.login("", GoogleDevice("", "", "", Seq.empty)).run.run
+        val result = apiServices.loginV1("", GoogleDevice("", "", "", Seq.empty)).run.run
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
@@ -177,7 +177,7 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.login("", GoogleDevice("", "", "", Seq.empty)).run.run
+        val result = apiServices.loginV1("", GoogleDevice("", "", "", Seq.empty)).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
