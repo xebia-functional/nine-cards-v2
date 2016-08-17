@@ -32,10 +32,7 @@ class AppRepository(
 
   val game = "GAME"
 
-  implicit val exceptionConverter: (Throwable => RepositoryException) =
-    ex => RepositoryException(ex.getMessage, Some(ex))
-
-  def addApp(data: AppData): CatsService[RepositoryException, App] =
+  def addApp(data: AppData): CatsService[App] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -53,7 +50,7 @@ class AppRepository(
       }
     }
 
-  def addApps(datas: Seq[AppData]): CatsService[RepositoryException, Unit] =
+  def addApps(datas: Seq[AppData]): CatsService[Unit] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -68,7 +65,7 @@ class AppRepository(
       }
     }
 
-  def deleteApps(where: String = ""): CatsService[RepositoryException, Int] =
+  def deleteApps(where: String = ""): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -80,7 +77,7 @@ class AppRepository(
       }
     }
 
-  def deleteApp(app: App): CatsService[RepositoryException, Int] =
+  def deleteApp(app: App): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -92,7 +89,7 @@ class AppRepository(
       }
     }
 
-  def deleteAppByPackage(packageName: String): CatsService[RepositoryException, Int] =
+  def deleteAppByPackage(packageName: String): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -105,7 +102,7 @@ class AppRepository(
       }
     }
 
-  def fetchApps(orderBy: String = ""): CatsService[RepositoryException, Seq[App]] =
+  def fetchApps(orderBy: String = ""): CatsService[Seq[App]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -120,7 +117,7 @@ class AppRepository(
   def fetchIterableApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[RepositoryException, IterableCursor[App]] =
+    orderBy: String = ""): CatsService[IterableCursor[App]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -134,7 +131,7 @@ class AppRepository(
       }
     }
 
-  def fetchAlphabeticalAppsCounter: CatsService[RepositoryException, Seq[DataCounter]] =
+  def fetchAlphabeticalAppsCounter: CatsService[Seq[DataCounter]] =
     toDataCounter(
       fetchData = getNamesAlphabetically,
       normalize = (name: String) => name.substring(0, 1).toUpperCase match {
@@ -142,7 +139,7 @@ class AppRepository(
         case _ => wildcard
       })
 
-  def fetchCategorizedAppsCounter: CatsService[RepositoryException, Seq[DataCounter]] =
+  def fetchCategorizedAppsCounter: CatsService[Seq[DataCounter]] =
     toDataCounter(
       fetchData = getCategoriesAlphabetically,
       normalize = {
@@ -150,10 +147,10 @@ class AppRepository(
         case t => t
       })
 
-  def fetchInstallationDateAppsCounter: CatsService[RepositoryException, Seq[DataCounter]] =
+  def fetchInstallationDateAppsCounter: CatsService[Seq[DataCounter]] =
     toInstallationDateDataCounter(fetchData = getInstallationDate)
 
-  def findAppById(id: Int): CatsService[RepositoryException, Option[App]] =
+  def findAppById(id: Int): CatsService[Option[App]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -165,7 +162,7 @@ class AppRepository(
       }
     }
 
-  def fetchAppByPackage(packageName: String): CatsService[RepositoryException, Option[App]] =
+  def fetchAppByPackage(packageName: String): CatsService[Option[App]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -178,7 +175,7 @@ class AppRepository(
       }
     }
 
-  def fetchAppByPackages(packageName: Seq[String]): CatsService[RepositoryException, Seq[App]] =
+  def fetchAppByPackages(packageName: Seq[String]): CatsService[Seq[App]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -190,7 +187,7 @@ class AppRepository(
       }
     }
 
-  def fetchAppsByCategory(category: String, orderBy: String = ""): CatsService[RepositoryException, Seq[App]] =
+  def fetchAppsByCategory(category: String, orderBy: String = ""): CatsService[Seq[App]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -205,7 +202,7 @@ class AppRepository(
       }
     }
 
-  def fetchIterableAppsByCategory(category: String, orderBy: String = ""): CatsService[RepositoryException, IterableCursor[App]] =
+  def fetchIterableAppsByCategory(category: String, orderBy: String = ""): CatsService[IterableCursor[App]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -220,7 +217,7 @@ class AppRepository(
       }
     }
 
-  def updateApp(app: App): CatsService[RepositoryException, Int] =
+  def updateApp(app: App): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -263,7 +260,7 @@ class AppRepository(
 
   private[this] def toDataCounter(
     fetchData: => Seq[String],
-    normalize: (String) => String = (term) => term): CatsService[RepositoryException, Seq[DataCounter]] =
+    normalize: (String) => String = (term) => term): CatsService[Seq[DataCounter]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -283,7 +280,7 @@ class AppRepository(
     }
 
   private[this] def toInstallationDateDataCounter(
-   fetchData: => Seq[Long]): CatsService[RepositoryException, Seq[DataCounter]] =
+   fetchData: => Seq[Long]): CatsService[Seq[DataCounter]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {

@@ -2,12 +2,13 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toWidget
 import com.fortysevendeg.ninecardslauncher.repository.model.{Widget, WidgetData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
@@ -27,10 +28,10 @@ class WidgetRepository(
 
   val widgetNotificationUri = uriCreator.parse(widgetUriNotificationString)
 
-  def addWidget(data: WidgetData): ServiceDef2[Widget, RepositoryException] =
-    Service {
+  def addWidget(data: WidgetData): CatsService[Widget] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
@@ -43,10 +44,10 @@ class WidgetRepository(
       }
     }
 
-  def addWidgets(datas: Seq[WidgetData]): ServiceDef2[Seq[Widget], RepositoryException] =
-    Service {
+  def addWidgets(datas: Seq[WidgetData]): CatsService[Seq[Widget]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
 
           val values = datas map createMapValues
 
@@ -63,10 +64,10 @@ class WidgetRepository(
       }
     }
 
-  def deleteWidgets(where: String = ""): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def deleteWidgets(where: String = ""): CatsService[Int] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = widgetUri,
             where = where,
@@ -75,10 +76,10 @@ class WidgetRepository(
       }
     }
 
-  def deleteWidget(widget: Widget): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def deleteWidget(widget: Widget): CatsService[Int] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = widgetUri,
             id = widget.id,
@@ -87,10 +88,10 @@ class WidgetRepository(
       }
     }
 
-  def findWidgetById(id: Int): ServiceDef2[Option[Widget], RepositoryException] =
-    Service {
+  def findWidgetById(id: Int): CatsService[Option[Widget]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.findById(
             uri = widgetUri,
             id = id,
@@ -99,19 +100,19 @@ class WidgetRepository(
       }
     }
 
-  def fetchWidgetByAppWidgetId(appWidgetId: Int): ServiceDef2[Option[Widget], RepositoryException] =
-    Service {
+  def fetchWidgetByAppWidgetId(appWidgetId: Int): CatsService[Option[Widget]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           fetchWidget(selection = s"${WidgetEntity.appWidgetId} = ?", selectionArgs = Seq(appWidgetId.toString))
         }
       }
     }
 
-  def fetchWidgetsByMoment(momentId: Int): ServiceDef2[Seq[Widget], RepositoryException] =
-    Service {
+  def fetchWidgetsByMoment(momentId: Int): CatsService[Seq[Widget]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = widgetUri,
             projection = allFields,
@@ -125,10 +126,10 @@ class WidgetRepository(
   def fetchWidgets(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[Seq[Widget], RepositoryException] =
-    Service {
+    orderBy: String = ""): CatsService[Seq[Widget]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = widgetUri,
             projection = allFields,
@@ -142,10 +143,10 @@ class WidgetRepository(
   def fetchIterableWidgets(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursor[Widget], RepositoryException] =
-    Service {
+    orderBy: String = ""): CatsService[IterableCursor[Widget]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
             uri = widgetUri,
             projection = allFields,
@@ -156,10 +157,10 @@ class WidgetRepository(
       }
     }
 
-  def updateWidget(widget: Widget): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def updateWidget(widget: Widget): CatsService[Int] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = createMapValues(widget.data)
 
           contentResolverWrapper.updateById(
@@ -171,10 +172,10 @@ class WidgetRepository(
       }
     }
 
-  def updateWidgets(widgets: Seq[Widget]): ServiceDef2[Seq[Int], RepositoryException] =
-    Service {
+  def updateWidgets(widgets: Seq[Widget]): CatsService[Seq[Int]] =
+    CatsService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = widgets map { widget =>
             (widget.id, createMapValues(widget.data))
           }

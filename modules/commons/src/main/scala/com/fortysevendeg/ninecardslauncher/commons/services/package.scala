@@ -42,10 +42,15 @@ package object services {
       override def pure[A](x: A): Task[A] = Task(x)
     }
 
-    type CatsService[Ex <: Throwable, Val] = XorT[Task, Ex, Val]
+    trait NineCardException extends RuntimeException {
+      def message: String
+      def cause: Option[Throwable]
+    }
 
-    def apply[Ex <: Throwable : ClassTag, Val](f: Task[Ex Xor Val]) : CatsService[Ex, Val] = {
-      XorT[Task, Ex, Val](f)
+    type CatsService[A] = XorT[Task, NineCardException, A]
+
+    def apply[A](f: Task[NineCardException Xor A]) : CatsService[A] = {
+      XorT[Task, NineCardException, A](f)
     }
 
   }
