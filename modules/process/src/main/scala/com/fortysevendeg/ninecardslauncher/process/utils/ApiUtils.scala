@@ -14,6 +14,9 @@ import scalaz.concurrent.Task
 class ApiUtils(persistenceServices: PersistenceServices)
   extends ImplicitsApiServiceExceptions {
 
+  /**
+    * @deprecated the sessionToken is not stored anymore here
+    */
   def getRequestConfig(implicit context: ContextSupport): ServiceDef2[RequestConfig, ApiServiceException] = {
     (for {
       (token, marketToken) <- context.getActiveUserId map getTokens getOrElse Service(Task(Result.errata(ApiServiceException("Missing user id"))))

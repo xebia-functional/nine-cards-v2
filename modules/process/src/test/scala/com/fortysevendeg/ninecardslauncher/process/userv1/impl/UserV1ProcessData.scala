@@ -1,15 +1,18 @@
-package com.fortysevendeg.ninecardslauncher.process.userconfig.impl
+package com.fortysevendeg.ninecardslauncher.process.userv1.impl
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{Game, AppCardType, AppsCollectionType}
-import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, Game}
+import com.fortysevendeg.ninecardslauncher.services.api.{GetUserConfigResponse, LoginResponseV1, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => PersistenceUser}
 import play.api.libs.json.JsString
 
-trait UserConfigProcessData {
+trait UserV1ProcessData {
 
-  val statusCodeOk = 200
+  val statusCodeUser = 101
 
-  val requestConfig = RequestConfig("fake-device-id", "fake-token", Some("fake-android-token"))
+  val userId = 99
+
+  val sessionToken = "fake-user-token"
 
   val email = "example@47deg.com"
 
@@ -18,10 +21,6 @@ trait UserConfigProcessData {
   val imageUrl = "http://www.47deg.com/image.jpg"
 
   val deviceIdPrefix = "fake-device-id"
-
-  val firstDeviceId = "fake-device-id-0"
-
-  val noDeviceId = "dont-exits-device-id"
 
   val deviceName = "Nexus"
 
@@ -34,6 +33,38 @@ trait UserConfigProcessData {
   val collectionCategory = Game
 
   val itemType = AppCardType
+
+  val deviceId = "XX-47-XX"
+
+  val marketToken = "EE-47-47-EE"
+
+  val permissions = Seq.empty
+
+  val googleDevice = GoogleDevice(
+    name = deviceName,
+    deviceId = deviceId,
+    secretToken = marketToken,
+    permissions = permissions)
+
+  val persistenceUser = PersistenceUser(
+    id = userId,
+    sessionToken = Some(sessionToken),
+    email = Some(email),
+    apiKey = None,
+    deviceToken = None,
+    marketToken = Some(marketToken),
+    name = None,
+    avatar = None,
+    cover = None,
+    deviceName = None,
+    deviceCloudId = None)
+
+  val loginResponseV1 = LoginResponseV1(
+    statusCode = statusCodeUser,
+    userId = Option(userId.toString),
+    sessionToken = Option(sessionToken),
+    email = Option(email),
+    devices = Seq(googleDevice))
 
   def createUserConfigCollectionItem(count: Int = 8): Seq[UserConfigCollectionItem] =
     (0 until count) map {
@@ -98,8 +129,15 @@ trait UserConfigProcessData {
       earlyAdopter = false,
       communityMember = true,
       joinedThrough = None,
-      tester = false
-    )
-  )
+      tester = false))
+
+  val getUserConfigResponse = GetUserConfigResponse(
+    statusCode = statusCodeUser,
+    userConfig = userConfig)
+
+  val requestConfig = RequestConfig(
+    deviceId = deviceId,
+    token = sessionToken,
+    marketToken = Some(marketToken))
 
 }

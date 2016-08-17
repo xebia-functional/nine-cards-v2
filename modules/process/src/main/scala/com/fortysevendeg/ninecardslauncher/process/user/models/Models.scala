@@ -1,11 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.user.models
 
-case class Device(
-  name: String,
-  deviceId: String,
-  secretToken: String,
-  permissions: Seq[String])
-
 case class User(
   id: Int,
   email: Option[String],
@@ -15,7 +9,6 @@ case class User(
   marketToken: Option[String],
   deviceName: Option[String],
   deviceCloudId: Option[String],
-  name: Option[String],
   userProfile: UserProfile)
 
 case class UserProfile(

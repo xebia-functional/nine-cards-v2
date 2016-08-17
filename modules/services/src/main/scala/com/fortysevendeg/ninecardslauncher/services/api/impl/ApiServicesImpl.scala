@@ -83,22 +83,14 @@ class ApiServicesImpl(
       loginResponse <- readOption(serviceClientResponse.data, userNotAuthenticatedMessage)
     } yield LoginResponse(loginResponse.apiKey, loginResponse.sessionToken)).resolve[ApiServiceException]
 
-  override def createInstallation(
-    deviceType: Option[DeviceType],
-    deviceToken: Option[String],
-    userId: Option[String]) =
-    (for {
-      response <- apiUserService.createInstallation(toInstallation(None, deviceType, deviceToken, userId), baseHeader)
-      installation <- readOption(response.data, installationNotFoundMessage)
-    } yield InstallationResponse(response.statusCode, toInstallation(installation))).resolve[ApiServiceException]
-
   override def updateInstallation(
-    id: String,
-    deviceType: Option[DeviceType],
-    deviceToken: Option[String],
-    userId: Option[String]) =
+    apiKey: String,
+    sessionToken: String,
+    androidId: String,
+    deviceToken: Option[String]) =
     (for {
-      response <- apiUserService.updateInstallation(toInstallation(Some(id), deviceType, deviceToken, userId), baseHeader)
+      response <- apiService.installations(version2.InstallationRequest(deviceToken getOrElse ""), version2.ServiceHeader(apiKey, sessionToken, androidId))
+      installation <- readOption(response.data, installationNotFoundMessage)
     } yield UpdateInstallationResponse(response.statusCode)).resolve[ApiServiceException]
 
   override def googlePlayPackage(
@@ -116,7 +108,7 @@ class ApiServicesImpl(
         statusCode = response.statusCode,
         packages = response.data map (packages => toGooglePlayPackageSeq(packages.items)) getOrElse Seq.empty)).resolve[ApiServiceException]
 
-  override def getUserConfig()(implicit requestConfig: RequestConfig) =
+  override def getUserConfigV1()(implicit requestConfig: RequestConfig) =
     (for {
       response <- userConfigService.getUserConfig(requestConfig.toHeader)
       userConfig <- readOption(response.data, userConfigNotFoundMessage)

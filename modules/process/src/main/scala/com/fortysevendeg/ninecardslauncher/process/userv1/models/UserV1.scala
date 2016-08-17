@@ -1,25 +1,31 @@
-package com.fortysevendeg.ninecardslauncher.process.userconfig.models
+package com.fortysevendeg.ninecardslauncher.process.userv1.models
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory}
 
-case class UserInfo(
+case class Device(
+  name: String,
+  deviceId: String,
+  secretToken: String,
+  permissions: Seq[String])
+
+case class UserV1Info(
   email: String,
   name: String,
   imageUrl: String,
   androidId: String,
-  devices: Seq[UserDevice])
+  devices: Seq[UserV1Device])
 
-case class UserDevice(
+case class UserV1Device(
   deviceId: String,
   deviceName: String,
-  collections: Seq[UserCollection])
+  collections: Seq[UserV1Collection])
 
-case class UserCollection(
+case class UserV1Collection(
   name: String,
   originalSharedCollectionId: Option[String],
   sharedCollectionId: Option[String],
   sharedCollectionSubscribed: Option[Boolean],
-  items: Seq[UserCollectionItem],
+  items: Seq[UserV1CollectionItem],
   collectionType: CollectionType,
   constrains: Seq[String],
   wifi: Seq[String],
@@ -27,7 +33,7 @@ case class UserCollection(
   icon: String,
   category: Option[NineCardCategory])
 
-case class UserCollectionItem(
+case class UserV1CollectionItem(
   itemType: String,
   title: String,
   intent: String,

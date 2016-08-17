@@ -56,7 +56,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
       collection <- getCollection
       sharedCollection = CreateSharedCollection(
         description = description,
-        author = user.name getOrElse (user.email getOrElse resGetString(R.string.defaultUser)),
+        author = user.userProfile.name getOrElse (user.email getOrElse resGetString(R.string.defaultUser)),
         name = name,
         packages = collection.cards flatMap (_.packageName),
         category = category,

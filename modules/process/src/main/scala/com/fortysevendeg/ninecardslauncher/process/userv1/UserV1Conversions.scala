@@ -1,24 +1,31 @@
-package com.fortysevendeg.ninecardslauncher.process.userconfig
+package com.fortysevendeg.ninecardslauncher.process.userv1
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory}
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models._
-import com.fortysevendeg.ninecardslauncher.services.api.models.{UserConfig, UserConfigCollection, UserConfigCollectionItem, UserConfigDevice}
+import com.fortysevendeg.ninecardslauncher.process.userv1.models.{Device, UserV1Collection, UserV1CollectionItem, UserV1Device, UserV1Info}
+import com.fortysevendeg.ninecardslauncher.services.api.models._
 
-trait UserConfigConversions {
+trait UserV1Conversions {
 
-  def toUserInfo(androidId: String, userConfig: UserConfig): UserInfo = UserInfo(
+  def toGoogleDevice(device: Device): GoogleDevice =
+    GoogleDevice(
+      name = device.name,
+      deviceId = device.deviceId,
+      secretToken = device.secretToken,
+      permissions = device.permissions)
+
+  def toUserInfo(androidId: String, userConfig: UserConfig): UserV1Info = UserV1Info(
     email = userConfig.email,
     name = userConfig.plusProfile.displayName,
     imageUrl = userConfig.plusProfile.profileImage.imageUrl,
     androidId = androidId,
     devices = userConfig.devices map toUserDevice)
 
-  def toUserDevice(userConfigDevice: UserConfigDevice): UserDevice = UserDevice(
+  def toUserDevice(userConfigDevice: UserConfigDevice): UserV1Device = UserV1Device(
     deviceId = userConfigDevice.deviceId,
     deviceName = userConfigDevice.deviceName,
     collections = userConfigDevice.collections map toUserCollection)
 
-  def toUserCollection(userConfigCollection: UserConfigCollection): UserCollection = UserCollection(
+  def toUserCollection(userConfigCollection: UserConfigCollection): UserV1Collection = UserV1Collection(
     name = userConfigCollection.name,
     originalSharedCollectionId = userConfigCollection.originalSharedCollectionId,
     sharedCollectionId = userConfigCollection.sharedCollectionId,
@@ -31,7 +38,7 @@ trait UserConfigConversions {
     icon = userConfigCollection.icon,
     category = userConfigCollection.category map (NineCardCategory(_)))
 
-  def toUserCollectionItem(item: UserConfigCollectionItem): UserCollectionItem = UserCollectionItem(
+  def toUserCollectionItem(item: UserConfigCollectionItem): UserV1CollectionItem = UserV1CollectionItem(
     itemType = item.itemType,
     title = item.title,
     intent = item.metadata.toString(),

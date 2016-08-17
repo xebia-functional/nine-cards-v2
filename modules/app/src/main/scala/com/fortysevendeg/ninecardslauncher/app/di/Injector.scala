@@ -28,8 +28,8 @@ import com.fortysevendeg.ninecardslauncher.process.theme.ThemeProcess
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.UserProcess
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigProcess
-import com.fortysevendeg.ninecardslauncher.process.userconfig.impl.UserConfigProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Process
+import com.fortysevendeg.ninecardslauncher.process.userv1.impl.UserV1ProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.widget.WidgetProcess
 import com.fortysevendeg.ninecardslauncher.process.widget.impl.WidgetProcessImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
@@ -64,7 +64,7 @@ trait Injector {
 
   def userProcess: UserProcess
 
-  def userConfigProcess: UserConfigProcess
+  def userV1Process: UserV1Process
 
   def widgetsProcess: WidgetProcess
 
@@ -214,7 +214,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     apiServices = apiServices,
     persistenceServices = persistenceServices)
 
-  lazy val userConfigProcess = new UserConfigProcessImpl(
+  lazy val userV1Process = new UserV1ProcessImpl(
     apiServices = apiServices,
     persistenceServices = persistenceServices
   )

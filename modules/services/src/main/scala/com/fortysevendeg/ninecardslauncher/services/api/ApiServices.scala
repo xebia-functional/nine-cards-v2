@@ -30,34 +30,20 @@ trait ApiServices {
     tokenId: String): ServiceDef2[LoginResponse, ApiServiceException]
 
   /**
-   * Creates a new user installation based on the provided params
-   * @param deviceType the device type. Actually only [[com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice]] is supported
-   * @param deviceToken the token used by the device
-   * @param userId the user identifier
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.InstallationResponse]] with the HTTP Code
-   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.Installation]]
-   * @throws ApiServiceException if there was an error in the request
-   */
-  def createInstallation(
-    deviceType: Option[DeviceType],
-    deviceToken: Option[String],
-    userId: Option[String]): ServiceDef2[InstallationResponse, ApiServiceException]
-
-  /**
    * Updates an existing user installation
-   * @param id the installation identifier to update
-   * @param deviceType the device type. Actually only [[com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice]] is supported
-   * @param deviceToken the token used by the device
-   * @param userId the user identifier
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.InstallationResponse]] with the HTTP Code
-   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.Installation]]
+   * @param apiKey the apiKey from login
+   * @param sessionToken the sessionToken from login
+   * @param androidId the device id
+   * @param deviceToken the token used for push notification
+   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UpdateInstallationResponse]] with the HTTP Code
+   *         of the response
    * @throws ApiServiceException if there was an error in the request
    */
   def updateInstallation(
-    id: String,
-    deviceType: Option[DeviceType],
-    deviceToken: Option[String],
-    userId: Option[String]): ServiceDef2[UpdateInstallationResponse, ApiServiceException]
+    apiKey: String,
+    sessionToken: String,
+    androidId: String,
+    deviceToken: Option[String]): ServiceDef2[UpdateInstallationResponse, ApiServiceException]
 
   /**
    * Fetches the package info from Google Play given a package name
@@ -86,7 +72,7 @@ trait ApiServices {
    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserConfig]]
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
    */
-  def getUserConfig()(implicit requestConfig: RequestConfig): ServiceDef2[GetUserConfigResponse, ApiServiceException]
+  def getUserConfigV1()(implicit requestConfig: RequestConfig): ServiceDef2[GetUserConfigResponse, ApiServiceException]
 
   /**
    * Fetches the recommended applications based on some request params

@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcess
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentProcess
-import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigProcess
+import com.fortysevendeg.ninecardslauncher.process.userconfig.UserV1Process
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
 import org.specs2.mock.Mockito
@@ -53,7 +53,7 @@ trait WizardPresenterSpecification
 
     val mockMomentProcess = mock[MomentProcess]
 
-    val mockUserConfigProcess = mock[UserConfigProcess]
+    val mockUserConfigProcess = mock[UserV1Process]
 
     val mockGoogleApiClient = mock[GoogleApiClient]
 
@@ -95,7 +95,7 @@ trait WizardPresenterSpecification
 
     mockInjector.momentProcess returns mockMomentProcess
 
-    mockInjector.userConfigProcess returns mockUserConfigProcess
+    mockInjector.userV1Process returns mockUserConfigProcess
 
     mockSharedPreferences.edit() returns mockEditor
 

@@ -2,15 +2,15 @@ package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.{Account, AccountManager, OperationCanceledException}
 import android.app.Activity
-import android.content.{Context, Intent}
+import android.content.Intent
 import android.os.{Build, Bundle}
 import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider, GooglePlusApiClientProvider}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.{CatchAll, _}
@@ -22,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDev
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigException
+import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.api.GoogleApiClient
@@ -171,8 +171,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       case Some(apiClient) =>
         val googlePlusProcess = di.createGooglePlusProcess(apiClient)
         Task.fork(googlePlusProcess.updateUserProfile().run).resolveAsync(
-          onResult = (profileName) =>
-            loadDevices(clientStatuses.driveApiClient, profileName, clientStatuses.email, clientStatuses.androidMarketToken),
+          onResult = loadDevices,
           onException = error,
           onPreTask = () => actions.showLoading().run
         )
@@ -294,18 +293,14 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       case _ =>
     }
 
-  private[this] def loadDevices(
-    maybeClient: Option[GoogleApiClient],
-    maybeProfileName: Option[String],
-    maybeEmail: Option[String],
-    maybeAndroidMarketToken: Option[String]): Unit = {
+  private[this] def loadDevices(maybeProfileName: Option[String]): Unit = {
 
     def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = Service {
       val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).run)
       Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
     }
 
-    def fakeUserConfigException: ServiceDef2[Unit, UserConfigException] = Service(Task(Answer(())))
+    def fakeUserConfigException: ServiceDef2[Unit, UserV1Exception] = Service(Task(Answer(())))
 
     def verifyAndUpdate(
       cloudStorageProcess: CloudStorageProcess,
@@ -313,7 +308,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       cloudStorageResources: Seq[CloudStorageDeviceSummary]) =
       if (cloudStorageResources.isEmpty) {
         for {
-          userInfo <- di.userConfigProcess.getUserInfo
+          userInfo <- di.userV1Process.getUserInfo(Build.MODEL, Seq(resGetString(R.string.android_market_oauth_scopes)))
           cloudStorageDevices <- storeOnCloud(cloudStorageProcess, userInfo.devices map toCloudStorageDevice)
           (maybeUserDevice, devices) <- cloudStorageProcess.prepareForActualDevice(cloudStorageDevices)
         } yield {
@@ -337,30 +332,30 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     def loadCloudDevices(
       client: GoogleApiClient,
       email: String,
-      androidMarketToken: String) = {
+      androidMarketToken: String,
+      emailTokenId: String) = {
       val cloudStorageProcess = di.createCloudStorageProcess(client)
       for {
-        response <- di.userProcess.signIn(email, Build.MODEL, androidMarketToken, Seq(resGetString(R.string.android_market_oauth_scopes)))
+        response <- di.userProcess.signIn(email, androidMarketToken, emailTokenId)
         cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
         userCloudDevices <- verifyAndUpdate(cloudStorageProcess, email, cloudStorageResources).resolveTo(UserCloudDevices(email, None, Seq.empty))
       } yield userCloudDevices
 
     }
 
-    (for {
-      client <- maybeClient
-      email <- maybeEmail
-      userPermissions <- maybeAndroidMarketToken
-    } yield {
-      Task.fork(loadCloudDevices(client, email, userPermissions).run).resolveAsyncUi(
-        onPreTask = () => actions.showLoading(),
-        onResult = (devices: UserCloudDevices) => actions.showDevices(devices),
-        onException = (ex: Throwable) => ex match {
-          case ex: UserException => actions.showErrorLoginUser()
-          case ex: UserConfigException => actions.showErrorLoginUser()
-          case _ => actions.showErrorConnectingGoogle()
-        })
-    }) getOrElse actions.showErrorConnectingGoogle().run
+    clientStatuses match {
+      case WizardPresenterStatuses(Some(client), _, Some(email), Some(androidMarketToken), Some(emailTokenId)) =>
+        Task.fork(loadCloudDevices(client, email, androidMarketToken, emailTokenId).run).resolveAsyncUi(
+          onPreTask = () => actions.showLoading(),
+          onResult = (devices: UserCloudDevices) => actions.showDevices(devices),
+          onException = (ex: Throwable) => ex match {
+            case ex: UserException => actions.showErrorLoginUser()
+            case ex: UserV1Exception => actions.showErrorLoginUser()
+            case _ => actions.showErrorConnectingGoogle()
+          })
+      case _ => actions.showErrorConnectingGoogle().run
+    }
+
   }
 
 }
