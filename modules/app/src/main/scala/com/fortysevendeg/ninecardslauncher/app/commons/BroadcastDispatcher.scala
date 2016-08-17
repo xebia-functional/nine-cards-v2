@@ -46,9 +46,9 @@ trait BroadcastDispatcher {
     sendBroadcast(intent)
   }
 
-  case class BroadAction(action: String, command: Option[String] = None)
-
 }
+
+case class BroadAction(action: String, command: Option[String] = None)
 
 object BroadcastDispatcher {
   val keyType = "broadcast-key-type"

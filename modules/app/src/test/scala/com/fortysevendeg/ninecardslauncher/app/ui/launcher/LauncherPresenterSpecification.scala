@@ -60,8 +60,6 @@ trait LauncherPresenterSpecification
 
     val presenter = new LauncherPresenter(mockActions) {
       statuses = mockStatuses
-      override protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
-        Service(Task(Answer(())))
       override protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
         Service(Task(Answer((collectionSeq, dockAppSeq, Some(moment)))))
       override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Answer(user)))
@@ -69,8 +67,6 @@ trait LauncherPresenterSpecification
 
     val presenterFailed = new LauncherPresenter(mockActions) {
       statuses = mockStatuses
-      override protected def deleteCollection(id: Int): ServiceDef2[Unit, CollectionException] =
-        Service(Task(Errata(collectionException)))
       override protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
         Service(Task(Errata(launcherAppsException)))
       override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Errata(userException)))

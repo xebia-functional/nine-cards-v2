@@ -57,8 +57,10 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
           case _ => false
         }
       }
-      val privateMoments = newMomentCollections filterNot (newMomentCollection => moments map (_.momentType) contains newMomentCollection.moment)
-      privateCollections ++ privateMoments
+      val privateMoments = newMomentCollections filterNot { newMomentCollection =>
+        moments find (_.momentType == newMomentCollection.moment) exists (_.collectionId.isDefined)
+      }
+      privateMoments ++ privateCollections
     }
 
 }

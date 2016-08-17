@@ -122,6 +122,8 @@ trait PersistenceServicesSpecification
 
     mockMomentRepository.deleteMoment(repoMoment) returns Service(Task(Result.answer(item)))
 
+    mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns Service(Task(Result.answer(item)))
+
     mockMomentRepository.fetchMoments() returns Service(Task(Result.answer(seqRepoMoment)))
 
     mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(seqRepoMoment)))

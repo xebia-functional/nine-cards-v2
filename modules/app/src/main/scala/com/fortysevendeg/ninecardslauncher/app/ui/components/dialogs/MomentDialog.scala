@@ -10,13 +10,13 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardsMomentOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentWithCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid._
 import macroid.FullDsl._
+import macroid._
 
-class MomentDialog(moments: Seq[MomentWithCollection])(implicit contextWrapper: ContextWrapper, presenter: LauncherPresenter)
+class MomentDialog()(implicit contextWrapper: ContextWrapper, presenter: LauncherPresenter)
   extends BottomSheetDialog(contextWrapper.getOriginal)
   with TypedFindView { dialog =>
 
@@ -26,12 +26,12 @@ class MomentDialog(moments: Seq[MomentWithCollection])(implicit contextWrapper: 
 
   setContentView(sheetView)
 
-  val views = moments map (moment => new MomentItem(moment))
+  val views = NineCardsMoment.moments map (moment => new MomentItem(moment))
 
   (selectMomentList <~
     vgAddViews(views)).run
 
-  class MomentItem(moment: MomentWithCollection)
+  class MomentItem(moment: NineCardsMoment)
     extends LinearLayout(contextWrapper.getOriginal)
     with TypedFindView {
 
@@ -43,15 +43,13 @@ class MomentDialog(moments: Seq[MomentWithCollection])(implicit contextWrapper: 
 
     val colorIcon = resGetColor(R.color.item_list_popup_moments_menu)
 
-    moment.momentType foreach { momentType =>
-      ((this <~ On.click(
-        Ui {
-          presenter.changeMoment(moment)
-          dialog.dismiss()
-        })) ~
-        (icon <~ ivSrc(momentType.getIconCollectionDetail) <~ tivDefaultColor(colorIcon)) ~
-        (text <~ tvText(momentType.getName))).run
-    }
+    ((this <~ On.click(
+      Ui {
+        presenter.changeMoment(moment)
+        dialog.dismiss()
+      })) ~
+      (icon <~ ivSrc(moment.getIconCollectionDetail) <~ tivDefaultColor(colorIcon)) ~
+      (text <~ tvText(moment.getName))).run
 
   }
 

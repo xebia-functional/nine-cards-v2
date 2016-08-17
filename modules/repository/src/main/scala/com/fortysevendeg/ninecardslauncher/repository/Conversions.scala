@@ -54,7 +54,7 @@ object Conversions {
   def toMoment(momentEntity: MomentEntity): Moment = Moment(
     id = momentEntity.id,
     data = MomentData(
-      collectionId = Option[Int](momentEntity.data.collectionId),
+      collectionId = momentEntity.data.collectionId,
       timeslot = momentEntity.data.timeslot,
       wifi = momentEntity.data.wifi,
       headphone = momentEntity.data.headphone,
