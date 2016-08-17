@@ -25,7 +25,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     (for {
       collection <- collectionRepository.addCollection(toRepositoryCollectionData(request))
       addedCards <- addCards(Seq(AddCardWithCollectionIdRequest(collection.id, request.cards)))
-      _ <- addMoments(Seq(request.moment map (_.copy(collectionId = Option(collection.id)))).flatten)
+      _ <- createOrUpdateMoments(Seq(request.moment map (_.copy(collectionId = Option(collection.id)))).flatten)
     } yield toCollection(collection).copy(cards = addedCards)).resolve[PersistenceServiceException]
 
   def addCollections(requests: Seq[AddCollectionRequest]) = {
@@ -41,7 +41,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       moments = collections.zip(momentsData) flatMap {
         case (collection, momentRequest) => momentRequest map (_.copy(collectionId = Option(collection.id)))
       }
-      _ <- addMoments(moments)
+      _ <- createOrUpdateMoments(moments)
     } yield collections map toCollection).resolve[PersistenceServiceException]
   }
 
@@ -141,6 +141,35 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       case Some(collection) => momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
       case None => Service(Task(Result.answer[Seq[RepositoryMoment], RepositoryException](Seq.empty)))
     }
+  }
+
+  private[this] def createOrUpdateMoments(requests: Seq[AddMomentRequest]) = {
+
+    def createOrUpdateMoment(request: AddMomentRequest) = {
+
+      def createOrUpdate(maybeMoment: Option[Moment]) = maybeMoment match {
+        case Some(moment) => updateMoment(UpdateMomentRequest(
+          id = moment.id,
+          collectionId = request.collectionId,
+          timeslot = moment.timeslot,
+          wifi = moment.wifi,
+          headphone = moment.headphone,
+          momentType = moment.momentType
+        ))
+        case None => addMoment(request)
+      }
+
+      for {
+        moments <- fetchMoments
+        _ <- createOrUpdate(moments find (_.momentType == request.momentType))
+      } yield ()
+    }
+
+    val s = requests map (r => createOrUpdateMoment(r).run)
+
+    Service(Task.gatherUnordered(s) map (list =>
+      CatchAll[PersistenceServiceException](list.collect { case Answer(value) => value })))
+
   }
 
 }

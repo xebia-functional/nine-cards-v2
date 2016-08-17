@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, ShortcutCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, MomentCollectionType, ShortcutCardType}
 import com.fortysevendeg.ninecardslauncher.process.device.ShortcutException
 import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.Result
@@ -142,11 +142,11 @@ class CollectionsPagerPresenter(
   }
 
   private[this] def momentReloadBroadCastIfNecessary(collectionPosition: Option[Int] = None) = {
-    val maybeMoment = (collectionPosition match {
+    val isMoment = (collectionPosition match {
       case Some(position) => actions.getCollection(position)
       case _ => actions.getCurrentCollection
-    }) flatMap (_.moment) flatMap (_.momentType)
-    maybeMoment foreach (moment => sendBroadCast(BroadAction(MomentsReloadedActionFilter.action, Option(moment.name))))
+    }) exists (_.collectionType == MomentCollectionType)
+    if (isMoment) sendBroadCast(BroadAction(MomentsReloadedActionFilter.action))
   }
 
   private[this] def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]):

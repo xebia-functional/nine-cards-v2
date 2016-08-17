@@ -60,7 +60,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
       val privateMoments = newMomentCollections filterNot { newMomentCollection =>
         moments find (_.momentType == newMomentCollection.moment) exists (_.collectionId.isDefined)
       }
-      privateCollections ++ privateMoments
+      privateMoments ++ privateCollections
     }
 
 }

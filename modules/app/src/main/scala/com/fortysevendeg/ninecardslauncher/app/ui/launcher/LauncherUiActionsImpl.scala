@@ -355,7 +355,11 @@ trait LauncherUiActionsImpl
 
   override def openMenu(): Ui[Any] = drawerLayout <~ dlOpenDrawer
 
-  override def openAppsMoment(): Ui[Any] = drawerLayout <~ dlOpenDrawerEnd
+  override def openAppsMoment(): Ui[Any] =
+    (drawerLayout ~> dlIsLockedClosedDrawerEnd) flatMap {
+      case Some(false) => drawerLayout <~ dlOpenDrawerEnd
+      case _ => Ui.nop
+    }
 
   override def closeAppsMoment(): Ui[Any] = drawerLayout <~ dlCloseDrawerEnd
 

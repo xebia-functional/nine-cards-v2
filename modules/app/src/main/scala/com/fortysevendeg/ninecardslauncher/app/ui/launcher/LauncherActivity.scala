@@ -35,7 +35,7 @@ class LauncherActivity
   override val actionsFilters: Seq[String] = MomentsActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (MomentsActionFilter(action), data) match {
-    case (MomentsReloadedActionFilter, Some(moment)) => presenter.reloadAppsMomentBar()
+    case (MomentsReloadedActionFilter, _) => presenter.reloadAppsMomentBar()
     case _ =>
   }
 

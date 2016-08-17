@@ -121,8 +121,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case (Some(collection: Collection), Some(request: AddCardRequest)) =>
         Task.fork(di.collectionProcess.addCards(collection.id, Seq(request)).run).resolveAsyncUi(
           onResult = (_) => {
-            momentReloadedBroadCastByCollectionIfNecessary(collection)
-            actions.showAddItemMessage(collection.name)
+            actions.showAddItemMessage(collection.name) ~
+              Ui(momentReloadedBroadCastByCollectionIfNecessary(collection))
           },
           onException = (_) => actions.showContactUsError())
       case _ =>
@@ -239,9 +239,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def clickWorkspaceBackground(): Unit = {
     (statuses.mode, statuses.transformation) match {
-      case (NormalMode, _) =>
-        val collection = actions.getData.headOption flatMap (_.moment) flatMap (_.collection)
-        if (collection.isDefined) actions.openAppsMoment().run
+      case (NormalMode, _) => actions.openAppsMoment().run
       case (EditWidgetsMode, Some(_)) => backToActionEditWidgets()
       case (EditWidgetsMode, None) => closeModeEditWidgets()
       case _ =>
@@ -288,7 +286,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def addCollection(collection: Collection): Unit = {
     addCollectionToCurrentData(collection) match {
       case Some((page: Int, data: Seq[LauncherData])) =>
-        actions.reloadWorkspaces(data, Some(page)).run
+        (actions.reloadWorkspaces(data, Some(page)) ~
+          Ui(momentReloadedBroadCastByCollectionIfNecessary(collection))).run
       case _ =>
     }
   }
@@ -301,9 +300,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def removeCollection(collection: Collection): Unit = {
     Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
       onResult = (_) => {
-        momentReloadedBroadCastByCollectionIfNecessary(collection)
         val (page, data) = removeCollectionToCurrentData(collection.id)
-        actions.reloadWorkspaces(data, Some(page))
+        actions.reloadWorkspaces(data, Some(page)) ~
+          Ui(momentReloadedBroadCastByCollectionIfNecessary(collection))
       },
       onException = (_) => actions.showContactUsError()
     )
@@ -477,9 +476,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     Task.fork(getMoment.run).resolveAsyncUi(
       onResult = {
         case (moment, collection) =>
-          moment.momentType foreach momentReloadBroadCastIfNecessary
           val data = LauncherData(MomentWorkSpace, Some(LauncherMoment(moment.momentType, collection)))
-          actions.reloadMoment(data)
+          actions.reloadMoment(data) ~
+            Ui(momentReloadBroadCastIfNecessary())
         case _ => Ui.nop
       })
   }
@@ -717,12 +716,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
 
   private[this] def momentReloadedBroadCastByCollectionIfNecessary(collection: Collection) = {
-    val maybeMoment = collection.moment flatMap (_.momentType)
-    maybeMoment foreach momentReloadBroadCastIfNecessary
+    if (collection.collectionType == MomentCollectionType) momentReloadBroadCastIfNecessary()
   }
 
-  private[this] def momentReloadBroadCastIfNecessary(moment: NineCardsMoment) =
-    sendBroadCast(BroadAction(MomentsReloadedActionFilter.action, Option(moment.name)))
+  private[this] def momentReloadBroadCastIfNecessary() = sendBroadCast(BroadAction(MomentsReloadedActionFilter.action))
 
   private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
