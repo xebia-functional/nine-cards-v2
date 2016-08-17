@@ -8,12 +8,11 @@ trait Conversions {
   def toUpdateRequest(user: ServicesUser, googlePlusProfile: GooglePlusProfile) =
     UpdateUserRequest(
       id = user.id,
-      userId = user.userId,
       email = user.email,
+      apiKey = user.apiKey,
       sessionToken = user.sessionToken,
-      installationId = user.installationId,
       deviceToken = user.deviceToken,
-      androidToken = user.androidToken,
+      marketToken = user.marketToken,
       name = googlePlusProfile.name,
       avatar = googlePlusProfile.avatarUrl,
       cover = googlePlusProfile.coverUrl,

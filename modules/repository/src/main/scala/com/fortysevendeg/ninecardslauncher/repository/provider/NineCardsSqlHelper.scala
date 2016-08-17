@@ -50,6 +50,35 @@ class NineCardsSqlHelper(context: Context)
         db.execSQL(s"ALTER TABLE ${UserEntity.table} ADD COLUMN ${UserEntity.deviceCloudId} TEXT")
       case 12 =>
         db.execSQL(WidgetEntity.createTableSQL)
+      case 13 =>
+        db.execSQL(s"ALTER TABLE ${UserEntity.table} RENAME TO tmp_${UserEntity.table}")
+        db.execSQL(UserEntity.createTableSQL)
+        db.execSQL(
+          s"""
+             | INSERT INTO ${UserEntity.table} (
+             |   ${NineCardsSqlHelper.id},
+             |   ${UserEntity.email},
+             |   ${UserEntity.sessionToken},
+             |   ${UserEntity.deviceToken},
+             |   ${UserEntity.marketToken},
+             |   ${UserEntity.name},
+             |   ${UserEntity.avatar},
+             |   ${UserEntity.cover},
+             |   ${UserEntity.deviceName},
+             |   ${UserEntity.deviceCloudId})
+             | SELECT
+             |   ${NineCardsSqlHelper.id},
+             |   ${UserEntity.email},
+             |   ${UserEntity.sessionToken},
+             |   ${UserEntity.deviceToken},
+             |   androidToken,
+             |   ${UserEntity.name},
+             |   ${UserEntity.avatar},
+             |   ${UserEntity.cover},
+             |   ${UserEntity.deviceName},
+             |   ${UserEntity.deviceCloudId}
+             | FROM tmp_${UserEntity.table} """.stripMargin)
+        db.execSQL(s"DROP TABLE tmp_${UserEntity.table}")
     }
 
     new Handler().post(() => execVersionsDB(oldVersion, newVersion))
@@ -59,5 +88,5 @@ class NineCardsSqlHelper(context: Context)
 object NineCardsSqlHelper {
   val id = "_id"
   val databaseName = "nineCards"
-  val databaseVersion = 12
+  val databaseVersion = 13
 }

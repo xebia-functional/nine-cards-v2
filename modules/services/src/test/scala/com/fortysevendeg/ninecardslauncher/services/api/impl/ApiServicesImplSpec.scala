@@ -23,7 +23,7 @@ trait ApiServicesSpecification
   implicit val requestConfig = RequestConfig(
     deviceId = Random.nextString(10),
     token = Random.nextString(10),
-    androidToken = Option(Random.nextString(10)))
+    marketToken = Option(Random.nextString(10)))
 
   val apiServicesConfig = ApiServicesConfig(
     appId = Random.nextString(10),
