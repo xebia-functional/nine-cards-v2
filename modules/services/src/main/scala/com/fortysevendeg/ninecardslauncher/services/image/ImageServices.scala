@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.image
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 
 trait ImageServices {
@@ -11,6 +12,6 @@ trait ImageServices {
    *         path where the file was stored
    * @throws FileException if exist some problem storing bitmap
    */
-  def saveBitmap(request: SaveBitmap)(implicit contextSupport: ContextSupport): ServiceDef2[SaveBitmapPath, FileException]
+  def saveBitmap(request: SaveBitmap)(implicit contextSupport: ContextSupport): CatsService[SaveBitmapPath]
   
 }

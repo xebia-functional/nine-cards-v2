@@ -1,9 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.services.image
 
-import scalaz.Scalaz._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
 
 trait FileException
-  extends RuntimeException {
+  extends RuntimeException
+  with NineCardException {
 
   val message: String
 
@@ -11,14 +12,16 @@ trait FileException
 
 }
 
-case class FileExceptionImpl(message: String, cause : Option[Throwable] = None)
+case class FileExceptionImpl(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)
-  with FileException {
+  with FileException
+  with NineCardException {
   cause map initCause
 }
 
 trait BitmapTransformationException
-  extends RuntimeException {
+  extends RuntimeException
+  with NineCardException {
 
   val message: String
 
@@ -26,13 +29,17 @@ trait BitmapTransformationException
 
 }
 
-case class BitmapTransformationExceptionImpl(message: String, cause : Option[Throwable] = None)
+case class BitmapTransformationExceptionImpl(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)
-  with BitmapTransformationException {
+  with BitmapTransformationException
+  with NineCardException {
   cause map initCause
 }
 
 trait ImplicitsImageExceptions {
-  implicit def fileException = (t: Throwable) => FileExceptionImpl(t.getMessage, t.some)
-  implicit def bitmapTransformationException = (t: Throwable) => BitmapTransformationExceptionImpl(t.getMessage, t.some)
+
+  implicit def fileException = (t: Throwable) => FileExceptionImpl(t.getMessage, Option(t))
+
+  implicit def bitmapTransformationException = (t: Throwable) => BitmapTransformationExceptionImpl(t.getMessage, Option(t))
+
 }
