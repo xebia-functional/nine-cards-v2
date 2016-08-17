@@ -245,7 +245,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }
 
     invalidateToken()
-    val scopes = "androidmarket"
+    val scopes = resGetString(R.string.android_market_oauth_scopes)
     Task.fork(requestToken(account, scopes, client).run).resolveAsync(
       onResult = (token: String) => {
         clientStatuses = clientStatuses.copy(androidMarketToken = Some(token))
@@ -264,7 +264,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
   private[this] def requestGooglePermission(
     account: Account,
     client: GoogleApiClient): Unit = {
-    val scopes = resGetString(R.string.oauth_scopes)
+    val scopes = resGetString(R.string.profile_and_drive_oauth_scopes)
     Task.fork(requestToken(account, scopes, client).run).resolveAsync(
       onResult = (_) => {
         clientStatuses.driveApiClient foreach (_.connect())
@@ -340,7 +340,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       androidMarketToken: String) = {
       val cloudStorageProcess = di.createCloudStorageProcess(client)
       for {
-        response <- di.userProcess.signIn(email, Build.MODEL, androidMarketToken, Seq("androidmarket"))
+        response <- di.userProcess.signIn(email, Build.MODEL, androidMarketToken, Seq(resGetString(R.string.android_market_oauth_scopes)))
         cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
         userCloudDevices <- verifyAndUpdate(cloudStorageProcess, email, cloudStorageResources).resolveTo(UserCloudDevices(email, None, Seq.empty))
       } yield userCloudDevices

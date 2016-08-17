@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
+import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.api.version1.model._
 
 import scala.util.Random
@@ -209,4 +210,14 @@ trait ApiServicesImplData {
   val sharedCollectionList = generateSharedCollectionList()
 
   val sharedCollection = generateSharedCollection
+
+  val apiKey = Random.nextString(10)
+
+  val sessionToken = Random.nextString(20)
+
+  val email = "email@dot.com"
+
+  val androidId = Random.nextString(10)
+
+  val tokenId = Random.nextString(30)
 }

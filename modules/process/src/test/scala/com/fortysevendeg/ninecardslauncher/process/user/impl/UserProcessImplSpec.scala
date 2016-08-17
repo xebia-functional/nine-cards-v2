@@ -47,10 +47,10 @@ trait UserProcessSpecification
 
     val mockApiServices = mock[ApiServices]
 
-    mockApiServices.login(
+    mockApiServices.loginV1(
       email = email,
       device = googleDevice) returns
-      Service(Task(Result.answer(LoginResponse(statusCodeUser, user))))
+      Service(Task(Result.answer(loginResponseV1)))
 
     mockApiServices.createInstallation(any, any, any) returns
       Service(Task(Result.answer(InstallationResponse(statusCodeOk, initialInstallation))))
@@ -118,7 +118,7 @@ trait UserProcessSpecification
 
     self: UserProcessScope =>
 
-    mockApiServices.login(
+    mockApiServices.loginV1(
       email = email,
       device = googleDevice) returns
       Service(Task(Result.errata(apiServiceException)))
@@ -145,7 +145,7 @@ class UserProcessImplSpec
       new UserProcessScope {
         val result = userProcess.signIn(email, deviceName, secretToken, permissions)(contextSupport).run.run
 
-        there was one(mockApiServices).login(anyString, any[GoogleDevice])
+        there was one(mockApiServices).loginV1(anyString, any[GoogleDevice])
         there was one(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userDBId))
         there was one(mockPersistenceServices).updateUser(any[UpdateUserRequest])
@@ -160,7 +160,7 @@ class UserProcessImplSpec
         new UserProcessScope {
           val result = userProcess.signIn(email, deviceName, secretToken, permissions)(contextSupport).run.run
 
-          there was one(mockApiServices).login(anyString, any[GoogleDevice])
+          there was one(mockApiServices).loginV1(anyString, any[GoogleDevice])
           there was one(mockApiServices).updateInstallation(any[String], any[Option[DeviceType]], any[Option[String]], any[Option[String]])
           there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userDBId))
           there was one(mockPersistenceServices).updateUser(any[UpdateUserRequest])
@@ -174,7 +174,7 @@ class UserProcessImplSpec
       "returns a UserException if login in ApiService returns a exception and shouldn't sync installation" in
         new UserProcessScope with LoginErrorUserProcessScope {
           val result = userProcess.signIn(email, deviceName, secretToken, permissions)(contextSupport).run.run
-          there was one(mockApiServices).login(anyString, any[GoogleDevice])
+          there was one(mockApiServices).loginV1(anyString, any[GoogleDevice])
           there was exactly(0)(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])
           there was exactly(0)(mockApiServices).updateInstallation(any[String], any[Option[DeviceType]], any[Option[String]], any[Option[String]])
 
@@ -188,7 +188,7 @@ class UserProcessImplSpec
       "returns a UserException if save user fails and shouldn't sync installation" in
         new UserProcessScope with SaveUserErrorUserProcessScope {
           val result = userProcess.signIn(email, deviceName, secretToken, permissions)(contextSupport).run.run
-          there was one(mockApiServices).login(anyString, any[GoogleDevice])
+          there was one(mockApiServices).loginV1(anyString, any[GoogleDevice])
           there was one(mockPersistenceServices).updateUser(any[UpdateUserRequest])
           there was exactly(0)(mockApiServices).createInstallation(any[Option[DeviceType]], any[Option[String]], any[Option[String]])
           there was exactly(0)(mockApiServices).updateInstallation(any[String], any[Option[DeviceType]], any[Option[String]], any[Option[String]])

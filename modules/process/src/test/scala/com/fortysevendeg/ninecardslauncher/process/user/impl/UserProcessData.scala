@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.user.impl
 
-import com.fortysevendeg.ninecardslauncher.services.api.models.{AndroidDevice, GoogleDevice, Installation, User}
+import com.fortysevendeg.ninecardslauncher.services.api.LoginResponseV1
+import com.fortysevendeg.ninecardslauncher.services.api.models.{AndroidDevice, GoogleDevice, Installation}
 import com.fortysevendeg.ninecardslauncher.services.persistence.FindUserByIdRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 import org.specs2.mock.Mockito
@@ -38,8 +39,9 @@ trait UserProcessData
     secretToken = secretToken,
     permissions = permissions)
 
-  val user = User(
-    id = Option(userId),
+  val loginResponseV1 = LoginResponseV1(
+    statusCode = statusCodeUser,
+    userId = Option(userId),
     sessionToken = Option(userToken),
     email = Option(email),
     devices = Seq(googleDevice))

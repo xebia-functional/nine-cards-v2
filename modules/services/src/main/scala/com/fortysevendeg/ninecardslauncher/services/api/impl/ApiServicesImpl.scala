@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.api.version1.reads.SharedCollectionIm
 import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserConfigImplicits._
 import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserImplicits._
 import com.fortysevendeg.ninecardslauncher.api.version1.services._
+import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
@@ -20,6 +21,7 @@ case class ApiServicesConfig(appId: String, appKey: String, localization: String
 
 class ApiServicesImpl(
   apiServicesConfig: ApiServicesConfig,
+  apiService: version2.ApiService,
   apiUserService: ApiUserService,
   googlePlayService: ApiGooglePlayService,
   userConfigService: ApiUserConfigService,
@@ -28,6 +30,8 @@ class ApiServicesImpl(
   extends ApiServices
   with Conversions
   with ImplicitsApiServiceExceptions {
+
+  import version2.JsonImplicits._
 
   val headerAppId = "X-Appsly-Application-Id"
 
@@ -48,6 +52,8 @@ class ApiServicesImpl(
 
   val userNotFoundMessage = "User not found"
 
+  val userNotAuthenticatedMessage = "User not authenticated"
+
   val installationNotFoundMessage = "Installation not found"
 
   val playAppNotFoundMessage = "Google Play Package not found"
@@ -66,7 +72,16 @@ class ApiServicesImpl(
     (for {
       response <- apiUserService.login(toUser(email, device), baseHeader)
       user <- readOption(response.data, userNotFoundMessage)
-    } yield LoginResponse(response.statusCode, toUser(user))).resolve[ApiServiceException]
+    } yield toLoginResponseV1(response.statusCode, user)).resolve[ApiServiceException]
+
+  override def login(
+    email: String,
+    androidId: String,
+    tokenId: String) =
+    (for {
+      serviceClientResponse <- apiService.login(version2.LoginRequest(email, androidId, tokenId))
+      loginResponse <- readOption(serviceClientResponse.data, userNotAuthenticatedMessage)
+    } yield LoginResponse(loginResponse.apiKey, loginResponse.sessionToken)).resolve[ApiServiceException]
 
   override def createInstallation(
     deviceType: Option[DeviceType],

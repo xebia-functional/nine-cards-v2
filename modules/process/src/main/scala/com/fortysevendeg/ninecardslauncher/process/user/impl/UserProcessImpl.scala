@@ -40,11 +40,11 @@ class UserProcessImpl(
         Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
         updateUser = userDB.copy(
           email = Option(email),
-          sessionToken = loginResponse.user.sessionToken,
+          sessionToken = loginResponse.sessionToken,
           marketToken = Some(device.secretToken),
           deviceName = Some(device.name))
         _ <- persistenceServices.updateUser(toUpdateRequest(id, updateUser))
-        _ <- syncInstallation(id, None, loginResponse.user.id, None)
+        _ <- syncInstallation(id, None, loginResponse.userId, None)
       } yield SignInResponse(loginResponse.statusCode)).resolve[UserException]
     }
   }

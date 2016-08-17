@@ -5,8 +5,15 @@ import com.fortysevendeg.ninecardslauncher.services.api.models._
 case class RequestConfig(deviceId: String, token: String, marketToken: Option[String])
 
 case class LoginResponse(
+  apiKey: String,
+  sessionToken: String)
+
+case class LoginResponseV1(
   statusCode: Int,
-  user: User)
+  userId: Option[String],
+  sessionToken: Option[String],
+  email: Option[String],
+  devices: Seq[GoogleDevice])
 
 case class InstallationResponse(
   statusCode: Int,

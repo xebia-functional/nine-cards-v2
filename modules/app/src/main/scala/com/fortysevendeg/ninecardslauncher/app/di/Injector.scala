@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.di
 import android.content.res.Resources
 import android.support.v4.content.ContextCompat
 import com.facebook.stetho.okhttp3.StethoInterceptor
-import com.fortysevendeg.ninecardslauncher.api.version1.services._
+import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
@@ -100,6 +100,10 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     httpClient = serviceHttpClient,
     baseUrl = resources.getString(R.string.api_base_url))
 
+  private[this] lazy val serviceClientV2 = new ServiceClient(
+    httpClient = serviceHttpClient,
+    baseUrl = resources.getString(R.string.api_v2_base_url))
+
   private[this] lazy val googlePlayServiceClient = new ServiceClient(
     httpClient = serviceHttpClient,
     baseUrl = resources.getString(R.string.api_google_play_url))
@@ -111,11 +115,12 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val apiServices = new ApiServicesImpl(
     apiServicesConfig = apiServicesConfig,
-    apiUserService = new ApiUserService(serviceClient),
-    googlePlayService = new ApiGooglePlayService(googlePlayServiceClient),
-    userConfigService = new ApiUserConfigService(serviceClient),
-    recommendationService = new ApiRecommendationService(serviceClient),
-    sharedCollectionsService = new ApiSharedCollectionsService(serviceClient))
+    apiService = new version2.ApiService(serviceClientV2),
+    apiUserService = new version1.services.ApiUserService(serviceClient),
+    googlePlayService = new version1.services.ApiGooglePlayService(googlePlayServiceClient),
+    userConfigService = new version1.services.ApiUserConfigService(serviceClient),
+    recommendationService = new version1.services.ApiRecommendationService(serviceClient),
+    sharedCollectionsService = new version1.services.ApiSharedCollectionsService(serviceClient))
 
   private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
     contextSupport.getContentResolver)

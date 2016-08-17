@@ -31,9 +31,10 @@ trait Conversions {
       secretToken = device.secretToken,
       permissions = device.permissions)
 
-  def toUser(user: ApiUser): User =
-    User(
-      id = user._id,
+  def toLoginResponseV1(statusCode: Int, user: ApiUser): LoginResponseV1 =
+    LoginResponseV1(
+      statusCode,
+      userId = user._id,
       sessionToken = user.sessionToken,
       email = user.email,
       devices = (for {

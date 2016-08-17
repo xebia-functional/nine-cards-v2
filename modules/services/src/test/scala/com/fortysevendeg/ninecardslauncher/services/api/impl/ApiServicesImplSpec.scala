@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api.version1.model.{GooglePlayPackage => ApiGooglePlayPackage, GooglePlayPackages => ApiGooglePlayPackages, GooglePlayRecommendation => ApiGooglePlayRecommendation, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, SharedCollectionList => ApiSharedCollectionList, User => ApiUser, UserConfig => ApiUserConfig}
-import com.fortysevendeg.ninecardslauncher.api.version1.services._
+import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
@@ -35,18 +35,21 @@ trait ApiServicesSpecification
   trait ApiServicesScope
     extends Scope {
 
-    val apiUserService = mock[ApiUserService]
+    val apiService = mock[version2.ApiService]
 
-    val googlePlayService = mock[ApiGooglePlayService]
+    val apiUserService = mock[version1.services.ApiUserService]
 
-    val userConfigService = mock[ApiUserConfigService]
+    val googlePlayService = mock[version1.services.ApiGooglePlayService]
 
-    val apiRecommendationService = mock[ApiRecommendationService]
+    val userConfigService = mock[version1.services.ApiUserConfigService]
 
-    val apiSharedCollectionsService = mock[ApiSharedCollectionsService]
+    val apiRecommendationService = mock[version1.services.ApiRecommendationService]
+
+    val apiSharedCollectionsService = mock[version1.services.ApiSharedCollectionsService]
 
     val apiServices = new ApiServicesImpl(
-      apiServicesConfig, 
+      apiServicesConfig,
+      apiService,
       apiUserService, 
       googlePlayService, 
       userConfigService, 
@@ -59,6 +62,11 @@ trait ApiServicesSpecification
     with Conversions {
 
     self: ApiServicesScope =>
+
+    apiService.login(any)(any, any) returns
+      Service {
+        Task(Answer(ServiceClientResponse[version2.LoginResponse](statusCode, Some(version2.LoginResponse(apiKey, sessionToken)))))
+      }
 
     apiUserService.login(any, any)(any, any) returns
       Service {
@@ -119,6 +127,8 @@ trait ApiServicesSpecification
 
     val exception = CustomException("")
 
+    apiService.login(any)(any, any) returns Service(Task(Errata(exception)))
+
     apiUserService.login(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
@@ -167,11 +177,35 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
+        val result = apiServices.login(email, androidId, tokenId).run.run
+        result must beLike {
+          case Answer(response) =>
+            response shouldEqual LoginResponse(apiKey, sessionToken)
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope with ErrorApiServicesImplResponses {
+        val result = apiServices.login(email, androidId, tokenId).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, apiException)) => apiException must beLike {
+              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
+            }
+          }
+        }
+      }
+
+  }
+
+  "loginV1" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope with ValidApiServicesImplResponses {
         val result = apiServices.loginV1("", GoogleDevice("", "", "", Seq.empty)).run.run
         result must beLike {
           case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.user shouldEqual toUser(user)
+            response shouldEqual toLoginResponseV1(statusCode, user)
         }
       }
 

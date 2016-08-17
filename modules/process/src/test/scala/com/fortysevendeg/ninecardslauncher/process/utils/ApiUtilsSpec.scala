@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.process.utils
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.services.api.models.User
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, FindUserByIdRequest, AndroidIdNotFoundException, PersistenceServices}
 import org.specs2.mock.Mockito
@@ -28,7 +27,6 @@ trait ApiUtilsSpecification
     val mockPersistenceServices = mock[PersistenceServices]
     val apiUtils = new ApiUtils(mockPersistenceServices)
     val mockRequestConfig = mock[RequestConfig]
-    val mockUser = mock[User]
 
     mockPersistenceServices.getAndroidId(mockContextSupport) returns
       Service(Task(Answer(androidId)))

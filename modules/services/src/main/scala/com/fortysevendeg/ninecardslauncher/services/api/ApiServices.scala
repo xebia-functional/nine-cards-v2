@@ -6,16 +6,28 @@ import com.fortysevendeg.ninecardslauncher.services.api.models._
 trait ApiServices {
 
   /**
-   * Tries to login with the email and the device
+   * Tries to login with the email and the device against backend V1
    * @param email user email
    * @param device user device
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponse]] with the HTTP Code
-   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.User]]
+   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponseV1]]
    * @throws ApiServiceException if the user is not found or the request throws an Exception
    */
   def loginV1(
     email: String,
-    device: GoogleDevice): ServiceDef2[LoginResponse, ApiServiceException]
+    device: GoogleDevice): ServiceDef2[LoginResponseV1, ApiServiceException]
+
+  /**
+    * Tries to login with the email, the androidId and the tokenId
+    * @param email user email
+    * @param androidId device identifier
+    * @param tokenId token id obtained in the email authentication
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponse]]
+    * @throws ApiServiceException if the user is not found or the request throws an Exception
+    */
+  def login(
+    email: String,
+    androidId: String,
+    tokenId: String): ServiceDef2[LoginResponse, ApiServiceException]
 
   /**
    * Creates a new user installation based on the provided params
