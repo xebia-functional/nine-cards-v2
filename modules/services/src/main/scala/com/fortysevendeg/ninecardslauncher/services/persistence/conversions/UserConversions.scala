@@ -11,12 +11,11 @@ trait UserConversions {
   def toUser(user: RepositoryUser): User =
     User(
       id = user.id,
-      userId = user.data.userId,
       email = user.data.email,
+      apiKey = user.data.apiKey,
       sessionToken = user.data.sessionToken,
-      installationId = user.data.installationId,
       deviceToken = user.data.deviceToken,
-      androidToken = user.data.androidToken,
+      marketToken = user.data.marketToken,
       name = user.data.name,
       avatar = user.data.avatar,
       cover = user.data.cover,
@@ -27,12 +26,11 @@ trait UserConversions {
     RepositoryUser(
       id = user.id,
       data = RepositoryUserData(
-        userId = user.userId,
         email = user.email,
+        apiKey = user.apiKey,
         sessionToken = user.sessionToken,
-        installationId = user.installationId,
         deviceToken = user.deviceToken,
-        androidToken = user.androidToken,
+        marketToken = user.marketToken,
         name = user.name,
         avatar = user.avatar,
         cover = user.cover,
@@ -43,12 +41,11 @@ trait UserConversions {
     RepositoryUser(
       id = request.id,
       data = RepositoryUserData(
-        userId = request.userId,
         email = request.email,
+        apiKey = request.apiKey,
         sessionToken = request.sessionToken,
-        installationId = request.installationId,
         deviceToken = request.deviceToken,
-        androidToken = request.androidToken,
+        marketToken = request.marketToken,
         name = request.name,
         avatar = request.avatar,
         cover = request.cover,
@@ -57,12 +54,11 @@ trait UserConversions {
 
   def toRepositoryUserData(request: AddUserRequest): RepositoryUserData =
     RepositoryUserData(
-      userId = request.userId,
       email = request.email,
+      apiKey = request.apiKey,
       sessionToken = request.sessionToken,
-      installationId = request.installationId,
       deviceToken = request.deviceToken,
-      androidToken = request.androidToken,
+      marketToken = request.marketToken,
       name = request.name,
       avatar = request.avatar,
       cover = request.cover,

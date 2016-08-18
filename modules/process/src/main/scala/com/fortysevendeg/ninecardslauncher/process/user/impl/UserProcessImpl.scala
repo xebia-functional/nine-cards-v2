@@ -25,7 +25,7 @@ class UserProcessImpl(
 
   private[this] val noActiveUserErrorMessage = "No active user"
 
-  val emptyUserRequest = AddUserRequest(None, None, None, None, None, None, None, None, None, None, None)
+  val emptyUserRequest = AddUserRequest(None, None, None, None, None, None, None, None, None, None)
 
   override def signIn(email: String, deviceName: String, token: String, permissions: Seq[String])(implicit context: ContextSupport) = {
     withActiveUser { id =>
@@ -40,9 +40,8 @@ class UserProcessImpl(
         Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
         updateUser = userDB.copy(
           email = Option(email),
-          userId = loginResponse.user.id,
           sessionToken = loginResponse.user.sessionToken,
-          androidToken = Some(device.secretToken),
+          marketToken = Some(device.secretToken),
           deviceName = Some(device.name))
         _ <- persistenceServices.updateUser(toUpdateRequest(id, updateUser))
         _ <- syncInstallation(id, None, loginResponse.user.id, None)
@@ -65,7 +64,7 @@ class UserProcessImpl(
 
   override def unregister(implicit context: ContextSupport) =
     withActiveUser { id =>
-      val update = UpdateUserRequest(id, None, None, None, None, None, None, None, None, None, None, None)
+      val update = UpdateUserRequest(id, None, None, None, None, None, None, None, None, None, None)
       (for {
         _ <- syncInstallation(id, None, None, None)
         _ <- persistenceServices.updateUser(update)
@@ -149,8 +148,6 @@ class UserProcessImpl(
           deviceType = Some(AndroidDevice),
           deviceToken = deviceToken,
           userId = userId)
-        Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
-        _ <- persistenceServices.updateUser(toUpdateRequest(id, userDB.copy(installationId = installation.id)))
       } yield statusCode).resolve[UserException]
     }
 
