@@ -96,12 +96,12 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
       Task {
         if (isError) {
           val errorMessage = clientResponse.body getOrElse "No content"
-          Xor.Left(ServiceClientExceptionImpl(s"Status code ${clientResponse.statusCode}. $errorMessage"))
+          Xor.Left(ServiceClientException(s"Status code ${clientResponse.statusCode}. $errorMessage"))
         } else {
           (clientResponse.body, emptyResponse, maybeReads) match {
             case (Some(d), false, Some(r)) => transformResponse[T](d, r)
-            case (None, false, _) => Xor.Left(ServiceClientExceptionImpl("No content"))
-            case (Some(d), false, None) => Xor.Left(ServiceClientExceptionImpl("No transformer found for type"))
+            case (None, false, _) => Xor.Left(ServiceClientException("No content"))
+            case (Some(d), false, None) => Xor.Left(ServiceClientException("No transformer found for type"))
             case _ => Xor.Right(None)
           }
         }
@@ -112,10 +112,10 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
   private def transformResponse[T](
     content: String,
     reads: Reads[T]
-    ): Xor[ServiceClientExceptionImpl, Some[T]] =
+    ): Xor[ServiceClientException, Some[T]] =
     Try(Json.parse(content).as[T](reads)) match {
       case Success(s) => Xor.Right(Some(s))
-      case Failure(e) => Xor.Left(ServiceClientExceptionImpl(message = e.getMessage, cause = Some(e)))
+      case Failure(e) => Xor.Left(ServiceClientException(message = e.getMessage, cause = Some(e)))
     }
 
 }
