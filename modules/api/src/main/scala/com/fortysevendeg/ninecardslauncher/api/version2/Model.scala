@@ -1,10 +1,23 @@
 package com.fortysevendeg.ninecardslauncher.api.version2
 
+trait BaseServiceHeader {
+
+  def apiKey: String
+  def sessionToken: String
+  def androidId: String
+
+}
+
 case class ServiceHeader(
   apiKey: String,
   sessionToken: String,
+  androidId: String) extends BaseServiceHeader
+
+case class ServiceMarketHeader(
+  apiKey: String,
+  sessionToken: String,
   androidId: String,
-  androidMarketToken: Option[String])
+  androidMarketToken: String) extends BaseServiceHeader
 
 case class LoginRequest(email: String, androidId: String, tokenId: String)
 

@@ -100,7 +100,7 @@ class ApiServiceSpec
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
           Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.latestCollections(category, offset, limit, serviceHeader).run.run
+        val serviceClientResponse = apiService.latestCollections(category, offset, limit, serviceMarketHeader).run.run
 
         serviceClientResponse must beLike {
           case Answer(r) =>
@@ -110,7 +110,7 @@ class ApiServiceSpec
 
         there was one(mockedServiceClient).get(
           path = s"/collections/latest/$category/$offset/$limit",
-          headers = createHeaders(latestCollectionsAuthToken),
+          headers = createMarketHeaders(latestCollectionsAuthToken),
           reads = Some(collectionsResponseReads),
           emptyResponse = false)
 
@@ -127,7 +127,7 @@ class ApiServiceSpec
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
           Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.topCollections(category, offset, limit, serviceHeader).run.run
+        val serviceClientResponse = apiService.topCollections(category, offset, limit, serviceMarketHeader).run.run
 
         serviceClientResponse must beLike {
           case Answer(r) =>
@@ -137,7 +137,7 @@ class ApiServiceSpec
 
         there was one(mockedServiceClient).get(
           path = s"/collections/top/$category/$offset/$limit",
-          headers = createHeaders(topCollectionsAuthToken),
+          headers = createMarketHeaders(topCollectionsAuthToken),
           reads = Some(collectionsResponseReads),
           emptyResponse = false)
 
@@ -206,7 +206,7 @@ class ApiServiceSpec
         mockedServiceClient.get[Collection](any, any, any, any) returns
           Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.getCollection(publicIdentifier, serviceHeader).run.run
+        val serviceClientResponse = apiService.getCollection(publicIdentifier, serviceMarketHeader).run.run
 
         serviceClientResponse must beLike {
           case Answer(r) =>
@@ -216,7 +216,7 @@ class ApiServiceSpec
 
         there was one(mockedServiceClient).get(
           path = s"/collections/$publicIdentifier",
-          headers = createHeaders(collectionsIdAuthToken),
+          headers = createMarketHeaders(collectionsIdAuthToken),
           reads = Some(collectionReads),
           emptyResponse = false)
 
@@ -233,7 +233,7 @@ class ApiServiceSpec
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
           Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.getCollections(serviceHeader).run.run
+        val serviceClientResponse = apiService.getCollections(serviceMarketHeader).run.run
 
         serviceClientResponse must beLike {
           case Answer(r) =>
@@ -243,7 +243,7 @@ class ApiServiceSpec
 
         there was one(mockedServiceClient).get(
           path = "/collections",
-          headers = createHeaders(collectionsAuthToken),
+          headers = createMarketHeaders(collectionsAuthToken),
           reads = Some(collectionsResponseReads),
           emptyResponse = false)
 
@@ -258,7 +258,7 @@ class ApiServiceSpec
         mockedServiceClient.post[CategorizeRequest, CategorizeResponse](any, any, any, any, any)(any) returns
           Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(categorizeResponse)))))
 
-        val serviceClientResponse = apiService.categorize(categorizeRequest, serviceHeader).run.run
+        val serviceClientResponse = apiService.categorize(categorizeRequest, serviceMarketHeader).run.run
 
         serviceClientResponse must beLike {
           case Answer(r) =>
@@ -268,7 +268,7 @@ class ApiServiceSpec
 
         there was one(mockedServiceClient).post(
           path = "/applications/categorize",
-          headers = createHeaders(categorizeAuthToken),
+          headers = createMarketHeaders(categorizeAuthToken),
           body = categorizeRequest,
           reads = Some(categorizeResponseReads),
           emptyResponse = false)(categorizeRequestWrites)
