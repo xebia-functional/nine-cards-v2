@@ -1,10 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.api.version1.services
 
 import com.fortysevendeg.ninecardslauncher.api.version1.model._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.rest.client.http.HttpClientException
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
-import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}
 import play.api.libs.json.{Reads, Writes}
 
 class ApiGooglePlayService(serviceClient: ServiceClient) {
@@ -17,7 +16,7 @@ class ApiGooglePlayService(serviceClient: ServiceClient) {
   def getGooglePlayPackage(
     packageName: String,
     headers: Seq[(String, String)])
-    (implicit reads: Reads[GooglePlayPackage]): ServiceDef2[ServiceClientResponse[GooglePlayPackage], HttpClientException with ServiceClientException] =
+    (implicit reads: Reads[GooglePlayPackage]): CatsService[ServiceClientResponse[GooglePlayPackage]] =
     serviceClient.get[GooglePlayPackage](
       path = s"$PrefixGooglePlay/$PackagePath/$packageName",
       headers = headers,
@@ -28,7 +27,7 @@ class ApiGooglePlayService(serviceClient: ServiceClient) {
     headers: Seq[(String, String)]
     )(implicit
     reads: Reads[GooglePlayPackages],
-    writes: Writes[PackagesRequest]): ServiceDef2[ServiceClientResponse[GooglePlayPackages], HttpClientException with ServiceClientException] =
+    writes: Writes[PackagesRequest]): CatsService[ServiceClientResponse[GooglePlayPackages]] =
     serviceClient.post[PackagesRequest, GooglePlayPackages](
       path = s"$PrefixGooglePlay/$PackagesPath/$DetailedPackagesPath",
       headers = headers,

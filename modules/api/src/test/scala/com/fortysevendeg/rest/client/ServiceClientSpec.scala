@@ -1,19 +1,19 @@
 package com.fortysevendeg.rest.client
 
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientExceptionImpl, HttpClientResponse}
+import cats.data.Xor
+import com.fortysevendeg.ninecardslauncher.commons.services.{CatsService, Service}
+import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientException, HttpClientResponse}
 import org.hamcrest.core.IsEqual
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import play.api.libs.json.Json
-import rapture.core.{Answer, Errata}
 
 import scalaz.concurrent.Task
 
 trait ServiceClientSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   trait ServiceClientScope
     extends Scope {
@@ -45,36 +45,60 @@ trait ServiceClientSpecification
 
     mockResponse.body returns Some(json)
 
-    httpClient.doGet(any, any) returns Service { Task(Answer(mockResponse)) }
+    httpClient.doGet(any, any) returns CatsService {
+      Task(Xor.right(mockResponse))
+    }
 
-    httpClient.doDelete(any, any) returns Service { Task(Answer(mockResponse)) }
+    httpClient.doDelete(any, any) returns CatsService {
+      Task(Xor.right(mockResponse))
+    }
 
-    httpClient.doPost(any, any) returns Service { Task(Answer(mockResponse)) }
+    httpClient.doPost(any, any) returns CatsService {
+      Task(Xor.right(mockResponse))
+    }
 
-    httpClient.doPost[SampleRequest](any, any, any)(any) returns Service { Task(Answer(mockResponse)) }
+    httpClient.doPost[SampleRequest](any, any, any)(any) returns CatsService {
+      Task(Xor.right(mockResponse))
+    }
 
-    httpClient.doPut(any, any) returns Service { Task(Answer(mockResponse)) }
+    httpClient.doPut(any, any) returns CatsService {
+      Task(Xor.right(mockResponse))
+    }
 
-    httpClient.doPut[SampleRequest](any, any, any)(any) returns Service { Task(Answer(mockResponse)) }
+    httpClient.doPut[SampleRequest](any, any, any)(any) returns CatsService {
+      Task(Xor.right(mockResponse))
+    }
   }
 
   trait WithFailedHttpClientMock {
 
     self: ServiceClientScope =>
 
-    val exception = HttpClientExceptionImpl("")
+    val exception = HttpClientException("")
 
-    httpClient.doGet(any, any) returns Service { Task(Errata(exception)) }
+    httpClient.doGet(any, any) returns CatsService {
+      Task(Xor.left(exception))
+    }
 
-    httpClient.doDelete(any, any) returns Service { Task(Errata(exception)) }
+    httpClient.doDelete(any, any) returns CatsService {
+      Task(Xor.left(exception))
+    }
 
-    httpClient.doPost(any, any) returns Service { Task(Errata(exception)) }
+    httpClient.doPost(any, any) returns CatsService {
+      Task(Xor.left(exception))
+    }
 
-    httpClient.doPost[SampleRequest](any, any, any)(any) returns Service { Task(Errata(exception)) }
+    httpClient.doPost[SampleRequest](any, any, any)(any) returns CatsService {
+      Task(Xor.left(exception))
+    }
 
-    httpClient.doPut(any, any) returns Service { Task(Errata(exception)) }
+    httpClient.doPut(any, any) returns CatsService {
+      Task(Xor.left(exception))
+    }
 
-    httpClient.doPut[SampleRequest](any, any, any)(any) returns Service { Task(Errata(exception)) }
+    httpClient.doPut[SampleRequest](any, any, any)(any) returns CatsService {
+      Task(Xor.left(exception))
+    }
   }
 
 }
@@ -82,131 +106,121 @@ trait ServiceClientSpecification
 case class Test(value: Int)
 
 class ServiceClientSpec
-    extends ServiceClientSpecification {
+  extends ServiceClientSpecification {
 
   "Service Client component" should {
 
     "return a valid response for a valid call to get with response" in
-        new ServiceClientScope with WithSuccessfullyHttpClientMock {
-          val response = serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
-          there was one(httpClient).doGet(any, any)
-          there was noMoreCallsTo(httpClient)
-          response must beLike {
-            case Answer(r) => r.data shouldEqual sampleResponse
-          }
+      new ServiceClientScope with WithSuccessfullyHttpClientMock {
+        val response = serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
+        there was one(httpClient).doGet(any, any)
+        there was noMoreCallsTo(httpClient)
+        response must beLike {
+          case Xor.Right(r) => r.data shouldEqual sampleResponse
         }
+      }
 
     "return a valid response for a valid call to get without response" in
-        new ServiceClientScope with WithSuccessfullyHttpClientMock {
-          val response = serviceClient.get(baseUrl, Seq.empty, None, emptyResponse = true).run.run
-          there was one(httpClient).doGet(any, any)
-          there was noMoreCallsTo(httpClient)
-          response must beLike {
-            case Answer(r) => r.data must beNone
-          }
+      new ServiceClientScope with WithSuccessfullyHttpClientMock {
+        val response = serviceClient.get(baseUrl, Seq.empty, None, emptyResponse = true).value.run
+        there was one(httpClient).doGet(any, any)
+        there was noMoreCallsTo(httpClient)
+        response must beLike {
+          case Xor.Right(r) => r.data must beNone
         }
+      }
 
     "return a valid response for a valid call to delete with response" in
-        new ServiceClientScope with WithSuccessfullyHttpClientMock {
-          val response = serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
-          there was one(httpClient).doDelete(any, any)
-          there was noMoreCallsTo(httpClient)
-          response must beLike {
-            case Answer(r) => r.data shouldEqual sampleResponse
-          }
+      new ServiceClientScope with WithSuccessfullyHttpClientMock {
+        val response = serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
+        there was one(httpClient).doDelete(any, any)
+        there was noMoreCallsTo(httpClient)
+        response must beLike {
+          case Xor.Right(r) => r.data shouldEqual sampleResponse
         }
+      }
 
     "return a valid response for a valid call to post" in
-        new ServiceClientScope with WithSuccessfullyHttpClientMock {
-          val response = serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
-          there was one(httpClient).doPost(any, any)
-          there was noMoreCallsTo(httpClient)
-          response must beLike {
-            case Answer(r) => r.data shouldEqual sampleResponse
-          }
+      new ServiceClientScope with WithSuccessfullyHttpClientMock {
+        val response = serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
+        there was one(httpClient).doPost(any, any)
+        there was noMoreCallsTo(httpClient)
+        response must beLike {
+          case Xor.Right(r) => r.data shouldEqual sampleResponse
         }
+      }
 
     "return a valid response for a valid call to post with valid arguments" in
-        new ServiceClientScope with WithSuccessfullyHttpClientMock {
-          val request = SampleRequest("sample-request")
-          val response = serviceClient.post[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)).run.run
-          there was one(httpClient).doPost[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any)
-          there was noMoreCallsTo(httpClient)
-          response must beLike {
-            case Answer(r) => r.data shouldEqual sampleResponse
-          }
+      new ServiceClientScope with WithSuccessfullyHttpClientMock {
+        val request = SampleRequest("sample-request")
+        val response = serviceClient.post[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)).value.run
+        there was one(httpClient).doPost[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any)
+        there was noMoreCallsTo(httpClient)
+        response must beLike {
+          case Xor.Right(r) => r.data shouldEqual sampleResponse
         }
+      }
 
     "return a valid response for a valid call to put" in
-        new ServiceClientScope with WithSuccessfullyHttpClientMock {
-          val response = serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
-          there was one(httpClient).doPut(any, any)
-          there was noMoreCallsTo(httpClient)
-          response must beLike {
-            case Answer(r) => r.data shouldEqual sampleResponse
-          }
+      new ServiceClientScope with WithSuccessfullyHttpClientMock {
+        val response = serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
+        there was one(httpClient).doPut(any, any)
+        there was noMoreCallsTo(httpClient)
+        response must beLike {
+          case Xor.Right(r) => r.data shouldEqual sampleResponse
         }
+      }
 
     "return a valid response for a valid call to put with valid arguments" in
-        new ServiceClientScope with WithSuccessfullyHttpClientMock {
-          val request = SampleRequest("sample-request")
-          val response = serviceClient.put[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)).run.run
-          there was one(httpClient).doPut[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any)
-          there was noMoreCallsTo(httpClient)
-          response must beLike {
-            case Answer(r) => r.data shouldEqual sampleResponse
-          }
+      new ServiceClientScope with WithSuccessfullyHttpClientMock {
+        val request = SampleRequest("sample-request")
+        val response = serviceClient.put[SampleRequest, SampleResponse](baseUrl, Seq.empty, request, Some(readsResponse)).value.run
+        there was one(httpClient).doPut[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any)
+        there was noMoreCallsTo(httpClient)
+        response must beLike {
+          case Xor.Right(r) => r.data shouldEqual sampleResponse
         }
+      }
 
     "throws a ServiceClientException when no Reads found for the response type" in
-        new ServiceClientScope with WithSuccessfullyHttpClientMock {
-          val response = serviceClient.get[Test](baseUrl, Seq.empty).run.run
-          response must beLike {
-            case Errata(t) => t.headOption must beSome.which {
-              case (_, (_, e)) => e must beAnInstanceOf[ServiceClientException]
-            }
+      new ServiceClientScope with WithSuccessfullyHttpClientMock {
+        val response = serviceClient.get[Test](baseUrl, Seq.empty).value.run
+        response must beLike {
+          case Xor.Left(e) => e must beAnInstanceOf[ServiceClientException]
           }
-        }
+      }
 
     "return a HttpClientException response when the call to get method throw an exception" in
-        new ServiceClientScope with WithFailedHttpClientMock {
-          val response = serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
-          response must beLike {
-            case Errata(t) => t.headOption must beSome.which {
-              case (_, (_, e)) => e shouldEqual exception
-            }
+      new ServiceClientScope with WithFailedHttpClientMock {
+        val response = serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
+        response must beLike {
+          case Xor.Left(e) =>  e shouldEqual exception
           }
-        }
+      }
 
     "return a HttpClientException when the call to delete method throw an exception" in
-        new ServiceClientScope with WithFailedHttpClientMock {
-          val response = serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
-          response must beLike {
-            case Errata(t) => t.headOption must beSome.which {
-              case (_, (_, e)) => e shouldEqual exception
-            }
+      new ServiceClientScope with WithFailedHttpClientMock {
+        val response = serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
+        response must beLike {
+          case Xor.Left(e) =>  e shouldEqual exception
           }
-        }
+      }
 
     "return a HttpClientException when the call to post method throw an exception" in
-        new ServiceClientScope with WithFailedHttpClientMock {
-          val response = serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
-          response must beLike {
-            case Errata(t) => t.headOption must beSome.which {
-              case (_, (_, e)) => e shouldEqual exception
-            }
+      new ServiceClientScope with WithFailedHttpClientMock {
+        val response = serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
+        response must beLike {
+          case Xor.Left(e) =>  e shouldEqual exception
           }
-        }
+      }
 
     "return a HttpClientException when the call to put method throw an exception" in
-        new ServiceClientScope with WithFailedHttpClientMock {
-          val response = serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).run.run
-          response must beLike {
-            case Errata(t) => t.headOption must beSome.which {
-              case (_, (_, e)) => e shouldEqual exception
-            }
-          }
+      new ServiceClientScope with WithFailedHttpClientMock {
+        val response = serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
+        response must beLike {
+          case Xor.Left(e) => e shouldEqual exception
         }
+      }
 
   }
 

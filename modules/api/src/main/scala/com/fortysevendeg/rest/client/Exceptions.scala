@@ -1,7 +1,10 @@
 package com.fortysevendeg.rest.client
 
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+
 trait ServiceClientException
-  extends RuntimeException {
+  extends RuntimeException
+    with NineCardException{
 
   val message: String
 
@@ -11,7 +14,8 @@ trait ServiceClientException
 
 case class ServiceClientExceptionImpl(message: String, cause : Option[Throwable] = None)
   extends RuntimeException(message)
-  with ServiceClientException {
+  with ServiceClientException
+  with NineCardException{
 
   cause map initCause
 }

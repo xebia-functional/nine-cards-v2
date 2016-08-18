@@ -1,22 +1,14 @@
 package com.fortysevendeg.rest.client.http
 
-import scalaz.Scalaz._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
 
-trait HttpClientException
-  extends RuntimeException {
 
-  val message: String
-
-  val cause: Option[Throwable]
-
-}
-
-case class HttpClientExceptionImpl(message: String, cause : Option[Throwable] = None)
+case class HttpClientException(message: String, cause : Option[Throwable] = None)
   extends RuntimeException(message)
-  with HttpClientException {
+  with NineCardException{
   cause map initCause
 }
 
 trait ImplicitsHttpClientExceptions {
-  implicit def httpClientExceptionConverter = (t: Throwable) => HttpClientExceptionImpl(t.getMessage, t.some)
+  implicit def httpClientExceptionConverter = (t: Throwable) => HttpClientException(t.getMessage, Option(t))
 }

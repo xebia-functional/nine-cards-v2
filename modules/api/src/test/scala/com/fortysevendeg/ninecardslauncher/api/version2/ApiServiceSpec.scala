@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.api.version2
 
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import cats.data.Xor
+import com.fortysevendeg.ninecardslauncher.commons.services.{CatsService, Service}
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
@@ -40,14 +40,14 @@ class ApiServiceSpec
       val response = LoginResponse(apiKey, sessionToken)
 
       mockedServiceClient.post[LoginRequest, LoginResponse](any, any, any, any, any)(any) returns
-        Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
+        CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
       val request = LoginRequest(email, loginId, tokenId)
 
-      val serviceResponse = apiService.login(request).run.run
+      val serviceResponse = apiService.login(request).value.run
 
       serviceResponse must beLike {
-        case Answer(r) =>
+        case Xor.Right(r) =>
           r.statusCode shouldEqual statusCodeOk
           r.data must beSome(response)
       }
@@ -70,14 +70,14 @@ class ApiServiceSpec
       val response = InstallationResponse(androidId, deviceToken)
 
       mockedServiceClient.put[InstallationRequest, InstallationResponse](any, any, any, any, any)(any) returns
-        Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
+        CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
       val request = InstallationRequest(deviceToken)
 
-      val serviceClientResponse = apiService.installations(request, simpleHeader).run.run
+      val serviceClientResponse = apiService.installations(request, simpleHeader).value.run
 
       serviceClientResponse must beLike {
-        case Answer(r) =>
+        case Xor.Right(r) =>
           r.statusCode shouldEqual statusCodeOk
           r.data must beSome(response)
       }
@@ -104,12 +104,12 @@ class ApiServiceSpec
         val response = CollectionsResponse(Seq(collection))
 
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
-          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
+          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.latestCollections(category, offset, limit, headerWithMarketToken).run.run
+        val serviceClientResponse = apiService.latestCollections(category, offset, limit, headerWithMarketToken).value.run
 
         serviceClientResponse must beLike {
-          case Answer(r) =>
+          case Xor.Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beSome(response)
         }
@@ -138,12 +138,12 @@ class ApiServiceSpec
         val response = CollectionsResponse(Seq(collection))
 
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
-          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
+          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.topCollections(category, offset, limit, headerWithMarketToken).run.run
+        val serviceClientResponse = apiService.topCollections(category, offset, limit, headerWithMarketToken).value.run
 
         serviceClientResponse must beLike {
-          case Answer(r) =>
+          case Xor.Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beSome(response)
         }
@@ -170,12 +170,12 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.post[CreateCollectionRequest, CreateCollectionResponse](any, any, any, any, any)(any) returns
-          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(createCollectionResponse)))))
+          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(createCollectionResponse)))))
 
-        val serviceClientResponse = apiService.createCollection(createCollectionRequest, simpleHeader).run.run
+        val serviceClientResponse = apiService.createCollection(createCollectionRequest, simpleHeader).value.run
 
         serviceClientResponse must beLike {
-          case Answer(r) =>
+          case Xor.Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beSome(createCollectionResponse)
         }
@@ -202,12 +202,12 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.put[UpdateCollectionRequest, UpdateCollectionResponse](any, any, any, any, any)(any) returns
-          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(updateCollectionResponse)))))
+          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(updateCollectionResponse)))))
 
-        val serviceClientResponse = apiService.updateCollection(publicIdentifier, updateCollectionRequest, simpleHeader).run.run
+        val serviceClientResponse = apiService.updateCollection(publicIdentifier, updateCollectionRequest, simpleHeader).value.run
 
         serviceClientResponse must beLike {
-          case Answer(r) =>
+          case Xor.Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beSome(updateCollectionResponse)
         }
@@ -236,12 +236,12 @@ class ApiServiceSpec
         val response = collection
 
         mockedServiceClient.get[Collection](any, any, any, any) returns
-          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
+          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.getCollection(publicIdentifier, headerWithMarketToken).run.run
+        val serviceClientResponse = apiService.getCollection(publicIdentifier, headerWithMarketToken).value.run
 
         serviceClientResponse must beLike {
-          case Answer(r) =>
+          case Xor.Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beSome(response)
         }
@@ -270,12 +270,12 @@ class ApiServiceSpec
         val response = CollectionsResponse(Seq(collection))
 
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
-          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(response)))))
+          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.getCollections(headerWithMarketToken).run.run
+        val serviceClientResponse = apiService.getCollections(headerWithMarketToken).value.run
 
         serviceClientResponse must beLike {
-          case Answer(r) =>
+          case Xor.Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beSome(response)
         }
@@ -302,12 +302,12 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.post[CategorizeRequest, CategorizeResponse](any, any, any, any, any)(any) returns
-          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(categorizeResponse)))))
+          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(categorizeResponse)))))
 
-        val serviceClientResponse = apiService.categorize(categorizeRequest, headerWithMarketToken).run.run
+        val serviceClientResponse = apiService.categorize(categorizeRequest, headerWithMarketToken).value.run
 
         serviceClientResponse must beLike {
-          case Answer(r) =>
+          case Xor.Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beSome(categorizeResponse)
         }
