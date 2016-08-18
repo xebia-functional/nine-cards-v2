@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{Collections
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
@@ -440,4 +440,12 @@ object EditWidgetsBottomPanelLayoutTweaks {
   def ewbAnimateActions = Tweak[W] (_.animateActions().run)
 
   def ewbAnimateCursors(implicit launcherPresenter: LauncherPresenter) = Tweak[W] (_.animateCursors.run)
+}
+
+object EditHourMomentLayoutTweaks {
+  type W = EditHourMomentLayout
+
+  def ehmPopulate(timeSlot: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme) =
+    Tweak[W] (_.populate(timeSlot, position).run)
+
 }

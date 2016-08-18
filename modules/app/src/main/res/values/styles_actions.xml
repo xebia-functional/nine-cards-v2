@@ -215,6 +215,11 @@
 
     <!-- Edit Moment -->
 
+    <style name="EditMomentScroll">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <style name="EditMomentRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -225,19 +230,39 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
         <item name="android:padding">@dimen/padding_large</item>
         <item name="android:layout_marginTop">@dimen/padding_default</item>
     </style>
 
-    <style name="EditMomentHeaderIconCollection">
+    <style name="EditMomentBodyContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="EditMomentHeaderIcon">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:background">@drawable/icon_edit_moment_hours</item>
+    </style>
+
+    <style name="EditMomentHeaderIconCollection" parent="EditMomentHeaderIcon">
+        <item name="android:src">@drawable/icon_edit_moment_link_collection</item>
+    </style>
+
+    <style name="EditMomentHeaderIconHours" parent="EditMomentHeaderIcon">
+        <item name="android:src">@drawable/icon_edit_moment_hours</item>
+    </style>
+
+    <style name="EditMomentHeaderIconWifi" parent="EditMomentHeaderIcon">
+        <item name="android:src">@drawable/icon_edit_moment_wifi</item>
     </style>
 
     <style name="EditMomentHeaderName">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">0px</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:textSize">@dimen/text_xlarge</item>
         <item name="android:paddingLeft">@dimen/padding_default</item>
     </style>
@@ -246,14 +271,73 @@
         <item name="android:text">@string/linkCollection</item>
     </style>
 
+    <style name="EditMomentHeaderHoursName" parent="EditMomentHeaderName">
+        <item name="android:text">@string/hours</item>
+    </style>
+
+    <style name="EditMomentHeaderWifiName" parent="EditMomentHeaderName">
+        <item name="android:text">@string/wifi</item>
+    </style>
+
+    <style name="EditMomentHeaderAction">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="EditMomentHeaderActionInfo" parent="EditMomentHeaderAction">
+        <item name="android:src">@drawable/icon_edit_moment_info</item>
+    </style>
+
+    <style name="EditMomentHeaderActionAdd" parent="EditMomentHeaderAction">
+        <item name="android:src">@drawable/icon_edit_moment_add</item>
+    </style>
+
     <style name="EditMomentHeaderSelectCollection">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:layout_margin">@dimen/padding_default</item>
+        <item name="android:layout_margin">@dimen/padding_large</item>
+    </style>
+
+    <!-- Edit Hour Moment -->
+
+    <style name="EditHourMomentRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="EditHourMomentHoursLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="EditHourMomentHourContent">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="EditHourMomentHourText">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">left</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
+    </style>
+
+    <style name="EditHourMomentHourLine" parent="ActionsLine">
+        <item name="android:layout_gravity">bottom</item>
     </style>
 
     <!-- Commons actions -->
+
+    <style name="ActionsActionDelete" parent="EditMomentHeaderAction">
+        <item name="android:src">@drawable/icon_edit_moment_delete</item>
+    </style>
 
     <style name="ActionsLine">
         <item name="android:layout_width">match_parent</item>

@@ -282,8 +282,15 @@ trait CollectionsUiActions
       workspaceButtonEditMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       FuncOn.click { view: View =>
-        val iconView = getIconView(view)
-        showAction(f[EditMomentFragment], iconView, resGetColor(R.color.collection_fab_button_item_edit_moment))
+        val momentType = getData.headOption flatMap (_.moment) flatMap (_.momentType) map (_.name)
+        momentType match {
+          case Some(moment) =>
+            val iconView = getIconView(view)
+            val momentMap = Map(EditMomentFragment.momentKey -> moment)
+            showAction(f[EditMomentFragment], iconView, resGetColor(R.color.collection_fab_button_item_edit_moment), momentMap)
+          case _ => Ui.nop
+        }
+
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonChangeMomentStyle <~
