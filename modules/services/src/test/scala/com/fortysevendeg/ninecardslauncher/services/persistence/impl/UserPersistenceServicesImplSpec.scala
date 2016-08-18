@@ -10,7 +10,6 @@ import org.specs2.mutable.Specification
 
 import scalaz.concurrent.Task
 
-
 trait UserPersistenceServicesDataSpecification
   extends Specification
     with DisjunctionMatchers {
@@ -61,9 +60,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
       val result = persistenceServices.addUser(createAddUserRequest()).value.run
 
       result must beLike {
-        case Xor.Right(user) =>
-          user.id shouldEqual uId
-          user.userId shouldEqual Some(userId)
+        case Xor.Right(user) => user.id shouldEqual uId
       }
     }
 
