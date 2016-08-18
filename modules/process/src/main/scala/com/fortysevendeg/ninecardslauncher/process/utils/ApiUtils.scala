@@ -16,16 +16,16 @@ class ApiUtils(persistenceServices: PersistenceServices)
 
   def getRequestConfig(implicit context: ContextSupport): ServiceDef2[RequestConfig, ApiServiceException] = {
     (for {
-      (token, androidToken) <- context.getActiveUserId map getTokens getOrElse Service(Task(Result.errata(ApiServiceException("Missing user id"))))
+      (token, marketToken) <- context.getActiveUserId map getTokens getOrElse Service(Task(Result.errata(ApiServiceException("Missing user id"))))
       androidId <- persistenceServices.getAndroidId
-    } yield RequestConfig(deviceId = androidId, token = token, androidToken = androidToken)).resolve[ApiServiceException]
+    } yield RequestConfig(deviceId = androidId, token = token, marketToken = marketToken)).resolve[ApiServiceException]
   }
 
   private[this] def getTokens(id: Int)(implicit context: ContextSupport): ServiceDef2[(String, Option[String]), ApiServiceException] = Service {
     persistenceServices.findUserById(FindUserByIdRequest(id)).run map {
-      case Answer(Some(User(_, _, _, Some(sessionToken), _, _, androidToken, _, _, _, _, _))) =>
+      case Answer(Some(User(_, _, _, Some(sessionToken), _, marketToken, _, _, _, _, _))) =>
         //TODO refactor to named params once available in Scala
-        Result.answer[(String, Option[String]), ApiServiceException]((sessionToken, androidToken))
+        Result.answer[(String, Option[String]), ApiServiceException]((sessionToken, marketToken))
       case _ => Result.errata(ApiServiceException("Session token doesn't exists"))
     }
   }

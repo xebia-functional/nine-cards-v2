@@ -1161,7 +1161,7 @@ class PersistenceServicesSpec
       result must beLike {
         case Answer(user) =>
           user.id shouldEqual uId
-          user.userId shouldEqual Some(userId)
+          user.email shouldEqual Some(email)
       }
     }
 
