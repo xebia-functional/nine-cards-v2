@@ -74,7 +74,7 @@ class ApiServiceSpec
 
       val request = InstallationRequest(deviceToken)
 
-      val serviceClientResponse = apiService.installations(request, simpleHeader).value.run
+      val serviceClientResponse = apiService.installations(request, serviceHeader).value.run
 
       serviceClientResponse must beLike {
         case Xor.Right(r) =>
@@ -82,15 +82,9 @@ class ApiServiceSpec
           r.data must beSome(response)
       }
 
-      val headers = Seq(
-        (headerAuthToken, installationAuthToken),
-        (headerSessionToken, sessionToken),
-        (headerAndroidId, androidId),
-        (headerMarketLocalization, headerMarketLocalizationValue))
-
       there was one(mockedServiceClient).put(
         path = "/installations",
-        headers = headers,
+        headers = createHeaders(installationAuthToken),
         body = request,
         reads = Some(installationResponseReads),
         emptyResponse = false)(installationRequestWrites)
@@ -106,7 +100,7 @@ class ApiServiceSpec
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
           CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.latestCollections(category, offset, limit, headerWithMarketToken).value.run
+        val serviceClientResponse = apiService.latestCollections(category, offset, limit, serviceMarketHeader).value.run
 
         serviceClientResponse must beLike {
           case Xor.Right(r) =>
@@ -114,16 +108,9 @@ class ApiServiceSpec
             r.data must beSome(response)
         }
 
-        val headers = Seq(
-          (headerAuthToken, latestCollectionsAuthToken),
-          (headerSessionToken, sessionToken),
-          (headerAndroidId, androidId),
-          (headerMarketLocalization, headerMarketLocalizationValue),
-          (headerAndroidMarketToken, marketToken))
-
         there was one(mockedServiceClient).get(
           path = s"/collections/latest/$category/$offset/$limit",
-          headers = headers,
+          headers = createMarketHeaders(latestCollectionsAuthToken),
           reads = Some(collectionsResponseReads),
           emptyResponse = false)
 
@@ -140,7 +127,7 @@ class ApiServiceSpec
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
           CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.topCollections(category, offset, limit, headerWithMarketToken).value.run
+        val serviceClientResponse = apiService.topCollections(category, offset, limit, serviceMarketHeader).value.run
 
         serviceClientResponse must beLike {
           case Xor.Right(r) =>
@@ -148,16 +135,9 @@ class ApiServiceSpec
             r.data must beSome(response)
         }
 
-        val headers = Seq(
-          (headerAuthToken, topCollectionsAuthToken),
-          (headerSessionToken, sessionToken),
-          (headerAndroidId, androidId),
-          (headerMarketLocalization, headerMarketLocalizationValue),
-          (headerAndroidMarketToken, marketToken))
-
         there was one(mockedServiceClient).get(
           path = s"/collections/top/$category/$offset/$limit",
-          headers = headers,
+          headers = createMarketHeaders(topCollectionsAuthToken),
           reads = Some(collectionsResponseReads),
           emptyResponse = false)
 
@@ -172,7 +152,7 @@ class ApiServiceSpec
         mockedServiceClient.post[CreateCollectionRequest, CreateCollectionResponse](any, any, any, any, any)(any) returns
           CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(createCollectionResponse)))))
 
-        val serviceClientResponse = apiService.createCollection(createCollectionRequest, simpleHeader).value.run
+        val serviceClientResponse = apiService.createCollection(createCollectionRequest, serviceHeader).value.run
 
         serviceClientResponse must beLike {
           case Xor.Right(r) =>
@@ -180,15 +160,9 @@ class ApiServiceSpec
             r.data must beSome(createCollectionResponse)
         }
 
-        val headers = Seq(
-          (headerAuthToken, collectionsAuthToken),
-          (headerSessionToken, sessionToken),
-          (headerAndroidId, androidId),
-          (headerMarketLocalization, headerMarketLocalizationValue))
-
         there was one(mockedServiceClient).post(
           path = "/collections",
-          headers = headers,
+          headers = createHeaders(collectionsAuthToken),
           body = createCollectionRequest,
           reads = Some(createCollectionResponseReads),
           emptyResponse = false)(createCollectionRequestWrites)
@@ -204,7 +178,7 @@ class ApiServiceSpec
         mockedServiceClient.put[UpdateCollectionRequest, UpdateCollectionResponse](any, any, any, any, any)(any) returns
           CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(updateCollectionResponse)))))
 
-        val serviceClientResponse = apiService.updateCollection(publicIdentifier, updateCollectionRequest, simpleHeader).value.run
+        val serviceClientResponse = apiService.updateCollection(publicIdentifier, updateCollectionRequest, serviceHeader).value.run
 
         serviceClientResponse must beLike {
           case Xor.Right(r) =>
@@ -212,15 +186,9 @@ class ApiServiceSpec
             r.data must beSome(updateCollectionResponse)
         }
 
-        val headers = Seq(
-          (headerAuthToken, collectionsIdAuthToken),
-          (headerSessionToken, sessionToken),
-          (headerAndroidId, androidId),
-          (headerMarketLocalization, headerMarketLocalizationValue))
-
         there was one(mockedServiceClient).put(
           path = s"/collections/$publicIdentifier",
-          headers = headers,
+          headers = createHeaders(collectionsIdAuthToken),
           body = updateCollectionRequest,
           reads = Some(updateCollectionResponseReads),
           emptyResponse = false)(updateCollectionRequestWrites)
@@ -238,7 +206,7 @@ class ApiServiceSpec
         mockedServiceClient.get[Collection](any, any, any, any) returns
           CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.getCollection(publicIdentifier, headerWithMarketToken).value.run
+        val serviceClientResponse = apiService.getCollection(publicIdentifier, serviceMarketHeader).value.run
 
         serviceClientResponse must beLike {
           case Xor.Right(r) =>
@@ -246,16 +214,9 @@ class ApiServiceSpec
             r.data must beSome(response)
         }
 
-        val headers = Seq(
-          (headerAuthToken, collectionsIdAuthToken),
-          (headerSessionToken, sessionToken),
-          (headerAndroidId, androidId),
-          (headerMarketLocalization, headerMarketLocalizationValue),
-          (headerAndroidMarketToken, marketToken))
-
         there was one(mockedServiceClient).get(
           path = s"/collections/$publicIdentifier",
-          headers = headers,
+          headers = createMarketHeaders(collectionsIdAuthToken),
           reads = Some(collectionReads),
           emptyResponse = false)
 
@@ -272,7 +233,7 @@ class ApiServiceSpec
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
           CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-        val serviceClientResponse = apiService.getCollections(headerWithMarketToken).value.run
+        val serviceClientResponse = apiService.getCollections(serviceMarketHeader).value.run
 
         serviceClientResponse must beLike {
           case Xor.Right(r) =>
@@ -280,16 +241,9 @@ class ApiServiceSpec
             r.data must beSome(response)
         }
 
-        val headers = Seq(
-          (headerAuthToken, collectionsAuthToken),
-          (headerSessionToken, sessionToken),
-          (headerAndroidId, androidId),
-          (headerMarketLocalization, headerMarketLocalizationValue),
-          (headerAndroidMarketToken, marketToken))
-
         there was one(mockedServiceClient).get(
           path = "/collections",
-          headers = headers,
+          headers = createMarketHeaders(collectionsAuthToken),
           reads = Some(collectionsResponseReads),
           emptyResponse = false)
 
@@ -304,7 +258,7 @@ class ApiServiceSpec
         mockedServiceClient.post[CategorizeRequest, CategorizeResponse](any, any, any, any, any)(any) returns
           CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(categorizeResponse)))))
 
-        val serviceClientResponse = apiService.categorize(categorizeRequest, headerWithMarketToken).value.run
+        val serviceClientResponse = apiService.categorize(categorizeRequest, serviceMarketHeader).value.run
 
         serviceClientResponse must beLike {
           case Xor.Right(r) =>
@@ -312,16 +266,9 @@ class ApiServiceSpec
             r.data must beSome(categorizeResponse)
         }
 
-        val headers = Seq(
-          (headerAuthToken, categorizeAuthToken),
-          (headerSessionToken, sessionToken),
-          (headerAndroidId, androidId),
-          (headerMarketLocalization, headerMarketLocalizationValue),
-          (headerAndroidMarketToken, marketToken))
-
         there was one(mockedServiceClient).post(
           path = "/applications/categorize",
-          headers = headers,
+          headers = createMarketHeaders(categorizeAuthToken),
           body = categorizeRequest,
           reads = Some(categorizeResponseReads),
           emptyResponse = false)(categorizeRequestWrites)

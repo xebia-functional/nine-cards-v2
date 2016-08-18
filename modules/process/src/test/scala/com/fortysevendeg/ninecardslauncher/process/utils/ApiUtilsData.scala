@@ -12,12 +12,11 @@ trait ApiUtilsData {
 
   val user = User(
     id = userDBId,
-    userId = None,
     email = None,
+    apiKey = None,
     sessionToken = Some(token),
-    installationId = None,
     deviceToken = None,
-    androidToken = None,
+    marketToken = None,
     name = None,
     avatar = None,
     cover = None,
@@ -26,12 +25,11 @@ trait ApiUtilsData {
 
   val userSessionTokenNone = User(
     id = userDBId,
-    userId = None,
     email = None,
+    apiKey = None,
     sessionToken = None,
-    installationId = None,
     deviceToken = None,
-    androidToken = None,
+    marketToken = None,
     name = None,
     avatar = None,
     cover = None,

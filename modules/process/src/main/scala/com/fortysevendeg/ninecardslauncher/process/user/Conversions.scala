@@ -17,12 +17,11 @@ trait Conversions {
   def toUpdateRequest(id: Int, user: ServicesUser) =
     UpdateUserRequest(
       id = id,
-      userId = user.userId,
       email = user.email,
+      apiKey = user.apiKey,
       sessionToken = user.sessionToken,
-      installationId = user.installationId,
       deviceToken = user.deviceToken,
-      androidToken = user.androidToken,
+      marketToken = user.marketToken,
       name = user.name,
       avatar = user.avatar,
       cover = user.cover,
@@ -32,12 +31,11 @@ trait Conversions {
   def toUser(user: ServicesUser): User =
     User(
       id = user.id,
-      userId = user.userId,
       email = user.email,
+      apiKey = user.apiKey,
       sessionToken = user.sessionToken,
-      installationId = user.installationId,
       deviceToken = user.deviceToken,
-      androidToken = user.androidToken,
+      marketToken = user.marketToken,
       deviceName = user.deviceName,
       deviceCloudId = user.deviceCloudId,
       name = user.name,

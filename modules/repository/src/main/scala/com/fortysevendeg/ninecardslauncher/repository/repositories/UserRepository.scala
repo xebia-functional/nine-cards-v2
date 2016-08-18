@@ -123,12 +123,11 @@ class UserRepository(
 
   private[this] def createMapValues(data: UserData) =
     Map[String, Any](
-      userId -> flatOrNull(data.userId),
       email -> flatOrNull(data.email),
+      apiKey -> flatOrNull(data.apiKey),
       sessionToken -> flatOrNull(data.sessionToken),
-      installationId -> flatOrNull(data.installationId),
       deviceToken -> flatOrNull(data.deviceToken),
-      androidToken -> flatOrNull(data.androidToken),
+      marketToken -> flatOrNull(data.marketToken),
       name -> flatOrNull(data.name),
       avatar -> flatOrNull(data.avatar),
       cover -> flatOrNull(data.cover),

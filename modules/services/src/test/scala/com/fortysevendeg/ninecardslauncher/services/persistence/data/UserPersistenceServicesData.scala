@@ -10,12 +10,11 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
 
   val uId: Int = Random.nextInt(10)
   val nonExistentUserId: Int = Random.nextInt(10) + 100
-  val userId: String = Random.nextString(5)
   val email: String = Random.nextString(5)
   val sessionToken: String = Random.nextString(5)
-  val installationId: String = Random.nextString(5)
+  val apiKey: String = Random.nextString(5)
   val deviceToken: String = Random.nextString(5)
-  val androidToken: String = Random.nextString(5)
+  val marketToken: String = Random.nextString(5)
   val nameUser: String = Random.nextString(5)
   val avatar: String = Random.nextString(5)
   val cover: String = Random.nextString(5)
@@ -25,12 +24,11 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
   def createSeqUser(
     num: Int = 5,
     id: Int = uId,
-    userId: String = userId,
     email: String = email,
     sessionToken: String = sessionToken,
-    installationId: String = installationId,
+    apiKey: String = apiKey,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken,
+    marketToken: String = marketToken,
     name: String = nameUser,
     avatar: String = avatar,
     cover: String = cover,
@@ -38,12 +36,11 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
     deviceCloudId: String = deviceCloudId): Seq[User] = List.tabulate(num)(
     item => User(
       id = id + item,
-      userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
-      installationId = Option(installationId),
+      apiKey = Option(apiKey),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken),
+      marketToken = Option(marketToken),
       name = Option(name),
       avatar = Option(avatar),
       cover = Option(cover),
@@ -57,24 +54,22 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
     List.tabulate(num)(item => RepositoryUser(id = id + item, data = data))
 
   def createRepoUserData(
-    userId: String = userId,
     email: String = email,
     sessionToken: String = sessionToken,
-    installationId: String = installationId,
+    apiKey: String = apiKey,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken,
+    marketToken: String = marketToken,
     name: String = nameUser,
     avatar: String = avatar,
     cover: String = cover,
     deviceName: String = deviceName,
     deviceCloudId: String = deviceCloudId): RepositoryUserData =
     RepositoryUserData(
-      userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
-      installationId = Option(installationId),
+      apiKey = Option(apiKey),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken),
+      marketToken = Option(marketToken),
       name = Option(name),
       avatar = Option(avatar),
       cover = Option(cover),
@@ -88,24 +83,22 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
   val repoUser: RepositoryUser = seqRepoUser(0)
 
   def createAddUserRequest(
-    userId: String = userId,
     email: String = email,
     sessionToken: String = sessionToken,
-    installationId: String = installationId,
+    apiKey: String = apiKey,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken,
+    marketToken: String = marketToken,
     name: String = nameUser,
     avatar: String = avatar,
     cover: String = cover,
     deviceName: String = deviceName,
     deviceCloudId: String = deviceCloudId): AddUserRequest =
     AddUserRequest(
-      userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
-      installationId = Option(installationId),
+      apiKey = Option(apiKey),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken),
+      marketToken = Option(marketToken),
       name = Option(name),
       avatar = Option(avatar),
       cover = Option(cover),
@@ -120,12 +113,11 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
 
   def createUpdateUserRequest(
     id: Int = uId,
-    userId: String = userId,
     email: String = email,
     sessionToken: String = sessionToken,
-    installationId: String = installationId,
+    apiKey: String = apiKey,
     deviceToken: String = deviceToken,
-    androidToken: String = androidToken,
+    marketToken: String = marketToken,
     name: String = nameUser,
     avatar: String = avatar,
     cover: String = cover,
@@ -133,12 +125,11 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
     deviceCloudId: String = deviceCloudId): UpdateUserRequest =
     UpdateUserRequest(
       id = id,
-      userId = Option(userId),
       email = Option(email),
       sessionToken = Option(sessionToken),
-      installationId = Option(installationId),
+      apiKey = Option(apiKey),
       deviceToken = Option(deviceToken),
-      androidToken = Option(androidToken),
+      marketToken = Option(marketToken),
       name = Option(name),
       avatar = Option(avatar),
       cover = Option(cover),
