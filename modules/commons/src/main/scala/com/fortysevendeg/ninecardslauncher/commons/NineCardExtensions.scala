@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
+import cats.data.XorT
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import rapture.core._
 import rapture.core.scalazInterop.ResultT
 
@@ -65,6 +67,12 @@ object NineCardExtensions {
       }
       ResultT(innerResult)
     }
+
+  }
+  implicit class XorTExtensions[Val](r: XorT[Task, NineCardException, Val]) {
+
+    def resolve[E <: NineCardException](implicit converter: Throwable => E): XorT[Task, NineCardException, Val] =
+      r leftMap converter
 
   }
 

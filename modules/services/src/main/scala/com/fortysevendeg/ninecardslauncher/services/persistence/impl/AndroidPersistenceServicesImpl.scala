@@ -1,11 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import android.database.Cursor
 import android.net.Uri
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, PersistenceServices}
-import rapture.core.Result
 
 import scalaz.concurrent.Task
 
@@ -15,15 +17,16 @@ trait AndroidPersistenceServicesImpl extends PersistenceServices {
 
   val contentGServices = "content://com.google.android.gsf.gservices"
 
-  def getAndroidId(implicit context: ContextSupport) =
-    Service {
+  def getAndroidId(implicit context: ContextSupport): CatsService[String] =
+    CatsService {
       Task {
-        val cursor = Option(context.getContentResolver.query(Uri.parse(contentGServices), javaNull, javaNull, Array(androidId), javaNull))
-        val result = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
+        val cursor: Option[Cursor] = Option(context.getContentResolver.query(Uri.parse(contentGServices), javaNull, javaNull, Array(androidId), javaNull))
+        val result: Option[String] = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
         cursor foreach (_.close())
-        result map {
-          Result.answer[String, AndroidIdNotFoundException]
-        } getOrElse Result.errata[String, AndroidIdNotFoundException](AndroidIdNotFoundException(message = "Android Id not found"))
+        result match {
+          case Some(r) => Xor.Right(r)
+          case _ => Xor.Left(AndroidIdNotFoundException("Android Id not found"))
+        }
       }
     }
 }
