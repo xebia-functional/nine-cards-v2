@@ -249,8 +249,9 @@ trait DrawerUiActions
       })
 
   def revealOutDrawer: Ui[_] = {
+    val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
     val searchIsEmpty = searchBoxView exists (_.isEmpty)
-    (drawerLayout <~ dlUnlockedStart <~ dlUnlockedEnd) ~
+    (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank)) ~
       (topBarPanel <~ vVisible) ~
       (searchBoxView <~ sbvClean <~ sbvDisableSearch) ~
       (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData(searchIsEmpty)))
