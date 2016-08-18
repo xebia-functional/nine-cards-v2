@@ -99,6 +99,8 @@
     <string name="hours">Hours</string>
     <string name="wifi">Wifi</string>
 
+    <string name="noLinkCollectionToMoment">No link collection to this moment</string>
+
     <string name="widgetsErrorMessage">We have had problems loading the widgets. Please try again</string>
 
     <!-- Collections -->

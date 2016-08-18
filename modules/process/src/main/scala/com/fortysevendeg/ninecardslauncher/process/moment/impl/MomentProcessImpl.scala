@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, M
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.DefaultApps._
-import com.fortysevendeg.ninecardslauncher.process.moment._
+import com.fortysevendeg.ninecardslauncher.process.moment.{UpdateMomentRequest, _}
 import com.fortysevendeg.ninecardslauncher.process.moment.models.App
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
@@ -53,6 +53,11 @@ class MomentProcessImpl(
     (for {
       moment <- persistenceServices.addMoment(toAddMomentRequest(None, nineCardsMoment))
     } yield toMoment(moment)).resolve[MomentException]
+
+  override def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport) =
+    (for {
+      _ <- persistenceServices.updateMoment(toServiceUpdateMomentRequest(item))
+    } yield ()).resolve[MomentException]
 
   override def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport) =
     (for {

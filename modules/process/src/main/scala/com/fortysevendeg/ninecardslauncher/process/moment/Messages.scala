@@ -6,6 +6,14 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 case class MomentProcessConfig(
   namesMoments: Map[NineCardsMoment, String])
 
+case class UpdateMomentRequest(
+  id: Int,
+  collectionId: Option[Int],
+  timeslot: Seq[MomentTimeSlot],
+  wifi: Seq[String],
+  headphone: Boolean,
+  momentType: Option[NineCardsMoment])
+
 case class SaveMomentRequest(
   collectionId: Option[Int],
   timeslot: Seq[MomentTimeSlot],
