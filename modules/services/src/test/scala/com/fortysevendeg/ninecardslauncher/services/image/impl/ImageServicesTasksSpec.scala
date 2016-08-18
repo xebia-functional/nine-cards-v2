@@ -9,7 +9,7 @@ import android.util.DisplayMetrics
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationExceptionImpl, FileException}
+import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationException, FileException}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -162,7 +162,7 @@ class ImageServicesTasksSpec
       new ImageServicesTasksScope with ErrorBitmapUrlImageServicesTasksScope {
         val result = mockImageServicesTask.getBitmapFromURL(uri).value.run
         result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[BitmapTransformationExceptionImpl]
+          case Xor.Left(e) => e must beAnInstanceOf[BitmapTransformationException]
         }
       }
 

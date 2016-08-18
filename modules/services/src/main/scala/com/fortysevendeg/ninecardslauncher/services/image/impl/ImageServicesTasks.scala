@@ -33,7 +33,7 @@ trait ImageServicesTasks
       XorCatchAll[BitmapTransformationException] {
         createInputStream(uri) match {
           case is: InputStream => createBitmapByInputStream(is)
-          case _ => throw BitmapTransformationExceptionImpl(s"Unexpected error while fetching content from uri: $uri")
+          case _ => throw BitmapTransformationException(s"Unexpected error while fetching content from uri: $uri")
         }
       }
     }

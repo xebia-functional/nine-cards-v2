@@ -21,11 +21,11 @@ trait ImageServicesImplSpecification
   extends Specification
     with Mockito {
 
-  val bitmapException = BitmapTransformationExceptionImpl("")
+  val bitmapException = BitmapTransformationException("")
 
   val serviceBitmapException = CatsService(Task(Xor.Left(bitmapException)))
 
-  val fileException = FileExceptionImpl("")
+  val fileException = FileException("")
 
   val serviceFileException: CatsService[Unit] = CatsService(Task(Xor.Left(fileException)))
 
