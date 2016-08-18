@@ -73,8 +73,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
       val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
 
       result must beLike {
-        case Xor.Right(a) =>
-          a shouldEqual Seq(dockApp)
+        case Xor.Right(a) => a shouldEqual Seq(dockApp)
       }
     }
 
@@ -89,8 +88,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
       val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
 
       result must beLike {
-        case Xor.Right(a) =>
-          a shouldEqual Seq(dockApp)
+        case Xor.Right(a) => a shouldEqual Seq(dockApp)
       }
     }
 
@@ -140,8 +138,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
       val result = persistenceServices.deleteAllDockApps().value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual items
+        case Xor.Right(deleted) => deleted shouldEqual items
       }
     }
 
@@ -160,8 +157,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
       val result = persistenceServices.deleteDockApp(createDeleteDockAppRequest(dockApp = dockApp)).value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual item
+        case Xor.Right(deleted) => deleted shouldEqual item
       }
     }
 
@@ -200,8 +196,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
       val result = persistenceServices.fetchIterableDockApps.value.run
 
       result must beLike {
-        case Xor.Right(iter) =>
-          iter.moveToPosition(0) shouldEqual iterableDockApps.moveToPosition(0)
+        case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableDockApps.moveToPosition(0)
       }
     }
 
@@ -231,8 +226,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
       val result = persistenceServices.findDockAppById(createFindDockAppByIdRequest(id = nonExistentDockAppId)).value.run
 
       result must beLike {
-        case Xor.Right(maybeDockApp) =>
-          maybeDockApp must beNone
+        case Xor.Right(maybeDockApp) => maybeDockApp must beNone
       }
     }
 

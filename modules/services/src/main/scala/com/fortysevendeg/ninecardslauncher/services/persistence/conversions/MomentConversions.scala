@@ -31,6 +31,16 @@ trait MomentConversions {
         headphone = moment.headphone,
         momentType = moment.momentType))
 
+  def toRepositoryMomentWithoutCollection(moment: Moment): RepositoryMoment =
+    RepositoryMoment(
+      id = moment.id,
+      data = RepositoryMomentData(
+        collectionId = None,
+        timeslot = Json.toJson(moment.timeslot).toString,
+        wifi = moment.wifi.mkString(","),
+        headphone = moment.headphone,
+        momentType = moment.momentType))
+
   def toRepositoryMoment(request: UpdateMomentRequest): RepositoryMoment =
     RepositoryMoment(
       id = request.id,

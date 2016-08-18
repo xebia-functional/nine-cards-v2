@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
+import android.support.v4.view.GravityCompat
+import android.support.v4.widget.DrawerLayout
 import android.view.View
-import android.widget.RadioButton
 import android.widget.TextView
 import macroid.Excerpt
 
@@ -13,4 +14,15 @@ object CommonsExcerpt {
 
   def text = Excerpt[TextView, Option[String]] (tv => Option(tv.getText) map (_.toString))
 
+  def dlIsLockedClosedDrawerStart: Excerpt[DrawerLayout, Boolean] = Excerpt[DrawerLayout, Boolean](
+    _.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+
+  def dlIsLockedClosedDrawerEnd: Excerpt[DrawerLayout, Boolean] = Excerpt[DrawerLayout, Boolean](
+  _.getDrawerLockMode(GravityCompat.END) == DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+
+  def dlIsLockedOpenedDrawerStart: Excerpt[DrawerLayout, Boolean] = Excerpt[DrawerLayout, Boolean](
+    _.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+
+  def dlIsLockedOpenedDrawerEnd: Excerpt[DrawerLayout, Boolean] = Excerpt[DrawerLayout, Boolean](
+    _.getDrawerLockMode(GravityCompat.END) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
 }

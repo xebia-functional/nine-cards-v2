@@ -398,29 +398,6 @@
         <item name="android:layout_marginBottom">@dimen/size_workspace_menu_item</item>
     </style>
 
-    <!-- Moments Workspace -->
-
-    <style name="LauncherMomentRoot">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-    </style>
-
-    <style name="LauncherMomentWidgets">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-    </style>
-
-    <style name="LauncherMomentMessage">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:text">@string/momentNotFoundMessage</item>
-        <item name="android:textColor">@color/text_launcher_action</item>
-        <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:padding">@dimen/padding_default</item>
-    </style>
-
     <!-- Collections Workspace -->
 
     <style name="LauncherCollectionsRoot">

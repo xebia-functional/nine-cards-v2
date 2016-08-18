@@ -105,8 +105,7 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
       val result = persistenceServices.deleteAllCards().value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual items
+        case Xor.Right(deleted) => deleted shouldEqual items
       }
     }
 
@@ -125,8 +124,7 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
       val result = persistenceServices.deleteCard(createDeleteCardRequest(card = card)).value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual item
+        case Xor.Right(deleted) => deleted shouldEqual item
       }
     }
 
@@ -145,8 +143,7 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
       val result = persistenceServices.deleteCardsByCollection(collectionId).value.run
 
       result must beLike {
-        case Xor.Right(deleted) =>
-          deleted shouldEqual items
+        case Xor.Right(deleted) => deleted shouldEqual items
       }
     }
 
@@ -165,8 +162,7 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
       val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId)).value.run
 
       result must beLike {
-        case Xor.Right(cards) =>
-          cards.size shouldEqual seqCard.size
+        case Xor.Right(cards) => cards.size shouldEqual seqCard.size
       }
     }
 
@@ -185,8 +181,7 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
       val result = persistenceServices.fetchCards.value.run
 
       result must beLike {
-        case Xor.Right(cards) =>
-          cards.size shouldEqual seqCard.size
+        case Xor.Right(cards) => cards.size shouldEqual seqCard.size
       }
     }
 
@@ -216,8 +211,7 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
       val result = persistenceServices.findCardById(createFindCardByIdRequest(id = nonExistentCardId)).value.run
 
       result must beLike {
-        case Xor.Right(maybeCard) =>
-          maybeCard must beNone
+        case Xor.Right(maybeCard) => maybeCard must beNone
       }
     }
 
@@ -236,8 +230,7 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
       val result = persistenceServices.updateCard(createUpdateCardRequest()).value.run
 
       result must beLike {
-        case Xor.Right(updated) =>
-          updated shouldEqual item
+        case Xor.Right(updated) => updated shouldEqual item
       }
     }
 
@@ -256,8 +249,7 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
       val result = persistenceServices.updateCards(createUpdateCardsRequest()).value.run
 
       result must beLike {
-        case Xor.Right(updated) =>
-          updated shouldEqual (item to items)
+        case Xor.Right(updated) => updated shouldEqual (item to items)
       }
     }
 

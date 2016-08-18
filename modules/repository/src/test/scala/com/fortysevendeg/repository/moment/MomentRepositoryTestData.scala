@@ -25,7 +25,7 @@ trait MomentRepositoryTestData {
     i => MomentEntity(
       id = testId + i,
       data = MomentEntityData(
-        collectionId = testCollectionId,
+        collectionId = Some(testCollectionId),
         timeslot = testTimeslot,
         wifi = testWifi,
         headphone = testHeadphone,
