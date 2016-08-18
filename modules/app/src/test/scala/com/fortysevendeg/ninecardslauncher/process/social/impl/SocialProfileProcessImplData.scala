@@ -21,12 +21,11 @@ trait SocialProfileProcessImplData {
 
   val user = User(
     activeUserId,
-    userId = Some("user-id"),
     email = Some("email"),
+    apiKey = Some("api-key"),
     sessionToken = Some("session-token"),
-    installationId = Some("installation-id"),
     deviceToken = Some("device-token"),
-    androidToken = Some("android-token"),
+    marketToken = Some("android-token"),
     name = Some(name),
     avatar = Some(avatarUrl),
     cover = Some(coverUrl),
@@ -37,12 +36,11 @@ trait SocialProfileProcessImplData {
 
   val updateUserRequest = UpdateUserRequest(
     id = user.id,
-    userId = user.userId,
     email = user.email,
+    apiKey = user.apiKey,
     sessionToken = user.sessionToken,
-    installationId = user.installationId,
     deviceToken = user.deviceToken,
-    androidToken = user.androidToken,
+    marketToken = user.marketToken,
     name = googlePlusProfile.name,
     avatar = googlePlusProfile.avatarUrl,
     cover = googlePlusProfile.coverUrl,

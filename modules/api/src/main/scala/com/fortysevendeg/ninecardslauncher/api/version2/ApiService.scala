@@ -47,7 +47,7 @@ class ApiService(serviceClient: ServiceClient) {
 
   def installations(
     request: InstallationRequest,
-    header: SimpleHeader)(
+    header: ServiceHeader)(
     implicit reads: Reads[InstallationResponse], writes: Writes[InstallationRequest]): ServiceDef2[ServiceClientResponse[InstallationResponse], ApiException] =
     serviceClient.put[InstallationRequest, InstallationResponse](
       path = installationsPath,
@@ -59,7 +59,7 @@ class ApiService(serviceClient: ServiceClient) {
     category: String,
     offset: Int,
     limit: Int,
-    header: HeaderWithMarketToken)(
+    header: ServiceMarketHeader)(
     implicit reads: Reads[CollectionsResponse]): ServiceDef2[ServiceClientResponse[CollectionsResponse], ApiException] = {
 
     val path = s"$latestCollectionsPath/$category/$offset/$limit"
@@ -74,7 +74,7 @@ class ApiService(serviceClient: ServiceClient) {
     category: String,
     offset: Int,
     limit: Int,
-    header: HeaderWithMarketToken)(
+    header: ServiceMarketHeader)(
     implicit reads: Reads[CollectionsResponse]): ServiceDef2[ServiceClientResponse[CollectionsResponse], ApiException] = {
 
     val path = s"$topCollectionsPath/$category/$offset/$limit"
@@ -87,7 +87,7 @@ class ApiService(serviceClient: ServiceClient) {
 
   def createCollection(
     request: CreateCollectionRequest,
-    header: SimpleHeader)(
+    header: ServiceHeader)(
     implicit reads: Reads[CreateCollectionResponse], writes: Writes[CreateCollectionRequest]): ServiceDef2[ServiceClientResponse[CreateCollectionResponse], ApiException] =
     serviceClient.post[CreateCollectionRequest, CreateCollectionResponse](
       path = collectionsPath,
@@ -98,7 +98,7 @@ class ApiService(serviceClient: ServiceClient) {
   def updateCollection(
     publicIdentifier: String,
     request: UpdateCollectionRequest,
-    header: SimpleHeader)(
+    header: ServiceHeader)(
     implicit reads: Reads[UpdateCollectionResponse], writes: Writes[UpdateCollectionRequest]): ServiceDef2[ServiceClientResponse[UpdateCollectionResponse], ApiException] = {
 
     val path = s"$collectionsPath/$publicIdentifier"
@@ -112,7 +112,7 @@ class ApiService(serviceClient: ServiceClient) {
 
   def getCollection(
     publicIdentifier: String,
-    header: HeaderWithMarketToken)(
+    header: ServiceMarketHeader)(
     implicit reads: Reads[Collection]): ServiceDef2[ServiceClientResponse[Collection], ApiException] = {
 
     val path = s"$collectionsPath/$publicIdentifier"
@@ -123,7 +123,7 @@ class ApiService(serviceClient: ServiceClient) {
       reads = Some(reads))
   }
 
-  def getCollections(header: HeaderWithMarketToken)(
+  def getCollections(header: ServiceMarketHeader)(
     implicit reads: Reads[CollectionsResponse]): ServiceDef2[ServiceClientResponse[CollectionsResponse], ApiException] =
     serviceClient.get[CollectionsResponse](
       path = collectionsPath,
@@ -132,7 +132,7 @@ class ApiService(serviceClient: ServiceClient) {
 
   def categorize(
     request: CategorizeRequest,
-    header: HeaderWithMarketToken)(
+    header: ServiceMarketHeader)(
     implicit reads: Reads[CategorizeResponse], writes: Writes[CategorizeRequest]): ServiceDef2[ServiceClientResponse[CategorizeResponse], ApiException] =
     serviceClient.post[CategorizeRequest, CategorizeResponse](
       path = categorizePath,
@@ -140,9 +140,14 @@ class ApiService(serviceClient: ServiceClient) {
       body = request,
       reads = Some(reads))
 
-  private[this] def createHeaders(
+  private[this] def createHeaders[T <: BaseServiceHeader](
     path: String,
-    header: Header): Seq[(String, String)] = {
+    header: T): Seq[(String, String)] = {
+
+    def readAndroidMarketToken: Option[String] = header match {
+      case h: ServiceMarketHeader => Option(h.androidMarketToken)
+      case _ => None
+    }
 
     val algorithm = "HmacSHA512"
     val charset = "UTF-8"
@@ -160,7 +165,7 @@ class ApiService(serviceClient: ServiceClient) {
       (headerSessionToken, header.sessionToken),
       (headerAndroidId, header.androidId),
       (headerMarketLocalization, headerMarketLocalizationValue)) ++
-    (header.androidMarketToken map ((headerAndroidMarketToken, _))).toSeq
+    (readAndroidMarketToken map ((headerAndroidMarketToken, _))).toSeq
   }
 
 }

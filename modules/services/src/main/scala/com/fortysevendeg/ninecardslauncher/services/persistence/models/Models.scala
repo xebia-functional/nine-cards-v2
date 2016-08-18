@@ -38,12 +38,11 @@ case class Card(
 
 case class User(
   id: Int,
-  userId: Option[String],
   email: Option[String],
+  apiKey: Option[String],
   sessionToken: Option[String],
-  installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String],
+  marketToken: Option[String],
   name: Option[String],
   avatar: Option[String],
   cover: Option[String],
