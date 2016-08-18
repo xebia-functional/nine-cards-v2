@@ -3,10 +3,9 @@ package com.fortysevendeg.ninecardslauncher.services.apps.impl
 import android.content.Intent
 import android.content.pm.{PackageManager, ResolveInfo}
 import android.provider.MediaStore
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.{XorCatchAll, javaNull}
 import com.fortysevendeg.ninecardslauncher.services.apps._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 
@@ -20,17 +19,17 @@ class AppsServicesImpl
   val androidFeedback = "com.google.android.feedback"
   val androidVending = "com.android.vending"
 
-  override def getInstalledApplications(implicit context: ContextSupport) = Service {
+  override def getInstalledApplications(implicit context: ContextSupport) = CatsService {
     Task {
-      CatchAll[AppsInstalledException] {
+      XorCatchAll[AppsInstalledException] {
         getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_LAUNCHER))
       }
     }
   }
 
-  override def getApplication(packageName: String)(implicit context: ContextSupport) = Service {
+  override def getApplication(packageName: String)(implicit context: ContextSupport) = CatsService {
     Task {
-      CatchAll[AppsInstalledException] {
+      XorCatchAll[AppsInstalledException] {
         val packageManager = context.getPackageManager
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         getApplicationByResolveInfo(packageManager.resolveActivity(intent, 0))
@@ -38,9 +37,9 @@ class AppsServicesImpl
     }
   }
 
-  def getDefaultApps(implicit context: ContextSupport) = Service {
+  def getDefaultApps(implicit context: ContextSupport) = CatsService {
     Task {
-      CatchAll[AppsInstalledException] {
+      XorCatchAll[AppsInstalledException] {
 
         val phoneApp: Option[Application] = getAppsByIntent(phoneIntent()).headOption
 

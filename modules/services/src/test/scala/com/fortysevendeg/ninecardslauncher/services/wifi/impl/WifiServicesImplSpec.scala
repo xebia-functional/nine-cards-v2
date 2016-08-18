@@ -2,11 +2,11 @@ package com.fortysevendeg.ninecardslauncher.services.wifi.impl
 
 import android.net.wifi.{WifiInfo, WifiManager}
 import android.net.{ConnectivityManager, NetworkInfo}
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.Answer
 
 import scala.util.Random
 
@@ -54,17 +54,17 @@ class WifiServicesImplSpec
 
   "returns the current SSID" in
     new WifiImplScope {
-      val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+      val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
       result must beLike {
-        case Answer(resultSSID) => resultSSID shouldEqual Some(ssid)
+        case Xor.Right(resultSSID) => resultSSID shouldEqual Some(ssid)
       }
     }
 
   "returns an empty SSID if it is not connected" in
     new WifiImplScope with WifiErrorScope {
-      val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+      val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
       result must beLike {
-        case Answer(resultSSID) => resultSSID shouldEqual Some("")
+        case Xor.Right(resultSSID) => resultSSID shouldEqual Some("")
       }
     }
 }

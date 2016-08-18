@@ -1,19 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.services.calls.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.ContentResolverWrapperImpl
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.services.calls.CallsContentProvider._
-import com.fortysevendeg.ninecardslauncher.services.calls.CallsServicesException
 import com.fortysevendeg.ninecardslauncher.services.contacts.Fields
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 trait CallsServicesSpecification
   extends Specification
-  with Mockito
-  with CallsServicesImplData {
+    with Mockito
+    with CallsServicesImplData {
 
   trait CallsServicesScope
     extends Scope {
@@ -36,7 +35,7 @@ trait CallsServicesSpecification
 
   trait ErrorCallsServicesResponses
     extends CallsServicesScope
-    with CallsServicesImplData {
+      with CallsServicesImplData {
 
     val contentResolverException = new RuntimeException("Irrelevant message")
 
@@ -58,26 +57,21 @@ class CallsServicesImplSpec
 
       "returns all the contacts from the content resolver" in
         new ValidCallsServicesResponses {
-          val result = callServices.getLastCalls.run.run
+          val result = callServices.getLastCalls.value.run
 
           result must beLike {
-            case Answer(seq) => seq shouldEqual calls
+            case Xor.Right(seq) => seq shouldEqual calls
           }
         }
 
       "return a CallsServiceException when the content resolver throws an exception" in
         new ErrorCallsServicesResponses {
-          val result = callServices.getLastCalls.run.run
+          val result = callServices.getLastCalls.value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: CallsServicesException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
-
     }
 
   }

@@ -36,13 +36,13 @@ trait DeviceProcessSpecification
 
   val persistenceServiceException = PersistenceServiceException("")
 
-  val bitmapTransformationException = BitmapTransformationExceptionImpl("")
+  val bitmapTransformationException = BitmapTransformationException("")
 
   val shortcutServicesException = ShortcutServicesException("")
 
   val contactsServicesException = ContactsServiceException("")
 
-  val fileServicesException = FileExceptionImpl("")
+  val fileServicesException = FileException("")
 
   val widgetsServicesException = WidgetServicesException("")
 

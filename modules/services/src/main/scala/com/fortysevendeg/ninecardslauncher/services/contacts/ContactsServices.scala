@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts
 
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{ContactCounter, Contact}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactCounter}
 
 trait ContactsServices {
 
@@ -13,7 +13,7 @@ trait ContactsServices {
     *         information about contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getContacts: ServiceDef2[Seq[Contact], ContactsServiceException]
+  def getContacts: CatsService[Seq[Contact]]
 
   /**
     * Returns the number of times the first letter of a contact is repeated alphabetically
@@ -22,7 +22,7 @@ trait ContactsServices {
     *         information about the times is repeated a contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getAlphabeticalCounterContacts: ServiceDef2[Seq[ContactCounter], ContactsServiceException]
+  def getAlphabeticalCounterContacts: CatsService[Seq[ContactCounter]]
 
   /**
     * Get iterable contacts sort by name. The info field is not filled
@@ -31,7 +31,7 @@ trait ContactsServices {
     *         information about contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getIterableContacts: ServiceDef2[IterableCursor[Contact], ContactsServiceException]
+  def getIterableContacts: CatsService[IterableCursor[Contact]]
 
   /**
     * Get iterable contacts by keyword sort by name. The info field is not filled
@@ -40,7 +40,7 @@ trait ContactsServices {
     *         information about contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getIterableContactsByKeyword(keyword: String): ServiceDef2[IterableCursor[Contact], ContactsServiceException]
+  def getIterableContactsByKeyword(keyword: String): CatsService[IterableCursor[Contact]]
 
   /**
     * Return contact by email if exist. The info field is not filled
@@ -49,7 +49,7 @@ trait ContactsServices {
     *         information about contact
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def fetchContactByEmail(email: String): ServiceDef2[Option[Contact], ContactsServiceException]
+  def fetchContactByEmail(email: String): CatsService[Option[Contact]]
 
   /**
     * Return contact by phone number if exist. The info field is not filled
@@ -58,7 +58,7 @@ trait ContactsServices {
     *         information about contact
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def fetchContactByPhoneNumber(phoneNumber: String): ServiceDef2[Option[Contact], ContactsServiceException]
+  def fetchContactByPhoneNumber(phoneNumber: String): CatsService[Option[Contact]]
 
   /**
     * Return contact by lookup key. The info field is filled
@@ -67,7 +67,7 @@ trait ContactsServices {
     *         information about contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider or lookup key don't exits
     */
-  def findContactByLookupKey(lookupKey: String): ServiceDef2[Contact, ContactsServiceException]
+  def findContactByLookupKey(lookupKey: String): CatsService[Contact]
 
   /**
     * Return favorite contacts. The info field is not filled
@@ -76,7 +76,7 @@ trait ContactsServices {
     *         information about contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getFavoriteContacts: ServiceDef2[Seq[Contact], ContactsServiceException]
+  def getFavoriteContacts: CatsService[Seq[Contact]]
 
   /**
     * Return iterable favorite contacts. The info field is not filled
@@ -85,7 +85,7 @@ trait ContactsServices {
     *         information about contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getIterableFavoriteContacts: ServiceDef2[IterableCursor[Contact], ContactsServiceException]
+  def getIterableFavoriteContacts: CatsService[IterableCursor[Contact]]
 
   /**
     * Return contacts with phone number. The info field is not filled
@@ -94,7 +94,7 @@ trait ContactsServices {
     *         information about contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getContactsWithPhone: ServiceDef2[Seq[Contact], ContactsServiceException]
+  def getContactsWithPhone: CatsService[Seq[Contact]]
 
   /**
     * Return iterable contacts with phone number. The info field is not filled
@@ -103,5 +103,5 @@ trait ContactsServices {
     *         information about contacts
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getIterableContactsWithPhone: ServiceDef2[IterableCursor[Contact], ContactsServiceException]
+  def getIterableContactsWithPhone: CatsService[IterableCursor[Contact]]
 }
