@@ -34,6 +34,10 @@ trait CollectionPersistenceServicesDataSpecification
 
     mockMomentRepository.addMoments(any) returns CatsService(Task(Xor.right(Seq(repoMoment))))
 
+    mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns CatsService(Task(Xor.right(item)))
+
+    mockMomentRepository.updateMoment(repoMoment) returns CatsService(Task(Xor.right(item)))
+
     mockMomentRepository.deleteMoment(repoMoment) returns CatsService(Task(Xor.right(item)))
 
     mockMomentRepository.fetchMoments() returns CatsService(Task(Xor.right(seqRepoMoment)))

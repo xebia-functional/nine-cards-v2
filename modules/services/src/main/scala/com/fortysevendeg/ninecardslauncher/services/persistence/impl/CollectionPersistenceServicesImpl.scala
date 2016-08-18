@@ -163,10 +163,10 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       } yield ()
     }
 
-    val s = requests map (r => createOrUpdateMoment(r).run)
+    val s = requests map (r => createOrUpdateMoment(r).value)
 
-    Service(Task.gatherUnordered(s) map (list =>
-      CatchAll[PersistenceServiceException](list.collect { case Answer(value) => value })))
+    CatsService(Task.gatherUnordered(s) map (list =>
+      XorCatchAll[PersistenceServiceException](list.collect { case Xor.Right(value) => value })))
 
   }
 
