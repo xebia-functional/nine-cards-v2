@@ -46,11 +46,16 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
       maybeMoment <- momentRepository.findMomentById(request.id)
     } yield maybeMoment map toMoment).resolve[PersistenceServiceException]
 
-  def fetchMomentByType(momentType: String) =
+  def getMomentByType(momentType: String) =
     (for {
       moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType))
       moment <- getHead(moments.headOption)
     } yield toMoment(moment)).resolve[PersistenceServiceException]
+
+  def fetchMomentByType(momentType: String) =
+    (for {
+      moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType))
+    } yield moments.headOption map toMoment).resolve[PersistenceServiceException]
 
   def updateMoment(request: UpdateMomentRequest) =
     (for {

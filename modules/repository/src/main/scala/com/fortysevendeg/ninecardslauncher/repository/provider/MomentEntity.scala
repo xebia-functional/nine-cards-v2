@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.repository.Conversions._
 case class MomentEntity(id: Int, data: MomentEntityData)
 
 case class MomentEntityData(
-  collectionId: Int,
+  collectionId: Option[Int],
   timeslot: String,
   wifi: String,
   headphone: Boolean,
@@ -29,15 +29,17 @@ object MomentEntity {
     headphone,
     momentType)
 
-  def momentEntityFromCursor(cursor: Cursor): MomentEntity =
+  def momentEntityFromCursor(cursor: Cursor): MomentEntity = {
+    val collectionIdColumn = cursor.getColumnIndex(collectionId)
     MomentEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = MomentEntityData(
-        collectionId = cursor.getInt(cursor.getColumnIndex(collectionId)),
+        collectionId = if (cursor.isNull(collectionIdColumn)) None else Some(cursor.getInt(collectionIdColumn)),
         timeslot = cursor.getString(cursor.getColumnIndex(timeslot)),
         wifi = cursor.getString(cursor.getColumnIndex(wifi)),
         headphone = cursor.getInt(cursor.getColumnIndex(headphone)) > 0,
         momentType = cursor.getString(cursor.getColumnIndex(momentType))))
+  }
 
 
   def momentFromCursor(cursor: Cursor): Moment = toMoment(momentEntityFromCursor(cursor))

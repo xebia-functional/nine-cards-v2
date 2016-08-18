@@ -238,7 +238,7 @@ trait DrawerUiActions
   def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
 
   def revealInDrawer(showKeyboard: Boolean): Ui[Future[_]] =
-    (drawerLayout <~ dlLockedClosed) ~
+    (drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
       (paginationDrawerPanel <~ reloadPager(0)) ~
       (appDrawerMain mapUiF { source =>
         (drawerContent <~~
@@ -249,8 +249,9 @@ trait DrawerUiActions
       })
 
   def revealOutDrawer: Ui[_] = {
+    val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
     val searchIsEmpty = searchBoxView exists (_.isEmpty)
-    (drawerLayout <~ dlUnlocked) ~
+    (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank)) ~
       (topBarPanel <~ vVisible) ~
       (searchBoxView <~ sbvClean <~ sbvDisableSearch) ~
       (appDrawerMain mapUiF (source => (drawerContent <~~ revealOutAppDrawer(source)) ~~ resetData(searchIsEmpty)))

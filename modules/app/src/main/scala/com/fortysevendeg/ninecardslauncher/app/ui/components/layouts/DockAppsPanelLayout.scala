@@ -1,15 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
 import android.content.Context
+import android.graphics.Color
 import android.util.AttributeSet
 import android.view.DragEvent._
-import android.view.LayoutInflater
+import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
@@ -23,6 +28,7 @@ import macroid._
 
 class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   extends LinearLayout(context, attrs, defStyle)
+  with Contexts[View]
   with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
@@ -43,6 +49,12 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val appDrawerPosition = 2
 
+  lazy val noFoundAppDrawable = PathMorphDrawable(
+    defaultIcon = IconTypes.ADD,
+    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
+    defaultColor = Color.WHITE.alpha(selectedAlpha),
+    padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
+
   var dockApps: Seq[DockApp] = Seq.empty
 
   var draggingTo: Option[Int] = None
@@ -52,15 +64,15 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   def init(apps: Seq[DockApp])
     (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
     dockApps = apps
-    (Option(findView(TR.launcher_page_1)) <~ populate(0)) ~
-      (Option(findView(TR.launcher_page_2)) <~ populate(1)) ~
-      (Option(findView(TR.launcher_page_3)) <~ populate(2)) ~
-      (Option(findView(TR.launcher_page_4)) <~ populate(3))
+    (findView(TR.launcher_page_1) <~ vSetPosition(0) <~ populate(getDockApp(0))) ~
+      (findView(TR.launcher_page_2) <~ vSetPosition(1) <~ populate(getDockApp(1))) ~
+      (findView(TR.launcher_page_3) <~ vSetPosition(2) <~ populate(getDockApp(2))) ~
+      (findView(TR.launcher_page_4) <~ vSetPosition(3) <~ populate(getDockApp(3)))
   }
 
   def reload(dockApp: DockApp)
     (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
-    dockApps = dockApps map (app => if (app.position == dockApp.position) dockApp else app)
+    dockApps = (dockApps filterNot (_.position == dockApp.position)) :+ dockApp
     this <~ updatePosition(dockApp.position)
   }
 
@@ -73,11 +85,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           (this <~ (draggingTo map select getOrElse select(unselectedPosition))).run
         }
       case ACTION_DROP =>
-        draggingTo flatMap dockApps.lift map { app =>
-          presenter.endAddItemToDockApp(app.position)
-        } getOrElse {
-          presenter.endAddItem()
-        }
+        draggingTo foreach presenter.endAddItemToDockApp
         draggingTo = None
         (this <~ select(unselectedPosition)).run
       case ACTION_DRAG_EXITED =>
@@ -93,7 +101,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   private[this] def updatePosition(position: Int)
     (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Transformer =
     Transformer {
-      case view: TintableImageView if view.getPosition.contains(position) => view <~ populate(position)
+      case view: TintableImageView if view.getPosition.contains(position) => view <~ populate(getDockApp(position))
     }
 
   private[this] def calculatePosition(x: Float): Option[Int] = {
@@ -105,18 +113,17 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     }
   }
 
-  private[this] def populate(position: Int)
+  private[this] def populate(dockApp: Option[DockApp])
     (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Tweak[TintableImageView] =
     tivPressedColor(theme.get(DockPressedColor)) +
-      vSetPosition(position) +
-      (dockApps.lift(position) map { app =>
+      (dockApp map { app =>
         (app.dockType match {
           case AppDockType => ivSrcByPackageName(app.intent.extractPackageName(), app.name)
           case ContactDockType => ivUriContact(app.imagePath, app.name, circular = true)
-          case _ => Tweak.blank
+          case _ => ivSrc(noFoundAppDrawable)
         }) +
           On.click (Ui(presenter.execute(app.intent)))
-      } getOrElse Tweak.blank)
+      } getOrElse ivSrc(noFoundAppDrawable) + On.click(Ui.nop))
 
   private[this] def select(position: Int)(implicit contextWrapper: ActivityContextWrapper) = Transformer {
     case view: TintableImageView if view.getPosition.contains(position) =>
@@ -130,5 +137,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         scaleY = Some(defaultScale),
         alpha = Some(defaultAlpha))
   }
+
+  private[this] def getDockApp(position: Int) = dockApps.find(_.position == position)
 
 }

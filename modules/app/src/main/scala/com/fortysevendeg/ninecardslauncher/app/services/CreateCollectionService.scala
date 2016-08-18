@@ -5,7 +5,7 @@ import android.content.{Context, Intent}
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
 import com.fortysevendeg.ninecardslauncher.app.services.commons.FirebaseExtensions._

@@ -2,15 +2,16 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.graphics.Bitmap
-import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentsReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, ShortcutCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, MomentCollectionType, ShortcutCardType}
 import com.fortysevendeg.ninecardslauncher.process.device.ShortcutException
 import macroid.{ActivityContextWrapper, Ui}
 import rapture.core.Result
@@ -51,6 +52,7 @@ class CollectionsPagerPresenter(
   def reloadCards(reloadFragment: Boolean): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.getCollectionById(collection.id).run).resolveAsync(
       onResult = (c) => c map (newCollection => if (newCollection.cards != collection.cards) {
+        momentReloadBroadCastIfNecessary()
         actions.reloadCards(newCollection.cards, reloadFragment).run
       })
     )
@@ -61,7 +63,10 @@ class CollectionsPagerPresenter(
     removeCard(card)
 
     Task.fork(di.collectionProcess.addCards(collectionId, Seq(toAddCardRequest(card))).run).resolveAsyncUi(
-      onResult = actions.addCardsToCollection(collectionPosition, _))
+      onResult = (cards) => {
+        momentReloadBroadCastIfNecessary()
+        actions.addCardsToCollection(collectionPosition, cards)
+      })
 
   }
 
@@ -88,21 +93,30 @@ class CollectionsPagerPresenter(
       })
   }
 
-  def addCards(cards: Seq[AddCardRequest]): Unit = actions.getCurrentCollection foreach { collection =>
-    Task.fork(di.collectionProcess.addCards(collection.id, cards).run).resolveAsyncUi(
-      onResult = actions.addCards
+  def addCards(cardsRequest: Seq[AddCardRequest]): Unit = actions.getCurrentCollection foreach { collection =>
+    Task.fork(di.collectionProcess.addCards(collection.id, cardsRequest).run).resolveAsyncUi(
+      onResult = (cards) => {
+        momentReloadBroadCastIfNecessary()
+        actions.addCards(cards)
+      }
     )
   }
 
   def removeCard(card: Card): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.deleteCard(collection.id, card.id).run).resolveAsyncUi(
-      onResult = (_) => actions.removeCards(card)
+      onResult = (_) => {
+        momentReloadBroadCastIfNecessary()
+        actions.removeCards(card)
+      }
     )
   }
 
   def addShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): Unit = {
     Task.fork(createShortcut(collectionId, name, shortcutIntent, bitmap).run).resolveAsyncUi(
-      onResult = actions.addCards
+      onResult = (cards) => {
+        momentReloadBroadCastIfNecessary()
+        actions.addCards(cards)
+      }
     )
   }
 
@@ -125,6 +139,14 @@ class CollectionsPagerPresenter(
 
   def startScroll(): Unit = actions.getCurrentCollection foreach { collection =>
     actions.showMenuButton(autoHide = true, collection).run
+  }
+
+  private[this] def momentReloadBroadCastIfNecessary(collectionPosition: Option[Int] = None) = {
+    val isMoment = (collectionPosition match {
+      case Some(position) => actions.getCollection(position)
+      case _ => actions.getCurrentCollection
+    }) exists (_.collectionType == MomentCollectionType)
+    if (isMoment) sendBroadCast(BroadAction(MomentsReloadedActionFilter.action))
   }
 
   private[this] def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]):
@@ -177,6 +199,8 @@ trait CollectionsUiActions {
   def removeCards(card: Card): Ui[Any]
 
   def getCurrentCollection: Option[Collection]
+
+  def getCollection(position: Int): Option[Collection]
 
   def translationScrollY(scroll: Int): Ui[Any]
 

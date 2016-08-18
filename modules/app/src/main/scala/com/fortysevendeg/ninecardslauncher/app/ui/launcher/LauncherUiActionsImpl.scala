@@ -34,7 +34,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Edit
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherData
+import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{LauncherData, LauncherMoment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.EditWidgetsMode
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets.WidgetsFragment
@@ -117,21 +117,23 @@ trait LauncherUiActionsImpl
       (editWidgetsTopPanel <~ ewtInit <~ applyFadeIn()) ~
       (editWidgetsBottomPanel <~ ewbShowActions <~ applyFadeIn()) ~
       (workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
-      (drawerLayout <~ dlLockedClosed)
+      (drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)
 
   override def reloadViewEditWidgets(): Ui[Any] =
     (editWidgetsTopPanel <~ ewtInit) ~
       (editWidgetsBottomPanel <~ ewbShowActions) ~
       (workspaces <~ lwsReloadSelectedWidget)
 
-  override def closeModeEditWidgets(): Ui[Any] =
+  override def closeModeEditWidgets(): Ui[Any] = {
+    val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
     (dockAppsPanel <~ applyFadeIn()) ~
       (paginationPanel <~ applyFadeIn()) ~
       (topBarPanel <~ applyFadeIn()) ~
       (editWidgetsTopPanel <~ applyFadeOut()) ~
       (editWidgetsBottomPanel <~ applyFadeOut()) ~
       (workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
-      (drawerLayout <~ dlUnlocked)
+      (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))
+  }
 
   override def resizeWidget(): Ui[Any] =
     (workspaces <~ lwsResizeCurrentWidget()) ~
@@ -168,8 +170,6 @@ trait LauncherUiActionsImpl
 
   override def showMinimumOneCollectionMessage(): Ui[Any] = showMessage(R.string.minimumOneCollectionMessage)
 
-  override def showEmptyMoments(): Ui[Any] = showMessage(R.string.emptyMoment)
-
   override def showNoImplementedYetMessage(): Ui[Any] = showMessage(R.string.todo)
 
   override def showLoading(): Ui[Any] = showCollectionsLoading
@@ -185,11 +185,11 @@ trait LauncherUiActionsImpl
   }
 
   override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] = {
-    val collectionMoment = data.headOption.flatMap(_.moment).flatMap(_.collection)
+    val momentType = data.headOption.flatMap(_.moment).flatMap(_.momentType)
     val launcherMoment = data.headOption.flatMap(_.moment)
     (loading <~ vGone) ~
       (appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
-      (topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank)) ~
+      (topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank)) ~
       (dockAppsPanel <~ daplInit(apps)) ~
       (workspaces <~
         vGlobalLayoutListener(_ =>
@@ -206,17 +206,23 @@ trait LauncherUiActionsImpl
   override def reloadCurrentMoment(): Ui[Any] = workspaces <~ lwsDataForceReloadMoment()
 
   override def reloadMomentTopBar(): Ui[Any] = {
-    val collectionMoment = getData.headOption.flatMap(_.moment).flatMap(_.collection)
-    topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank)
+    val momentType = getData.headOption.flatMap(_.moment).flatMap(_.momentType)
+    topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank)
   }
 
   override def reloadMoment(data: LauncherData): Ui[Any] = {
-    val collectionMoment = data.moment.flatMap(_.collection)
+    val momentType = data.moment.flatMap(_.momentType)
     val launcherMoment = data.moment
     (workspaces <~ lwsDataMoment(data)) ~
       (appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
-      (topBarPanel <~ (collectionMoment map tblReloadMoment getOrElse Tweak.blank))
+      (topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))
   }
+
+  override def reloadBarMoment(data: LauncherMoment): Ui[Any] =
+    (appsMoment <~ amlPopulate(data)) ~ (drawerLayout <~ (data.collection match {
+      case Some(_) => dlUnlockedEnd
+      case None => dlLockedClosedEnd
+    }))
 
   override def showUserProfile(email: Option[String], name: Option[String], avatarUrl: Option[String], coverPhotoUrl: Option[String]): Ui[Any] =
     userProfileMenu(email, name, avatarUrl, coverPhotoUrl)
@@ -341,9 +347,9 @@ trait LauncherUiActionsImpl
     showAction(f[WidgetsFragment], None, resGetColor(R.color.primary), map)
   }
 
-  override def showSelectMomentDialog(moments: Seq[MomentWithCollection]): Ui[Any] = activityContextWrapper.original.get match {
+  override def showSelectMomentDialog(): Ui[Any] = activityContextWrapper.original.get match {
     case Some(activity: Activity) => Ui {
-      val momentDialog = new MomentDialog(moments)
+      val momentDialog = new MomentDialog()
       momentDialog.show()
     }
     case _ => Ui.nop
@@ -351,7 +357,11 @@ trait LauncherUiActionsImpl
 
   override def openMenu(): Ui[Any] = drawerLayout <~ dlOpenDrawer
 
-  override def openAppsMoment(): Ui[Any] = drawerLayout <~ dlOpenDrawerEnd
+  override def openAppsMoment(): Ui[Any] =
+    (drawerLayout ~> dlIsLockedClosedDrawerEnd) flatMap {
+      case Some(false) => drawerLayout <~ dlOpenDrawerEnd
+      case _ => Ui.nop
+    }
 
   override def closeAppsMoment(): Ui[Any] = drawerLayout <~ dlCloseDrawerEnd
 
@@ -454,9 +464,11 @@ trait LauncherUiActionsImpl
 
   override def isEmptyCollectionsInWorkspace: Boolean = isEmptyCollections
 
-  def turnOffFragmentContent: Ui[Any] =
+  def turnOffFragmentContent: Ui[Any] = {
+    val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
     (fragmentContent <~ vClickable(false)) ~
-      (drawerLayout <~ dlUnlocked)
+      (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))
+  }
 
   def reloadPager(currentPage: Int) = Transformer {
     case imageView: TintableImageView if imageView.isPosition(currentPage) =>
