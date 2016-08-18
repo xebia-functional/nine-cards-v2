@@ -23,7 +23,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     limit: Int = 50)
     (implicit context: ContextSupport) =
     (for {
-      userConfig <- apiUtils.getRequestConfig
+      userConfig <- apiUtils.getRequestConfigV1
       response <- apiServices.getSharedCollectionsByCategory(category.name, typeShareCollection.name, offset, limit)(userConfig)
     } yield response.items map toSharedCollection).resolve[SharedCollectionsExceptions]
 
@@ -32,7 +32,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     (implicit context: ContextSupport) = {
     import sharedCollection._
     (for {
-      userConfig <- apiUtils.getRequestConfig
+      userConfig <- apiUtils.getRequestConfigV1
       result <- apiServices.createSharedCollection(name, description, author, packages, category.name, icon, community)(userConfig)
     } yield toCreatedCollection(result)).resolve[SharedCollectionsExceptions]
   }

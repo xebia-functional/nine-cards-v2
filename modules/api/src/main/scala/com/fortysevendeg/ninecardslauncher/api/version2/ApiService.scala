@@ -145,7 +145,7 @@ class ApiService(serviceClient: ServiceClient) {
     header: T): Seq[(String, String)] = {
 
     def readAndroidMarketToken: Option[String] = header match {
-      case h: ServiceMarketHeader => Option(h.androidMarketToken)
+      case h: ServiceMarketHeader => h.androidMarketToken
       case _ => None
     }
 

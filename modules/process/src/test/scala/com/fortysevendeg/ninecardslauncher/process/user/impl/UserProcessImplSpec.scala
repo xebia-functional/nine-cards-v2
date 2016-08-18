@@ -200,7 +200,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).findUserById(any)
         there was no(mockPersistenceServices).updateUser(any)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -221,7 +221,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was no(mockPersistenceServices).updateUser(any)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -247,7 +247,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was one(mockPersistenceServices).updateUser(emptyUpdateUserRequest)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -269,7 +269,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was one(mockPersistenceServices).updateUser(emptyUpdateUserRequest)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -291,7 +291,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was one(mockPersistenceServices).updateUser(emptyUpdateUserRequest)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -307,7 +307,7 @@ class UserProcessImplSpec
         mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
         mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
         mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(deviceId)))
-        mockApiServices.updateInstallation(any, any, any, any) returns Service(Task(Answer(updateInstallationResponse)))
+        mockApiServices.updateInstallation(any)(any) returns Service(Task(Answer(updateInstallationResponse)))
 
         val result = userProcess.unregister(mockContextSupport).run.run
 
@@ -315,7 +315,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was one(mockPersistenceServices).updateUser(emptyUpdateUserRequest)
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
-        there was one(mockApiServices).updateInstallation(apiKey, sessionToken, deviceId, None)
+        there was one(mockApiServices).updateInstallation(None)(RequestConfig(apiKey, sessionToken, deviceId))
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -389,7 +389,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).findUserById(any)
         there was no(mockPersistenceServices).updateUser(any)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -410,7 +410,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was no(mockPersistenceServices).updateUser(any)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -439,7 +439,7 @@ class UserProcessImplSpec
           deviceToken = Some(deviceToken))
         there was one(mockPersistenceServices).updateUser(updateRequest)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -465,7 +465,7 @@ class UserProcessImplSpec
           deviceToken = Some(anotherDeviceToken))
         there was one(mockPersistenceServices).updateUser(updateRequest)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -491,7 +491,7 @@ class UserProcessImplSpec
           deviceToken = Some(anotherDeviceToken))
         there was one(mockPersistenceServices).updateUser(updateRequest)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -507,7 +507,7 @@ class UserProcessImplSpec
         mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
         mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
         mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(deviceId)))
-        mockApiServices.updateInstallation(any, any, any, any) returns Service(Task(Answer(updateInstallationResponse)))
+        mockApiServices.updateInstallation(any)(any) returns Service(Task(Answer(updateInstallationResponse)))
 
         val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(anotherDeviceToken))(mockContextSupport).run.run
 
@@ -519,7 +519,7 @@ class UserProcessImplSpec
           deviceToken = Some(anotherDeviceToken))
         there was one(mockPersistenceServices).updateUser(updateRequest)
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
-        there was one(mockApiServices).updateInstallation(apiKey, sessionToken, deviceId, Some(anotherDeviceToken))
+        there was one(mockApiServices).updateInstallation(Some(anotherDeviceToken))(RequestConfig(apiKey, sessionToken, deviceId))
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -535,7 +535,7 @@ class UserProcessImplSpec
         mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
         mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
         mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(deviceId)))
-        mockApiServices.updateInstallation(any, any, any, any) returns Service(Task(Answer(updateInstallationResponse)))
+        mockApiServices.updateInstallation(any)(any) returns Service(Task(Answer(updateInstallationResponse)))
 
         val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, None)(mockContextSupport).run.run
 
@@ -547,7 +547,7 @@ class UserProcessImplSpec
           deviceToken = Some(anotherDeviceToken))
         there was one(mockPersistenceServices).updateUser(updateRequest)
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
-        there was one(mockApiServices).updateInstallation(apiKey, sessionToken, deviceId, Some(deviceToken))
+        there was one(mockApiServices).updateInstallation(Some(deviceToken))(RequestConfig(apiKey, sessionToken, deviceId))
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -566,7 +566,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).findUserById(any)
         there was no(mockPersistenceServices).updateUser(any)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -587,7 +587,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was no(mockPersistenceServices).updateUser(any)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
@@ -612,7 +612,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was one(mockPersistenceServices).updateUser(updateUserRequest)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -634,7 +634,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was one(mockPersistenceServices).updateUser(updateUserRequest)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -656,7 +656,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was one(mockPersistenceServices).updateUser(updateUserRequest)
         there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any, any, any, any)
+        there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }
@@ -672,7 +672,7 @@ class UserProcessImplSpec
         mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
         mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
         mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(deviceId)))
-        mockApiServices.updateInstallation(any, any, any, any) returns Service(Task(Answer(updateInstallationResponse)))
+        mockApiServices.updateInstallation(any)(any) returns Service(Task(Answer(updateInstallationResponse)))
 
         val result = userProcess.updateDeviceToken(anotherDeviceToken)(mockContextSupport).run.run
 
@@ -681,7 +681,7 @@ class UserProcessImplSpec
         val updateRequest = updateUserRequest.copy(deviceToken = Some(anotherDeviceToken))
         there was one(mockPersistenceServices).updateUser(updateRequest)
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
-        there was one(mockApiServices).updateInstallation(apiKey, sessionToken, deviceId, Some(anotherDeviceToken))
+        there was one(mockApiServices).updateInstallation(Some(anotherDeviceToken))(RequestConfig(apiKey, sessionToken, deviceId))
 
         result must beAnInstanceOf[Answer[Unit, UserException]]
       }

@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.api.version1.model._
+import com.fortysevendeg.ninecardslauncher.api.version2.CategorizedApp
 
 import scala.util.Random
 
@@ -45,6 +46,16 @@ trait ApiServicesImplData {
       deviceType = Some(Random.nextString(10)),
       deviceToken = Some(Random.nextString(10)),
       userId = Some(Random.nextString(10)))
+
+  def generateCategorizedApps(num: Int = 10) =
+    1 to num map { _ =>
+      generateCategorizedApp
+    }
+
+  def generateCategorizedApp =
+    CategorizedApp(
+      packageName = Random.nextString(10),
+      category = generateCategories(1).head)
 
   def generateGooglePlayPackages =
     GooglePlayPackages(
@@ -199,6 +210,8 @@ trait ApiServicesImplData {
 
   val installation = generateInstallation
 
+  val categorizeApps = generateCategorizedApps()
+
   val googlePlayPackages = generateGooglePlayPackages
 
   val googlePlayApps = 1 to 10 map (_ => generateGooglePlayApp)
@@ -214,6 +227,8 @@ trait ApiServicesImplData {
   val apiKey = Random.nextString(10)
 
   val sessionToken = Random.nextString(20)
+
+  val deviceToken = Random.nextString(20)
 
   val email = "email@dot.com"
 

@@ -31,7 +31,7 @@ trait ApiServiceData {
 
   val serviceHeader = ServiceHeader(apiKey, sessionToken, androidId)
 
-  val serviceMarketHeader = ServiceMarketHeader(apiKey, sessionToken, androidId, marketToken)
+  val serviceMarketHeader = ServiceMarketHeader(apiKey, sessionToken, androidId, Some(marketToken))
 
   def createHeaders(authToken: String) = Seq(
     (headerAuthToken, authToken),

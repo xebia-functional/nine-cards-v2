@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.userv1.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, Game}
-import com.fortysevendeg.ninecardslauncher.services.api.{GetUserConfigResponse, LoginResponseV1, RequestConfig}
+import com.fortysevendeg.ninecardslauncher.services.api.{GetUserConfigResponse, LoginResponseV1, RequestConfigV1}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => PersistenceUser}
 import play.api.libs.json.JsString
@@ -135,7 +135,7 @@ trait UserV1ProcessData {
     statusCode = statusCodeUser,
     userConfig = userConfig)
 
-  val requestConfig = RequestConfig(
+  val requestConfig = RequestConfigV1(
     deviceId = deviceId,
     token = sessionToken,
     marketToken = Some(marketToken))

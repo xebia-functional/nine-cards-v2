@@ -1,14 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.process.recommendations.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Social
-import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
+import com.fortysevendeg.ninecardslauncher.services.api.RequestConfigV1
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 
 import scala.util.Random
 
 trait RecommendationsProcessData {
 
-  val requestConfig = RequestConfig("fake-device-id", "fake-token", Some("fake-android-token"))
+  val requestConfig = RequestConfigV1("fake-device-id", "fake-token", Some("fake-android-token"))
 
   val statusCodeOk = 200
 

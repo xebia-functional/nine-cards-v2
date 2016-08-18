@@ -17,7 +17,7 @@ case class ServiceMarketHeader(
   apiKey: String,
   sessionToken: String,
   androidId: String,
-  androidMarketToken: String) extends BaseServiceHeader
+  androidMarketToken: Option[String]) extends BaseServiceHeader
 
 case class LoginRequest(email: String, androidId: String, tokenId: String)
 

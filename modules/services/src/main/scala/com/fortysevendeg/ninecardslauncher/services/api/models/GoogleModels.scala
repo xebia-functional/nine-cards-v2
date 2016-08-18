@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.api.models
 
-case class GooglePlayPackage(app: GooglePlayApp)
-
 case class GoogleDevice(
   name: String,
   deviceId: String,

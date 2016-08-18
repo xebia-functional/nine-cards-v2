@@ -3,13 +3,13 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, SharedCollection}
-import com.fortysevendeg.ninecardslauncher.services.api.{CreateSharedCollectionResponse, RequestConfig, SharedCollectionResponse, SharedCollectionResponseList, CreateSharedCollection => ApiCreateSharedCollection}
+import com.fortysevendeg.ninecardslauncher.services.api.{CreateSharedCollectionResponse, RequestConfigV1, SharedCollectionResponse, SharedCollectionResponseList, CreateSharedCollection => ApiCreateSharedCollection}
 
 import scala.util.Random
 
 trait SharedCollectionsProcessImplData {
 
-  val requestConfig = RequestConfig("fake-device-id", "fake-token", Some("fake-android-token"))
+  val requestConfig = RequestConfigV1("fake-device-id", "fake-token", Some("fake-android-token"))
 
   val category = Communication
 

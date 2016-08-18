@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.user._
-import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
+import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 import rapture.core.{Answer, Result}
@@ -121,7 +121,7 @@ class UserProcessImpl(
       case (Some(apiKey), Some(sessionToken)) if user.deviceToken != deviceToken =>
         (for {
           androidId <- persistenceServices.getAndroidId
-          response <- apiServices.updateInstallation(apiKey, sessionToken, androidId, deviceToken)
+          response <- apiServices.updateInstallation(deviceToken)(RequestConfig(apiKey, sessionToken, androidId))
         } yield response.statusCode).resolve[UserException]
       case _ => Service(Task(Answer(0)))
     }

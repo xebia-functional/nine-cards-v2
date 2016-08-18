@@ -20,10 +20,15 @@ trait ApiServicesSpecification
   extends Specification
   with Mockito {
 
-  implicit val requestConfig = RequestConfig(
+  implicit val requestConfigV1 = RequestConfigV1(
     deviceId = Random.nextString(10),
     token = Random.nextString(10),
     marketToken = Option(Random.nextString(10)))
+
+  implicit val requestConfig = RequestConfig(
+    apiKey = Random.nextString(10),
+    sessionToken = Random.nextString(10),
+    androidId = Random.nextString(10))
 
   val apiServicesConfig = ApiServicesConfig(
     appId = Random.nextString(10),
@@ -66,6 +71,16 @@ trait ApiServicesSpecification
     apiService.login(any)(any, any) returns
       Service {
         Task(Answer(ServiceClientResponse[version2.LoginResponse](statusCode, Some(version2.LoginResponse(apiKey, sessionToken)))))
+      }
+
+    apiService.installations(any, any)(any, any) returns
+      Service {
+        Task(Answer(ServiceClientResponse[version2.InstallationResponse](statusCode, Some(version2.InstallationResponse(androidId, deviceToken)))))
+      }
+
+    apiService.categorize(any, any)(any, any) returns
+      Service {
+        Task(Answer(ServiceClientResponse[version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
       }
 
     apiUserService.login(any, any)(any, any) returns
@@ -128,6 +143,10 @@ trait ApiServicesSpecification
     val exception = CustomException("")
 
     apiService.login(any)(any, any) returns Service(Task(Errata(exception)))
+
+    apiService.installations(any, any)(any, any) returns Service(Task(Errata(exception)))
+
+    apiService.categorize(any, any)(any, any) returns Service(Task(Errata(exception)))
 
     apiUserService.login(any, any)(any, any) returns Service {
       Task(Errata(exception))
@@ -223,37 +242,11 @@ class ApiServicesImplSpec
 
   }
 
-  "createInstallation" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.createInstallation(Some(AndroidDevice), Some(""), Some("")).run.run
-        result must beLike {
-          case Answer(response) =>
-            response.statusCode shouldEqual statusCode
-            response.installation shouldEqual toInstallation(installation)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.createInstallation(Some(AndroidDevice), Some(""), Some("")).run.run
-        result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
-        }
-      }
-
-  }
-
   "updateInstallation" should {
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.updateInstallation("", Some(AndroidDevice), Some(""), Some("")).run.run
+        val result = apiServices.updateInstallation(Some("")).run.run
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
@@ -262,7 +255,7 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.updateInstallation("", Some(AndroidDevice), Some(""), Some("")).run.run
+        val result = apiServices.updateInstallation(Some("")).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
@@ -278,11 +271,11 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.googlePlayPackage("").run.run
+        val result = apiServices.googlePlayPackage(categorizeApps.head.packageName).run.run
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
-            Some(response.app) shouldEqual googlePlayPackages.items.headOption.map(a => toGooglePlayApp(a.docV2))
+            Some(response.app) shouldEqual categorizeApps.headOption.map(a => CategorizedPackage(a.packageName, Some(a.category)))
         }
       }
 
@@ -308,7 +301,7 @@ class ApiServicesImplSpec
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
-            response.packages shouldEqual (googlePlayPackages.items map toGooglePlayPackage)
+            response.packages shouldEqual (categorizeApps map (a => CategorizedPackage(a.packageName, Some(a.category))))
         }
       }
 

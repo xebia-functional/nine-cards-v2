@@ -31,7 +31,7 @@ trait RecommendationsProcessSpecification
 
     val process = new RecommendationsProcessImpl(apiServices, mockPersistenceServices) {
       override val apiUtils: ApiUtils = mock[ApiUtils]
-      apiUtils.getRequestConfig(contextSupport) returns
+      apiUtils.getRequestConfigV1(contextSupport) returns
         Service(Task(Result.answer(requestConfig)))
     }
 

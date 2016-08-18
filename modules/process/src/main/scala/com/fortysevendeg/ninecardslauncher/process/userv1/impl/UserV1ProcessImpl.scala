@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 import com.fortysevendeg.ninecardslauncher.process.userv1.models.{Device, UserV1Info}
 import com.fortysevendeg.ninecardslauncher.process.userv1.{ImplicitsUserV1Exception, UserV1Conversions, UserV1Exception, UserV1Process}
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GetUserConfigResponse, LoginResponseV1, RequestConfig}
+import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GetUserConfigResponse, LoginResponseV1, RequestConfigV1}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
 import rapture.core.Result
@@ -43,7 +43,7 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
       marketToken: Option[String]): ServiceDef2[GetUserConfigResponse, UserV1Exception] =
       maybeSessionToken match {
         case Some(sessionToken) =>
-          apiServices.getUserConfigV1()(RequestConfig(androidId, sessionToken, marketToken)).resolve[UserV1Exception]
+          apiServices.getUserConfigV1()(RequestConfigV1(androidId, sessionToken, marketToken)).resolve[UserV1Exception]
         case _ =>
           Service(Task(Result.errata[GetUserConfigResponse, UserV1Exception](UserV1Exception(userNotLoggedMsg))))
       }

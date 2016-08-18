@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.utils
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, RequestConfig}
+import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, RequestConfigV1}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, FindUserByIdRequest, AndroidIdNotFoundException, PersistenceServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -26,7 +26,7 @@ trait ApiUtilsSpecification
     mockContextSupport.getActiveUserId returns Some(userDBId)
     val mockPersistenceServices = mock[PersistenceServices]
     val apiUtils = new ApiUtils(mockPersistenceServices)
-    val mockRequestConfig = mock[RequestConfig]
+    val mockRequestConfig = mock[RequestConfigV1]
 
     mockPersistenceServices.getAndroidId(mockContextSupport) returns
       Service(Task(Answer(androidId)))
@@ -75,7 +75,7 @@ class ApiUtilsSpec
 
     "returns a request config with a correct deviceId and token" in
       new ApiUtilsScope {
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfigV1(mockContextSupport).run.run
         result must beLike {
           case Answer(resultRequestConfig) =>
             resultRequestConfig.deviceId shouldEqual mockRequestConfig.deviceId
@@ -85,7 +85,7 @@ class ApiUtilsSpec
 
     "returns an ApiServiceException when the session token doesn't exists" in
       new ApiUtilsScope with SessionTokenNoneUserApiUtilsScope {
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfigV1(mockContextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]
@@ -95,7 +95,7 @@ class ApiUtilsSpec
 
     "returns an ApiServiceException when the session token return a exception" in
       new ApiUtilsScope with ErrorUserApiUtilsScope {
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfigV1(mockContextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]
@@ -105,7 +105,7 @@ class ApiUtilsSpec
 
     "returns an ApiServiceException when the android id can't be found" in
       new ApiUtilsScope with ErrorAndroidIdApiUtilsScope {
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfigV1(mockContextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]

@@ -16,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcess
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentProcess
-import com.fortysevendeg.ninecardslauncher.process.userconfig.UserV1Process
+import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Process
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
 import org.specs2.mock.Mockito
@@ -61,8 +61,6 @@ trait WizardPresenterSpecification
 
     val mockSharedPreferences = mock[SharedPreferences]
 
-    val mockEditor = mock[SharedPreferences.Editor]
-
     val mockAccountManagerFuture = mock[AccountManagerFuture[Bundle]]
 
     val mockBundle = mock[Bundle]
@@ -97,10 +95,6 @@ trait WizardPresenterSpecification
 
     mockInjector.userV1Process returns mockUserConfigProcess
 
-    mockSharedPreferences.edit() returns mockEditor
-
-    mockEditor.putString(any, any) returns mockEditor
-
     mockContextActivity.getResources returns mockResources
 
     mockActions.initialize(any) returns Ui[Any](())
@@ -122,8 +116,6 @@ trait WizardPresenterSpecification
       override lazy val accounts = Seq(account)
 
       override lazy val accountManager = mockAccountManager
-
-      override lazy val preferences = mockSharedPreferences
 
       override def createGoogleDriveClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient = mockGoogleApiClient
 
@@ -178,17 +170,15 @@ class WizardPresenterSpec
 
         mockBundle.getString(AccountManager.KEY_AUTHTOKEN) returns token
 
-        mockResources.getString(anyInt) returns googleScopes
+        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
 
-        mockSharedPreferences.getString(any, any) returns token
+        presenter.clientStatuses = WizardPresenterStatuses(androidMarketToken = Some(token))
 
         presenter.connectAccount(accountName, termsAccept = true)
 
         there was after(1.seconds).two(mockActions).showLoading()
         there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull)
         there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull)
-        there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, token)
-        there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, javaNull)
         there was after(1.seconds).one(mockAccountManager).invalidateAuthToken(presenter.accountType, token)
       }
 
@@ -201,17 +191,13 @@ class WizardPresenterSpec
 
         mockBundle.getString(AccountManager.KEY_AUTHTOKEN) returns token
 
-        mockResources.getString(anyInt) returns googleScopes
-
-        mockSharedPreferences.getString(any, any) returns javaNull
+        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
 
         presenter.connectAccount(accountName, termsAccept = true)
 
         there was after(1.seconds).two(mockActions).showLoading()
         there was after(1.seconds).one(mockAccountManager).getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull)
         there was after(1.seconds).one(mockAccountManager).getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull)
-        there was after(1.seconds).one(mockEditor).putString(presenter.googleKeyToken, token)
-        there was after(1.seconds).no(mockEditor).putString(presenter.googleKeyToken, javaNull)
         there was after(1.seconds).no(mockAccountManager).invalidateAuthToken(any, any)
       }
 
@@ -235,6 +221,8 @@ class WizardPresenterSpec
         mockFragmentTransaction.addToBackStack(any) returns mockFragmentTransaction
 
         val exception = mock[OperationCanceledException]
+
+        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
 
         mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFuture
 
@@ -268,7 +256,7 @@ class WizardPresenterSpec
 
         mockBundle.getString(AccountManager.KEY_AUTHTOKEN) returns token
 
-        mockResources.getString(anyInt) returns googleScopes
+        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
 
         presenter.connectAccount(accountName, termsAccept = true)
 
@@ -286,6 +274,8 @@ class WizardPresenterSpec
         mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFuture
 
         mockAccountManagerFuture.getResult throws exception
+
+        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
 
         presenter.connectAccount(accountName, termsAccept = true)
 
@@ -311,7 +301,7 @@ class WizardPresenterSpec
 
         mockBundle.getString(AccountManager.KEY_AUTHTOKEN) returns token
 
-        mockResources.getString(anyInt) returns googleScopes
+        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
 
         presenter.connectAccount(accountName, termsAccept = true)
 

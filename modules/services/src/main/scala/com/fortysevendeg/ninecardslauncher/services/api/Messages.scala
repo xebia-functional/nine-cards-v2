@@ -2,7 +2,13 @@ package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 
-case class RequestConfig(deviceId: String, token: String, marketToken: Option[String])
+case class RequestConfigV1(deviceId: String, token: String, marketToken: Option[String])
+
+case class RequestConfig(
+  apiKey: String,
+  sessionToken: String,
+  androidId: String,
+  marketToken: Option[String] = None)
 
 case class LoginResponse(
   apiKey: String,
@@ -24,11 +30,15 @@ case class UpdateInstallationResponse(
 
 case class GooglePlayPackageResponse(
   statusCode: Int,
-  app: GooglePlayApp)
+  app: CategorizedPackage)
+
+case class CategorizedPackage(
+  packageName: String,
+  category: Option[String])
 
 case class GooglePlayPackagesResponse(
   statusCode: Int,
-  packages: Seq[GooglePlayPackage])
+  packages: Seq[CategorizedPackage])
 
 trait UserConfigResponse {
   def statusCode: Int

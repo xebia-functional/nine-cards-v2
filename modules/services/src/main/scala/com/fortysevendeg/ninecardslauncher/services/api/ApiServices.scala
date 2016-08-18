@@ -31,48 +31,43 @@ trait ApiServices {
 
   /**
    * Updates an existing user installation
-   * @param apiKey the apiKey from login
-   * @param sessionToken the sessionToken from login
-   * @param androidId the device id
    * @param deviceToken the token used for push notification
+   * @param requestConfig necessary info for the headers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UpdateInstallationResponse]] with the HTTP Code
    *         of the response
    * @throws ApiServiceException if there was an error in the request
    */
-  def updateInstallation(
-    apiKey: String,
-    sessionToken: String,
-    androidId: String,
-    deviceToken: Option[String]): ServiceDef2[UpdateInstallationResponse, ApiServiceException]
+  def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig): ServiceDef2[UpdateInstallationResponse, ApiServiceException]
 
   /**
    * Fetches the package info from Google Play given a package name
    * @param packageName the package identifier. For example `com.fortysevendeg.ninecardslauncher`
+   * @param requestConfig necessary info for the headers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackageResponse]] with the HTTP Code
-   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
+   *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
    * @throws ApiServiceException if there was an error in the request
    */
-  def googlePlayPackage(
-    packageName: String)(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlayPackageResponse, ApiServiceException]
+  def googlePlayPackage(packageName: String)(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlayPackageResponse, ApiServiceException]
 
   /**
    * Fetches a list of packages information from Google Play given a list of package names. The response is similar to
    * {@link #googlePlayPackage(String)(RequestConfig) googlePlayPackage} but allow to fetch a list of packages with one operation.
    * @param packageNames a sequence of package identifiers
+   * @param requestConfig necessary info for the headers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesResponse]] with the HTTP Code
-   *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayPackage]]
+   *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
    * @throws ApiServiceException if there was an error in the request
    */
-  def googlePlayPackages(
-    packageNames: Seq[String])(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlayPackagesResponse, ApiServiceException]
+  def googlePlayPackages(packageNames: Seq[String])(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlayPackagesResponse, ApiServiceException]
 
   /**
-   * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfig]]
+   * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfigV1]]
+    *
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigResponse]] with the HTTP Code
    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserConfig]]
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
    */
-  def getUserConfigV1()(implicit requestConfig: RequestConfig): ServiceDef2[GetUserConfigResponse, ApiServiceException]
+  def getUserConfigV1()(implicit requestConfig: RequestConfigV1): ServiceDef2[GetUserConfigResponse, ApiServiceException]
 
   /**
    * Fetches the recommended applications based on some request params
@@ -88,7 +83,7 @@ trait ApiServices {
     categories: Seq[String],
     likePackages: Seq[String],
     excludePackages: Seq[String],
-    limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[RecommendationResponse, ApiServiceException]
+    limit: Int)(implicit requestConfig: RequestConfigV1): ServiceDef2[RecommendationResponse, ApiServiceException]
 
   /**
     * Fetches the public collections based on some request params
@@ -104,7 +99,7 @@ trait ApiServices {
     category: String,
     collectionType: String,
     offset: Int,
-    limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[SharedCollectionResponseList, ApiServiceException]
+    limit: Int)(implicit requestConfig: RequestConfigV1): ServiceDef2[SharedCollectionResponseList, ApiServiceException]
 
   /**
     * Persists a new shared collection
@@ -125,5 +120,5 @@ trait ApiServices {
     packages: Seq[String],
     category: String,
     icon: String,
-    community: Boolean)(implicit requestConfig: RequestConfig): ServiceDef2[CreateSharedCollectionResponse, ApiServiceException]
+    community: Boolean)(implicit requestConfig: RequestConfigV1): ServiceDef2[CreateSharedCollectionResponse, ApiServiceException]
 }
