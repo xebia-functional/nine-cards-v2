@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Paint
+import android.graphics.{Paint, PorterDuff}
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable._
 import android.os.Vibrator
@@ -172,6 +172,8 @@ object ExtraTweaks {
 
     override def onItemSelected(parent: AdapterView[_], view: View, position: Int, id: Long): Unit = onItem(position)
   }))
+
+  def sChangeDropdownColor(color: Int) = Tweak[Spinner](_.getBackground.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
 
   def tvHintColor(color: Int): Tweak[TextView] = Tweak[TextView](_.setHintTextColor(color))
 
