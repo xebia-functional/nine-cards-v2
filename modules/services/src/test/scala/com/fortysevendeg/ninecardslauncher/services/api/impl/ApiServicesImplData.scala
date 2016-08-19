@@ -160,6 +160,8 @@ trait ApiServicesImplData {
 
   val recommendationResponse = version2.RecommendationsResponse(recommendationApps)
 
+  val recommendationByAppsResponse = version2.RecommendationsByAppsResponse(recommendationApps)
+
   val collectionApps1 = 1 to 5 map (_ => generateCollectionApp)
   val collectionApps2 = 1 to 5 map (_ => generateCollectionApp)
   val collectionApps3 = 1 to 5 map (_ => generateCollectionApp)

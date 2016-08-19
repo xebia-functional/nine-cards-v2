@@ -85,6 +85,11 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[version2.RecommendationsResponse](statusCode, Some(recommendationResponse))))
       }
 
+    apiService.recommendationsByApps(any, any)(any, any) returns
+      Service {
+        Task(Answer(ServiceClientResponse[version2.RecommendationsByAppsResponse](statusCode, Some(recommendationByAppsResponse))))
+      }
+
     apiService.latestCollections(any, any, any, any)(any) returns
       Service {
         Task(Answer(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
@@ -314,6 +319,32 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.getRecommendedApps(category, Seq.empty, limit).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, apiException)) => apiException must beLike {
+              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
+            }
+          }
+        }
+      }
+
+  }
+
+  "getRecommendedAppsByPackage" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope with ValidApiServicesImplResponses {
+        val result = apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit).run.run
+        result must beLike {
+          case Answer(response) =>
+            response.statusCode shouldEqual statusCode
+            response.seq.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope with ErrorApiServicesImplResponses {
+        val result = apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
