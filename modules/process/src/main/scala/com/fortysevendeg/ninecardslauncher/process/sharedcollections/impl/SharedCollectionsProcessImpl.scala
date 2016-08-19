@@ -23,7 +23,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     limit: Int = 50)
     (implicit context: ContextSupport) =
     (for {
-      userConfig <- apiUtils.getRequestConfigV1
+      userConfig <- apiUtils.getRequestConfig
       response <- apiServices.getSharedCollectionsByCategory(category.name, typeShareCollection.name, offset, limit)(userConfig)
     } yield response.items map toSharedCollection).resolve[SharedCollectionsExceptions]
 

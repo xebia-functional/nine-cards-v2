@@ -7,11 +7,8 @@ case class SharedCollection(
   sharedCollectionId: String,
   publishedOn: Long,
   description: String,
-  screenshots: Seq[String],
   author: String,
-  tags: Seq[String],
   name: String,
-  shareLink: String,
   packages: Seq[String],
   resolvedPackages: Seq[SharedCollectionPackage],
   views: Int,
@@ -31,7 +28,6 @@ case class CreateSharedCollection(
 case class SharedCollectionPackage(
   packageName: String,
   title: String,
-  description: String,
   icon: String,
   stars: Double,
   downloads: String,
@@ -43,7 +39,6 @@ case class CreatedCollection(
   author: String,
   packages: Seq[String],
   category: NineCardCategory,
-  shareLink: String,
   sharedCollectionId: String,
   icon: String,
   community: Boolean

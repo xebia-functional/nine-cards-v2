@@ -63,11 +63,8 @@ case class SharedCollectionResponse(
   sharedCollectionId: String,
   publishedOn: Long,
   description: String,
-  screenshots: Seq[String],
   author: String,
-  tags: Seq[String],
   name: String,
-  shareLink: String,
   packages: Seq[String],
   resolvedPackages: Seq[SharedCollectionPackageResponse],
   views: Int,
@@ -78,7 +75,6 @@ case class SharedCollectionResponse(
 case class SharedCollectionPackageResponse(
   packageName: String,
   title: String,
-  description: String,
   icon: String,
   stars: Double,
   downloads: String,
@@ -94,7 +90,6 @@ case class CreateSharedCollection(
   author: String,
   packages: Seq[String],
   category: String,
-  shareLink: String,
   sharedCollectionId: String,
   icon: String,
   community: Boolean)

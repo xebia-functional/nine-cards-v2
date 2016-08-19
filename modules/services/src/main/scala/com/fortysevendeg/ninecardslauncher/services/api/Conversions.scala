@@ -1,8 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
-import com.fortysevendeg.ninecardslauncher.api.version1.model.{GooglePlayRecommendation, SharedCollection, SharedCollectionPackage, AuthData => ApiAuthData, AuthGoogle => ApiAuthGoogle, AuthGoogleDevice => ApiAuthGoogleDevice, GooglePlayAggregateRating => ApiGooglePlayAggregateRating, GooglePlayApp => ApiGooglePlayApp, GooglePlayAppDetails => ApiGooglePlayAppDetails, GooglePlayDetails => ApiGooglePlayDetails, GooglePlayImage => ApiGooglePlayImage, GooglePlayOffer => ApiGooglePlayOffer, GooglePlayPackage => ApiGooglePlayPackage, Installation => ApiInstallation, RecommendationRequest => ApiRecommendationRequest, ShareCollection => ApiShareCollection, User => ApiUser, UserConfig => ApiUserConfig, UserConfigCollection => ApiUserConfigCollection, UserConfigCollectionItem => ApiUserConfigCollectionItem, UserConfigDevice => ApiUserConfigDevice, UserConfigPlusProfile => ApiUserConfigPlusProfile, UserConfigProfileImage => ApiUserConfigProfileImage, UserConfigStatusInfo => ApiUserConfigStatusInfo, UserConfigTimeSlot => ApiUserConfigTimeSlot, UserConfigUserLocation => ApiUserConfigUserLocation}
-import com.fortysevendeg.ninecardslauncher.api.version2.CategorizeResponse
+import com.fortysevendeg.ninecardslauncher.api.version1.model.{GooglePlayRecommendation, SharedCollection, AuthData => ApiAuthData, AuthGoogle => ApiAuthGoogle, AuthGoogleDevice => ApiAuthGoogleDevice, GooglePlayAggregateRating => ApiGooglePlayAggregateRating, GooglePlayApp => ApiGooglePlayApp, GooglePlayAppDetails => ApiGooglePlayAppDetails, GooglePlayDetails => ApiGooglePlayDetails, GooglePlayImage => ApiGooglePlayImage, GooglePlayOffer => ApiGooglePlayOffer, Installation => ApiInstallation, RecommendationRequest => ApiRecommendationRequest, ShareCollection => ApiShareCollection, User => ApiUser, UserConfig => ApiUserConfig, UserConfigCollection => ApiUserConfigCollection, UserConfigCollectionItem => ApiUserConfigCollectionItem, UserConfigDevice => ApiUserConfigDevice, UserConfigPlusProfile => ApiUserConfigPlusProfile, UserConfigProfileImage => ApiUserConfigProfileImage, UserConfigStatusInfo => ApiUserConfigStatusInfo, UserConfigTimeSlot => ApiUserConfigTimeSlot, UserConfigUserLocation => ApiUserConfigUserLocation}
+import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
+import org.joda.time.format.DateTimeFormat
+
+import scala.util.{Success, Try}
 
 trait Conversions {
 
@@ -91,10 +94,10 @@ trait Conversions {
       offer = googlePlayApp.offer map toGooglePlayOffer,
       aggregateRating = toGooglePlayAggregateRating(googlePlayApp.aggregateRating))
 
-  def toCategorizedPackage(packageName: String, categorizeResponse: CategorizeResponse): CategorizedPackage =
+  def toCategorizedPackage(packageName: String, categorizeResponse: version2.CategorizeResponse): CategorizedPackage =
     CategorizedPackage(packageName, categorizeResponse.items.find(_.packageName == packageName).map(_.category))
 
-  def toCategorizedPackages(categorizeResponse: CategorizeResponse): Seq[CategorizedPackage] =
+  def toCategorizedPackages(categorizeResponse: version2.CategorizeResponse): Seq[CategorizedPackage] =
     categorizeResponse.items.map(app => CategorizedPackage(app.packageName, Some(app.category)))
 
   val iconImageType = 4
@@ -239,35 +242,46 @@ trait Conversions {
   def toPlayAppSeq(recommendation: GooglePlayRecommendation): Seq[GooglePlayApp] =
     recommendation.items map (item => toGooglePlayApp(item.app))
 
-  def toSharedCollectionResponseSeq(sharedCollections: Seq[SharedCollection]): Seq[SharedCollectionResponse] =
-    sharedCollections map toSharedCollectionResponse
+  def toSharedCollectionResponseSeq(collections: Seq[version2.Collection]): Seq[SharedCollectionResponse] =
+    collections map toSharedCollectionResponse
 
-  def toSharedCollectionResponse(sharedCollection: SharedCollection) =
+  def formatPublishedDate(date: String): Long = {
+
+    val formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")
+
+    def cleanString: String = date.replaceAll("\"", "") match {
+      case s if s.matches(".+\\.\\d{3}000") => s.substring(0, s.length - 3)
+      case s => s
+    }
+
+    Try(formatter.withZoneUTC().parseDateTime(cleanString)) match {
+      case Success(d) => d.getMillis
+      case _ => 0
+    }
+  }
+
+  def toSharedCollectionResponse(collection: version2.Collection) =
     SharedCollectionResponse(
-      id = sharedCollection._id,
-      sharedCollectionId = sharedCollection.sharedCollectionId,
-      publishedOn = sharedCollection.publishedOn,
-      description = sharedCollection.description,
-      screenshots = sharedCollection.screenshots map (_.uri),
-      author = sharedCollection.author,
-      tags = sharedCollection.tags,
-      name = sharedCollection.name,
-      shareLink = sharedCollection.shareLink,
-      packages = sharedCollection.packages,
-      resolvedPackages = toSharedCollectionPackageResponseSeq(sharedCollection.resolvedPackages),
-      views = sharedCollection.views,
-      category = sharedCollection.category,
-      icon = sharedCollection.icon,
-      community = sharedCollection.community)
+      id = collection.publicIdentifier,
+      sharedCollectionId = collection.publicIdentifier,
+      publishedOn = formatPublishedDate(collection.publishedOn),
+      description = collection.description getOrElse "",
+      author = collection.author,
+      name = collection.name,
+      packages = collection.packages,
+      resolvedPackages = toSharedCollectionPackageResponseSeq(collection.appsInfo),
+      views = collection.views getOrElse 0,
+      category = collection.category,
+      icon = collection.icon,
+      community = collection.community)
 
-  def toSharedCollectionPackageResponseSeq(packages: Seq[SharedCollectionPackage]): Seq[SharedCollectionPackageResponse] =
+  def toSharedCollectionPackageResponseSeq(packages: Seq[version2.CollectionApp]): Seq[SharedCollectionPackageResponse] =
     packages map toSharedCollectionPackageResponse
 
-  def toSharedCollectionPackageResponse(item: SharedCollectionPackage): SharedCollectionPackageResponse =
+  def toSharedCollectionPackageResponse(item: version2.CollectionApp): SharedCollectionPackageResponse =
     SharedCollectionPackageResponse(
       packageName = item.packageName,
       title = item.title,
-      description = item.description,
       icon = item.icon,
       stars = item.stars,
       downloads = item.downloads,
@@ -299,7 +313,6 @@ trait Conversions {
       author = sharedCollection.author,
       packages = sharedCollection.packages,
       category = sharedCollection.category,
-      shareLink = sharedCollection.shareLink,
       sharedCollectionId = sharedCollection.sharedCollectionId,
       icon = sharedCollection.icon,
       community = sharedCollection.community

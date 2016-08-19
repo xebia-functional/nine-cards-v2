@@ -3,13 +3,14 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, SharedCollection}
-import com.fortysevendeg.ninecardslauncher.services.api.{CreateSharedCollectionResponse, RequestConfigV1, SharedCollectionResponse, SharedCollectionResponseList, CreateSharedCollection => ApiCreateSharedCollection}
+import com.fortysevendeg.ninecardslauncher.services.api.{CreateSharedCollectionResponse, RequestConfig, RequestConfigV1, SharedCollectionResponse, SharedCollectionResponseList, CreateSharedCollection => ApiCreateSharedCollection}
 
 import scala.util.Random
 
 trait SharedCollectionsProcessImplData {
 
-  val requestConfig = RequestConfigV1("fake-device-id", "fake-token", Some("fake-android-token"))
+  val requestConfigV1 = RequestConfigV1("fake-device-id", "fake-token", Some("fake-android-token"))
+  val requestConfig = RequestConfig("fake-api-key", "fake-session-token", "fake-android-id", Some("fake-market-token"))
 
   val category = Communication
 
@@ -28,11 +29,8 @@ trait SharedCollectionsProcessImplData {
       publishedOn = Random.nextLong(),
       description = Random.nextString(10),
       icon = Random.nextString(10),
-      screenshots = Seq.empty,
       author = Random.nextString(10),
-      tags = Seq.empty,
       name = Random.nextString(10),
-      shareLink = Random.nextString(10),
       packages = Seq.empty,
       resolvedPackages = Seq.empty,
       views = Random.nextInt(),
@@ -50,11 +48,8 @@ trait SharedCollectionsProcessImplData {
       sharedCollectionId = Random.nextString(10),
       publishedOn = Random.nextLong(),
       description = Random.nextString(10),
-      screenshots = Seq.empty,
       author = Random.nextString(10),
-      tags = Seq.empty,
       name = Random.nextString(10),
-      shareLink = Random.nextString(10),
       packages = Seq.empty,
       resolvedPackages = Seq.empty,
       views = Random.nextInt(),
@@ -85,7 +80,6 @@ trait SharedCollectionsProcessImplData {
         author = sharedCollection.author,
         packages = sharedCollection.packages,
         category = sharedCollection.category.name,
-        shareLink = sharedCollection.shareLink,
         sharedCollectionId = sharedCollection.sharedCollectionId,
         icon = sharedCollection.icon,
         community = sharedCollection.community

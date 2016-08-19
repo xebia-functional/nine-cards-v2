@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.version1.model.{GooglePlayPackage => ApiGooglePlayPackage, GooglePlayPackages => ApiGooglePlayPackages, GooglePlayRecommendation => ApiGooglePlayRecommendation, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, SharedCollectionList => ApiSharedCollectionList, User => ApiUser, UserConfig => ApiUserConfig}
+import com.fortysevendeg.ninecardslauncher.api.version1.model.{GooglePlayRecommendation => ApiGooglePlayRecommendation, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, User => ApiUser, UserConfig => ApiUserConfig}
 import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.api._
@@ -98,16 +98,6 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[Unit](statusCode, None)))
       }
 
-    googlePlayService.getGooglePlayPackage(any, any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiGooglePlayPackage](statusCode, googlePlayPackages.items.headOption)))
-      }
-
-    googlePlayService.getGooglePlayPackages(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiGooglePlayPackages](statusCode, Some(googlePlayPackages))))
-      }
-
     userConfigService.getUserConfig(any)(any) returns
       Service {
         Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
@@ -118,9 +108,15 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[ApiGooglePlayRecommendation](statusCode, Some(googlePlayRecommendation))))
       }
 
-    apiSharedCollectionsService.getSharedCollectionListByCategory(any, any, any, any, any)(any) returns
+    apiService.latestCollections(any, any, any, any)(any) returns
       Service {
-        Task(Answer(ServiceClientResponse[ApiSharedCollectionList](statusCode, Some(sharedCollectionList))))
+        Task(Answer(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
+      }
+
+
+    apiService.topCollections(any, any, any, any)(any) returns
+      Service {
+        Task(Answer(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
       }
 
     apiSharedCollectionsService.shareCollection(any, any)(any, any) returns
@@ -148,6 +144,12 @@ trait ApiServicesSpecification
 
     apiService.categorize(any, any)(any, any) returns Service(Task(Errata(exception)))
 
+    apiService.categorize(any, any)(any, any) returns Service(Task(Errata(exception)))
+
+    apiService.latestCollections(any, any, any, any)(any) returns Service(Task(Errata(exception)))
+
+    apiService.topCollections(any, any, any, any)(any) returns Service(Task(Errata(exception)))
+
     apiUserService.login(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
@@ -160,14 +162,6 @@ trait ApiServicesSpecification
       Task(Errata(exception))
     }
 
-    googlePlayService.getGooglePlayPackage(any, any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    googlePlayService.getGooglePlayPackages(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
-
     userConfigService.getUserConfig(any)(any) returns Service {
       Task(Errata(exception))
     }
@@ -175,11 +169,6 @@ trait ApiServicesSpecification
     apiRecommendationService.getRecommendedApps(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
-
-    apiSharedCollectionsService.getSharedCollectionListByCategory(any, any, any, any, any)(any) returns
-      Service {
-        Task(Errata(exception))
-      }
 
     apiSharedCollectionsService.shareCollection(any, any)(any, any) returns
       Service {
@@ -319,7 +308,7 @@ class ApiServicesImplSpec
 
   }
 
-  "getUserConfig" should {
+  "getUserConfigV1" should {
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
@@ -373,24 +362,44 @@ class ApiServicesImplSpec
 
   "getSharedCollectionsByCategory" should {
 
-    "return a valid response if the services returns a valid response" in
+    "return a valid response if the services returns a valid response for TOP apps" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.getSharedCollectionsByCategory(category, collectionType, offset, limit).run.run
+        val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeTop, offset, limit).run.run
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
-            response.items shouldEqual response.items
+            response.items.size shouldEqual collections.size
         }
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service" in
+    "return an ApiServiceException with the cause the exception returned by the service for TOP apps" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.getSharedCollectionsByCategory(category, collectionType, offset, limit).run.run
+        val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeTop, offset, limit).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
               case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
             }
+          }
+        }
+      }
+
+    "return a valid response if the services returns a valid response for LATEST apps" in
+      new ApiServicesScope with ValidApiServicesImplResponses {
+        val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit).run.run
+        result must beLike {
+          case Answer(response) =>
+            response.statusCode shouldEqual statusCode
+            response.items.size shouldEqual collections.size
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service for LATEST apps" in
+      new ApiServicesScope with ErrorApiServicesImplResponses {
+        val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit).run.run
+        result must beLike {
+          case Errata(e) => e.headOption must beSome.which {
+            case (_, (_, apiException)) => apiException must beAnInstanceOf[ApiServiceException]
           }
         }
       }
@@ -411,7 +420,6 @@ class ApiServicesImplSpec
               author = sharedCollection.author,
               packages = sharedCollection.packages,
               category = sharedCollection.category,
-              shareLink = sharedCollection.shareLink,
               sharedCollectionId = sharedCollection.sharedCollectionId,
               icon = sharedCollection.icon,
               community = sharedCollection.community

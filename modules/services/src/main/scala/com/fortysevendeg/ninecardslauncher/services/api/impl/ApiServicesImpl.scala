@@ -8,11 +8,13 @@ import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserConfigImplicit
 import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserImplicits._
 import com.fortysevendeg.ninecardslauncher.api.version1.services._
 import com.fortysevendeg.ninecardslauncher.api._
+import com.fortysevendeg.ninecardslauncher.api.version2.CollectionsResponse
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
+import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import rapture.core.{Answer, Errata}
 
 import scalaz.concurrent.Task
@@ -123,12 +125,23 @@ class ApiServicesImpl(
     category: String,
     collectionType: String,
     offset: Int,
-    limit: Int)(implicit requestConfig: RequestConfigV1) =
-    (for {
-      response <- sharedCollectionsService.getSharedCollectionListByCategory(
-        collectionType, category, offset, limit, requestConfig.toHeader)
+    limit: Int)(implicit requestConfig: RequestConfig) = {
+
+    def serviceCall: ServiceDef2[ServiceClientResponse[CollectionsResponse], ApiServiceException] =
+      collectionType.toLowerCase match {
+        case "top" =>
+          apiService.topCollections(category, offset, limit, requestConfig.toGooglePlayHeader).resolve[ApiServiceException]
+        case "latest" =>
+          apiService.latestCollections(category, offset, limit, requestConfig.toGooglePlayHeader).resolve[ApiServiceException]
+        case _ => Service(Task(Errata(ApiServiceException(shareCollectionNotFoundMessage))))
+
+      }
+
+    for {
+      response <- serviceCall
       sharedCollections <- readOption(response.data, shareCollectionNotFoundMessage)
-    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(sharedCollections.items))).resolve[ApiServiceException]
+    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(sharedCollections.collections))
+  }
 
   override def createSharedCollection(
     name: String,

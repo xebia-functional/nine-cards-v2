@@ -159,6 +159,31 @@ trait ApiServicesImplData {
       googlePlayApps map (app => GooglePlayRecommendationItems(app.docid, app, None))
     )
 
+  def generateCollection(collectionApps: Seq[version2.CollectionApp]) =
+    version2.Collection(
+      name = Random.nextString(10),
+      author = Random.nextString(10),
+      description = Some(Random.nextString(10)),
+      icon = Random.nextString(10),
+      category = "SOCIAL",
+      community = Random.nextBoolean(),
+      publishedOn = "\"2016-08-19T09:39:00.359000\"",
+      installations = Some(Random.nextInt(10)),
+      views = Some(Random.nextInt(100)),
+      publicIdentifier = Random.nextString(10),
+      appsInfo = collectionApps,
+      packages = collectionApps map (_.packageName))
+
+  def generateCollectionApp =
+    version2.CollectionApp(
+      stars = Random.nextDouble() * 5,
+      icon = Random.nextString(10),
+      packageName = Random.nextString(10),
+      downloads = "500,000,000+",
+      category = "SOCIAL",
+      title = Random.nextString(10),
+      free = Random.nextBoolean())
+
   def generateSharedCollectionList(num: Int = 10) =
     SharedCollectionList(
       items = (1 to num map (_ => generateSharedCollection))
@@ -204,7 +229,8 @@ trait ApiServicesImplData {
 
   val community = true
 
-  val collectionType = "TOP"
+  val collectionTypeTop = "top"
+  val collectionTypeLatest = "latest"
 
   val user = generateUser
 
@@ -217,6 +243,15 @@ trait ApiServicesImplData {
   val googlePlayApps = 1 to 10 map (_ => generateGooglePlayApp)
 
   val googlePlayRecommendation = generateGooglePlayRecommendation(googlePlayApps)
+
+  val collectionApps1 = 1 to 5 map (_ => generateCollectionApp)
+  val collectionApps2 = 1 to 5 map (_ => generateCollectionApp)
+  val collectionApps3 = 1 to 5 map (_ => generateCollectionApp)
+
+  val collections = Seq(
+    generateCollection(collectionApps1),
+    generateCollection(collectionApps2),
+    generateCollection(collectionApps3))
 
   val userConfig = generateUserConfig
 

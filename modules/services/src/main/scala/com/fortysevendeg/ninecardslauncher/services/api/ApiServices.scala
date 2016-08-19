@@ -99,7 +99,7 @@ trait ApiServices {
     category: String,
     collectionType: String,
     offset: Int,
-    limit: Int)(implicit requestConfig: RequestConfigV1): ServiceDef2[SharedCollectionResponseList, ApiServiceException]
+    limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[SharedCollectionResponseList, ApiServiceException]
 
   /**
     * Persists a new shared collection
