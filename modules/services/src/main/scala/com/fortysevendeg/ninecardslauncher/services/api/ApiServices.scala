@@ -70,9 +70,8 @@ trait ApiServices {
   def getUserConfigV1()(implicit requestConfig: RequestConfigV1): ServiceDef2[GetUserConfigResponse, ApiServiceException]
 
   /**
-   * Fetches the recommended applications based on some request params
-   * @param categories sequence of package ids
-   * @param likePackages sequence of similar packages
+   * Fetches the recommended applications based on a category
+   * @param category the category
    * @param excludePackages sequence of exclude packages
    * @param limit the maximum number of apps returned
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
@@ -80,10 +79,23 @@ trait ApiServices {
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
    */
   def getRecommendedApps(
-    categories: Seq[String],
-    likePackages: Seq[String],
+    category: String,
     excludePackages: Seq[String],
-    limit: Int)(implicit requestConfig: RequestConfigV1): ServiceDef2[RecommendationResponse, ApiServiceException]
+    limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[RecommendationResponse, ApiServiceException]
+
+  /**
+   * Fetches the recommended applications based on other packages
+   * @param packages the liked packages
+   * @param excludePackages sequence of exclude packages
+   * @param limit the maximum number of apps returned
+   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
+   *         of the response and the sequence of recommended [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
+   * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+   */
+  def getRecommendedAppsByPackages(
+    packages: Seq[String],
+    excludePackages: Seq[String],
+    limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[RecommendationResponse, ApiServiceException]
 
   /**
     * Fetches the public collections based on some request params

@@ -52,7 +52,18 @@ case class GetUserConfigResponse(
 
 case class RecommendationResponse(
   statusCode: Int,
-  seq: Seq[GooglePlayApp])
+  seq: Seq[RecommendationApp])
+
+case class RecommendationApp(
+  packageName: String,
+  name: String,
+  downloads: String,
+  icon: String,
+  stars: Double,
+  free: Boolean,
+  description: String,
+  screenshots: Seq[String]
+)
 
 case class SharedCollectionResponseList(
   statusCode: Int,

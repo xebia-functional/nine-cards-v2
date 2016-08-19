@@ -11,11 +11,10 @@ import com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, CallData, LastCallsContact, Widget, _}
 import com.fortysevendeg.ninecardslauncher.process.device.types._
 import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp}
-import com.fortysevendeg.ninecardslauncher.services.api.{CategorizedPackage, RequestConfig, RequestConfigV1}
-import com.fortysevendeg.ninecardslauncher.services.api.models._
+import com.fortysevendeg.ninecardslauncher.services.api.{CategorizedPackage, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => ServicesCall}
-import com.fortysevendeg.ninecardslauncher.services.commons.{EmailCategory => ServicesEmailCategory, EmailHome => ServicesEmailHome, EmailOther => ServicesEmailOther, EmailWork => ServicesEmailWork, PhoneCategory => ServicesPhoneCategory, PhoneFaxHome => ServicesPhoneFaxHome, PhoneFaxWork => ServicesPhoneFaxWork, PhoneHome => ServicesPhoneHome, PhoneMain => ServicesPhoneMain, PhoneMobile => ServicesPhoneMobile, PhoneOther => ServicesPhoneOther, PhonePager => ServicesPhonePager, PhoneWork => ServicesPhoneWork}
+import com.fortysevendeg.ninecardslauncher.services.commons.{EmailHome => ServicesEmailHome, PhoneHome => ServicesPhoneHome, PhoneMobile => ServicesPhoneMobile, PhoneOther => ServicesPhoneOther, PhoneWork => ServicesPhoneWork}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
@@ -271,8 +270,6 @@ trait DeviceProcessData
       packageName = packageName3,
       className = className3,
       path = path3))
-
-  val requestConfigV1 = RequestConfigV1("fake-device-id", "fake-token", Some("fake-android-token"))
 
   val requestConfig = RequestConfig("fake-api-key", "fake-session-token", "fake-android-id", Some("fake-android-token"))
 

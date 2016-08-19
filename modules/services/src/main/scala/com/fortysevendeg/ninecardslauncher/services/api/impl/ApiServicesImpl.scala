@@ -113,15 +113,22 @@ class ApiServicesImpl(
     } yield GetUserConfigResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def getRecommendedApps(
-    categories: Seq[String],
-    likePackages: Seq[String],
+    category: String,
     excludePackages: Seq[String],
-    limit: Int)(implicit requestConfig: RequestConfigV1) =
+    limit: Int)(implicit requestConfig: RequestConfig) =
     (for {
-      response <- recommendationService.getRecommendedApps(
-        toRecommendationRequest(categories, likePackages, excludePackages, limit), requestConfig.toHeader)
+      response <- apiService.recommendations(category, version2.RecommendationsRequest(filter = None, excludePackages, limit), requestConfig.toGooglePlayHeader)
       recommendation <- readOption(response.data, categoryNotFoundMessage)
-    } yield RecommendationResponse(response.statusCode, toPlayAppSeq(recommendation))).resolve[ApiServiceException]
+    } yield RecommendationResponse(response.statusCode, toRecommendationAppSeq(recommendation.apps))).resolve[ApiServiceException]
+
+  override def getRecommendedAppsByPackages(
+    packages: Seq[String],
+    excludePackages: Seq[String],
+    limit: Int)(implicit requestConfig: RequestConfig) =
+    (for {
+      response <- apiService.recommendationsByApps(version2.RecommendationsByAppsRequest(packages, filter = None, excludePackages, limit), requestConfig.toGooglePlayHeader)
+      recommendation <- readOption(response.data, categoryNotFoundMessage)
+    } yield RecommendationResponse(response.statusCode, toRecommendationAppSeq(recommendation.apps))).resolve[ApiServiceException]
 
   override def getSharedCollectionsByCategory(
     category: String,

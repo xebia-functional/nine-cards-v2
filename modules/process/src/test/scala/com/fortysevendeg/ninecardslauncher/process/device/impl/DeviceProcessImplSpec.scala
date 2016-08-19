@@ -212,11 +212,7 @@ trait DeviceProcessSpecification
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
 
-      apiUtils.getRequestConfigV1(contextSupport) returns
-        Service(Task(Result.answer(requestConfigV1)))
-
-      apiUtils.getRequestConfig(contextSupport) returns
-        Service(Task(Result.answer(requestConfig)))
+      apiUtils.getRequestConfig(contextSupport) returns Service(Task(Result.answer(requestConfig)))
 
     }
 

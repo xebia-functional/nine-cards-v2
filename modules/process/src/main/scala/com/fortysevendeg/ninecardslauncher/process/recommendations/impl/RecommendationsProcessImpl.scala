@@ -19,14 +19,14 @@ class RecommendationsProcessImpl(apiServices: ApiServices, persistenceServices: 
 
   override def getRecommendedAppsByCategory(category: NineCardCategory, excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport) =
     (for {
-      userConfig <- apiUtils.getRequestConfigV1
-      response <- apiServices.getRecommendedApps(Seq(category.name), Seq.empty, excludePackages, defaultRecommendedAppsLimit)(userConfig)
+      userConfig <- apiUtils.getRequestConfig
+      response <- apiServices.getRecommendedApps(category.name, excludePackages, defaultRecommendedAppsLimit)(userConfig)
     } yield response.seq map toRecommendedApp).resolve[RecommendedAppsException]
 
   override def getRecommendedAppsByPackages(packages: Seq[String], excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport) =
     (for {
-      userConfig <- apiUtils.getRequestConfigV1
-      response <- apiServices.getRecommendedApps(Seq.empty, packages, excludePackages, defaultRecommendedAppsLimit)(userConfig)
+      userConfig <- apiUtils.getRequestConfig
+      response <- apiServices.getRecommendedAppsByPackages(packages, excludePackages, defaultRecommendedAppsLimit)(userConfig)
     } yield response.seq map toRecommendedApp).resolve[RecommendedAppsException]
 
 }
