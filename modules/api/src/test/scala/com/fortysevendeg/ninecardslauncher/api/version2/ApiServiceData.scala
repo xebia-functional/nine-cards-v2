@@ -117,12 +117,14 @@ trait ApiServiceData {
 
   val recommendationsRequest = RecommendationsRequest(
     filter = Some("FREE"),
-    excludePackages = Seq("com.package.sample"))
+    excludePackages = Seq("com.package.sample"),
+    limit = 10)
 
   val recommendationsByAppsRequest = RecommendationsByAppsRequest(
     packages = Seq("com.fortysevendeg.ninecardslauncher"),
     filter = Some("FREE"),
-    excludePackages = Seq("com.package.sample"))
+    excludePackages = Seq("com.package.sample"),
+    limit = 10)
 
   val recommendationsResponse = RecommendationsResponse(apps = Seq(recommendationApp))
 
