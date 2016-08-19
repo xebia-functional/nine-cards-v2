@@ -146,7 +146,7 @@ class ApiServicesImpl(
     def toHeader: Seq[(String, String)] =
       baseHeader :+ ((headerDevice, request.deviceId)) :+ ((headerToken, request.token))
 
-    def toGooglePlayHeader: Seq[(String, String)] = request.androidToken.map((headerGooglePlayToken, _)) ++: toHeader
+    def toGooglePlayHeader: Seq[(String, String)] = request.marketToken.map((headerGooglePlayToken, _)) ++: toHeader
   }
 
   private[this] def readOption[T](maybe: Option[T], msg: String = ""): ServiceDef2[T, ApiServiceException] = Service {

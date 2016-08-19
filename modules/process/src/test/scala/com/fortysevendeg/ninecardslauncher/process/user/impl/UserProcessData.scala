@@ -46,12 +46,11 @@ trait UserProcessData
 
   val persistenceUser = ServicesUser(
     id = userDBId,
-    userId = None,
     email = None,
+    apiKey = None,
     sessionToken = None,
-    installationId = None,
     deviceToken = None,
-    androidToken = None,
+    marketToken = None,
     name = None,
     avatar = None,
     cover = None,

@@ -32,8 +32,18 @@ trait ApiServiceData {
   val recommendationsPaidAuthToken = "bc84d348c49d1a5f6fb9694050ed503ff8d55f0b6163b7a6e3929287e33a72ccf1549d99345855e13a412724f56042970e66148f2ad712105001773884e8ceb4"
   val recommendationsAuthToken = "eb8d8a575642e6d1b4b048d921a5b5ec9036a10542e424077ba261fd8a55aa47287f202691ef7c8a4ec19013affbc0c01cfa13e9a759734f2579a869a1842361"
 
-  val simpleHeader = SimpleHeader(apiKey, sessionToken, androidId)
-  val headerWithMarketToken = HeaderWithMarketToken(apiKey, sessionToken, androidId, marketToken)
+  val serviceHeader = ServiceHeader(apiKey, sessionToken, androidId)
+
+  val serviceMarketHeader = ServiceMarketHeader(apiKey, sessionToken, androidId, marketToken)
+
+  def createHeaders(authToken: String) = Seq(
+    (headerAuthToken, authToken),
+    (headerSessionToken, sessionToken),
+    (headerAndroidId, androidId),
+    (headerMarketLocalization, headerMarketLocalizationValue))
+
+  def createMarketHeaders(authToken: String) =
+    createHeaders(authToken) :+ (headerAndroidMarketToken, marketToken)
 
   val category = "SOCIAL"
   val publicIdentifier = "collection-public-identifier"

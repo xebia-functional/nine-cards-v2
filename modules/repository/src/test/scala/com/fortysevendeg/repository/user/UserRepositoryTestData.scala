@@ -11,10 +11,9 @@ trait UserRepositoryTestData {
 
   val testId = Random.nextInt(10)
   val testNonExistingId = 15
-  val testUserId = Random.nextString(10)
   val testEmail = Random.nextString(10)
+  val testApiKey = Random.nextString(10)
   val testSessionToken= Random.nextString(10)
-  val testInstallationId= Random.nextString(10)
   val testDeviceToken = Random.nextString(10)
   val testAndroidToken = Random.nextString(10)
   val testName = Random.nextString(10)
@@ -32,12 +31,11 @@ trait UserRepositoryTestData {
     i => UserEntity(
       id = testId + i,
       data = UserEntityData(
-        userId = testUserId,
         email = testEmail,
+        apiKey = testApiKey,
         sessionToken = testSessionToken,
-        installationId = testInstallationId,
         deviceToken = testDeviceToken,
-        androidToken = testAndroidToken,
+        marketToken = testAndroidToken,
         name = testName,
         avatar = testAvatar,
         cover = testCover,
@@ -48,12 +46,11 @@ trait UserRepositoryTestData {
     i => User(
       id = testId + i,
       data = UserData(
-        userId = testUserId.some,
         email = testEmail.some,
+        apiKey = testApiKey.some,
         sessionToken = testSessionToken.some,
-        installationId = testInstallationId.some,
         deviceToken = testDeviceToken.some,
-        androidToken = testAndroidToken.some,
+        marketToken = testAndroidToken.some,
         name = testName.some,
         avatar = testAvatar.some,
         cover = testCover.some,
@@ -61,12 +58,11 @@ trait UserRepositoryTestData {
         deviceCloudId = testDeviceCloudId.some)))
 
   def createUserValues = Map[String, Any](
-    UserEntity.userId -> testUserId,
     UserEntity.email -> testEmail,
+    UserEntity.apiKey -> testApiKey,
     UserEntity.sessionToken -> testSessionToken,
-    UserEntity.installationId -> testInstallationId,
     UserEntity.deviceToken -> testDeviceToken,
-    UserEntity.androidToken -> testAndroidToken,
+    UserEntity.marketToken -> testAndroidToken,
     UserEntity.name -> testName,
     UserEntity.avatar -> testAvatar,
     UserEntity.cover -> testCover,
@@ -74,12 +70,11 @@ trait UserRepositoryTestData {
     UserEntity.deviceCloudId -> testDeviceCloudId)
 
   def createUserData = UserData(
-    userId = testUserId.some,
     email = testEmail.some,
+    apiKey = testApiKey.some,
     sessionToken = testSessionToken.some,
-    installationId = testInstallationId.some,
     deviceToken = testDeviceToken.some,
-    androidToken = testAndroidToken.some,
+    marketToken = testAndroidToken.some,
     name = testName.some,
     avatar = testAvatar.some,
     cover = testCover.some,
