@@ -66,7 +66,7 @@ trait ApiServices {
    * {@link #googlePlayPackage(String)(RequestConfig) googlePlayPackage} but allow to fetch a list of packages with one operation.
  *
    * @param packageNames a sequence of package identifiers
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesResponse]] with the HTTP Code
+   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesRespo nse]] with the HTTP Code
    *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayPackage]]
    * @throws ApiServiceException if there was an error in the request
    */

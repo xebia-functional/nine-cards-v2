@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.api.version2
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.{CatsService, Service}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import org.specs2.mock.Mockito
@@ -282,12 +282,12 @@ class ApiServiceSpec
       "return the status code and the response and call with the right category" in new ApiServiceScope {
 
         mockedServiceClient.post[RecommendationsRequest, RecommendationsResponse](any, any, any, any, any)(any) returns
-          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))))
+          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))))
 
-        val serviceClientResponse = apiService.recommendations(category, recommendationsRequest, serviceMarketHeader).run.run
+        val serviceClientResponse = apiService.recommendations(category, recommendationsRequest, serviceMarketHeader).value.run
 
         serviceClientResponse must beLike {
-          case Answer(r) =>
+          case Xor.Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beSome(recommendationsResponse)
         }
@@ -315,12 +315,12 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.post[RecommendationsByAppsRequest, RecommendationsByAppsResponse](any, any, any, any, any)(any) returns
-          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(recommendationsByAppsResponse)))))
+          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(recommendationsByAppsResponse)))))
 
-        val serviceClientResponse = apiService.recommendationsByApps(recommendationsByAppsRequest, serviceMarketHeader).run.run
+        val serviceClientResponse = apiService.recommendationsByApps(recommendationsByAppsRequest, serviceMarketHeader).value.run
 
         serviceClientResponse must beLike {
-          case Answer(r) =>
+          case Xor.Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beSome(recommendationsByAppsResponse)
         }
