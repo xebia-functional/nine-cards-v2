@@ -37,6 +37,8 @@ class ApiService(serviceClient: ServiceClient) {
 
   private[this] val categorizePath = "/applications/categorize"
 
+  private[this] val recommendationsPath = "/recommendations"
+
   def login(request: LoginRequest)(
     implicit reads: Reads[LoginResponse], writes: Writes[LoginRequest]): ServiceDef2[ServiceClientResponse[LoginResponse], ApiException] =
     serviceClient.post[LoginRequest, LoginResponse](
@@ -139,6 +141,22 @@ class ApiService(serviceClient: ServiceClient) {
       headers = createHeaders(categorizePath, header),
       body = request,
       reads = Some(reads))
+
+  def recommendations(
+    category: String,
+    filter: Option[RecommendationsFilter],
+    header: HeaderWithMarketToken)(
+    implicit reads: Reads[RecommendationsResponse]): ServiceDef2[ServiceClientResponse[RecommendationsResponse], ApiException] = {
+
+    val filterPath = filter map (f => s"/${f.path}") getOrElse ""
+
+    val path = s"$recommendationsPath/$category$filterPath"
+
+    serviceClient.get[RecommendationsResponse](
+      path = path,
+      headers = createHeaders(path, header),
+      reads = Some(reads))
+  }
 
   private[this] def createHeaders(
     path: String,

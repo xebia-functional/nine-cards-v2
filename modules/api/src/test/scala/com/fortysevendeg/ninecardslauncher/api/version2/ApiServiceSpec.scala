@@ -330,5 +330,93 @@ class ApiServiceSpec
 
     }
 
+    "recommendations" should {
+
+      "return the status code and the response and call with the right category and free filter" in new ApiServiceScope {
+
+        mockedServiceClient.get[RecommendationsResponse](any, any, any, any) returns
+          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))))
+
+        val serviceClientResponse = apiService.recommendations(category, Some(FreeRecommendations), headerWithMarketToken).run.run
+
+        serviceClientResponse must beLike {
+          case Answer(r) =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data must beSome(recommendationsResponse)
+        }
+
+        val headers = Seq(
+          (headerAuthToken, recommendationsFreeAuthToken),
+          (headerSessionToken, sessionToken),
+          (headerAndroidId, androidId),
+          (headerMarketLocalization, headerMarketLocalizationValue),
+          (headerAndroidMarketToken, marketToken))
+
+        there was one(mockedServiceClient).get(
+          path = s"/recommendations/$category/FREE",
+          headers = headers,
+          reads = Some(recommendationsResponseReads),
+          emptyResponse = false)
+
+      }
+
+      "return the status code and the response and call with the right category and paid filter" in new ApiServiceScope {
+
+        mockedServiceClient.get[RecommendationsResponse](any, any, any, any) returns
+          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))))
+
+        val serviceClientResponse = apiService.recommendations(category, Some(PaidRecommendations), headerWithMarketToken).run.run
+
+        serviceClientResponse must beLike {
+          case Answer(r) =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data must beSome(recommendationsResponse)
+        }
+
+        val headers = Seq(
+          (headerAuthToken, recommendationsPaidAuthToken),
+          (headerSessionToken, sessionToken),
+          (headerAndroidId, androidId),
+          (headerMarketLocalization, headerMarketLocalizationValue),
+          (headerAndroidMarketToken, marketToken))
+
+        there was one(mockedServiceClient).get(
+          path = s"/recommendations/$category/PAID",
+          headers = headers,
+          reads = Some(recommendationsResponseReads),
+          emptyResponse = false)
+
+      }
+
+      "return the status code and the response and call with the right category and without filter" in new ApiServiceScope {
+
+        mockedServiceClient.get[RecommendationsResponse](any, any, any, any) returns
+          Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))))
+
+        val serviceClientResponse = apiService.recommendations(category, None, headerWithMarketToken).run.run
+
+        serviceClientResponse must beLike {
+          case Answer(r) =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data must beSome(recommendationsResponse)
+        }
+
+        val headers = Seq(
+          (headerAuthToken, recommendationsAuthToken),
+          (headerSessionToken, sessionToken),
+          (headerAndroidId, androidId),
+          (headerMarketLocalization, headerMarketLocalizationValue),
+          (headerAndroidMarketToken, marketToken))
+
+        there was one(mockedServiceClient).get(
+          path = s"/recommendations/$category",
+          headers = headers,
+          reads = Some(recommendationsResponseReads),
+          emptyResponse = false)
+
+      }
+
+    }
+
   }
 }
