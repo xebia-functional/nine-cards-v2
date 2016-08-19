@@ -1,10 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.api.version1.services
 
-import com.fortysevendeg.ninecardslauncher.api.version1.model.{AuthData, Installation, User}
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.rest.client.http.HttpClientException
+import com.fortysevendeg.ninecardslauncher.api.version1.model.{Installation, User}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
-import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}
 import play.api.libs.json.{Reads, Writes}
 
 class ApiUserService(serviceClient: ServiceClient) {
@@ -16,7 +15,7 @@ class ApiUserService(serviceClient: ServiceClient) {
     user: User,
     headers: Seq[(String, String)]
     )(implicit reads: Reads[User],
-    writes: Writes[User]): ServiceDef2[ServiceClientResponse[User], HttpClientException with ServiceClientException] =
+    writes: Writes[User]): CatsService[ServiceClientResponse[User]] =
     serviceClient.post[User, User](
       path = prefixPathUser,
       headers = headers,
@@ -27,7 +26,7 @@ class ApiUserService(serviceClient: ServiceClient) {
     installation: Installation,
     headers: Seq[(String, String)]
     )(implicit reads: Reads[Installation],
-    writes: Writes[Installation]): ServiceDef2[ServiceClientResponse[Installation], HttpClientException with ServiceClientException] = {
+    writes: Writes[Installation]): CatsService[ServiceClientResponse[Installation]] = {
     // TODO we have a error in match when the field is None. We need to fix that
     val installationCopy = Installation(
       _id = installation._id map (t => t),
@@ -44,7 +43,7 @@ class ApiUserService(serviceClient: ServiceClient) {
   def updateInstallation(
     installation: Installation,
     headers: Seq[(String, String)]
-    )(implicit writes: Writes[Installation]): ServiceDef2[ServiceClientResponse[Unit], HttpClientException with ServiceClientException] = {
+    )(implicit writes: Writes[Installation]): CatsService[ServiceClientResponse[Unit]] = {
     // TODO we have a error in match when the field is None. We need to fix that
     val installationCopy = Installation(
       _id = installation._id map (t => t),

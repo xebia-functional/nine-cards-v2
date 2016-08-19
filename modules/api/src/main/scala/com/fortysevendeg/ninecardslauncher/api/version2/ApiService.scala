@@ -3,10 +3,10 @@ package com.fortysevendeg.ninecardslauncher.api.version2
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
 import com.fortysevendeg.rest.client.http.HttpClientException
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
+import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}
 import play.api.libs.json.{Reads, Writes}
 
 class ApiService(serviceClient: ServiceClient) {
@@ -38,7 +38,7 @@ class ApiService(serviceClient: ServiceClient) {
   private[this] val categorizePath = "/applications/categorize"
 
   def login(request: LoginRequest)(
-    implicit reads: Reads[LoginResponse], writes: Writes[LoginRequest]): ServiceDef2[ServiceClientResponse[LoginResponse], ApiException] =
+    implicit reads: Reads[LoginResponse], writes: Writes[LoginRequest]): CatsService[ServiceClientResponse[LoginResponse]] =
     serviceClient.post[LoginRequest, LoginResponse](
       path = loginPath,
       headers = Seq.empty,
@@ -48,7 +48,7 @@ class ApiService(serviceClient: ServiceClient) {
   def installations(
     request: InstallationRequest,
     header: ServiceHeader)(
-    implicit reads: Reads[InstallationResponse], writes: Writes[InstallationRequest]): ServiceDef2[ServiceClientResponse[InstallationResponse], ApiException] =
+    implicit reads: Reads[InstallationResponse], writes: Writes[InstallationRequest]): CatsService[ServiceClientResponse[InstallationResponse]] =
     serviceClient.put[InstallationRequest, InstallationResponse](
       path = installationsPath,
       headers = createHeaders(installationsPath, header),
@@ -60,7 +60,7 @@ class ApiService(serviceClient: ServiceClient) {
     offset: Int,
     limit: Int,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[CollectionsResponse]): ServiceDef2[ServiceClientResponse[CollectionsResponse], ApiException] = {
+    implicit reads: Reads[CollectionsResponse]): CatsService[ServiceClientResponse[CollectionsResponse]] = {
 
     val path = s"$latestCollectionsPath/$category/$offset/$limit"
 
@@ -75,7 +75,7 @@ class ApiService(serviceClient: ServiceClient) {
     offset: Int,
     limit: Int,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[CollectionsResponse]): ServiceDef2[ServiceClientResponse[CollectionsResponse], ApiException] = {
+    implicit reads: Reads[CollectionsResponse]): CatsService[ServiceClientResponse[CollectionsResponse]] = {
 
     val path = s"$topCollectionsPath/$category/$offset/$limit"
 
@@ -88,7 +88,7 @@ class ApiService(serviceClient: ServiceClient) {
   def createCollection(
     request: CreateCollectionRequest,
     header: ServiceHeader)(
-    implicit reads: Reads[CreateCollectionResponse], writes: Writes[CreateCollectionRequest]): ServiceDef2[ServiceClientResponse[CreateCollectionResponse], ApiException] =
+    implicit reads: Reads[CreateCollectionResponse], writes: Writes[CreateCollectionRequest]): CatsService[ServiceClientResponse[CreateCollectionResponse]] =
     serviceClient.post[CreateCollectionRequest, CreateCollectionResponse](
       path = collectionsPath,
       headers = createHeaders(collectionsPath, header),
@@ -99,7 +99,7 @@ class ApiService(serviceClient: ServiceClient) {
     publicIdentifier: String,
     request: UpdateCollectionRequest,
     header: ServiceHeader)(
-    implicit reads: Reads[UpdateCollectionResponse], writes: Writes[UpdateCollectionRequest]): ServiceDef2[ServiceClientResponse[UpdateCollectionResponse], ApiException] = {
+    implicit reads: Reads[UpdateCollectionResponse], writes: Writes[UpdateCollectionRequest]): CatsService[ServiceClientResponse[UpdateCollectionResponse]] = {
 
     val path = s"$collectionsPath/$publicIdentifier"
 
@@ -113,7 +113,7 @@ class ApiService(serviceClient: ServiceClient) {
   def getCollection(
     publicIdentifier: String,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[Collection]): ServiceDef2[ServiceClientResponse[Collection], ApiException] = {
+    implicit reads: Reads[Collection]): CatsService[ServiceClientResponse[Collection]] = {
 
     val path = s"$collectionsPath/$publicIdentifier"
 
@@ -124,7 +124,7 @@ class ApiService(serviceClient: ServiceClient) {
   }
 
   def getCollections(header: ServiceMarketHeader)(
-    implicit reads: Reads[CollectionsResponse]): ServiceDef2[ServiceClientResponse[CollectionsResponse], ApiException] =
+    implicit reads: Reads[CollectionsResponse]): CatsService[ServiceClientResponse[CollectionsResponse]] =
     serviceClient.get[CollectionsResponse](
       path = collectionsPath,
       headers = createHeaders(collectionsPath, header),
@@ -133,7 +133,7 @@ class ApiService(serviceClient: ServiceClient) {
   def categorize(
     request: CategorizeRequest,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[CategorizeResponse], writes: Writes[CategorizeRequest]): ServiceDef2[ServiceClientResponse[CategorizeResponse], ApiException] =
+    implicit reads: Reads[CategorizeResponse], writes: Writes[CategorizeRequest]): CatsService[ServiceClientResponse[CategorizeResponse]] =
     serviceClient.post[CategorizeRequest, CategorizeResponse](
       path = categorizePath,
       headers = createHeaders(categorizePath, header),

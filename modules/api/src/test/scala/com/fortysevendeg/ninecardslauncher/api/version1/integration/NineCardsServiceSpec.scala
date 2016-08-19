@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.api.version1.integration
 
 import ApiServiceHelper._
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.api.version1.model._
 import com.fortysevendeg.ninecardslauncher.api.version1.reads.GooglePlayImplicits._
 import com.fortysevendeg.ninecardslauncher.api.version1.reads.RecommendationImplicits._
@@ -13,7 +14,6 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
 import org.specs2.specification._
 import org.specs2.specification.core.Fragments
-import rapture.core.Answer
 
 trait NineCardsServiceSpecification
   extends Specification
@@ -55,10 +55,10 @@ class NineCardsServiceSpec
     "return the UserConfig for a getUserConfig get call" in
       new NineCardsServiceScope {
 
-        val result = apiUserConfigService.getUserConfig(Seq.empty).run.run
+        val result = apiUserConfigService.getUserConfig(Seq.empty).value.run
 
         result must beLike {
-          case Answer(r) => r.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
+          case Xor.Right(r) => r.data must beSome[UserConfig].which(_._id shouldEqual userConfigIdFirst)
         }
 
       }
@@ -71,10 +71,10 @@ class NineCardsServiceSpec
       new NineCardsServiceScope {
 
         val result =
-          apiSharedCollectionsService.getSharedCollectionListByCategory(sharedCollectionType, sharedCollectionCategory, 0, 0, Seq.empty).run.run
+          apiSharedCollectionsService.getSharedCollectionListByCategory(sharedCollectionType, sharedCollectionCategory, 0, 0, Seq.empty).value.run
 
         result must beLike {
-          case Answer(r) => r.data must beSome[SharedCollectionList].which { collectionList =>
+          case Xor.Right(r) => r.data must beSome[SharedCollectionList].which { collectionList =>
             collectionList.items must have size sharedCollectionSize
             collectionList.items.headOption map (_.sharedCollectionId) must beSome(sharedCollectionIdFirst)
             collectionList.items.lastOption map (_.sharedCollectionId) must beSome(sharedCollectionIdLast)
@@ -86,10 +86,10 @@ class NineCardsServiceSpec
       new NineCardsServiceScope {
 
         val result =
-          apiSharedCollectionsService.shareCollection(createShareCollection(), Seq.empty).run.run
+          apiSharedCollectionsService.shareCollection(createShareCollection(), Seq.empty).value.run
 
         result must beLike {
-          case Answer(r) => r.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
+          case Xor.Right(r) => r.data must beSome[SharedCollection].which(_.sharedCollectionId shouldEqual sharedCollectionIdFirst)
         }
       }
 
@@ -101,10 +101,10 @@ class NineCardsServiceSpec
       new NineCardsServiceScope {
 
         val result =
-          apiGooglePlayService.getGooglePlayPackage(packageName1, Seq.empty).run.run
+          apiGooglePlayService.getGooglePlayPackage(packageName1, Seq.empty).value.run
 
         result must beLike {
-          case Answer(r) => r.data must beSome[GooglePlayPackage].which(_.docV2.docid shouldEqual packageName1)
+          case Xor.Right(r) => r.data must beSome[GooglePlayPackage].which(_.docV2.docid shouldEqual packageName1)
         }
       }
 
@@ -112,10 +112,10 @@ class NineCardsServiceSpec
       new NineCardsServiceScope {
 
         val result =
-          apiGooglePlayService.getGooglePlayPackages(PackagesRequest(Seq(packageName1, packageName2)), Seq.empty).run.run
+          apiGooglePlayService.getGooglePlayPackages(PackagesRequest(Seq(packageName1, packageName2)), Seq.empty).value.run
 
         result must beLike {
-          case Answer(r) => r.data must beSome[GooglePlayPackages].which { packages =>
+          case Xor.Right(r) => r.data must beSome[GooglePlayPackages].which { packages =>
             packages.items must have size 2
             packages.items.headOption map (_.docV2.docid) must beSome(packageName1)
             packages.items.lastOption map (_.docV2.docid) must beSome(packageName2)
@@ -130,10 +130,10 @@ class NineCardsServiceSpec
       new NineCardsServiceScope {
 
         val result =
-          apiRecommendationService.getRecommendedApps(createRecommendationRequest(), Seq.empty).run.run
+          apiRecommendationService.getRecommendedApps(createRecommendationRequest(), Seq.empty).value.run
 
         result must beLike {
-          case Answer(r) => r.data must beSome[GooglePlayRecommendation].which(_.items must have size 6)
+          case Xor.Right(r) => r.data must beSome[GooglePlayRecommendation].which(_.items must have size 6)
         }
       }
   }
