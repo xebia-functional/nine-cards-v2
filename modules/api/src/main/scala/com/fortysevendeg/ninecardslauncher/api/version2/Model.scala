@@ -50,6 +50,14 @@ case class CategorizeRequest(items: Seq[String])
 
 case class CategorizeResponse(errors: Seq[String], items: Seq[CategorizedApp])
 
+case class RecommendationsRequest(filter: Option[String], excludePackages: Seq[String], limit: Int)
+
+case class RecommendationsResponse(apps: Seq[RecommendationApp])
+
+case class RecommendationsByAppsRequest(packages: Seq[String], filter: Option[String], excludePackages: Seq[String], limit: Int)
+
+case class RecommendationsByAppsResponse(apps: Seq[RecommendationApp])
+
 case class PackagesStats(added: Int, removed: Option[Int] = None)
 
 case class Collection(
@@ -82,3 +90,13 @@ case class CollectionUpdateInfo(
 case class CategorizedApp(
   packageName: String,
   category: String)
+
+case class RecommendationApp(
+  packageName: String,
+  name: String,
+  downloads: String,
+  icon: String,
+  stars: Double,
+  free: Boolean,
+  description: String,
+  screenshots: Seq[String])
