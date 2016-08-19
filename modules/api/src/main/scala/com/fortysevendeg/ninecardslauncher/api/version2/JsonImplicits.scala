@@ -14,6 +14,9 @@ object JsonImplicits {
   implicit val updateCollectionResponseReads = Json.reads[UpdateCollectionResponse]
   implicit val categorizedAppReads = Json.reads[CategorizedApp]
   implicit val categorizeResponseReads = Json.reads[CategorizeResponse]
+  implicit val recommendationAppReads = Json.reads[RecommendationApp]
+  implicit val recommendationsResponseReads = Json.reads[RecommendationsResponse]
+  implicit val recommendationsByAppsResponseReads = Json.reads[RecommendationsByAppsResponse]
 
   implicit val loginRequestWrites = Json.writes[LoginRequest]
   implicit val installationRequestWrites = Json.writes[InstallationRequest]
@@ -21,5 +24,7 @@ object JsonImplicits {
   implicit val collectionUpdateInfoWrites = Json.writes[CollectionUpdateInfo]
   implicit val updateCollectionRequestWrites = Json.writes[UpdateCollectionRequest]
   implicit val categorizeRequestWrites = Json.writes[CategorizeRequest]
+  implicit val recommendationsRequestWrites = Json.writes[RecommendationsRequest]
+  implicit val recommendationsByAppsRequestWrites = Json.writes[RecommendationsByAppsRequest]
 
 }
