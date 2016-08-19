@@ -35,8 +35,6 @@ class ApiServicesImpl(
 
   val headerLocalization = "X-Android-Market-Localization"
 
-  val headerGooglePlayToken = "X-Google-Play-Token"
-
   val baseHeader: Seq[(String, String)] = Seq(
     (headerAppId, apiServicesConfig.appId),
     (headerAppKey, apiServicesConfig.appKey),
@@ -165,8 +163,6 @@ class ApiServicesImpl(
   implicit class RequestHeaderHeader(request: RequestConfigV1) {
     def toHeader: Seq[(String, String)] =
       baseHeader :+ ((headerDevice, request.deviceId)) :+ ((headerToken, request.token))
-
-    def toGooglePlayHeader: Seq[(String, String)] = request.marketToken.map((headerGooglePlayToken, _)) ++: toHeader
   }
 
   implicit class RequestConfigExt(request: RequestConfig) {

@@ -23,6 +23,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, C
 import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
+import com.fortysevendeg.ninecardslauncher.process.userv1.models.UserV1Device
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.api.GoogleApiClient
@@ -300,6 +301,12 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Answer(r) => r }))
     }
 
+    // If we found some error when connecting to Backend V1 we just return an empty collection of devices
+    def loadDevicesFromV1(): ServiceDef2[Seq[UserV1Device], UserV1Exception] =
+      di.userV1Process.getUserInfo(Build.MODEL, Seq(resGetString(R.string.android_market_oauth_scopes)))
+        .map(_.devices)
+        .resolveTo(Seq.empty)
+
     def fakeUserConfigException: ServiceDef2[Unit, UserV1Exception] = Service(Task(Answer(())))
 
     def verifyAndUpdate(
@@ -308,8 +315,8 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       cloudStorageResources: Seq[CloudStorageDeviceSummary]) =
       if (cloudStorageResources.isEmpty) {
         for {
-          userInfo <- di.userV1Process.getUserInfo(Build.MODEL, Seq(resGetString(R.string.android_market_oauth_scopes)))
-          cloudStorageDevices <- storeOnCloud(cloudStorageProcess, userInfo.devices map toCloudStorageDevice)
+          userInfoDevices <- loadDevicesFromV1()
+          cloudStorageDevices <- storeOnCloud(cloudStorageProcess, userInfoDevices map toCloudStorageDevice)
           (maybeUserDevice, devices) <- cloudStorageProcess.prepareForActualDevice(cloudStorageDevices)
         } yield {
           UserCloudDevices(
