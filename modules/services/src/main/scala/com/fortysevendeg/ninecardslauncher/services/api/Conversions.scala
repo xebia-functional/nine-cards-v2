@@ -10,16 +10,16 @@ trait Conversions {
 
   def toUser(
     email: String,
-    device: GoogleDevice
-    ): version1.model.User =
-    version1.model.User(
+    device: LoginV1Device
+    ): version1.User =
+    version1.User(
       _id = None,
       email = None,
       sessionToken = None,
       username = None,
       password = None,
-      authData = Some(version1.model.AuthData(
-        google = Some(version1.model.AuthGoogle(
+      authData = Some(version1.AuthData(
+        google = Some(version1.AuthGoogle(
           email = email,
           devices = List(fromGoogleDevice(device))
         )),
@@ -27,14 +27,14 @@ trait Conversions {
         twitter = None,
         anonymous = None)))
 
-  def fromGoogleDevice(device: GoogleDevice): version1.model.AuthGoogleDevice =
-    version1.model.AuthGoogleDevice(
+  def fromGoogleDevice(device: LoginV1Device): version1.AuthGoogleDevice =
+    version1.AuthGoogleDevice(
       name = device.name,
       deviceId = device.deviceId,
       secretToken = device.secretToken,
       permissions = device.permissions)
 
-  def toLoginResponseV1(statusCode: Int, user: version1.model.User): LoginResponseV1 =
+  def toLoginResponseV1(statusCode: Int, user: version1.User): LoginResponseV1 =
     LoginResponseV1(
       statusCode,
       userId = user._id,
@@ -45,10 +45,10 @@ trait Conversions {
         google <- data.google
       } yield toGoogleDeviceSeq(google.devices)) getOrElse Seq.empty)
 
-  def toGoogleDeviceSeq(devices: Seq[version1.model.AuthGoogleDevice]): Seq[GoogleDevice] = devices map toGoogleDevice
+  def toGoogleDeviceSeq(devices: Seq[version1.AuthGoogleDevice]): Seq[LoginV1Device] = devices map toGoogleDevice
 
-  def toGoogleDevice(device: version1.model.AuthGoogleDevice): GoogleDevice =
-    GoogleDevice(
+  def toGoogleDevice(device: version1.AuthGoogleDevice): LoginV1Device =
+    LoginV1Device(
       name = device.name,
       deviceId = device.deviceId,
       secretToken = device.secretToken,
@@ -60,32 +60,32 @@ trait Conversions {
   def toCategorizedPackages(categorizeResponse: version2.CategorizeResponse): Seq[CategorizedPackage] =
     categorizeResponse.items.map(app => CategorizedPackage(app.packageName, Some(app.category)))
 
-  def toUserConfig(apiUserConfig: version1.model.UserConfig): UserConfig =
-    UserConfig(
+  def toUserConfig(apiUserConfig: version1.UserConfig): UserV1 =
+    UserV1(
       _id = apiUserConfig._id,
       email = apiUserConfig.email,
       plusProfile = toUserConfigPlusProfile(apiUserConfig.plusProfile),
       devices = apiUserConfig.devices map toUserConfigDevice,
       status = toUserConfigStatusInfo(apiUserConfig.status))
 
-  def toUserConfigPlusProfile(apiPlusProfile: version1.model.UserConfigPlusProfile): UserConfigPlusProfile =
-    UserConfigPlusProfile(
+  def toUserConfigPlusProfile(apiPlusProfile: version1.UserConfigPlusProfile): UserV1PlusProfile =
+    UserV1PlusProfile(
       displayName = apiPlusProfile.displayName,
       profileImage = toUserConfigProfileImage(apiPlusProfile.profileImage))
 
-  def toUserConfigProfileImage(apiProfileImage: version1.model.UserConfigProfileImage): UserConfigProfileImage =
-    UserConfigProfileImage(
+  def toUserConfigProfileImage(apiProfileImage: version1.UserConfigProfileImage): UserV1ProfileImage =
+    UserV1ProfileImage(
       imageType = apiProfileImage.imageType,
       imageUrl = apiProfileImage.imageUrl)
 
-  def toUserConfigDevice(apiDevice: version1.model.UserConfigDevice): UserConfigDevice =
-    UserConfigDevice(
+  def toUserConfigDevice(apiDevice: version1.UserConfigDevice): UserV1Device =
+    UserV1Device(
       deviceId = apiDevice.deviceId,
       deviceName = apiDevice.deviceName,
       collections = apiDevice.collections map toUserConfigCollection)
 
-  def toUserConfigCollection(apiCollection: version1.model.UserConfigCollection): UserConfigCollection =
-    UserConfigCollection(
+  def toUserConfigCollection(apiCollection: version1.UserConfigCollection): UserV1Collection =
+    UserV1Collection(
       name = apiCollection.name,
       originalSharedCollectionId = apiCollection.originalSharedCollectionId,
       sharedCollectionId = apiCollection.sharedCollectionId,
@@ -102,15 +102,15 @@ trait Conversions {
       alt = apiCollection.alt,
       category = apiCollection.category)
 
-  def toUserConfigCollectionItem(apiCollectionItem: version1.model.UserConfigCollectionItem): UserConfigCollectionItem =
-    UserConfigCollectionItem(
+  def toUserConfigCollectionItem(apiCollectionItem: version1.UserConfigCollectionItem): UserV1CollectionItem =
+    UserV1CollectionItem(
       itemType = apiCollectionItem.itemType,
       title = apiCollectionItem.title,
       metadata = apiCollectionItem.metadata,
       categories = apiCollectionItem.categories)
 
-  def toUserConfigStatusInfo(apiStatusInfo: version1.model.UserConfigStatusInfo): UserConfigStatusInfo =
-    UserConfigStatusInfo(
+  def toUserConfigStatusInfo(apiStatusInfo: version1.UserConfigStatusInfo): UserV1StatusInfo =
+    UserV1StatusInfo(
       products = apiStatusInfo.products,
       friendsReferred = apiStatusInfo.friendsReferred,
       themesShared = apiStatusInfo.themesShared,

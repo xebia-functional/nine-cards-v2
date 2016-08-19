@@ -1,12 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.version1.model.PackagesRequest
-import com.fortysevendeg.ninecardslauncher.api.version1.reads.GooglePlayImplicits._
-import com.fortysevendeg.ninecardslauncher.api.version1.reads.RecommendationImplicits._
-import com.fortysevendeg.ninecardslauncher.api.version1.reads.SharedCollectionImplicits._
-import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserConfigImplicits._
-import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserImplicits._
-import com.fortysevendeg.ninecardslauncher.api.version1.services._
 import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.api.version2.CollectionsResponse
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
@@ -24,15 +17,12 @@ case class ApiServicesConfig(appId: String, appKey: String, localization: String
 class ApiServicesImpl(
   apiServicesConfig: ApiServicesConfig,
   apiService: version2.ApiService,
-  apiUserService: ApiUserService,
-  googlePlayService: ApiGooglePlayService,
-  userConfigService: ApiUserConfigService,
-  recommendationService: ApiRecommendationService,
-  sharedCollectionsService: ApiSharedCollectionsService)
+  apiServiceV1: version1.ApiService)
   extends ApiServices
   with Conversions
   with ImplicitsApiServiceExceptions {
 
+  import version1.JsonImplicits._
   import version2.JsonImplicits._
 
   val headerAppId = "X-Appsly-Application-Id"
@@ -72,9 +62,9 @@ class ApiServicesImpl(
 
   override def loginV1(
     email: String,
-    device: GoogleDevice) =
+    device: LoginV1Device) =
     (for {
-      response <- apiUserService.login(toUser(email, device), baseHeader)
+      response <- apiServiceV1.login(toUser(email, device), baseHeader)
       user <- readOption(response.data, userNotFoundMessage)
     } yield toLoginResponseV1(response.statusCode, user)).resolve[ApiServiceException]
 
@@ -108,9 +98,9 @@ class ApiServicesImpl(
 
   override def getUserConfigV1()(implicit requestConfig: RequestConfigV1) =
     (for {
-      response <- userConfigService.getUserConfig(requestConfig.toHeader)
+      response <- apiServiceV1.getUserConfig(requestConfig.toHeader)
       userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield GetUserConfigResponse(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
+    } yield GetUserV1Response(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def getRecommendedApps(
     category: String,

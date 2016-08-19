@@ -19,11 +19,7 @@ case class LoginResponseV1(
   userId: Option[String],
   sessionToken: Option[String],
   email: Option[String],
-  devices: Seq[GoogleDevice])
-
-case class InstallationResponse(
-  statusCode: Int,
-  installation: Installation)
+  devices: Seq[LoginV1Device])
 
 case class UpdateInstallationResponse(
   statusCode: Int)
@@ -40,15 +36,15 @@ case class GooglePlayPackagesResponse(
   statusCode: Int,
   packages: Seq[CategorizedPackage])
 
-trait UserConfigResponse {
+trait UserV1Response {
   def statusCode: Int
 
-  def userConfig: UserConfig
+  def userConfig: UserV1
 }
 
-case class GetUserConfigResponse(
+case class GetUserV1Response(
   statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
+  userConfig: UserV1) extends UserV1Response
 
 case class RecommendationResponse(
   statusCode: Int,

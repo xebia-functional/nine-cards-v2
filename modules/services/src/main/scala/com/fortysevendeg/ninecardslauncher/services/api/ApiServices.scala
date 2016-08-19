@@ -14,7 +14,7 @@ trait ApiServices {
    */
   def loginV1(
     email: String,
-    device: GoogleDevice): ServiceDef2[LoginResponseV1, ApiServiceException]
+    device: LoginV1Device): ServiceDef2[LoginResponseV1, ApiServiceException]
 
   /**
     * Tries to login with the email, the androidId and the tokenId
@@ -63,11 +63,11 @@ trait ApiServices {
   /**
    * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfigV1]]
     *
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigResponse]] with the HTTP Code
-   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserConfig]]
+   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GetUserV1Response]] with the HTTP Code
+   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserV1]]
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
    */
-  def getUserConfigV1()(implicit requestConfig: RequestConfigV1): ServiceDef2[GetUserConfigResponse, ApiServiceException]
+  def getUserConfigV1()(implicit requestConfig: RequestConfigV1): ServiceDef2[GetUserV1Response, ApiServiceException]
 
   /**
    * Fetches the recommended applications based on a category
@@ -75,7 +75,7 @@ trait ApiServices {
    * @param excludePackages sequence of exclude packages
    * @param limit the maximum number of apps returned
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
-   *         of the response and the sequence of recommended [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
+   *         of the response and the sequence of recommended apps
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
    */
   def getRecommendedApps(
@@ -89,7 +89,7 @@ trait ApiServices {
    * @param excludePackages sequence of exclude packages
    * @param limit the maximum number of apps returned
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
-   *         of the response and the sequence of recommended [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
+   *         of the response and the sequence of recommended apps
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
    */
   def getRecommendedAppsByPackages(
@@ -104,7 +104,7 @@ trait ApiServices {
     * @param offset offset of list
     * @param limit the maximum number of collection returned
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SharedCollectionResponseList]] with the HTTP Code
-    *         of the response and the sequence of recommended [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
+    *         of the response and the sequence of recommended collections
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def getSharedCollectionsByCategory(

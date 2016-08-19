@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api.version1.model.{GooglePlayRecommendation => ApiGooglePlayRecommendation, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, User => ApiUser, UserConfig => ApiUserConfig}
 import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.api._
@@ -42,24 +41,12 @@ trait ApiServicesSpecification
 
     val apiService = mock[version2.ApiService]
 
-    val apiUserService = mock[version1.services.ApiUserService]
-
-    val googlePlayService = mock[version1.services.ApiGooglePlayService]
-
-    val userConfigService = mock[version1.services.ApiUserConfigService]
-
-    val apiRecommendationService = mock[version1.services.ApiRecommendationService]
-
-    val apiSharedCollectionsService = mock[version1.services.ApiSharedCollectionsService]
+    val apiServiceV1 = mock[version1.ApiService]
 
     val apiServices = new ApiServicesImpl(
       apiServicesConfig,
       apiService,
-      apiUserService, 
-      googlePlayService, 
-      userConfigService, 
-      apiRecommendationService,
-      apiSharedCollectionsService)
+      apiServiceV1)
   }
 
   trait ValidApiServicesImplResponses
@@ -83,29 +70,19 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
       }
 
-    apiUserService.login(any, any)(any, any) returns
+    apiServiceV1.login(any, any)(any, any) returns
       Service {
-        Task(Answer(ServiceClientResponse[ApiUser](statusCode, Some(user))))
+        Task(Answer(ServiceClientResponse[version1.User](statusCode, Some(user))))
       }
 
-    apiUserService.createInstallation(any, any)(any, any) returns
+    apiServiceV1.getUserConfig(any)(any) returns
       Service {
-        Task(Answer(ServiceClientResponse[ApiInstallation](statusCode, Some(installation))))
+        Task(Answer(ServiceClientResponse[version1.UserConfig](statusCode, Some(userConfig))))
       }
 
-    apiUserService.updateInstallation(any, any)(any) returns
+    apiService.recommendations(any, any, any)(any, any) returns
       Service {
-        Task(Answer(ServiceClientResponse[Unit](statusCode, None)))
-      }
-
-    userConfigService.getUserConfig(any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
-      }
-
-    apiRecommendationService.getRecommendedApps(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiGooglePlayRecommendation](statusCode, Some(googlePlayRecommendation))))
+        Task(Answer(ServiceClientResponse[version2.RecommendationsResponse](statusCode, Some(recommendationResponse))))
       }
 
     apiService.latestCollections(any, any, any, any)(any) returns
@@ -151,23 +128,15 @@ trait ApiServicesSpecification
 
     apiService.createCollection(any, any)(any, any) returns Service(Task(Errata(exception)))
 
-    apiUserService.login(any, any)(any, any) returns Service {
+    apiService.recommendations(any, any, any)(any, any) returns Service(Task(Errata(exception)))
+
+    apiService.recommendationsByApps(any, any)(any, any) returns Service(Task(Errata(exception)))
+
+    apiServiceV1.login(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
 
-    apiUserService.createInstallation(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
-
-    apiUserService.updateInstallation(any, any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    userConfigService.getUserConfig(any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    apiRecommendationService.getRecommendedApps(any, any)(any, any) returns Service {
+    apiServiceV1.getUserConfig(any)(any) returns Service {
       Task(Errata(exception))
     }
   }
@@ -206,7 +175,7 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.loginV1("", GoogleDevice("", "", "", Seq.empty)).run.run
+        val result = apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)).run.run
         result must beLike {
           case Answer(response) =>
             response shouldEqual toLoginResponseV1(statusCode, user)
@@ -215,7 +184,7 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.loginV1("", GoogleDevice("", "", "", Seq.empty)).run.run
+        val result = apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {
@@ -334,17 +303,17 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.getRecommendedApps(Seq.empty, Seq.empty, Seq.empty, limit).run.run
+        val result = apiServices.getRecommendedApps(category, Seq.empty, limit).run.run
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
-            response.seq.map(_.docid) shouldEqual googlePlayApps.map(_.docid)
+            response.seq.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
         }
       }
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.getRecommendedApps(Seq.empty, Seq.empty, Seq.empty, limit).run.run
+        val result = apiServices.getRecommendedApps(category, Seq.empty, limit).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
             case (_, (_, apiException)) => apiException must beLike {

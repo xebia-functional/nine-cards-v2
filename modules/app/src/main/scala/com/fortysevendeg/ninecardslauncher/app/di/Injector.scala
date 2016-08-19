@@ -96,11 +96,11 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val serviceHttpClient = createHttpClient
 
-  private[this] lazy val serviceClient = new ServiceClient(
+  private[this] lazy val serviceClientV1 = new ServiceClient(
     httpClient = serviceHttpClient,
     baseUrl = resources.getString(R.string.api_base_url))
 
-  private[this] lazy val serviceClientV2 = new ServiceClient(
+  private[this] lazy val serviceClient = new ServiceClient(
     httpClient = serviceHttpClient,
     baseUrl = resources.getString(R.string.api_v2_base_url))
 
@@ -115,12 +115,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val apiServices = new ApiServicesImpl(
     apiServicesConfig = apiServicesConfig,
-    apiService = new version2.ApiService(serviceClientV2),
-    apiUserService = new version1.services.ApiUserService(serviceClient),
-    googlePlayService = new version1.services.ApiGooglePlayService(googlePlayServiceClient),
-    userConfigService = new version1.services.ApiUserConfigService(serviceClient),
-    recommendationService = new version1.services.ApiRecommendationService(serviceClient),
-    sharedCollectionsService = new version1.services.ApiSharedCollectionsService(serviceClient))
+    apiService = new version2.ApiService(serviceClient),
+    apiServiceV1 = new version1.ApiService(serviceClientV1))
 
   private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
     contextSupport.getContentResolver)

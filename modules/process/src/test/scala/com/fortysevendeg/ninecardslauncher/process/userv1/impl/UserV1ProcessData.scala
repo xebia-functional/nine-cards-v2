@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.userv1.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, Game}
-import com.fortysevendeg.ninecardslauncher.services.api.{GetUserConfigResponse, LoginResponseV1, RequestConfigV1}
+import com.fortysevendeg.ninecardslauncher.services.api.{GetUserV1Response, LoginResponseV1, RequestConfigV1}
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => PersistenceUser}
 import play.api.libs.json.JsString
@@ -40,7 +40,7 @@ trait UserV1ProcessData {
 
   val permissions = Seq.empty
 
-  val googleDevice = GoogleDevice(
+  val googleDevice = LoginV1Device(
     name = deviceName,
     deviceId = deviceId,
     secretToken = marketToken,
@@ -66,10 +66,10 @@ trait UserV1ProcessData {
     email = Option(email),
     devices = Seq(googleDevice))
 
-  def createUserConfigCollectionItem(count: Int = 8): Seq[UserConfigCollectionItem] =
+  def createUserConfigCollectionItem(count: Int = 8): Seq[UserV1CollectionItem] =
     (0 until count) map {
       item =>
-        UserConfigCollectionItem(
+        UserV1CollectionItem(
           itemType = itemType.name,
           title = s"Item $item",
           metadata = JsString(""),
@@ -80,7 +80,7 @@ trait UserV1ProcessData {
   def createUserConfigCollection(count: Int = 5) =
     (0 until count) map {
       item =>
-        UserConfigCollection(
+        UserV1Collection(
           name = collectionName,
           originalSharedCollectionId = None,
           sharedCollectionId = None,
@@ -102,25 +102,25 @@ trait UserV1ProcessData {
   def createUserConfigDevice(count: Int = 3) =
     (0 until count) map {
       item =>
-        UserConfigDevice(
+        UserV1Device(
           deviceId = s"$deviceIdPrefix-$item",
           deviceName = s"$deviceName $item",
           collections = createUserConfigCollection()
         )
     }
 
-  val userConfig = UserConfig(
+  val userConfig = UserV1(
     _id = "fake-id",
     email = email,
-    plusProfile = UserConfigPlusProfile(
+    plusProfile = UserV1PlusProfile(
       displayName = name,
-      profileImage = UserConfigProfileImage(
+      profileImage = UserV1ProfileImage(
         imageType = 0,
         imageUrl = imageUrl
       )
     ),
     devices = createUserConfigDevice(),
-    status = UserConfigStatusInfo(
+    status = UserV1StatusInfo(
       products = Seq.empty,
       friendsReferred = 0,
       themesShared = 0,
@@ -131,7 +131,7 @@ trait UserV1ProcessData {
       joinedThrough = None,
       tester = false))
 
-  val getUserConfigResponse = GetUserConfigResponse(
+  val getUserConfigResponse = GetUserV1Response(
     statusCode = statusCodeUser,
     userConfig = userConfig)
 

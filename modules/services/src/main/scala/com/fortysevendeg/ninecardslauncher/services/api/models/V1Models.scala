@@ -2,23 +2,23 @@ package com.fortysevendeg.ninecardslauncher.services.api.models
 
 import play.api.libs.json._
 
-case class UserConfig(
+case class UserV1(
   _id: String,
   email: String,
-  plusProfile: UserConfigPlusProfile,
-  devices: Seq[UserConfigDevice],
-  status: UserConfigStatusInfo)
+  plusProfile: UserV1PlusProfile,
+  devices: Seq[UserV1Device],
+  status: UserV1StatusInfo)
 
-case class UserConfigPlusProfile(
+case class UserV1PlusProfile(
   displayName: String,
-  profileImage: UserConfigProfileImage)
+  profileImage: UserV1ProfileImage)
 
-case class UserConfigDevice(
+case class UserV1Device(
   deviceId: String,
   deviceName: String,
-  collections: Seq[UserConfigCollection])
+  collections: Seq[UserV1Collection])
 
-case class UserConfigStatusInfo(
+case class UserV1StatusInfo(
   products: Seq[String],
   friendsReferred: Int,
   themesShared: Int,
@@ -29,16 +29,16 @@ case class UserConfigStatusInfo(
   joinedThrough: Option[String],
   tester: Boolean)
 
-case class UserConfigProfileImage(
+case class UserV1ProfileImage(
   imageType: Int,
   imageUrl: String)
 
-case class UserConfigCollection(
+case class UserV1Collection(
   name: String,
   originalSharedCollectionId: Option[String],
   sharedCollectionId: Option[String],
   sharedCollectionSubscribed: Option[Boolean],
-  items: Seq[UserConfigCollectionItem],
+  items: Seq[UserV1CollectionItem],
   collectionType: String,
   constrains: Seq[String],
   wifi: Seq[String],
@@ -50,19 +50,14 @@ case class UserConfigCollection(
   alt: Double,
   category: Option[String])
 
-case class UserConfigCollectionItem(
+case class UserV1CollectionItem(
   itemType: String,
   title: String,
   metadata: JsValue,
   categories: Option[Seq[String]])
 
-case class UserConfigUserLocation(
-  wifi: String,
-  lat: Double,
-  lng: Double,
-  occurrence: Seq[UserConfigTimeSlot])
-
-case class UserConfigTimeSlot(
-  from: String,
-  to: String,
-  days: Seq[Int])
+case class LoginV1Device(
+  name: String,
+  deviceId: String,
+  secretToken: String,
+  permissions: Seq[String])
