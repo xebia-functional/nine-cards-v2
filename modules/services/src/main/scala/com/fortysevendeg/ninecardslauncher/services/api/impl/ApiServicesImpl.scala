@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.api.version1.model.PackagesRequest
 import com.fortysevendeg.ninecardslauncher.api.version1.reads.GooglePlayImplicits._
 import com.fortysevendeg.ninecardslauncher.api.version1.reads.RecommendationImplicits._
@@ -8,11 +9,10 @@ import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserConfigImplicit
 import com.fortysevendeg.ninecardslauncher.api.version1.reads.UserImplicits._
 import com.fortysevendeg.ninecardslauncher.api.version1.services._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
-import rapture.core.{Answer, Errata}
 
 import scalaz.concurrent.Task
 
@@ -149,11 +149,11 @@ class ApiServicesImpl(
     def toGooglePlayHeader: Seq[(String, String)] = request.marketToken.map((headerGooglePlayToken, _)) ++: toHeader
   }
 
-  private[this] def readOption[T](maybe: Option[T], msg: String = ""): ServiceDef2[T, ApiServiceException] = Service {
+  private[this] def readOption[T](maybe: Option[T], msg: String = ""): CatsService[T] = CatsService {
     Task {
       maybe match {
-        case Some(v) => Answer(v)
-        case _ => Errata(ApiServiceException(msg))
+        case Some(v) => Xor.Right(v)
+        case _ => Xor.Left(ApiServiceException(msg))
       }
     }
   }

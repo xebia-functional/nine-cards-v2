@@ -1,12 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 
 trait ApiServices {
 
   /**
    * Tries to login with the email and the device
+ *
    * @param email user email
    * @param device user device
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponse]] with the HTTP Code
@@ -15,10 +16,11 @@ trait ApiServices {
    */
   def login(
     email: String,
-    device: GoogleDevice): ServiceDef2[LoginResponse, ApiServiceException]
+    device: GoogleDevice): CatsService[LoginResponse]
 
   /**
    * Creates a new user installation based on the provided params
+ *
    * @param deviceType the device type. Actually only [[com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice]] is supported
    * @param deviceToken the token used by the device
    * @param userId the user identifier
@@ -29,10 +31,11 @@ trait ApiServices {
   def createInstallation(
     deviceType: Option[DeviceType],
     deviceToken: Option[String],
-    userId: Option[String]): ServiceDef2[InstallationResponse, ApiServiceException]
+    userId: Option[String]): CatsService[InstallationResponse]
 
   /**
    * Updates an existing user installation
+ *
    * @param id the installation identifier to update
    * @param deviceType the device type. Actually only [[com.fortysevendeg.ninecardslauncher.services.api.models.AndroidDevice]] is supported
    * @param deviceToken the token used by the device
@@ -45,39 +48,43 @@ trait ApiServices {
     id: String,
     deviceType: Option[DeviceType],
     deviceToken: Option[String],
-    userId: Option[String]): ServiceDef2[UpdateInstallationResponse, ApiServiceException]
+    userId: Option[String]): CatsService[UpdateInstallationResponse]
 
   /**
    * Fetches the package info from Google Play given a package name
+ *
    * @param packageName the package identifier. For example `com.fortysevendeg.ninecardslauncher`
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackageResponse]] with the HTTP Code
    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp]]
    * @throws ApiServiceException if there was an error in the request
    */
   def googlePlayPackage(
-    packageName: String)(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlayPackageResponse, ApiServiceException]
+    packageName: String)(implicit requestConfig: RequestConfig): CatsService[GooglePlayPackageResponse]
 
   /**
    * Fetches a list of packages information from Google Play given a list of package names. The response is similar to
    * {@link #googlePlayPackage(String)(RequestConfig) googlePlayPackage} but allow to fetch a list of packages with one operation.
+ *
    * @param packageNames a sequence of package identifiers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesResponse]] with the HTTP Code
    *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayPackage]]
    * @throws ApiServiceException if there was an error in the request
    */
   def googlePlayPackages(
-    packageNames: Seq[String])(implicit requestConfig: RequestConfig): ServiceDef2[GooglePlayPackagesResponse, ApiServiceException]
+    packageNames: Seq[String])(implicit requestConfig: RequestConfig): CatsService[GooglePlayPackagesResponse]
 
   /**
    * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfig]]
+ *
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GetUserConfigResponse]] with the HTTP Code
    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserConfig]]
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
    */
-  def getUserConfig()(implicit requestConfig: RequestConfig): ServiceDef2[GetUserConfigResponse, ApiServiceException]
+  def getUserConfig()(implicit requestConfig: RequestConfig): CatsService[GetUserConfigResponse]
 
   /**
    * Fetches the recommended applications based on some request params
+ *
    * @param categories sequence of package ids
    * @param likePackages sequence of similar packages
    * @param excludePackages sequence of exclude packages
@@ -90,10 +97,11 @@ trait ApiServices {
     categories: Seq[String],
     likePackages: Seq[String],
     excludePackages: Seq[String],
-    limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[RecommendationResponse, ApiServiceException]
+    limit: Int)(implicit requestConfig: RequestConfig): CatsService[RecommendationResponse]
 
   /**
     * Fetches the public collections based on some request params
+ *
     * @param category category of collections
     * @param collectionType type [top or latest]
     * @param offset offset of list
@@ -106,10 +114,11 @@ trait ApiServices {
     category: String,
     collectionType: String,
     offset: Int,
-    limit: Int)(implicit requestConfig: RequestConfig): ServiceDef2[SharedCollectionResponseList, ApiServiceException]
+    limit: Int)(implicit requestConfig: RequestConfig): CatsService[SharedCollectionResponseList]
 
   /**
     * Persists a new shared collection
+ *
     * @param name The name of the collection
     * @param description The user's description of the collection
     * @param author The original author of the collection
@@ -127,5 +136,5 @@ trait ApiServices {
     packages: Seq[String],
     category: String,
     icon: String,
-    community: Boolean)(implicit requestConfig: RequestConfig): ServiceDef2[CreateSharedCollectionResponse, ApiServiceException]
+    community: Boolean)(implicit requestConfig: RequestConfig): CatsService[CreateSharedCollectionResponse]
 }

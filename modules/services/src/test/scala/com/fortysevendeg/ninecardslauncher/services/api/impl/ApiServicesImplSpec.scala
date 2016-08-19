@@ -1,8 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.api.version1.model.{GooglePlayPackage => ApiGooglePlayPackage, GooglePlayPackages => ApiGooglePlayPackages, GooglePlayRecommendation => ApiGooglePlayRecommendation, Installation => ApiInstallation, SharedCollection => ApiSharedCollection, SharedCollectionList => ApiSharedCollectionList, User => ApiUser, UserConfig => ApiUserConfig}
 import com.fortysevendeg.ninecardslauncher.api.version1.services._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.rest.client.ServiceClientException
@@ -11,14 +12,13 @@ import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 import scala.util.Random
 import scalaz.concurrent.Task
 
 trait ApiServicesSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   implicit val requestConfig = RequestConfig(
     deviceId = Random.nextString(10),
@@ -46,115 +46,117 @@ trait ApiServicesSpecification
     val apiSharedCollectionsService = mock[ApiSharedCollectionsService]
 
     val apiServices = new ApiServicesImpl(
-      apiServicesConfig, 
-      apiUserService, 
-      googlePlayService, 
-      userConfigService, 
+      apiServicesConfig,
+      apiUserService,
+      googlePlayService,
+      userConfigService,
       apiRecommendationService,
       apiSharedCollectionsService)
   }
 
   trait ValidApiServicesImplResponses
     extends ApiServicesImplData
-    with Conversions {
+      with Conversions {
 
     self: ApiServicesScope =>
 
     apiUserService.login(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUser](statusCode, Some(user))))
+      CatsService {
+        Task(Xor.Right(ServiceClientResponse[ApiUser](statusCode, Some(user))))
       }
 
     apiUserService.createInstallation(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiInstallation](statusCode, Some(installation))))
+      CatsService {
+        Task(Xor.Right(ServiceClientResponse[ApiInstallation](statusCode, Some(installation))))
       }
 
     apiUserService.updateInstallation(any, any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[Unit](statusCode, None)))
+      CatsService {
+        Task(Xor.Right(ServiceClientResponse[Unit](statusCode, None)))
       }
 
     googlePlayService.getGooglePlayPackage(any, any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiGooglePlayPackage](statusCode, googlePlayPackages.items.headOption)))
+      CatsService {
+        Task(Xor.Right(ServiceClientResponse[ApiGooglePlayPackage](statusCode, googlePlayPackages.items.headOption)))
       }
 
     googlePlayService.getGooglePlayPackages(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiGooglePlayPackages](statusCode, Some(googlePlayPackages))))
+      CatsService {
+        Task(Xor.Right(ServiceClientResponse[ApiGooglePlayPackages](statusCode, Some(googlePlayPackages))))
       }
 
     userConfigService.getUserConfig(any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
+      CatsService {
+        Task(Xor.Right(ServiceClientResponse[ApiUserConfig](statusCode, Some(userConfig))))
       }
 
     apiRecommendationService.getRecommendedApps(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiGooglePlayRecommendation](statusCode, Some(googlePlayRecommendation))))
+      CatsService {
+        Task(Xor.Right(ServiceClientResponse[ApiGooglePlayRecommendation](statusCode, Some(googlePlayRecommendation))))
       }
 
     apiSharedCollectionsService.getSharedCollectionListByCategory(any, any, any, any, any)(any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiSharedCollectionList](statusCode, Some(sharedCollectionList))))
+      CatsService {
+        Task(Xor.Right(ServiceClientResponse[ApiSharedCollectionList](statusCode, Some(sharedCollectionList))))
       }
 
     apiSharedCollectionsService.shareCollection(any, any)(any, any) returns
-      Service {
-        Task(Answer(ServiceClientResponse[ApiSharedCollection](statusCode, Some(sharedCollection))))
-     }
+      CatsService {
+        Task(Xor.Right(ServiceClientResponse[ApiSharedCollection](statusCode, Some(sharedCollection))))
+      }
   }
 
   trait ErrorApiServicesImplResponses
     extends ApiServicesImplData
-    with Conversions {
+      with Conversions {
 
     self: ApiServicesScope =>
 
-    case class CustomException(message: String, cause: Option[Throwable] = None)
-      extends RuntimeException(message)
-      with ServiceClientException
-      with HttpClientException
+    val exception = HttpClientException("")
 
-    val exception = CustomException("")
+    apiUserService.login(any, any)(any, any) returns
+      CatsService {
+        Task(Xor.Left(exception))
+      }
 
-    apiUserService.login(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
+    apiUserService.createInstallation(any, any)(any, any) returns
+      CatsService {
+        Task(Xor.Left(exception))
+      }
 
-    apiUserService.createInstallation(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
+    apiUserService.updateInstallation(any, any)(any) returns
+      CatsService {
+        Task(Xor.Left(exception))
+      }
 
-    apiUserService.updateInstallation(any, any)(any) returns Service {
-      Task(Errata(exception))
-    }
+    googlePlayService.getGooglePlayPackage(any, any)(any) returns
+      CatsService {
+        Task(Xor.Left(exception))
+      }
 
-    googlePlayService.getGooglePlayPackage(any, any)(any) returns Service {
-      Task(Errata(exception))
-    }
+    googlePlayService.getGooglePlayPackages(any, any)(any, any) returns
+      CatsService {
+        Task(Xor.Left(exception))
+      }
 
-    googlePlayService.getGooglePlayPackages(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
+    userConfigService.getUserConfig(any)(any) returns
+      CatsService {
+        Task(Xor.Left(exception))
+      }
 
-    userConfigService.getUserConfig(any)(any) returns Service {
-      Task(Errata(exception))
-    }
-
-    apiRecommendationService.getRecommendedApps(any, any)(any, any) returns Service {
-      Task(Errata(exception))
-    }
+    apiRecommendationService.getRecommendedApps(any, any)(any, any) returns
+      CatsService {
+        Task(Xor.Left(exception))
+      }
 
     apiSharedCollectionsService.getSharedCollectionListByCategory(any, any, any, any, any)(any) returns
-      Service {
-        Task(Errata(exception))
+      CatsService {
+        Task(Xor.Left(exception))
       }
 
     apiSharedCollectionsService.shareCollection(any, any)(any, any) returns
-      Service {
-        Task(Errata(exception))
+      CatsService {
+        Task(Xor.Left(exception))
       }
   }
 
@@ -167,9 +169,9 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.login("", GoogleDevice("", "", "", Seq.empty)).run.run
+        val result = apiServices.login("", GoogleDevice("", "", "", Seq.empty)).value.run
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.statusCode shouldEqual statusCode
             response.user shouldEqual toUser(user)
         }
@@ -177,13 +179,9 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.login("", GoogleDevice("", "", "", Seq.empty)).run.run
+        val result = apiServices.login("", GoogleDevice("", "", "", Seq.empty)).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
@@ -193,9 +191,9 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.createInstallation(Some(AndroidDevice), Some(""), Some("")).run.run
+        val result = apiServices.createInstallation(Some(AndroidDevice), Some(""), Some("")).value.run
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.statusCode shouldEqual statusCode
             response.installation shouldEqual toInstallation(installation)
         }
@@ -203,13 +201,9 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.createInstallation(Some(AndroidDevice), Some(""), Some("")).run.run
+        val result = apiServices.createInstallation(Some(AndroidDevice), Some(""), Some("")).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
@@ -219,22 +213,18 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.updateInstallation("", Some(AndroidDevice), Some(""), Some("")).run.run
+        val result = apiServices.updateInstallation("", Some(AndroidDevice), Some(""), Some("")).value.run
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.statusCode shouldEqual statusCode
         }
       }
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.updateInstallation("", Some(AndroidDevice), Some(""), Some("")).run.run
+        val result = apiServices.updateInstallation("", Some(AndroidDevice), Some(""), Some("")).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
@@ -244,9 +234,9 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.googlePlayPackage("").run.run
+        val result = apiServices.googlePlayPackage("").value.run
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.statusCode shouldEqual statusCode
             Some(response.app) shouldEqual googlePlayPackages.items.headOption.map(a => toGooglePlayApp(a.docV2))
         }
@@ -254,13 +244,9 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.googlePlayPackage("").run.run
+        val result = apiServices.googlePlayPackage("").value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
@@ -270,9 +256,9 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.googlePlayPackages(Seq.empty).run.run
+        val result = apiServices.googlePlayPackages(Seq.empty).value.run
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.statusCode shouldEqual statusCode
             response.packages shouldEqual (googlePlayPackages.items map toGooglePlayPackage)
         }
@@ -280,13 +266,9 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.googlePlayPackages(Seq.empty).run.run
+        val result = apiServices.googlePlayPackages(Seq.empty).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
@@ -296,9 +278,9 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.getUserConfig().run.run
+        val result = apiServices.getUserConfig().value.run
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.statusCode shouldEqual statusCode
             response.userConfig shouldEqual toUserConfig(userConfig)
         }
@@ -306,13 +288,9 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.getUserConfig().run.run
+        val result = apiServices.getUserConfig().value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
@@ -322,9 +300,9 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.getRecommendedApps(Seq.empty, Seq.empty, Seq.empty, limit).run.run
+        val result = apiServices.getRecommendedApps(Seq.empty, Seq.empty, Seq.empty, limit).value.run
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.statusCode shouldEqual statusCode
             response.seq.map(_.docid) shouldEqual googlePlayApps.map(_.docid)
         }
@@ -332,13 +310,9 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.getRecommendedApps(Seq.empty, Seq.empty, Seq.empty, limit).run.run
+        val result = apiServices.getRecommendedApps(Seq.empty, Seq.empty, Seq.empty, limit).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
@@ -348,9 +322,9 @@ class ApiServicesImplSpec
 
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.getSharedCollectionsByCategory(category, collectionType, offset, limit).run.run
+        val result = apiServices.getSharedCollectionsByCategory(category, collectionType, offset, limit).value.run
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.statusCode shouldEqual statusCode
             response.items shouldEqual response.items
         }
@@ -358,13 +332,9 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.getSharedCollectionsByCategory(category, collectionType, offset, limit).run.run
+        val result = apiServices.getSharedCollectionsByCategory(category, collectionType, offset, limit).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
@@ -374,9 +344,9 @@ class ApiServicesImplSpec
 
     "return a valid response if the services return a valid response" in
       new ApiServicesScope with ValidApiServicesImplResponses {
-        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).run.run
+        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.statusCode shouldEqual statusCode
             response.newSharedCollection shouldEqual CreateSharedCollection(
               name = sharedCollection.name,
@@ -394,13 +364,9 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the calue the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
-        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).run.run
+        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, apiException)) => apiException must beLike {
-              case e: ApiServiceException => e.cause must beSome.which(_ shouldEqual exception)
-            }
-          }
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
