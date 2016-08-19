@@ -231,4 +231,7 @@
     <!-- Edit Widgets -->
     <dimen name="edit_widgets_size_icon">48dp</dimen>
 
+    <!-- Edit Moments -->
+    <dimen name="edit_moment_size_day">34dp</dimen>
+
 </resources>

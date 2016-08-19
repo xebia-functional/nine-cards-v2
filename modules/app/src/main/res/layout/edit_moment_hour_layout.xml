@@ -38,4 +38,8 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/edit_hour_days_content"
+        style="@style/EditHourMomentDaysContent" />
+
 </LinearLayout>
