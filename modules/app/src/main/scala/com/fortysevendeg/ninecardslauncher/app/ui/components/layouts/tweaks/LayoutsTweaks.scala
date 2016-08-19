@@ -20,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
@@ -445,7 +446,7 @@ object EditWidgetsBottomPanelLayoutTweaks {
 object EditHourMomentLayoutTweaks {
   type W = EditHourMomentLayout
 
-  def ehmPopulate(timeSlot: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme) =
+  def ehmPopulate(timeSlot: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter) =
     Tweak[W] (_.populate(timeSlot, position).run)
 
 }

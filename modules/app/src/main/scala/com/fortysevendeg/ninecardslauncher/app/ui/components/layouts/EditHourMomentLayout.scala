@@ -1,9 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
+import android.app.TimePickerDialog
+import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
-import android.widget.{ImageView, LinearLayout}
+import android.widget.{ImageView, LinearLayout, TimePicker}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -11,12 +14,15 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.MomentTimeSlot
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+
+import scala.util.Try
 
 class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   extends LinearLayout(context, attrs, defStyle)
@@ -51,22 +57,55 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   LayoutInflater.from(context).inflate(R.layout.edit_moment_hour_layout, this)
 
-  def populate(time: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme): Ui[Any] = {
+  def populate(time: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter): Ui[Any] = {
+    val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(theme.get(DrawerIconColor))
     val iconColor = theme.get(DrawerIconColor)
     val textColor = theme.get(DrawerTextColor)
     (this <~ vSetPosition(position)) ~
-      (startText <~ tvText(time.from) <~ tvColor(textColor)) ~
-      (endText <~ tvText(time.to) <~ tvColor(textColor)) ~
-      (deleteAction <~ tivDefaultColor(iconColor)) ~
-      fillDays(time.days)
+      (startContent <~ On.click(showTime(position, time.from, from = true))) ~
+      (endContent <~ On.click(showTime(position, time.to, from = false))) ~
+      (startText <~
+        tvText(time.from) <~
+        tvColor(textColor) <~
+        tvCompoundDrawablesWithIntrinsicBounds(right = Some(arrow))) ~
+      (endText <~
+        tvText(time.to) <~
+        tvColor(textColor) <~
+        tvCompoundDrawablesWithIntrinsicBounds(right = Some(arrow))) ~
+      (deleteAction <~
+        tivDefaultColor(iconColor) <~
+        On.click(Ui(editMomentPresenter.removeHour(position)))) ~
+      fillDays(position, time.days)
   }
 
-  private[this] def fillDays(days: Seq[Int]) = {
+  private[this] def showTime(position: Int, time: String, from: Boolean)(implicit editMomentPresenter: EditMomentPresenter): Ui[Any] = Try {
+    val timeArray = time.split(":")
+    (timeArray(0).toInt, timeArray(1).toInt)
+  }.toOption match {
+    case Some((hour, min)) =>
+      Ui {
+        val dialog = new TimePickerDialog(getContext, new OnTimeSetListener {
+          def timeToString(time: Int) = if (time < 10) s"0$time" else time.toString
+          override def onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int): Unit = {
+            val hour = s"${timeToString(hourOfDay)}:${timeToString(minute)}"
+            if (from)
+              editMomentPresenter.changeFromHour(position, hour)
+            else
+              editMomentPresenter.changeToHour(position, hour)
+          }
+        }, hour, min, true)
+        dialog.show()
+      }
+    case _ => Ui.nop
+  }
+
+  private[this] def fillDays(position: Int, days: Seq[Int])(implicit editMomentPresenter: EditMomentPresenter) = {
     val views = days.zipWithIndex map {
       case (day, index) =>
         val letter = daysWeek.lift(index) getOrElse ""
         val color = if (day == 0) dayUnselectedColor else daySelectedColor
         (w[ImageView] <~
+          On.click(Ui(editMomentPresenter.swapDay(position, index))) <~
           ivSrc(CharDrawable(letter, circle = true, Some(color)))).get
     }
     val params = new LinearLayout.LayoutParams(sizeDay, sizeDay)

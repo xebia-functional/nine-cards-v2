@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 
-import android.graphics.{Color, PorterDuff}
-import android.graphics.drawable.ColorDrawable
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -9,14 +7,15 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.adapters.ThemeArrayAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.EditHourMomentLayout
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditHourMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -67,7 +66,7 @@ trait EditMomentActionsImpl
       (iconWifi <~ tivDefaultColor(iconColor)) ~
       (iconHour <~ tivDefaultColor(iconColor)) ~
       (addWifi <~ tivDefaultColor(iconColor)) ~
-      (addHour <~ tivDefaultColor(iconColor)) ~
+      (addHour <~ tivDefaultColor(iconColor) <~ On.click(Ui(editPresenter.addHour()))) ~
       (nameWifi <~ tvColor(textColor)) ~
       (nameHour <~ tvColor(textColor)) ~
       (nameLinkCollection <~ tvColor(textColor)) ~
@@ -85,6 +84,19 @@ trait EditMomentActionsImpl
 
   override def showSavingMomentErrorMessage(): Ui[Any] = uiShortToast(R.string.contactUsError)
 
+  override def reloadDays(position: Int, timeslot: MomentTimeSlot): Ui[Any] = hourContent <~ Transformer {
+    case view: EditHourMomentLayout if view.getPosition.contains(position) => view <~ ehmPopulate(timeslot, position)
+  }
+
+  override def loadHours(moment: Moment): Ui[Any] = {
+    val views = moment.timeslot.zipWithIndex map {
+      case (slot, index) => (w[EditHourMomentLayout] <~ ehmPopulate(slot, index)).get
+    }
+    hourContent <~ vgRemoveAllViews <~ vgAddViews(views)
+  }
+
+  override def showFieldErrorMessage(): Ui[Any] = uiShortToast(R.string.contactUsError)
+
   private[this] def loadCategories(moment: Moment, collections: Seq[Collection]): Ui[Any] = {
     val collectionIds = 0 +: (collections map (_.id))
     val collectionNames = resGetString(R.string.noLinkCollectionToMoment) +: (collections map (_.name))
@@ -99,11 +111,5 @@ trait EditMomentActionsImpl
       (if (spinnerPosition > 0) sSelection(spinnerPosition) else Tweak.blank)
   }
 
-  private[this] def loadHours(moment: Moment): Ui[Any] = {
-    val views = moment.timeslot.zipWithIndex map {
-      case (slot, index) => (w[EditHourMomentLayout] <~ ehmPopulate(slot, index)).get
-    }
-    hourContent <~ vgAddViews(views)
-  }
 
 }
