@@ -35,7 +35,11 @@
     },
     {
       "styleType": "DrawerTextColor",
-      "color": "#000000"
+      "color": "#de000000"
+    },
+    {
+      "styleType": "DrawerIconColor",
+      "color": "#de000000"
     },
     {
       "styleType": "DockPressedColor",
@@ -64,10 +68,6 @@
     {
       "styleType": "CollectionDetailTextTabDefaultColor",
       "color": "#80ffffff"
-    },
-    {
-      "styleType": "DrawerIconColor",
-      "color": "#000000"
     }
   ]
 }

@@ -298,6 +298,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/text_default</item>
         <item name="android:layout_margin">@dimen/padding_large</item>
+        <item name="android:spinnerMode">dialog</item>
     </style>
 
     <!-- Edit Hour Moment -->

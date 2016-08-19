@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 
+import android.graphics.{Color, PorterDuff}
+import android.graphics.drawable.ColorDrawable
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -14,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Dial
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditHourMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -27,6 +29,8 @@ trait EditMomentActionsImpl
 
   implicit val editPresenter: EditMomentPresenter
 
+  val defaultIcon = "default"
+
   lazy val momentCollection = findView(TR.edit_moment_collection)
 
   lazy val hourContent = findView(TR.edit_moment_hour_content)
@@ -36,6 +40,8 @@ trait EditMomentActionsImpl
   lazy val wifiContent = findView(TR.edit_moment_wifi_content)
 
   lazy val iconLinkCollection = findView(TR.edit_moment_icon_link_collection)
+
+  lazy val iconInfo = findView(TR.edit_moment_collection_info)
 
   lazy val iconHour = findView(TR.edit_moment_icon_hour)
 
@@ -57,6 +63,7 @@ trait EditMomentActionsImpl
       dtbChangeText(R.string.editMoment) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (iconLinkCollection <~ tivDefaultColor(iconColor)) ~
+      (iconInfo <~ tivDefaultColor(iconColor)) ~
       (iconWifi <~ tivDefaultColor(iconColor)) ~
       (iconHour <~ tivDefaultColor(iconColor)) ~
       (addWifi <~ tivDefaultColor(iconColor)) ~
@@ -81,7 +88,7 @@ trait EditMomentActionsImpl
   private[this] def loadCategories(moment: Moment, collections: Seq[Collection]): Ui[Any] = {
     val collectionIds = 0 +: (collections map (_.id))
     val collectionNames = resGetString(R.string.noLinkCollectionToMoment) +: (collections map (_.name))
-    val icons = collectionNames map ImageResourceNamed.iconCollectionDetail
+    val icons = (defaultIcon +: (collections map (_.icon))) map ImageResourceNamed.iconCollectionDetail
     val sa = new ThemeArrayAdapter(icons, collectionNames)
 
     val spinnerPosition = moment.collectionId map collectionIds.indexOf getOrElse -1

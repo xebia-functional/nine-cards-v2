@@ -29,7 +29,7 @@ class ThemeArrayAdapter(icons: Seq[Int], values: Seq[String])(implicit contextWr
   override def getDropDownView(position: Int, convertView: View, parent: ViewGroup): View = {
     val backgroundColor = theme.get(DrawerBackgroundColor)
     (w[TextView] <~
-      commonStyle(position)<~
+      commonStyle(position) <~
       vBackgroundColor(backgroundColor)).get
   }
 
