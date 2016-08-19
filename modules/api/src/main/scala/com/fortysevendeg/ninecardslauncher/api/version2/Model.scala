@@ -50,7 +50,13 @@ case class CategorizeRequest(items: Seq[String])
 
 case class CategorizeResponse(errors: Seq[String], items: Seq[CategorizedApp])
 
+case class RecommendationsRequest(filter: Option[String], excludePackages: Seq[String])
+
 case class RecommendationsResponse(apps: Seq[RecommendationApp])
+
+case class RecommendationsByAppsRequest(packages: Seq[String], filter: Option[String], excludePackages: Seq[String])
+
+case class RecommendationsByAppsResponse(apps: Seq[RecommendationApp])
 
 case class PackagesStats(added: Int, removed: Option[Int] = None)
 
@@ -94,15 +100,3 @@ case class RecommendationApp(
   free: Boolean,
   description: String,
   screenshots: Seq[String])
-
-sealed trait RecommendationsFilter {
-  def path: String
-}
-
-case object FreeRecommendations extends RecommendationsFilter {
-  override def path: String = "FREE"
-}
-
-case object PaidRecommendations extends RecommendationsFilter {
-  override def path: String = "PAID"
-}
