@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, SharedCollection}
-import com.fortysevendeg.ninecardslauncher.services.api.{CreateSharedCollectionResponse, RequestConfig, RequestConfigV1, SharedCollectionResponse, SharedCollectionResponseList, CreateSharedCollection => ApiCreateSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection}
+import com.fortysevendeg.ninecardslauncher.services.api.{CreateSharedCollectionResponse, RequestConfig, RequestConfigV1, SharedCollectionResponse, SharedCollectionResponseList}
 
 import scala.util.Random
 
@@ -42,22 +42,7 @@ trait SharedCollectionsProcessImplData {
     statusCode = statusCodeOk,
     items = generateSharedCollectionResponse())
 
-  def generateSharedCollection =
-    SharedCollection(
-      id = Random.nextString(10),
-      sharedCollectionId = Random.nextString(10),
-      publishedOn = Random.nextLong(),
-      description = Random.nextString(10),
-      author = Random.nextString(10),
-      name = Random.nextString(10),
-      packages = Seq.empty,
-      resolvedPackages = Seq.empty,
-      views = Random.nextInt(),
-      category = Communication,
-      icon = Random.nextString(10),
-      community = Random.nextBoolean())
-
-  val sharedCollection = generateSharedCollection
+  val sharedCollectionId = Random.nextString(10)
 
   def generateCreateSharedCollection =
     CreateSharedCollection(
@@ -71,19 +56,8 @@ trait SharedCollectionsProcessImplData {
 
   val createSharedCollection = generateCreateSharedCollection
 
-  val createSharedCollectionResponse ={
+  val createSharedCollectionResponse =
     CreateSharedCollectionResponse(
       statusCode = statusCodeOk,
-      newSharedCollection = ApiCreateSharedCollection(
-        name = sharedCollection.name,
-        description = sharedCollection.description,
-        author = sharedCollection.author,
-        packages = sharedCollection.packages,
-        category = sharedCollection.category.name,
-        sharedCollectionId = sharedCollection.sharedCollectionId,
-        icon = sharedCollection.icon,
-        community = sharedCollection.community
-      )
-    )
-  }
+      sharedCollectionId = sharedCollectionId)
 }

@@ -117,17 +117,7 @@ class SharedCollectionsProcessImplSpec
           createSharedCollection
         )(contextSupport).run.run
 
-        result mustEqual Answer(
-          CreatedCollection(
-            name = sharedCollection.name,
-            description = sharedCollection.description,
-            author = sharedCollection.author,
-            packages = sharedCollection.packages,
-            category = sharedCollection.category,
-            sharedCollectionId = sharedCollection.sharedCollectionId,
-            icon = sharedCollection.icon,
-            community = sharedCollection.community
-          ))
+        result mustEqual Answer(sharedCollectionId)
       }
 
     "return a SharedCollectionsException if the service throws an exception" in

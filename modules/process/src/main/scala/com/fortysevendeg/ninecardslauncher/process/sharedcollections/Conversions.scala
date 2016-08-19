@@ -29,16 +29,4 @@ trait Conversions {
       stars = item.stars,
       downloads = item.downloads,
       free = item.free)
-
-  def toCreatedCollection(item: CreateSharedCollectionResponse): CreatedCollection =
-    CreatedCollection(
-      name = item.newSharedCollection.name,
-      description = item.newSharedCollection.description,
-      author = item.newSharedCollection.author,
-      packages = item.newSharedCollection.packages,
-      category = NineCardCategory(item.newSharedCollection.category),
-      sharedCollectionId = item.newSharedCollection.sharedCollectionId,
-      icon = item.newSharedCollection.icon,
-      community = item.newSharedCollection.community
-    )
 }

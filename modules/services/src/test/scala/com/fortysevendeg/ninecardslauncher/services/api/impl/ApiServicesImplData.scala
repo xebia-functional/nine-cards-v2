@@ -184,33 +184,6 @@ trait ApiServicesImplData {
       title = Random.nextString(10),
       free = Random.nextBoolean())
 
-  def generateSharedCollectionList(num: Int = 10) =
-    SharedCollectionList(
-      items = (1 to num map (_ => generateSharedCollection))
-    )
-
-  def generateSharedCollection: SharedCollection =
-      SharedCollection(
-        _id = Random.nextString(10),
-        sharedCollectionId = Random.nextString(10),
-        publishedOn = 0,
-        description = Random.nextString(10),
-        screenshots = Seq.empty,
-        author = Random.nextString(10),
-        tags = Seq.empty,
-        name = Random.nextString(10),
-        shareLink = Random.nextString(10),
-        packages = Seq.empty,
-        resolvedPackages = Seq.empty,
-        occurrence = Seq.empty,
-        lat = 0,
-        lng = 0,
-        alt = 0,
-        views = 0,
-        category = Random.nextString(10),
-        icon = Random.nextString(10),
-        community = true)
-
   val offset = 0
 
   val limit = 20
@@ -255,10 +228,6 @@ trait ApiServicesImplData {
 
   val userConfig = generateUserConfig
 
-  val sharedCollectionList = generateSharedCollectionList()
-
-  val sharedCollection = generateSharedCollection
-
   val apiKey = Random.nextString(10)
 
   val sessionToken = Random.nextString(20)
@@ -270,4 +239,8 @@ trait ApiServicesImplData {
   val androidId = Random.nextString(10)
 
   val tokenId = Random.nextString(30)
+
+  val sharedCollectionId = Random.nextString(30)
+
+  val packageStats = version2.PackagesStats(1, None)
 }

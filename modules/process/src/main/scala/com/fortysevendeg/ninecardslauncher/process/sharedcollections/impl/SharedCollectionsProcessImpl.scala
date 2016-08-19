@@ -32,8 +32,8 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     (implicit context: ContextSupport) = {
     import sharedCollection._
     (for {
-      userConfig <- apiUtils.getRequestConfigV1
+      userConfig <- apiUtils.getRequestConfig
       result <- apiServices.createSharedCollection(name, description, author, packages, category.name, icon, community)(userConfig)
-    } yield toCreatedCollection(result)).resolve[SharedCollectionsExceptions]
+    } yield result.sharedCollectionId).resolve[SharedCollectionsExceptions]
   }
 }

@@ -25,10 +25,10 @@ trait SharedCollectionsProcess {
   /**
     * Persist a [[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]]
     * @param sharedCollection the defined collection to create
-    * @return unit, to signify successful completion
+    * @return shared collection identifier
     * @throws SharedCollectionsExceptions if the service cannot create the collection for some reason
     */
   def createSharedCollection(
     sharedCollection: CreateSharedCollection
-  )(implicit context: ContextSupport): ServiceDef2[CreatedCollection, SharedCollectionsExceptions]
+  )(implicit context: ContextSupport): ServiceDef2[String, SharedCollectionsExceptions]
 }

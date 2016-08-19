@@ -113,16 +113,15 @@ trait ApiServicesSpecification
         Task(Answer(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
       }
 
-
     apiService.topCollections(any, any, any, any)(any) returns
       Service {
         Task(Answer(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
       }
 
-    apiSharedCollectionsService.shareCollection(any, any)(any, any) returns
+    apiService.createCollection(any, any)(any, any) returns
       Service {
-        Task(Answer(ServiceClientResponse[ApiSharedCollection](statusCode, Some(sharedCollection))))
-     }
+        Task(Answer(ServiceClientResponse[version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
+      }
   }
 
   trait ErrorApiServicesImplResponses
@@ -150,6 +149,8 @@ trait ApiServicesSpecification
 
     apiService.topCollections(any, any, any, any)(any) returns Service(Task(Errata(exception)))
 
+    apiService.createCollection(any, any)(any, any) returns Service(Task(Errata(exception)))
+
     apiUserService.login(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
@@ -169,11 +170,6 @@ trait ApiServicesSpecification
     apiRecommendationService.getRecommendedApps(any, any)(any, any) returns Service {
       Task(Errata(exception))
     }
-
-    apiSharedCollectionsService.shareCollection(any, any)(any, any) returns
-      Service {
-        Task(Errata(exception))
-      }
   }
 
 }
@@ -414,16 +410,7 @@ class ApiServicesImplSpec
         result must beLike {
           case Answer(response) =>
             response.statusCode shouldEqual statusCode
-            response.newSharedCollection shouldEqual CreateSharedCollection(
-              name = sharedCollection.name,
-              description = sharedCollection.description,
-              author = sharedCollection.author,
-              packages = sharedCollection.packages,
-              category = sharedCollection.category,
-              sharedCollectionId = sharedCollection.sharedCollectionId,
-              icon = sharedCollection.icon,
-              community = sharedCollection.community
-            )
+            response.sharedCollectionId shouldEqual sharedCollectionId
         }
       }
 

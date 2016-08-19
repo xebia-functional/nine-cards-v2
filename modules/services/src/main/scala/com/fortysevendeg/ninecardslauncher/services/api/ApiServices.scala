@@ -110,7 +110,7 @@ trait ApiServices {
     * @param icon The collection's icon
     * @param community A flag for whether this is a community collection
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.CreateSharedCollectionResponse]] with the HTTP Code
-    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.CreateSharedCollection]]
+    *         of the response and the sharedCollectionId
     * @throws ApiServiceException if the service is unable to create the shared collection
     */
   def createSharedCollection(
@@ -120,5 +120,5 @@ trait ApiServices {
     packages: Seq[String],
     category: String,
     icon: String,
-    community: Boolean)(implicit requestConfig: RequestConfigV1): ServiceDef2[CreateSharedCollectionResponse, ApiServiceException]
+    community: Boolean)(implicit requestConfig: RequestConfig): ServiceDef2[CreateSharedCollectionResponse, ApiServiceException]
 }

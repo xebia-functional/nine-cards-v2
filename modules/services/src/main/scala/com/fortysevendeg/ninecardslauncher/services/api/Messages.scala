@@ -82,14 +82,4 @@ case class SharedCollectionPackageResponse(
 
 case class CreateSharedCollectionResponse(
   statusCode: Int,
-  newSharedCollection: CreateSharedCollection)
-
-case class CreateSharedCollection(
-  name: String,
-  description: String,
-  author: String,
-  packages: Seq[String],
-  category: String,
-  sharedCollectionId: String,
-  icon: String,
-  community: Boolean)
+  sharedCollectionId: String)

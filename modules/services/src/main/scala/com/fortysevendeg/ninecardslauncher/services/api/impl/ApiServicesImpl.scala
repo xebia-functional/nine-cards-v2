@@ -64,6 +64,8 @@ class ApiServicesImpl(
 
   val categoryNotFoundMessage = "Google Play Category not found"
 
+  val errorCreatingCollectionMessage = "Unknown error creating collection"
+
   val shareCollectionNotFoundMessage = "Shared Collections not found"
 
   val createSharedCollectionNotFoundMessage = "Shared Collection not found"
@@ -150,11 +152,18 @@ class ApiServicesImpl(
     packages: Seq[String],
     category: String,
     icon: String,
-    community: Boolean)(implicit requestConfig: RequestConfigV1) =
+    community: Boolean)(implicit requestConfig: RequestConfig) =
     (for {
-      response <- sharedCollectionsService.shareCollection(toShareCollection(description, author, name, packages, category, icon, community), requestConfig.toHeader)
-      createdCollection <- readOption(response.data, shareCollectionNotFoundMessage)
-    } yield CreateSharedCollectionResponse(response.statusCode, toCreateSharedCollection(createdCollection))).resolve[ApiServiceException]
+      response <- apiService.createCollection(version2.CreateCollectionRequest(
+        name = name,
+        author = author,
+        description = description,
+        icon = icon,
+        category = category,
+        community = community,
+        packages = packages), requestConfig.toServiceHeader)
+      createdCollection <- readOption(response.data, errorCreatingCollectionMessage)
+    } yield CreateSharedCollectionResponse(response.statusCode, createdCollection.publicIdentifier)).resolve[ApiServiceException]
 
   implicit class RequestHeaderHeader(request: RequestConfigV1) {
     def toHeader: Seq[(String, String)] =

@@ -305,16 +305,4 @@ trait Conversions {
       icon = icon,
       community = community
     )
-
-  def toCreateSharedCollection(sharedCollection: SharedCollection): CreateSharedCollection =
-    CreateSharedCollection(
-      name = sharedCollection.name,
-      description = sharedCollection.description,
-      author = sharedCollection.author,
-      packages = sharedCollection.packages,
-      category = sharedCollection.category,
-      sharedCollectionId = sharedCollection.sharedCollectionId,
-      icon = sharedCollection.icon,
-      community = sharedCollection.community
-    )
 }
