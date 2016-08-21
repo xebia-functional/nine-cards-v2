@@ -33,20 +33,13 @@ trait WifiImplSpecification
 
     }
 
-    mockConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI) returns mockNetWorkInfo
+    mockConnectivityManager.getActiveNetworkInfo returns mockNetWorkInfo
     mockNetWorkInfo.isConnected returns true
-
-    mockWifiManager.getConnectionInfo returns mockWifiInfo
-    mockWifiInfo.getSSID returns ssid
-
-  }
-
-  trait WifiErrorScope {
-    self : WifiImplScope =>
-
-    mockWifiInfo.getSSID returns ""
+    mockNetWorkInfo.getExtraInfo returns ssid
+    mockNetWorkInfo.getType returns ConnectivityManager.TYPE_WIFI
 
   }
+
 }
 
 class WifiServicesImplSpec
@@ -60,11 +53,48 @@ class WifiServicesImplSpec
       }
     }
 
-  "returns an empty SSID if it is not connected" in
-    new WifiImplScope with WifiErrorScope {
+  "returns None if it is not connected" in
+    new WifiImplScope {
+
+      mockNetWorkInfo.isConnected returns false
+
       val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
       result must beLike {
-        case Answer(resultSSID) => resultSSID shouldEqual Some("")
+        case Answer(resultSSID) => resultSSID shouldEqual None
       }
     }
+
+  "returns None if type isn't WIFI" in
+    new WifiImplScope {
+
+      mockNetWorkInfo.getType returns 0
+
+      val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+      result must beLike {
+        case Answer(resultSSID) => resultSSID shouldEqual None
+      }
+    }
+
+  "returns None SSID if SSID is empty" in
+    new WifiImplScope {
+
+      mockNetWorkInfo.getExtraInfo returns ""
+
+      val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+      result must beLike {
+        case Answer(resultSSID) => resultSSID shouldEqual None
+      }
+    }
+
+  "returns None SSID if SSID is null" in
+    new WifiImplScope {
+
+      mockNetWorkInfo.getExtraInfo returns null
+
+      val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+      result must beLike {
+        case Answer(resultSSID) => resultSSID shouldEqual None
+      }
+    }
+
 }
