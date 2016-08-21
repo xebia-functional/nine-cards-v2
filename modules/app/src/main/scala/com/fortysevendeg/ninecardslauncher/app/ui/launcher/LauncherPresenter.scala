@@ -69,9 +69,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def initialize(): Unit = {
     Try(FirebaseAnalytics.getInstance(contextWrapper.bestAvailable))
     Task.fork(di.userProcess.register.run).resolveAsync()
-    Task.fork(di.deviceProcess.getConfiguredNetworks.run).resolveAsync(
-      onResult = (ws) => ws foreach (w =>android.util.Log.d("9cards", s"$w"))
-    )
     actions.initialize.run
   }
 
