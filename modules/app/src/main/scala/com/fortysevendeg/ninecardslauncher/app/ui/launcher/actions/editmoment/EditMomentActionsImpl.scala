@@ -1,12 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 
+import android.support.v4.app.DialogFragment
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImageResourceNamed, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWifiMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
@@ -15,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{EditHourMo
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditHourMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -31,11 +33,13 @@ trait EditMomentActionsImpl
 
   val defaultIcon = "default"
 
+  val tagDialog = "dialog"
+
   lazy val momentCollection = findView(TR.edit_moment_collection)
 
   lazy val hourContent = findView(TR.edit_moment_hour_content)
 
-  lazy val addHour = findView(TR.edit_moment_add_hour)
+  lazy val addHourAction = findView(TR.edit_moment_add_hour)
 
   lazy val wifiContent = findView(TR.edit_moment_wifi_content)
 
@@ -47,7 +51,7 @@ trait EditMomentActionsImpl
 
   lazy val iconWifi = findView(TR.edit_moment_icon_wifi)
 
-  lazy val addWifi = findView(TR.edit_moment_add_wifi)
+  lazy val addWifiAction = findView(TR.edit_moment_add_wifi)
 
   lazy val nameWifi = findView(TR.edit_moment_name_wifi)
 
@@ -66,8 +70,8 @@ trait EditMomentActionsImpl
       (iconInfo <~ tivDefaultColor(iconColor)) ~
       (iconWifi <~ tivDefaultColor(iconColor)) ~
       (iconHour <~ tivDefaultColor(iconColor)) ~
-      (addWifi <~ tivDefaultColor(iconColor)) ~
-      (addHour <~ tivDefaultColor(iconColor) <~ On.click(Ui(editPresenter.addHour()))) ~
+      (addWifiAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(editPresenter.addWifi()))) ~
+      (addHourAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(editPresenter.addHour()))) ~
       (nameWifi <~ tvColor(textColor)) ~
       (nameHour <~ tvColor(textColor)) ~
       (nameLinkCollection <~ tvColor(textColor)) ~
@@ -76,7 +80,8 @@ trait EditMomentActionsImpl
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(editPresenter.saveMoment()))) ~
       loadCategories(moment, collections) ~
-      loadHours(moment)
+      loadHours(moment) ~
+      loadWifis(moment)
   }
 
   override def momentNoFound(): Ui[Any] = unreveal()
@@ -94,6 +99,11 @@ trait EditMomentActionsImpl
       case (slot, index) => (w[EditHourMomentLayout] <~ ehmPopulate(slot, index)).get
     }
     hourContent <~ vgRemoveAllViews <~ vgAddViews(views)
+  }
+
+  override def showWifiDialog(wifis: Seq[String]): Ui[Any] = {
+    val dialog = WifiDialogFragment(wifis)
+    showDialog(dialog, RequestCodes.selectInfoWifi)
   }
 
   override def loadWifis(moment: Moment): Ui[Any] = {
@@ -119,5 +129,12 @@ trait EditMomentActionsImpl
       (if (spinnerPosition > 0) sSelection(spinnerPosition) else Tweak.blank)
   }
 
+  private[this] def showDialog(dialog: DialogFragment, requestCode: Int) = Ui {
+    val ft = getFragmentManager.beginTransaction()
+    Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    dialog.setTargetFragment(this, requestCode)
+    dialog.show(ft, tagDialog)
+  }
 
 }

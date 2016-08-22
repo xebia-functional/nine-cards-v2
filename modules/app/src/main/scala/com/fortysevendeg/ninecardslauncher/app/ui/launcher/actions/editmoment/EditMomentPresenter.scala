@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadAction
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentsReloadedActionFilter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentsConstrainsChangedActionFilter, MomentsReloadedActionFilter}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.moment.UpdateMomentRequest
@@ -69,6 +69,13 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
     }).run
   }
 
+  def addWifi(): Unit = {
+    Task.fork(di.deviceProcess.getConfiguredNetworks.run).resolveAsyncUi(
+      onResult = actions.showWifiDialog,
+      onException = (_) => actions.showFieldErrorMessage()
+    )
+  }
+
   def addWifi(wifi: String): Unit = {
     statuses = statuses.addWifi(wifi)
     (statuses.modifiedMoment match {
@@ -96,7 +103,7 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
         momentType = moment.momentType
       )
       Task.fork(di.momentProcess.updateMoment(request).run).resolveAsyncUi(
-        onResult = (_) => Ui(momentReloadBroadCastIfNecessary()) ~ actions.success(),
+        onResult = (_) => Ui(momentConstrainsChangedBroadCastIfNecessary()) ~ actions.success(),
         onException = (_) => actions.showSavingMomentErrorMessage())
     case _ => actions.success().run
   }
@@ -109,7 +116,8 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
     }).run
   }
 
-  private[this] def momentReloadBroadCastIfNecessary() = sendBroadCast(BroadAction(MomentsReloadedActionFilter.action))
+  private[this] def momentConstrainsChangedBroadCastIfNecessary() =
+    sendBroadCast(BroadAction(MomentsConstrainsChangedActionFilter.action))
 
 }
 
@@ -204,6 +212,8 @@ trait EditMomentActions {
   def reloadDays(position: Int, timeslot: MomentTimeSlot): Ui[Any]
 
   def loadHours(moment: Moment): Ui[Any]
+
+  def showWifiDialog(wifis: Seq[String]): Ui[Any]
 
   def loadWifis(moment: Moment): Ui[Any]
 

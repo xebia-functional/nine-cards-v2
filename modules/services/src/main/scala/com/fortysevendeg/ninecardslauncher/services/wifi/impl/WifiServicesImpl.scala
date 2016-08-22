@@ -21,7 +21,7 @@ class WifiServicesImpl
 
         networkInfo match {
           case Some(n) if n.isConnected && n.getType == ConnectivityManager.TYPE_WIFI && n.getExtraInfo != "" =>
-            Option(n.getExtraInfo)
+            Option(n.getExtraInfo.replace("\"", ""))
           case _ => None
         }
       }

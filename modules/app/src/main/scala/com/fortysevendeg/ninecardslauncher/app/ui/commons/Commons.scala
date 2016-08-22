@@ -62,6 +62,8 @@ object RequestCodes {
 
   val goToConfigureWidgets = 11
 
+  val selectInfoWifi = 12
+
 }
 
 object ResultCodes {

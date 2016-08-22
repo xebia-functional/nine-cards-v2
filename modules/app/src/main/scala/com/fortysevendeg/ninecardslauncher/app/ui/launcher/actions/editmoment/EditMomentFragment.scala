@@ -1,8 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
@@ -26,6 +29,19 @@ class EditMomentFragment
     momentType match {
       case Some(moment) => editPresenter.initialize(NineCardsMoment(moment))
       case _ => editPresenter.momentNoFound()
+    }
+  }
+
+  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
+    super.onActivityResult(requestCode, resultCode, data)
+    (requestCode, resultCode) match {
+      case (RequestCodes.selectInfoWifi, Activity.RESULT_OK) =>
+        Option(data) flatMap (d => Option(d.getExtras)) foreach {
+          case extras if extras.containsKey(EditMomentFragment.wifiRequest) =>
+            editPresenter.addWifi(extras.getString(EditMomentFragment.wifiRequest))
+          case _ =>
+        }
+      case _ =>
     }
   }
 

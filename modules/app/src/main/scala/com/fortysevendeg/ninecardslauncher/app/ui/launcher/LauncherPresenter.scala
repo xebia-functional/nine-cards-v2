@@ -77,7 +77,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     if (actions.isEmptyCollectionsInWorkspace) {
       loadLauncherInfo()
     } else if (cache.canReloadMomentInResume) {
-      checkMoment()
+      changeMomentIfIsAvailable()
     }
   }
 
@@ -489,6 +489,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       })
   }
 
+  def changeMomentConstrains(): Unit = {
+    cache.clearTime()
+    changeMomentIfIsAvailable()
+  }
+
   def reloadAppsMomentBar(): Unit = {
 
     def selectMoment(moments: Seq[Moment]) = for {
@@ -517,12 +522,20 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def loadLauncherInfo(): Unit = {
+
+    def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
+      for {
+        collections <- di.collectionProcess.getCollections
+        dockApps <- di.deviceProcess.getDockApps
+        moment <- di.momentProcess.getBestAvailableMoment
+      } yield (collections, dockApps, moment)
+
     Task.fork(getLauncherInfo.run).resolveAsyncUi(
       onResult = {
         // Check if there are collections in DB, if there aren't we go to wizard
         case (Nil, _, _) => Ui(goToWizard())
         case (collections, apps, moment) =>
-          Task.fork(getUser.run).resolveAsyncUi(
+          Task.fork(di.userProcess.getUser.run).resolveAsyncUi(
             onResult = user => actions.showUserProfile(
               email = user.email,
               name = user.userProfile.name,
@@ -726,46 +739,39 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
 
-  protected def getUser: ServiceDef2[User, UserException] = di.userProcess.getUser
+  // Check if there is a new best available moment, if not reload the apps moment bar
+  def changeMomentIfIsAvailable(): Unit = {
 
-  protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
-    for {
-      collections <- di.collectionProcess.getCollections
-      dockApps <- di.deviceProcess.getDockApps
-      moment <- di.momentProcess.getBestAvailableMoment
-    } yield (collections, dockApps, moment)
+    // Check if the best available moment is different to the current moment, if it's different return Some(moment)
+    // in the other case None
+    def getCheckMoment: ServiceDef2[Option[LauncherMoment], CollectionException with MomentException] = {
 
-  // Check if the best available moment is different to the current moment, if it's different return Some(moment)
-  // in the other case None
-  protected def getCheckMoment: ServiceDef2[Option[LauncherMoment], CollectionException with MomentException] = {
-
-    def getCollection(moment: Option[Moment]): ServiceDef2[Option[Collection], CollectionException] = {
-      val emptyService = Service(Task(Result.answer[Option[Collection], CollectionException](None)))
-      val momentType = moment flatMap (_.momentType)
-      val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
-      val collectionId = moment flatMap (_.collectionId)
-      if (momentType == currentMomentType) {
-        emptyService
-      } else {
-        collectionId map di.collectionProcess.getCollectionById getOrElse emptyService
+      def getCollection(moment: Option[Moment]): ServiceDef2[Option[Collection], CollectionException] = {
+        val emptyService = Service(Task(Result.answer[Option[Collection], CollectionException](None)))
+        val momentType = moment flatMap (_.momentType)
+        val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
+        val collectionId = moment flatMap (_.collectionId)
+        if (momentType == currentMomentType) {
+          emptyService
+        } else {
+          collectionId map di.collectionProcess.getCollectionById getOrElse emptyService
+        }
       }
+
+      for {
+        moment <- di.momentProcess.getBestAvailableMoment
+        collection <- getCollection(moment)
+      } yield collection map (_ => LauncherMoment(moment flatMap (_.momentType), collection))
     }
 
-    for {
-      moment <- di.momentProcess.getBestAvailableMoment
-      collection <- getCollection(moment)
-    } yield collection map (_ => LauncherMoment(moment flatMap (_.momentType), collection))
-  }
-
-  // Check if there is a new best available moment. If not, we check if the current moment was changed
-  private[this] def checkMoment(): Unit =
     Task.fork(getCheckMoment.run).resolveAsyncUi(
       onResult = (launcherMoment) => {
         launcherMoment map { _ =>
           val data = LauncherData(MomentWorkSpace, launcherMoment)
           actions.reloadMoment(data)
-        } getOrElse Ui.nop
+        } getOrElse Ui(reloadAppsMomentBar())
       })
+  }
 
   protected def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
     for {
