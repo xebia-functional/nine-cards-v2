@@ -85,7 +85,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   private[this] def createHttpClient = {
     val okHttpClientBuilder = new okhttp3.OkHttpClient.Builder()
     if (BuildConfig.DEBUG) {
-      okHttpClientBuilder.addInterceptor(new StethoInterceptor)
+      okHttpClientBuilder.addNetworkInterceptor(new StethoInterceptor)
     }
     new OkHttpClient(okHttpClientBuilder.build())
   }
@@ -103,10 +103,6 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   private[this] lazy val serviceClient = new ServiceClient(
     httpClient = serviceHttpClient,
     baseUrl = resources.getString(R.string.api_v2_base_url))
-
-  private[this] lazy val googlePlayServiceClient = new ServiceClient(
-    httpClient = serviceHttpClient,
-    baseUrl = resources.getString(R.string.api_google_play_url))
 
   private[this] lazy val apiServicesConfig = ApiServicesConfig(
     appId = resources.getString(R.string.api_app_id),

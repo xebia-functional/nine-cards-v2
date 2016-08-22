@@ -29,7 +29,11 @@ class UserProcessImpl(
         androidId <- persistenceServices.getAndroidId
         loginResponse <- apiServices.login(email, androidId, emailTokenId)
         Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
-        updateUser = userDB.copy(apiKey = Option(loginResponse.apiKey), sessionToken = Option(loginResponse.sessionToken))
+        updateUser = userDB.copy(
+          email = Some(email),
+          apiKey = Option(loginResponse.apiKey),
+          sessionToken = Option(loginResponse.sessionToken),
+          marketToken = Option(androidMarketToken))
         _ <- persistenceServices.updateUser(toUpdateRequest(id, updateUser))
       } yield ()).resolve[UserException]
     }
