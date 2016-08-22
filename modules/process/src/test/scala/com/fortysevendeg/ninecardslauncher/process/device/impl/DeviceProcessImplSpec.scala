@@ -19,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
 import com.fortysevendeg.ninecardslauncher.services.widgets.{WidgetServicesException, WidgetsServices}
+import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -200,6 +201,11 @@ trait DeviceProcessSpecification
     mockContactsServices.fetchContactByPhoneNumber(phoneNumber3) returns
       Service(Task(Result.answer(Some(callsContacts(2)))))
 
+    val mockWifiServices = mock[WifiServices]
+
+    mockWifiServices.getConfiguredNetworks(contextSupport) returns
+      Service(Task(Result.answer(networks)))
+
     val deviceProcess = new DeviceProcessImpl(
       mockAppsServices,
       mockApiServices,
@@ -208,7 +214,8 @@ trait DeviceProcessSpecification
       mockContactsServices,
       mockImageServices,
       mockWidgetsServices,
-      mockCallsServices) {
+      mockCallsServices,
+      mockWifiServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
       apiUtils.getRequestConfig(contextSupport) returns
@@ -1368,6 +1375,19 @@ class DeviceProcessImplSpec
           }
         }
       }
+  }
+
+  "getConfiguredNetworks" should {
+
+    "returns all networks for a valid request" in
+      new DeviceProcessScope with DockAppsScope {
+        val result = deviceProcess.getConfiguredNetworks(contextSupport).run.run
+        result must beLike {
+          case Answer(r) =>
+            r shouldEqual networks
+        }
+      }
+
   }
 
 }
