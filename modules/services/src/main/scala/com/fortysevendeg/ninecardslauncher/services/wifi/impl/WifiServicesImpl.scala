@@ -20,7 +20,10 @@ class WifiServicesImpl
         val networkInfo = connManager map (_.getActiveNetworkInfo())
 
         networkInfo match {
-          case Some(n) if n.isConnected && n.getType == ConnectivityManager.TYPE_WIFI && n.getExtraInfo != "" =>
+          case Some(n) if n.isConnected &&
+            n.getType == ConnectivityManager.TYPE_WIFI &&
+            n.getExtraInfo != "" &&
+            Option(n.getExtraInfo).nonEmpty =>
             Option(n.getExtraInfo.replace("\"", ""))
           case _ => None
         }
