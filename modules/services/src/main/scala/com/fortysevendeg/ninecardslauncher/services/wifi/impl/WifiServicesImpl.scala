@@ -8,7 +8,6 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.services.wifi.{ImplicitsWifiExceptions, WifiServices, WifiServicesException}
 
-import scala.util.Try
 import scalaz.concurrent.Task
 
 class WifiServicesImpl
@@ -30,7 +29,7 @@ class WifiServicesImpl
     }
   }
 
-  override def getConfiguredNetworks(implicit contextSupport: ContextSupport) = Service {
+  override def getConfiguredNetworks(implicit contextSupport: ContextSupport) = CatsService {
     Task {
       XorCatchAll[WifiServicesException] {
         import scala.collection.JavaConversions._

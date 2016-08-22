@@ -2,13 +2,13 @@ package com.fortysevendeg.ninecardslauncher.services.wifi.impl
 
 import android.net.wifi.{WifiConfiguration, WifiInfo, WifiManager}
 import android.net.{ConnectivityManager, NetworkInfo}
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServicesException
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 import scala.collection.JavaConversions._
 
@@ -51,9 +51,9 @@ class WifiServicesImplSpec
   "getCurrentSSID" should {
     "returns the current SSID" in
       new WifiImplScope {
-        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
         result must beLike {
-          case Answer(resultSSID) => resultSSID shouldEqual Some(ssid)
+          case Xor.Right(resultSSID) => resultSSID shouldEqual Some(ssid)
         }
       }
 
@@ -62,9 +62,9 @@ class WifiServicesImplSpec
 
         mockNetWorkInfo.isConnected returns false
 
-        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
         result must beLike {
-          case Answer(resultSSID) => resultSSID shouldEqual None
+          case Xor.Right(resultSSID) => resultSSID shouldEqual None
         }
       }
 
@@ -73,9 +73,9 @@ class WifiServicesImplSpec
 
         mockNetWorkInfo.getType returns ConnectivityManager.TYPE_MOBILE
 
-        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
         result must beLike {
-          case Answer(resultSSID) => resultSSID shouldEqual None
+          case Xor.Right(resultSSID) => resultSSID shouldEqual None
         }
       }
 
@@ -84,9 +84,9 @@ class WifiServicesImplSpec
 
         mockNetWorkInfo.getExtraInfo returns ""
 
-        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
         result must beLike {
-          case Answer(resultSSID) => resultSSID shouldEqual None
+          case Xor.Right(resultSSID) => resultSSID shouldEqual None
         }
       }
 
@@ -95,9 +95,9 @@ class WifiServicesImplSpec
 
         mockNetWorkInfo.getExtraInfo returns javaNull
 
-        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
         result must beLike {
-          case Answer(resultSSID) => resultSSID shouldEqual None
+          case Xor.Right(resultSSID) => resultSSID shouldEqual None
         }
       }
   }
@@ -106,9 +106,9 @@ class WifiServicesImplSpec
 
     "returns list of networks sorted" in
       new WifiImplScope {
-        val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).run.run
+        val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).value.run
         result must beLike {
-          case Answer(networks) => networks shouldEqual networksSorted
+          case Xor.Right(networks) => networks shouldEqual networksSorted
         }
       }
 
@@ -116,9 +116,9 @@ class WifiServicesImplSpec
       new WifiImplScope {
         mockWifiManager.getConfiguredNetworks returns Seq.empty[WifiConfiguration]
 
-        val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).run.run
+        val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).value.run
         result must beLike {
-          case Answer(networks) => networks shouldEqual Seq.empty
+          case Xor.Right(networks) => networks shouldEqual Seq.empty
         }
       }
 
@@ -126,11 +126,9 @@ class WifiServicesImplSpec
       new WifiImplScope {
         mockWifiManager.getConfiguredNetworks returns javaNull
 
-        val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).run.run
+        val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WifiServicesException]
-          }
+          case Xor.Left(e) => e  must beAnInstanceOf[WifiServicesException]
         }
       }
 
