@@ -13,4 +13,12 @@ trait WifiServices {
     */
   def getCurrentSSID(implicit contextSupport: ContextSupport): ServiceDef2[Option[String], WifiServicesException]
 
+  /**
+    * Get all configured networks sorted by name
+    *
+    * @return Seq[String] that contains all SSIDs
+    * @throws WifiServicesException if exist some problem getting the information
+    */
+  def getConfiguredNetworks(implicit contextSupport: ContextSupport): ServiceDef2[Seq[String], WifiServicesException]
+
 }

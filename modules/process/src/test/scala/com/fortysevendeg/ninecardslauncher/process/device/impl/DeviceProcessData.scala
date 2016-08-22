@@ -673,4 +673,6 @@ trait DeviceProcessData
     ServicesDataCounter("oneMonth", 6),
     ServicesDataCounter("twoMonths", 5))
 
+  val networks = 0 to 10 map (c => s"Networks $c")
+
 }

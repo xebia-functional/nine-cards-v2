@@ -204,4 +204,12 @@ trait DeviceProcess {
     */
   def deleteAllDockApps(): ServiceDef2[Unit, DockAppException]
 
+  /**
+    * Get all configured networks sorted by name
+    *
+    * @return Seq[String] that contains all SSIDs
+    * @throws WidgetException if exist some problem to get the widgets
+    */
+  def getConfiguredNetworks(implicit context: ContextSupport): ServiceDef2[Seq[String], DeviceException]
+
 }
