@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
-import cats.data.XorT
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import cats.data.{Xor, XorT}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.{NineCardException, _}
 import rapture.core._
 import rapture.core.scalazInterop.ResultT
 
@@ -69,10 +69,36 @@ object NineCardExtensions {
     }
 
   }
-  implicit class XorTExtensions[Val](r: XorT[Task, NineCardException, Val]) {
 
-    def resolve[E <: NineCardException](implicit converter: Throwable => E): XorT[Task, NineCardException, Val] =
+  // Cats extensions
+
+  implicit class XorTExtensions[A](r: XorT[Task, NineCardException, A]) {
+
+    def resolve[E <: NineCardException](implicit converter: Throwable => E): XorT[Task, NineCardException, A] =
       r leftMap converter
+
+  }
+
+  implicit class XorTOptionExtensions[A](r : XorT[Task, NineCardException, Option[A]]) {
+
+    case class EmptyException(message: String, cause: Option[Throwable] = None)
+      extends RuntimeException(message)
+        with NineCardException {
+      cause map initCause
+    }
+
+    def resolveOption() = {
+      val task: Task[NineCardException Xor Option[A]] = r.value
+
+      val innerResult: Task[NineCardException Xor A] = task.map {
+        case error @ Xor.Left(_) => error
+        case Xor.Right(result) => result match {
+          case Some(a) => Xor.Right(a)
+          case _ => Xor.left(EmptyException(""))
+        }
+      }
+      XorT(innerResult)
+    }
 
   }
 
