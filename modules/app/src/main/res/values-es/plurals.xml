@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="sharedCollectionChangedNotificationBigMsg">
+        <item quantity="one">La colección \'%s\' ha sido actualizada con una nueva aplicación. Pulsa aquí para añadirla a tu colleción.</item>
+        <item quantity="other">La colección \'%s\' ha sido actualizada con nuevas aplicaciones. Pulsa aquí para añadirlas a tu colleción.</item>
+    </plurals>
+</resources>

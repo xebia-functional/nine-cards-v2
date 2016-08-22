@@ -5,8 +5,9 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, NineCardIntent, PrivateCard}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, UpdateCollectionsRequest => ServicesUpdateCollectionsRequest, _}
 
 trait Conversions extends CommonConversions {
@@ -75,6 +76,20 @@ trait Conversions extends CommonConversions {
     cards = collection.cards,
     moment = collection.moment)
 
+  def toUpdatedSharedCollection(collection: Collection, originalSharedCollectionId: Option[String]): Collection =  Collection(
+    id = collection.id,
+    position = collection.position,
+    name = collection.name,
+    collectionType = collection.collectionType,
+    icon = collection.icon,
+    themedColorIndex = collection.themedColorIndex,
+    appsCategory = collection.appsCategory,
+    originalSharedCollectionId = originalSharedCollectionId,
+    sharedCollectionId = collection.sharedCollectionId,
+    sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
+    cards = collection.cards,
+    moment = collection.moment)
+
   def toFetchCollectionByPositionRequest(pos: Int): FetchCollectionByPositionRequest = FetchCollectionByPositionRequest(
     position = pos)
 
@@ -121,6 +136,24 @@ trait Conversions extends CommonConversions {
     cardType = addCardRequest.cardType.name,
     intent = nineCardIntentToJson(addCardRequest.intent),
     imagePath = addCardRequest.imagePath)
+
+  def toAddCardRequest(collectionId: Int, app: ServicesApp, position: Int): ServicesAddCardRequest = ServicesAddCardRequest (
+    collectionId = Option(collectionId),
+    position = position,
+    term = app.name,
+    packageName = Option(app.packageName),
+    cardType = AppCardType.name,
+    intent = nineCardIntentToJson(toNineCardIntent(app)),
+    imagePath = app.imagePath)
+
+  def toAddCardRequest(collectionId: Int, categorizedPackage: CategorizedPackage, position: Int): ServicesAddCardRequest = ServicesAddCardRequest (
+    collectionId = Option(collectionId),
+    position = position,
+    term = categorizedPackage.packageName,
+    packageName = Option(categorizedPackage.packageName),
+    cardType = AppCardType.name,
+    intent = nineCardIntentToJson(packageToNineCardIntent(categorizedPackage.packageName)),
+    imagePath = "")
 
   def toFindCardByIdRequest(cardId: Int): FindCardByIdRequest = FindCardByIdRequest(
     id = cardId)

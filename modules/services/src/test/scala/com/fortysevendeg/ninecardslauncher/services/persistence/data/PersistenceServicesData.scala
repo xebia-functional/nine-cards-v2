@@ -499,9 +499,6 @@ trait PersistenceServicesData extends Conversions {
   def createFetchCollectionByPositionRequest(position: Int): FetchCollectionByPositionRequest =
     FetchCollectionByPositionRequest(position = position)
 
-  def createFetchCollectionBySharedCollection(sharedCollectionId: String): FetchCollectionBySharedCollectionRequest =
-    FetchCollectionBySharedCollectionRequest(sharedCollectionId = sharedCollectionId)
-
   def createFindCollectionByIdRequest(id: Int): FindCollectionByIdRequest = FindCollectionByIdRequest(id = id)
 
   def createUpdateCollectionRequest(

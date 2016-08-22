@@ -100,7 +100,18 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionBySharedCollectionId(sharedCollectionId: String): ServiceDef2[Option[Collection], RepositoryException] =
+  def fetchCollectionBySharedCollectionId(id: String): ServiceDef2[Option[Collection], RepositoryException] =
+    Service {
+      Task {
+        CatchAll[RepositoryException] {
+          fetchCollection(
+            selection = s"$sharedCollectionId = ?",
+            selectionArgs = Seq(id.toString))
+        }
+      }
+    }
+
+  def fetchCollectionByOriginalSharedCollectionId(sharedCollectionId: String): ServiceDef2[Option[Collection], RepositoryException] =
     Service {
       Task {
         CatchAll[RepositoryException] {

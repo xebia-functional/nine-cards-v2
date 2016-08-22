@@ -13,6 +13,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, 
 import com.fortysevendeg.ninecardslauncher.process.moment.SaveMomentRequest
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
+import com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage
 
 import scala.util.Random
 

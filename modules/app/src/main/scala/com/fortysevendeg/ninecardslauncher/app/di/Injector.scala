@@ -188,7 +188,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     collectionProcessConfig = collectionProcessConfig,
     persistenceServices = persistenceServices,
     contactsServices = contactsServices,
-    appsServices = appsServices)
+    appsServices = appsServices,
+    apiServices = apiServices)
 
   private[this] lazy val namesMoments: Map[NineCardsMoment, String] = (moments map {
     moment =>

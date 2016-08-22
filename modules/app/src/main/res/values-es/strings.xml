@@ -477,6 +477,13 @@
     <string name="sharedContentErrorNotSupported">Contenido compartido no soportado</string>
     <string name="sharedContentErrorUnexpected">Error inesperado</string>
 
+    <string name="sharedCollectionChangedNotificationTitle">¡Colección actualizada!</string>
+    <string name="sharedCollectionChangedNotificationMsg">La colección \'%s\' ha sido actualizada</string>
+    <string name="sharedCollectionChangedNotificationUnsubscribe">Desubscribirse</string>
+    <string name="sharedCollectionChangedNotificationSynchronize">Sincronizar</string>
+    <string name="sharedCollectionUnsubscribed">Desubscrito correctamente de la coleción</string>
+    <string name="sharedCollectionUpdated">Colección correctamente actualizada</string>
+
     <!-- Edit Widgets -->
     <string name="editingWidgets">Editando widgets</string>
     <string name="movingWidgets">Moviendo widgets</string>
