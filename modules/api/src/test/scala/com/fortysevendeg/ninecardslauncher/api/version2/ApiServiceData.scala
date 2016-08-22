@@ -4,6 +4,8 @@ trait ApiServiceData {
 
   val baseUrl = "http://localhost:8080"
 
+  val headerContentType = "Content-Type"
+  val headerContentTypeValue = "application/json"
   val headerAuthToken = "X-Auth-Token"
   val headerSessionToken = "X-Session-Token"
   val headerAndroidId = "X-Android-ID"
@@ -36,6 +38,7 @@ trait ApiServiceData {
   val serviceMarketHeader = ServiceMarketHeader(apiKey, sessionToken, androidId, Some(marketToken))
 
   def createHeaders(authToken: String) = Seq(
+    (headerContentType, headerContentTypeValue),
     (headerAuthToken, authToken),
     (headerSessionToken, sessionToken),
     (headerAndroidId, androidId),
