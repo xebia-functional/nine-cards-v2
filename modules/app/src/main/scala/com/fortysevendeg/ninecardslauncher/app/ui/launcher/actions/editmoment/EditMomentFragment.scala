@@ -35,5 +35,7 @@ object EditMomentFragment {
 
   val momentKey = "moment"
 
+  val wifiRequest = "wifi-request"
+
 }
 

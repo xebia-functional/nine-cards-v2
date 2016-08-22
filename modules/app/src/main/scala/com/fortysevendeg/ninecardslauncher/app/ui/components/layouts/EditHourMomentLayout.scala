@@ -58,8 +58,8 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   LayoutInflater.from(context).inflate(R.layout.edit_moment_hour_layout, this)
 
   def populate(time: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter): Ui[Any] = {
-    val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(theme.get(DrawerIconColor))
     val iconColor = theme.get(DrawerIconColor)
+    val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
     val textColor = theme.get(DrawerTextColor)
     (this <~ vSetPosition(position)) ~
       (startContent <~ On.click(showTime(position, time.from, from = true))) ~

@@ -69,6 +69,22 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
     }).run
   }
 
+  def addWifi(wifi: String): Unit = {
+    statuses = statuses.addWifi(wifi)
+    (statuses.modifiedMoment match {
+      case Some(moment) => actions.loadWifis(moment)
+      case _ => actions.showSavingMomentErrorMessage()
+    }).run
+  }
+
+  def removeWifi(position: Int): Unit = {
+    statuses = statuses.removeWifi(position)
+    (statuses.modifiedMoment match {
+      case Some(moment) => actions.loadWifis(moment)
+      case _ => actions.showSavingMomentErrorMessage()
+    }).run
+  }
+
   def saveMoment(): Unit = (statuses.wasModified(), statuses.modifiedMoment) match {
     case (true, Some(moment)) =>
       val request = UpdateMomentRequest(
@@ -157,6 +173,20 @@ case class EditMomentStatuses(
     copy(modifiedMoment = modMoment)
   }
 
+  def addWifi(wifi: String) = {
+    val modMoment = modifiedMoment map { moment =>
+      moment.copy(wifi = moment.wifi :+ wifi)
+    }
+    copy(modifiedMoment = modMoment)
+  }
+
+  def removeWifi(position: Int) = {
+    val modMoment = modifiedMoment map { m =>
+      m.copy(wifi = m.wifi.filterNot(m.wifi.indexOf(_) == position))
+    }
+    copy(modifiedMoment = modMoment)
+  }
+
   def wasModified(): Boolean = moment != modifiedMoment
 
 }
@@ -174,6 +204,8 @@ trait EditMomentActions {
   def reloadDays(position: Int, timeslot: MomentTimeSlot): Ui[Any]
 
   def loadHours(moment: Moment): Ui[Any]
+
+  def loadWifis(moment: Moment): Ui[Any]
 
   def showFieldErrorMessage(): Ui[Any]
 

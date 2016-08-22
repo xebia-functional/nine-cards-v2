@@ -450,3 +450,11 @@ object EditHourMomentLayoutTweaks {
     Tweak[W] (_.populate(timeSlot, position).run)
 
 }
+
+object EditWifiMomentLayoutTweaks {
+  type W = EditWifiMomentLayout
+
+  def ewmPopulate(wifi: String, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter) =
+    Tweak[W] (_.populate(wifi, position).run)
+
+}

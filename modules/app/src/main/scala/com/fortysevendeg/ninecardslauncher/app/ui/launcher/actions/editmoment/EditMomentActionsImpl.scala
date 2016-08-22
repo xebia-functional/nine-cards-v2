@@ -8,9 +8,10 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWifiMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.adapters.ThemeArrayAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.EditHourMomentLayout
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditHourMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -93,6 +94,13 @@ trait EditMomentActionsImpl
       case (slot, index) => (w[EditHourMomentLayout] <~ ehmPopulate(slot, index)).get
     }
     hourContent <~ vgRemoveAllViews <~ vgAddViews(views)
+  }
+
+  override def loadWifis(moment: Moment): Ui[Any] = {
+    val views = moment.wifi.zipWithIndex map {
+      case (wifi, index) => (w[EditWifiMomentLayout] <~ ewmPopulate(wifi, index)).get
+    }
+    wifiContent <~ vgRemoveAllViews <~ vgAddViews(views)
   }
 
   override def showFieldErrorMessage(): Ui[Any] = uiShortToast(R.string.contactUsError)

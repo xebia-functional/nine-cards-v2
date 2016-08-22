@@ -344,6 +344,30 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <!-- Edit Hour Moment -->
+
+    <style name="EditWifiMomentRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="EditWifiMomentWifiLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="EditWifiMomentWifiText">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">left</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
+    </style>
+
     <!-- Commons actions -->
 
     <style name="ActionsActionDelete" parent="EditMomentHeaderAction">
