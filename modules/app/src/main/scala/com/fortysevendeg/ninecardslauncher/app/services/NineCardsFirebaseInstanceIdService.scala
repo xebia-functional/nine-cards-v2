@@ -16,8 +16,6 @@ class NineCardsFirebaseInstanceIdService
 
   override def onTokenRefresh(): Unit = {
     super.onTokenRefresh()
-    android.util.Log.d("9Cards", "onTokenRefresh")
     readToken foreach di.userProcess.updateDeviceToken
-    // TODO - Call to the backend as part of ticket 582 (https://github.com/47deg/nine-cards-v2/issues/582)
   }
 }

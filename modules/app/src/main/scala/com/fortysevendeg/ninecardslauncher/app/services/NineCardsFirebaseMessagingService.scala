@@ -1,21 +1,59 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
+import com.fortysevendeg.ninecardslauncher.app.services.payloads.SharedCollectionPayload
 import com.google.firebase.messaging.{FirebaseMessagingService, RemoteMessage}
+import play.api.libs.json._
+
+import scala.util.{Failure, Success, Try}
 
 class NineCardsFirebaseMessagingService extends FirebaseMessagingService {
+
+  import jsonImplicits._
+  import payloads._
 
   override def onMessageReceived(remoteMessage: RemoteMessage): Unit = {
     super.onMessageReceived(remoteMessage)
 
-    // TODO - 584 (https://github.com/47deg/nine-cards-v2/issues/584)
-    android.util.Log.d("9Cards", s"From: ${remoteMessage.getFrom}")
+    def readJson[T <: Payload](json: String, f: (T) => Unit)(implicit reads: Reads[T]) = Try(Json.parse(json)) match {
+      case Success(jsValue) => reads.reads(jsValue).asOpt foreach f
+      case Failure(ex) => android.util.Log.e("9Cards", "Error parsing message payload")
+    }
+
+
     Option(remoteMessage.getData) foreach { data =>
-      if (data.size() > 0) {
-        android.util.Log.d("9Cards", s"Message data payload: $data")
+      (Option(data.get("payloadType")), Option(data.get("payload"))) match {
+        case (Some(`sharedCollectionPayload`), Some(json)) => readJson(json, sharedCollectionNotification)
+        case _ =>
       }
     }
-    Option(remoteMessage.getNotification) foreach { notification =>
-      android.util.Log.d("9Cards", s"Message Notification Body: ${notification.getBody}")
-    }
+
   }
+
+  def sharedCollectionNotification(payload: SharedCollectionPayload): Unit = {
+    // TODO
+  }
+}
+
+object jsonImplicits {
+
+  implicit val sharedCollectionPayloadReads = Json.reads[SharedCollectionPayload]
+
+}
+
+object payloads {
+
+  val sharedCollectionPayload = "sharedCollection"
+
+  sealed trait Payload {
+    def payloadType: String
+  }
+
+  case class SharedCollectionPayload(
+    publicIdentifier: String,
+    addedPackages: Seq[String]) extends Payload {
+
+    override def payloadType: String = sharedCollectionPayload
+
+  }
+
 }
