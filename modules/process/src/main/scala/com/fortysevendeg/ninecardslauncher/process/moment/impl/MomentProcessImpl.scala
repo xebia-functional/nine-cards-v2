@@ -83,8 +83,7 @@ class MomentProcessImpl(
       collections <- persistenceServices.fetchCollections
       wifi <- wifiServices.getCurrentSSID
       moments = serviceMoments map toMoment
-      momentWithCollection = moments filter (m => collections.exists(col => m.collectionId.contains(col.id)))
-      momentsPrior = momentWithCollection sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
+      momentsPrior = moments sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
     } yield momentsPrior.headOption).resolve[MomentException]
 
   override def getAvailableMoments(implicit context: ContextSupport) =
@@ -123,6 +122,8 @@ class MomentProcessImpl(
     (isHappening(moment1, now), isHappening(moment2, now), wifi) match {
       case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.contains(w) => true
       case (h1, h2, Some(w)) if h1 == h2 && moment2.wifi.contains(w) => false
+      case (h1, h2, None) if h1 == h2 && moment1.wifi.isEmpty && moment2.wifi.nonEmpty => true
+      case (h1, h2, None) if h1 == h2 && moment1.wifi.nonEmpty && moment2.wifi.isEmpty => false
       case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.isEmpty && moment2.wifi.nonEmpty => true
       case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.nonEmpty && moment2.wifi.isEmpty => false
       case (true, false, _) => true

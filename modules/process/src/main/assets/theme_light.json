@@ -35,11 +35,11 @@
     },
     {
       "styleType": "DrawerTextColor",
-      "color": "#de000000"
+      "color": "#cc000000"
     },
     {
       "styleType": "DrawerIconColor",
-      "color": "#de000000"
+      "color": "#99000000"
     },
     {
       "styleType": "DockPressedColor",

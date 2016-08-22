@@ -306,8 +306,18 @@
     <style name="EditHourMomentRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:paddingTop">@dimen/padding_large</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:paddingBottom">@dimen/padding_large</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="EditHourMomentContent">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:padding">@dimen/padding_large</item>
     </style>
 
     <style name="EditHourMomentHoursLine">
@@ -322,6 +332,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:layout_marginLeft">@dimen/padding_default</item>
+        <item name="android:layout_marginRight">@dimen/padding_default</item>
     </style>
 
     <style name="EditHourMomentHourText">

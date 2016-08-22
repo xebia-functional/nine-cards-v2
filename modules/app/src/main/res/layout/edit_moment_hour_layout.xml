@@ -4,42 +4,47 @@
     style="@style/EditHourMomentRoot">
 
     <LinearLayout
-        style="@style/EditHourMomentHoursLine">
+        style="@style/EditHourMomentContent">
 
-        <FrameLayout
-            android:id="@+id/edit_hour_start_content"
-            style="@style/EditHourMomentHourContent">
+        <LinearLayout
+            style="@style/EditHourMomentHoursLine">
 
-            <TextView
-                android:id="@+id/edit_hour_start_text"
-                style="@style/EditHourMomentHourText"/>
+            <FrameLayout
+                android:id="@+id/edit_hour_start_content"
+                style="@style/EditHourMomentHourContent">
 
-            <ImageView
-                style="@style/EditHourMomentHourLine"/>
+                <TextView
+                    android:id="@+id/edit_hour_start_text"
+                    style="@style/EditHourMomentHourText"/>
 
-        </FrameLayout>
+                <ImageView
+                    style="@style/EditHourMomentHourLine"/>
 
-        <FrameLayout
-            android:id="@+id/edit_hour_end_content"
-            style="@style/EditHourMomentHourContent">
+            </FrameLayout>
 
-            <TextView
-                android:id="@+id/edit_hour_end_text"
-                style="@style/EditHourMomentHourText"/>
+            <FrameLayout
+                android:id="@+id/edit_hour_end_content"
+                style="@style/EditHourMomentHourContent">
 
-            <ImageView
-                style="@style/EditHourMomentHourLine"/>
+                <TextView
+                    android:id="@+id/edit_hour_end_text"
+                    style="@style/EditHourMomentHourText"/>
 
-        </FrameLayout>
+                <ImageView
+                    style="@style/EditHourMomentHourLine"/>
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
-            android:id="@+id/edit_hour_action_delete"
-            style="@style/ActionsActionDelete"/>
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edit_hour_days_content"
+            style="@style/EditHourMomentDaysContent" />
 
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/edit_hour_days_content"
-        style="@style/EditHourMomentDaysContent" />
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        android:id="@+id/edit_hour_action_delete"
+        style="@style/ActionsActionDelete"/>
 
 </LinearLayout>
