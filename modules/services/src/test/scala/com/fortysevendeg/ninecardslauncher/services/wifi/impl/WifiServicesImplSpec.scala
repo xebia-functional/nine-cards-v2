@@ -71,7 +71,7 @@ class WifiServicesImplSpec
     "returns None if type isn't WIFI" in
       new WifiImplScope {
 
-        mockNetWorkInfo.getType returns 0
+        mockNetWorkInfo.getType returns ConnectivityManager.TYPE_MOBILE
 
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
         result must beLike {
@@ -79,7 +79,7 @@ class WifiServicesImplSpec
         }
       }
 
-    "returns None SSID if SSID is empty" in
+    "returns None if SSID is empty" in
       new WifiImplScope {
 
         mockNetWorkInfo.getExtraInfo returns ""
@@ -90,7 +90,7 @@ class WifiServicesImplSpec
         }
       }
 
-    "returns None SSID if SSID is null" in
+    "returns None if SSID is null" in
       new WifiImplScope {
 
         mockNetWorkInfo.getExtraInfo returns javaNull

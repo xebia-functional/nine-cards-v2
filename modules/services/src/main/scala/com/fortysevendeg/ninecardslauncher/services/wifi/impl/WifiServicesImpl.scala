@@ -7,8 +7,6 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.services.wifi.{ImplicitsWifiExceptions, WifiServices, WifiServicesException}
-
-import scala.collection.JavaConversions._
 import scalaz.concurrent.Task
 
 class WifiServicesImpl
@@ -33,6 +31,7 @@ class WifiServicesImpl
   override def getConfiguredNetworks(implicit contextSupport: ContextSupport) = Service {
     Task {
       CatchAll[WifiServicesException] {
+        import scala.collection.JavaConversions._
         val wifiManager = getWifiManager
         val networks = wifiManager map (_.getConfiguredNetworks.toList) getOrElse List.empty
         networks map (_.SSID.replace("\"", "")) sortWith(_.toLowerCase() < _.toLowerCase())

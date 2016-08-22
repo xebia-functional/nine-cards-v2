@@ -39,8 +39,6 @@ class DeviceProcessImpl(
   with DeviceConversions {
 
   def getConfiguredNetworks(implicit context: ContextSupport) =
-    (for {
-      networks <- wifiServices.getConfiguredNetworks
-    } yield networks).resolve[DeviceException]
+    wifiServices.getConfiguredNetworks.resolve[DeviceException]
 
 }
