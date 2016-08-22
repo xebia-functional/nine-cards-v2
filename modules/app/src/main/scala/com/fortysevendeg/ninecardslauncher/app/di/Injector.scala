@@ -44,6 +44,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.impl.Persistence
 import com.fortysevendeg.ninecardslauncher.services.plus.impl.GooglePlusServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
 import com.fortysevendeg.ninecardslauncher.services.wifi.impl.WifiServicesImpl
 import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
 import com.fortysevendeg.rest.client.ServiceClient
@@ -158,6 +159,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val callsServices = new CallsServicesImpl(contentResolverWrapper)
 
+  private[this] lazy val wifiServices = new WifiServicesImpl()
+
   // Process
 
   lazy val recommendationsProcess = new RecommendationsProcessImpl(
@@ -172,7 +175,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     contactsServices = contactsServices,
     imageServices = imageServices,
     widgetsServices = widgetsServices,
-    callsServices = callsServices)
+    callsServices = callsServices,
+    wifiServices = wifiServices)
 
   private[this] lazy val nameCategories: Map[NineCardCategory, String] = (allCategories map {
     category =>
@@ -197,8 +201,6 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val momentProcessConfig = MomentProcessConfig(
     namesMoments = namesMoments)
-
-  private[this] lazy val wifiServices = new WifiServicesImpl()
 
   lazy val momentProcess = new MomentProcessImpl(
     momentProcessConfig = momentProcessConfig,
