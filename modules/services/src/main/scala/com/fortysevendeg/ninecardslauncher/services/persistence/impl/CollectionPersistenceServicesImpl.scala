@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, Moment => RepositoryMoment}
-import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, MomentEntity}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card, Collection, Moment}
@@ -52,7 +52,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
 
   def deleteCollection(request: DeleteCollectionRequest) = {
     (for {
-      deletedCards <- deleteCards(request.collection.cards)
+      _ <- cardRepository.deleteCards(where = s"${CardEntity.collectionId} = ${request.collection.id}")
       deletedCollection <- collectionRepository.deleteCollection(toRepositoryCollection(request.collection))
       _ <- unlinkCollectionInMoment(request.collection.moment)
     } yield deletedCollection).resolve[PersistenceServiceException]
@@ -94,18 +94,6 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     (for {
       updated <- collectionRepository.updateCollections(request.updateCollectionsRequests map toRepositoryCollection)
     } yield updated).resolve[PersistenceServiceException]
-
-  private[this] def deleteCards(cards: Seq[Card]): ServiceDef2[Int, PersistenceServiceException] = {
-    val deletedCards = cards map {
-      card =>
-        cardRepository.deleteCard(toRepositoryCard(card)).run
-    }
-
-    Service(
-      Task.gatherUnordered(deletedCards) map (
-        list =>
-          CatchAll[PersistenceServiceException](list.collect { case Answer(value) => value }.sum)))
-  }
 
   private[this] def fetchCards(maybeCollection: Option[RepositoryCollection]): ServiceDef2[Seq[RepositoryCard], RepositoryException] = {
     maybeCollection match {

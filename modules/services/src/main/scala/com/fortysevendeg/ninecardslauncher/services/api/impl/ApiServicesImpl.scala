@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api._
-import com.fortysevendeg.ninecardslauncher.api.version2.CollectionsResponse
+import com.fortysevendeg.ninecardslauncher.api.version2.{CollectionUpdateInfo, CollectionsResponse}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
@@ -159,6 +159,23 @@ class ApiServicesImpl(
         packages = packages), requestConfig.toServiceHeader)
       createdCollection <- readOption(response.data, errorCreatingCollectionMessage)
     } yield CreateSharedCollectionResponse(response.statusCode, createdCollection.publicIdentifier)).resolve[ApiServiceException]
+
+  override def updateSharedCollection(
+    sharedCollectionId: String,
+    maybeName: Option[String],
+    maybeDescription: Option[String],
+    packages: Seq[String])(implicit requestConfig: RequestConfig) = {
+
+    def toUpdateInfo: Option[CollectionUpdateInfo] = maybeName map (name => CollectionUpdateInfo(name, maybeDescription))
+
+    (for {
+      response <- apiService.updateCollection(
+        publicIdentifier = sharedCollectionId,
+        request = version2.UpdateCollectionRequest(collectionInfo = toUpdateInfo, packages = Some(packages)),
+        header = requestConfig.toServiceHeader)
+      createdCollection <- readOption(response.data, errorCreatingCollectionMessage)
+    } yield UpdateSharedCollectionResponse(response.statusCode, createdCollection.publicIdentifier)).resolve[ApiServiceException]
+  }
 
   implicit class RequestHeaderHeader(request: RequestConfigV1) {
     def toHeader: Seq[(String, String)] =
