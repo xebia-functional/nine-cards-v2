@@ -149,8 +149,7 @@ object Settings {
     playJson,
     okHttp,
     specs2,
-    mockito,
-    mockServer)
+    mockito)
 
   lazy val repositoryDependencies = Seq(
     jodaTime,

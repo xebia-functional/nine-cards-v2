@@ -20,26 +20,26 @@ trait ContentResolverWrapper {
   def insert(
     uri: Uri,
     values: Map[String, Any],
-    notificationUri: Option[Uri] = None): Int
+    notificationUris: Seq[Uri] = Seq.empty): Int
 
   def inserts(
     authority: String,
     uri: Uri,
     allValues: Seq[Map[String, Any]],
-    notificationUri: Option[Uri] = None): Seq[Int]
+    notificationUris: Seq[Uri] = Seq.empty): Seq[Int]
 
   def delete(
     uri: Uri,
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    notificationUri: Option[Uri] = None): Int
+    notificationUris: Seq[Uri] = Seq.empty): Int
 
   def deleteById(
     uri: Uri,
     id: Int,
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    notificationUri: Option[Uri] = None): Int
+    notificationUris: Seq[Uri] = Seq.empty): Int
 
   def fetch[T](
     uri: Uri,
@@ -68,19 +68,19 @@ trait ContentResolverWrapper {
     values: Map[String, Any],
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    notificationUri: Option[Uri] = None): Int
+    notificationUris: Seq[Uri] = Seq.empty): Int
 
   def updateById(
     uri: Uri,
     id: Int,
     values: Map[String, Any],
-    notificationUri: Option[Uri] = None): Int
+    notificationUris: Seq[Uri] = Seq.empty): Int
 
   def updateByIds(
     authority: String,
     uri: Uri,
     idAndValues: Seq[(Int, Map[String, Any])],
-    notificationUri: Option[Uri] = None): Seq[Int]
+    notificationUris: Seq[Uri] = Seq.empty): Seq[Int]
 }
 
 class ContentResolverWrapperImpl(contentResolver: ContentResolver)
@@ -97,10 +97,10 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
   override def insert(
     uri: Uri,
     values: Map[String, Any],
-    notificationUri: Option[Uri] = None): Int = {
+    notificationUris: Seq[Uri] = Seq.empty): Int = {
     val response = contentResolver.insert(uri, map2ContentValue(values))
     val idString = response.getPathSegments.get(1)
-    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    notificationUris foreach (contentResolver.notifyChange(_, javaNull))
     Integer.parseInt(idString)
   }
 
@@ -108,7 +108,7 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     authority: String,
     uri: Uri,
     allValues: Seq[Map[String, Any]],
-    notificationUri: Option[Uri] = None): Seq[Int] = {
+    notificationUris: Seq[Uri] = Seq.empty): Seq[Int] = {
 
     val operations = allValues map { values =>
       ContentProviderOperation.newInsert(uri)
@@ -119,7 +119,7 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     import scala.collection.JavaConverters._
     val result = contentResolver.applyBatch(authority, new util.ArrayList(operations.asJava))
 
-    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    notificationUris foreach (contentResolver.notifyChange(_, javaNull))
 
     result.map(_.uri.getPathSegments.get(1).toInt)
   }
@@ -129,9 +129,9 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     values: Map[String, Any],
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    notificationUri: Option[Uri] = None): Int = {
+    notificationUris: Seq[Uri] = Seq.empty): Int = {
     val updatedRowCount = contentResolver.update(uri, map2ContentValue(values), where, whereParams.toArray)
-    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    notificationUris foreach (contentResolver.notifyChange(_, javaNull))
     updatedRowCount
   }
 
@@ -139,9 +139,9 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     uri: Uri,
     id: Int,
     values: Map[String, Any],
-    notificationUri: Option[Uri] = None): Int = {
+    notificationUris: Seq[Uri] = Seq.empty): Int = {
     val updatedRowCount = contentResolver.update(withAppendedPath(uri, id.toString), map2ContentValue(values), "", Seq.empty.toArray)
-    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    notificationUris foreach (contentResolver.notifyChange(_, javaNull))
     updatedRowCount
   }
 
@@ -149,7 +149,7 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     authority: String,
     uri: Uri,
     idAndValues: Seq[(Int, Map[String, Any])],
-    notificationUri: Option[Uri] = None): Seq[Int] = {
+    notificationUris: Seq[Uri] = Seq.empty): Seq[Int] = {
 
     val operations = idAndValues map {
       case (id, values) =>
@@ -161,7 +161,7 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     import scala.collection.JavaConverters._
     val result = contentResolver.applyBatch(authority, new util.ArrayList(operations.asJava))
 
-    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    notificationUris foreach (contentResolver.notifyChange(_, javaNull))
     result map (_.count.toInt)
   }
 
@@ -169,9 +169,9 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     uri: Uri,
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    notificationUri: Option[Uri] = None): Int = {
+    notificationUris: Seq[Uri] = Seq.empty): Int = {
     val deletedRowCount = contentResolver.delete(uri, where, whereParams.toArray)
-    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    notificationUris foreach (contentResolver.notifyChange(_, javaNull))
     deletedRowCount
   }
 
@@ -180,9 +180,9 @@ class ContentResolverWrapperImpl(contentResolver: ContentResolver)
     id: Int,
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    notificationUri: Option[Uri] = None): Int = {
+    notificationUris: Seq[Uri] = Seq.empty): Int = {
     val deletedRowCount = contentResolver.delete(withAppendedPath(uri, id.toString), where, whereParams.toArray)
-    notificationUri foreach (contentResolver.notifyChange(_, javaNull))
+    notificationUris foreach (contentResolver.notifyChange(_, javaNull))
     deletedRowCount
   }
 

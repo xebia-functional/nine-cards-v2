@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
-import com.fortysevendeg.ninecardslauncher.process.userconfig.models.{UserCollection, UserCollectionItem, UserDevice}
+import com.fortysevendeg.ninecardslauncher.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
 
@@ -20,7 +20,7 @@ object Conversions {
       modifiedDate = driveServiceFile.modifiedDate,
       currentDevice = maybeCloudId contains driveServiceFile.uuid)
 
-  def toCloudStorageDevice(userDevice: UserDevice) =
+  def toCloudStorageDevice(userDevice: UserV1Device) =
     CloudStorageDeviceData(
       deviceId = userDevice.deviceId,
       deviceName = userDevice.deviceName,
@@ -29,7 +29,7 @@ object Conversions {
       moments = None,
       dockApps = None)
 
-  def toCloudStorageCollection(userCollection: UserCollection) =
+  def toCloudStorageCollection(userCollection: UserV1Collection) =
     CloudStorageCollection(
       name = userCollection.name,
       originalSharedCollectionId = userCollection.originalSharedCollectionId,
@@ -41,7 +41,7 @@ object Conversions {
       category = userCollection.category,
       moment = None)
 
-  def toCloudStorageCollectionItem(userCollectionItem: UserCollectionItem) =
+  def toCloudStorageCollectionItem(userCollectionItem: UserV1CollectionItem) =
     CloudStorageCollectionItem(
       itemType = userCollectionItem.itemType,
       title = userCollectionItem.title,

@@ -1,19 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.process.recommendations
 
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlayApp
+import com.fortysevendeg.ninecardslauncher.services.api.RecommendationApp
 
 trait Conversions {
 
-  def toRecommendedApp(googlePlayApp: GooglePlayApp): RecommendedApp =
+  def toRecommendedApp(app: RecommendationApp): RecommendedApp =
     RecommendedApp(
-      packageName = googlePlayApp.docid,
-      title = googlePlayApp.title,
-      icon = googlePlayApp.icon,
-      downloads = googlePlayApp.details.appDetails.numDownloads,
-      stars = googlePlayApp.aggregateRating.starRating,
-      description = googlePlayApp.descriptionHtml,
-      free = googlePlayApp.offer.headOption exists (_.micros == 0),
-      screenshots = googlePlayApp.screenshots)
+      packageName = app.packageName,
+      title = app.name,
+      icon = Some(app.icon),
+      downloads = app.downloads,
+      stars = app.stars,
+      description = Some(app.description),
+      free = app.free,
+      screenshots = app.screenshots)
 
 }

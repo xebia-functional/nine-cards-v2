@@ -97,6 +97,9 @@ trait LauncherExecutor {
       tryOrError(activity, chooserIntent)
     }
 
+  def launchShareCollection(sharedCollectionId: String)(implicit activityContext: ActivityContextWrapper) =
+    launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
+
   def launchSearch(implicit activityContext: ActivityContextWrapper) =
     for {
       activity <- activityContext.original.get

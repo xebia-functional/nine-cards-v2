@@ -1,18 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.process.user
 
-import com.fortysevendeg.ninecardslauncher.process.user.models.{Device, User, UserProfile}
-import com.fortysevendeg.ninecardslauncher.services.api.models.GoogleDevice
+import com.fortysevendeg.ninecardslauncher.process.user.models.{User, UserProfile}
 import com.fortysevendeg.ninecardslauncher.services.persistence.UpdateUserRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 
 trait Conversions {
-
-  def toGoogleDevice(device: Device): GoogleDevice =
-    GoogleDevice(
-      name = device.name,
-      deviceId = device.deviceId,
-      secretToken = device.secretToken,
-      permissions = device.permissions)
 
   def toUpdateRequest(id: Int, user: ServicesUser) =
     UpdateUserRequest(
@@ -38,7 +30,6 @@ trait Conversions {
       marketToken = user.marketToken,
       deviceName = user.deviceName,
       deviceCloudId = user.deviceCloudId,
-      name = user.name,
       userProfile = toUserProfile(user))
 
   def toUserProfile(user: ServicesUser): UserProfile =

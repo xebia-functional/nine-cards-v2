@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.di
 import android.content.res.Resources
 import android.support.v4.content.ContextCompat
 import com.facebook.stetho.okhttp3.StethoInterceptor
-import com.fortysevendeg.ninecardslauncher.api.version1.services._
+import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
@@ -28,8 +28,8 @@ import com.fortysevendeg.ninecardslauncher.process.theme.ThemeProcess
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.UserProcess
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.userconfig.UserConfigProcess
-import com.fortysevendeg.ninecardslauncher.process.userconfig.impl.UserConfigProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Process
+import com.fortysevendeg.ninecardslauncher.process.userv1.impl.UserV1ProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.widget.WidgetProcess
 import com.fortysevendeg.ninecardslauncher.process.widget.impl.WidgetProcessImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
@@ -65,7 +65,7 @@ trait Injector {
 
   def userProcess: UserProcess
 
-  def userConfigProcess: UserConfigProcess
+  def userV1Process: UserV1Process
 
   def widgetsProcess: WidgetProcess
 
@@ -86,7 +86,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   private[this] def createHttpClient = {
     val okHttpClientBuilder = new okhttp3.OkHttpClient.Builder()
     if (BuildConfig.DEBUG) {
-      okHttpClientBuilder.addInterceptor(new StethoInterceptor)
+      okHttpClientBuilder.addNetworkInterceptor(new StethoInterceptor)
     }
     new OkHttpClient(okHttpClientBuilder.build())
   }
@@ -97,13 +97,13 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val serviceHttpClient = createHttpClient
 
-  private[this] lazy val serviceClient = new ServiceClient(
+  private[this] lazy val serviceClientV1 = new ServiceClient(
     httpClient = serviceHttpClient,
     baseUrl = resources.getString(R.string.api_base_url))
 
-  private[this] lazy val googlePlayServiceClient = new ServiceClient(
+  private[this] lazy val serviceClient = new ServiceClient(
     httpClient = serviceHttpClient,
-    baseUrl = resources.getString(R.string.api_google_play_url))
+    baseUrl = resources.getString(R.string.api_v2_base_url))
 
   private[this] lazy val apiServicesConfig = ApiServicesConfig(
     appId = resources.getString(R.string.api_app_id),
@@ -112,11 +112,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val apiServices = new ApiServicesImpl(
     apiServicesConfig = apiServicesConfig,
-    apiUserService = new ApiUserService(serviceClient),
-    googlePlayService = new ApiGooglePlayService(googlePlayServiceClient),
-    userConfigService = new ApiUserConfigService(serviceClient),
-    recommendationService = new ApiRecommendationService(serviceClient),
-    sharedCollectionsService = new ApiSharedCollectionsService(serviceClient))
+    apiService = new version2.ApiService(serviceClient),
+    apiServiceV1 = new version1.ApiService(serviceClientV1))
 
   private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
     contextSupport.getContentResolver)
@@ -191,7 +188,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     collectionProcessConfig = collectionProcessConfig,
     persistenceServices = persistenceServices,
     contactsServices = contactsServices,
-    appsServices = appsServices)
+    appsServices = appsServices,
+    apiServices = apiServices)
 
   private[this] lazy val namesMoments: Map[NineCardsMoment, String] = (moments map {
     moment =>
@@ -211,7 +209,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     apiServices = apiServices,
     persistenceServices = persistenceServices)
 
-  lazy val userConfigProcess = new UserConfigProcessImpl(
+  lazy val userV1Process = new UserV1ProcessImpl(
     apiServices = apiServices,
     persistenceServices = persistenceServices
   )

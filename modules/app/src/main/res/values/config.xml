@@ -5,11 +5,11 @@
     <string name="api_app_id">${appsly.appid}</string>
     <string name="api_app_key">${appsly.appkey}</string>
     <string name="api_localization">en-EN</string>
-
-    <string name="api_google_play_url">${googleplay.url}</string>
+    <string name="api_v2_base_url">${9c_backend.baseurl}</string>
 
     <!-- Google -->
-    <string name="oauth_scopes">${google_oauth_scopes}</string>
+    <string name="profile_and_drive_oauth_scopes">oauth2:https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.appdata</string>
+    <string name="android_market_oauth_scopes">androidmarket</string>
 
     <!-- Google Play -->
     <string name="google_play_url">http://play.google.com/store/apps/details?id=%1$s</string>

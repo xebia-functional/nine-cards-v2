@@ -8,21 +8,29 @@ import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import NineCardsObserver._
 
 class NineCardsObserver(implicit contextSupport: ContextSupport)
   extends ContentObserver(javaNull) {
 
-  private[this] lazy val nextAlarmTime = 10 * 60 * 1000
+  lazy val preferences = contextSupport.context.getSharedPreferences(notificationPreferences, Context.MODE_PRIVATE)
 
-  private[this] lazy val syncUris = Seq(
-    cardUriNotificationString,
-    collectionUriNotificationString,
-    dockAppUriNotificationString,
-    momentUriNotificationString)
+  private[this] def addCollectionId(collectionId: Int) = {
+    val collections = preferences.getString(collectionIdsKey, "")
+    val ids: Array[Int] = collections.split(",").filterNot(_.isEmpty).map(_.toInt)
+    val newIds = ids.toSet + collectionId
+    preferences.edit.putString(collectionIdsKey, newIds.mkString(",")).apply()
+  }
+
+  private[this] val nextAlarmTime = 10 * 60 * 1000
 
   override def onChange(selfChange: Boolean, uri: Uri): Unit =
-    if (syncUris.contains(uri.toString)) {
-      createAlarm()
+    matchUri(uri.toString) match {
+      case Some((UriCollection, maybeId)) =>
+        maybeId foreach addCollectionId
+        createAlarm()
+      case Some(_) => createAlarm()
+      case _ =>
     }
 
   private[this] def createAlarm(): Unit =
@@ -45,4 +53,39 @@ class NineCardsObserver(implicit contextSupport: ContextSupport)
       case a: AlarmManager => Some(a)
       case _ => None
     }
+}
+
+object NineCardsObserver {
+
+  val notificationPreferences = "notificationPreferences"
+
+  val collectionIdsKey = "_collectionsIds_"
+
+  sealed trait UriType
+
+  case object UriCard extends UriType
+  case object UriCollection extends UriType
+  case object UriDockApp extends UriType
+  case object UriMoment extends UriType
+  case object UriWidget extends UriType
+
+  private[this] val uriRegExp = s"$baseUriNotificationString/([^/]+)(/(\\d+))?".r
+
+  def matchUri(uri: String): Option[(UriType, Option[Int])] = {
+
+    def readType(uriType: String): Option[UriType] = uriType match {
+      case `appUriPath` => Some(UriCard)
+      case `collectionUriPath` => Some(UriCollection)
+      case `dockAppUriPath` => Some(UriDockApp)
+      case `momentUriPath` => Some(UriMoment)
+      case `widgetUriPath` => Some(UriWidget)
+      case _ => None
+    }
+
+    uri match {
+      case uriRegExp(uriType, _, id) => readType(uriType) map ((_, Option(id) map (_.toInt)))
+      case _ => None
+    }
+  }
+
 }

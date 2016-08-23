@@ -82,7 +82,7 @@ trait DeviceProcessSpecification
       Service(Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
 
     mockApiServices.googlePlayPackage(any)(any) returns
-      Service(Task(Result.answer(GooglePlayPackageResponse(statusCodeOk, googlePlayPackage.app))))
+      Service(Task(Result.answer(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
 
     val mockShortcutsServices = mock[ShortcutsServices]
 
@@ -218,8 +218,8 @@ trait DeviceProcessSpecification
       mockWifiServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
-      apiUtils.getRequestConfig(contextSupport) returns
-        Service(Task(Result.answer(requestConfig)))
+
+      apiUtils.getRequestConfig(contextSupport) returns Service(Task(Result.answer(requestConfig)))
 
     }
 
