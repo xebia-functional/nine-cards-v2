@@ -484,6 +484,11 @@
     <string name="sharedCollectionUnsubscribed">Desubscrito correctamente de la coleción</string>
     <string name="sharedCollectionUpdated">Colección correctamente actualizada</string>
 
+    <plurals name="sharedCollectionChangedNotificationBigMsg">
+        <item quantity="one">La colección \'%s\' ha sido actualizada con una nueva aplicación. Pulsa aquí para añadirla a tu colleción.</item>
+        <item quantity="other">La colección \'%s\' ha sido actualizada con nuevas aplicaciones. Pulsa aquí para añadirlas a tu colleción.</item>
+    </plurals>
+
     <!-- Edit Widgets -->
     <string name="editingWidgets">Editando widgets</string>
     <string name="movingWidgets">Moviendo widgets</string>

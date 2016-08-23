@@ -155,13 +155,3 @@ object PositionsUtils {
   }
 
 }
-
-object CommonsResourcesExtras {
-
-  def resGetQuantityString(resourceId: Int, quantity: Int)(implicit c: ContextWrapper): String =
-    c.bestAvailable.getResources.getQuantityString(resourceId, quantity)
-
-  def resGetQuantityString(resourceId: Int, quantity: Int, formatArgs: AnyRef*)(implicit c: ContextWrapper): String =
-    c.bestAvailable.getResources.getQuantityString(resourceId, quantity, formatArgs: _*)
-
-}

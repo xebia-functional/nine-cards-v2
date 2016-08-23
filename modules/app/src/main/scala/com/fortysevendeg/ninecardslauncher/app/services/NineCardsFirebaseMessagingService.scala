@@ -7,6 +7,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.services.payloads.SharedCollectionPayload
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -37,7 +38,7 @@ class NineCardsFirebaseMessagingService
 
     def readJson[T <: Payload](json: String, f: (T) => Unit)(implicit reads: Reads[T]) = Try(Json.parse(json)) match {
       case Success(jsValue) => reads.reads(jsValue).asOpt foreach f
-      case Failure(ex) => android.util.Log.e("9Cards", "Error parsing message payload")
+      case Failure(ex) => AppLog.printErrorMessage(ex, Some("Error parsing message payload"))
     }
 
 
@@ -69,8 +70,6 @@ class NineCardsFirebaseMessagingService
           val unsubscribeIntent = new Intent(this, classOf[UpdateSharedCollectionService])
           unsubscribeIntent.setAction(UpdateSharedCollectionService.actionUnsubscribe)
           unsubscribeIntent.putExtra(UpdateSharedCollectionService.intentExtraCollectionId, collectionId)
-
-          android.util.Log.i("9Cards", s"Unsubscribe intent id: ${unsubscribeIntent.getIntExtra(UpdateSharedCollectionService.intentExtraCollectionId, 0)}")
 
           val syncIntent = new Intent(this, classOf[UpdateSharedCollectionService])
           syncIntent.setAction(UpdateSharedCollectionService.actionSync)

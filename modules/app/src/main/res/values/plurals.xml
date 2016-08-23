@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <plurals name="sharedCollectionChangedNotificationBigMsg">
-        <item quantity="one">The collection \'%s\' has been updated with a new application. Click here to add it to your collection.</item>
-        <item quantity="other">The collection \'%s\' has been updated with new applications. Click here to add them to your collection.</item>
-    </plurals>
-</resources>
