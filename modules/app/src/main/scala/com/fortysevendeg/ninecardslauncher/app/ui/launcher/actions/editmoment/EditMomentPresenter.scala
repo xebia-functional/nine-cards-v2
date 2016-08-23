@@ -139,7 +139,9 @@ case class EditMomentStatuses(
       val timeslots = m.timeslot.zipWithIndex map {
         case (timeslot, index) if index == position =>
           val modDays = timeslot.days.zipWithIndex map {
-            case (s, indexDay) => if (indexDay == day) if (s == 0) 1 else 0 else s
+            case (s, indexDay) if indexDay == day && s == 0 => 1
+            case (s, indexDay) if indexDay == day => 0
+            case (s, indexDay) => s
           }
           timeslot.copy(days = modDays)
         case (timeslot, _) => timeslot
