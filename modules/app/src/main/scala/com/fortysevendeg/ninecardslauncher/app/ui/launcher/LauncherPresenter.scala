@@ -29,7 +29,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException, CollectionExceptionImpl}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
@@ -744,7 +744,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     // Check if the best available moment is different to the current moment, if it's different return Some(moment)
     // in the other case None
-    def getCheckMoment: ServiceDef2[Option[LauncherMoment], CollectionException with MomentException] = {
+    def getCheckMoment: ServiceDef2[LauncherMoment, CollectionException with MomentException] = {
 
       def getCollection(moment: Option[Moment]): ServiceDef2[Option[Collection], CollectionException] = {
         val emptyService = Service(Task(Result.answer[Option[Collection], CollectionException](None)))
@@ -752,7 +752,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
         val collectionId = moment flatMap (_.collectionId)
         if (momentType == currentMomentType) {
-          emptyService
+          Service(Task(Result.errata(CollectionExceptionImpl("Best available moment is same of current moment"))))
         } else {
           collectionId map di.collectionProcess.getCollectionById getOrElse emptyService
         }
@@ -761,16 +761,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       for {
         moment <- di.momentProcess.getBestAvailableMoment
         collection <- getCollection(moment)
-      } yield collection map (_ => LauncherMoment(moment flatMap (_.momentType), collection))
+      } yield LauncherMoment(moment flatMap (_.momentType), collection)
     }
 
     Task.fork(getCheckMoment.run).resolveAsyncUi(
       onResult = (launcherMoment) => {
-        launcherMoment map { _ =>
-          val data = LauncherData(MomentWorkSpace, launcherMoment)
-          actions.reloadMoment(data)
-        } getOrElse Ui(reloadAppsMomentBar())
-      })
+        val data = LauncherData(MomentWorkSpace, Some(launcherMoment))
+        actions.reloadMoment(data)
+      },
+      onException = (_) => Ui(reloadAppsMomentBar()))
   }
 
   protected def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =

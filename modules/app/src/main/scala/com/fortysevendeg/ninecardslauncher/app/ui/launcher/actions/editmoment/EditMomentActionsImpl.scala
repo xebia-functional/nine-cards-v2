@@ -1,17 +1,22 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 
 import android.support.v4.app.DialogFragment
+import android.view.Gravity
+import android.widget.TextView
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImageResourceNamed, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWifiMomentLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.adapters.ThemeArrayAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditHourMomentLayoutTweaks._
@@ -67,7 +72,7 @@ trait EditMomentActionsImpl
       dtbChangeText(R.string.editMoment) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (iconLinkCollection <~ tivDefaultColor(iconColor)) ~
-      (iconInfo <~ tivDefaultColor(iconColor)) ~
+      (iconInfo <~ tivDefaultColor(iconColor) <~ On.click(showLinkCollectionMessage())) ~
       (iconWifi <~ tivDefaultColor(iconColor)) ~
       (iconHour <~ tivDefaultColor(iconColor)) ~
       (addWifiAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(editPresenter.addWifi()))) ~
@@ -95,8 +100,12 @@ trait EditMomentActionsImpl
   }
 
   override def loadHours(moment: Moment): Ui[Any] = {
-    val views = moment.timeslot.zipWithIndex map {
-      case (slot, index) => (w[EditHourMomentLayout] <~ ehmPopulate(slot, index)).get
+    val views = if (moment.timeslot.nonEmpty) {
+      moment.timeslot.zipWithIndex map {
+        case (slot, index) => (w[EditHourMomentLayout] <~ ehmPopulate(slot, index)).get
+      }
+    } else {
+      Seq(createMessage(R.string.addHoursToEditMoment))
     }
     hourContent <~ vgRemoveAllViews <~ vgAddViews(views)
   }
@@ -107,13 +116,25 @@ trait EditMomentActionsImpl
   }
 
   override def loadWifis(moment: Moment): Ui[Any] = {
-    val views = moment.wifi.zipWithIndex map {
-      case (wifi, index) => (w[EditWifiMomentLayout] <~ ewmPopulate(wifi, index)).get
+    val views = if (moment.wifi.nonEmpty) {
+      moment.wifi.zipWithIndex map {
+        case (wifi, index) => (w[EditWifiMomentLayout] <~ ewmPopulate(wifi, index)).get
+      }
+    } else {
+      Seq(createMessage(R.string.addWifiToEditMoment))
     }
     wifiContent <~ vgRemoveAllViews <~ vgAddViews(views)
   }
 
   override def showFieldErrorMessage(): Ui[Any] = uiShortToast(R.string.contactUsError)
+
+  private[this] def showLinkCollectionMessage() = Ui {
+    val dialog = new AlertDialogFragment(
+      message = R.string.linkCollectionMessage,
+      showCancelButton = false
+    )
+    dialog.show(getFragmentManager, tagDialog)
+  }
 
   private[this] def loadCategories(moment: Moment, collections: Seq[Collection]): Ui[Any] = {
     val collectionIds = 0 +: (collections map (_.id))
@@ -135,6 +156,18 @@ trait EditMomentActionsImpl
     ft.addToBackStack(javaNull)
     dialog.setTargetFragment(this, requestCode)
     dialog.show(ft, tagDialog)
+  }
+
+  private[this] def createMessage(res: Int) = {
+    val textColor = theme.get(DrawerTextColor).alpha(.4f)
+    val padding = resGetDimensionPixelSize(R.dimen.padding_large)
+    (w[TextView] <~
+      vMatchWidth <~
+      vPaddings(padding) <~
+      tvGravity(Gravity.CENTER_HORIZONTAL) <~
+      tvText(res) <~
+      tvSizeResource(R.dimen.text_default) <~
+      tvColor(textColor)).get
   }
 
 }

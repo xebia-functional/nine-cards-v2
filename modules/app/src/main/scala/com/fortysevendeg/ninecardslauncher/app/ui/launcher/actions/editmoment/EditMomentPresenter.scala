@@ -35,7 +35,11 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
 
   def momentNoFound(): Unit = actions.momentNoFound().run
 
-  def setCollectionId(collectionId: Option[Int]): Unit = statuses = statuses.setCollectionId(collectionId)
+  def setCollectionId(collectionId: Option[Int]): Unit =
+    statuses = statuses.setCollectionId(collectionId match {
+      case Some(0) => None
+      case c => c
+    })
 
   def swapDay(position: Int, day: Int): Unit = {
     statuses = statuses.swapDay(position, day)
