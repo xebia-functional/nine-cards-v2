@@ -346,24 +346,20 @@
     <string name="appDrawerPrefTitle">Cajón de Aplicaciones</string>
     <string name="appDrawerPrefSummary">Resumen de Cajón de Aplicaciones</string>
 
-    <string name="defaultWindowTitle">Apertura de Ventana por defecto</string>
-    <string name="defaultWindowSummary">Resumen de Apertura de Ventana por defecto</string>
+    <string name="appDrawerLongPressTitle">Acción en Long-press</string>
+    <string name="appDrawerLongPressSummary">Acción actual: %s</string>
 
-    <string name="defaultWindowApps">Aplicaciones</string>
-    <string name="defaultWindowContacts">Contactos</string>
+    <string name="appDrawerOpenKeyboard">Abrir teclado</string>
+    <string name="appDrawerOpenContacts">Abrir contactos</string>
 
-    <string name="letterAnimationTitle">Animación de la Letra</string>
-    <string name="letterAnimationSummary">Animaciones para mostrar la letra seleccionada</string>
+    <string name="appDrawerOpenAnimationTitle">Animación</string>
+    <string name="appDrawerOpenAnimationSummary">Actual animación: %s</string>
 
-    <string name="letterAnimations1">TBD 1</string>
-    <string name="letterAnimations2">TBD 2</string>
-    <string name="letterAnimations3">TBD 3</string>
+    <string name="appDrawerOpenAnimationReveal">Aparición en círculo</string>
+    <string name="appDrawerOpenAnimationFade">Fade</string>
 
-    <string name="windowIconTitle">Icono de ventana</string>
-    <string name="windowIconSummary">Icono para acceder a la ventana</string>
-
-    <string name="windowIconsClassic">Clásico</string>
-    <string name="windowIconsNineCards">9Cards</string>
+    <string name="appDrawerFistTabContactTitle">Contactos Favoritos al entrar</string>
+    <string name="appDrawerFistTabContactSummary">Los Contacts Favorites aparecerán al entrar en el área de contactos</string>
 
     <!-- Sizes Preferences -->
 

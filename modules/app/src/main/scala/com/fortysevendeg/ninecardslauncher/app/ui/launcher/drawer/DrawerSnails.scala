@@ -3,46 +3,42 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.annotation.TargetApi
 import android.os.Build
-import android.support.v7.widget.RecyclerView
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.SnailsUtils
+import com.fortysevendeg.ninecardslauncher.app.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
 
 object DrawerSnails {
 
-  def revealInAppDrawer(source: View)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def openAppDrawer(animation: AppDrawerAnimationValue, source: View)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
-      Lollipop.ifSupportedThen {
-        reveal(source, view)(animPromise.trySuccess(()))
-      } getOrElse {
-        fadeIn(view)(animPromise.trySuccess(()))
+      (Lollipop.ifSupportedThen(), animation) match {
+        case (Some(_), AppDrawerAnimationCircle) => reveal(source, view)(animPromise.trySuccess(()))
+        case _ => fadeIn(view)(animPromise.trySuccess(()))
       }
 
       animPromise.future
   }
 
-  def revealOutAppDrawer(source: View)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
+  def closeAppDrawer(animation: AppDrawerAnimationValue, source: View)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
-      Lollipop.ifSupportedThen {
-        reveal(source, view, in = false)(animPromise.trySuccess(()))
-      } getOrElse {
-        fadeOut(view)(animPromise.trySuccess(()))
+      (Lollipop.ifSupportedThen(), animation) match {
+        case (Some(_), AppDrawerAnimationCircle) => reveal(source, view, in = false)(animPromise.trySuccess(()))
+        case _ => fadeOut(view)(animPromise.trySuccess(()))
       }
 
       animPromise.future

@@ -150,6 +150,7 @@ case class DrawerRecyclerViewListener(
 
 case class DrawerRecyclerStatuses(
   contentView: ContentView = AppsView,
+  lastTimeContentViewWasChanged: Boolean = false,
   disableClickItems: Boolean = false,
   displacement: Float = 0,
   swap: Boolean = false) {

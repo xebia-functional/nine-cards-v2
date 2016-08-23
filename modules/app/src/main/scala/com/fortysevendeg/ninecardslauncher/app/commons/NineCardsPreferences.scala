@@ -53,6 +53,8 @@ sealed trait NineCardsPreferenceValue[T]
   def readValue(pref: NineCardsPreferencesValue): T
 }
 
+// Moments Preferences
+
 case object ShowClockMoment
   extends NineCardsPreferenceValue[Boolean] {
   override val name: String = showClockMoment
@@ -60,6 +62,28 @@ case object ShowClockMoment
 
   override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
 }
+
+// App Drawer Preferences
+
+case object AppDrawerLongPressAction
+  extends NineCardsPreferenceValue[AppDrawerLongPressActionValue] {
+  override val name: String = appDrawerLongPressAction
+  override val default: AppDrawerLongPressActionValue = AppDrawerLongPressActionOpenKeyboard
+
+  override def readValue(pref: NineCardsPreferencesValue): AppDrawerLongPressActionValue =
+    AppDrawerLongPressActionValue(pref.getString(name, default.name))
+}
+
+case object AppDrawerAnimation
+  extends NineCardsPreferenceValue[AppDrawerAnimationValue] {
+  override val name: String = appDrawerAnimation
+  override val default: AppDrawerAnimationValue = AppDrawerAnimationCircle
+
+  override def readValue(pref: NineCardsPreferencesValue): AppDrawerAnimationValue =
+    AppDrawerAnimationValue(pref.getString(name, default.name))
+}
+
+// Theme Preferences
 
 case object ThemeFile
   extends NineCardsPreferenceValue[String] {
@@ -83,6 +107,7 @@ case object ThemeFile
       case _ => default
     }
 }
+// Commons
 
 class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
 
@@ -114,8 +139,15 @@ object PreferencesKeys {
 
 // Values for all preference keys used for values
 object PreferencesValuesKeys {
+  // Moment keys
   val showClockMoment = "showClockMoment"
+
+  // Theme Keys
   val themeFile = "theme"
+
+  // AppDrawer Keys
+  val appDrawerLongPressAction = "appDrawerLongPressAction"
+  val appDrawerAnimation = "appDrawerAnimation"
 }
 
 
