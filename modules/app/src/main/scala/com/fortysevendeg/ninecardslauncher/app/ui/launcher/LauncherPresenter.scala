@@ -34,7 +34,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentExceptionImpl}
+import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentException}
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
@@ -654,7 +654,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def getWidgetInfoById(appWidgetId: Int): ServiceDef2[(ComponentName, Cell), MomentException] =
       actions.getWidgetInfoById(appWidgetId) match {
         case Some(info) => Service(Task(Answer[(ComponentName, Cell), MomentException](info)))
-        case _ => Service(Task(Errata(MomentExceptionImpl("Info widget not found"))))
+        case _ => Service(Task(Errata(MomentException("Info widget not found"))))
       }
 
     def createWidget(appWidgetId: Int, nineCardsMoment: NineCardsMoment) = for {

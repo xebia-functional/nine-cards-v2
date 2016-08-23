@@ -1,15 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, UnformedApp, UnformedContact}
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCollectionRequest, CollectionException, CollectionProcess, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions}
 
 import scalaz.concurrent.Task
 
@@ -36,9 +38,9 @@ trait CollectionsProcessImpl extends CollectionProcess {
       collections <- persistenceServices.addCollections(collectionsRequest)
     } yield collections map toCollection).resolve[CollectionException]
 
-  def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = Service {
+  def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = CatsService {
     Task {
-      CatchAll[CollectionException] {
+      XorCatchAll[CollectionException] {
         createPrivateCollections(apps, appsCategories, minAppsGenerateCollections)
       }
     }
@@ -59,7 +61,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def deleteCollection(collectionId: Int) =
     (for {
-      Some(collection) <- findCollectionById(collectionId)
+      collection <- findCollectionById(collectionId).resolveOption()
       _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
       _ <- persistenceServices.deleteCardsByCollection(collectionId)
       collectionList <- getCollections
@@ -74,8 +76,6 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def reorderCollection(position: Int, newPosition: Int) =
     (for {
-      Some(collection) <- persistenceServices.fetchCollectionByPosition(toFetchCollectionByPositionRequest(position))
-      if position != newPosition
       collectionList <- getCollections
       (from, to) = if (position > newPosition) (newPosition, position) else (position, newPosition)
       updatedCollections = collectionList.reorderRange(position, newPosition).zip(from to to) map {
@@ -86,14 +86,14 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest) =
     (for {
-      Some(collection) <- findCollectionById(collectionId)
+      collection <- findCollectionById(collectionId).resolveOption()
       updatedCollection = toUpdatedCollection(toCollection(collection), editCollectionRequest)
       _ <- updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 
   def updateSharedCollection(collectionId: Int, sharedCollectionId: String) =
     (for {
-      Some(collection) <- findCollectionById(collectionId)
+      collection <- findCollectionById(collectionId).resolveOption()
       updatedCollection = toUpdatedSharedCollection(toCollection(collection), sharedCollectionId)
       _ <- updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]

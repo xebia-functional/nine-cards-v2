@@ -1,32 +1,29 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
-import scalaz.Scalaz._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
 
-trait CollectionException
-  extends RuntimeException {
-
-  val message: String
-
-  val cause: Option[Throwable]
-
-}
-
-case class CollectionExceptionImpl(message: String, cause : Option[Throwable] = None)
+case class CollectionException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)
-  with CollectionException {
+    with NineCardException {
   cause map initCause
 }
 
-case class CardException(message: String, cause : Option[Throwable] = None) extends RuntimeException(message) {
+case class CardException(message: String, cause: Option[Throwable] = None)
+  extends RuntimeException(message)
+    with NineCardException {
   cause map initCause
 }
 
-case class ContactException(message: String, cause : Option[Throwable] = None) extends RuntimeException(message) {
+case class ContactException(message: String, cause: Option[Throwable] = None)
+  extends RuntimeException(message)
+    with NineCardException {
   cause map initCause
 }
 
 trait ImplicitsCollectionException {
-  implicit def collectionException = (t: Throwable) => CollectionExceptionImpl(t.getMessage, t.some)
-  implicit def cardException = (t: Throwable) => CardException(t.getMessage, t.some)
-  implicit def contactException = (t: Throwable) => ContactException(t.getMessage, t.some)
+  implicit def collectionException = (t: Throwable) => CollectionException(t.getMessage, Option(t))
+
+  implicit def cardException = (t: Throwable) => CardException(t.getMessage, Option(t))
+
+  implicit def contactException = (t: Throwable) => ContactException(t.getMessage, Option(t))
 }

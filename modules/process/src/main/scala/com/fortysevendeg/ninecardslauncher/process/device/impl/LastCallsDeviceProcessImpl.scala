@@ -1,14 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.{CatchAll, _}
+import cats.data.Xor
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact}
 import com.fortysevendeg.ninecardslauncher.process.device.{CallException, DeviceConversions, DeviceProcess, ImplicitsDeviceException}
 import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ImplicitsContactsServiceExceptions}
-import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
@@ -26,22 +27,22 @@ trait LastCallsDeviceProcessImpl extends DeviceProcess {
       combinedContacts <- getCombinedContacts(simpleGroupCalls)
     } yield fillCombinedContacts(combinedContacts)).resolve[CallException]
 
-  private[this] def simpleGroupCalls(lastCalls: Seq[Call]): ServiceDef2[Seq[LastCallsContact], CallException] = Service {
+  private[this] def simpleGroupCalls(lastCalls: Seq[Call]): CatsService[Seq[LastCallsContact]] = CatsService {
     Task {
-      CatchAll[CallException] {
+      XorCatchAll[CallException] {
         (lastCalls groupBy (_.number) map { case (k, v) => toSimpleLastCallsContact(k, v) }).toSeq
       }
     }
   }
 
   private[this] def getCombinedContacts(items: Seq[LastCallsContact]):
-  ServiceDef2[Seq[(LastCallsContact, Option[Contact])], ContactsServiceException] = Service {
-    val tasks = items map (item => combineContact(item).run)
-    Task.gatherUnordered(tasks) map (list => CatchAll[ContactsServiceException](list.collect { case Answer(combinedContact) => combinedContact }))
+  CatsService[Seq[(LastCallsContact, Option[Contact])]] = CatsService {
+    val tasks = items map (item => combineContact(item).value)
+    Task.gatherUnordered(tasks) map (list => XorCatchAll[ContactsServiceException](list.collect { case Xor.Right(combinedContact) => combinedContact }))
   }
 
   private[this] def combineContact(lastCallsContact: LastCallsContact):
-  ServiceDef2[(LastCallsContact, Option[Contact]), ContactsServiceException] =
+  CatsService[(LastCallsContact, Option[Contact])] =
     for {
       contact <- contactsServices.fetchContactByPhoneNumber(lastCallsContact.number)
     } yield (lastCallsContact, contact map toContact)

@@ -1257,7 +1257,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
           }
         }
       }
@@ -1267,7 +1267,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
           }
         }
       }
@@ -1277,7 +1277,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
           }
         }
       }
@@ -1299,7 +1299,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.createOrUpdateDockApp(name1, AppDockType, intent, imagePath1, 0).run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
           }
         }
       }
@@ -1349,7 +1349,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getDockApps.run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
           }
         }
       }
@@ -1371,7 +1371,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.deleteAllDockApps().run.run
         result must beLike {
           case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
           }
         }
       }
