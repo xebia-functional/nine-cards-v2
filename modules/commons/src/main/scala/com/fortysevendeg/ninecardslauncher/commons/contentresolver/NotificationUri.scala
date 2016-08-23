@@ -8,18 +8,18 @@ object NotificationUri {
 
   val baseUriNotificationString = s"$contentPrefix$authorityPart"
 
-  val appUriNotificationString = s"$baseUriNotificationString/app"
+  val appUriPath = "app"
 
-  val cardUriNotificationString = s"$baseUriNotificationString/card"
+  val cardUriPath = "card"
 
-  val collectionUriNotificationString = s"$baseUriNotificationString/collection"
+  val collectionUriPath = "collection"
 
-  val dockAppUriNotificationString = s"$baseUriNotificationString/dockApp"
+  val dockAppUriPath = "dockApp"
 
-  val momentUriNotificationString = s"$baseUriNotificationString/moment"
+  val momentUriPath = "moment"
 
-  val userUriNotificationString = s"$baseUriNotificationString/user"
+  val userUriPath = "user"
 
-  val widgetUriNotificationString = s"$baseUriNotificationString/widget"
+  val widgetUriPath = "widget"
 
 }

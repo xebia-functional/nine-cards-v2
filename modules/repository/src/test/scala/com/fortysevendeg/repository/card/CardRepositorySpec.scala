@@ -32,6 +32,15 @@ trait CardRepositorySpecification
     lazy val cardRepository = new CardRepository(contentResolverWrapper, uriCreator)
 
     lazy val mockUri = mock[Uri]
+
+    lazy val mockUriBuilt = mock[Uri]
+
+    lazy val mockUriBuilder = mock[Uri.Builder]
+
+    uriCreator.parse(any) returns mockUri
+
+    uriCreator.withAppendedPath(any, any) returns mockUriBuilt
+
   }
 
   trait ValidCardRepositoryResponses
@@ -39,22 +48,11 @@ trait CardRepositorySpecification
 
     self: CardRepositoryScope =>
 
-    uriCreator.parse(any) returns mockUri
+    contentResolverWrapper.insert(any, any, any) returns testCardId
 
-    contentResolverWrapper.insert(
-      uri = mockUri,
-      values = createInsertCardValues,
-      notificationUri = Some(mockUri)) returns testCardId
+    contentResolverWrapper.delete(any, any, any, any) returns 1
 
-    contentResolverWrapper.delete(
-      uri = mockUri,
-      where = "",
-      notificationUri = Some(mockUri)) returns 1
-
-    contentResolverWrapper.deleteById(
-      uri = mockUri,
-      id = testCardId,
-      notificationUri = Some(mockUri)) returns 1
+    contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -88,7 +86,7 @@ trait CardRepositorySpecification
       uri = mockUri,
       id = card.id,
       values = createUpdateCardValues,
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
   }
 
   trait ValidAllCardsRepositoryResponses
@@ -109,22 +107,11 @@ trait CardRepositorySpecification
 
     val contentResolverException = new RuntimeException("Irrelevant message")
 
-    uriCreator.parse(any) returns mockUri
+    contentResolverWrapper.insert(any, any, any) throws contentResolverException
 
-    contentResolverWrapper.insert(
-      uri = mockUri,
-      values = createInsertCardValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
+    contentResolverWrapper.delete(any, any, any, any) throws contentResolverException
 
-    contentResolverWrapper.delete(
-      uri = mockUri,
-      where = "",
-      notificationUri = Some(mockUri)) throws contentResolverException
-
-    contentResolverWrapper.deleteById(
-      uri = mockUri,
-      id = testCardId,
-      notificationUri = Some(mockUri)) throws contentResolverException
+    contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -144,7 +131,7 @@ trait CardRepositorySpecification
       uri = mockUri,
       id = card.id,
       values = createUpdateCardValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
   }
 
   trait ErrorAllCardsRepositoryResponses
@@ -270,7 +257,7 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ValidCardRepositoryResponses {
 
-          val result = cardRepository.deleteCard(card = card).run.run
+          val result = cardRepository.deleteCard(testCollectionId, card = card).run.run
 
           result must beLike {
             case Answer(deleted) =>
@@ -282,7 +269,7 @@ class CardRepositorySpec
         new CardRepositoryScope
           with ErrorCardRepositoryResponses {
 
-          val result = cardRepository.deleteCard(card = card).run.run
+          val result = cardRepository.deleteCard(testCollectionId, card = card).run.run
 
           result must beLike {
             case Errata(e) => e.headOption must beSome.which {

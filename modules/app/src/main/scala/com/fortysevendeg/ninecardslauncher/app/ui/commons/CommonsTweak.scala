@@ -178,3 +178,13 @@ object ExtraTweaks {
   def tvHintColor(color: Int): Tweak[TextView] = Tweak[TextView](_.setHintTextColor(color))
 
 }
+
+object CommonsResourcesExtras {
+
+  def resGetQuantityString(resourceId: Int, quantity: Int)(implicit c: ContextWrapper): String =
+    c.bestAvailable.getResources.getQuantityString(resourceId, quantity)
+
+  def resGetQuantityString(resourceId: Int, quantity: Int, formatArgs: AnyRef*)(implicit c: ContextWrapper): String =
+    c.bestAvailable.getResources.getQuantityString(resourceId, quantity, formatArgs: _*)
+
+}

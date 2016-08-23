@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
 import android.accounts.Account
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserPermissions
 
 trait WizardPresenterData {
 
@@ -18,8 +17,6 @@ trait WizardPresenterData {
   val token = "fake-token"
 
   val permissions = Seq.empty
-
-  val userPermission = UserPermissions(token, permissions)
 
   val nameDevice = "Nexus 47"
 

@@ -3,10 +3,11 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api
 import android.os.Bundle
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.{GoogleApiClient, Scope}
 import com.google.android.gms.drive._
 import com.google.android.gms.plus.Plus
 import macroid.{ActivityContextWrapper, ContextWrapper}
@@ -44,6 +45,7 @@ trait GooglePlusApiClientProvider {
   def createGooglePlusClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient = {
     val gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
       .requestScopes(Plus.SCOPE_PLUS_PROFILE)
+      .requestIdToken(contextWrapper.bestAvailable.getString(R.string.default_web_client_id))
       .setAccountName(account)
       .build()
 

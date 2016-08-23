@@ -499,6 +499,18 @@
     <string name="sharedContentErrorNotSupported">Shared content not supported</string>
     <string name="sharedContentErrorUnexpected">Unexpected error</string>
 
+    <string name="sharedCollectionChangedNotificationTitle">Collection updated!</string>
+    <string name="sharedCollectionChangedNotificationMsg">The collection \'%s\' has been updated</string>
+    <string name="sharedCollectionChangedNotificationUnsubscribe">Unsubscribe</string>
+    <string name="sharedCollectionChangedNotificationSynchronize">Synchronize</string>
+    <string name="sharedCollectionUnsubscribed">Collection successfully unsubscribed</string>
+    <string name="sharedCollectionUpdated">Collection successfully updated</string>
+
+    <plurals name="sharedCollectionChangedNotificationBigMsg">
+        <item quantity="one">The collection \'%s\' has been updated with a new application. Click here to add it to your collection.</item>
+        <item quantity="other">The collection \'%s\' has been updated with new applications. Click here to add them to your collection.</item>
+    </plurals>
+
     <!-- Edit Widgets -->
     <string name="editingWidgets">Editing widgets</string>
     <string name="movingWidgets">Moving widgets</string>

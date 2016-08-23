@@ -96,12 +96,12 @@ trait PublishCollectionActionsImpl
       (endLayout <~ vInvisible) ~
       (paginationPanel <~ reloadPagers(currentPage = 2))
 
-  override def goToPublishCollectionEnd(shareLink: String): Ui[Any] =
+  override def goToPublishCollectionEnd(sharedCollectionId: String): Ui[Any] =
     (startLayout <~ vInvisible) ~
       (informationLayout <~ vInvisible) ~
       (publishingLayout <~ applyFadeOut()) ~
       (endLayout <~ applyFadeIn()) ~
-      (endButton <~ On.click(Ui(launchShare(shareLink)) ~ Ui(dismiss())))
+      (endButton <~ On.click(Ui(launchShareCollection(sharedCollectionId)) ~ Ui(dismiss())))
 
   override def showMessageCollectionError: Ui[Any] = showMessage(R.string.collectionError)
 

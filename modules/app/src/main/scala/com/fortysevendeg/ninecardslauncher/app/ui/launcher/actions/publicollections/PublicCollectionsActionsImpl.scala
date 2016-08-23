@@ -184,7 +184,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
       (addCollection <~ On.click(Ui(presenter.saveSharedCollection(collection)))) ~
-      (shareCollection <~ On.click(Ui(presenter.launchShare(collection.shareLink))))
+      (shareCollection <~ On.click(Ui(presenter.launchShareCollection(collection.sharedCollectionId))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

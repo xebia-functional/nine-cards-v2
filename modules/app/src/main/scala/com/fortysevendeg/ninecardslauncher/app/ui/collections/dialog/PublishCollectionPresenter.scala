@@ -43,7 +43,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
     } yield {
       Task.fork(createPublishedCollection(name, description, category).run).resolveAsyncUi(
         onPreTask = () => actions.goToPublishCollectionPublishing(),
-        onResult = (shareLink: String) => actions.goToPublishCollectionEnd(shareLink),
+        onResult = (sharedCollectionId: String) => actions.goToPublishCollectionEnd(sharedCollectionId),
         onException = (ex: Throwable) => {
           actions.showMessagePublishingError ~
             actions.goBackToPublishCollectionInformation(name, description, category)
@@ -56,15 +56,15 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
       collection <- getCollection
       sharedCollection = CreateSharedCollection(
         description = description,
-        author = user.name getOrElse (user.email getOrElse resGetString(R.string.defaultUser)),
+        author = user.userProfile.name getOrElse (user.email getOrElse resGetString(R.string.defaultUser)),
         name = name,
         packages = collection.cards flatMap (_.packageName),
         category = category,
         icon = collection.icon,
         community = false)
-      createdCollection <- di.sharedCollectionsProcess.createSharedCollection(sharedCollection)
-      _ <- di.collectionProcess.updateSharedCollection(collection.id, createdCollection.sharedCollectionId)
-    } yield createdCollection.getUrlSharedCollection
+      sharedCollectionId <- di.sharedCollectionsProcess.createSharedCollection(sharedCollection)
+      _ <- di.collectionProcess.updateSharedCollection(collection.id, sharedCollectionId)
+    } yield sharedCollectionId
 
   private[this] def getCollection: ServiceDef2[Collection, SharedCollectionsExceptions] = statuses.collection map { col =>
     Service(Task(Answer[Collection, SharedCollectionsExceptions](col)))
@@ -85,7 +85,7 @@ trait PublishCollectionActions {
 
   def goToPublishCollectionPublishing(): Ui[Any]
 
-  def goToPublishCollectionEnd(shareLink: String): Ui[Any]
+  def goToPublishCollectionEnd(sharedCollectionId: String): Ui[Any]
 
   def showMessageCollectionError: Ui[Any]
 
