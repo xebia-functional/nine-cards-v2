@@ -1,32 +1,35 @@
 package com.fortysevendeg.ninecardslauncher.process.utils
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.services.api.{ImplicitsApiServiceExceptions, ApiServiceException, RequestConfig}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
-import rapture.core.{Answer, Result}
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ImplicitsApiServiceExceptions, RequestConfig}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, FindUserByIdRequest, PersistenceServices}
 
 import scalaz.concurrent.Task
 
 class ApiUtils(persistenceServices: PersistenceServices)
   extends ImplicitsApiServiceExceptions {
 
-  def getRequestConfig(implicit context: ContextSupport): ServiceDef2[RequestConfig, ApiServiceException] = {
+  def getRequestConfig(implicit context: ContextSupport): CatsService[RequestConfig] = {
+
+    def getUser = context.getActiveUserId match {
+      case Some(id) => persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
+      case _ => CatsService(Task(Xor.left(PersistenceServiceException("Missing user id"))))
+    }
+
+    def getSessionToken(sessionToken: Option[String]) = sessionToken match {
+      case Some(st) => CatsService(Task(Xor.right(st)))
+      case _ => CatsService(Task(Xor.left(PersistenceServiceException("No session token available"))))
+    }
+
     (for {
-      (token, marketToken) <- context.getActiveUserId map getTokens getOrElse Service(Task(Result.errata(ApiServiceException("Missing user id"))))
+      user <- getUser
+      sessionToken <- getSessionToken(user.sessionToken)
       androidId <- persistenceServices.getAndroidId
-    } yield RequestConfig(deviceId = androidId, token = token, marketToken = marketToken)).resolve[ApiServiceException]
+    } yield RequestConfig(deviceId = androidId, token = sessionToken, marketToken = user.marketToken)).resolve[ApiServiceException]
   }
 
-  private[this] def getTokens(id: Int)(implicit context: ContextSupport): ServiceDef2[(String, Option[String]), ApiServiceException] = Service {
-    persistenceServices.findUserById(FindUserByIdRequest(id)).run map {
-      case Answer(Some(User(_, _, _, Some(sessionToken), _, marketToken, _, _, _, _, _))) =>
-        //TODO refactor to named params once available in Scala
-        Result.answer[(String, Option[String]), ApiServiceException]((sessionToken, marketToken))
-      case _ => Result.errata(ApiServiceException("Session token doesn't exists"))
-    }
-  }
 }

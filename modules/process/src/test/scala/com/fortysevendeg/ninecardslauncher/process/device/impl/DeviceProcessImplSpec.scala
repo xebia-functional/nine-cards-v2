@@ -5,9 +5,10 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.DisplayMetrics
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppDockType
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
@@ -23,7 +24,6 @@ import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata, Result}
 
 import scalaz.concurrent.Task
 
@@ -68,143 +68,143 @@ trait DeviceProcessSpecification
     val mockAppsServices = mock[AppsServices]
 
     mockAppsServices.getInstalledApplications(contextSupport) returns
-      Service(Task(Result.answer(applications)))
+      CatsService(Task(Xor.right(applications)))
 
     mockAppsServices.getApplication(packageName1)(contextSupport) returns
-      Service(Task(Result.answer(applications.head)))
+      CatsService(Task(Xor.right(applications.head)))
 
     mockAppsServices.getDefaultApps(contextSupport) returns
-      Service(Task(Result.answer(applications)))
+      CatsService(Task(Xor.right(applications)))
 
     val mockApiServices = mock[ApiServices]
 
     mockApiServices.googlePlayPackages(any)(any) returns
-      Service(Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
+      CatsService(Task(Xor.right(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
 
     mockApiServices.googlePlayPackage(any)(any) returns
-      Service(Task(Result.answer(GooglePlayPackageResponse(statusCodeOk, googlePlayPackage.app))))
+      CatsService(Task(Xor.right(GooglePlayPackageResponse(statusCodeOk, googlePlayPackage.app))))
 
     val mockShortcutsServices = mock[ShortcutsServices]
 
     mockShortcutsServices.getShortcuts(contextSupport) returns
-      Service(Task(Result.answer(shortcuts)))
+      CatsService(Task(Xor.right(shortcuts)))
 
     val mockPersistenceServices = mock[PersistenceServices]
 
     mockPersistenceServices.deleteAllApps() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllWidgets() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllCollections() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllCards() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllDockApps() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.fetchApps(any, any) returns
-      Service(Task(Result.answer(appsPersistence)))
+      CatsService(Task(Xor.right(appsPersistence)))
 
     mockPersistenceServices.fetchIterableApps(any, any) returns
-      Service(Task(Result.answer(iterableCursorApps)))
+      CatsService(Task(Xor.right(iterableCursorApps)))
 
     mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns
-      Service(Task(Result.answer(iterableCursorApps)))
+      CatsService(Task(Xor.right(iterableCursorApps)))
 
     mockPersistenceServices.fetchAlphabeticalAppsCounter returns
-      Service(Task(Result.answer(appsCounters)))
+      CatsService(Task(Xor.right(appsCounters)))
 
     mockPersistenceServices.fetchCategorizedAppsCounter returns
-      Service(Task(Result.answer(categoryCounters)))
+      CatsService(Task(Xor.right(categoryCounters)))
 
     mockPersistenceServices.fetchInstallationDateAppsCounter returns
-      Service(Task(Result.answer(installationAppsCounters)))
+      CatsService(Task(Xor.right(installationAppsCounters)))
 
     mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns
-      Service(Task(Result.answer(iterableCursorApps)))
+      CatsService(Task(Xor.right(iterableCursorApps)))
 
     mockPersistenceServices.addApp(any[AddAppRequest]) returns(
-      Service(Task(Result.answer(appsPersistence.head))),
-      Service(Task(Result.answer(appsPersistence(1)))),
-      Service(Task(Result.answer(appsPersistence(2)))))
+      CatsService(Task(Xor.right(appsPersistence.head))),
+      CatsService(Task(Xor.right(appsPersistence(1)))),
+      CatsService(Task(Xor.right(appsPersistence(2)))))
 
     mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns
-      Service(Task(Result.answer(appsPersistence.head)))
+      CatsService(Task(Xor.right(appsPersistence.head)))
 
     mockPersistenceServices.deleteAppByPackage(any) returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.findAppByPackage(any) returns
-      Service(Task(Result.answer(appsPersistence.headOption)))
+      CatsService(Task(Xor.right(appsPersistence.headOption)))
 
     mockPersistenceServices.fetchAppByPackages(any) returns
-      Service(Task(Result.answer(appsPersistence)))
+      CatsService(Task(Xor.right(appsPersistence)))
 
     mockPersistenceServices.updateApp(any) returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     val mockContactsServices = mock[ContactsServices]
 
     mockContactsServices.getContacts returns
-      Service(Task(Result.answer(contacts)))
+      CatsService(Task(Xor.right(contacts)))
 
     mockContactsServices.getFavoriteContacts returns
-      Service(Task(Result.answer(contacts)))
+      CatsService(Task(Xor.right(contacts)))
 
     mockContactsServices.getContactsWithPhone returns
-      Service(Task(Result.answer(contacts)))
+      CatsService(Task(Xor.right(contacts)))
 
     mockContactsServices.getIterableContacts returns
-      Service(Task(Result.answer(iterableCursorContact)))
+      CatsService(Task(Xor.right(iterableCursorContact)))
 
     mockContactsServices.getAlphabeticalCounterContacts returns
-      Service(Task(Result.answer(contactsCounters)))
+      CatsService(Task(Xor.right(contactsCounters)))
 
     mockContactsServices.getIterableFavoriteContacts returns
-      Service(Task(Result.answer(iterableCursorContact)))
+      CatsService(Task(Xor.right(iterableCursorContact)))
 
     mockContactsServices.getIterableContactsWithPhone returns
-      Service(Task(Result.answer(iterableCursorContact)))
+      CatsService(Task(Xor.right(iterableCursorContact)))
 
     mockContactsServices.getIterableContactsByKeyword(keyword) returns
-      Service(Task(Result.answer(iterableCursorContact)))
+      CatsService(Task(Xor.right(iterableCursorContact)))
 
     mockContactsServices.findContactByLookupKey("lookupKey 1") returns
-      Service(Task(Result.answer(contacts.head)))
+      CatsService(Task(Xor.right(contacts.head)))
     mockContactsServices.findContactByLookupKey("lookupKey 2") returns
-      Service(Task(Result.answer(contacts(1))))
+      CatsService(Task(Xor.right(contacts(1))))
     mockContactsServices.findContactByLookupKey("lookupKey 3") returns
-      Service(Task(Result.answer(contacts(2))))
+      CatsService(Task(Xor.right(contacts(2))))
 
     val mockImageServices = mock[ImageServices]
 
     val mockWidgetsServices = mock[WidgetsServices]
 
     mockWidgetsServices.getWidgets(any) returns
-      Service(Task(Result.answer(widgetsServices)))
+      CatsService(Task(Xor.right(widgetsServices)))
 
     val mockCallsServices = mock[CallsServices]
 
     mockCallsServices.getLastCalls returns
-      Service(Task(Result.answer(callsServices)))
+      CatsService(Task(Xor.right(callsServices)))
 
     mockContactsServices.fetchContactByPhoneNumber(phoneNumber1) returns
-      Service(Task(Result.answer(Some(callsContacts(0)))))
+      CatsService(Task(Xor.right(Some(callsContacts(0)))))
 
     mockContactsServices.fetchContactByPhoneNumber(phoneNumber2) returns
-      Service(Task(Result.answer(Some(callsContacts(1)))))
+      CatsService(Task(Xor.right(Some(callsContacts(1)))))
 
     mockContactsServices.fetchContactByPhoneNumber(phoneNumber3) returns
-      Service(Task(Result.answer(Some(callsContacts(2)))))
+      CatsService(Task(Xor.right(Some(callsContacts(2)))))
 
     val mockWifiServices = mock[WifiServices]
 
     mockWifiServices.getConfiguredNetworks(contextSupport) returns
-      Service(Task(Result.answer(networks)))
+      CatsService(Task(Xor.right(networks)))
 
     val deviceProcess = new DeviceProcessImpl(
       mockAppsServices,
@@ -219,7 +219,7 @@ trait DeviceProcessSpecification
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
       apiUtils.getRequestConfig(contextSupport) returns
-        Service(Task(Result.answer(requestConfig)))
+        CatsService(Task(Xor.right(requestConfig)))
 
     }
 
@@ -228,16 +228,16 @@ trait DeviceProcessSpecification
   trait ErrorAppServicesProcessScope {
     self: DeviceProcessScope =>
 
-    mockAppsServices.getInstalledApplications(contextSupport) returns Service {
-      Task(Errata(appInstalledException))
+    mockAppsServices.getInstalledApplications(contextSupport) returns CatsService {
+      Task(Xor.left(appInstalledException))
     }
 
-    mockAppsServices.getApplication(packageName1)(contextSupport) returns Service {
-      Task(Errata(appInstalledException))
+    mockAppsServices.getApplication(packageName1)(contextSupport) returns CatsService {
+      Task(Xor.left(appInstalledException))
     }
 
-    mockAppsServices.getDefaultApps(contextSupport) returns Service {
-      Task(Errata(appInstalledException))
+    mockAppsServices.getDefaultApps(contextSupport) returns CatsService {
+      Task(Xor.left(appInstalledException))
     }
 
   }
@@ -245,12 +245,12 @@ trait DeviceProcessSpecification
   trait ErrorApiServicesProcessScope {
     self: DeviceProcessScope =>
 
-    mockApiServices.googlePlayPackages(any)(any) returns Service {
-      Task(Errata(apiServiceException))
+    mockApiServices.googlePlayPackages(any)(any) returns CatsService {
+      Task(Xor.left(apiServiceException))
     }
 
-    mockApiServices.googlePlayPackage(any)(any) returns Service {
-      Task(Errata(apiServiceException))
+    mockApiServices.googlePlayPackage(any)(any) returns CatsService {
+      Task(Xor.left(apiServiceException))
     }
 
   }
@@ -258,8 +258,8 @@ trait DeviceProcessSpecification
   trait ErrorPersistenceServicesDeleteAppsProcessScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.deleteAllApps returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.deleteAllApps returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
   }
 
@@ -267,10 +267,10 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
-    mockPersistenceServices.deleteAllWidgets() returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.deleteAllWidgets() returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
   }
@@ -279,13 +279,13 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllWidgets() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
-    mockPersistenceServices.deleteAllCollections returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.deleteAllCollections returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
   }
@@ -294,16 +294,16 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllWidgets() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllCollections returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
-    mockPersistenceServices.deleteAllCards returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.deleteAllCards returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
   }
@@ -312,71 +312,71 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllWidgets() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllCollections() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllCards() returns
-      Service(Task(Result.answer(items)))
+      CatsService(Task(Xor.right(items)))
 
-    mockPersistenceServices.deleteAllDockApps() returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.deleteAllDockApps() returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
   }
 
   trait ErrorPersistenceServicesProcessScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.fetchApps(any, any) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.fetchApps(any, any) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchIterableApps(any, any) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.fetchIterableApps(any, any) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchAlphabeticalAppsCounter returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.fetchAlphabeticalAppsCounter returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchCategorizedAppsCounter returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.fetchCategorizedAppsCounter returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchInstallationDateAppsCounter returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.fetchInstallationDateAppsCounter returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.addApp(any[AddAppRequest]) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.addApp(any[AddAppRequest]) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.deleteAppByPackage(any) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.deleteAppByPackage(any) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.findAppByPackage(any) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.findAppByPackage(any) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.updateApp(any) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.updateApp(any) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
   }
@@ -384,8 +384,8 @@ trait DeviceProcessSpecification
   trait ShortcutsErrorScope {
     self: DeviceProcessScope =>
 
-    mockShortcutsServices.getShortcuts(contextSupport) returns Service {
-      Task(Errata(shortcutServicesException))
+    mockShortcutsServices.getShortcuts(contextSupport) returns CatsService {
+      Task(Xor.left(shortcutServicesException))
     }
 
   }
@@ -393,8 +393,8 @@ trait DeviceProcessSpecification
   trait FavoriteContactsErrorScope {
     self: DeviceProcessScope =>
 
-    mockContactsServices.getFavoriteContacts returns Service {
-      Task(Errata(contactsServicesException))
+    mockContactsServices.getFavoriteContacts returns CatsService {
+      Task(Xor.left(contactsServicesException))
     }
 
   }
@@ -403,10 +403,10 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockContactsServices.getFavoriteContacts returns
-      Service(Task(Result.answer(contacts)))
+      CatsService(Task(Xor.right(contacts)))
 
-    mockContactsServices.findContactByLookupKey(any) returns Service {
-      Task(Errata(contactsServicesException))
+    mockContactsServices.findContactByLookupKey(any) returns CatsService {
+      Task(Xor.left(contactsServicesException))
     }
 
   }
@@ -419,14 +419,14 @@ trait DeviceProcessSpecification
     val saveBitmapPath = SaveBitmapPath(nameShortcut, fileNameShortcut)
 
     mockImageServices.saveBitmap(saveBitmap)(contextSupport) returns
-      Service(Task(Result.answer(saveBitmapPath)))
+      CatsService(Task(Xor.right(saveBitmapPath)))
   }
 
   trait SaveShortcutErrorScope {
     self: DeviceProcessScope =>
 
-    mockImageServices.saveBitmap(any[SaveBitmap])(any) returns Service {
-      Task(Errata(fileServicesException))
+    mockImageServices.saveBitmap(any[SaveBitmap])(any) returns CatsService {
+      Task(Xor.left(fileServicesException))
     }
   }
 
@@ -434,42 +434,42 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockContactsServices.findContactByLookupKey(anyString) returns
-      Service(Task(Result.answer(contact)))
+      CatsService(Task(Xor.right(contact)))
   }
 
   trait ContactsErrorScope {
     self: DeviceProcessScope =>
 
-    mockContactsServices.getContacts returns Service {
-      Task(Errata(contactsServicesException))
+    mockContactsServices.getContacts returns CatsService {
+      Task(Xor.left(contactsServicesException))
     }
 
-    mockContactsServices.getIterableContacts returns Service {
-      Task(Errata(contactsServicesException))
+    mockContactsServices.getIterableContacts returns CatsService {
+      Task(Xor.left(contactsServicesException))
     }
 
-    mockContactsServices.findContactByLookupKey(anyString) returns Service {
-      Task(Errata(contactsServicesException))
+    mockContactsServices.findContactByLookupKey(anyString) returns CatsService {
+      Task(Xor.left(contactsServicesException))
     }
 
-    mockContactsServices.getIterableContactsByKeyword(keyword) returns Service {
-      Task(Errata(contactsServicesException))
+    mockContactsServices.getIterableContactsByKeyword(keyword) returns CatsService {
+      Task(Xor.left(contactsServicesException))
     }
   }
 
   trait WidgetsErrorScope {
     self: DeviceProcessScope =>
 
-    mockWidgetsServices.getWidgets(any) returns Service {
-      Task(Errata(widgetsServicesException))
+    mockWidgetsServices.getWidgets(any) returns CatsService {
+      Task(Xor.left(widgetsServicesException))
     }
   }
 
   trait CallsErrorScope {
     self: DeviceProcessScope =>
 
-    mockCallsServices.getLastCalls returns Service {
-      Task(Errata(callsServicesException))
+    mockCallsServices.getLastCalls returns CatsService {
+      Task(Xor.left(callsServicesException))
     }
   }
 
@@ -477,10 +477,10 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockCallsServices.getLastCalls returns
-      Service(Task(Result.answer(callsServices)))
+      CatsService(Task(Xor.right(callsServices)))
 
-    mockContactsServices.fetchContactByPhoneNumber(any) returns Service {
-      Task(Errata(contactsServicesException))
+    mockContactsServices.fetchContactByPhoneNumber(any) returns CatsService {
+      Task(Xor.left(contactsServicesException))
     }
   }
 
@@ -488,39 +488,39 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.createOrUpdateDockApp(any) returns
-      Service(Task(Result.answer(dockAppSeq)))
+      CatsService(Task(Xor.right(dockAppSeq)))
 
     mockPersistenceServices.fetchDockApps returns
-      Service(Task(Result.answer(dockAppSeq)))
+      CatsService(Task(Xor.right(dockAppSeq)))
 
     mockPersistenceServices.deleteAllDockApps() returns
-      Service(Task(Result.answer(dockAppsRemoved)))
+      CatsService(Task(Xor.right(dockAppsRemoved)))
   }
 
   trait DockAppsFindErrorScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.fetchAppByPackages(any) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.fetchAppByPackages(any) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
     mockPersistenceServices.createOrUpdateDockApp(any) returns
-      Service(Task(Result.answer(dockAppSeq)))
+      CatsService(Task(Xor.right(dockAppSeq)))
   }
 
   trait DockAppsErrorScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.createOrUpdateDockApp(any) returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.createOrUpdateDockApp(any) returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchDockApps returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.fetchDockApps returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.deleteAllDockApps() returns Service {
-      Task(Errata(persistenceServiceException))
+    mockPersistenceServices.deleteAllDockApps() returns CatsService {
+      Task(Xor.left(persistenceServiceException))
     }
   }
 
@@ -533,61 +533,51 @@ class DeviceProcessImplSpec
 
     "deletes all apps, cards, collections and dockApps" in
       new DeviceProcessScope {
-        val result = deviceProcess.resetSavedItems().run.run
+        val result = deviceProcess.resetSavedItems().value.run
         result must beLike {
-          case Answer(result) =>
+          case Xor.Right(result) =>
             result shouldEqual ((): Unit)
         }
       }
 
     "returns ResetException when persistence service fails deleting the apps" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteAppsProcessScope {
-        val result = deviceProcess.resetSavedItems().run.run
+        val result = deviceProcess.resetSavedItems().value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
+          case Xor.Left(e) => e must beAnInstanceOf[ResetException]
           }
-        }
       }
 
     "returns ResetException when persistence service fails deleting widgets" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteWidgetsProcessScope {
-        val result = deviceProcess.resetSavedItems().run.run
+        val result = deviceProcess.resetSavedItems().value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
+          case Xor.Left(e) => e must beAnInstanceOf[ResetException]
           }
-        }
       }
 
     "returns ResetException when persistence service fails deleting the collections" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteCollectionsProcessScope {
-        val result = deviceProcess.resetSavedItems().run.run
+        val result = deviceProcess.resetSavedItems().value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
+          case Xor.Left(e) => e must beAnInstanceOf[ResetException]
           }
-        }
       }
 
     "returns ResetException when persistence service fails deleting the cards" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteCardsProcessScope {
-        val result = deviceProcess.resetSavedItems().run.run
+        val result = deviceProcess.resetSavedItems().value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
+          case Xor.Left(e) => e must beAnInstanceOf[ResetException]
           }
-        }
       }
 
     "returns ResetException when persistence service fails deleting the dock apps" in
       new DeviceProcessScope with ErrorPersistenceServicesDeleteDockAppsProcessScope {
-        val result = deviceProcess.resetSavedItems().run.run
+        val result = deviceProcess.resetSavedItems().value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ResetException]
+          case Xor.Left(e) => e must beAnInstanceOf[ResetException]
           }
-        }
       }
 
   }
@@ -596,20 +586,18 @@ class DeviceProcessImplSpec
 
     "get available Shortcuts" in
       new DeviceProcessScope {
-        val result = deviceProcess.getAvailableShortcuts(contextSupport).run.run
+        val result = deviceProcess.getAvailableShortcuts(contextSupport).value.run
         result must beLike {
-          case Answer(r) => r.map(_.title) shouldEqual shortcuts.map(_.title)
+          case Xor.Right(r) => r.map(_.title) shouldEqual shortcuts.map(_.title)
         }
       }
 
     "returns ShortcutException when ShortcutsServices fails" in
       new DeviceProcessScope with ShortcutsErrorScope {
-        val result = deviceProcess.getAvailableShortcuts(contextSupport).run.run
+        val result = deviceProcess.getAvailableShortcuts(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ShortcutException]
+          case Xor.Left(e) => e must beAnInstanceOf[ShortcutException]
           }
-        }
       }
 
   }
@@ -618,28 +606,26 @@ class DeviceProcessImplSpec
 
     "get favorite contacts" in
       new DeviceProcessScope {
-        val result = deviceProcess.getFavoriteContacts(contextSupport).run.run
+        val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
         result must beLike {
           // TODO - This is a workaround and need to be fixed in ticket 9C-284
-          case Answer(r) => r.map(_.name).sorted shouldEqual contacts.map(_.name).sorted
+          case Xor.Right(r) => r.map(_.name).sorted shouldEqual contacts.map(_.name).sorted
         }
       }
 
     "returns ContactException when ContactsServices fails getting the favorite contacts" in
       new DeviceProcessScope with FavoriteContactsErrorScope {
-        val result = deviceProcess.getFavoriteContacts(contextSupport).run.run
+        val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
+          case Xor.Left(e) => e must beAnInstanceOf[ContactException]
           }
-        }
       }
 
     "returns an empty list if ContactsServices fails filling the contacts" in
       new DeviceProcessScope with FilledFavoriteContactsErrorScope {
-        val result = deviceProcess.getFavoriteContacts(contextSupport).run.run
+        val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
         result must beLike {
-          case Answer(resultContacts) =>
+          case Xor.Right(resultContacts) =>
             resultContacts shouldEqual Seq()
         }
       }
@@ -650,9 +636,9 @@ class DeviceProcessImplSpec
 
     "get term counters for contacts by name" in
       new DeviceProcessScope {
-        val result = deviceProcess.getTermCountersForContacts()(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForContacts()(contextSupport).value.run
         result must beLike {
-          case Answer(counters) =>
+          case Xor.Right(counters) =>
             counters map (_.term) shouldEqual (contactsCounters map (_.term))
         }
         there was one(mockContactsServices).getAlphabeticalCounterContacts
@@ -660,28 +646,26 @@ class DeviceProcessImplSpec
 
     "get term counters for contacts by favorite" in
       new DeviceProcessScope {
-        val result = deviceProcess.getTermCountersForContacts(FavoriteContacts)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForContacts(FavoriteContacts)(contextSupport).value.run
         result must beLike {
-          case Answer(counters) => counters shouldEqual Seq.empty
+          case Xor.Right(counters) => counters shouldEqual Seq.empty
         }
       }
 
     "get term counters for apps by contacts with phone number" in
       new DeviceProcessScope {
-        val result = deviceProcess.getTermCountersForContacts(ContactsWithPhoneNumber)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForContacts(ContactsWithPhoneNumber)(contextSupport).value.run
         result must beLike {
-          case Answer(counters) => counters shouldEqual Seq.empty
+          case Xor.Right(counters) => counters shouldEqual Seq.empty
         }
       }
 
     "returns AppException if persistence service fails " in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getTermCountersForApps(GetByName)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForApps(GetByName)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
   }
@@ -690,20 +674,18 @@ class DeviceProcessImplSpec
 
     "get path of icon stored" in
       new DeviceProcessScope with SaveShortcutScope {
-        val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).run.run
+        val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).value.run
         result must beLike {
-          case Answer(path) => path shouldEqual fileNameShortcut
+          case Xor.Right(path) => path shouldEqual fileNameShortcut
         }
       }
 
     "returns ShortcutException when ImageServices fails storing the icon" in
       new DeviceProcessScope with SaveShortcutErrorScope {
-        val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).run.run
+        val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ShortcutException]
+          case Xor.Left(e) => e must beAnInstanceOf[ShortcutException]
           }
-        }
       }
   }
 
@@ -711,36 +693,34 @@ class DeviceProcessImplSpec
 
     "get all contacts sorted" in
       new DeviceProcessScope {
-        val result = deviceProcess.getContacts()(contextSupport).run.run
+        val result = deviceProcess.getContacts()(contextSupport).value.run
         result must beLike {
-          case Answer(response) => response.map(_.name) shouldEqual contacts.map(_.name)
+          case Xor.Right(response) => response.map(_.name) shouldEqual contacts.map(_.name)
         }
       }
 
     "get favorite contacts sorted" in
       new DeviceProcessScope {
-        val result = deviceProcess.getContacts(FavoriteContacts)(contextSupport).run.run
+        val result = deviceProcess.getContacts(FavoriteContacts)(contextSupport).value.run
         result must beLike {
-          case Answer(response) => response.map(_.name) shouldEqual contacts.map(_.name)
+          case Xor.Right(response) => response.map(_.name) shouldEqual contacts.map(_.name)
         }
       }
 
     "get contacts with phone number sorted" in
       new DeviceProcessScope {
-        val result = deviceProcess.getContacts(ContactsWithPhoneNumber)(contextSupport).run.run
+        val result = deviceProcess.getContacts(ContactsWithPhoneNumber)(contextSupport).value.run
         result must beLike {
-          case Answer(response) => response.map(_.name) shouldEqual contacts.map(_.name)
+          case Xor.Right(response) => response.map(_.name) shouldEqual contacts.map(_.name)
         }
       }
 
     "returns ContactException when ContactsService fails getting contacts" in
       new DeviceProcessScope with ContactsErrorScope {
-        val result = deviceProcess.getContacts()(contextSupport).run.run
+        val result = deviceProcess.getContacts()(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
+          case Xor.Left(e) => e must beAnInstanceOf[ContactException]
           }
-        }
       }
 
   }
@@ -749,36 +729,34 @@ class DeviceProcessImplSpec
 
     "get all contacts sorted" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableContacts()(contextSupport).run.run
+        val result = deviceProcess.getIterableContacts()(contextSupport).value.run
         result must beLike {
-          case Answer(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
+          case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
         }
       }
 
     "get favorite contacts sorted" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableContacts(FavoriteContacts)(contextSupport).run.run
+        val result = deviceProcess.getIterableContacts(FavoriteContacts)(contextSupport).value.run
         result must beLike {
-          case Answer(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
+          case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
         }
       }
 
     "get contacts with phone number sorted" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableContacts(ContactsWithPhoneNumber)(contextSupport).run.run
+        val result = deviceProcess.getIterableContacts(ContactsWithPhoneNumber)(contextSupport).value.run
         result must beLike {
-          case Answer(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
+          case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
         }
       }
 
     "returns ContactException when ContactsService fails getting contacts" in
       new DeviceProcessScope with ContactsErrorScope {
-        val result = deviceProcess.getIterableContacts()(contextSupport).run.run
+        val result = deviceProcess.getIterableContacts()(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
+          case Xor.Left(e) => e must beAnInstanceOf[ContactException]
           }
-        }
       }
 
   }
@@ -787,9 +765,9 @@ class DeviceProcessImplSpec
 
     "get contact find a contact with data info filled" in
       new DeviceProcessScope with FindContactScope {
-        val result = deviceProcess.getContact(lookupKey)(contextSupport).run.run
+        val result = deviceProcess.getContact(lookupKey)(contextSupport).value.run
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.lookupKey shouldEqual lookupKey
             response.info must beSome
         }
@@ -797,12 +775,10 @@ class DeviceProcessImplSpec
 
     "returns ContactException when ContactsService fails getting contact" in
       new DeviceProcessScope with ContactsErrorScope {
-        val result = deviceProcess.getContact(lookupKey)(contextSupport).run.run
+        val result = deviceProcess.getContact(lookupKey)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
+          case Xor.Left(e) => e must beAnInstanceOf[ContactException]
           }
-        }
       }
 
   }
@@ -811,20 +787,18 @@ class DeviceProcessImplSpec
 
     "get contacts by keyword" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableContactsByKeyWord(keyword)(contextSupport).run.run
+        val result = deviceProcess.getIterableContactsByKeyWord(keyword)(contextSupport).value.run
         result must beLike {
-          case Answer(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
+          case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
         }
       }
 
     "returns ContactException when ContactsService fails getting contacts" in
       new DeviceProcessScope with ContactsErrorScope {
-        val result = deviceProcess.getIterableContactsByKeyWord(keyword)(contextSupport).run.run
+        val result = deviceProcess.getIterableContactsByKeyWord(keyword)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ContactException]
+          case Xor.Left(e) => e must beAnInstanceOf[ContactException]
           }
-        }
       }
 
   }
@@ -833,9 +807,9 @@ class DeviceProcessImplSpec
 
     "get saved apps by name" in
       new DeviceProcessScope {
-        val result = deviceProcess.getSavedApps(GetByName)(contextSupport).run.run
+        val result = deviceProcess.getSavedApps(GetByName)(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual apps
         }
         there was one(mockPersistenceServices).fetchApps(OrderByName, ascending = true)
@@ -843,9 +817,9 @@ class DeviceProcessImplSpec
 
     "get saved apps by update date" in
       new DeviceProcessScope {
-        val result = deviceProcess.getSavedApps(GetByInstallDate)(contextSupport).run.run
+        val result = deviceProcess.getSavedApps(GetByInstallDate)(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual apps
         }
         there was one(mockPersistenceServices).fetchApps(OrderByInstallDate, ascending = false)
@@ -853,9 +827,9 @@ class DeviceProcessImplSpec
 
     "get saved apps by category" in
       new DeviceProcessScope {
-        val result = deviceProcess.getSavedApps(GetByCategory)(contextSupport).run.run
+        val result = deviceProcess.getSavedApps(GetByCategory)(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual apps
         }
         there was one(mockPersistenceServices).fetchApps(OrderByCategory, ascending = true)
@@ -863,12 +837,10 @@ class DeviceProcessImplSpec
 
     "returns AppException if persistence service fails " in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getSavedApps(GetByName)(contextSupport).run.run
+        val result = deviceProcess.getSavedApps(GetByName)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
   }
@@ -877,9 +849,9 @@ class DeviceProcessImplSpec
 
     "get iterable saved apps by name" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableApps(GetByName)(contextSupport).run.run
+        val result = deviceProcess.getIterableApps(GetByName)(contextSupport).value.run
         result must beLike {
-          case Answer(iter) =>
+          case Xor.Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableApps(OrderByName, ascending = true)
@@ -887,9 +859,9 @@ class DeviceProcessImplSpec
 
     "get iterable saved apps by update date" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableApps(GetByInstallDate)(contextSupport).run.run
+        val result = deviceProcess.getIterableApps(GetByInstallDate)(contextSupport).value.run
         result must beLike {
-          case Answer(iter) =>
+          case Xor.Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableApps(OrderByInstallDate, ascending = false)
@@ -897,9 +869,9 @@ class DeviceProcessImplSpec
 
     "get iterable saved apps by category" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableApps(GetByCategory)(contextSupport).run.run
+        val result = deviceProcess.getIterableApps(GetByCategory)(contextSupport).value.run
         result must beLike {
-          case Answer(iter) =>
+          case Xor.Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableApps(OrderByCategory, ascending = true)
@@ -907,12 +879,10 @@ class DeviceProcessImplSpec
 
     "returns AppException if persistence service fails " in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getIterableApps(GetByName)(contextSupport).run.run
+        val result = deviceProcess.getIterableApps(GetByName)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
   }
@@ -921,9 +891,9 @@ class DeviceProcessImplSpec
 
     "get iterable saved apps by category" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableAppsByCategory(category)(contextSupport).run.run
+        val result = deviceProcess.getIterableAppsByCategory(category)(contextSupport).value.run
         result must beLike {
-          case Answer(iter) =>
+          case Xor.Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableAppsByCategory(category, OrderByName, ascending = true)
@@ -931,12 +901,10 @@ class DeviceProcessImplSpec
 
     "returns AppException if persistence service fails " in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getIterableAppsByCategory(category)(contextSupport).run.run
+        val result = deviceProcess.getIterableAppsByCategory(category)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
   }
@@ -945,9 +913,9 @@ class DeviceProcessImplSpec
 
     "get term counters for apps by name" in
       new DeviceProcessScope {
-        val result = deviceProcess.getTermCountersForApps(GetByName)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForApps(GetByName)(contextSupport).value.run
         result must beLike {
-          case Answer(counters) =>
+          case Xor.Right(counters) =>
             counters map (_.term) shouldEqual (appsCounters map (_.term))
         }
         there was one(mockPersistenceServices).fetchAlphabeticalAppsCounter
@@ -955,18 +923,18 @@ class DeviceProcessImplSpec
 
     "get term counters for apps by installation date" in
       new DeviceProcessScope {
-        val result = deviceProcess.getTermCountersForApps(GetByInstallDate)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForApps(GetByInstallDate)(contextSupport).value.run
         result must beLike {
-          case Answer(counters) =>
+          case Xor.Right(counters) =>
             counters map (_.term) shouldEqual (installationAppsCounters map (_.term))
         }
       }
 
     "get term counters for apps by category" in
       new DeviceProcessScope {
-        val result = deviceProcess.getTermCountersForApps(GetByCategory)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForApps(GetByCategory)(contextSupport).value.run
         result must beLike {
-          case Answer(counters) =>
+          case Xor.Right(counters) =>
             counters map (_.term) shouldEqual (categoryCounters map (_.term))
         }
         there was one(mockPersistenceServices).fetchCategorizedAppsCounter
@@ -974,32 +942,26 @@ class DeviceProcessImplSpec
 
     "returns AppException if persistence service fails in GetByName" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getTermCountersForApps(GetByName)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForApps(GetByName)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
     "returns AppException if persistence service fails in GetByCategory" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getTermCountersForApps(GetByCategory)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForApps(GetByCategory)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e  must beAnInstanceOf[AppException]
           }
-        }
       }
 
     "returns AppException if persistence service fails in GetByInstallDate" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getTermCountersForApps(GetByInstallDate)(contextSupport).run.run
+        val result = deviceProcess.getTermCountersForApps(GetByInstallDate)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
   }
@@ -1008,9 +970,9 @@ class DeviceProcessImplSpec
 
     "get iterable apps ordered by name" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)(contextSupport).run.run
+        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)(contextSupport).value.run
         result must beLike {
-          case Answer(iter) =>
+          case Xor.Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableAppsByKeyword(keyword, OrderByName, ascending = true)
@@ -1018,9 +980,9 @@ class DeviceProcessImplSpec
 
     "get iterable apps ordered by update date" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByInstallDate)(contextSupport).run.run
+        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByInstallDate)(contextSupport).value.run
         result must beLike {
-          case Answer(iter) =>
+          case Xor.Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = false)
@@ -1028,9 +990,9 @@ class DeviceProcessImplSpec
 
     "get iterable apps ordered by category" in
       new DeviceProcessScope {
-        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByCategory)(contextSupport).run.run
+        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByCategory)(contextSupport).value.run
         result must beLike {
-          case Answer(iter) =>
+          case Xor.Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableAppsByKeyword(keyword, OrderByCategory, ascending = true)
@@ -1038,12 +1000,10 @@ class DeviceProcessImplSpec
 
     "returns AppException if persistence service fails " in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)(contextSupport).run.run
+        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
   }
 
@@ -1051,40 +1011,36 @@ class DeviceProcessImplSpec
 
     "gets and saves installed apps" in
       new DeviceProcessScope {
-        val result = deviceProcess.saveInstalledApps(contextSupport).run.run
+        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual ((): Unit)
         }
       }
 
     "returns a AppException if persistence service fails" in
       new DeviceProcessScope with ErrorAppServicesProcessScope {
-        val result = deviceProcess.saveInstalledApps(contextSupport).run.run
+        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
     "returns an empty Answer if api service fails" in
       new DeviceProcessScope with ErrorApiServicesProcessScope {
-        val result = deviceProcess.saveInstalledApps(contextSupport).run.run
+        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual ((): Unit)
         }
       }
 
     "returns an AppException if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.saveInstalledApps(contextSupport).run.run
+        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
   }
@@ -1093,40 +1049,36 @@ class DeviceProcessImplSpec
 
     "gets and saves an installed app" in
       new DeviceProcessScope {
-        val result = deviceProcess.saveApp(packageName1)(contextSupport).run.run
+        val result = deviceProcess.saveApp(packageName1)(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual ((): Unit)
         }
       }
 
     "returns an AppException if app service fails" in
       new DeviceProcessScope with ErrorAppServicesProcessScope {
-        val result = deviceProcess.saveApp(packageName1)(contextSupport).run.run
+        val result = deviceProcess.saveApp(packageName1)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
     "returns an empty Answer if api service fails" in
       new DeviceProcessScope with ErrorApiServicesProcessScope {
-        val result = deviceProcess.saveApp(packageName1)(contextSupport).run.run
+        val result = deviceProcess.saveApp(packageName1)(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual ((): Unit)
         }
       }
 
     "returns an empty Answer if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.saveApp(packageName1)(contextSupport).run.run
+        val result = deviceProcess.saveApp(packageName1)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
   }
@@ -1135,21 +1087,19 @@ class DeviceProcessImplSpec
 
     "deletes an app" in
       new DeviceProcessScope {
-        val result = deviceProcess.deleteApp(packageName1)(contextSupport).run.run
+        val result = deviceProcess.deleteApp(packageName1)(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual ((): Unit)
         }
       }
 
     "returns an empty Answer if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.deleteApp(packageName1)(contextSupport).run.run
+        val result = deviceProcess.deleteApp(packageName1)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
   }
@@ -1158,30 +1108,28 @@ class DeviceProcessImplSpec
 
     "gets and saves one installed app" in
       new DeviceProcessScope {
-        val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
+        val result = deviceProcess.updateApp(packageName1)(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual ((): Unit)
         }
       }
 
     "returns an empty Answer if api service fails" in
       new DeviceProcessScope with ErrorApiServicesProcessScope {
-        val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
+        val result = deviceProcess.updateApp(packageName1)(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual ((): Unit)
         }
       }
 
     "returns an AppException if persistence service fails" in
       new DeviceProcessScope with ErrorPersistenceServicesProcessScope {
-        val result = deviceProcess.updateApp(packageName1)(contextSupport).run.run
+        val result = deviceProcess.updateApp(packageName1)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AppException]
+          case Xor.Left(e) => e must beAnInstanceOf[AppException]
           }
-        }
       }
 
   }
@@ -1190,21 +1138,19 @@ class DeviceProcessImplSpec
 
     "get widgets" in
       new DeviceProcessScope {
-        val result = deviceProcess.getWidgets(contextSupport).run.run
+        val result = deviceProcess.getWidgets(contextSupport).value.run
         result must beLike {
-          case Answer(resultWidgets) =>
+          case Xor.Right(resultWidgets) =>
             resultWidgets shouldEqual appWithWidgets
         }
       }
 
     "returns WidgetException if WidgetServices fail getting the Widgets " in
       new DeviceProcessScope with WidgetsErrorScope {
-        val result = deviceProcess.getWidgets(contextSupport).run.run
+        val result = deviceProcess.getWidgets(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[WidgetException]
+          case Xor.Left(e) => e must beAnInstanceOf[WidgetException]
           }
-        }
       }
 
   }
@@ -1213,28 +1159,26 @@ class DeviceProcessImplSpec
 
     "get last calls" in
       new DeviceProcessScope {
-        val result = deviceProcess.getLastCalls(contextSupport).run.run
+        val result = deviceProcess.getLastCalls(contextSupport).value.run
         result must beLike {
-          case Answer(resultLastCalls) =>
+          case Xor.Right(resultLastCalls) =>
             resultLastCalls shouldEqual lastCallsContacts
         }
       }
 
     "returns CallsException if CallsServices fail getting the calls " in
       new DeviceProcessScope with CallsErrorScope {
-        val result = deviceProcess.getLastCalls(contextSupport).run.run
+        val result = deviceProcess.getLastCalls(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[CallException]
+          case Xor.Left(e) => e must beAnInstanceOf[CallException]
           }
-        }
       }
 
     "returns an empty List if ContactsServices fail getting the contacts " in
       new DeviceProcessScope with CallsContactsErrorScope {
-        val result = deviceProcess.getLastCalls(contextSupport).run.run
+        val result = deviceProcess.getLastCalls(contextSupport).value.run
         result must beLike {
-          case Answer(resultApps) =>
+          case Xor.Right(resultApps) =>
             resultApps shouldEqual Seq()
         }
       }
@@ -1245,41 +1189,35 @@ class DeviceProcessImplSpec
 
     "returns a empty answer for a valid request" in
       new DeviceProcessScope with DockAppsScope {
-        val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
+        val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
         result must beLike {
-          case Answer(resultDockApp) =>
+          case Xor.Right(resultDockApp) =>
             resultDockApp shouldEqual dockAppProcessSeq
         }
       }
 
     "returns DockAppException when AppService fails" in
       new DeviceProcessScope with ErrorAppServicesProcessScope {
-        val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
+        val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+          case Xor.Left(e) => e must beAnInstanceOf[DockAppException]
           }
-        }
       }
 
     "returns DockAppException when PersistenceService fails fetching the apps" in
       new DeviceProcessScope with DockAppsFindErrorScope {
-        val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
+        val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+          case Xor.Left(e) => e must beAnInstanceOf[DockAppException]
           }
-        }
       }
 
     "returns DockAppException when PersistenceService fails saving the apps" in
       new DeviceProcessScope with DockAppsErrorScope {
-        val result = deviceProcess.generateDockApps(size)(contextSupport).run.run
+        val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+          case Xor.Left(e) => e must beAnInstanceOf[DockAppException]
           }
-        }
       }
   }
 
@@ -1287,21 +1225,19 @@ class DeviceProcessImplSpec
 
     "returns a empty answer for a valid request" in
       new DeviceProcessScope with DockAppsScope {
-        val result = deviceProcess.createOrUpdateDockApp(name1, AppDockType, intent, imagePath1, 0).run.run
+        val result = deviceProcess.createOrUpdateDockApp(name1, AppDockType, intent, imagePath1, 0).value.run
         result must beLike {
-          case Answer(resultDockApp) =>
+          case Xor.Right(resultDockApp) =>
             resultDockApp shouldEqual ((): Unit)
         }
       }
 
     "returns DockAppException when PersistenceService fails" in
       new DeviceProcessScope with DockAppsErrorScope {
-        val result = deviceProcess.createOrUpdateDockApp(name1, AppDockType, intent, imagePath1, 0).run.run
+        val result = deviceProcess.createOrUpdateDockApp(name1, AppDockType, intent, imagePath1, 0).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+          case Xor.Left(e) => e must beAnInstanceOf[DockAppException]
           }
-        }
       }
 
   }
@@ -1311,11 +1247,11 @@ class DeviceProcessImplSpec
     "return the three dockApps saved" in
       new DeviceProcessScope with DockAppsScope {
 
-        mockPersistenceServices.createOrUpdateDockApp(any) returns Service(Task(Result.answer(dockAppSeq)))
+        mockPersistenceServices.createOrUpdateDockApp(any) returns CatsService(Task(Xor.right(dockAppSeq)))
 
-        val result = deviceProcess.saveDockApps(saveDockAppRequestSeq).run.run
+        val result = deviceProcess.saveDockApps(saveDockAppRequestSeq).value.run
         result must beLike {
-          case Answer(resultSeqDockApp) =>
+          case Xor.Right(resultSeqDockApp) =>
             resultSeqDockApp.size shouldEqual saveDockAppRequestSeq.size
         }
       }
@@ -1323,12 +1259,10 @@ class DeviceProcessImplSpec
     "returns DockAppException when PersistenceService fails" in
       new DeviceProcessScope with DockAppsErrorScope {
 
-        val result = deviceProcess.saveDockApps(saveDockAppRequestSeq).run.run
+        val result = deviceProcess.saveDockApps(saveDockAppRequestSeq).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppException]
+          case Xor.Left(e) => e must beAnInstanceOf[DockAppException]
           }
-        }
       }
 
   }
@@ -1337,21 +1271,19 @@ class DeviceProcessImplSpec
 
     "get dock apps stored" in
       new DeviceProcessScope with DockAppsScope {
-        val result = deviceProcess.getDockApps.run.run
+        val result = deviceProcess.getDockApps.value.run
         result must beLike {
-          case Answer(resultDockApp) =>
+          case Xor.Right(resultDockApp) =>
             resultDockApp map (_.name) shouldEqual (dockAppProcessSeq map (_.name))
         }
       }
 
     "returns DockAppException when PersistenceService fails" in
       new DeviceProcessScope with DockAppsErrorScope {
-        val result = deviceProcess.getDockApps.run.run
+        val result = deviceProcess.getDockApps.value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+          case Xor.Left(e) => e must beAnInstanceOf[DockAppException]
           }
-        }
       }
   }
 
@@ -1359,21 +1291,19 @@ class DeviceProcessImplSpec
 
     "returns a empty answer for a valid request" in
       new DeviceProcessScope with DockAppsScope {
-        val result = deviceProcess.deleteAllDockApps().run.run
+        val result = deviceProcess.deleteAllDockApps().value.run
         result must beLike {
-          case Answer(resultDockApp) =>
+          case Xor.Right(resultDockApp) =>
             resultDockApp shouldEqual ((): Unit)
         }
       }
 
     "returns DockAppException when PersistenceService fails" in
       new DeviceProcessScope with DockAppsErrorScope {
-        val result = deviceProcess.deleteAllDockApps().run.run
+        val result = deviceProcess.deleteAllDockApps().value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[DockAppExceptionImpl]
+          case Xor.Left(e) => e must beAnInstanceOf[DockAppException]
           }
-        }
       }
   }
 
@@ -1381,9 +1311,9 @@ class DeviceProcessImplSpec
 
     "returns all networks for a valid request" in
       new DeviceProcessScope with DockAppsScope {
-        val result = deviceProcess.getConfiguredNetworks(contextSupport).run.run
+        val result = deviceProcess.getConfiguredNetworks(contextSupport).value.run
         result must beLike {
-          case Answer(r) =>
+          case Xor.Right(r) =>
             r shouldEqual networks
         }
       }

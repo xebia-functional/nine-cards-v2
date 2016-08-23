@@ -6,7 +6,7 @@ import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, PersistenceServices}
 
 import scalaz.concurrent.Task

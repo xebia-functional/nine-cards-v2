@@ -1,15 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.process.userconfig.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.process.userconfig.{ImplicitsUserConfigException, UserConfigConversions, UserConfigException, UserConfigProcess}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.api.models.{UserConfigCollection, UserConfigDevice}
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
-import rapture.core.Result
 
 import scalaz.concurrent.Task
 
@@ -32,11 +32,11 @@ class UserConfigProcessImpl(apiServices: ApiServices, persistenceServices: Persi
     userConfigCollections <- getUserConfigCollections(device)
   } yield userConfigCollections map toUserCollection).resolve[UserConfigException]
 
-  private[this] def getUserConfigCollections(device: Option[UserConfigDevice]): ServiceDef2[Seq[UserConfigCollection], UserConfigException] =
-    Service {
+  private[this] def getUserConfigCollections(device: Option[UserConfigDevice]): CatsService[Seq[UserConfigCollection]] =
+    CatsService {
       Task {
-        device map (device => Result.answer[Seq[UserConfigCollection], UserConfigException](device.collections)) getOrElse
-          Result.errata[Seq[UserConfigCollection], UserConfigException](UserConfigException("Device don't found"))
+        device map (device => Xor.right(device.collections)) getOrElse
+          Xor.left(UserConfigException("Device don't found"))
       }
     }
 

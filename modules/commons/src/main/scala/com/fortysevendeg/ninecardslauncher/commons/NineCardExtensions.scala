@@ -77,6 +77,15 @@ object NineCardExtensions {
     def resolve[E <: NineCardException](implicit converter: Throwable => E): XorT[Task, NineCardException, A] =
       r leftMap converter
 
+    def resolveTo(result: A): XorT[Task, NineCardException, A] = {
+      val task: Task[Xor[NineCardException, A]] = r.value
+      val innerResult: Task[NineCardException Xor A] = task.map {
+        case r @ Xor.Right(_) => r
+        case Xor.Left(_) => Xor.right(result)
+      }
+      XorT(innerResult)
+    }
+
   }
 
   implicit class XorTOptionExtensions[A](r : XorT[Task, NineCardException, Option[A]]) {
@@ -94,7 +103,7 @@ object NineCardExtensions {
         case error @ Xor.Left(_) => error
         case Xor.Right(result) => result match {
           case Some(a) => Xor.Right(a)
-          case _ => Xor.left(EmptyException(""))
+          case _ => Xor.left(EmptyException("Value not found"))
         }
       }
       XorT(innerResult)

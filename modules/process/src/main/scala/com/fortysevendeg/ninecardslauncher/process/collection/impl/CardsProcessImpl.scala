@@ -1,14 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException, CollectionProcess}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCardRequest => ServicesDeleteCardRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, DeleteCardRequest => ServicesDeleteCardRequest, ImplicitsPersistenceServiceExceptions}
+
+import scalaz.concurrent.Task
 
 trait CardsProcessImpl extends CollectionProcess {
 
@@ -28,7 +32,7 @@ trait CardsProcessImpl extends CollectionProcess {
 
   def deleteCard(collectionId: Int, cardId: Int) =
     (for {
-      Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(cardId))
+      card <- persistenceServices.findCardById(toFindCardByIdRequest(cardId)).resolveOption()
       cardList <- getCardsByCollectionId(collectionId)
       _ <- persistenceServices.deleteCard(ServicesDeleteCardRequest(card))
       _ <- updateCardList(moveCardList(cardList, card.position))
@@ -50,17 +54,16 @@ trait CardsProcessImpl extends CollectionProcess {
           cardList <- getCardsByCollectionId(collectionId)
           _ <- updateCardList(reorderList(cardList,card.position))
         } yield ()
-      else Service.success[Unit,CardException](Unit)
-
+      else CatsService(Task(Xor.Right(Unit)))
     (for {
-      Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(cardId))
+      card <- persistenceServices.findCardById(toFindCardByIdRequest(cardId)).resolveOption()
       _ <- reorderAux(card)
     } yield ()).resolve[CardException]
   }
 
   def editCard(collectionId: Int, cardId: Int, name: String) =
     (for {
-      Some(card) <- persistenceServices.findCardById(toFindCardByIdRequest(cardId))
+      card <- persistenceServices.findCardById(toFindCardByIdRequest(cardId)).resolveOption()
       updatedCard = toUpdatedCard(toCard(card), name)
       _ <- updateCard(updatedCard)
     } yield updatedCard).resolve[CardException]

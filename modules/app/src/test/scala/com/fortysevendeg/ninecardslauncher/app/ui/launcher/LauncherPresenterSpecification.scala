@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.LauncherPres
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionExceptionImpl}
+import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.device.DockAppException
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
@@ -37,7 +37,7 @@ trait LauncherPresenterSpecification
 
   val launcherAppsException = LauncherAppsException("", None)
 
-  val collectionException = CollectionExceptionImpl("", None)
+  val collectionException = CollectionException("", None)
 
   val userException = UserException("", None)
 

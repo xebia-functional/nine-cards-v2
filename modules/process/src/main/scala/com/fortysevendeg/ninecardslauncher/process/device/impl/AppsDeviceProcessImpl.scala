@@ -1,7 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps
@@ -10,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesResponse
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, OrderByName}
-import rapture.core.Answer
 
 trait AppsDeviceProcessImpl
   extends DeviceProcess
@@ -54,14 +55,14 @@ trait AppsDeviceProcessImpl
     } yield new IterableApps(iter)).resolve[AppException]
 
   def saveInstalledApps(implicit context: ContextSupport) =
-    (for {
+  (for {
       requestConfig <- apiUtils.getRequestConfig
       installedApps <- appsServices.getInstalledApplications
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
         .resolveTo(GooglePlayPackagesResponse(200, Seq.empty))
       apps = installedApps map { app =>
         val knownCategory = findCategory(app.packageName)
-        val category = knownCategory getOrElse {
+        val category: NineCardCategory = knownCategory getOrElse {
           val categoryName = googlePlayPackagesResponse.packages find(_.app.docid == app.packageName) flatMap (_.app.details.appDetails.appCategory.headOption)
           categoryName map (NineCardCategory(_)) getOrElse Misc
         }
@@ -85,7 +86,7 @@ trait AppsDeviceProcessImpl
   def updateApp(packageName: String)(implicit context: ContextSupport) =
     (for {
       app <- appsServices.getApplication(packageName)
-      Some(appPersistence) <- persistenceServices.findAppByPackage(packageName)
+      appPersistence <- persistenceServices.findAppByPackage(packageName).resolveOption()
       appCategory <- getAppCategory(packageName)
       _ <- persistenceServices.updateApp(toUpdateAppRequest(appPersistence.id, app, appCategory))
     } yield ()).resolve[AppException]
@@ -93,8 +94,8 @@ trait AppsDeviceProcessImpl
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {
       requestConfig <- apiUtils.getRequestConfig
-      appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).run.run match {
-        case Answer(g) => (g.app.details.appDetails.appCategory map (NineCardCategory(_))).headOption.getOrElse(Misc)
+      appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).value.run match {
+        case Xor.Right(g) => (g.app.details.appDetails.appCategory map (NineCardCategory(_))).headOption.getOrElse(Misc)
         case _ => Misc
       }
     } yield appCategory

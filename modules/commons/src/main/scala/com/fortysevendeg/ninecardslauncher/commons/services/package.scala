@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
-import cats.{Functor, Monad}
 import cats.data.{Xor, XorT}
+import cats.{Functor, Monad}
 import rapture.core.Result
 import rapture.core.scalazInterop.ResultT
 

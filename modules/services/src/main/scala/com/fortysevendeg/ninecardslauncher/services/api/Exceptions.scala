@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCard
 
 case class ApiServiceException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)
-  with NineCardException{
+  with NineCardException {
   cause map initCause
 }
 

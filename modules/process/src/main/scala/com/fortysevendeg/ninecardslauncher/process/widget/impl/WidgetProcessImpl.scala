@@ -4,6 +4,8 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, _}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteWidgetRequest => ServicesDeleteWidgetRequest, _}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+
 
 class WidgetProcessImpl(
   val persistenceServices: PersistenceServices)
@@ -41,14 +43,14 @@ class WidgetProcessImpl(
 
   override def moveWidget(widgetId: Int, moveWidgetRequest: MoveWidgetRequest) =
     (for {
-      Some(widget) <- findWidgetById(widgetId)
+      widget <- findWidgetById(widgetId).resolveOption()
       updatedWidget = toUpdatedWidget(toWidget(widget), moveWidgetRequest)
       _ <- updateWidget(updatedWidget)
     } yield updatedWidget).resolve[AppWidgetException]
 
   override def resizeWidget(widgetId: Int, resizeWidgetRequest: ResizeWidgetRequest) =
     (for {
-      Some(widget) <- findWidgetById(widgetId)
+      widget <- findWidgetById(widgetId).resolveOption()
       updatedWidget = toUpdatedWidget(toWidget(widget), resizeWidgetRequest)
       _ <- updateWidget(updatedWidget)
     } yield updatedWidget).resolve[AppWidgetException]
@@ -60,7 +62,7 @@ class WidgetProcessImpl(
 
   override def deleteWidget(widgetId: Int) =
     (for {
-      Some(widget) <- findWidgetById(widgetId)
+      widget <- findWidgetById(widgetId).resolveOption()
       _ <- persistenceServices.deleteWidget(ServicesDeleteWidgetRequest(widget))
     } yield ()).resolve[AppWidgetException]
 

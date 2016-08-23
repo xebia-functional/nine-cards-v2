@@ -1,13 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, SharedCollection}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.ResultTExtensions
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 
 class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
   extends SharedCollectionsProcess
@@ -21,7 +22,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     typeShareCollection: TypeSharedCollection,
     offset: Int = 0,
     limit: Int = 50)
-    (implicit context: ContextSupport) =
+    (implicit context: ContextSupport): CatsService[Seq[SharedCollection]] =
     (for {
       userConfig <- apiUtils.getRequestConfig
       response <- apiServices.getSharedCollectionsByCategory(category.name, typeShareCollection.name, offset, limit)(userConfig)

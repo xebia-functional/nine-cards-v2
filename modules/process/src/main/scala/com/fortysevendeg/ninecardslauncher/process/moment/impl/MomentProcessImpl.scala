@@ -1,8 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.process.moment.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
@@ -59,9 +61,9 @@ class MomentProcessImpl(
       moments <- persistenceServices.addMoments(items map toAddMomentRequest)
     } yield moments map toMoment).resolve[MomentException]
 
-  override def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport) = Service {
+  override def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport) = CatsService {
     Task {
-      CatchAll[MomentException] {
+      XorCatchAll[MomentException] {
         generatePrivateMomentsCollections(apps, moments, Seq.empty, position)
       }
     }

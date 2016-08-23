@@ -1,14 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.process.utils
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.services.api.models.User
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, FindUserByIdRequest, AndroidIdNotFoundException, PersistenceServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Result, Answer, Errata}
 
 import scalaz.concurrent.Task
 
@@ -31,40 +31,40 @@ trait ApiUtilsSpecification
     val mockUser = mock[User]
 
     mockPersistenceServices.getAndroidId(mockContextSupport) returns
-      Service(Task(Answer(androidId)))
+      CatsService(Task(Xor.right(androidId)))
 
     mockPersistenceServices.findUserById(FindUserByIdRequest(userDBId)) returns
-      Service(Task(Result.answer(Some(user))))
+      CatsService(Task(Xor.right(Some(user))))
 
     mockRequestConfig.deviceId returns androidId
     mockRequestConfig.token returns token
 
   }
 
-  trait SessionTokenNoneUserApiUtilsScope{
+  trait SessionTokenNoneUserApiUtilsScope {
 
     self: ApiUtilsScope =>
 
     mockPersistenceServices.findUserById(FindUserByIdRequest(userDBId)) returns
-      Service(Task(Result.answer(Some(userSessionTokenNone))))
+      CatsService(Task(Xor.right(Some(userSessionTokenNone))))
 
   }
 
-  trait ErrorUserApiUtilsScope{
+  trait ErrorUserApiUtilsScope {
 
     self: ApiUtilsScope =>
 
     mockPersistenceServices.findUserById(FindUserByIdRequest(userDBId)) returns
-      Service(Task(Result.errata(persistenceServicesException)))
+      CatsService(Task(Xor.left(persistenceServicesException)))
 
   }
 
-  trait ErrorAndroidIdApiUtilsScope{
+  trait ErrorAndroidIdApiUtilsScope {
 
     self: ApiUtilsScope =>
 
     mockPersistenceServices.getAndroidId(mockContextSupport) returns
-      Service(Task(Errata(androidIdNotFoundException)))
+      CatsService(Task(Xor.left(androidIdNotFoundException)))
 
   }
 
@@ -77,9 +77,9 @@ class ApiUtilsSpec
 
     "returns a request config with a correct deviceId and token" in
       new ApiUtilsScope {
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beLike {
-          case Answer(resultRequestConfig) =>
+          case Xor.Right(resultRequestConfig) =>
             resultRequestConfig.deviceId shouldEqual mockRequestConfig.deviceId
             resultRequestConfig.token shouldEqual mockRequestConfig.token
         }
@@ -87,31 +87,25 @@ class ApiUtilsSpec
 
     "returns an ApiServiceException when the session token doesn't exists" in
       new ApiUtilsScope with SessionTokenNoneUserApiUtilsScope {
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
         }
       }
 
     "returns an ApiServiceException when the session token return a exception" in
       new ApiUtilsScope with ErrorUserApiUtilsScope {
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
         }
       }
 
     "returns an ApiServiceException when the android id can't be found" in
       new ApiUtilsScope with ErrorAndroidIdApiUtilsScope {
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
         }
       }
 
