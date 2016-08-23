@@ -43,23 +43,23 @@ trait WidgetRepositorySpecification
     contentResolverWrapper.insert(
       uri = mockUri,
       values = widgetValues,
-      notificationUri = Some(mockUri)) returns testWidgetId
+      notificationUris = Seq(mockUri)) returns testWidgetId
 
     contentResolverWrapper.inserts(
       authority = NineCardsUri.authorityPart,
       uri = mockUri,
       allValues = widgetValuesSeq,
-      notificationUri = Some(mockUri)) returns widgetIdSeq
+      notificationUris = Seq(mockUri)) returns widgetIdSeq
 
     contentResolverWrapper.delete(
       uri = mockUri,
       where = "",
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.deleteById(
       uri = mockUri,
       id = testWidgetId,
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -125,13 +125,13 @@ trait WidgetRepositorySpecification
       uri = mockUri,
       id = testWidgetId,
       values = widgetValues,
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.updateByIds(
       authority = NineCardsUri.authorityPart,
       uri = mockUri,
       idAndValues = widgetIdAndValuesSeq,
-      notificationUri = Some(mockUri)) returns Seq(5)
+      notificationUris = Seq(mockUri)) returns Seq(5)
   }
 
   trait ValidAllWidgetsRepositoryResponses
@@ -157,23 +157,23 @@ trait WidgetRepositorySpecification
     contentResolverWrapper.insert(
       uri = mockUri,
       values = widgetValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.inserts(
       authority = NineCardsUri.authorityPart,
       uri = mockUri,
       allValues = widgetValuesSeq,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.delete(
       uri = mockUri,
       where = "",
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.deleteById(
       uri = mockUri,
       id = testWidgetId,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -225,13 +225,13 @@ trait WidgetRepositorySpecification
       uri = mockUri,
       id = testWidgetId,
       values = widgetValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.updateByIds(
       authority = NineCardsUri.authorityPart,
       uri = mockUri,
       idAndValues = widgetIdAndValuesSeq,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
   }
 
   trait ErrorAllWidgetsRepositoryResponses

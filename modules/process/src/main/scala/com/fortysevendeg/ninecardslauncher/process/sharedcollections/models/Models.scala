@@ -25,6 +25,12 @@ case class CreateSharedCollection(
    icon: String,
    community: Boolean)
 
+case class UpdateSharedCollection(
+   sharedCollectionId: String,
+   name: String,
+   description: Option[String],
+   packages: Seq[String])
+
 case class SharedCollectionPackage(
   packageName: String,
   title: String,

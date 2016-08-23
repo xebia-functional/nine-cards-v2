@@ -101,7 +101,7 @@ class UserRepositorySpec
               userResponse.data.email should beSome(testEmail)
           }
 
-          there was one(contentResolverWrapper).insert(mockUri, createUserValues, Some(mockUri))
+          there was one(contentResolverWrapper).insert(mockUri, createUserValues, Seq(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -119,7 +119,7 @@ class UserRepositorySpec
             }
           }
 
-          there was one(contentResolverWrapper).insert(mockUri, createUserValues, Some(mockUri))
+          there was one(contentResolverWrapper).insert(mockUri, createUserValues, Seq(mockUri))
         }
     }
 
@@ -140,7 +140,7 @@ class UserRepositorySpec
           there was one(contentResolverWrapper).delete(
             uri = mockUri,
             where = "",
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -161,7 +161,7 @@ class UserRepositorySpec
           there was one(contentResolverWrapper).delete(
             uri = mockUri,
             where = "",
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
     }
 
@@ -182,7 +182,7 @@ class UserRepositorySpec
           there was one(contentResolverWrapper).deleteById(
             uri = mockUri,
             id = testId,
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -203,7 +203,7 @@ class UserRepositorySpec
           there were one(contentResolverWrapper).deleteById(
             uri = mockUri,
             id = testId,
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
     }
 
@@ -291,7 +291,7 @@ class UserRepositorySpec
             uri = mockUri,
             id = testId,
             values = createUserValues,
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -313,7 +313,7 @@ class UserRepositorySpec
             uri = mockUri,
             id = testId,
             values = createUserValues,
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
     }
 

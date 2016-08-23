@@ -51,7 +51,7 @@ case class AddCardWithCollectionIdRequest(
 
 case class DeleteCardsRequest(where: String)
 
-case class DeleteCardRequest(card: Card)
+case class DeleteCardRequest(collectionId: Int, card: Card)
 
 case class FindCardByIdRequest(id: Int)
 

@@ -133,4 +133,20 @@ trait ApiServices {
     category: String,
     icon: String,
     community: Boolean)(implicit requestConfig: RequestConfig): ServiceDef2[CreateSharedCollectionResponse, ApiServiceException]
+
+  /**
+    * Updates an existing  shared collection
+    * @param sharedCollectionId The collection identifier
+    * @param name The name of the collection
+    * @param description The user's description of the collection
+    * @param packages The list of packages in the collection
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UpdateSharedCollectionResponse]] with the HTTP Code
+    *         of the response and the sharedCollectionId
+    * @throws ApiServiceException if the service is unable to create the shared collection
+    */
+  def updateSharedCollection(
+    sharedCollectionId: String,
+    name: Option[String],
+    description: Option[String],
+    packages: Seq[String])(implicit requestConfig: RequestConfig): ServiceDef2[UpdateSharedCollectionResponse, ApiServiceException]
 }

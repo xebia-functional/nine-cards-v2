@@ -25,7 +25,7 @@ class WidgetRepository(
 
   val widgetUri = uriCreator.parse(widgetUriString)
 
-  val widgetNotificationUri = uriCreator.parse(widgetUriNotificationString)
+  val widgetNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$widgetUriPath")
 
   def addWidget(data: WidgetData): ServiceDef2[Widget, RepositoryException] =
     Service {
@@ -36,7 +36,7 @@ class WidgetRepository(
           val id = contentResolverWrapper.insert(
             uri = widgetUri,
             values = values,
-            notificationUri = Some(widgetNotificationUri))
+            notificationUris = Seq(widgetNotificationUri))
 
           Widget(id = id, data = data)
         }
@@ -54,7 +54,7 @@ class WidgetRepository(
             authority = NineCardsUri.authorityPart,
             uri = widgetUri,
             allValues = values,
-            notificationUri = Some(widgetNotificationUri))
+            notificationUris = Seq(widgetNotificationUri))
 
           datas zip ids map {
             case (data, id) => Widget(id = id, data = data)
@@ -70,7 +70,7 @@ class WidgetRepository(
           contentResolverWrapper.delete(
             uri = widgetUri,
             where = where,
-            notificationUri = Some(widgetNotificationUri))
+            notificationUris = Seq(widgetNotificationUri))
         }
       }
     }
@@ -82,7 +82,7 @@ class WidgetRepository(
           contentResolverWrapper.deleteById(
             uri = widgetUri,
             id = widget.id,
-            notificationUri = Some(widgetNotificationUri))
+            notificationUris = Seq(widgetNotificationUri))
         }
       }
     }
@@ -166,7 +166,7 @@ class WidgetRepository(
             uri = widgetUri,
             id = widget.id,
             values = values,
-            notificationUri = Some(widgetNotificationUri))
+            notificationUris = Seq(widgetNotificationUri))
         }
       }
     }
@@ -183,7 +183,7 @@ class WidgetRepository(
             authority = NineCardsUri.authorityPart,
             uri = widgetUri,
             idAndValues = values,
-            notificationUri = Some(widgetNotificationUri))
+            notificationUris = Seq(widgetNotificationUri))
         }
       }
     }

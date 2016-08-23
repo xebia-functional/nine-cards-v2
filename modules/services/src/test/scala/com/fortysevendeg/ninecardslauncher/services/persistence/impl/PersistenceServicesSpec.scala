@@ -57,7 +57,7 @@ trait PersistenceServicesSpecification
     mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(items)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.answer(item)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns Service(Task(Result.answer(item)))
     }
 
     List.tabulate(5) { index =>
@@ -188,7 +188,7 @@ trait PersistenceServicesSpecification
     mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.errata(exception)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.errata(exception)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns Service(Task(Result.errata(exception)))
     }
 
     List.tabulate(5) { index =>

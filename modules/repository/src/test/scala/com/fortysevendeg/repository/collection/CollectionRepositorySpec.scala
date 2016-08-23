@@ -42,17 +42,17 @@ trait CollectionRepositorySpecification
     contentResolverWrapper.insert(
       uri = mockUri,
       values = createCollectionValues,
-      notificationUri = Some(mockUri)) returns testCollectionId
+      notificationUris = Seq(mockUri)) returns testCollectionId
 
     contentResolverWrapper.delete(
       uri = mockUri,
       where = "",
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.deleteById(
       uri = mockUri,
       id = testCollectionId,
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -126,7 +126,7 @@ trait CollectionRepositorySpecification
       uri = mockUri,
       id = testCollectionId,
       values = createCollectionValues,
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
   }
 
   trait ErrorCollectionRepositoryResponses
@@ -141,17 +141,17 @@ trait CollectionRepositorySpecification
     contentResolverWrapper.insert(
       uri = mockUri,
       values = createCollectionValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.delete(
       uri = mockUri,
       where = "",
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.deleteById(
       uri = mockUri,
       id = testCollectionId,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -195,7 +195,7 @@ trait CollectionRepositorySpecification
       uri = mockUri,
       id = testCollectionId,
       values = createCollectionValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
   }
 
 }

@@ -90,3 +90,7 @@ case class SharedCollectionPackageResponse(
 case class CreateSharedCollectionResponse(
   statusCode: Int,
   sharedCollectionId: String)
+
+case class UpdateSharedCollectionResponse(
+  statusCode: Int,
+  sharedCollectionId: String)
