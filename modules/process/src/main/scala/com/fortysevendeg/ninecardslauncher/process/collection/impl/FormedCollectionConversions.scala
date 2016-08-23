@@ -13,7 +13,6 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServices, ImplicitsContactsServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{MomentTimeSlot => ServicesMomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
-import rapture.core.Answer
 
 import scala.annotation.tailrec
 import scalaz.{-\/, \/-}

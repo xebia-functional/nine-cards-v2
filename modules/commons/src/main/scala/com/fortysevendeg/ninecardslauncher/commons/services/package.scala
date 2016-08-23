@@ -1,11 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
-import cats.{MonadFilter, Functor, Monad}
 import cats.data.{Xor, XorT}
+import cats.{Functor, Monad}
 import rapture.core.Result
 import rapture.core.scalazInterop.ResultT
 
-import scala.concurrent.Future
 import scala.language.{higherKinds, implicitConversions}
 import scala.reflect.ClassTag
 import scalaz._

@@ -139,7 +139,6 @@ class UserProcessImpl(
           case Xor.Right(r) => Xor.Right(r.statusCode)
           // TODO - This need to be improved in ticket 9C-214
           case Xor.Left(_) => Xor.Left(UserException(syncInstallationErrorMessage))
-//          case Unforeseen(ex) => Result.errata[Int, UserException](UserException(syncInstallationErrorMessage, Some(ex)))
         }
       }
     } getOrElse {
