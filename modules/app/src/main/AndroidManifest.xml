@@ -133,6 +133,10 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name="com.fortysevendeg.ninecardslauncher.app.services.UpdateSharedCollectionService"
+            android:exported="false"/>
+
     </application>
 
     <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
