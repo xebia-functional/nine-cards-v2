@@ -6,7 +6,7 @@ object TryOps {
 
   implicit class FailureLogOps[T](t: Try[T]) {
 
-    val tag = "9cards"
+    val tag = AppLog.tag
 
     def logInfo(): Unit = log(Info)
 
