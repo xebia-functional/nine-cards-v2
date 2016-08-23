@@ -12,11 +12,8 @@ trait Conversions {
       sharedCollectionId = item.sharedCollectionId,
       publishedOn = item.publishedOn,
       description = item.description,
-      screenshots = item.screenshots,
       author = item.author,
-      tags = item.tags,
       name = item.name,
-      shareLink = item.shareLink,
       packages = item.packages,
       resolvedPackages = item.resolvedPackages map toSharedCollectionPackage,
       views = item.views,
@@ -28,22 +25,8 @@ trait Conversions {
     SharedCollectionPackage(
       packageName = item.packageName,
       title = item.title,
-      description = item.description,
       icon = item.icon,
       stars = item.stars,
       downloads = item.downloads,
       free = item.free)
-
-  def toCreatedCollection(item: CreateSharedCollectionResponse): CreatedCollection =
-    CreatedCollection(
-      name = item.newSharedCollection.name,
-      description = item.newSharedCollection.description,
-      author = item.newSharedCollection.author,
-      packages = item.newSharedCollection.packages,
-      category = NineCardCategory(item.newSharedCollection.category),
-      shareLink = item.newSharedCollection.shareLink,
-      sharedCollectionId = item.newSharedCollection.sharedCollectionId,
-      icon = item.newSharedCollection.icon,
-      community = item.newSharedCollection.community
-    )
 }

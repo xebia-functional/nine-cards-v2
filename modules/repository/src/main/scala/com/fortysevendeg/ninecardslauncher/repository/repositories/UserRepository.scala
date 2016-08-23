@@ -24,7 +24,7 @@ class UserRepository(
 
   val userUri = uriCreator.parse(userUriString)
 
-  val userNotificationUri = uriCreator.parse(userUriNotificationString)
+  val userNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$userUriPath")
 
   def addUser(data: UserData): ServiceDef2[User, RepositoryException] =
     Service {
@@ -35,7 +35,7 @@ class UserRepository(
           val id = contentResolverWrapper.insert(
             uri = userUri,
             values = values,
-            notificationUri = Some(userNotificationUri))
+            notificationUris = Seq(userNotificationUri))
 
           User(id = id, data = data)
         }
@@ -49,7 +49,7 @@ class UserRepository(
           contentResolverWrapper.delete(
             uri = userUri,
             where = where,
-            notificationUri = Some(userNotificationUri))
+            notificationUris = Seq(userNotificationUri))
         }
       }
     }
@@ -61,7 +61,7 @@ class UserRepository(
           contentResolverWrapper.deleteById(
             uri = userUri,
             id = user.id,
-            notificationUri = Some(userNotificationUri))
+            notificationUris = Seq(userNotificationUri))
         }
       }
     }
@@ -116,7 +116,7 @@ class UserRepository(
             uri = userUri,
             id = item.id,
             values = values,
-            notificationUri = Some(userNotificationUri))
+            notificationUris = Seq(userNotificationUri))
         }
       }
     }

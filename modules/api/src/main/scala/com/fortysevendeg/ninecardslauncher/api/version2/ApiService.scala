@@ -13,6 +13,10 @@ class ApiService(serviceClient: ServiceClient) {
 
   type ApiException = HttpClientException with ServiceClientException
 
+  private[this] val headerContentType = "Content-Type"
+
+  private[this] val headerContentTypeValue = "application/json"
+
   private[this] val headerAuthToken = "X-Auth-Token"
 
   private[this] val headerSessionToken = "X-Session-Token"
@@ -43,7 +47,7 @@ class ApiService(serviceClient: ServiceClient) {
     implicit reads: Reads[LoginResponse], writes: Writes[LoginRequest]): ServiceDef2[ServiceClientResponse[LoginResponse], ApiException] =
     serviceClient.post[LoginRequest, LoginResponse](
       path = loginPath,
-      headers = Seq.empty,
+      headers = Seq((headerContentType, headerContentTypeValue)),
       body = request,
       reads = Some(reads))
 
@@ -176,7 +180,7 @@ class ApiService(serviceClient: ServiceClient) {
     header: T): Seq[(String, String)] = {
 
     def readAndroidMarketToken: Option[String] = header match {
-      case h: ServiceMarketHeader => Option(h.androidMarketToken)
+      case h: ServiceMarketHeader => h.androidMarketToken
       case _ => None
     }
 
@@ -192,6 +196,7 @@ class ApiService(serviceClient: ServiceClient) {
     }
 
     Seq(
+      (headerContentType, headerContentTypeValue),
       (headerAuthToken, hashMac(header.apiKey, serviceClient.baseUrl.concat(path))),
       (headerSessionToken, header.sessionToken),
       (headerAndroidId, header.androidId),

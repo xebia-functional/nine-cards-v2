@@ -7,11 +7,10 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
-import com.fortysevendeg.ninecardslauncher.services.api.models.{GooglePlayApp, GooglePlayPackage}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => ServicesCall}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{ContactCounter, Contact => ServicesContact, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, AppWebsite, BitmapResize}
+import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, BitmapResize}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ServicesShortcut}
@@ -65,15 +64,6 @@ trait DeviceConversions extends NineCardIntentConversions {
         dateUpdate = item.dateUpdate,
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
-
-  def toAppWebSiteSeq(googlePlayPackages: Seq[GooglePlayPackage]): Seq[AppWebsite] = googlePlayPackages flatMap {
-    case GooglePlayPackage(GooglePlayApp(docid, title, _, _, Some(icon), _, _, _, _, _, _)) =>
-      Some(AppWebsite(
-        packageName = docid,
-        url = icon,
-        name = title))
-    case _ => None
-  }
 
   def toAppPackageSeq(items: Seq[Application]): Seq[AppPackage] = items map toAppPackage
 

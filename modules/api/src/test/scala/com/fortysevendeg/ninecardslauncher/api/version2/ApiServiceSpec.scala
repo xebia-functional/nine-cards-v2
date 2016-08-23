@@ -54,7 +54,7 @@ class ApiServiceSpec
 
       there was one(mockedServiceClient).post(
         path = "/login",
-        headers = Seq.empty,
+        headers = Seq((headerContentType, headerContentTypeValue)),
         body = request,
         reads = Some(loginResponseReads),
         emptyResponse = false)(loginRequestWrites)
@@ -292,16 +292,9 @@ class ApiServiceSpec
             r.data must beSome(recommendationsResponse)
         }
 
-        val headers = Seq(
-          (headerAuthToken, recommendationsAuthToken),
-          (headerSessionToken, sessionToken),
-          (headerAndroidId, androidId),
-          (headerMarketLocalization, headerMarketLocalizationValue),
-          (headerAndroidMarketToken, marketToken))
-
         there was one(mockedServiceClient).post(
           path = s"/recommendations/$category",
-          headers = headers,
+          headers = createMarketHeaders(recommendationsAuthToken),
           body = recommendationsRequest,
           reads = Some(recommendationsResponseReads),
           emptyResponse = false)(recommendationsRequestWrites)
@@ -325,16 +318,9 @@ class ApiServiceSpec
             r.data must beSome(recommendationsByAppsResponse)
         }
 
-        val headers = Seq(
-          (headerAuthToken, recommendationsByAppsAuthToken),
-          (headerSessionToken, sessionToken),
-          (headerAndroidId, androidId),
-          (headerMarketLocalization, headerMarketLocalizationValue),
-          (headerAndroidMarketToken, marketToken))
-
         there was one(mockedServiceClient).post(
           path = s"/recommendations",
-          headers = headers,
+          headers = createMarketHeaders(recommendationsByAppsAuthToken),
           body = recommendationsByAppsRequest,
           reads = Some(recommendationsByAppsResponseReads),
           emptyResponse = false)(recommendationsByAppsRequestWrites)

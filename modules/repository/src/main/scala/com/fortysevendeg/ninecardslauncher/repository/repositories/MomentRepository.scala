@@ -25,7 +25,7 @@ class MomentRepository(
 
   val momentUri = uriCreator.parse(momentUriString)
 
-  val momentNotificationUri = uriCreator.parse(momentUriNotificationString)
+  val momentNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$momentUriPath")
 
   def addMoment(data: MomentData): ServiceDef2[Moment, RepositoryException] =
     Service {
@@ -36,7 +36,7 @@ class MomentRepository(
           val id = contentResolverWrapper.insert(
             uri = momentUri,
             values = values,
-            notificationUri = Some(momentNotificationUri))
+            notificationUris = Seq(momentNotificationUri))
 
           Moment(id = id, data = data)
         }
@@ -54,7 +54,7 @@ class MomentRepository(
             authority = NineCardsUri.authorityPart,
             uri = momentUri,
             allValues = values,
-            notificationUri = Some(momentNotificationUri))
+            notificationUris = Seq(momentNotificationUri))
 
           datas zip ids map {
             case (data, id) => Moment(id = id, data = data)
@@ -70,7 +70,7 @@ class MomentRepository(
           contentResolverWrapper.delete(
             uri = momentUri,
             where = where,
-            notificationUri = Some(momentNotificationUri))
+            notificationUris = Seq(momentNotificationUri))
         }
       }
     }
@@ -82,7 +82,7 @@ class MomentRepository(
           contentResolverWrapper.deleteById(
             uri = momentUri,
             id = moment.id,
-            notificationUri = Some(momentNotificationUri))
+            notificationUris = Seq(momentNotificationUri))
         }
       }
     }
@@ -143,7 +143,7 @@ class MomentRepository(
             uri = momentUri,
             id = item.id,
             values = values,
-            notificationUri = Some(momentNotificationUri))
+            notificationUris = Seq(momentNotificationUri))
         }
       }
     }

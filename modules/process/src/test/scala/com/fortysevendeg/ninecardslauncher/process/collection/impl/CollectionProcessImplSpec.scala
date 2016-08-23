@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
 import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionExceptionImpl, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
+import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
@@ -50,11 +51,14 @@ trait CollectionProcessImplSpecification
     val mockContactsServices = mock[ContactsServices]
     mockContactsServices.getFavoriteContacts returns Service(Task(Result.answer(Seq.empty)))
 
+    val mockApiServices = mock[ApiServices]
+
     val collectionProcess = new CollectionProcessImpl(
       collectionProcessConfig = collectionProcessConfig,
       persistenceServices = mockPersistenceServices,
       contactsServices = mockContactsServices,
-      appsServices = mockAppsServices)
+      appsServices = mockAppsServices,
+      apiServices = mockApiServices)
 
   }
 

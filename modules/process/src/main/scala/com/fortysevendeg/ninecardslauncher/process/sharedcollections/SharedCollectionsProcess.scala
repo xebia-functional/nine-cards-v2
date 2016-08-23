@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, SharedCollection, CreatedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, SharedCollection, UpdateSharedCollection}
 
 trait SharedCollectionsProcess {
 
@@ -25,10 +25,20 @@ trait SharedCollectionsProcess {
   /**
     * Persist a [[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]]
     * @param sharedCollection the defined collection to create
-    * @return unit, to signify successful completion
+    * @return shared collection identifier
     * @throws SharedCollectionsExceptions if the service cannot create the collection for some reason
     */
   def createSharedCollection(
     sharedCollection: CreateSharedCollection
-  )(implicit context: ContextSupport): ServiceDef2[CreatedCollection, SharedCollectionsExceptions]
+  )(implicit context: ContextSupport): ServiceDef2[String, SharedCollectionsExceptions]
+
+  /**
+    * Updates a [[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]]
+    * @param sharedCollection the defined collection to update
+    * @return shared collection identifier
+    * @throws SharedCollectionsExceptions if the service cannot create the collection for some reason
+    */
+  def updateSharedCollection(
+    sharedCollection: UpdateSharedCollection
+  )(implicit context: ContextSupport): ServiceDef2[String, SharedCollectionsExceptions]
 }
