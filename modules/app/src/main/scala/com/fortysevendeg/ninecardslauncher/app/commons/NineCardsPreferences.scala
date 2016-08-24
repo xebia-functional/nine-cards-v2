@@ -83,6 +83,14 @@ case object AppDrawerAnimation
     AppDrawerAnimationValue(pref.getString(name, default.name))
 }
 
+case object AppDrawerFavoriteContactsFirst
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = appDrawerFavoriteContacts
+  override val default: Boolean = false
+
+  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+}
+
 // Theme Preferences
 
 case object ThemeFile
@@ -148,6 +156,7 @@ object PreferencesValuesKeys {
   // AppDrawer Keys
   val appDrawerLongPressAction = "appDrawerLongPressAction"
   val appDrawerAnimation = "appDrawerAnimation"
+  val appDrawerFavoriteContacts = "appDrawerFavoriteContacts"
 }
 
 

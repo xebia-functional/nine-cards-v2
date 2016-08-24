@@ -204,11 +204,12 @@ trait DrawerUiActions
 
   private[this] def loadContactsAlphabetical: Ui[_] = {
     val maybeDrawable = appTabs.lift(AppsMenuOption(AppsAlphabetical)) map (_.drawable)
-    loadContactsAndSaveStatus(ContactsAlphabetical) ~
+    val favoriteContactsFirst = AppDrawerFavoriteContactsFirst.readValue(preferenceValues)
+    loadContactsAndSaveStatus(if (favoriteContactsFirst) ContactsFavorites else ContactsAlphabetical) ~
       (paginationDrawerPanel <~ reloadPager(1)) ~
       (pullToTabsView <~
         ptvClearTabs() <~
-        ptvAddTabsAndActivate(contactsTabs, 0, None)) ~
+        ptvAddTabsAndActivate(contactsTabs, if (favoriteContactsFirst) 1 else 0, None)) ~
       (searchBoxView <~ sbvUpdateContentView(ContactView) <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
   }
 
