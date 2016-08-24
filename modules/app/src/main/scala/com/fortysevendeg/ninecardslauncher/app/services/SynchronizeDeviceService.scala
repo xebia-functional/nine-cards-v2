@@ -1,8 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
-import android.app.Service
+import android.app.{IntentService, Service}
 import android.content.{Context, Intent}
-import android.os.IBinder
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.observers.NineCardsObserver._
@@ -32,7 +31,7 @@ import rapture.core.Answer
 import scalaz.concurrent.Task
 
 class SynchronizeDeviceService
-  extends Service
+  extends IntentService("synchronizeDeviceService")
   with Contexts[Service]
   with ContextSupportProvider
   with GoogleDriveApiClientService
@@ -47,17 +46,13 @@ class SynchronizeDeviceService
 
   private var currentState: Option[String] = None
 
-  override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
+  override def onHandleIntent(intent: Intent): Unit = {
     registerDispatchers
 
     Task.fork(updateCollections().run).resolveAsync()
 
     synchronizeDevice
-
-    super.onStartCommand(intent, flags, startId)
   }
-
-  override def onBind(intent: Intent): IBinder = javaNull
 
   override def onDestroy(): Unit = {
     super.onDestroy()
@@ -125,7 +120,7 @@ class SynchronizeDeviceService
     }
 
     val ids = preferences.getString(collectionIdsKey, "").split(",")
-    val updateServices = ids map (id => updateCollection(id.toInt).run)
+    val updateServices = ids filterNot (_.isEmpty) map (id => updateCollection(id.toInt).run)
     preferences.edit().remove(collectionIdsKey).apply()
 
     services.Service {
