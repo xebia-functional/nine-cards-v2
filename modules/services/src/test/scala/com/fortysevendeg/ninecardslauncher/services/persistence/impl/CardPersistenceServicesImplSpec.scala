@@ -27,7 +27,7 @@ trait CardPersistenceServicesDataSpecification
     mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns CatsService(Task(Xor.right(items)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns CatsService(Task(Xor.right(item)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns CatsService(Task(Xor.right(item)))
     }
 
     List.tabulate(5) { index =>
@@ -57,7 +57,7 @@ trait CardPersistenceServicesDataSpecification
     mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns CatsService(Task(Xor.left(exception)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns CatsService(Task(Xor.left(exception)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns CatsService(Task(Xor.left(exception)))
     }
 
     List.tabulate(5) { index =>

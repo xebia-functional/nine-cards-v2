@@ -445,143 +445,144 @@ class CollectionRepositorySpec
             }
           }
 
-    }
+      }
 
-    "fetchCollectionByPosition" should {
+      "fetchCollectionByPosition" should {
 
-      "return a Collection object when a existing position is given" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
+        "return a Collection object when a existing position is given" in
+          new CollectionRepositoryScope
+            with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).value.run
+            val result = collectionRepository.fetchCollectionByPosition(position = testPosition).value.run
 
-          result must beLike {
-            case Xor.Right(maybeCollection) =>
-              maybeCollection must beSome[Collection].which { collection =>
-                collection.id shouldEqual testCollectionId
-                collection.data.position shouldEqual testPosition
-              }
+            result must beLike {
+              case Xor.Right(maybeCollection) =>
+                maybeCollection must beSome[Collection].which { collection =>
+                  collection.id shouldEqual testCollectionId
+                  collection.data.position shouldEqual testPosition
+                }
+            }
           }
-        }
 
-      "return None when a non-existing position is given" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
-          val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).value.run
+        "return None when a non-existing position is given" in
+          new CollectionRepositoryScope
+            with ValidCollectionRepositoryResponses {
+            val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).value.run
 
-          result must beLike {
-            case Xor.Right(maybeCollection) =>
-              maybeCollection must beNone
+            result must beLike {
+              case Xor.Right(maybeCollection) =>
+                maybeCollection must beNone
+            }
           }
-        }
 
-      "return a RepositoryException when a exception is thrown" in
-        new CollectionRepositoryScope
-          with ErrorCollectionRepositoryResponses {
+        "return a RepositoryException when a exception is thrown" in
+          new CollectionRepositoryScope
+            with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchCollectionByPosition(position = testPosition).value.run
+            val result = collectionRepository.fetchCollectionByPosition(position = testPosition).value.run
 
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
+            result must beLike {
+              case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
+            }
           }
-        }
-    }
+      }
 
-    "fetchSortedCollections" should {
+      "fetchSortedCollections" should {
 
-      "return all the cache categories stored in the database" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
+        "return all the cache categories stored in the database" in
+          new CollectionRepositoryScope
+            with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchSortedCollections.value.run
+            val result = collectionRepository.fetchSortedCollections.value.run
 
-          result must beLike {
-            case Xor.Right(collections) =>
-              collections shouldEqual collectionSeq
+            result must beLike {
+              case Xor.Right(collections) =>
+                collections shouldEqual collectionSeq
+            }
           }
-        }
 
-      "return a RepositoryException when a exception is thrown" in
-        new CollectionRepositoryScope
-          with ErrorCollectionRepositoryResponses {
+        "return a RepositoryException when a exception is thrown" in
+          new CollectionRepositoryScope
+            with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.fetchSortedCollections.value.run
+            val result = collectionRepository.fetchSortedCollections.value.run
 
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
+            result must beLike {
+              case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
+            }
           }
-        }
-    }
+      }
 
-    "updateCollection" should {
+      "updateCollection" should {
 
-      "return a successful result when the collection is updated" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
+        "return a successful result when the collection is updated" in
+          new CollectionRepositoryScope
+            with ValidCollectionRepositoryResponses {
 
-          val result = collectionRepository.updateCollection(collection = collection).value.run
+            val result = collectionRepository.updateCollection(collection = collection).value.run
 
-          result must beLike {
-            case Xor.Right(updated) =>
-              updated shouldEqual 1
+            result must beLike {
+              case Xor.Right(updated) =>
+                updated shouldEqual 1
+            }
           }
-        }
 
-      "return a RepositoryException when a exception is thrown" in
-        new CollectionRepositoryScope
-          with ErrorCollectionRepositoryResponses {
+        "return a RepositoryException when a exception is thrown" in
+          new CollectionRepositoryScope
+            with ErrorCollectionRepositoryResponses {
 
-          val result = collectionRepository.updateCollection(collection = collection).value.run
+            val result = collectionRepository.updateCollection(collection = collection).value.run
 
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
+            result must beLike {
+              case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
+            }
           }
-        }
-    }
+      }
 
-    "getEntityFromCursor" should {
+      "getEntityFromCursor" should {
 
-      "return None when an empty cursor is given" in
-        new EmptyCollectionMockCursor
-          with Scope {
+        "return None when an empty cursor is given" in
+          new EmptyCollectionMockCursor
+            with Scope {
 
-          val result = getEntityFromCursor(collectionEntityFromCursor)(mockCursor)
+            val result = getEntityFromCursor(collectionEntityFromCursor)(mockCursor)
 
-          result must beNone
-        }
-
-      "return a Collection object when a cursor with data is given" in
-        new CollectionMockCursor
-          with Scope {
-
-          val result = getEntityFromCursor(collectionEntityFromCursor)(mockCursor)
-
-          result must beSome[CollectionEntity].which { collection =>
-            collection.id shouldEqual collectionEntity.id
-            collection.data shouldEqual collectionEntity.data
+            result must beNone
           }
-        }
-    }
 
-    "getListFromCursor" should {
+        "return a Collection object when a cursor with data is given" in
+          new CollectionMockCursor
+            with Scope {
 
-      "return an empty sequence when an empty cursor is given" in
-        new EmptyCollectionMockCursor
-          with Scope {
+            val result = getEntityFromCursor(collectionEntityFromCursor)(mockCursor)
 
-          val result = getListFromCursor(collectionEntityFromCursor)(mockCursor)
+            result must beSome[CollectionEntity].which { collection =>
+              collection.id shouldEqual collectionEntity.id
+              collection.data shouldEqual collectionEntity.data
+            }
+          }
+      }
 
-          result should beEmpty
-        }
+      "getListFromCursor" should {
 
-      "return a Collection sequence when a cursor with data is given" in
-        new CollectionMockCursor
-          with Scope {
+        "return an empty sequence when an empty cursor is given" in
+          new EmptyCollectionMockCursor
+            with Scope {
 
-          val result = getListFromCursor(collectionEntityFromCursor)(mockCursor)
+            val result = getListFromCursor(collectionEntityFromCursor)(mockCursor)
 
-          result shouldEqual collectionEntitySeq
-        }
+            result should beEmpty
+          }
+
+        "return a Collection sequence when a cursor with data is given" in
+          new CollectionMockCursor
+            with Scope {
+
+            val result = getListFromCursor(collectionEntityFromCursor)(mockCursor)
+
+            result shouldEqual collectionEntitySeq
+          }
+      }
     }
   }
 }

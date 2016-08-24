@@ -1,13 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.process.utils
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServiceException
-import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, FindUserByIdRequest, AndroidIdNotFoundException, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 import scalaz.concurrent.Task
 
@@ -40,12 +41,10 @@ class ApiUtilsSpec
 
         mockContextSupport.getActiveUserId returns None
 
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfig(mockContextSupport).value.run
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
         }
       }
 
@@ -53,14 +52,12 @@ class ApiUtilsSpec
       new ApiUtilsScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(None)))
+        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
 
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfig(mockContextSupport).value.run
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
         }
 
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -70,14 +67,12 @@ class ApiUtilsSpec
       new ApiUtilsScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user.copy(apiKey = None)))))
+        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user.copy(apiKey = None)))))
 
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfig(mockContextSupport).value.run
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
         }
 
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -87,14 +82,12 @@ class ApiUtilsSpec
       new ApiUtilsScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user.copy(sessionToken = None)))))
+        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user.copy(sessionToken = None)))))
 
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfig(mockContextSupport).value.run
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ApiServiceException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
         }
 
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -104,12 +97,12 @@ class ApiUtilsSpec
       new ApiUtilsScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(FindUserByIdRequest(userId)) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(androidId)))
+        mockPersistenceServices.findUserById(FindUserByIdRequest(userId)) returns CatsService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.getAndroidId(any) returns CatsService(Task(Xor.right(androidId)))
 
-        val result = apiUtils.getRequestConfig(mockContextSupport).run.run
+        val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beLike {
-          case Answer(resultRequestConfig) =>
+          case Xor.Right(resultRequestConfig) =>
             resultRequestConfig.apiKey shouldEqual apiKey
             resultRequestConfig.sessionToken shouldEqual sessionToken
             resultRequestConfig.androidId shouldEqual androidId

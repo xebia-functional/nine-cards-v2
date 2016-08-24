@@ -1,14 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.process.user.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.process.user._
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
-import rapture.core.{Answer, Result}
 
 import scalaz.concurrent.Task
 
@@ -28,7 +28,7 @@ class UserProcessImpl(
       (for {
         androidId <- persistenceServices.getAndroidId
         loginResponse <- apiServices.login(email, androidId, emailTokenId)
-        Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
+        userDB <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
         updateUser = userDB.copy(
           email = Some(email),
           apiKey = Option(loginResponse.apiKey),
@@ -41,18 +41,18 @@ class UserProcessImpl(
 
   override def register(implicit context: ContextSupport) = {
 
-    def checkOrAddUser(id: Int)(implicit context: ContextSupport): ServiceDef2[ServicesUser, UserException] =
+    def checkOrAddUser(id: Int)(implicit context: ContextSupport): CatsService[ServicesUser] =
       (for {
         maybeUser <- persistenceServices.findUserById(FindUserByIdRequest(id))
-        user <- maybeUser map (user => Service(Task(Result.answer[ServicesUser, PersistenceServiceException](user)))) getOrElse {
+        user <- maybeUser map (user => CatsService(Task(Xor.right(user)))) getOrElse {
           persistenceServices.addUser(emptyUserRequest)
         }
       } yield user).resolve[UserException]
 
-    def getFirstOrAddUser(implicit context: ContextSupport): ServiceDef2[ServicesUser, UserException] =
+    def getFirstOrAddUser(implicit context: ContextSupport): CatsService[ServicesUser] =
       (for {
         maybeUsers <- persistenceServices.fetchUsers
-        user <- maybeUsers.headOption map (user => Service(Task(Result.answer[ServicesUser, PersistenceServiceException](user)))) getOrElse {
+        user <- maybeUsers.headOption map (user => CatsService(Task(Xor.right(user)))) getOrElse {
           persistenceServices.addUser(emptyUserRequest)
         }
       } yield user).resolve[UserException]
@@ -74,7 +74,7 @@ class UserProcessImpl(
     withActiveUser { id =>
       val update = UpdateUserRequest(id, None, None, None, None, None, None, None, None, None, None)
       (for {
-        Some(userDB) <- persistenceServices.findUserById(FindUserByIdRequest(id))
+        userDB <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
         _ <- persistenceServices.updateUser(update)
         _ <- syncInstallation(userDB, None)
       } yield ()).resolve[UserException]
@@ -83,7 +83,7 @@ class UserProcessImpl(
   override def getUser(implicit context: ContextSupport) =
     withActiveUser { id =>
       (for {
-        Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(id))
+        user <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
       } yield toUser(user)).resolve[UserException]
     }
 
@@ -93,7 +93,7 @@ class UserProcessImpl(
     deviceToken: Option[String] = None)(implicit context: ContextSupport) =
     withActiveUser { id =>
       (for {
-        Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(id))
+        user <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
         _ <- persistenceServices.updateUser(toUpdateRequest(
           id = id,
           user = user.copy(
@@ -107,27 +107,27 @@ class UserProcessImpl(
   override def updateDeviceToken(deviceToken: String)(implicit context: ContextSupport) =
     withActiveUser { id =>
       (for {
-        Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(id))
+        user <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
         _ <- persistenceServices.updateUser(toUpdateRequest(id, user.copy(deviceToken = Option(deviceToken))))
         _ <- syncInstallation(user, Option(deviceToken))
       } yield ()).resolve[UserException]
     }
 
-  private[this] def withActiveUser[T](f: Int => ServiceDef2[T, UserException])(implicit context: ContextSupport) =
+  private[this] def withActiveUser[T](f: Int => CatsService[T])(implicit context: ContextSupport) =
     context.getActiveUserId map f getOrElse {
-      Service(Task(Result.errata[T, UserException](UserException(noActiveUserErrorMessage))))
+      CatsService(Task(Xor.left(UserException(noActiveUserErrorMessage))))
     }
 
   private[this] def syncInstallation(
     user: ServicesUser,
-    deviceToken: Option[String])(implicit context: ContextSupport): ServiceDef2[Int, UserException] =
+    deviceToken: Option[String])(implicit context: ContextSupport): CatsService[Int] =
     (user.apiKey, user.sessionToken) match {
       case (Some(apiKey), Some(sessionToken)) if user.deviceToken != deviceToken =>
         (for {
           androidId <- persistenceServices.getAndroidId
           response <- apiServices.updateInstallation(deviceToken)(RequestConfig(apiKey, sessionToken, androidId))
         } yield response.statusCode).resolve[UserException]
-      case _ => Service(Task(Answer(0)))
+      case _ => CatsService(Task(Xor.right(0)))
     }
 
 }

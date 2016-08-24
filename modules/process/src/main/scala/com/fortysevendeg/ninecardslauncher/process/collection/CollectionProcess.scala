@@ -59,7 +59,7 @@ trait CollectionProcess {
     * @return the Option[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
     * @throws CollectionException if there was an error getting the existing collections
     */
-  def getCollectionBySharedCollectionId(sharedCollectionId: String, original: Boolean): ServiceDef2[Option[Collection], CollectionException]
+  def getCollectionBySharedCollectionId(sharedCollectionId: String, original: Boolean): CatsService[Option[Collection]]
 
   /**
    * Adds a new Collection after the last existing one
@@ -121,7 +121,7 @@ trait CollectionProcess {
     * @return the [[Collection]]
     * @throws CollectionException if there was an error finding the collection or updating it
     */
-  def unsubscribeSharedCollection(collectionId: Int): ServiceDef2[Collection, CollectionException]
+  def unsubscribeSharedCollection(collectionId: Int): CatsService[Collection]
 
   /**
     * Adds some new packages to a given Collection
@@ -131,7 +131,7 @@ trait CollectionProcess {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Card] of the new cards
     * @throws CardException if there was an error getting the existing cards or adding the new one
     */
-  def addPackages(collectionId: Int, packages: Seq[String])(implicit context: ContextSupport): ServiceDef2[Unit, CollectionException]
+  def addPackages(collectionId: Int, packages: Seq[String])(implicit context: ContextSupport): CatsService[Unit]
 
   /**
    * Adds some new Cards after the last existing one in a given Collection

@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryC
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, MomentEntity}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card, Collection, Moment}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection, Moment}
 
 import scalaz.concurrent.Task
 
@@ -66,7 +66,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
 
   def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest) = {
 
-    def fetchCollection(): ServiceDef2[Option[RepositoryCollection], RepositoryException] =
+    def fetchCollection(): CatsService[Option[RepositoryCollection]] =
       if(request.original) {
         collectionRepository.fetchCollectionByOriginalSharedCollectionId(request.sharedCollectionId)
       } else {

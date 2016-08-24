@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, SharedCollection, UpdateSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, CreatedCollection, SharedCollection, UpdateSharedCollection}
 
 trait SharedCollectionsProcess {
 
@@ -31,7 +31,7 @@ trait SharedCollectionsProcess {
     */
   def createSharedCollection(
     sharedCollection: CreateSharedCollection
-  )(implicit context: ContextSupport): CatsService[CreatedCollection]
+  )(implicit context: ContextSupport): CatsService[String]
 
   /**
     * Updates a [[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]]

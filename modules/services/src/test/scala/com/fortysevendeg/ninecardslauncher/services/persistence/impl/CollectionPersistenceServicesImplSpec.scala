@@ -3,7 +3,8 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.provider.{MomentEntity, CardEntity}
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, MomentEntity}
+import com.fortysevendeg.ninecardslauncher.services.persistence.FetchCollectionBySharedCollectionRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.PersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 import org.specs2.matcher.DisjunctionMatchers
@@ -24,8 +25,12 @@ trait CollectionPersistenceServicesDataSpecification
 
     mockCardRepository.addCards(any) returns CatsService(Task(Xor.right(Seq(repoCard))))
 
+    mockCardRepository.deleteCards() returns CatsService(Task(Xor.right(items)))
+
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns CatsService(Task(Xor.right(items)))
+
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns CatsService(Task(Xor.right(item)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns CatsService(Task(Xor.right(item)))
     }
 
     List.tabulate(5) { index =>
@@ -70,6 +75,10 @@ trait CollectionPersistenceServicesDataSpecification
 
     mockCollectionRepository.fetchCollectionBySharedCollectionId(nonExistentSharedCollectionId) returns CatsService(Task(Xor.right(None)))
 
+    mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId) returns CatsService(Task(Xor.right(Option(repoCollection))))
+
+    mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(nonExistentSharedCollectionId) returns CatsService(Task(Xor.right(None)))
+
     mockCollectionRepository.fetchSortedCollections returns CatsService(Task(Xor.right(seqRepoCollection)))
 
     mockCollectionRepository.findCollectionById(collectionId) returns CatsService(Task(Xor.right(Option(repoCollection))))
@@ -86,8 +95,12 @@ trait CollectionPersistenceServicesDataSpecification
 
     mockCardRepository.addCard(collectionId, repoCardData) returns CatsService(Task(Xor.left(exception)))
 
+    mockCardRepository.deleteCards() returns CatsService(Task(Xor.left(exception)))
+
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns CatsService(Task(Xor.left(exception)))
+
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns CatsService(Task(Xor.left(exception)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns CatsService(Task(Xor.left(exception)))
     }
 
     List.tabulate(5) { index =>
@@ -216,8 +229,9 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
   "fetchCollectionBySharedCollection" should {
 
-    "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId)).value.run
+    "return a Collection for a valid request and original to true" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(
+        FetchCollectionBySharedCollectionRequest(sharedCollectionId, original = true)).value.run
 
       result must beLike {
         case Xor.Right(maybeCollection) =>
@@ -228,16 +242,42 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       }
     }
 
-    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(nonExistentSharedCollectionId)).value.run
+    "return a Collection for a valid request and original to false" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(
+        FetchCollectionBySharedCollectionRequest(sharedCollectionId, original = false)).value.run
 
       result must beLike {
-        case Xor.Right(maybeCollection) => maybeCollection must beNone
+        case Xor.Right(maybeCollection) =>
+          maybeCollection must beSome[Collection].which { collection =>
+            collection.id shouldEqual collectionId
+            collection.sharedCollectionId shouldEqual Option(sharedCollectionId)
+          }
+      }
+    }
+
+    "return None when a non-existent id and original to true is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(
+        FetchCollectionBySharedCollectionRequest(nonExistentSharedCollectionId, original = true)).value.run
+
+      result must beLike {
+        case Xor.Right(maybeCollection) =>
+          maybeCollection must beNone
+      }
+    }
+
+    "return None when a non-existent id and original to false is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(
+        FetchCollectionBySharedCollectionRequest(nonExistentSharedCollectionId, original = false)).value.run
+
+      result must beLike {
+        case Xor.Right(maybeCollection) =>
+          maybeCollection must beNone
       }
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId)).value.run
+      val result = persistenceServices.fetchCollectionBySharedCollection(
+        FetchCollectionBySharedCollectionRequest(sharedCollectionId, original = false)).value.run
 
       result must beLike {
         case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)

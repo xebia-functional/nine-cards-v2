@@ -51,7 +51,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedApps(any, any, any)(any) returns
-              Service(Task(Result.answer(RecommendationResponse(statusCodeOk, recommendationApps))))
+          CatsService(Task(Xor.right(RecommendationResponse(statusCodeOk, recommendationApps))))
 
         val result = process.getRecommendedAppsByCategory(category)(contextSupport).value.run
 
@@ -68,7 +68,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedApps(any, any, any)(any) returns
-              Service(Task(Errata(apiException)))
+          CatsService(Task(Xor.left(apiException)))
 
         val result = process.getRecommendedAppsByCategory(category)(contextSupport).value.run
 
@@ -85,7 +85,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedAppsByPackages(any, any, any)(any) returns
-              Service(Task(Result.answer(RecommendationResponse(statusCodeOk, recommendationApps))))
+          CatsService(Task(Xor.right(RecommendationResponse(statusCodeOk, recommendationApps))))
 
         val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).value.run
 
@@ -102,7 +102,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedAppsByPackages(any, any, any)(any) returns
-              Service(Task(Errata(apiException)))
+          CatsService(Task(Xor.left(apiException)))
 
         val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).value.run
 

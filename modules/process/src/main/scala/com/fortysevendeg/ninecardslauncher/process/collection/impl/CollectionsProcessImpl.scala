@@ -1,19 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
+import cats.data.Xor
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, UnformedApp, UnformedContact}
 import com.fortysevendeg.ninecardslauncher.process.collection._
+import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, UnformedApp, UnformedContact}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteCollectionRequest => ServicesDeleteCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, CategorizedPackage}
+import com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FetchCollectionBySharedCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
 
 import scalaz.concurrent.Task
@@ -110,16 +110,16 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def unsubscribeSharedCollection(collectionId: Int) =
     (for {
-      Some(collection) <- findCollectionById(collectionId)
+      collection <- findCollectionById(collectionId).resolveOption()
       updatedCollection = toUpdatedSharedCollection(toCollection(collection), originalSharedCollectionId = None)
       _ <- updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 
   def addPackages(collectionId: Int, packages: Seq[String])(implicit context: ContextSupport) = {
 
-    def fetchPackages(packages: Seq[String]): ServiceDef2[Seq[CategorizedPackage], ApiServiceException] =
+    def fetchPackages(packages: Seq[String]): CatsService[Seq[CategorizedPackage]] =
       if (packages.isEmpty) {
-        Service(Task(Answer(Seq.empty)))
+        CatsService(Task(Xor.right(Seq.empty)))
       } else {
         for {
           requestConfig <- apiUtils.getRequestConfig

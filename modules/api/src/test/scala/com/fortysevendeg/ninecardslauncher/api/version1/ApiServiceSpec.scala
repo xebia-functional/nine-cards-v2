@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.api.version1
 
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import cats.data.Xor
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
@@ -38,12 +38,12 @@ class ApiServiceSpec
     "return the status code and the response" in new ApiServiceScope {
 
       mockedServiceClient.post[User, User](any, any, any, any, any)(any) returns
-        Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(user)))))
+        CatsService(Task(Xor.right(ServiceClientResponse(statusCodeOk, Some(user)))))
 
-      val serviceResponse = apiService.login(emptyUser, headers).run.run
+      val serviceResponse = apiService.login(emptyUser, headers).value.run
 
       serviceResponse must beLike {
-        case Answer(r) =>
+        case Xor.Right(r) =>
           r.statusCode shouldEqual statusCodeOk
           r.data must beSome(user)
       }
@@ -64,12 +64,12 @@ class ApiServiceSpec
     "return the status code and the response" in new ApiServiceScope {
 
       mockedServiceClient.get[UserConfig](any, any, any, any) returns
-        Service(Task(Answer(ServiceClientResponse(statusCodeOk, Some(userConfig)))))
+        CatsService(Task(Xor.right(ServiceClientResponse(statusCodeOk, Some(userConfig)))))
 
-      val serviceClientResponse = apiService.getUserConfig(headers).run.run
+      val serviceClientResponse = apiService.getUserConfig(headers).value.run
 
       serviceClientResponse must beLike {
-        case Answer(r) =>
+        case Xor.Right(r) =>
           r.statusCode shouldEqual statusCodeOk
           r.data must beSome(userConfig)
       }
