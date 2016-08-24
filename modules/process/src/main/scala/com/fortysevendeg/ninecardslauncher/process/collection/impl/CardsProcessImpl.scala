@@ -34,7 +34,7 @@ trait CardsProcessImpl extends CollectionProcess {
     (for {
       card <- persistenceServices.findCardById(toFindCardByIdRequest(cardId)).resolveOption()
       cardList <- getCardsByCollectionId(collectionId)
-      _ <- persistenceServices.deleteCard(ServicesDeleteCardRequest(card))
+      _ <- persistenceServices.deleteCard(ServicesDeleteCardRequest(collectionId, card))
       _ <- updateCardList(moveCardList(cardList, card.position))
     } yield ()).resolve[CardException]
 

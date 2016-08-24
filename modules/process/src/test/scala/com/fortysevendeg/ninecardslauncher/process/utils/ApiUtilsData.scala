@@ -6,30 +6,21 @@ trait ApiUtilsData {
 
   val androidId = "012354654894654654"
 
-  val token = "Session token"
+  val apiKey = "api-key"
 
-  val userDBId = 1
+  val sessionToken = "Session token"
+
+  val marketToken = "Market token"
+
+  val userId = 1
 
   val user = User(
-    id = userDBId,
+    id = userId,
     email = None,
-    apiKey = None,
-    sessionToken = Some(token),
+    apiKey = Some(apiKey),
+    sessionToken = Some(sessionToken),
     deviceToken = None,
-    marketToken = None,
-    name = None,
-    avatar = None,
-    cover = None,
-    deviceName = None,
-    deviceCloudId = None)
-
-  val userSessionTokenNone = User(
-    id = userDBId,
-    email = None,
-    apiKey = None,
-    sessionToken = None,
-    deviceToken = None,
-    marketToken = None,
+    marketToken = Some(marketToken),
     name = None,
     avatar = None,
     cover = None,

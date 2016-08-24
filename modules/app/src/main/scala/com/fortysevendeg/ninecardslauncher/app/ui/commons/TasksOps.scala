@@ -11,7 +11,7 @@ object TasksOps {
 
   implicit class TaskResultUI[A, E <: Exception](t: Task[Result[A, E]]) {
 
-    val tag = "9cards"
+    val tag = AppLog.tag
 
     def resolveAsync[E >: Throwable](
       onResult: A => Unit = a => (),

@@ -24,7 +24,7 @@ class AppRepository(
 
   val appUri = uriCreator.parse(appUriString)
 
-  val appNotificationUri = uriCreator.parse(appUriNotificationString)
+  val appNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$appUriPath")
 
   val abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
 
@@ -41,7 +41,7 @@ class AppRepository(
           val id = contentResolverWrapper.insert(
             uri = appUri,
             values = values,
-            notificationUri = Some(appNotificationUri))
+            notificationUris = Seq(appNotificationUri))
 
           App(
             id = id,
@@ -60,7 +60,7 @@ class AppRepository(
             authority = NineCardsUri.authorityPart,
             uri = appUri,
             allValues = values,
-            notificationUri = Some(appNotificationUri))
+            notificationUris = Seq(appNotificationUri))
         }
       }
     }
@@ -72,7 +72,7 @@ class AppRepository(
           contentResolverWrapper.delete(
             uri = appUri,
             where = where,
-            notificationUri = Some(appNotificationUri))
+            notificationUris = Seq(appNotificationUri))
         }
       }
     }
@@ -84,7 +84,7 @@ class AppRepository(
           contentResolverWrapper.deleteById(
             uri = appUri,
             id = app.id,
-            notificationUri = Some(appNotificationUri))
+            notificationUris = Seq(appNotificationUri))
         }
       }
     }
@@ -97,7 +97,7 @@ class AppRepository(
             uri = appUri,
             where = s"${AppEntity.packageName} = ?",
             whereParams = Seq(packageName),
-            notificationUri = Some(appNotificationUri))
+            notificationUris = Seq(appNotificationUri))
         }
       }
     }
@@ -227,7 +227,7 @@ class AppRepository(
             uri = appUri,
             id = app.id,
             values = values,
-            notificationUri = Some(appNotificationUri)
+            notificationUris = Seq(appNotificationUri)
           )
         }
       }

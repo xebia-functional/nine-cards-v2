@@ -82,7 +82,7 @@ trait DeviceProcessSpecification
       CatsService(Task(Xor.right(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
 
     mockApiServices.googlePlayPackage(any)(any) returns
-      CatsService(Task(Xor.right(GooglePlayPackageResponse(statusCodeOk, googlePlayPackage.app))))
+      CatsService(Task(Xor.right(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
 
     val mockShortcutsServices = mock[ShortcutsServices]
 

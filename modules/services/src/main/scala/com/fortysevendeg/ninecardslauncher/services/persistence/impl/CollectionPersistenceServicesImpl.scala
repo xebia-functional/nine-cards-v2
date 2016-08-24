@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, Moment => RepositoryMoment}
-import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, MomentEntity}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card, Collection, Moment}
@@ -52,7 +52,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
 
   def deleteCollection(request: DeleteCollectionRequest) = {
     (for {
-      deletedCards <- deleteCards(request.collection.cards)
+      _ <- cardRepository.deleteCards(where = s"${CardEntity.collectionId} = ${request.collection.id}")
       deletedCollection <- collectionRepository.deleteCollection(toRepositoryCollection(request.collection))
       _ <- unlinkCollectionInMoment(request.collection.moment)
     } yield deletedCollection).resolve[PersistenceServiceException]
@@ -64,12 +64,21 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       collectionWithCards <- fetchCards(collectionsWithoutCards)
     } yield collectionWithCards.sortWith(_.position < _.position)).resolve[PersistenceServiceException]
 
-  def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest) =
+  def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest) = {
+
+    def fetchCollection(): ServiceDef2[Option[RepositoryCollection], RepositoryException] =
+      if(request.original) {
+        collectionRepository.fetchCollectionByOriginalSharedCollectionId(request.sharedCollectionId)
+      } else {
+        collectionRepository.fetchCollectionBySharedCollectionId(request.sharedCollectionId)
+      }
+
     (for {
-      collection <- collectionRepository.fetchCollectionBySharedCollectionId(request.sharedCollectionId)
+      collection <- fetchCollection()
       cards <- fetchCards(collection)
       moments <- getMomentsByCollection(collection)
     } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
+  }
 
   def fetchCollectionByPosition(request: FetchCollectionByPositionRequest) =
     (for {
@@ -94,17 +103,6 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     (for {
       updated <- collectionRepository.updateCollections(request.updateCollectionsRequests map toRepositoryCollection)
     } yield updated).resolve[PersistenceServiceException]
-
-  private[this] def deleteCards(cards: Seq[Card]): CatsService[Int] = {
-    val deletedCards = cards map {
-      card =>
-        cardRepository.deleteCard(toRepositoryCard(card)).value
-    }
-
-    CatsService(
-      Task.gatherUnordered(deletedCards) map (list =>
-          XorCatchAll[PersistenceServiceException](list.collect { case Xor.Right(value) => value }.sum)))
-  }
 
   private[this] def fetchCards(maybeCollection: Option[RepositoryCollection]): CatsService[Seq[RepositoryCard]] = {
     maybeCollection match {

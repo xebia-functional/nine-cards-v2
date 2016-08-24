@@ -63,23 +63,23 @@ trait AppRepositorySpecification
     contentResolverWrapper.insert(
       uri = mockUri,
       values = createAppValues,
-      notificationUri = Some(mockUri)) returns testAppId
+      notificationUris = Seq(mockUri)) returns testAppId
 
     contentResolverWrapper.deleteById(
       uri = mockUri,
       id = testAppId,
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.delete(
       uri = mockUri,
       where = "",
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.delete(
       uri = mockUri,
       where = s"$packageName = ?",
       whereParams = Seq(testPackageName),
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -133,7 +133,7 @@ trait AppRepositorySpecification
       uri = mockUri,
       id = testAppId,
       values = createAppValues,
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
   }
 
   trait ErrorAppRepositoryResponses {
@@ -145,23 +145,23 @@ trait AppRepositorySpecification
     contentResolverWrapper.insert(
       uri = mockUri,
       values = createAppValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.deleteById(
       uri = mockUri,
       id = testAppId,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.delete(
       uri = mockUri,
       where = "",
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.delete(
       uri = mockUri,
       where = s"$packageName = ?",
       whereParams = Seq(testPackageName),
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -194,7 +194,7 @@ trait AppRepositorySpecification
       uri = mockUri,
       id = testAppId,
       values = createAppValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
   }
 
 }

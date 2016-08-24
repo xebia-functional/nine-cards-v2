@@ -26,7 +26,7 @@ class CollectionRepository(
 
   val collectionUri = uriCreator.parse(collectionUriString)
 
-  val collectionNotificationUri = uriCreator.parse(collectionUriNotificationString)
+  val collectionNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$collectionUriPath")
 
   def addCollection(data: CollectionData): CatsService[Collection] =
     CatsService {
@@ -37,7 +37,7 @@ class CollectionRepository(
           val id = contentResolverWrapper.insert(
             uri = collectionUri,
             values = values,
-            notificationUri = Some(collectionNotificationUri))
+            notificationUris = Seq(collectionNotificationUri))
 
           Collection(id = id, data = data)
         }
@@ -55,7 +55,7 @@ class CollectionRepository(
             authority = NineCardsUri.authorityPart,
             uri = collectionUri,
             allValues = values,
-            notificationUri = Some(collectionNotificationUri))
+            notificationUris = Seq(collectionNotificationUri))
 
           datas zip ids map {
             case (data, id) => Collection(id = id, data = data)
@@ -71,7 +71,7 @@ class CollectionRepository(
           contentResolverWrapper.delete(
             uri = collectionUri,
             where = where,
-            notificationUri = Some(collectionNotificationUri))
+            notificationUris = Seq(collectionNotificationUri))
         }
       }
     }
@@ -83,7 +83,7 @@ class CollectionRepository(
           contentResolverWrapper.deleteById(
             uri = collectionUri,
             id = collection.id,
-            notificationUri = Some(collectionNotificationUri))
+            notificationUris = Seq(collectionNotificationUri))
         }
       }
     }
@@ -100,7 +100,18 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionBySharedCollectionId(sharedCollectionId: String): CatsService[Option[Collection]] =
+  def fetchCollectionBySharedCollectionId(id: String): CatsService[Option[Collection]] =
+    CatsService {
+      Task {
+        XorCatchAll[RepositoryException] {
+          fetchCollection(
+            selection = s"$sharedCollectionId = ?",
+            selectionArgs = Seq(id.toString))
+        }
+      }
+    }
+
+  def fetchCollectionByOriginalSharedCollectionId(sharedCollectionId: String): CatsService[Option[Collection]] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
@@ -156,7 +167,7 @@ class CollectionRepository(
             uri = collectionUri,
             id = collection.id,
             values = values,
-            notificationUri = Some(collectionNotificationUri))
+            notificationUris = Seq(collectionNotificationUri))
         }
       }
     }
@@ -173,7 +184,7 @@ class CollectionRepository(
             authority = NineCardsUri.authorityPart,
             uri = collectionUri,
             idAndValues = values,
-            notificationUri = Some(collectionNotificationUri))
+            notificationUris = Seq(collectionNotificationUri))
         }
       }
     }

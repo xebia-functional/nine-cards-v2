@@ -42,17 +42,17 @@ trait DockAppRepositorySpecification
     contentResolverWrapper.insert(
       uri = mockUri,
       values = createDockAppValues,
-      notificationUri = Some(mockUri)) returns testId
+      notificationUris = Seq(mockUri)) returns testId
 
     contentResolverWrapper.delete(
       uri = mockUri,
       where = "",
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.deleteById(
       uri = mockUri,
       id = testId,
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -70,7 +70,7 @@ trait DockAppRepositorySpecification
       uri = mockUri,
       id = testId,
       values = createDockAppValues,
-      notificationUri = Some(mockUri)) returns 1
+      notificationUris = Seq(mockUri)) returns 1
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,
@@ -108,17 +108,17 @@ trait DockAppRepositorySpecification
     contentResolverWrapper.insert(
       uri = mockUri,
       values = createDockAppValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.delete(
       uri = mockUri,
       where = "",
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.deleteById(
       uri = mockUri,
       id = testId,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.findById(
       uri = mockUri,
@@ -130,7 +130,7 @@ trait DockAppRepositorySpecification
       uri = mockUri,
       id = testId,
       values = createDockAppValues,
-      notificationUri = Some(mockUri)) throws contentResolverException
+      notificationUris = Seq(mockUri)) throws contentResolverException
 
     contentResolverWrapper.fetchAll(
       uri = mockUri,

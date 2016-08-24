@@ -36,7 +36,7 @@ trait CardPersistenceServicesImpl extends PersistenceServices {
 
   def deleteCard(request: DeleteCardRequest) =
     (for {
-      deleted <- cardRepository.deleteCard(toRepositoryCard(request.card))
+      deleted <- cardRepository.deleteCard(request.collectionId, toRepositoryCard(request.card))
     } yield deleted).resolve[PersistenceServiceException]
 
   def deleteCardsByCollection(collectionId: Int) =

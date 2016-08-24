@@ -21,7 +21,7 @@ trait SharedCollectionsProcessImplSpecification
   extends Specification
     with Mockito {
 
-  val apiException = new ApiServiceException("")
+  val apiException = ApiServiceException("")
 
   trait SharedCollectionsProcessProcessScope
     extends Scope
@@ -41,6 +41,7 @@ trait SharedCollectionsProcessImplSpecification
     val sharedCollectionsProcess = new SharedCollectionsProcessImpl(
       apiServices = mockApiServices,
       persistenceServices = mockPersistenceServices) {
+
       override val apiUtils: ApiUtils = mock[ApiUtils]
       apiUtils.getRequestConfig(contextSupport) returns
         CatsService(Task(Xor.right(requestConfig)))
@@ -112,18 +113,7 @@ class SharedCollectionsProcessImplSpec
           createSharedCollection
         )(contextSupport).value.run
 
-        result mustEqual Xor.Right(
-          CreatedCollection(
-            sharedCollection.name,
-            sharedCollection.description,
-            sharedCollection.author,
-            sharedCollection.packages,
-            sharedCollection.category,
-            sharedCollection.shareLink,
-            sharedCollection.sharedCollectionId,
-            sharedCollection.icon,
-            sharedCollection.community
-          ))
+        result mustEqual Xor.Right(sharedCollectionId)
       }
 
     "return a SharedCollectionsException if the service throws an exception" in

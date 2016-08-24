@@ -6,8 +6,7 @@ import com.fortysevendeg.ninecardslauncher.process.user.models.User
 
 trait UserProcess {
 
-  def signIn(email: String, deviceName: String, token: String, permissions: Seq[String])
-    (implicit context: ContextSupport): CatsService[SignInResponse]
+  def signIn(email: String, androidMarketToken: String, emailTokenId: String)(implicit context: ContextSupport): CatsService[Unit]
 
   def register(implicit context: ContextSupport): CatsService[Unit]
 

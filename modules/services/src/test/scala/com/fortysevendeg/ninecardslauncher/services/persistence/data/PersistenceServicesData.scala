@@ -260,7 +260,7 @@ trait PersistenceServicesData extends Conversions {
       imagePath = imagePath,
       notification = Option(notification))
 
-  def createDeleteCardRequest(card: Card): DeleteCardRequest = DeleteCardRequest(card = card)
+  def createDeleteCardRequest(card: Card): DeleteCardRequest = DeleteCardRequest(collectionId, card = card)
 
   def createFetchCardsByCollectionRequest(collectionId: Int): FetchCardsByCollectionRequest =
     FetchCardsByCollectionRequest(collectionId = collectionId)
@@ -321,9 +321,6 @@ trait PersistenceServicesData extends Conversions {
 
   def createFetchCollectionByPositionRequest(position: Int): FetchCollectionByPositionRequest =
     FetchCollectionByPositionRequest(position = position)
-
-  def createFetchCollectionBySharedCollection(sharedCollectionId: String): FetchCollectionBySharedCollectionRequest =
-    FetchCollectionBySharedCollectionRequest(sharedCollectionId = sharedCollectionId)
 
   def createFindCollectionByIdRequest(id: Int): FindCollectionByIdRequest = FindCollectionByIdRequest(id = id)
 

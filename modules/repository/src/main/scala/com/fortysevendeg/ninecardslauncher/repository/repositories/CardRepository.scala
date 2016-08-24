@@ -25,7 +25,8 @@ class CardRepository(
 
   val cardUri = uriCreator.parse(cardUriString)
 
-  val cardNotificationUri = uriCreator.parse(cardUriNotificationString)
+  val cardNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$cardUriPath")
+  val collectionNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$collectionUriPath")
 
   def addCard(collectionId: Int, data: CardData): CatsService[Card] =
     CatsService {
@@ -36,7 +37,7 @@ class CardRepository(
           val id = contentResolverWrapper.insert(
             uri = cardUri,
             values = values,
-            notificationUri = Some(cardNotificationUri))
+            notificationUris = Seq(cardNotificationUri, uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
 
           Card(id = id, data = data)
         }
@@ -54,10 +55,15 @@ class CardRepository(
             }
           }
 
+          val collectionNotificationUris = datas.map(_.collectionId).distinct.map { id =>
+            uriCreator.withAppendedPath(collectionNotificationUri, id.toString)
+          }
+
           val ids = contentResolverWrapper.inserts(
             authority = NineCardsUri.authorityPart,
             uri = cardUri,
-            allValues = values)
+            allValues = values,
+            notificationUris = collectionNotificationUris :+ cardNotificationUri)
 
           (datas flatMap (_.data)) zip ids map {
             case (data, id) => Card(id = id, data = data)
@@ -73,19 +79,19 @@ class CardRepository(
           contentResolverWrapper.delete(
             uri = cardUri,
             where = where,
-            notificationUri = Some(cardNotificationUri))
+            notificationUris = Seq(cardNotificationUri))
         }
       }
     }
 
-  def deleteCard(card: Card): CatsService[Int] =
+  def deleteCard(collectionId: Int, card: Card): CatsService[Int] =
     CatsService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = cardUri,
             id = card.id,
-            notificationUri = Some(cardNotificationUri))
+            notificationUris = Seq(cardNotificationUri, uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
         }
       }
     }
@@ -154,7 +160,7 @@ class CardRepository(
             uri = cardUri,
             id = card.id,
             values = values,
-            notificationUri = Some(cardNotificationUri))
+            notificationUris = Seq(cardNotificationUri))
         }
       }
     }
@@ -171,7 +177,7 @@ class CardRepository(
             authority = NineCardsUri.authorityPart,
             uri = cardUri,
             idAndValues = values,
-            notificationUri = Some(cardNotificationUri))
+            notificationUris = Seq(cardNotificationUri))
         }
       }
     }

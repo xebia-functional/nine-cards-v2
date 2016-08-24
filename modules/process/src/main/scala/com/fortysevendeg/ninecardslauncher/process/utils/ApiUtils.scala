@@ -1,35 +1,39 @@
 package com.fortysevendeg.ninecardslauncher.process.utils
 
-import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ImplicitsApiServiceExceptions, RequestConfig}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, FindUserByIdRequest, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
+import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
+import rapture.core.{Answer, Errata, Result}
+import com.fortysevendeg.ninecardslauncher.commons.services.Service._
 
 import scalaz.concurrent.Task
 
 class ApiUtils(persistenceServices: PersistenceServices)
   extends ImplicitsApiServiceExceptions {
 
-  def getRequestConfig(implicit context: ContextSupport): CatsService[RequestConfig] = {
+  def getRequestConfig(implicit context: ContextSupport): ServiceDef2[RequestConfig, ApiServiceException] = {
 
-    def getUser = context.getActiveUserId match {
-      case Some(id) => persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
-      case _ => CatsService(Task(Xor.left(PersistenceServiceException("Missing user id"))))
+    def loadUser(userId: Int) =
+      (for {
+        Some(user) <- persistenceServices.findUserById(FindUserByIdRequest(userId))
+        (apiKey, sessionToken) <- loadTokens(user)
+        androidId <- persistenceServices.getAndroidId
+      } yield RequestConfig(apiKey, sessionToken, androidId, user.marketToken)).resolve[ApiServiceException]
+
+    def loadTokens(user: User): ServiceDef2[(String, String), ApiServiceException] =
+      (user.apiKey, user.sessionToken) match {
+        case (Some(apiKey), Some(sessionToken)) => Service(Task(Answer((apiKey, sessionToken))))
+        case _ => Service(Task(Errata(ApiServiceException("Session token doesn't exists"))))
+      }
+
+    context.getActiveUserId match {
+      case Some(id) => loadUser(id)
+      case None =>  Service(Task(Result.errata(ApiServiceException("Missing user id"))))
     }
 
-    def getSessionToken(sessionToken: Option[String]) = sessionToken match {
-      case Some(st) => CatsService(Task(Xor.right(st)))
-      case _ => CatsService(Task(Xor.left(PersistenceServiceException("No session token available"))))
-    }
-
-    (for {
-      user <- getUser
-      sessionToken <- getSessionToken(user.sessionToken)
-      androidId <- persistenceServices.getAndroidId
-    } yield RequestConfig(deviceId = androidId, token = sessionToken, marketToken = user.marketToken)).resolve[ApiServiceException]
   }
 
 }

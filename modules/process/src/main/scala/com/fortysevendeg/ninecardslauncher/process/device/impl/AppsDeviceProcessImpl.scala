@@ -62,8 +62,8 @@ trait AppsDeviceProcessImpl
         .resolveTo(GooglePlayPackagesResponse(200, Seq.empty))
       apps = installedApps map { app =>
         val knownCategory = findCategory(app.packageName)
-        val category: NineCardCategory = knownCategory getOrElse {
-          val categoryName = googlePlayPackagesResponse.packages find(_.app.docid == app.packageName) flatMap (_.app.details.appDetails.appCategory.headOption)
+        val category = knownCategory getOrElse {
+          val categoryName = googlePlayPackagesResponse.packages find(_.packageName == app.packageName) flatMap (_.category)
           categoryName map (NineCardCategory(_)) getOrElse Misc
         }
         toAddAppRequest(app, category)
@@ -95,7 +95,7 @@ trait AppsDeviceProcessImpl
     for {
       requestConfig <- apiUtils.getRequestConfig
       appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).value.run match {
-        case Xor.Right(g) => (g.app.details.appDetails.appCategory map (NineCardCategory(_))).headOption.getOrElse(Misc)
+        case Xor.Right(g) => (g.app.category map (NineCardCategory(_))).getOrElse(Misc)
         case _ => Misc
       }
     } yield appCategory
