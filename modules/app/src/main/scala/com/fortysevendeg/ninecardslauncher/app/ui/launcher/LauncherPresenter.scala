@@ -35,8 +35,6 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentExceptionImpl}
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, AppWidgetException, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.R
@@ -76,7 +74,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     di.observerRegister.registerObserver()
     if (actions.isEmptyCollectionsInWorkspace) {
       loadLauncherInfo()
-    } else if (cache.canReloadMomentInResume) {
+    } else if (cache.canReloadMoment) {
       changeMomentIfIsAvailable()
     }
   }
@@ -489,9 +487,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       })
   }
 
-  def changeMomentConstrains(): Unit = {
-    cache.clearTime()
+  def changeMomentConstrains(): Unit = if (cache.canReloadMoment) {
     changeMomentIfIsAvailable()
+  } else {
+    reloadAppsMomentBar()
   }
 
   def reloadAppsMomentBar(): Unit = {

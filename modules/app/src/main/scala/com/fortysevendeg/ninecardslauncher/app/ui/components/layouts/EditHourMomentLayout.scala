@@ -11,6 +11,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -35,7 +36,7 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val margin = resGetDimensionPixelSize(R.dimen.padding_default)
 
-  val sizeDay = resGetDimensionPixelSize(R.dimen.edit_moment_size_day)
+  val paddingLarge = resGetDimensionPixelSize(R.dimen.padding_large)
 
   val daySelectedColor = resGetColor(R.color.collection_fab_button_item_edit_moment)
 
@@ -61,7 +62,7 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     val iconColor = theme.get(DrawerIconColor)
     val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
     val textColor = theme.get(DrawerTextColor)
-    (this <~ vSetPosition(position)) ~
+    (this <~ vSetPosition(position) <~ vGlobalLayoutListener(_ => fillDays(position, time.days))) ~
       (startContent <~ On.click(showTime(position, time.from, from = true))) ~
       (endContent <~ On.click(showTime(position, time.to, from = false))) ~
       (startText <~
@@ -74,8 +75,7 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         tvCompoundDrawablesWithIntrinsicBounds(right = Some(arrow))) ~
       (deleteAction <~
         tivDefaultColor(iconColor) <~
-        On.click(Ui(editMomentPresenter.removeHour(position)))) ~
-      fillDays(position, time.days)
+        On.click(Ui(editMomentPresenter.removeHour(position))))
   }
 
   private[this] def showTime(position: Int, time: String, from: Boolean)(implicit editMomentPresenter: EditMomentPresenter): Ui[Any] = Try {
@@ -108,6 +108,7 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           On.click(Ui(editMomentPresenter.swapDay(position, index))) <~
           ivSrc(CharDrawable(letter, circle = true, Some(color)))).get
     }
+    val sizeDay = ((getWidth - (paddingLarge * 2)) / days.length) - (margin * 2)
     val params = new LinearLayout.LayoutParams(sizeDay, sizeDay)
     params.setMargins(margin, margin, margin, margin)
     daysContent <~
