@@ -17,7 +17,7 @@ class CachePreferences(implicit contextWrapper: ContextWrapper) {
 
   def clearTime(): Unit = cachePreferences.edit().remove(timeMomentChanged).apply()
 
-  def canReloadMomentInResume: Boolean = {
+  def canReloadMoment: Boolean = {
     val defaultDate = new DateTime().minusDays(1)
     val timeChanged = new DateTime(cachePreferences.getLong(timeMomentChanged, defaultDate.getMillis))
     timeChanged.plusHours(1).isBeforeNow

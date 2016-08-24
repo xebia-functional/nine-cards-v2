@@ -128,6 +128,8 @@ trait EditMomentActionsImpl
 
   override def showFieldErrorMessage(): Ui[Any] = uiShortToast(R.string.contactUsError)
 
+  def showItemDuplicatedMessage(): Ui[Any] = uiShortToast(R.string.addDuplicateItemError)
+
   private[this] def showLinkCollectionMessage() = Ui {
     val dialog = new AlertDialogFragment(
       message = R.string.linkCollectionMessage,

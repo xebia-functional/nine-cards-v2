@@ -520,4 +520,7 @@
     <string name="noMoveForWidget">The widget can\'t be moved there</string>
     <string name="noResizeForWidget">The widget can\'t be resized there</string>
 
+    <!-- Edit Moment -->
+    <string name="addDuplicateItemError">Item is duplicated</string>
+
 </resources>

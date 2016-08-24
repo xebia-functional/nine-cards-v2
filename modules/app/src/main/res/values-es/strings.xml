@@ -506,4 +506,7 @@
     <string name="noMoveForWidget">El widget no puede moverse ahí</string>
     <string name="noResizeForWidget">El widget no puede redimensionarse ahí</string>
 
+    <!-- Edit Moment -->
+    <string name="addDuplicateItemError">Elemento duplicado</string>
+
 </resources>

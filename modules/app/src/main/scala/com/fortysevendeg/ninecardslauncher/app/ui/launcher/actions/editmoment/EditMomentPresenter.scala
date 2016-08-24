@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadAction
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentsConstrainsChangedActionFilter, MomentsReloadedActionFilter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentsConstrainsChangedActionFilter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.moment.UpdateMomentRequest
@@ -58,11 +58,16 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
 
   def addHour(): Unit = {
     val newTimeslot = MomentTimeSlot(from = "9:00", to = "14:00", days = Seq(0, 0, 0, 0, 0, 0, 0))
-    statuses = statuses.addHour(newTimeslot)
-    (statuses.modifiedMoment match {
-      case Some(moment) => actions.loadHours(moment)
-      case _ => actions.showSavingMomentErrorMessage()
-    }).run
+    val containsTimeslot = statuses.modifiedMoment exists (_.timeslot.contains(newTimeslot))
+    if (containsTimeslot) {
+      actions.showItemDuplicatedMessage().run
+    } else {
+      statuses = statuses.addHour(newTimeslot)
+      (statuses.modifiedMoment match {
+        case Some(moment) => actions.loadHours(moment)
+        case _ => actions.showSavingMomentErrorMessage()
+      }).run
+    }
   }
 
   def removeHour(position: Int): Unit = {
@@ -81,11 +86,16 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
   }
 
   def addWifi(wifi: String): Unit = {
-    statuses = statuses.addWifi(wifi)
-    (statuses.modifiedMoment match {
-      case Some(moment) => actions.loadWifis(moment)
-      case _ => actions.showSavingMomentErrorMessage()
-    }).run
+    val containsWifi = statuses.modifiedMoment exists (_.wifi.contains(wifi))
+    if (containsWifi) {
+      actions.showItemDuplicatedMessage().run
+    } else {
+      statuses = statuses.addWifi(wifi)
+      (statuses.modifiedMoment match {
+        case Some(moment) => actions.loadWifis(moment)
+        case _ => actions.showSavingMomentErrorMessage()
+      }).run
+    }
   }
 
   def removeWifi(position: Int): Unit = {
@@ -224,5 +234,7 @@ trait EditMomentActions {
   def loadWifis(moment: Moment): Ui[Any]
 
   def showFieldErrorMessage(): Ui[Any]
+
+  def showItemDuplicatedMessage(): Ui[Any]
 
 }
