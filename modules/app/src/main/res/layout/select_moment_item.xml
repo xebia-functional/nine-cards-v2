@@ -11,4 +11,8 @@
         android:id="@+id/select_moment_item_text"
         style="@style/SelectMomentItemText"/>
 
+    <ImageView
+        android:id="@+id/select_moment_item_close"
+        style="@style/SelectMomentItemClose"/>
+
 </LinearLayout>

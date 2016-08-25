@@ -95,6 +95,18 @@
     <string name="editMoment">Edit Moment</string>
     <string name="changeMoment">Change Moment</string>
 
+    <string name="linkCollection">Quick Access to Collection</string>
+    <string name="hours">Hours</string>
+    <string name="wifi">Wifi</string>
+
+    <string name="noLinkCollectionToMoment">No link collection to this moment</string>
+
+    <string name="addHoursToEditMoment">Add time constraints to this moment in order to show in your launcher when you need</string>
+
+    <string name="addWifiToEditMoment">Adds wifi constraints to this moment and it\'ll be shown when you are connected to them</string>
+
+    <string name="linkCollectionMessage">You can select a collection and access quickly to the apps, contacts and shortcuts inside of this collection from a right drawer in 9Cards. You only have click in the background or swipe from the right edge</string>
+
     <string name="widgetsErrorMessage">We have had problems loading the widgets. Please try again</string>
 
     <!-- Collections -->
@@ -511,5 +523,8 @@
     <string name="noSpaceForWidget">The widget don\'t currently have space</string>
     <string name="noMoveForWidget">The widget can\'t be moved there</string>
     <string name="noResizeForWidget">The widget can\'t be resized there</string>
+
+    <!-- Edit Moment -->
+    <string name="addDuplicateItemError">Item is duplicated</string>
 
 </resources>
