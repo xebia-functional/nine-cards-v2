@@ -10,6 +10,11 @@
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_xlarge">24dp</dimen>
 
+    <dimen name="size_icon_small">36dp</dimen>
+    <dimen name="size_icon_default">48dp</dimen>
+    <dimen name="size_icon_medium">54dp</dimen>
+    <dimen name="size_icon_large">64dp</dimen>
+
     <dimen name="radius_default">3dp</dimen>
 
     <dimen name="text_xxxxlarge">26sp</dimen>

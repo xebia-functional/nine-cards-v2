@@ -6,21 +6,22 @@ import android.support.design.widget.BottomSheetDialog
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
 class CollectionDialog(
   moments: Seq[Collection],
   onCollection: (Int) => Any,
-  onDismissDialog: () => Any)(implicit contextWrapper: ContextWrapper)
+  onDismissDialog: () => Any)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends BottomSheetDialog(contextWrapper.getOriginal)
   with TypedFindView { dialog =>
 
@@ -33,6 +34,7 @@ class CollectionDialog(
   val views = moments map (moment => new CollectionItem(moment))
 
   (selectCollectionList <~
+    vBackgroundColor(theme.get(DrawerBackgroundColor)) <~
     vgAddViews(views)).run
 
   setOnDismissListener(new OnDismissListener {
@@ -49,15 +51,13 @@ class CollectionDialog(
 
     val text = findView(TR.select_collection_item_text)
 
-    val colorIcon = resGetColor(R.color.item_list_popup_moments_menu)
-
     ((this <~ On.click(
       Ui {
         onCollection(collection.id)
         dialog.dismiss()
       })) ~
-      (icon <~ ivSrc(iconCollectionDetail(collection.icon)) <~ tivDefaultColor(colorIcon)) ~
-      (text <~ tvText(collection.name))).run
+      (icon <~ ivSrc(iconCollectionDetail(collection.icon)) <~ tivDefaultColor(theme.get(DrawerIconColor))) ~
+      (text <~ tvText(collection.name) <~ tvColor(theme.get(DrawerTextColor)))).run
 
 
   }
