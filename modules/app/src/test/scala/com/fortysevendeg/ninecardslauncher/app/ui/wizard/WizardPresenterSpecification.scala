@@ -31,13 +31,6 @@ trait WizardPresenterSpecification
   with Mockito
   with WizardPresenterData {
 
-  case class RequestUserPermissionException(message: String, cause: Option[Throwable] = None)
-    extends RuntimeException(message)
-    with AuthTokenException
-    with AuthTokenOperationCancelledException
-
-  val requestUserPermissionsException = RequestUserPermissionException("", None)
-
   trait WizardPresenterScope
     extends Scope {
 

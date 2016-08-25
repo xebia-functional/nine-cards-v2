@@ -1,21 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.LauncherPresenterStatuses
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionException}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.{NineCardException, CatsService}
+import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
-import com.fortysevendeg.ninecardslauncher.process.device.DockAppException
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import macroid.{ActivityContextWrapper, Ui}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 import scala.concurrent.duration._
 import scalaz.concurrent.Task
@@ -31,9 +29,7 @@ trait LauncherPresenterSpecification
 
   case class LauncherAppsException(message: String, cause: Option[Throwable] = None)
     extends RuntimeException(message)
-    with CollectionException
-    with DockAppException
-    with MomentException
+    with NineCardException
 
   val launcherAppsException = LauncherAppsException("", None)
 
@@ -60,16 +56,16 @@ trait LauncherPresenterSpecification
 
     val presenter = new LauncherPresenter(mockActions) {
       statuses = mockStatuses
-      override protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
-        Service(Task(Answer((collectionSeq, dockAppSeq, Some(moment)))))
-      override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Answer(user)))
+      override protected def getLauncherInfo: CatsService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
+        CatsService(Task(Xor.right((collectionSeq, dockAppSeq, Some(moment)))))
+      override protected def getUser: CatsService[User] = CatsService(Task(Xor.right(user)))
     }
 
     val presenterFailed = new LauncherPresenter(mockActions) {
       statuses = mockStatuses
-      override protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
-        Service(Task(Errata(launcherAppsException)))
-      override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Errata(userException)))
+      override protected def getLauncherInfo: CatsService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
+        CatsService(Task(Xor.left(launcherAppsException)))
+      override protected def getUser: CatsService[User] = CatsService(Task(Xor.left(userException)))
     }
 
   }

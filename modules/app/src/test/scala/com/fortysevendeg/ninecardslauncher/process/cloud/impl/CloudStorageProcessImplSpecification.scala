@@ -16,7 +16,7 @@ import scalaz.concurrent.Task
 
 trait CloudStorageProcessImplSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   val driveServicesException = DriveServicesException("")
 
@@ -239,7 +239,7 @@ class CloudStorageProcessImplSpec
 
           val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
-            case Xor.Left(e) =>  e.cause must beSome(driveServicesException)
+            case Xor.Left(e) => e.cause must beSome(driveServicesException)
           }
 
         }
@@ -281,7 +281,7 @@ class CloudStorageProcessImplSpec
 
           val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
-            case Xor.Left(e) =>  e.cause must beSome(persistenceServicesException)
+            case Xor.Left(e) => e.cause must beSome(persistenceServicesException)
           }
 
         }
@@ -321,7 +321,7 @@ class CloudStorageProcessImplSpec
 
           val result = cloudStorageProcess.getCloudStorageDevice(cloudId).value.run
           result must beLike {
-            case Xor.Left(e) =>  e.cause must beSome(driveServicesException)
+            case Xor.Left(e) => e.cause must beSome(driveServicesException)
           }
 
         }
@@ -441,9 +441,7 @@ class CloudStorageProcessImplSpec
             cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
 
           result must beLike {
-            case Xor.Left(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beAnInstanceOf[CloudStorageProcessException]
-            }
+            case Xor.Left(e) => e must beAnInstanceOf[CloudStorageProcessException]
           }
         }
 
@@ -462,13 +460,8 @@ class CloudStorageProcessImplSpec
             cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
 
           result must beLike {
-            case Xor.Left(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: CloudStorageProcessException => e.cause must beSome(androidIdNotFoundException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome(androidIdNotFoundException)
           }
-
         }
 
       "return a CloudStorageProcessException when the persistence service return an exception" in
@@ -484,13 +477,8 @@ class CloudStorageProcessImplSpec
             cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
 
           result must beLike {
-            case Xor.Left(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: CloudStorageProcessException => e.cause must beSome(androidIdNotFoundException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome(androidIdNotFoundException)
           }
-
         }
 
       "return a CloudStorageProcessException when there isn't a active user id" in
@@ -506,11 +494,8 @@ class CloudStorageProcessImplSpec
             cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
 
           result must beLike {
-            case Xor.Left(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beAnInstanceOf[CloudStorageProcessException]
-            }
+            case Xor.Left(e) => e must beAnInstanceOf[CloudStorageProcessException]
           }
-
         }
 
     }
@@ -523,7 +508,7 @@ class CloudStorageProcessImplSpec
           driveServices.deleteFile(cloudId) returns CatsService(Task(Xor.right(Unit)))
 
           val result = cloudStorageProcess.deleteCloudStorageDevice(cloudId).value.run
-          result must beAnInstanceOf[Answer[Unit, CloudStorageProcessException]]
+          result must beAnInstanceOf[Xor.Right[Unit]]
         }
 
       "return a CloudStorageProcessException when the service returns an exception" in
@@ -531,9 +516,8 @@ class CloudStorageProcessImplSpec
 
           val result = cloudStorageProcess.deleteCloudStorageDevice(cloudId).value.run
           result must beLike {
-            case Xor.Left(e) =>  e.cause must beSome(driveServicesException)
+            case Xor.Left(e) => e.cause must beSome(driveServicesException)
           }
-
         }
 
     }
