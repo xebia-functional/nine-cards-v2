@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadAction
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentsConstrainsChangedActionFilter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentConstrainsChangedActionFilter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.moment.UpdateMomentRequest
@@ -131,7 +131,7 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
   }
 
   private[this] def momentConstrainsChangedBroadCastIfNecessary() =
-    sendBroadCast(BroadAction(MomentsConstrainsChangedActionFilter.action))
+    sendBroadCast(BroadAction(MomentConstrainsChangedActionFilter.action))
 
 }
 

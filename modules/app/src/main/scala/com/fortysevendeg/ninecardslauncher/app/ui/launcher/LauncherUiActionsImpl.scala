@@ -354,7 +354,7 @@ trait LauncherUiActionsImpl
 
   override def showSelectMomentDialog(): Ui[Any] = activityContextWrapper.original.get match {
     case Some(activity: Activity) => Ui {
-      val momentDialog = new MomentDialog()
+      val momentDialog = new MomentDialog
       momentDialog.show()
     }
     case _ => Ui.nop

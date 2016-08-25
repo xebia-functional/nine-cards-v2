@@ -8,14 +8,14 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions, PreferencesValuesKeys}
-import com.fortysevendeg.ninecardslauncher.app.ui.CachePreferences
+import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentsReloadedActionFilter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, RequestCodes, WidgetsOps}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
@@ -58,7 +58,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   val defaultPage = 1
 
-  lazy val cache = new CachePreferences
+  lazy val persistMoment = new PersistMoment
 
   var statuses = LauncherPresenterStatuses()
 
@@ -74,7 +74,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     di.observerRegister.registerObserver()
     if (actions.isEmptyCollectionsInWorkspace) {
       loadLauncherInfo()
-    } else if (cache.canReloadMoment) {
+    } else if (persistMoment.nonPersist) {
       changeMomentIfIsAvailable()
     }
   }
@@ -462,7 +462,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def goToChangeMoment(): Unit = actions.showSelectMomentDialog().run
 
   def changeMoment(momentType: NineCardsMoment): Unit = {
-    cache.updateTimeMomentChangedManually()
+    persistMoment.persist(momentType)
 
     def getMoment = for {
       maybeMoment <- di.momentProcess.fetchMomentByType(momentType)
@@ -485,12 +485,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
             Ui(momentReloadBroadCastIfNecessary())
         case _ => Ui.nop
       })
-  }
-
-  def changeMomentConstrains(): Unit = if (cache.canReloadMoment) {
-    changeMomentIfIsAvailable()
-  } else {
-    reloadAppsMomentBar()
   }
 
   def reloadAppsMomentBar(): Unit = {
@@ -522,11 +516,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def loadLauncherInfo(): Unit = {
 
+    def getMoment = persistMoment.getPersistMoment match {
+      case Some(moment) => di.momentProcess.fetchMomentByType(moment)
+      case _ => di.momentProcess.getBestAvailableMoment
+    }
+
     def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
       for {
         collections <- di.collectionProcess.getCollections
         dockApps <- di.deviceProcess.getDockApps
-        moment <- di.momentProcess.getBestAvailableMoment
+        moment <- getMoment
       } yield (collections, dockApps, moment)
 
     Task.fork(getLauncherInfo.run).resolveAsyncUi(
@@ -733,7 +732,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       }
     }
 
-  private[this] def momentReloadBroadCastIfNecessary() = sendBroadCast(BroadAction(MomentsReloadedActionFilter.action))
+  def cleanPersistedMoment() = {
+    persistMoment.clean()
+    momentForceBestAvailable()
+  }
+
+  private[this] def momentReloadBroadCastIfNecessary() = sendBroadCast(BroadAction(MomentReloadedActionFilter.action))
+
+  private[this] def momentForceBestAvailable() = sendBroadCast(BroadAction(MomentForceBestAvailableActionFilter.action))
 
   private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
