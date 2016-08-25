@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AllAppsCategory, Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetAppOrder, GetByName}
@@ -33,7 +33,7 @@ case class AppsPresenter(
       case AllApps => getLoadApps(GetByName)
       case AppsByCategory => getLoadAppsByCategory(category)
     }
-    Task.fork(task.run).resolveAsyncUi(
+    Task.fork(task.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = {
         case (apps: IterableApps, counters: Seq[TermCounter]) =>
@@ -55,13 +55,13 @@ case class AppsPresenter(
     actions.appAdded(card).run
   }
 
-  private[this] def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
+  private[this] def getLoadApps(order: GetAppOrder): CatsService[(IterableApps, Seq[TermCounter])] =
     for {
       iterableApps <- di.deviceProcess.getIterableApps(order)
       counters <- di.deviceProcess.getTermCountersForApps(order)
     } yield (iterableApps, counters)
 
-  private[this] def getLoadAppsByCategory(category: NineCardCategory): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
+  private[this] def getLoadAppsByCategory(category: NineCardCategory): CatsService[(IterableApps, Seq[TermCounter])] =
     for {
       iterableApps <- di.deviceProcess.getIterableAppsByCategory(category.name)
     } yield (iterableApps, Seq.empty)

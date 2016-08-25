@@ -1,35 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
-trait AuthTokenOperationCancelledException
-  extends RuntimeException {
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
 
-  val message: String
 
-  val cause: Option[Throwable]
-
-}
-
-case class AuthTokenOperationCancelledExceptionImpl(message: String, cause : Option[Throwable] = None)
+case class AuthTokenOperationCancelledException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)
-  with AuthTokenOperationCancelledException {
+  with NineCardException {
   cause foreach initCause
 }
 
-trait AuthTokenException
-  extends RuntimeException {
-
-  val message: String
-
-  val cause: Option[Throwable]
-
-}
-
-case class AuthTokenExceptionImpl(message: String, cause : Option[Throwable] = None)
+case class AuthTokenException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)
-  with AuthTokenException {
+  with NineCardException {
   cause foreach initCause
 }
 
 trait ImplicitsAuthTokenException {
-  implicit def authTokenExceptionConverter = (t: Throwable) => AuthTokenExceptionImpl(t.getMessage, Some(t))
+  implicit def authTokenExceptionConverter = (t: Throwable) => AuthTokenException(t.getMessage, Option(t))
 }

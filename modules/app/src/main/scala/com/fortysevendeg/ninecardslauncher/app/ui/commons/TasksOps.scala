@@ -1,15 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import macroid.Ui
-import rapture.core.{Answer, Errata, Result, Unforeseen}
 
 import scalaz.concurrent.Task
 import scalaz.{-\/, \/-}
 
 object TasksOps {
 
-  implicit class TaskResultUI[A, E <: Exception](t: Task[Result[A, E]]) {
+  implicit class TaskResultUI[A, E <: Exception](t: Task[Xor[E,A]]) {
 
     val tag = AppLog.tag
 
@@ -21,15 +21,12 @@ object TasksOps {
       onPreTask()
       t.runAsync {
         case -\/(ex) =>
-          printErrorTaskMessage("=> EXCEPTION Disjunction <=", Seq(ex))
+          printErrorTaskMessage("=> EXCEPTION Disjunction <=", ex)
           onException(ex)
-        case \/-(Answer(response)) => onResult(response)
-        case \/-(e@Errata(_)) =>
-          printErrorTaskMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
-          e.exceptions foreach onException
-        case \/-(Unforeseen(ex)) =>
-          printErrorTaskMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
-          onException(ex)
+        case \/-(Xor.Right(response)) => onResult(response)
+        case \/-(Xor.Left(e)) =>
+          printErrorTaskMessage(s"=> EXCEPTION Xor ", e)
+          onException(e)
       }
     }
 
@@ -40,15 +37,12 @@ object TasksOps {
       onPreTask().run
       t.runAsync {
         case -\/(ex) =>
-          printErrorTaskMessage("=> EXCEPTION Disjunction <=", Seq(ex))
+          printErrorTaskMessage("=> EXCEPTION Disjunction <=", ex)
           onException(ex).run
-        case \/-(Answer(response)) => onResult(response).run
-        case \/-(e@Errata(_)) =>
-          printErrorTaskMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
-          e.exceptions foreach (ex => onException(ex).run)
-        case \/-(Unforeseen(ex)) =>
-          printErrorTaskMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
-          onException(ex).run
+        case \/-(Xor.Right(response)) => onResult(response).run
+        case \/-(Xor.Left(e)) =>
+          printErrorTaskMessage(s"=> EXCEPTION Xor <=", e)
+          onException(e).run
       }
     }
 
@@ -56,13 +50,10 @@ object TasksOps {
       onResult: A => Unit = a => (),
       onException: E => Unit = (e: Throwable) => ()): Unit = {
       t.map {
-        case Answer(response) => onResult(response)
-        case e@Errata(_) =>
-          printErrorTaskMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
-          e.exceptions foreach onException
-        case Unforeseen(ex) =>
-          printErrorTaskMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
-          onException(ex)
+        case Xor.Right(response) => onResult(response)
+        case Xor.Left(e) =>
+          printErrorTaskMessage(s"=> EXCEPTION Xor <=", e)
+          onException(e)
       }.attemptRun
     }
 
@@ -70,13 +61,10 @@ object TasksOps {
       onResult: (A) => Ui[_] = a => Ui.nop,
       onException: (E) => Ui[_] = (e: Throwable) => Ui.nop): Unit = {
       t.map {
-        case Answer(response) => onResult(response).run
-        case e@Errata(_) =>
-          printErrorTaskMessage(s"=> EXCEPTION Errata (${e.exceptions.length}) <=", e.exceptions)
-          e.exceptions foreach (ex => onException(ex).run)
-        case Unforeseen(ex) =>
-          printErrorTaskMessage("=> EXCEPTION Unforeseen <=", Seq(ex))
-          onException(ex).run
+        case Xor.Right(response) => onResult(response).run
+        case Xor.Left(e) =>
+          printErrorTaskMessage(s"=> EXCEPTION Xor <=", e)
+          onException(e).run
       }.attemptRun
     }
 

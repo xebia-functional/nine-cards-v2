@@ -4,20 +4,20 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.webkit.URLUtil
+import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.share.models.{SharedContent, Web}
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, NineCardIntent, NineCardIntentExtras}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.ShortcutCardType
-import com.fortysevendeg.ninecardslauncher.process.device.{IconResize, ShortcutException}
+import com.fortysevendeg.ninecardslauncher.process.device.IconResize
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
-import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
@@ -55,7 +55,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
             content = content,
             image = readImageUri(i))
           statuses = statuses.copy(sharedContent = Some(sharedContent))
-          Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
+          Task.fork(di.collectionProcess.getCollections.value).resolveAsyncUi(
             onResult = uiActions.showChooseCollection,
             onException = error)
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) =>
@@ -87,25 +87,25 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
         imagePath = imagePath)
     }
 
-    def saveBitmap(maybeUri: Option[Uri]): ServiceDef2[String, ShortcutException] = {
+    def saveBitmap(maybeUri: Option[Uri]): CatsService[String] = {
       maybeUri match {
         case Some(uri) =>
           val iconSize = resGetDimensionPixelSize(R.dimen.size_icon_card)
           di.deviceProcess.saveShortcutIcon(
             MediaStore.Images.Media.getBitmap(contextWrapper.bestAvailable.getContentResolver, uri),
             Some(IconResize(iconSize, iconSize)))
-        case _ => Service(Task(Answer("")))
+        case _ => CatsService(Task(Xor.right("")))
       }
     }
 
-    def addCard(sharedContent: SharedContent): ServiceDef2[Unit, ShortcutException with CardException] = for {
+    def addCard(sharedContent: SharedContent): CatsService[Unit] = for {
       imagePath <- saveBitmap(sharedContent.image)
       _ <- di.collectionProcess.addCards(collectionId, Seq(createRequest(sharedContent, imagePath)))
     } yield ()
 
     statuses.sharedContent match {
       case Some(sharedContent) =>
-        Task.fork(addCard(sharedContent).run).resolveAsyncUi(
+        Task.fork(addCard(sharedContent).value).resolveAsyncUi(
           onResult = (_) => uiActions.showSuccess(),
           onException = error)
       case _ => uiActions.showUnexpectedError().run
