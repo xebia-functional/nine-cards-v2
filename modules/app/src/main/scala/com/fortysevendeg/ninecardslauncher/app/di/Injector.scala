@@ -24,6 +24,8 @@ import com.fortysevendeg.ninecardslauncher.process.recommendations.Recommendatio
 import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsProcess
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl.SharedCollectionsProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcess
+import com.fortysevendeg.ninecardslauncher.process.social.impl.SocialProfileProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.theme.ThemeProcess
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.UserProcess
@@ -33,6 +35,7 @@ import com.fortysevendeg.ninecardslauncher.process.userv1.impl.UserV1ProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.widget.WidgetProcess
 import com.fortysevendeg.ninecardslauncher.process.widget.impl.WidgetProcessImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import com.fortysevendeg.ninecardslauncher.services.accounts.impl.AccountsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.calls.impl.CallsServicesImpl
@@ -44,9 +47,8 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.impl.Persistence
 import com.fortysevendeg.ninecardslauncher.services.plus.impl.GooglePlusServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
 import com.fortysevendeg.ninecardslauncher.services.wifi.impl.WifiServicesImpl
-import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
+import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.google.android.gms.common.api.GoogleApiClient
@@ -75,9 +77,11 @@ trait Injector {
 
   def createCloudStorageProcess(client: GoogleApiClient): CloudStorageProcess
 
-  def createGooglePlusProcess(client: GoogleApiClient): UserAccountsProcess
+  def createSocialProfileProcess(client: GoogleApiClient): SocialProfileProcess
 
   def observerRegister: ObserverRegister
+
+  def userAccountsProcess: UserAccountsProcess
 
 }
 
@@ -226,11 +230,15 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     new CloudStorageProcessImpl(services, persistenceServices)
   }
 
-  override def createGooglePlusProcess(client: GoogleApiClient): UserAccountsProcess = {
+  override def createSocialProfileProcess(client: GoogleApiClient): SocialProfileProcess = {
     val services = new GooglePlusServicesImpl(client)
-    new UserAccountsProcessImpl(services, persistenceServices)
+    new SocialProfileProcessImpl(services, persistenceServices)
   }
 
   lazy val observerRegister = new ObserverRegister(uriCreator)
 
+  lazy val userAccountsProcess: UserAccountsProcess = {
+    val services = new AccountsServicesImpl
+    new UserAccountsProcessImpl(services)
+  }
 }

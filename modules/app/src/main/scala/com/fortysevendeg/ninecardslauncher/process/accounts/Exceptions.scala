@@ -1,26 +1,41 @@
 package com.fortysevendeg.ninecardslauncher.process.accounts
 
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.services.accounts.{AccountsServicesOperationCancelledException, AccountsServicesPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.plus.GooglePlusServicesException
 
 import scalaz.Scalaz._
 
-case class SocialProfileProcessException(  message: String,  cause: Option[Throwable] = None,  recoverable: Boolean = false)
+trait AccountsProcessException extends NineCardException
+
+case class AccountsProcessExceptionImpl(message: String, cause: Option[Throwable])
   extends RuntimeException(message)
-  with NineCardException{
+    with AccountsProcessException {
+  cause map initCause
+}
 
-  cause foreach initCause
+case class AccountsProcessPermissionException(message: String, cause: Option[Throwable])
+  extends RuntimeException(message)
+    with AccountsProcessException {
+  cause map initCause
+}
 
+case class AccountsProcessOperationCancelledException(message: String, cause: Option[Throwable])
+  extends RuntimeException(message)
+    with AccountsProcessException {
+  cause map initCause
 }
 
 trait ImplicitsSocialProfileProcessExceptions {
 
-  implicit def googlePlusExceptionConverter = (t: Throwable) => {
-    t match {
-      case gPlusException: GooglePlusServicesException =>
-        SocialProfileProcessException(gPlusException.getMessage, gPlusException.some, gPlusException.recoverable)
-      case _ => SocialProfileProcessException(t.getMessage, Option(t))
+  implicit def accountsProcessExceptionConverter = (throwable: Throwable) =>
+    throwable match {
+      case e: AccountsServicesPermissionException =>
+        AccountsProcessPermissionException(e.message, Some(e))
+      case e: AccountsServicesOperationCancelledException =>
+        AccountsProcessOperationCancelledException(e.message, Some(e))
+      case e =>
+        AccountsProcessExceptionImpl(e.getMessage, Option(e))
     }
-  }
 
 }

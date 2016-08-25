@@ -27,10 +27,10 @@ trait AccountsServices {
 
   /**
     * Invalidates the token associated to the specified account
-    * @param account the account
+    * @param accountType the account type
     * @param token the token to invalidate
     * @throws AccountsServicesException if the service found a problem invalidating the token
     */
-  def invalidateToken(account: Account, token: String)(implicit contextWrapper: ContextWrapper): CatsService[Unit]
+  def invalidateToken(accountType: String, token: String)(implicit contextWrapper: ContextWrapper): CatsService[Unit]
 
 }

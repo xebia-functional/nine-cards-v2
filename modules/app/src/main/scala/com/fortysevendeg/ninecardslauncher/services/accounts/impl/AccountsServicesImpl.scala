@@ -58,10 +58,10 @@ class AccountsServicesImpl
       }
     }
 
-  override def invalidateToken(account: Account, token: String)(implicit contextWrapper: ContextWrapper): CatsService[Unit] =
+  override def invalidateToken(accountType: String, token: String)(implicit contextWrapper: ContextWrapper): CatsService[Unit] =
     CatsService {
       Task {
-        XorCatchAll[AccountsServicesExceptionImpl](getAccountManager.invalidateAuthToken(account.accountType, token))
+        XorCatchAll[AccountsServicesExceptionImpl](getAccountManager.invalidateAuthToken(accountType, token))
       }
     }
 }

@@ -177,7 +177,7 @@ class AccountsServicesImplSpec
     "call invalidateToken in AccountManager with the right parameters" in
       new AccountsServicesImplScope {
 
-        val result = accountsServices.invalidateToken(account1, authToken).value.run
+        val result = accountsServices.invalidateToken(account1.accountType, authToken).value.run
         result shouldEqual Xor.Right(())
 
         there was one(accountManager).invalidateAuthToken(account1.accountType, authToken)

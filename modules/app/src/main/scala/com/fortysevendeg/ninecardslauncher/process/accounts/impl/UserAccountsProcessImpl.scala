@@ -1,48 +1,24 @@
 package com.fortysevendeg.ninecardslauncher.process.accounts.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
-import com.fortysevendeg.ninecardslauncher.process.accounts.{Conversions, ImplicitsSocialProfileProcessExceptions, UserAccountsProcess, SocialProfileProcessException}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
-import com.fortysevendeg.ninecardslauncher.services.plus.GooglePlusServices
-import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
+import com.fortysevendeg.ninecardslauncher.process.accounts._
+import com.fortysevendeg.ninecardslauncher.process.social.Conversions
+import com.fortysevendeg.ninecardslauncher.services.accounts.AccountsServices
+import com.fortysevendeg.ninecardslauncher.services.accounts.models.{Account, GoogleAccount}
+import macroid.{ActivityContextWrapper, ContextWrapper}
 
-import scalaz.concurrent.Task
-
-class UserAccountsProcessImpl(
-  googlePlusServices: GooglePlusServices,
-  persistenceServices: PersistenceServices)
+class UserAccountsProcessImpl(accountsServices: AccountsServices)
   extends UserAccountsProcess
   with ImplicitsSocialProfileProcessExceptions
   with Conversions {
 
-  val me = "me"
+  override def getGoogleAccounts(implicit contextWrapper: ContextWrapper) =
+    accountsServices.getAccounts(Some(GoogleAccount)).map(_.map(_.accountName)).resolve[AccountsProcessException]
 
-  private[this] val noActiveUserErrorMessage = "No active user"
+  override def getAuthToken(accountName: String, scope: String)(implicit contextWrapper: ActivityContextWrapper) =
+    accountsServices.getAuthToken(Account(GoogleAccount.value, accountName), scope).resolve[AccountsProcessException]
 
-  override def updateUserProfile()(implicit context: ContextSupport) = (for {
-    googlePlusProfile <- googlePlusServices.loadUserProfile
-    _ <- findAndUpdateUserProfile(googlePlusProfile)
-  } yield googlePlusProfile.name).resolve[SocialProfileProcessException]
-
-  private[this] def findAndUpdateUserProfile(googlePlusProfile: GooglePlusProfile)(implicit context: ContextSupport) =
-    context.getActiveUserId map { id =>
-      (for {
-        maybeUser <- persistenceServices.findUserById(FindUserByIdRequest(id))
-        _ <- updateUser(maybeUser, googlePlusProfile)
-      } yield ()).resolve[SocialProfileProcessException]
-    } getOrElse {
-      CatsService(Task(Xor.left(SocialProfileProcessException(noActiveUserErrorMessage))))
-    }
-
-  private[this] def updateUser(maybeUser: Option[ServicesUser], googlePlusProfile: GooglePlusProfile) =
-    maybeUser match {
-      case Some(user) => persistenceServices.updateUser(toUpdateRequest(user, googlePlusProfile))
-      case None => CatsService(Task(Xor.left(PersistenceServiceException(noActiveUserErrorMessage))))
-    }
-
+  override def invalidateToken(token: String)(implicit contextWrapper: ContextWrapper) =
+    accountsServices.invalidateToken(GoogleAccount.value, token).resolve[AccountsProcessException]
 }

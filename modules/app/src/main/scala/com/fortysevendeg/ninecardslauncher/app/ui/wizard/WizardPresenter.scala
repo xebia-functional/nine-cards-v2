@@ -21,7 +21,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
-import com.fortysevendeg.ninecardslauncher.process.accounts.SocialProfileProcessException
+import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
 import com.fortysevendeg.ninecardslauncher.process.userv1.models.UserV1Device
@@ -169,8 +169,8 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
     clientStatuses.plusApiClient match {
       case Some(apiClient) =>
-        val googlePlusProcess = di.createGooglePlusProcess(apiClient)
-        Task.fork(googlePlusProcess.updateUserProfile().value).resolveAsync(
+        val socialProfileProcess = di.createSocialProfileProcess(apiClient)
+        Task.fork(socialProfileProcess.updateUserProfile().value).resolveAsync(
           onResult = loadDevices,
           onException = error,
           onPreTask = () => actions.showLoading().run
