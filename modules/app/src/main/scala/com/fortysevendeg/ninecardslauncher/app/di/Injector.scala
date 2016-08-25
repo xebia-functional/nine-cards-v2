@@ -18,8 +18,8 @@ import com.fortysevendeg.ninecardslauncher.process.device.DeviceProcess
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentProcess, MomentProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.moment.impl.MomentProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcess
-import com.fortysevendeg.ninecardslauncher.process.social.impl.SocialProfileProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.accounts.UserAccountsProcess
+import com.fortysevendeg.ninecardslauncher.process.accounts.impl.UserAccountsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendationsProcess
 import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsProcess
@@ -75,7 +75,7 @@ trait Injector {
 
   def createCloudStorageProcess(client: GoogleApiClient): CloudStorageProcess
 
-  def createGooglePlusProcess(client: GoogleApiClient): SocialProfileProcess
+  def createGooglePlusProcess(client: GoogleApiClient): UserAccountsProcess
 
   def observerRegister: ObserverRegister
 
@@ -226,9 +226,9 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     new CloudStorageProcessImpl(services, persistenceServices)
   }
 
-  override def createGooglePlusProcess(client: GoogleApiClient): SocialProfileProcess = {
+  override def createGooglePlusProcess(client: GoogleApiClient): UserAccountsProcess = {
     val services = new GooglePlusServicesImpl(client)
-    new SocialProfileProcessImpl(services, persistenceServices)
+    new UserAccountsProcessImpl(services, persistenceServices)
   }
 
   lazy val observerRegister = new ObserverRegister(uriCreator)

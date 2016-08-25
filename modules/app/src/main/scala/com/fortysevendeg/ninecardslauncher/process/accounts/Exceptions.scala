@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.social
+package com.fortysevendeg.ninecardslauncher.process.accounts
 
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
 import com.fortysevendeg.ninecardslauncher.services.plus.GooglePlusServicesException

@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.process.social.impl
+package com.fortysevendeg.ninecardslauncher.process.accounts.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
+import com.fortysevendeg.ninecardslauncher.process.accounts.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServices, GooglePlusServicesException}
 import org.specs2.mock.Mockito
@@ -12,10 +12,10 @@ import org.specs2.specification.Scope
 
 import scalaz.concurrent.Task
 
-trait SocialProfileProcessImplSpecification
+trait UserAccountsProcessImplSpecification
   extends Specification
   with Mockito
-  with SocialProfileProcessImplData {
+  with UserAccountsProcessImplData {
 
   trait CloudStorageProcessImplScope
     extends Scope {
@@ -26,14 +26,14 @@ trait SocialProfileProcessImplSpecification
 
     val persistenceServices = mock[PersistenceServices]
 
-    val socialProfileProcess = new SocialProfileProcessImpl(googlePlusServices, persistenceServices)
+    val socialProfileProcess = new UserAccountsProcessImpl(googlePlusServices, persistenceServices)
 
   }
 
 }
 
-class SocialProfileProcessImplSpec
-  extends SocialProfileProcessImplSpecification {
+class UserAccountsProcessImplSpec
+  extends UserAccountsProcessImplSpecification {
 
   "updateUserProfile" should {
 

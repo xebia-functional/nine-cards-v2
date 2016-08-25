@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.process.social.impl
+package com.fortysevendeg.ninecardslauncher.process.accounts.impl
 
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, UpdateUserRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
 
-trait SocialProfileProcessImplData {
+trait UserAccountsProcessImplData {
 
   val activeUserId = 10
 

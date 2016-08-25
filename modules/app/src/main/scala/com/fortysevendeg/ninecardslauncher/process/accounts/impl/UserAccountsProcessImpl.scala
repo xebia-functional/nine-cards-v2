@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.process.social.impl
+package com.fortysevendeg.ninecardslauncher.process.accounts.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
-import com.fortysevendeg.ninecardslauncher.process.social.{Conversions, ImplicitsSocialProfileProcessExceptions, SocialProfileProcess, SocialProfileProcessException}
+import com.fortysevendeg.ninecardslauncher.process.accounts.{Conversions, ImplicitsSocialProfileProcessExceptions, UserAccountsProcess, SocialProfileProcessException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.plus.GooglePlusServices
@@ -13,10 +13,10 @@ import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfil
 
 import scalaz.concurrent.Task
 
-class SocialProfileProcessImpl(
+class UserAccountsProcessImpl(
   googlePlusServices: GooglePlusServices,
   persistenceServices: PersistenceServices)
-  extends SocialProfileProcess
+  extends UserAccountsProcess
   with ImplicitsSocialProfileProcessExceptions
   with Conversions {
 
