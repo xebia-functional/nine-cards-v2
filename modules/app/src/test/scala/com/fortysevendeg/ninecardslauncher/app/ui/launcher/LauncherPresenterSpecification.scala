@@ -1,16 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
+import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.LauncherPresenterStatuses
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionExceptionImpl}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
-import com.fortysevendeg.ninecardslauncher.process.device.DockAppException
-import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.user.models.User
+import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionExceptionImpl, CollectionProcess}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.device.{DeviceProcess, DockAppException}
+import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcess}
 import macroid.{ActivityContextWrapper, Ui}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -35,41 +33,41 @@ trait LauncherPresenterSpecification
     with DockAppException
     with MomentException
 
-  val launcherAppsException = LauncherAppsException("", None)
-
   val collectionException = CollectionExceptionImpl("", None)
-
-  val userException = UserException("", None)
 
   trait WizardPresenterScope
     extends Scope {
-
-    val canRemoveCollections = true
-
-    val dockAppSeq = Seq(dockApp)
-
-    val collectionSeq = Seq(collection)
 
     val mockActions = mock[LauncherUiActions]
     mockActions.showLoading() returns Ui[Any]()
     mockActions.showContactUsError() returns Ui[Any]()
     mockActions.showMinimumOneCollectionMessage() returns Ui[Any]()
-    mockActions.canRemoveCollections returns canRemoveCollections
+    mockActions.canRemoveCollections returns true
+
+    val mockInjector = mock[Injector]
+
+    val mockCollectionProcess = mock[CollectionProcess]
+    mockCollectionProcess.getCollections returns Service(Task(Answer(Seq(collection))))
+
+    val mockDeviceProcess = mock[DeviceProcess]
+    mockDeviceProcess.getDockApps returns Service(Task(Answer(Seq(dockApp))))
+
+    val mockMomentProcess = mock[MomentProcess]
+    mockMomentProcess.getBestAvailableMoment(any[ContextSupport]) returns Service(Task(Answer(Some(moment))))
+
+    mockInjector.collectionProcess returns mockCollectionProcess
+    mockInjector.deviceProcess returns mockDeviceProcess
+    mockInjector.momentProcess returns mockMomentProcess
 
     val mockStatuses = mock[LauncherPresenterStatuses]
 
-    val presenter = new LauncherPresenter(mockActions) {
-      statuses = mockStatuses
-      override protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
-        Service(Task(Answer((collectionSeq, dockAppSeq, Some(moment)))))
-      override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Answer(user)))
-    }
+    val mockPersistMoment = mock[PersistMoment]
+    mockPersistMoment.getPersistMoment returns None
 
-    val presenterFailed = new LauncherPresenter(mockActions) {
+    val presenter = new LauncherPresenter(mockActions) {
+      override lazy val di: Injector = mockInjector
+      override lazy val persistMoment: PersistMoment = mockPersistMoment
       statuses = mockStatuses
-      override protected def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
-        Service(Task(Errata(launcherAppsException)))
-      override protected def getUser: ServiceDef2[User, UserException] = Service(Task(Errata(userException)))
     }
 
   }
@@ -83,7 +81,9 @@ class LauncherPresenterSpec
 
     "show dialog returning a successful data and it can remove collections" in
       new WizardPresenterScope {
+
         mockStatuses.collectionReorderMode returns Some(collection)
+
         presenter.removeCollectionInReorderMode()
         there was after(1 seconds).no(mockActions).showMinimumOneCollectionMessage()
         there was after(1 seconds).no(mockActions).showContactUsError()
@@ -91,8 +91,10 @@ class LauncherPresenterSpec
 
     "show message returning a successful data and it can't remove collections" in
       new WizardPresenterScope {
-        override val canRemoveCollections: Boolean = false
+
+        mockActions.canRemoveCollections returns false
         mockStatuses.collectionReorderMode returns Some(collection)
+
         presenter.removeCollectionInReorderMode()
         there was after(1 seconds).one(mockActions).showMinimumOneCollectionMessage()
       }
@@ -110,7 +112,7 @@ class LauncherPresenterSpec
 
     "show error returning a failed" in
       new WizardPresenterScope {
-        presenterFailed.removeCollection(collection)
+        presenter.removeCollection(collection)
         there was after(1 seconds).one(mockActions).showContactUsError()
       }
 
@@ -127,7 +129,7 @@ class LauncherPresenterSpec
     "returning a empty list the information isn't loaded" in
       new WizardPresenterScope {
 
-        override val collectionSeq: Seq[Collection] = Seq.empty
+        mockCollectionProcess.getCollections returns Service(Task(Answer(Seq.empty[Collection])))
 
         presenter.loadLauncherInfo()
         there was after(1 seconds).no(mockActions).loadLauncherInfo(any, any)
@@ -135,7 +137,10 @@ class LauncherPresenterSpec
 
     "go to wizard returning a failed loading collections" in
       new WizardPresenterScope {
-        presenterFailed.loadLauncherInfo()
+
+        mockCollectionProcess.getCollections returns Service(Task(Errata(collectionException)))
+
+        presenter.loadLauncherInfo()
         there was after(1 seconds).no(mockActions).loadLauncherInfo(any, any)
       }
 

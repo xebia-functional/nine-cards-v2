@@ -9,7 +9,7 @@
         android:inputType="text"/>
 
     <ImageView
-        style="@style/NewCollectionLine"/>
+        style="@style/ActionsLine"/>
 
     <LinearLayout
         android:id="@+id/new_collection_select_color_content"
@@ -27,7 +27,7 @@
     </LinearLayout>
 
     <ImageView
-        style="@style/NewCollectionLine"/>
+        style="@style/ActionsLine"/>
 
 
     <LinearLayout
@@ -46,6 +46,6 @@
     </LinearLayout>
 
     <ImageView
-        style="@style/NewCollectionLine"/>
+        style="@style/ActionsLine"/>
 
 </LinearLayout>

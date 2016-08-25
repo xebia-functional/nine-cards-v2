@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/EditWifiMomentRoot">
+
+    <LinearLayout
+        style="@style/EditWifiMomentWifiLine">
+
+        <TextView
+            android:id="@+id/edit_wifi_name"
+            style="@style/EditWifiMomentWifiText"/>
+
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            android:id="@+id/edit_wifi_action_delete"
+            style="@style/ActionsActionDelete"/>
+
+    </LinearLayout>
+
+
+</LinearLayout>

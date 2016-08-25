@@ -12,26 +12,29 @@ class AlertDialogFragment(
   okMessage: Int = android.R.string.ok,
   cancelMessage: Int = android.R.string.cancel,
   positiveAction: () => Unit = () => (),
-  negativeAction: () => Unit = () => ())
+  negativeAction: () => Unit = () => (),
+  showCancelButton: Boolean = true)
   extends DialogFragment {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
 
-    new AlertDialog.Builder(getActivity).
+    val alert = new AlertDialog.Builder(getActivity).
       setMessage(message).
       setPositiveButton(okMessage, new OnClickListener {
         override def onClick(dialog: DialogInterface, which: Int): Unit = {
           positiveAction()
           dismiss()
         }
-      }).
-      setNegativeButton(cancelMessage, new OnClickListener {
+      })
+    if (showCancelButton) {
+      alert.setNegativeButton(cancelMessage, new OnClickListener {
         override def onClick(dialog: DialogInterface, which: Int): Unit = {
           negativeAction()
           dismiss()
         }
-      }).
-      create()
+      })
+    }
+    alert.create()
   }
 
 }

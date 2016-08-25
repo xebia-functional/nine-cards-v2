@@ -10,7 +10,7 @@ import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentsActionFilter, MomentsReloadedActionFilter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentsActionFilter, MomentConstrainsChangedActionFilter, MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 
@@ -35,7 +35,9 @@ class LauncherActivity
   override val actionsFilters: Seq[String] = MomentsActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (MomentsActionFilter(action), data) match {
-    case (MomentsReloadedActionFilter, _) => presenter.reloadAppsMomentBar()
+    case (MomentReloadedActionFilter, _) => presenter.reloadAppsMomentBar()
+    case (MomentConstrainsChangedActionFilter, _) => presenter.reloadAppsMomentBar()
+    case (MomentForceBestAvailableActionFilter, _) => presenter.changeMomentIfIsAvailable()
     case _ =>
   }
 

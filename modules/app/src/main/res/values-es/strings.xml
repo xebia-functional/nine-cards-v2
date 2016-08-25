@@ -90,6 +90,18 @@
     <string name="editMoment">Editar Momento</string>
     <string name="changeMoment">Cambiar Momento</string>
 
+    <string name="linkCollection">Acceso Rápido a Colección</string>
+    <string name="hours">Horas</string>
+    <string name="wifi">Wifi</string>
+
+    <string name="noLinkCollectionToMoment">No vincular colección a este momento</string>
+
+    <string name="addHoursToEditMoment">Añade restricciones de tiempo a este momento y será mostrado en 9Cards sólo esas horas</string>
+
+    <string name="addWifiToEditMoment">Añade tus Wifi a este momento y lo mostraremos cuando estés conectado a uno de ellos</string>
+
+    <string name="linkCollectionMessage">Puedes seleccionar una colección y acceder rápidamente a las aplicaciones, contactos y accesos directos de esta colección desde una barra a la derecha de 9Cards. Sólo tienes que hacer clic en el fondo o un swipe desde el borde derecho del Launcher</string>
+
     <string name="widgetsErrorMessage">Hemos tenido problemas cargando los widgets. Inténtalo más tarde</string>
 
     <!-- Collections -->
@@ -497,5 +509,8 @@
     <string name="noSpaceForWidget">El widget no tiene espacio actualmente</string>
     <string name="noMoveForWidget">El widget no puede moverse ahí</string>
     <string name="noResizeForWidget">El widget no puede redimensionarse ahí</string>
+
+    <!-- Edit Moment -->
+    <string name="addDuplicateItemError">Elemento duplicado</string>
 
 </resources>

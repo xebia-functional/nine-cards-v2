@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Paint
+import android.graphics.{Paint, PorterDuff}
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable._
 import android.os.Vibrator
@@ -14,7 +14,8 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
-import android.widget.{EditText, ImageView, Spinner, TextView}
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -165,6 +166,14 @@ object ExtraTweaks {
   }
 
   def sSelection(position: Int) = Tweak[Spinner](_.setSelection(position))
+
+  def sItemSelectedListener(onItem: (Int => Unit)) = Tweak[Spinner](_.setOnItemSelectedListener(new OnItemSelectedListener {
+    override def onNothingSelected(parent: AdapterView[_]): Unit = {}
+
+    override def onItemSelected(parent: AdapterView[_], view: View, position: Int, id: Long): Unit = onItem(position)
+  }))
+
+  def sChangeDropdownColor(color: Int) = Tweak[Spinner](_.getBackground.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
 
   def tvHintColor(color: Int): Tweak[TextView] = Tweak[TextView](_.setHintTextColor(color))
 

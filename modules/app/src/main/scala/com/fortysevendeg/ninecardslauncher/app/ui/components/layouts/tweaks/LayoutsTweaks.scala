@@ -14,12 +14,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{Collections
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
@@ -440,4 +441,20 @@ object EditWidgetsBottomPanelLayoutTweaks {
   def ewbAnimateActions = Tweak[W] (_.animateActions().run)
 
   def ewbAnimateCursors(implicit launcherPresenter: LauncherPresenter) = Tweak[W] (_.animateCursors.run)
+}
+
+object EditHourMomentLayoutTweaks {
+  type W = EditHourMomentLayout
+
+  def ehmPopulate(timeSlot: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter) =
+    Tweak[W] (_.populate(timeSlot, position).run)
+
+}
+
+object EditWifiMomentLayoutTweaks {
+  type W = EditWifiMomentLayout
+
+  def ewmPopulate(wifi: String, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter) =
+    Tweak[W] (_.populate(wifi, position).run)
+
 }

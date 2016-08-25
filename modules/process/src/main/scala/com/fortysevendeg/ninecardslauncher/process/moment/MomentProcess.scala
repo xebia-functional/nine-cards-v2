@@ -53,7 +53,16 @@ trait MomentProcess {
   /**
     * Creates Moments from some already formed and given Moments
     *
-    * @param items the Seq[com.fortysevendeg.ninecardslauncher.process.moment.models.Moment] of Moments
+    * @param item the com.fortysevendeg.ninecardslauncher.process.moment.UpdateMomentRequest of Moments
+    * @return Unit
+    * @throws MomentException if there was an error creating the moments' collections
+    */
+  def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport): ServiceDef2[Unit, MomentException]
+
+  /**
+    * Creates Moments from some already formed and given Moments
+    *
+    * @param items the Seq[com.fortysevendeg.ninecardslauncher.process.moment.SaveMomentRequest] of Moments
     * @return the List[com.fortysevendeg.ninecardslauncherprocess.moment.models.Moment]
     * @throws MomentException if there was an error creating the moments' collections
     */

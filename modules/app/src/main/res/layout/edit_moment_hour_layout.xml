@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/EditHourMomentRoot">
+
+    <LinearLayout
+        style="@style/EditHourMomentContent">
+
+        <LinearLayout
+            style="@style/EditHourMomentHoursLine">
+
+            <FrameLayout
+                android:id="@+id/edit_hour_start_content"
+                style="@style/EditHourMomentHourContent">
+
+                <TextView
+                    android:id="@+id/edit_hour_start_text"
+                    style="@style/EditHourMomentHourText"/>
+
+                <ImageView
+                    style="@style/EditHourMomentHourLine"/>
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/edit_hour_end_content"
+                style="@style/EditHourMomentHourContent">
+
+                <TextView
+                    android:id="@+id/edit_hour_end_text"
+                    style="@style/EditHourMomentHourText"/>
+
+                <ImageView
+                    style="@style/EditHourMomentHourLine"/>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/edit_hour_days_content"
+            style="@style/EditHourMomentDaysContent" />
+
+    </LinearLayout>
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        android:id="@+id/edit_hour_action_delete"
+        style="@style/ActionsActionDelete"/>
+
+</LinearLayout>
