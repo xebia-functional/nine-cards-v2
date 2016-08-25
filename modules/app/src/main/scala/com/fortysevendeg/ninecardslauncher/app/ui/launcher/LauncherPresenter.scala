@@ -30,13 +30,12 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
-import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.R
@@ -522,14 +521,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case _ => di.momentProcess.getBestAvailableMoment
     }
 
-    def getLauncherInfo: CatsServices[(Seq[Collection], Seq[DockApp], Option[Moment])] =
+    def getLauncherInfo: CatsService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
       for {
         collections <- di.collectionProcess.getCollections
         dockApps <- di.deviceProcess.getDockApps
         moment <- getMoment
       } yield (collections, dockApps, moment)
 
-    Task.fork(getLauncherInfo.run).resolveAsyncUi(
+    Task.fork(getLauncherInfo.value).resolveAsyncUi(
       onResult = {
         // Check if there are collections in DB, if there aren't we go to wizard
         case (Nil, _, _) => Ui(goToWizard())
@@ -754,7 +753,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def getCheckMoment: CatsService[LauncherMoment] = {
 
       def getCollection(moment: Option[Moment]): CatsService[Option[Collection]] = {
-        val emptyService = Service(Task(Xor.right(None)))
+        val emptyService: CatsService[Option[Collection]] = CatsService(Task(Xor.right(None)))
         val momentType = moment flatMap (_.momentType)
         val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
         val collectionId = moment flatMap (_.collectionId)
