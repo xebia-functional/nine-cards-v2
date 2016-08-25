@@ -6,7 +6,7 @@ import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentsReloadedActionFilter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
@@ -145,7 +145,7 @@ class CollectionsPagerPresenter(
       case Some(position) => actions.getCollection(position)
       case _ => actions.getCurrentCollection
     }) exists (_.collectionType == MomentCollectionType)
-    if (isMoment) sendBroadCast(BroadAction(MomentsReloadedActionFilter.action))
+    if (isMoment) sendBroadCast(BroadAction(MomentReloadedActionFilter.action))
   }
 
   private[this] def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]):

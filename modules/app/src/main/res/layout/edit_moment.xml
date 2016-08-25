@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/EditMomentScroll">
+
+    <LinearLayout
+        style="@style/EditMomentRoot">
+
+        <LinearLayout
+            style="@style/EditMomentHeaderContent">
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                android:id="@+id/edit_moment_icon_link_collection"
+                style="@style/EditMomentHeaderIconCollection"/>
+
+            <TextView
+                android:id="@+id/edit_moment_name_link_collection"
+                style="@style/EditMomentHeaderCollectionName"/>
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                android:id="@+id/edit_moment_collection_info"
+                style="@style/EditMomentHeaderActionInfo"/>
+
+        </LinearLayout>
+
+        <ImageView
+            style="@style/ActionsLine"/>
+
+        <Spinner
+            android:id="@+id/edit_moment_collection"
+            style="@style/EditMomentHeaderSelectCollection" />
+
+        <LinearLayout
+            style="@style/EditMomentHeaderContent">
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                android:id="@+id/edit_moment_icon_hour"
+                style="@style/EditMomentHeaderIconHours"/>
+
+            <TextView
+                android:id="@+id/edit_moment_name_hour"
+                style="@style/EditMomentHeaderHoursName"/>
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                android:id="@+id/edit_moment_add_hour"
+                style="@style/EditMomentHeaderActionAdd"/>
+
+        </LinearLayout>
+
+        <ImageView
+            style="@style/ActionsLine"/>
+
+        <LinearLayout
+            android:id="@+id/edit_moment_hour_content"
+            style="@style/EditMomentBodyContent"/>
+
+        <LinearLayout
+            style="@style/EditMomentHeaderContent">
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                android:id="@+id/edit_moment_icon_wifi"
+                style="@style/EditMomentHeaderIconWifi"/>
+
+            <TextView
+                android:id="@+id/edit_moment_name_wifi"
+                style="@style/EditMomentHeaderWifiName"/>
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                android:id="@+id/edit_moment_add_wifi"
+                style="@style/EditMomentHeaderActionAdd"/>
+
+        </LinearLayout>
+
+        <ImageView
+            style="@style/ActionsLine"/>
+
+        <LinearLayout
+            android:id="@+id/edit_moment_wifi_content"
+            style="@style/EditMomentBodyContent"/>
+
+    </LinearLayout>
+
+</ScrollView>

@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.process.commons
 import com.fortysevendeg.ninecardslauncher.process.collection.models.FormedMoment
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot, _}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.moment.SaveMomentRequest
-import com.fortysevendeg.ninecardslauncher.services.persistence.AddMomentRequest
+import com.fortysevendeg.ninecardslauncher.process.moment.{SaveMomentRequest, UpdateMomentRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddMomentRequest, UpdateMomentRequest => ServiceUpdateMomentRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 
 trait CommonConversions extends NineCardIntentConversions {
@@ -77,6 +77,15 @@ trait CommonConversions extends NineCardIntentConversions {
       wifi = toWifiSeq(moment),
       headphone = false,
       momentType = Option(moment.name))
+
+  def toServiceUpdateMomentRequest(moment: UpdateMomentRequest): ServiceUpdateMomentRequest =
+    ServiceUpdateMomentRequest(
+      id = moment.id,
+      collectionId = moment.collectionId,
+      timeslot = moment.timeslot map toServicesMomentTimeSlot,
+      wifi = moment.wifi,
+      headphone = moment.headphone,
+      momentType = moment.momentType map (_.name))
 
   def toServicesMomentTimeSlot(timeSlot: MomentTimeSlot): ServicesMomentTimeSlot =
     ServicesMomentTimeSlot(

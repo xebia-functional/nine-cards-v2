@@ -269,6 +269,8 @@ trait LauncherUiActionsImpl
 
   override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
 
+  override def editMoment(momentType: String): Ui[Any] = showEditMoment(momentType)
+
   override def addWidgets(widgets: Seq[AppWidget]): Ui[Any] = {
     val uiWidgets = widgets map { widget =>
       val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
@@ -349,7 +351,7 @@ trait LauncherUiActionsImpl
 
   override def showSelectMomentDialog(): Ui[Any] = activityContextWrapper.original.get match {
     case Some(activity: Activity) => Ui {
-      val momentDialog = new MomentDialog()
+      val momentDialog = new MomentDialog
       momentDialog.show()
     }
     case _ => Ui.nop

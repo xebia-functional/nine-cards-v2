@@ -85,9 +85,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] def createHttpClient = {
     val okHttpClientBuilder = new okhttp3.OkHttpClient.Builder()
-    if (BuildConfig.DEBUG) {
-      okHttpClientBuilder.addNetworkInterceptor(new StethoInterceptor)
-    }
+    okHttpClientBuilder.addNetworkInterceptor(new StethoInterceptor)
     new OkHttpClient(okHttpClientBuilder.build())
   }
 

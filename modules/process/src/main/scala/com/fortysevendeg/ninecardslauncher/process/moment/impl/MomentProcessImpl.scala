@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, M
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.DefaultApps._
-import com.fortysevendeg.ninecardslauncher.process.moment._
+import com.fortysevendeg.ninecardslauncher.process.moment.{UpdateMomentRequest, _}
 import com.fortysevendeg.ninecardslauncher.process.moment.models.App
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
@@ -56,6 +56,11 @@ class MomentProcessImpl(
       moment <- persistenceServices.addMoment(toAddMomentRequest(None, nineCardsMoment))
     } yield toMoment(moment)).resolve[MomentException]
 
+  override def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport) =
+    (for {
+      _ <- persistenceServices.updateMoment(toServiceUpdateMomentRequest(item))
+    } yield ()).resolve[MomentException]
+
   override def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport) =
     (for {
       moments <- persistenceServices.addMoments(items map toAddMomentRequest)
@@ -80,8 +85,7 @@ class MomentProcessImpl(
       collections <- persistenceServices.fetchCollections
       wifi <- wifiServices.getCurrentSSID
       moments = serviceMoments map toMoment
-      momentWithCollection = moments filter (m => collections.exists(col => m.collectionId.contains(col.id)))
-      momentsPrior = momentWithCollection sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
+      momentsPrior = moments sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
     } yield momentsPrior.headOption).resolve[MomentException]
 
   override def getAvailableMoments(implicit context: ContextSupport) =
@@ -120,6 +124,8 @@ class MomentProcessImpl(
     (isHappening(moment1, now), isHappening(moment2, now), wifi) match {
       case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.contains(w) => true
       case (h1, h2, Some(w)) if h1 == h2 && moment2.wifi.contains(w) => false
+      case (h1, h2, None) if h1 == h2 && moment1.wifi.isEmpty && moment2.wifi.nonEmpty => true
+      case (h1, h2, None) if h1 == h2 && moment1.wifi.nonEmpty && moment2.wifi.isEmpty => false
       case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.isEmpty && moment2.wifi.nonEmpty => true
       case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.nonEmpty && moment2.wifi.isEmpty => false
       case (true, false, _) => true

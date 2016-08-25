@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.services.wifi.impl
 
+import android.content.Context
 import android.net.wifi.{WifiConfiguration, WifiInfo, WifiManager}
 import android.net.{ConnectivityManager, NetworkInfo}
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServicesException
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -21,18 +21,19 @@ trait WifiImplSpecification
     extends Scope {
 
     val mockContextSupport = mock[ContextSupport]
+    val mockContext = mock[Context]
+
     val mockConnectivityManager = mock[ConnectivityManager]
     val mockNetWorkInfo = mock[NetworkInfo]
     val mockWifiManager = mock[WifiManager]
     val mockWifiInfo = mock[WifiInfo]
 
-    val wifiServicesImpl = new WifiServicesImpl {
+    mockContext.getSystemService(Context.CONNECTIVITY_SERVICE) returns mockConnectivityManager
+    mockContext.getSystemService(Context.WIFI_SERVICE) returns mockWifiManager
 
-      override protected def getConnectivityManager(implicit contextSupport: ContextSupport) = Option(mockConnectivityManager)
+    mockContextSupport.context returns mockContext
 
-      override protected def getWifiManager(implicit contextSupport: ContextSupport) = Option(mockWifiManager)
-
-    }
+    val wifiServicesImpl = new WifiServicesImpl
 
     mockConnectivityManager.getActiveNetworkInfo returns mockNetWorkInfo
     mockNetWorkInfo.isConnected returns true
@@ -54,6 +55,17 @@ class WifiServicesImplSpec
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
         result must beLike {
           case Xor.Right(resultSSID) => resultSSID shouldEqual Some(ssid)
+        }
+      }
+
+    "returns None if there isn't active network" in
+      new WifiImplScope {
+
+        mockConnectivityManager.getActiveNetworkInfo returns javaNull
+
+        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
+        result must beLike {
+          case Xor.Right(resultSSID) => resultSSID shouldEqual None
         }
       }
 
@@ -122,13 +134,13 @@ class WifiServicesImplSpec
         }
       }
 
-    "returns WifiServicesException if android returns null" in
+    "returns empty list if android returns null" in
       new WifiImplScope {
         mockWifiManager.getConfiguredNetworks returns javaNull
 
         val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).value.run
         result must beLike {
-          case Xor.Left(e) => e  must beAnInstanceOf[WifiServicesException]
+          case Xor.Right(networks) => networks shouldEqual Seq.empty
         }
       }
 
