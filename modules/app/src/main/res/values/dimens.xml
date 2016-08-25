@@ -50,7 +50,10 @@
     <integer name="anim_duration_normal">200</integer>
 
     <!-- Top bar -->
+    <dimen name="width_icon_content_top_bar_moment">54dp</dimen>
+    <dimen name="height_icon_content_top_bar_moment">48dp</dimen>
     <dimen name="size_icon_top_bar_moment">24dp</dimen>
+    <dimen name="radius_icon_top_bar_moment">20dp</dimen>
 
     <!-- Apps moment bar -->
     <dimen name="size_apps_bar_moment">86dp</dimen>

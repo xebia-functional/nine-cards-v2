@@ -4,11 +4,11 @@
 
     <FrameLayout
         style="@style/MenuAppsMomentIconContent"
-        android:id="@+id/launcher_moment_icon_content">
+        android:id="@+id/moment_bar_icon_content">
 
         <ImageView
             style="@style/MenuAppsMomentIcon"
-            android:id="@+id/launcher_moment_icon"/>
+            android:id="@+id/moment_bar_icon"/>
 
     </FrameLayout>
 
@@ -16,7 +16,7 @@
 
         <LinearLayout
             style="@style/MenuAppsMomentApps"
-            android:id="@+id/launcher_moment_apps"/>
+            android:id="@+id/moment_bar_apps"/>
 
     </ScrollView>
 
