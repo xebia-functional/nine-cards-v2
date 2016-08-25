@@ -148,8 +148,6 @@ trait LauncherUiActionsImpl
       (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
       (editWidgetsTopPanel <~ ewtMoving)
 
-  override def arrowWidget(arrow: Arrow): Ui[Any] = workspaces <~ lwsArrowWidget(arrow)
-
   override def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any] = workspaces <~ lwsResizeWidgetById(id, resize)
 
   override def moveWidgetById(id: Int, move: MoveWidgetRequest): Ui[Any] = workspaces <~ lwsMoveWidgetById(id, move)
@@ -317,9 +315,11 @@ trait LauncherUiActionsImpl
     if (success) {
       Ui(presenter.configureOrAddWidget(Some(appWidgetId)))
     } else {
+//      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
       val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
       intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
       intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider)
+//      intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER_PROFILE, appWidgetInfo.getProfile)
       uiStartIntentForResult(intent, RequestCodes.goToWidgets)
     }
   }

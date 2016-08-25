@@ -949,8 +949,6 @@ trait LauncherUiActions {
 
   def moveWidget(): Ui[Any]
 
-  def arrowWidget(arrow: Arrow): Ui[Any]
-
   def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any]
 
   def moveWidgetById(id: Int, move: MoveWidgetRequest): Ui[Any]
