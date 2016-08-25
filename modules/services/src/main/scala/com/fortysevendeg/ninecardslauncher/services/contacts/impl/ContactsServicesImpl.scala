@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.{CatsService, Service}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{ContactCounter, ContactInfo}

@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.services.image
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
 
 trait ImageServices {
 

@@ -2,19 +2,18 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.graphics.Bitmap
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, MomentCollectionType, ShortcutCardType}
-import com.fortysevendeg.ninecardslauncher.process.device.ShortcutException
 import macroid.{ActivityContextWrapper, Ui}
-import rapture.core.Result
 
 import scalaz.concurrent.Task
 
@@ -31,7 +30,7 @@ class CollectionsPagerPresenter(
 
   def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): Unit = {
     actions.initialize(indexColor, icon, isStateChanged).run
-    Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.getCollections.value).resolveAsyncUi(
       onResult = (collections: Seq[Collection]) => actions.showCollections(collections, position),
       onException = (ex: Throwable) => actions.showContactUsError
     )
@@ -50,7 +49,7 @@ class CollectionsPagerPresenter(
   def destroyAction(): Unit = actions.destroyAction.run
 
   def reloadCards(reloadFragment: Boolean): Unit = actions.getCurrentCollection foreach { collection =>
-    Task.fork(di.collectionProcess.getCollectionById(collection.id).run).resolveAsync(
+    Task.fork(di.collectionProcess.getCollectionById(collection.id).value).resolveAsync(
       onResult = (c) => c map (newCollection => if (newCollection.cards != collection.cards) {
         momentReloadBroadCastIfNecessary()
         actions.reloadCards(newCollection.cards, reloadFragment).run
@@ -62,7 +61,7 @@ class CollectionsPagerPresenter(
 
     removeCard(card)
 
-    Task.fork(di.collectionProcess.addCards(collectionId, Seq(toAddCardRequest(card))).run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.addCards(collectionId, Seq(toAddCardRequest(card))).value).resolveAsyncUi(
       onResult = (cards) => {
         momentReloadBroadCastIfNecessary()
         actions.addCardsToCollection(collectionPosition, cards)
@@ -83,7 +82,7 @@ class CollectionsPagerPresenter(
   }
 
   def shareCollection(): Unit = actions.getCurrentCollection foreach { collection =>
-    Task.fork(di.collectionProcess.getCollectionById(collection.id).run).resolveAsync(
+    Task.fork(di.collectionProcess.getCollectionById(collection.id).value).resolveAsync(
       onResult = (c) => c map { col =>
         if (col.sharedCollectionId.isDefined) {
           col.getUrlSharedCollection map launchShare
@@ -94,7 +93,7 @@ class CollectionsPagerPresenter(
   }
 
   def addCards(cardsRequest: Seq[AddCardRequest]): Unit = actions.getCurrentCollection foreach { collection =>
-    Task.fork(di.collectionProcess.addCards(collection.id, cardsRequest).run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.addCards(collection.id, cardsRequest).value).resolveAsyncUi(
       onResult = (cards) => {
         momentReloadBroadCastIfNecessary()
         actions.addCards(cards)
@@ -103,7 +102,7 @@ class CollectionsPagerPresenter(
   }
 
   def removeCard(card: Card): Unit = actions.getCurrentCollection foreach { collection =>
-    Task.fork(di.collectionProcess.deleteCard(collection.id, card.id).run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.deleteCard(collection.id, card.id).value).resolveAsyncUi(
       onResult = (_) => {
         momentReloadBroadCastIfNecessary()
         actions.removeCards(card)
@@ -112,7 +111,7 @@ class CollectionsPagerPresenter(
   }
 
   def addShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): Unit = {
-    Task.fork(createShortcut(collectionId, name, shortcutIntent, bitmap).run).resolveAsyncUi(
+    Task.fork(createShortcut(collectionId, name, shortcutIntent, bitmap).value).resolveAsyncUi(
       onResult = (cards) => {
         momentReloadBroadCastIfNecessary()
         actions.addCards(cards)
@@ -150,7 +149,7 @@ class CollectionsPagerPresenter(
   }
 
   private[this] def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]):
-  ServiceDef2[Seq[Card], ShortcutException with CardException] = for {
+  CatsService[Seq[Card]] = for {
     path <- saveShortcutIcon(bitmap)
     addCardRequest = AddCardRequest(
       term = name,
@@ -161,8 +160,8 @@ class CollectionsPagerPresenter(
     cards <- di.collectionProcess.addCards(collectionId, Seq(addCardRequest))
   } yield cards
 
-  private[this] def saveShortcutIcon(bitmap: Option[Bitmap]): ServiceDef2[String, ShortcutException] =
-    bitmap map (di.deviceProcess.saveShortcutIcon(_)) getOrElse Service(Task(Result.answer(""))) // We use a empty string because the UI will generate an image
+  private[this] def saveShortcutIcon(bitmap: Option[Bitmap]): CatsService[String] =
+    bitmap map (di.deviceProcess.saveShortcutIcon(_)) getOrElse CatsService(Task(Xor.right(""))) // We use a empty string because the UI will generate an image
 
 }
 

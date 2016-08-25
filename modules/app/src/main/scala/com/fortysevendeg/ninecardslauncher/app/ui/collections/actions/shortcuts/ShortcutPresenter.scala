@@ -17,7 +17,7 @@ class ShortcutPresenter(actions: ShortcutUiActions)(implicit activityContextWrap
   }
 
   def loadShortcuts(): Unit =
-    Task.fork(di.deviceProcess.getAvailableShortcuts.run).resolveAsyncUi(
+    Task.fork(di.deviceProcess.getAvailableShortcuts.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult =  actions.loadShortcuts,
       onException = (ex: Throwable) => actions.showLoadingShortcutsError()

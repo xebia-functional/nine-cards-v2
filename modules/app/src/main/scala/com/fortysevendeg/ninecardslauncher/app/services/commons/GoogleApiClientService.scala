@@ -43,7 +43,7 @@ trait GoogleDriveApiClientService
     error(resGetString(R.string.errorConnectingGoogle))
 
   def synchronizeDevice(implicit di: Injector, contextSupport: ContextSupport): Unit = {
-    Task.fork(di.userProcess.getUser.run).resolveAsync(
+    Task.fork(di.userProcess.getUser.value).resolveAsync(
       user => user.email match {
         case Some(account) =>
           val client = createGoogleDriveClient(account)
