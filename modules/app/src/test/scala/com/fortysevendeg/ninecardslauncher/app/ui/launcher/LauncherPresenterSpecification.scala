@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
+import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.LauncherPresenterStatuses
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.Service
@@ -60,8 +61,12 @@ trait LauncherPresenterSpecification
 
     val mockStatuses = mock[LauncherPresenterStatuses]
 
+    val mockPersistMoment = mock[PersistMoment]
+    mockPersistMoment.getPersistMoment returns None
+
     val presenter = new LauncherPresenter(mockActions) {
       override lazy val di: Injector = mockInjector
+      override lazy val persistMoment: PersistMoment = mockPersistMoment
       statuses = mockStatuses
     }
 
