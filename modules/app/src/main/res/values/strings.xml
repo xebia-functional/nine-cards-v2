@@ -48,8 +48,6 @@
 
     <string name="messageAcceptTerms">You should accept terms and conditions</string>
 
-    <string name="messageEmpty">There isn\'t data in this moment</string>
-
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
 
@@ -181,7 +179,14 @@
     <string name="errorLoadingApps">Error loading apps</string>
     <string name="errorLoadingShortcuts">Error loading shortcuts</string>
     <string name="errorLoadingRecommendations">Error loading recommendations</string>
+
     <string name="errorLoadingPrivateCollections">Error loading private collections</string>
+    <string name="errorSavingPrivateCollections">Error saving private collections</string>
+    <string name="emptyPrivateCollections">9Cards creates collections from your installed applications and you have all categories between your collection. Maybe another day we have some collection</string>
+
+    <string name="errorLoadingPublicCollections">Error loading public collections</string>
+    <string name="errorSavingPublicCollections">Error saving public collections</string>
+    <string name="emptyPublicCollections">There aren\'t collections published in this category. Maybe you can share one of your collections :-)</string>
 
     <!-- Contacts Info -->
 

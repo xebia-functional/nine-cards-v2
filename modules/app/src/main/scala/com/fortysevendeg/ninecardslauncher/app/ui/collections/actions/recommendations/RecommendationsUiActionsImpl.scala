@@ -34,8 +34,8 @@ trait RecommendationsUiActionsImpl
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  override def showLoadingRecommendationError(): Ui[Any] =
-    showError(R.string.errorLoadingRecommendations, presenter.loadRecommendations())
+  override def showErrorLoadingRecommendationInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.errorLoadingRecommendations, error = true, presenter.loadRecommendations())
 
   override def loadRecommendations(recommendations: Seq[RecommendedApp]): Ui[Any] = {
     val adapter = RecommendationsAdapter(recommendations)

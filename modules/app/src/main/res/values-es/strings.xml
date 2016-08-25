@@ -122,8 +122,6 @@
 
     <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
 
-    <string name="emptyMoment">No tienes momentos definidos</string>
-
     <string name="momentNotFoundMessage">Momento no encontrado. Tu deberías crear colecciones desde la sección Mis Collections</string>
 
     <!-- Collections Detail -->
@@ -173,7 +171,14 @@
     <string name="errorLoadingApps">Error cargando aplicaciones</string>
     <string name="errorLoadingShortcuts">Error cargando accesos directos</string>
     <string name="errorLoadingRecommendations">Error cargando recomendaciones</string>
+
     <string name="errorLoadingPrivateCollections">Error cargando colleciones privadas</string>
+    <string name="errorSavingPrivateCollections">Error guardando colleción privada</string>
+    <string name="emptyPrivateCollections">9Cards crea colecciones de tus aplicaciones instaladas y ya tienes todas las categorías entre tus collections. Pásate otro día por si tenemos algunas colección para ti</string>
+
+    <string name="errorLoadingPublicCollections">Error cargando colleciones públicas</string>
+    <string name="errorSavingPublicCollections">Error guardando colleción pública</string>
+    <string name="emptyPublicCollections">No hay colecciones publicadas en esta categoría. Quizás podrías crear tu una :-)</string>
 
     <!-- Contacts Info -->
 

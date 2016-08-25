@@ -65,9 +65,14 @@ trait PrivateCollectionsActionsImpl
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  override def showEmptyMessage(): Ui[Any] = showError(R.string.messageEmpty, collectionPresenter.loadPrivateCollections())
+  override def showEmptyMessageInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.emptyPrivateCollections, error = false, collectionPresenter.loadPrivateCollections())
 
-  override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
+  override def showErrorLoadingCollectionInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.errorLoadingPrivateCollections, error = true, collectionPresenter.loadPrivateCollections())
+
+  override def showErrorSavingCollectionInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.errorSavingPrivateCollections, error = true, collectionPresenter.loadPrivateCollections())
 
   override def close(): Ui[Any] = unreveal()
 

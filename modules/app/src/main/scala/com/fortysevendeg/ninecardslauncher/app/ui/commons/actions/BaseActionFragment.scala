@@ -8,7 +8,9 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportProvider, NineCardsPreferencesValue, ThemeFile}
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
@@ -108,6 +110,7 @@ trait BaseActionFragment
       (content <~ vgAddView(layout))  ~
       (loading <~ pbColor(colorPrimary)) ~
       (transitionView <~ vBackgroundColor(colorPrimary)) ~
+      (errorIcon <~ tivDefaultColor(colorPrimary)) ~
       (rootContent <~ vInvisible) ~
       (errorContent <~ vGone) ~
       (errorMessage <~ tvColor(theme.get(DrawerTextColor).alpha(0.8f))) ~
@@ -137,8 +140,9 @@ trait BaseActionFragment
     onStartFinishAction ~ (rootView <~~ revealOut(x, y, width, height)) ~~ onEndFinishAction
   }
 
-  def showError(message: Int, action: => Unit): Ui[_] =
+  def showMessageInScreen(message: Int, error: Boolean, action: => Unit): Ui[_] =
     (loading <~ vGone) ~
+      (errorIcon <~ ivSrc(if (error) R.drawable.placeholder_error else R.drawable.placeholder_empty)) ~
       (errorMessage <~ text(message)) ~
       (errorButton <~ On.click {
         action
