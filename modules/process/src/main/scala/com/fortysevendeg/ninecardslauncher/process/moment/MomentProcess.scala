@@ -57,7 +57,7 @@ trait MomentProcess {
     * @return Unit
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport): ServiceDef2[Unit, MomentException]
+  def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport): CatsService[Unit]
 
   /**
     * Creates Moments from some already formed and given Moments

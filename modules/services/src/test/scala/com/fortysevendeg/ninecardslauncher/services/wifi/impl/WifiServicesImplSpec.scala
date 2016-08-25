@@ -63,9 +63,9 @@ class WifiServicesImplSpec
 
         mockConnectivityManager.getActiveNetworkInfo returns javaNull
 
-        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).run.run
+        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
         result must beLike {
-          case Answer(resultSSID) => resultSSID shouldEqual None
+          case Xor.Right(resultSSID) => resultSSID shouldEqual None
         }
       }
 
