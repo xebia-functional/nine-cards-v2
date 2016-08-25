@@ -59,14 +59,14 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter:
 
   def adaptSize(widget: AppWidget): Ui[Any] = this.getField[Cell](LauncherWidgetView.cellKey) match {
     case Some(cell) => Ui {
-      widgetView.updateAppWidgetSize(javaNull, 0, 0, cell.widthCell * cell.spanX, cell.heightCell * cell.spanY)
+      updateWidgetSize(cell)
       setLayoutParams(createParams(cell, widget))
     }
     case _ => Ui.nop
   }
 
   def addView(cell: Cell, widget: AppWidget): Tweak[FrameLayout] = {
-    widgetView.updateAppWidgetSize(javaNull, 0, 0, cell.widthCell * cell.spanX, cell.heightCell * cell.spanY)
+    updateWidgetSize(cell)
     vgAddView(this, createParams(cell, widget))
   }
 
@@ -78,6 +78,17 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter:
     val top = paddingDefault + startY
     params.setMargins(left, top, paddingDefault, paddingDefault)
     params
+  }
+
+  private[this] def updateWidgetSize(cell: Cell): Unit = {
+    val (width, height) = cell.getSize() match {
+      case (w, h) => (w - paddingDefault, h - paddingDefault)
+    }
+    val (minWidth, minHeight) = cell.getSize(1, 1) match {
+      case (w, h) => (w - paddingDefault, h - paddingDefault)
+    }
+    widgetView.updateAppWidgetSize(javaNull, minWidth, minHeight, width, height)
+    widgetView.requestLayout()
   }
 
 }

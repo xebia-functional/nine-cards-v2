@@ -68,6 +68,8 @@ object WidgetsOps {
     widthCell: Int,
     heightCell: Int) {
 
+    def getSize(): (Int, Int) = (spanX * widthCell, spanY * heightCell)
+
     def getSize(sX: Int, sY: Int): (Int, Int) = (sX * widthCell, sY * heightCell)
 
   }
