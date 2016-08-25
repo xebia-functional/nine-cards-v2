@@ -1,7 +1,7 @@
 package com.fortysevendeg.rest.client
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.{CatsService, Service}
+import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientException, HttpClientResponse}
 import org.hamcrest.core.IsEqual
 import org.specs2.mock.Mockito
