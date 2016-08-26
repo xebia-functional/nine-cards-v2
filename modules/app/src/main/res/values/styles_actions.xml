@@ -187,6 +187,7 @@
         <item name="android:hint">@string/collectionName</item>
         <item name="android:textColorHint">@color/hint_collection_name</item>
         <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:maxLength">26</item>
     </style>
 
     <style name="NewCollectionSelectorContent">

@@ -59,7 +59,7 @@ trait CreateOrEditCollectionActionsImpl
     val textColor = theme.get(DrawerTextColor)
     (toolbar <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
-      (name <~ tvColor(textColor) <~ tvHintColor(textColor.alpha(0.8f))) ~
+      (name <~ tvColor(textColor) <~ tvHintColor(textColor.alpha(0.4f))) ~
       (colorText <~ tvColor(textColor)) ~
       (iconText <~ tvColor(textColor)) ~
       (colorContent <~ On.click(Ui(collectionPresenter.changeColor(getColor)))) ~
