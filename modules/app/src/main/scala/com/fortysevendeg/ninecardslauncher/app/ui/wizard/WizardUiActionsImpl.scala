@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -37,17 +36,9 @@ trait WizardUiActionsImpl
 
   lazy val userRootLayout = findView(TR.wizard_user_content)
 
-  lazy val userContentLayout = findView(TR.wizard_user_select_content_layout)
-
-  lazy val usersSpinner = findView(TR.wizard_user_group)
-
   lazy val usersTerms = findView(TR.wizard_user_terms)
 
   lazy val userAction = findView(TR.wizard_user_action)
-
-  lazy val accountsErrorContent = findView(TR.wizard_accounts_error_layout)
-
-  lazy val accountsErrorAction = findView(TR.wizard_accounts_error_action)
 
   lazy val titleDevice = findView(TR.wizard_device_title)
 
@@ -78,13 +69,9 @@ trait WizardUiActionsImpl
         On.click {
           Ui {
             val termsAccept = usersTerms.isChecked
-            val username = usersSpinner.getSelectedItem.toString
-            presenter.connectAccount(username, termsAccept)
+            presenter.connectAccount(termsAccept)
           }
         }) ~
-      (accountsErrorAction <~
-        defaultActionStyle <~
-        On.click(Ui(presenter.askForPermissions()))) ~
       (deviceAction <~
         defaultActionStyle <~
         On.click {
@@ -93,8 +80,8 @@ trait WizardUiActionsImpl
               Ui {
                 val tag = Option(i.getTag) map (_.toString)
                 tag match {
-                  case Some(`newConfigurationKey`) => presenter.generateCollections(None)
-                  case cloudId => presenter.generateCollections(cloudId)
+                  case Some(`newConfigurationKey`) => presenter.deviceSelected(None)
+                  case cloudId => presenter.deviceSelected(cloudId)
                 }
               }
           }
@@ -117,7 +104,11 @@ trait WizardUiActionsImpl
       goToUser()
   }
 
-  override def goToUser(): Ui[Any] = showUser(error = false)
+  override def goToUser(): Ui[Any] =
+    (loadingRootLayout <~ vInvisible) ~
+      (userRootLayout <~ vVisible) ~
+      (wizardRootLayout <~ vInvisible) ~
+      (deviceRootLayout <~ vInvisible)
 
   override def goToWizard(): Ui[Any] =
     (loadingRootLayout <~ vInvisible) ~
@@ -130,13 +121,6 @@ trait WizardUiActionsImpl
       (userRootLayout <~ vInvisible) ~
       (wizardRootLayout <~ vInvisible) ~
       (deviceRootLayout <~ vInvisible)
-
-  def showAccounts(accounts: Seq[String]): Ui[Any] = {
-    val sa = new ArrayAdapter[String](activityContextWrapper.getOriginal, android.R.layout.simple_spinner_dropdown_item, accounts.toArray)
-    (usersSpinner <~ sAdapter(sa)) ~ showUser(error = false)
-  }
-
-  override def showErrorAccountsPermission(): Ui[Any] = showUser(error = true)
 
   override def showErrorLoginUser(): Ui[Any] = backToUser(R.string.errorLoginUser)
 
@@ -152,14 +136,6 @@ trait WizardUiActionsImpl
       (titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, devices.name)))
 
   override def showDiveIn(): Ui[Any] = stepsAction <~ vEnabled(true)
-
-  private[this] def showUser(error: Boolean): Ui[Any] =
-    (loadingRootLayout <~ vInvisible) ~
-      (userRootLayout <~ vVisible) ~
-      (userContentLayout <~ (if (error) vGone else vVisible)) ~
-      (accountsErrorContent <~ (if (error) vVisible else vGone)) ~
-      (wizardRootLayout <~ vInvisible) ~
-      (deviceRootLayout <~ vInvisible)
 
   private[this] def showMessage(message: Int): Ui[Any] = rootLayout <~ vSnackbarShort(message)
 

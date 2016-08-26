@@ -15,8 +15,6 @@ class AccountsServicesImpl
   extends AccountsServices
   with ImplicitsAccountsServicesExceptions {
 
-  import AccountsServicesImpl._
-
   def getAccountManager(implicit contextWrapper: ContextWrapper): AccountManager =
     Option(AccountManager.get(contextWrapper.bestAvailable)) match {
       case Some(am) => am
@@ -50,7 +48,7 @@ class AccountsServicesImpl
       Task {
         Xor.catchNonFatal {
           val activity = contextWrapper.original.get.getOrElse(throw new IllegalStateException("Activity instance is null"))
-          val result = getAccountManager.getAuthToken(account.toAndroid, scope, javaNull, activity, javaNull, javaNull).getResult
+          val result = getAccountManager.getAuthToken(new AndroidAccount(account.accountName, account.accountType), scope, javaNull, activity, javaNull, javaNull).getResult
           Option(result.getString(AccountManager.KEY_AUTHTOKEN)) getOrElse (throw new RuntimeException("Received null token"))
         } leftMap {
           case e: OperationCanceledException => AccountsServicesOperationCancelledException(e.getMessage, Some(e))
@@ -65,14 +63,4 @@ class AccountsServicesImpl
         XorCatchAll[AccountsServicesExceptionImpl](getAccountManager.invalidateAuthToken(accountType, token))
       }
     }
-}
-
-object AccountsServicesImpl {
-
-  implicit class AccountOps(account: Account) {
-
-    def toAndroid: AndroidAccount = new AndroidAccount(account.accountType, account.accountName)
-
-  }
-
 }

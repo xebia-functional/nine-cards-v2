@@ -19,7 +19,9 @@ object PermissionChecker {
     override val value: String = android.Manifest.permission.READ_CONTACTS
   }
 
-  case class PermissionResult(permission: AppPermission, result: Boolean)
+  case class PermissionResult(permission: AppPermission, result: Boolean) {
+    def hasPermission(p: AppPermission): Boolean = permission == p && result
+  }
 
   private[this] def parsePermission(value: String): Option[AppPermission] =
     value match {

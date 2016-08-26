@@ -58,23 +58,10 @@
         <item name="android:gravity">center_horizontal</item>
     </style>
 
-    <style name="WizardUserSelectContentLayout">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:gravity">center</item>
-    </style>
-
     <style name="WizardUserSelectContent">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
-    </style>
-
-    <style name="WizardUserSelect">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">@dimen/padding_default</item>
     </style>
 
     <style name="WizardUserButton">
@@ -94,37 +81,6 @@
         <item name="android:text">@string/termsAndConditions</item>
         <item name="android:textColor">@color/wizard_text_terms</item>
         <item name="android:checked">true</item>
-    </style>
-
-    <!-- Accounts error -->
-
-    <style name="WizardAccountsErrorContentLayout">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <style name="WizardAccountsErrorMessage">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">0px</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:padding">@dimen/padding_large</item>
-        <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:text">@string/errorAccountsMessage</item>
-        <item name="android:textColor">@color/wizard_text_message</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <style name="WizardAccountsErrorButton">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:minWidth">@dimen/wizard_min_width_button</item>
-        <item name="android:padding">@dimen/padding_large</item>
-        <item name="android:text">@string/buttonTryAgain</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/wizard_text_button_on</item>
-        <item name="android:layout_marginBottom">@dimen/padding_large</item>
     </style>
 
     <!-- Devices -->
