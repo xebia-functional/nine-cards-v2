@@ -4,7 +4,6 @@ import android.content.Context
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams
-import android.view.animation.AnimationUtils
 import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
 import com.fortysevendeg.macroid.extras.ViewTweaks._

@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
+import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -36,13 +37,11 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Edit
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{LauncherData, LauncherMoment}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.EditWidgetsMode
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets.WidgetsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.Arrow
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -474,9 +473,9 @@ trait LauncherUiActionsImpl
   }
 
   def reloadPager(currentPage: Int) = Transformer {
-    case imageView: TintableImageView if imageView.isPosition(currentPage) =>
+    case imageView: ImageView if imageView.isPosition(currentPage) =>
       imageView <~ vActivated(true) <~~ pagerAppear
-    case imageView: TintableImageView =>
+    case imageView: ImageView =>
       imageView <~ vActivated(false)
   }
 

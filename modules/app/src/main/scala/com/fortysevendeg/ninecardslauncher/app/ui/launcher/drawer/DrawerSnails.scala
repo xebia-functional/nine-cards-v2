@@ -56,7 +56,10 @@ object DrawerSnails {
     reveal.addListener(new AnimatorListenerAdapter {
       override def onAnimationStart(animation: Animator): Unit = {
         super.onAnimationStart(animation)
-        if (in) view.setVisibility(View.VISIBLE)
+        if (in) {
+          view.setAlpha(1)
+          view.setVisibility(View.VISIBLE)
+        }
       }
 
       override def onAnimationEnd(animation: Animator) = {
