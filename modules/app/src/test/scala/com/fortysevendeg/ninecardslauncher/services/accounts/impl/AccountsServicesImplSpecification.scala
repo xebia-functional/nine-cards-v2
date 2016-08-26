@@ -5,12 +5,14 @@ import android.app.Activity
 import android.os.Bundle
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.services.accounts.{AccountsServicesExceptionImpl, AccountsServicesOperationCancelledException, AccountsServicesPermissionException}
+import com.fortysevendeg.ninecardslauncher.services.accounts.{AccountsServicesException, AccountsServicesExceptionImpl, AccountsServicesOperationCancelledException, AccountsServicesPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.accounts.models.GoogleAccount
 import macroid.{ActivityContextWrapper, ContextWrapper}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+
+import scala.ref.WeakReference
 
 trait AccountsServicesImplSpecification
   extends Specification
@@ -25,8 +27,6 @@ trait AccountsServicesImplSpecification
     implicit val activityContextWrapper = mock[ActivityContextWrapper]
 
     val activity = mock[Activity]
-
-    activityContextWrapper.getOriginal returns activity
 
     val accountManager = mock[AccountManager]
 
@@ -105,7 +105,7 @@ class AccountsServicesImplSpec
         accountManager.getAccountsByType(any) throws runtimeException
 
         val result = accountsServices.getAccounts(Some(GoogleAccount)).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesExceptionImpl]]
+        result must beAnInstanceOf[Xor.Left[AccountsServicesException]]
 
         there was one(accountManager).getAccountsByType(GoogleAccount.value)
       }
@@ -116,7 +116,7 @@ class AccountsServicesImplSpec
         accountManager.getAccounts throws runtimeException
 
         val result = accountsServices.getAccounts(None).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesExceptionImpl]]
+        result must beAnInstanceOf[Xor.Left[AccountsServicesException]]
 
         there was one(accountManager).getAccounts
       }
@@ -127,6 +127,7 @@ class AccountsServicesImplSpec
     "returns the accounts sequence and call with the right account and scope" in
       new AccountsServicesImplScope {
 
+        activityContextWrapper.original returns new WeakReference[Activity](activity)
         accountManagerFuture.getResult returns bundle
         bundle.getString(any) returns authToken
 
@@ -136,14 +137,24 @@ class AccountsServicesImplSpec
         there was one(accountManager).getAuthToken(androidAccount1, scope, javaNull, activity, javaNull, javaNull)
       }
 
+    "returns an AccountsServiceException when the activity is null" in
+      new AccountsServicesImplScope {
+
+        activityContextWrapper.original returns new WeakReference[Activity](javaNull)
+
+        val result = accountsServices.getAuthToken(account1, scope).value.run
+        result must beAnInstanceOf[Xor.Left[AccountsServicesException]]
+      }
+
     "returns an AccountsServiceException when the token is null" in
       new AccountsServicesImplScope {
 
+        activityContextWrapper.original returns new WeakReference[Activity](activity)
         accountManagerFuture.getResult returns bundle
         bundle.getString(any) returns javaNull
 
         val result = accountsServices.getAuthToken(account1, scope).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesExceptionImpl]]
+        result must beAnInstanceOf[Xor.Left[AccountsServicesException]]
 
         there was one(accountManager).getAuthToken(androidAccount1, scope, javaNull, activity, javaNull, javaNull)
       }
@@ -151,6 +162,7 @@ class AccountsServicesImplSpec
     "returns an AccountsServicesOperationCancelledException when the service throw an OperationCanceledException" in
       new AccountsServicesImplScope {
 
+        activityContextWrapper.original returns new WeakReference[Activity](activity)
         accountManagerFuture.getResult throws operationCancelledException
 
         val result = accountsServices.getAuthToken(account1, scope).value.run
@@ -162,10 +174,11 @@ class AccountsServicesImplSpec
     "returns an AccountsServiceException when the service throw a RuntimeException" in
       new AccountsServicesImplScope {
 
+        activityContextWrapper.original returns new WeakReference[Activity](activity)
         accountManagerFuture.getResult throws runtimeException
 
         val result = accountsServices.getAuthToken(account1, scope).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesExceptionImpl]]
+        result must beAnInstanceOf[Xor.Left[AccountsServicesException]]
 
         there was one(accountManager).getAuthToken(androidAccount1, scope, javaNull, activity, javaNull, javaNull)
       }

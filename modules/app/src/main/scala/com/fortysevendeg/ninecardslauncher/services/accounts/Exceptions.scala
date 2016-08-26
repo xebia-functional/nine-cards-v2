@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.accounts
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
 trait AccountsServicesException extends NineCardException
 
@@ -26,10 +26,4 @@ trait ImplicitsAccountsServicesExceptions {
 
   implicit def accountsServicesExceptionConverter =
     (t: Throwable) => AccountsServicesExceptionImpl(t.getMessage, Option(t))
-
-  implicit def accountsServicesPermissionExceptionConverter =
-    (t: Throwable) => AccountsServicesPermissionException(t.getMessage, Option(t))
-
-  implicit def accountsServicesOperationCancelledExceptionConverter =
-    (t: Throwable) => AccountsServicesOperationCancelledException(t.getMessage, Option(t))
 }
