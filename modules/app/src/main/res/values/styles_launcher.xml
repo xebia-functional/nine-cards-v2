@@ -170,12 +170,17 @@
         <item name="android:orientation">horizontal</item>
     </style>
 
+    <style name="LauncherMomentIconContent">
+        <item name="android:layout_width">@dimen/width_icon_content_top_bar_moment</item>
+        <item name="android:layout_height">@dimen/height_icon_content_top_bar_moment</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:layout_marginRight">@dimen/padding_medium</item>
+    </style>
+
     <style name="LauncherMomentIcon">
         <item name="android:layout_width">@dimen/size_icon_top_bar_moment</item>
         <item name="android:layout_height">@dimen/size_icon_top_bar_moment</item>
-        <item name="android:layout_gravity">center_vertical</item>
-        <item name="android:layout_marginLeft">@dimen/padding_default</item>
-        <item name="android:layout_marginRight">@dimen/padding_default</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="LauncherMomentText">

@@ -19,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermC
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
+import android.appwidget.AppWidgetHostView
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
@@ -58,7 +59,7 @@ object LauncherWorkSpacesTweaks {
     view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
   }
 
-  def lwsAddWidget(widgetView: View, cell: Cell, widget: AppWidget) = Tweak[W] (_.addWidget(widgetView, cell, widget))
+  def lwsAddWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget) = Tweak[W] (_.addWidget(widgetView, cell, widget))
 
   def lwsShowRules() = Tweak[W] (_.showRulesInMoment())
 
@@ -69,8 +70,6 @@ object LauncherWorkSpacesTweaks {
   def lwsResizeCurrentWidget() = Tweak[W] (_.resizeCurrentWidget())
 
   def lwsMoveCurrentWidget() = Tweak[W] (_.moveCurrentWidget())
-
-  def lwsArrowWidget(arrow: Arrow) = Tweak[W] (_.arrowWidget(arrow))
 
   def lwsResizeWidgetById(id: Int, resize: ResizeWidgetRequest) = Tweak[W] (_.resizeWidgetById(id, resize))
 

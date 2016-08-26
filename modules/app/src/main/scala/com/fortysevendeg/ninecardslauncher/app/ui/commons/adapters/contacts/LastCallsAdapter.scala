@@ -20,6 +20,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrolle
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.process.device.models.LastCallsContact
 import com.fortysevendeg.ninecardslauncher.process.device.types._
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -29,7 +30,7 @@ import org.ocpsoft.prettytime.PrettyTime
 case class LastCallsAdapter(
   contacts: Seq[LastCallsContact],
   clickListener: (LastCallsContact) => Unit)
-  (implicit val activityContext: ActivityContextWrapper, implicit val uiContext: UiContext[_])
+  (implicit val activityContext: ActivityContextWrapper, implicit val uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[LastCallsContactHolder]
   with FastScrollerListener {
 
@@ -61,7 +62,7 @@ case class LastCallsAdapter(
   override def getColumns: Int = columnsLists
 }
 
-case class LastCallsContactHolder(content: View)
+case class LastCallsContactHolder(content: View)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -77,12 +78,13 @@ case class LastCallsContactHolder(content: View)
 
   (icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank)).run
 
-  def bind(contact: LastCallsContact, position: Int)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]): Ui[_] = {
+  def bind(contact: LastCallsContact, position: Int): Ui[_] = {
     val date = new Date(contact.lastCallDate)
     val time = new PrettyTime().format(date)
+    val color = theme.get(DrawerTextColor)
     (icon <~ ivUriContact(contact.photoUri getOrElse "", contact.title, circular = true)) ~
-      (name <~ tvText(contact.title)) ~
-      (hour <~ tvText(time)) ~
+      (name <~ tvText(contact.title) <~ tvColor(color)) ~
+      (hour <~ tvText(time) <~ tvColor(color)) ~
       (callTypes <~ addCallTypesView(contact.calls take maxCalls map (_.callType))) ~
       (content <~ vSetPosition(position))
   }

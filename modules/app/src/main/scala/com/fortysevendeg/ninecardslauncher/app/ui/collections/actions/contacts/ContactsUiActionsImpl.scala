@@ -97,8 +97,8 @@ trait ContactsUiActionsImpl
 
   override def showGeneralError(): Ui[Any] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
-  override def showLoadingContactsError(filter: ContactsFilter): Ui[Any] =
-    showError(R.string.errorLoadingApps, contactsPresenter.loadContacts(filter))
+  override def showErrorLoadingContactsInScreen(filter: ContactsFilter): Ui[Any] =
+    showMessageInScreen(R.string.errorLoadingContacts, error = true, action = contactsPresenter.loadContacts(filter))
 
   override def showDialog(contact: Contact): Ui[Any] = Ui {
     val ft = getFragmentManager.beginTransaction()

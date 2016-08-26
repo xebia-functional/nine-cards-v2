@@ -99,9 +99,14 @@ trait PublicCollectionsActionsImpl
         }) ~
       (recycler <~ recyclerStyle)
 
-  override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError, () => {
-    collectionPresenter.loadPublicCollections()
-  })
+  override def showErrorLoadingCollectionInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.errorLoadingPublicCollections, error = true, action = collectionPresenter.loadPublicCollections())
+
+  override def showErrorSavingCollectionInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.errorSavingPublicCollections, error = true, action = collectionPresenter.loadPublicCollections())
+
+  override def showEmptyMessageInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.emptyPublicCollections, error = false, collectionPresenter.loadPublicCollections())
 
   override def loadPublicCollections(
     sharedCollections: Seq[SharedCollection]): Ui[Any] = {

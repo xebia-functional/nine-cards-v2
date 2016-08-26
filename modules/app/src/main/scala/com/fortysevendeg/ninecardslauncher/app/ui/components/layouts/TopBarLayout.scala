@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.Tint
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardsMomentOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -44,6 +45,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   lazy val momentContent = Option(findView(TR.launcher_moment_content))
 
+  lazy val momentIconContent = Option(findView(TR.launcher_moment_icon_content))
+
   lazy val momentIcon = Option(findView(TR.launcher_moment_icon))
 
   lazy val momentText = Option(findView(TR.launcher_moment_text))
@@ -67,22 +70,29 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   (this <~
     vgAddViews(Seq(momentWorkspace, collectionWorkspace))).run
 
-  def init(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] =
-    (momentWorkspace <~ vInvisible) ~
+  def init(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
+    val iconColor = theme.get(SearchIconsColor)
+    val pressedColor = theme.get(SearchPressedColor)
+    val iconBackground = new TopBarMomentBackgroundDrawable
+    val edgeBackground = new TopBarMomentEdgeBackgroundDrawable
+    (momentWorkspace <~ vInvisible <~ vBackground(edgeBackground)) ~
+      (momentIconContent <~ vBackground(iconBackground) <~ vLayerTypeSoftware(iconBackground.paint)) ~
+      (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(pressedColor)) ~
       (collectionsSearchPanel <~
         vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))) ~
       (collectionsBurgerIcon <~
-        tivDefaultColor(theme.get(SearchIconsColor)) <~
-        tivPressedColor(theme.get(SearchPressedColor)) <~
+        tivDefaultColor(iconColor) <~
+        tivPressedColor(pressedColor) <~
         On.click(Ui(presenter.launchMenu()))) ~
       (collectionsGoogleIcon <~
         tivDefaultColor(theme.get(SearchGoogleColor)) <~
-        tivPressedColor(theme.get(SearchPressedColor)) <~
+        tivPressedColor(pressedColor) <~
         On.click(Ui(presenter.launchSearch))) ~
       (collectionsMicIcon <~
-        tivDefaultColor(theme.get(SearchIconsColor)) <~
-        tivPressedColor(theme.get(SearchPressedColor)) <~
+        tivDefaultColor(iconColor) <~
+        tivPressedColor(pressedColor) <~
         On.click(Ui(presenter.launchVoiceSearch)))
+  }
 
   def movement(from: LauncherData, to: LauncherData, isFromLeft: Boolean, fraction: Float): Unit =
     if (from.workSpaceType != to.workSpaceType) {

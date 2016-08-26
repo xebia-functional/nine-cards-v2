@@ -10,7 +10,7 @@
             android:id="@+id/card_icon_content"
             style="@style/CardIconContent">
 
-            <ImageView
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
                 android:id="@+id/card_icon"
                 style="@style/CardIcon"/>
 

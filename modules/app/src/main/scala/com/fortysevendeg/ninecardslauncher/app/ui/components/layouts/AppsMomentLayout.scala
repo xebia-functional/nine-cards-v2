@@ -34,11 +34,11 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   LayoutInflater.from(context).inflate(R.layout.apps_moment_layout, this)
 
-  lazy val iconContent = findView(TR.launcher_moment_icon_content)
+  lazy val iconContent = findView(TR.moment_bar_icon_content)
 
-  lazy val icon = findView(TR.launcher_moment_icon)
+  lazy val icon = findView(TR.moment_bar_icon)
 
-  lazy val appsContent = findView(TR.launcher_moment_apps)
+  lazy val appsContent = findView(TR.moment_bar_apps)
 
   (Lollipop.ifSupportedThen(iconContent <~ vElevation(resGetDimensionPixelSize(R.dimen.elevation_default))) getOrElse Ui.nop).run
 
