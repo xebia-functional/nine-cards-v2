@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.social
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 import com.fortysevendeg.ninecardslauncher.services.plus.GooglePlusServicesException
 
 import scalaz.Scalaz._

@@ -5,8 +5,8 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, UnformedApp, UnformedContact}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
@@ -43,7 +43,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
       collections <- persistenceServices.addCollections(collectionsRequest)
     } yield collections map toCollection).resolve[CollectionException]
 
-  def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = CatsService {
+  def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = TaskService {
     Task {
       XorCatchAll[CollectionException] {
         createPrivateCollections(apps, appsCategories, minAppsGenerateCollections)
@@ -117,9 +117,9 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def addPackages(collectionId: Int, packages: Seq[String])(implicit context: ContextSupport) = {
 
-    def fetchPackages(packages: Seq[String]): CatsService[Seq[CategorizedPackage]] =
+    def fetchPackages(packages: Seq[String]): TaskService[Seq[CategorizedPackage]] =
       if (packages.isEmpty) {
-        CatsService(Task(Xor.right(Seq.empty)))
+        TaskService(Task(Xor.right(Seq.empty)))
       } else {
         for {
           requestConfig <- apiUtils.getRequestConfig

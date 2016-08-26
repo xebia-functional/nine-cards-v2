@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
 import cats.data.{Xor, XorT}
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.{NineCardException, _}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, _}
 
 import scala.language.implicitConversions
 import scalaz.concurrent.Task

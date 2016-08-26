@@ -4,7 +4,7 @@ import android.content.Intent
 import android.content.pm.{PackageManager, ResolveInfo}
 import android.provider.MediaStore
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.{XorCatchAll, javaNull}
 import com.fortysevendeg.ninecardslauncher.services.apps._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
@@ -19,7 +19,7 @@ class AppsServicesImpl
   val androidFeedback = "com.google.android.feedback"
   val androidVending = "com.android.vending"
 
-  override def getInstalledApplications(implicit context: ContextSupport) = CatsService {
+  override def getInstalledApplications(implicit context: ContextSupport) = TaskService {
     Task {
       XorCatchAll[AppsInstalledException] {
         getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_LAUNCHER))
@@ -27,7 +27,7 @@ class AppsServicesImpl
     }
   }
 
-  override def getApplication(packageName: String)(implicit context: ContextSupport) = CatsService {
+  override def getApplication(packageName: String)(implicit context: ContextSupport) = TaskService {
     Task {
       XorCatchAll[AppsInstalledException] {
         val packageManager = context.getPackageManager
@@ -37,7 +37,7 @@ class AppsServicesImpl
     }
   }
 
-  def getDefaultApps(implicit context: ContextSupport) = CatsService {
+  def getDefaultApps(implicit context: ContextSupport) = TaskService {
     Task {
       XorCatchAll[AppsInstalledException] {
 

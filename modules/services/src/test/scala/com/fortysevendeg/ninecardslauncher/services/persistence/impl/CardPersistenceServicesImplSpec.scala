@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence.data._
@@ -18,31 +18,31 @@ trait CardPersistenceServicesDataSpecification
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
 
-    mockCardRepository.addCard(collectionId, repoCardData) returns CatsService(Task(Xor.right(repoCard)))
+    mockCardRepository.addCard(collectionId, repoCardData) returns TaskService(Task(Xor.right(repoCard)))
 
-    mockCardRepository.addCards(any) returns CatsService(Task(Xor.right(Seq(repoCard))))
+    mockCardRepository.addCards(any) returns TaskService(Task(Xor.right(Seq(repoCard))))
 
-    mockCardRepository.deleteCards() returns CatsService(Task(Xor.right(items)))
+    mockCardRepository.deleteCards() returns TaskService(Task(Xor.right(items)))
 
-    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns CatsService(Task(Xor.right(items)))
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns TaskService(Task(Xor.right(items)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(collectionId, repoCard) returns CatsService(Task(Xor.right(item)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns TaskService(Task(Xor.right(item)))
     }
 
     List.tabulate(5) { index =>
-      mockCardRepository.fetchCardsByCollection(collectionId + index) returns CatsService(Task(Xor.right(seqRepoCard)))
+      mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Xor.right(seqRepoCard)))
     }
 
-    mockCardRepository.fetchCards returns CatsService(Task(Xor.right(seqRepoCard)))
+    mockCardRepository.fetchCards returns TaskService(Task(Xor.right(seqRepoCard)))
 
-    mockCardRepository.findCardById(cardId) returns CatsService(Task(Xor.right(Option(repoCard))))
+    mockCardRepository.findCardById(cardId) returns TaskService(Task(Xor.right(Option(repoCard))))
 
-    mockCardRepository.findCardById(nonExistentCardId) returns CatsService(Task(Xor.right(None)))
+    mockCardRepository.findCardById(nonExistentCardId) returns TaskService(Task(Xor.right(None)))
 
-    mockCardRepository.updateCard(repoCard) returns CatsService(Task(Xor.right(item)))
+    mockCardRepository.updateCard(repoCard) returns TaskService(Task(Xor.right(item)))
 
-    mockCardRepository.updateCards(seqRepoCard) returns CatsService(Task(Xor.right(item to items)))
+    mockCardRepository.updateCards(seqRepoCard) returns TaskService(Task(Xor.right(item to items)))
 
   }
 
@@ -50,27 +50,27 @@ trait CardPersistenceServicesDataSpecification
 
     val exception = RepositoryException("Irrelevant message")
 
-    mockCardRepository.addCard(collectionId, repoCardData) returns CatsService(Task(Xor.left(exception)))
+    mockCardRepository.addCard(collectionId, repoCardData) returns TaskService(Task(Xor.left(exception)))
 
-    mockCardRepository.deleteCards() returns CatsService(Task(Xor.left(exception)))
+    mockCardRepository.deleteCards() returns TaskService(Task(Xor.left(exception)))
 
-    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns CatsService(Task(Xor.left(exception)))
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns TaskService(Task(Xor.left(exception)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(collectionId, repoCard) returns CatsService(Task(Xor.left(exception)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns TaskService(Task(Xor.left(exception)))
     }
 
     List.tabulate(5) { index =>
-      mockCardRepository.fetchCardsByCollection(collectionId + index) returns CatsService(Task(Xor.left(exception)))
+      mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Xor.left(exception)))
     }
 
-    mockCardRepository.fetchCards returns CatsService(Task(Xor.left(exception)))
+    mockCardRepository.fetchCards returns TaskService(Task(Xor.left(exception)))
 
-    mockCardRepository.findCardById(cardId) returns CatsService(Task(Xor.left(exception)))
+    mockCardRepository.findCardById(cardId) returns TaskService(Task(Xor.left(exception)))
 
-    mockCardRepository.updateCard(repoCard) returns CatsService(Task(Xor.left(exception)))
+    mockCardRepository.updateCard(repoCard) returns TaskService(Task(Xor.left(exception)))
 
-    mockCardRepository.updateCards(seqRepoCard) returns CatsService(Task(Xor.left(exception)))
+    mockCardRepository.updateCards(seqRepoCard) returns TaskService(Task(Xor.left(exception)))
 
   }
 

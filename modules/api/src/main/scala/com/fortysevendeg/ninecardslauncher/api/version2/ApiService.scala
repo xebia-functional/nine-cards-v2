@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.api.version2
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.rest.client.http.HttpClientException
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}
@@ -44,7 +44,7 @@ class ApiService(serviceClient: ServiceClient) {
   private[this] val recommendationsPath = "/recommendations"
 
   def login(request: LoginRequest)(
-    implicit reads: Reads[LoginResponse], writes: Writes[LoginRequest]): CatsService[ServiceClientResponse[LoginResponse]] =
+    implicit reads: Reads[LoginResponse], writes: Writes[LoginRequest]): TaskService[ServiceClientResponse[LoginResponse]] =
     serviceClient.post[LoginRequest, LoginResponse](
       path = loginPath,
       headers = Seq((headerContentType, headerContentTypeValue)),
@@ -54,7 +54,7 @@ class ApiService(serviceClient: ServiceClient) {
   def installations(
     request: InstallationRequest,
     header: ServiceHeader)(
-    implicit reads: Reads[InstallationResponse], writes: Writes[InstallationRequest]): CatsService[ServiceClientResponse[InstallationResponse]] =
+    implicit reads: Reads[InstallationResponse], writes: Writes[InstallationRequest]): TaskService[ServiceClientResponse[InstallationResponse]] =
     serviceClient.put[InstallationRequest, InstallationResponse](
       path = installationsPath,
       headers = createHeaders(installationsPath, header),
@@ -66,7 +66,7 @@ class ApiService(serviceClient: ServiceClient) {
     offset: Int,
     limit: Int,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[CollectionsResponse]): CatsService[ServiceClientResponse[CollectionsResponse]] = {
+    implicit reads: Reads[CollectionsResponse]): TaskService[ServiceClientResponse[CollectionsResponse]] = {
 
     val path = s"$latestCollectionsPath/$category/$offset/$limit"
 
@@ -81,7 +81,7 @@ class ApiService(serviceClient: ServiceClient) {
     offset: Int,
     limit: Int,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[CollectionsResponse]): CatsService[ServiceClientResponse[CollectionsResponse]] = {
+    implicit reads: Reads[CollectionsResponse]): TaskService[ServiceClientResponse[CollectionsResponse]] = {
 
     val path = s"$topCollectionsPath/$category/$offset/$limit"
 
@@ -94,7 +94,7 @@ class ApiService(serviceClient: ServiceClient) {
   def createCollection(
     request: CreateCollectionRequest,
     header: ServiceHeader)(
-    implicit reads: Reads[CreateCollectionResponse], writes: Writes[CreateCollectionRequest]): CatsService[ServiceClientResponse[CreateCollectionResponse]] =
+    implicit reads: Reads[CreateCollectionResponse], writes: Writes[CreateCollectionRequest]): TaskService[ServiceClientResponse[CreateCollectionResponse]] =
     serviceClient.post[CreateCollectionRequest, CreateCollectionResponse](
       path = collectionsPath,
       headers = createHeaders(collectionsPath, header),
@@ -105,7 +105,7 @@ class ApiService(serviceClient: ServiceClient) {
     publicIdentifier: String,
     request: UpdateCollectionRequest,
     header: ServiceHeader)(
-    implicit reads: Reads[UpdateCollectionResponse], writes: Writes[UpdateCollectionRequest]): CatsService[ServiceClientResponse[UpdateCollectionResponse]] = {
+    implicit reads: Reads[UpdateCollectionResponse], writes: Writes[UpdateCollectionRequest]): TaskService[ServiceClientResponse[UpdateCollectionResponse]] = {
 
     val path = s"$collectionsPath/$publicIdentifier"
 
@@ -119,7 +119,7 @@ class ApiService(serviceClient: ServiceClient) {
   def getCollection(
     publicIdentifier: String,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[Collection]): CatsService[ServiceClientResponse[Collection]] = {
+    implicit reads: Reads[Collection]): TaskService[ServiceClientResponse[Collection]] = {
 
     val path = s"$collectionsPath/$publicIdentifier"
 
@@ -130,7 +130,7 @@ class ApiService(serviceClient: ServiceClient) {
   }
 
   def getCollections(header: ServiceMarketHeader)(
-    implicit reads: Reads[CollectionsResponse]): CatsService[ServiceClientResponse[CollectionsResponse]] =
+    implicit reads: Reads[CollectionsResponse]): TaskService[ServiceClientResponse[CollectionsResponse]] =
     serviceClient.get[CollectionsResponse](
       path = collectionsPath,
       headers = createHeaders(collectionsPath, header),
@@ -139,7 +139,7 @@ class ApiService(serviceClient: ServiceClient) {
   def categorize(
     request: CategorizeRequest,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[CategorizeResponse], writes: Writes[CategorizeRequest]): CatsService[ServiceClientResponse[CategorizeResponse]] =
+    implicit reads: Reads[CategorizeResponse], writes: Writes[CategorizeRequest]): TaskService[ServiceClientResponse[CategorizeResponse]] =
     serviceClient.post[CategorizeRequest, CategorizeResponse](
       path = categorizePath,
       headers = createHeaders(categorizePath, header),
@@ -150,7 +150,7 @@ class ApiService(serviceClient: ServiceClient) {
     category: String,
     request: RecommendationsRequest,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[RecommendationsResponse], writes: Writes[RecommendationsRequest]): CatsService[ServiceClientResponse[RecommendationsResponse]] = {
+    implicit reads: Reads[RecommendationsResponse], writes: Writes[RecommendationsRequest]): TaskService[ServiceClientResponse[RecommendationsResponse]] = {
 
     val path = s"$recommendationsPath/$category"
 
@@ -164,7 +164,7 @@ class ApiService(serviceClient: ServiceClient) {
   def recommendationsByApps(
     request: RecommendationsByAppsRequest,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[RecommendationsByAppsResponse], writes: Writes[RecommendationsByAppsRequest]): CatsService[ServiceClientResponse[RecommendationsByAppsResponse]] = {
+    implicit reads: Reads[RecommendationsByAppsResponse], writes: Writes[RecommendationsByAppsRequest]): TaskService[ServiceClientResponse[RecommendationsByAppsResponse]] = {
 
     val path = s"$recommendationsPath"
 

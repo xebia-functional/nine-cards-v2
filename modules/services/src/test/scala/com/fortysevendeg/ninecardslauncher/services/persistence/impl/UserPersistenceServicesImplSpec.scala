@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.UserPersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
@@ -16,38 +16,38 @@ trait UserPersistenceServicesDataSpecification
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with UserPersistenceServicesData {
 
-    mockUserRepository.addUser(repoUserData) returns CatsService(Task(Xor.right(repoUser)))
+    mockUserRepository.addUser(repoUserData) returns TaskService(Task(Xor.right(repoUser)))
 
-    mockUserRepository.deleteUsers() returns CatsService(Task(Xor.right(items)))
+    mockUserRepository.deleteUsers() returns TaskService(Task(Xor.right(items)))
 
-    mockUserRepository.deleteUser(repoUser) returns CatsService(Task(Xor.right(item)))
+    mockUserRepository.deleteUser(repoUser) returns TaskService(Task(Xor.right(item)))
 
-    mockUserRepository.fetchUsers returns CatsService(Task(Xor.right(seqRepoUser)))
+    mockUserRepository.fetchUsers returns TaskService(Task(Xor.right(seqRepoUser)))
 
-    mockUserRepository.findUserById(uId) returns CatsService(Task(Xor.right(Option(repoUser))))
+    mockUserRepository.findUserById(uId) returns TaskService(Task(Xor.right(Option(repoUser))))
 
-    mockUserRepository.findUserById(nonExistentUserId) returns CatsService(Task(Xor.right(None)))
+    mockUserRepository.findUserById(nonExistentUserId) returns TaskService(Task(Xor.right(None)))
 
-    mockUserRepository.updateUser(repoUser) returns CatsService(Task(Xor.right(item)))
+    mockUserRepository.updateUser(repoUser) returns TaskService(Task(Xor.right(item)))
   }
 
   trait ErrorRepositoryServicesResponses extends RepositoryServicesScope with UserPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 
-    mockUserRepository.addUser(repoUserData) returns CatsService(Task(Xor.left(exception)))
+    mockUserRepository.addUser(repoUserData) returns TaskService(Task(Xor.left(exception)))
 
-    mockUserRepository.deleteUsers() returns CatsService(Task(Xor.left(exception)))
+    mockUserRepository.deleteUsers() returns TaskService(Task(Xor.left(exception)))
 
-    mockUserRepository.deleteUser(repoUser) returns CatsService(Task(Xor.left(exception)))
+    mockUserRepository.deleteUser(repoUser) returns TaskService(Task(Xor.left(exception)))
 
-    mockUserRepository.fetchUsers returns CatsService(Task(Xor.left(exception)))
+    mockUserRepository.fetchUsers returns TaskService(Task(Xor.left(exception)))
 
-    mockUserRepository.findUserById(uId) returns CatsService(Task(Xor.left(exception)))
+    mockUserRepository.findUserById(uId) returns TaskService(Task(Xor.left(exception)))
 
-    mockUserRepository.findUserById(nonExistentUserId) returns CatsService(Task(Xor.left(exception)))
+    mockUserRepository.findUserById(nonExistentUserId) returns TaskService(Task(Xor.left(exception)))
 
-    mockUserRepository.updateUser(repoUser) returns CatsService(Task(Xor.left(exception)))
+    mockUserRepository.updateUser(repoUser) returns TaskService(Task(Xor.left(exception)))
   }
 
 }

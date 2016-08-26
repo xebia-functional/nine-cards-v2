@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.widget
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.widget.models._
 
 trait WidgetProcess {
@@ -11,7 +11,7 @@ trait WidgetProcess {
     * @return the Seq[Widget] of existing widgets
     * @throws AppWidgetException if there was an error getting the existing widgets
     */
-  def getWidgets: CatsService[Seq[AppWidget]]
+  def getWidgets: TaskService[Seq[AppWidget]]
 
   /**
     * Gets a widget by a given Id
@@ -20,7 +20,7 @@ trait WidgetProcess {
     * @return the Option[Widget] corresponding with the Id
     * @throws AppWidgetException if there was an error getting the widget
     */
-  def getWidgetById(widgetId: Int): CatsService[Option[AppWidget]]
+  def getWidgetById(widgetId: Int): TaskService[Option[AppWidget]]
 
   /**
     * Gets a widget by a given appWidgetId
@@ -29,7 +29,7 @@ trait WidgetProcess {
     * @return the Option[Widget] corresponding with the appWidgetId
     * @throws AppWidgetException if there was an error getting the widget
     */
-  def getWidgetByAppWidgetId(appWidgetId: Int): CatsService[Option[AppWidget]]
+  def getWidgetByAppWidgetId(appWidgetId: Int): TaskService[Option[AppWidget]]
 
   /**
     * Gets the existing widgets related with a given moment
@@ -38,7 +38,7 @@ trait WidgetProcess {
     * @return the Seq[Widget] of existing widgets related with the moment
     * @throws AppWidgetException if there was an error getting the existing widgets
     */
-  def getWidgetsByMoment(momentId: Int): CatsService[Seq[AppWidget]]
+  def getWidgetsByMoment(momentId: Int): TaskService[Seq[AppWidget]]
 
   /**
     * Adds a new widget
@@ -47,7 +47,7 @@ trait WidgetProcess {
     * @return the new [[AppWidget]] added
     * @throws AppWidgetException if there was an error adding the new widget
     */
-  def addWidget(addWidgetRequest: AddWidgetRequest): CatsService[AppWidget]
+  def addWidget(addWidgetRequest: AddWidgetRequest): TaskService[AppWidget]
 
   /**
     * Adds a sequence of new widgets
@@ -56,7 +56,7 @@ trait WidgetProcess {
     * @return the Seq[Widget] of new widgets added
     * @throws AppWidgetException if there was an error adding the new widget
     */
-  def addWidgets(request: Seq[AddWidgetRequest]): CatsService[Seq[AppWidget]]
+  def addWidgets(request: Seq[AddWidgetRequest]): TaskService[Seq[AppWidget]]
 
   /**
     * Moves an existing widget in the workspace
@@ -66,7 +66,7 @@ trait WidgetProcess {
     * @return the [[AppWidget]] with the new position
     * @throws AppWidgetException if there was an error finding the widget or moving it
     */
-  def moveWidget(widgetId: Int, moveWidgetRequest: MoveWidgetRequest): CatsService[AppWidget]
+  def moveWidget(widgetId: Int, moveWidgetRequest: MoveWidgetRequest): TaskService[AppWidget]
 
   /**
     * Resizes an existing widget in the workspace
@@ -76,14 +76,14 @@ trait WidgetProcess {
     * @return the [[AppWidget]] with the new position
     * @throws AppWidgetException if there was an error finding the widget or resizing it
     */
-  def resizeWidget(widgetId: Int, resizeWidgetRequest: ResizeWidgetRequest): CatsService[AppWidget]
+  def resizeWidget(widgetId: Int, resizeWidgetRequest: ResizeWidgetRequest): TaskService[AppWidget]
 
   /**
     * Delete all widgets in database
     *
     * @throws AppWidgetException if exist some problem deleting the widgets
     */
-  def deleteAllWidgets(): CatsService[Unit]
+  def deleteAllWidgets(): TaskService[Unit]
 
   /**
     * Deletes a widget
@@ -91,7 +91,7 @@ trait WidgetProcess {
     * @param widgetId the Id of the Widget
     * @throws AppWidgetException if there was an error finding the widget or resizing it
     */
-  def deleteWidget(widgetId: Int): CatsService[Unit]
+  def deleteWidget(widgetId: Int): TaskService[Unit]
 
   /**
     * Delete all widgets in database with a given momentId
@@ -99,7 +99,7 @@ trait WidgetProcess {
     * @param momentId the Id of the moment associated with the widgets
     * @throws AppWidgetException if exist some problem deleting the widgets
     */
-  def deleteWidgetsByMoment(momentId: Int): CatsService[Unit]
+  def deleteWidgetsByMoment(momentId: Int): TaskService[Unit]
 
 
 }

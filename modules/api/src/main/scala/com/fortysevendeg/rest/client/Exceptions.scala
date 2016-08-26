@@ -1,6 +1,6 @@
 package com.fortysevendeg.rest.client
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
 
 case class ServiceClientException(message: String, cause : Option[Throwable] = None)

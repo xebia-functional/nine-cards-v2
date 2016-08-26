@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
 case class WidgetServicesException(message: String, cause : Option[Throwable] = None)
   extends RuntimeException(message)

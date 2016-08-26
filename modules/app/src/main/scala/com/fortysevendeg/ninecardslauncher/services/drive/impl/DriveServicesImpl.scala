@@ -4,7 +4,7 @@ import java.io.{InputStream, OutputStreamWriter}
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.drive._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
@@ -86,7 +86,7 @@ class DriveServicesImpl(client: GoogleApiClient)
     searchFiles(query.some)(seq => f(seq.headOption))
   }
 
-  private[this] def searchFiles[R](query: Option[Query])(f: (Seq[DriveServiceFileSummary]) => R) = CatsService {
+  private[this] def searchFiles[R](query: Option[Query])(f: (Seq[DriveServiceFileSummary]) => R) = TaskService {
     Task {
       val request = query match {
         case Some(q) => appFolder.queryChildren(client, q)
@@ -130,7 +130,7 @@ class DriveServicesImpl(client: GoogleApiClient)
     deviceId: String,
     fileType: String,
     mimeType: String,
-    f: (OutputStreamWriter) => Unit) = CatsService {
+    f: (OutputStreamWriter) => Unit) = TaskService {
     Task {
       Drive.DriveApi
         .newDriveContents(client)
@@ -174,7 +174,7 @@ class DriveServicesImpl(client: GoogleApiClient)
     }
 
   private[this] def fetchDriveFile[R](driveId: String)(f: (Metadata) => Xor[DriveServicesException, R]) =
-    CatsService {
+    TaskService {
       Task {
         appFolder
           .queryChildren(client, queryUUID(driveId))

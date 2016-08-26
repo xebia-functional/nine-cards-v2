@@ -8,8 +8,8 @@ import android.graphics.Bitmap
 import android.util.DisplayMetrics
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.image._
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -23,11 +23,11 @@ trait ImageServicesImplSpecification
 
   val bitmapException = BitmapTransformationException("")
 
-  val serviceBitmapException = CatsService(Task(Xor.Left(bitmapException)))
+  val serviceBitmapException = TaskService(Task(Xor.Left(bitmapException)))
 
   val fileException = FileException("")
 
-  val serviceFileException: CatsService[Unit] = CatsService(Task(Xor.Left(fileException)))
+  val serviceFileException: TaskService[Unit] = TaskService(Task(Xor.Left(fileException)))
 
   trait ImageServicesScope
     extends Scope
@@ -46,7 +46,7 @@ trait ImageServicesImplSpecification
 
     val saveBitmap = SaveBitmap(bitmap = mock[Bitmap], bitmapResize = None)
 
-    val fileExistsTask = CatsService(Task {
+    val fileExistsTask = TaskService(Task {
       Xor.catchOnly[FileException] {
         val file = mock[File]
         file.exists() returns true
@@ -55,7 +55,7 @@ trait ImageServicesImplSpecification
       }
     })
 
-    val fileNotExistsTask = CatsService(Task {
+    val fileNotExistsTask = TaskService(Task {
       Xor.catchOnly[FileException] {
         val file = mock[File]
         file.exists() returns false
@@ -64,7 +64,7 @@ trait ImageServicesImplSpecification
       }
     })
 
-    val saveBitmapTask = CatsService(Task {
+    val saveBitmapTask = TaskService(Task {
       Xor.catchOnly[FileException] {
         val file = mock[File]
         file.exists() returns true
@@ -73,7 +73,7 @@ trait ImageServicesImplSpecification
       }
     })
 
-    val defaultBitmapTask = CatsService(Task(Xor.catchOnly[BitmapTransformationException](mock[Bitmap])))
+    val defaultBitmapTask = TaskService(Task(Xor.catchOnly[BitmapTransformationException](mock[Bitmap])))
 
     val mockTasks = mock[ImageServicesTasks]
 
@@ -82,7 +82,7 @@ trait ImageServicesImplSpecification
       defaultBitmapTask
 
     mockTasks.saveBitmap(any[File], any[Bitmap]) returns
-      CatsService(Task(Xor.catchOnly[FileException](())))
+      TaskService(Task(Xor.catchOnly[FileException](())))
 
     val mockImageService = new ImageServicesImpl(imageServiceConfig, mockTasks)
 

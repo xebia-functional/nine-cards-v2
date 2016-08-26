@@ -5,7 +5,7 @@ import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.wifi.{ImplicitsWifiExceptions, WifiServices, WifiServicesException}
 
 import scalaz.concurrent.Task
@@ -14,7 +14,7 @@ class WifiServicesImpl
   extends WifiServices
   with ImplicitsWifiExceptions {
 
-  override def getCurrentSSID(implicit contextSupport: ContextSupport) = CatsService {
+  override def getCurrentSSID(implicit contextSupport: ContextSupport) = TaskService {
     Task {
       XorCatchAll[WifiServicesException] {
         val connManager = getConnectivityManager
@@ -32,7 +32,7 @@ class WifiServicesImpl
     }
   }
 
-  override def getConfiguredNetworks(implicit contextSupport: ContextSupport) = CatsService {
+  override def getConfiguredNetworks(implicit contextSupport: ContextSupport) = TaskService {
     Task {
       XorCatchAll[WifiServicesException] {
         import scala.collection.JavaConversions._

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.moment
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.moment.models._
@@ -14,7 +14,7 @@ trait MomentProcess {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.moment.models.Moment]
     * @throws MomentException if there was an error getting the existing moments
     */
-  def getMoments: CatsService[Seq[Moment]]
+  def getMoments: TaskService[Seq[Moment]]
 
   /**
     * Get moment by type, if the moment don't exist return an exception
@@ -23,7 +23,7 @@ trait MomentProcess {
     * @return the com.fortysevendeg.ninecardslauncher.process.moment.models.Moment
     * @throws MomentException if there was an error getting the existing moments
     */
-  def getMomentByType(momentType: NineCardsMoment): CatsService[Moment]
+  def getMomentByType(momentType: NineCardsMoment): TaskService[Moment]
 
   /**
     * Get moment by type, if the moment don't exist return None
@@ -32,7 +32,7 @@ trait MomentProcess {
     * @return the com.fortysevendeg.ninecardslauncher.process.moment.models.Moment
     * @throws MomentException if there was an error getting the existing moments
     */
-  def fetchMomentByType(momentType: NineCardsMoment): CatsService[Option[Moment]]
+  def fetchMomentByType(momentType: NineCardsMoment): TaskService[Option[Moment]]
 
   /**
     * Creates Moments and their associated Collections with the apps installed in the device
@@ -40,7 +40,7 @@ trait MomentProcess {
     * @return the List[com.fortysevendeg.ninecardslauncher.process.commons.models.Collection]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def createMoments(implicit context: ContextSupport): CatsService[Seq[Collection]]
+  def createMoments(implicit context: ContextSupport): TaskService[Seq[Collection]]
 
   /**
     * Create new Moment without collection by type
@@ -48,7 +48,7 @@ trait MomentProcess {
     * @return the List[com.fortysevendeg.ninecardslauncher.process.commons.models.Collection]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport): CatsService[Moment]
+  def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport): TaskService[Moment]
 
   /**
     * Creates Moments from some already formed and given Moments
@@ -57,7 +57,7 @@ trait MomentProcess {
     * @return Unit
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport): CatsService[Unit]
+  def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport): TaskService[Unit]
 
   /**
     * Creates Moments from some already formed and given Moments
@@ -66,7 +66,7 @@ trait MomentProcess {
     * @return the List[com.fortysevendeg.ninecardslauncherprocess.moment.models.Moment]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport): CatsService[Seq[Moment]]
+  def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport): TaskService[Seq[Moment]]
 
   /**
     * Generate Private Moments Collections with the apps installed in the device
@@ -76,14 +76,14 @@ trait MomentProcess {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.commons.PrivateCollection]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport): CatsService[Seq[PrivateCollection]]
+  def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport): TaskService[Seq[PrivateCollection]]
 
   /**
     * Delete all moments in database
     *
     * @throws MomentException if exist some problem to get the app or storing it
     */
-  def deleteAllMoments(): CatsService[Unit]
+  def deleteAllMoments(): TaskService[Unit]
 
   /**
     * Gets the best available moments
@@ -91,7 +91,7 @@ trait MomentProcess {
     * @return the best com.fortysevendeg.ninecardslauncher.process.moment.models.Moment
     * @throws MomentException if there was an error getting the best moment
     */
-  def getBestAvailableMoment(implicit context: ContextSupport): CatsService[Option[Moment]]
+  def getBestAvailableMoment(implicit context: ContextSupport): TaskService[Option[Moment]]
 
   /**
     * Gets all available moments. Only the moments with collection
@@ -99,6 +99,6 @@ trait MomentProcess {
     * @return sequuence com.fortysevendeg.ninecardslauncher.process.moment.models.Moment
     * @throws MomentException if there was an error getting the best moment
     */
-  def getAvailableMoments(implicit context: ContextSupport): CatsService[Seq[MomentWithCollection]]
+  def getAvailableMoments(implicit context: ContextSupport): TaskService[Seq[MomentWithCollection]]
 
 }

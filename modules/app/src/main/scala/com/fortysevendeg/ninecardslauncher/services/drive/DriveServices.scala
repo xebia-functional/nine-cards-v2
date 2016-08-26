@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.drive
 
 import java.io.InputStream
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 
 trait DriveServices {
@@ -13,7 +13,7 @@ trait DriveServices {
     * @return Sequence of `DriveServiceFile`
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def listFiles(maybeFileType: Option[String]): CatsService[Seq[DriveServiceFileSummary]]
+  def listFiles(maybeFileType: Option[String]): TaskService[Seq[DriveServiceFileSummary]]
 
   /**
     * Verify if a specific file exists
@@ -21,7 +21,7 @@ trait DriveServices {
     * @return boolean indicating if the file exists
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def fileExists(driveId: String): CatsService[Boolean]
+  def fileExists(driveId: String): TaskService[Boolean]
 
   /**
     * Returns the content of a file
@@ -29,7 +29,7 @@ trait DriveServices {
     * @return the file content as String
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def readFile(driveId: String): CatsService[DriveServiceFile]
+  def readFile(driveId: String): TaskService[DriveServiceFile]
 
   /**
     * Creates a new text file
@@ -41,7 +41,7 @@ trait DriveServices {
     * @return the file identifier
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def createFile(title: String, content: String, deviceId: String, fileType: String, mimeType: String): CatsService[DriveServiceFileSummary]
+  def createFile(title: String, content: String, deviceId: String, fileType: String, mimeType: String): TaskService[DriveServiceFileSummary]
 
   /**
     * Creates a new file
@@ -52,7 +52,7 @@ trait DriveServices {
     * @param mimeType the file mimeType
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def createFile(title: String, content: InputStream, deviceId: String, fileType: String, mimeType: String): CatsService[DriveServiceFileSummary]
+  def createFile(title: String, content: InputStream, deviceId: String, fileType: String, mimeType: String): TaskService[DriveServiceFileSummary]
 
   /**
     * Updates the content of an existing text file
@@ -60,7 +60,7 @@ trait DriveServices {
     * @param content the content as String
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def updateFile(driveId: String, content: String): CatsService[DriveServiceFileSummary]
+  def updateFile(driveId: String, content: String): TaskService[DriveServiceFileSummary]
 
   /**
     * Updates the content of an existing file
@@ -68,7 +68,7 @@ trait DriveServices {
     * @param content the content as InputStream (won't be closed after finish)
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def updateFile(driveId: String, content: InputStream): CatsService[DriveServiceFileSummary]
+  def updateFile(driveId: String, content: InputStream): TaskService[DriveServiceFileSummary]
 
   /**
     * Try to delete the file
@@ -76,6 +76,6 @@ trait DriveServices {
     * @return Unit
     * @throws DriveServicesException if there was an error or there is no file with this identifier
     */
-  def deleteFile(driveId: String): CatsService[Unit]
+  def deleteFile(driveId: String): TaskService[Unit]
 
 }

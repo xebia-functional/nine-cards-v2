@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AllAppsCategory, Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetAppOrder, GetByName}
@@ -55,13 +55,13 @@ case class AppsPresenter(
     actions.appAdded(card).run
   }
 
-  private[this] def getLoadApps(order: GetAppOrder): CatsService[(IterableApps, Seq[TermCounter])] =
+  private[this] def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
       iterableApps <- di.deviceProcess.getIterableApps(order)
       counters <- di.deviceProcess.getTermCountersForApps(order)
     } yield (iterableApps, counters)
 
-  private[this] def getLoadAppsByCategory(category: NineCardCategory): CatsService[(IterableApps, Seq[TermCounter])] =
+  private[this] def getLoadAppsByCategory(category: NineCardCategory): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
       iterableApps <- di.deviceProcess.getIterableAppsByCategory(category.name)
     } yield (iterableApps, Seq.empty)

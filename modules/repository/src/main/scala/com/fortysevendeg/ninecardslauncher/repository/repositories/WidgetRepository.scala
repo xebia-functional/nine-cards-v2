@@ -7,8 +7,8 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toWidget
 import com.fortysevendeg.ninecardslauncher.repository.model.{Widget, WidgetData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
@@ -28,8 +28,8 @@ class WidgetRepository(
 
   val widgetNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$widgetUriPath")
 
-  def addWidget(data: WidgetData): CatsService[Widget] =
-    CatsService {
+  def addWidget(data: WidgetData): TaskService[Widget] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = createMapValues(data)
@@ -44,8 +44,8 @@ class WidgetRepository(
       }
     }
 
-  def addWidgets(datas: Seq[WidgetData]): CatsService[Seq[Widget]] =
-    CatsService {
+  def addWidgets(datas: Seq[WidgetData]): TaskService[Seq[Widget]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
 
@@ -64,8 +64,8 @@ class WidgetRepository(
       }
     }
 
-  def deleteWidgets(where: String = ""): CatsService[Int] =
-    CatsService {
+  def deleteWidgets(where: String = ""): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.delete(
@@ -76,8 +76,8 @@ class WidgetRepository(
       }
     }
 
-  def deleteWidget(widget: Widget): CatsService[Int] =
-    CatsService {
+  def deleteWidget(widget: Widget): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
@@ -88,8 +88,8 @@ class WidgetRepository(
       }
     }
 
-  def findWidgetById(id: Int): CatsService[Option[Widget]] =
-    CatsService {
+  def findWidgetById(id: Int): TaskService[Option[Widget]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.findById(
@@ -100,8 +100,8 @@ class WidgetRepository(
       }
     }
 
-  def fetchWidgetByAppWidgetId(appWidgetId: Int): CatsService[Option[Widget]] =
-    CatsService {
+  def fetchWidgetByAppWidgetId(appWidgetId: Int): TaskService[Option[Widget]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           fetchWidget(selection = s"${WidgetEntity.appWidgetId} = ?", selectionArgs = Seq(appWidgetId.toString))
@@ -109,8 +109,8 @@ class WidgetRepository(
       }
     }
 
-  def fetchWidgetsByMoment(momentId: Int): CatsService[Seq[Widget]] =
-    CatsService {
+  def fetchWidgetsByMoment(momentId: Int): TaskService[Seq[Widget]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
@@ -126,8 +126,8 @@ class WidgetRepository(
   def fetchWidgets(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[Seq[Widget]] =
-    CatsService {
+    orderBy: String = ""): TaskService[Seq[Widget]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
@@ -143,8 +143,8 @@ class WidgetRepository(
   def fetchIterableWidgets(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[IterableCursor[Widget]] =
-    CatsService {
+    orderBy: String = ""): TaskService[IterableCursor[Widget]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
@@ -157,8 +157,8 @@ class WidgetRepository(
       }
     }
 
-  def updateWidget(widget: Widget): CatsService[Int] =
-    CatsService {
+  def updateWidget(widget: Widget): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = createMapValues(widget.data)
@@ -172,8 +172,8 @@ class WidgetRepository(
       }
     }
 
-  def updateWidgets(widgets: Seq[Widget]): CatsService[Seq[Int]] =
-    CatsService {
+  def updateWidgets(widgets: Seq[Widget]): TaskService[Seq[Int]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = widgets map { widget =>

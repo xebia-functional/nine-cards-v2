@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.api.version1
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import org.specs2.mock.Mockito
@@ -38,7 +38,7 @@ class ApiServiceSpec
     "return the status code and the response" in new ApiServiceScope {
 
       mockedServiceClient.post[User, User](any, any, any, any, any)(any) returns
-        CatsService(Task(Xor.right(ServiceClientResponse(statusCodeOk, Some(user)))))
+        TaskService(Task(Xor.right(ServiceClientResponse(statusCodeOk, Some(user)))))
 
       val serviceResponse = apiService.login(emptyUser, headers).value.run
 
@@ -64,7 +64,7 @@ class ApiServiceSpec
     "return the status code and the response" in new ApiServiceScope {
 
       mockedServiceClient.get[UserConfig](any, any, any, any) returns
-        CatsService(Task(Xor.right(ServiceClientResponse(statusCodeOk, Some(userConfig)))))
+        TaskService(Task(Xor.right(ServiceClientResponse(statusCodeOk, Some(userConfig)))))
 
       val serviceClientResponse = apiService.getUserConfig(headers).value.run
 

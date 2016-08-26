@@ -4,8 +4,8 @@ import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactCounter}
@@ -20,8 +20,8 @@ trait ContactsDeviceProcessImpl extends DeviceProcess {
     with ImplicitsDeviceException
     with ImplicitsContactsServiceExceptions =>
 
-  val emptyContactCounterService: CatsService[Seq[ContactCounter]] =
-    CatsService(Task(Xor.Right(Seq.empty)))
+  val emptyContactCounterService: TaskService[Seq[ContactCounter]] =
+    TaskService(Task(Xor.Right(Seq.empty)))
 
   def getFavoriteContacts(implicit context: ContextSupport) =
     (for {
@@ -67,7 +67,7 @@ trait ContactsDeviceProcessImpl extends DeviceProcess {
     } yield toContact(contact)).resolve[ContactException]
 
   // TODO Change when ticket is finished (9C-235 - Fetch contacts from several lookup keys)
-  private[this] def fillContacts(contacts: Seq[ServicesContact]) = CatsService {
+  private[this] def fillContacts(contacts: Seq[ServicesContact]) = TaskService {
     val tasks = contacts map (c => contactsServices.findContactByLookupKey(c.lookupKey).value)
     Task.gatherUnordered(tasks) map (list => XorCatchAll[ContactsServiceException](list.collect { case Xor.Right(contact) => contact }))
   }.resolve[ContactException]

@@ -4,8 +4,8 @@ import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsExceptions
@@ -47,7 +47,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
         })
     }) getOrElse actions.showMessageFormFieldError.run
 
-  private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): CatsService[String] =
+  private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): TaskService[String] =
     for {
       user <- di.userProcess.getUser
       collection <- getCollection
@@ -63,9 +63,9 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
       _ <- di.collectionProcess.updateSharedCollection(collection.id, sharedCollectionId)
     } yield sharedCollectionId
 
-  private[this] def getCollection: CatsService[Collection] = statuses.collection map { col =>
-    CatsService(Task(Xor.right(col)))
-  } getOrElse CatsService(Task(Xor.left(SharedCollectionsExceptions("", None))))
+  private[this] def getCollection: TaskService[Collection] = statuses.collection map { col =>
+    TaskService(Task(Xor.right(col)))
+  } getOrElse TaskService(Task(Xor.left(SharedCollectionsExceptions("", None))))
 
 }
 

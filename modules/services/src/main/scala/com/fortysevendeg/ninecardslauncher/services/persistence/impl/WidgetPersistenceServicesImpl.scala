@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.repository.provider.WidgetEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._

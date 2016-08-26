@@ -5,7 +5,7 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcessConfig}
@@ -54,10 +54,10 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollection)))
-    mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns CatsService(Task(Xor.right(seqServicesApps)))
-    mockPersistenceServices.addCollections(any) returns CatsService(Task(Xor.right(moments map (_ => servicesCollection))))
-    mockPersistenceServices.addMoment(any) returns CatsService(Task(Xor.right(servicesMoment)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
+    mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Xor.right(seqServicesApps)))
+    mockPersistenceServices.addCollections(any) returns TaskService(Task(Xor.right(moments map (_ => servicesCollection))))
+    mockPersistenceServices.addMoment(any) returns TaskService(Task(Xor.right(servicesMoment)))
 
   }
 
@@ -65,7 +65,7 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -73,8 +73,8 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollection)))
-    mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
+    mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -82,9 +82,9 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollection)))
-    mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns CatsService(Task(Xor.right(seqServicesApps)))
-    mockPersistenceServices.addCollections(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
+    mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Xor.right(seqServicesApps)))
+    mockPersistenceServices.addCollections(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -92,7 +92,7 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.addMoments(any) returns CatsService(Task(Xor.right(moments map (_ => servicesMoment))))
+    mockPersistenceServices.addMoments(any) returns TaskService(Task(Xor.right(moments map (_ => servicesMoment))))
 
   }
 
@@ -100,7 +100,7 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.addMoments(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.addMoments(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -108,7 +108,7 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.deleteAllMoments() returns CatsService(Task(Xor.right(momentId)))
+    mockPersistenceServices.deleteAllMoments() returns TaskService(Task(Xor.right(momentId)))
 
   }
 
@@ -116,7 +116,7 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.deleteAllMoments() returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.deleteAllMoments() returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -127,10 +127,10 @@ trait MomentProcessImplSpecification
     val wifi: Option[String]
     val time: DateTime
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollectionForMoments)))
-    mockPersistenceServices.fetchMoments returns CatsService(Task(Xor.right(servicesMomentSeq)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollectionForMoments)))
+    mockPersistenceServices.fetchMoments returns TaskService(Task(Xor.right(servicesMomentSeq)))
 
-    mockWifiServices.getCurrentSSID(contextSupport) returns CatsService(Task(Xor.right(wifi)))
+    mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Xor.right(wifi)))
 
     override val momentProcess = new MomentProcessImpl(
       momentProcessConfig = momentProcessConfig,
@@ -145,8 +145,8 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollectionForMoments)))
-    mockPersistenceServices.fetchMoments returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollectionForMoments)))
+    mockPersistenceServices.fetchMoments returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -154,9 +154,9 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollectionForMoments)))
-    mockPersistenceServices.fetchMoments returns CatsService(Task(Xor.right(servicesMomentSeq)))
-    mockWifiServices.getCurrentSSID(contextSupport) returns CatsService(Task(Xor.left(wifiServiceException)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollectionForMoments)))
+    mockPersistenceServices.fetchMoments returns TaskService(Task(Xor.right(servicesMomentSeq)))
+    mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Xor.left(wifiServiceException)))
 
   }
 
@@ -164,8 +164,8 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollectionForMoments)))
-    mockPersistenceServices.fetchMoments returns CatsService(Task(Xor.right(servicesMomentSeq)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollectionForMoments)))
+    mockPersistenceServices.fetchMoments returns TaskService(Task(Xor.right(servicesMomentSeq)))
 
   }
 
@@ -173,8 +173,8 @@ trait MomentProcessImplSpecification
 
     self: MomentProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollectionForMoments)))
-    mockPersistenceServices.fetchMoments returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollectionForMoments)))
+    mockPersistenceServices.fetchMoments returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 

@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.utils
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServiceException
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
 import org.specs2.mock.Mockito
@@ -52,7 +52,7 @@ class ApiUtilsSpec
       new ApiUtilsScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
 
@@ -67,7 +67,7 @@ class ApiUtilsSpec
       new ApiUtilsScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user.copy(apiKey = None)))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user.copy(apiKey = None)))))
 
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
 
@@ -82,7 +82,7 @@ class ApiUtilsSpec
       new ApiUtilsScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user.copy(sessionToken = None)))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user.copy(sessionToken = None)))))
 
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
 
@@ -97,8 +97,8 @@ class ApiUtilsSpec
       new ApiUtilsScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(FindUserByIdRequest(userId)) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.getAndroidId(any) returns CatsService(Task(Xor.right(androidId)))
+        mockPersistenceServices.findUserById(FindUserByIdRequest(userId)) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(androidId)))
 
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beLike {

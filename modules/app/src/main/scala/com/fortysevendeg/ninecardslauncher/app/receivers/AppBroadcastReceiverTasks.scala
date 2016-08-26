@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.receivers
 
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 
 trait AppBroadcastReceiverTasks {
 

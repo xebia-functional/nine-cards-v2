@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, Moment => RepositoryMoment}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, MomentEntity}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -66,7 +66,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
 
   def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest) = {
 
-    def fetchCollection(): CatsService[Option[RepositoryCollection]] =
+    def fetchCollection(): TaskService[Option[RepositoryCollection]] =
       if(request.original) {
         collectionRepository.fetchCollectionByOriginalSharedCollectionId(request.sharedCollectionId)
       } else {
@@ -104,14 +104,14 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       updated <- collectionRepository.updateCollections(request.updateCollectionsRequests map toRepositoryCollection)
     } yield updated).resolve[PersistenceServiceException]
 
-  private[this] def fetchCards(maybeCollection: Option[RepositoryCollection]): CatsService[Seq[RepositoryCard]] = {
+  private[this] def fetchCards(maybeCollection: Option[RepositoryCollection]): TaskService[Seq[RepositoryCard]] = {
     maybeCollection match {
       case Some(collection) => cardRepository.fetchCardsByCollection(collection.id)
-      case None => CatsService(Task(Xor.Right(Seq.empty)))
+      case None => TaskService(Task(Xor.Right(Seq.empty)))
     }
   }
 
-  private[this] def fetchCards(collections: Seq[RepositoryCollection]): CatsService[Seq[Collection]] = {
+  private[this] def fetchCards(collections: Seq[RepositoryCollection]): TaskService[Seq[Collection]] = {
     val result = collections map {
       collection =>
         (for {
@@ -120,22 +120,22 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
         } yield toCollection(collection, cards, moments.headOption)).value
     }
 
-    CatsService(
+    TaskService(
       Task.gatherUnordered(result) map (list =>
           XorCatchAll[PersistenceServiceException](list.collect { case Xor.Right(collection) => collection })))
   }
 
-  private[this] def unlinkCollectionInMoment(maybeMoment: Option[Moment]): CatsService[Unit] = {
+  private[this] def unlinkCollectionInMoment(maybeMoment: Option[Moment]): TaskService[Unit] = {
     maybeMoment match {
       case Some(moment) => momentRepository.updateMoment(toRepositoryMomentWithoutCollection(moment)) map (_ => ())
-      case None => CatsService(Task(Xor.right((): Unit)))
+      case None => TaskService(Task(Xor.right((): Unit)))
     }
   }
 
-  private[this] def getMomentsByCollection(maybeCollection: Option[RepositoryCollection]): CatsService[Seq[RepositoryMoment]] = {
+  private[this] def getMomentsByCollection(maybeCollection: Option[RepositoryCollection]): TaskService[Seq[RepositoryMoment]] = {
     maybeCollection match {
       case Some(collection) => momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
-      case None => CatsService(Task(Xor.Right(Seq.empty)))
+      case None => TaskService(Task(Xor.Right(Seq.empty)))
     }
   }
 
@@ -163,7 +163,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
 
     val s = requests map (r => createOrUpdateMoment(r).value)
 
-    CatsService(Task.gatherUnordered(s) map (list =>
+    TaskService(Task.gatherUnordered(s) map (list =>
       XorCatchAll[PersistenceServiceException](list.collect { case Xor.Right(value) => value })))
 
   }

@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.plus
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
 
 trait GooglePlusServices {
@@ -10,7 +10,7 @@ trait GooglePlusServices {
     *
     * @return the information about the profile
     */
-  def loadUserProfile: CatsService[GooglePlusProfile]
+  def loadUserProfile: TaskService[GooglePlusProfile]
 
 
 }

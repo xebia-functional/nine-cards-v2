@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
@@ -35,7 +35,7 @@ trait CloudStorageProcessImplSpecification
 
     val persistenceServices = mock[PersistenceServices]
 
-    persistenceServices.getAndroidId returns CatsService(Task(Xor.right(sampleId)))
+    persistenceServices.getAndroidId returns TaskService(Task(Xor.right(sampleId)))
 
     val cloudStorageProcess = new CloudStorageProcessImpl(driveServices, persistenceServices)
 
@@ -45,15 +45,15 @@ trait CloudStorageProcessImplSpecification
 
     self: CloudStorageProcessImplScope =>
 
-    driveServices.listFiles(any) returns CatsService(Task(Xor.left(driveServicesException)))
-    driveServices.fileExists(any) returns CatsService(Task(Xor.left(driveServicesException)))
-    driveServices.readFile(any) returns CatsService(Task(Xor.left(driveServicesException)))
-    driveServices.deleteFile(any) returns CatsService(Task(Xor.left(driveServicesException)))
-    driveServices.createFile(anyString, anyString, anyString, anyString, anyString) returns CatsService(Task(Xor.left(driveServicesException)))
-    driveServices.updateFile(anyString, anyString) returns CatsService(Task(Xor.left(driveServicesException)))
+    driveServices.listFiles(any) returns TaskService(Task(Xor.left(driveServicesException)))
+    driveServices.fileExists(any) returns TaskService(Task(Xor.left(driveServicesException)))
+    driveServices.readFile(any) returns TaskService(Task(Xor.left(driveServicesException)))
+    driveServices.deleteFile(any) returns TaskService(Task(Xor.left(driveServicesException)))
+    driveServices.createFile(anyString, anyString, anyString, anyString, anyString) returns TaskService(Task(Xor.left(driveServicesException)))
+    driveServices.updateFile(anyString, anyString) returns TaskService(Task(Xor.left(driveServicesException)))
 
-    persistenceServices.findUserById(any) returns CatsService(Task(Xor.left(persistenceServicesException)))
-    persistenceServices.getAndroidId returns CatsService(Task(Xor.left(androidIdNotFoundException)))
+    persistenceServices.findUserById(any) returns TaskService(Task(Xor.left(persistenceServicesException)))
+    persistenceServices.getAndroidId returns TaskService(Task(Xor.left(androidIdNotFoundException)))
 
   }
 
@@ -78,7 +78,7 @@ class CloudStorageProcessImplSpec
     "return the actual device and an empty list when passing only one element that corresponds to the device id" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        persistenceServices.getAndroidId returns CatsService(Task(Xor.right(deviceId)))
+        persistenceServices.getAndroidId returns TaskService(Task(Xor.right(deviceId)))
 
         val cloudStorageDevice = generateCloudStorageDevice(
           cloudId = cloudId,
@@ -96,7 +96,7 @@ class CloudStorageProcessImplSpec
     "return an empty option and an empty list when passing a empty list" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        persistenceServices.getAndroidId returns CatsService(Task(Xor.right(deviceId)))
+        persistenceServices.getAndroidId returns TaskService(Task(Xor.right(deviceId)))
 
         val result = cloudStorageProcess.prepareForActualDevice(Seq.empty).value.run
         result must beLike {
@@ -110,7 +110,7 @@ class CloudStorageProcessImplSpec
     "return an empty option and an empty list when passing only one element that not corresponds to the device id" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        persistenceServices.getAndroidId returns CatsService(Task(Xor.right(deviceId)))
+        persistenceServices.getAndroidId returns TaskService(Task(Xor.right(deviceId)))
 
         val cloudStorageDevice = generateCloudStorageDevice(
           cloudId = cloudId,
@@ -128,7 +128,7 @@ class CloudStorageProcessImplSpec
     "return the newest device when passing two elements that correspond with the device id" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        persistenceServices.getAndroidId returns CatsService(Task(Xor.right(deviceId)))
+        persistenceServices.getAndroidId returns TaskService(Task(Xor.right(deviceId)))
 
         val cloudStorageDevice1 = generateCloudStorageDevice(
           cloudId = cloudId,
@@ -152,7 +152,7 @@ class CloudStorageProcessImplSpec
     "return the actual device and a sorted list when passing some elements and one of them correspond with the device id" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        persistenceServices.getAndroidId returns CatsService(Task(Xor.right(deviceId)))
+        persistenceServices.getAndroidId returns TaskService(Task(Xor.right(deviceId)))
 
         val cloudStorageDevice = generateCloudStorageDevice(
           cloudId = cloudId,
@@ -199,9 +199,9 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          driveServices.listFiles(any) returns CatsService(Task(Xor.right(driveServiceFileSummarySeq)))
+          driveServices.listFiles(any) returns TaskService(Task(Xor.right(driveServiceFileSummarySeq)))
 
-          persistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
           val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
@@ -218,9 +218,9 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          driveServices.listFiles(any) returns CatsService(Task(Xor.right(driveServiceFileSummaryEmptySeq)))
+          driveServices.listFiles(any) returns TaskService(Task(Xor.right(driveServiceFileSummaryEmptySeq)))
 
-          persistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
           val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
@@ -235,7 +235,7 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
           val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
@@ -261,9 +261,9 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          driveServices.listFiles(any) returns CatsService(Task(Xor.right(driveServiceFileSummaryEmptySeq)))
+          driveServices.listFiles(any) returns TaskService(Task(Xor.right(driveServiceFileSummaryEmptySeq)))
 
-          persistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
           val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
@@ -277,7 +277,7 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          driveServices.listFiles(any) returns CatsService(Task(Xor.right(driveServiceFileSummaryEmptySeq)))
+          driveServices.listFiles(any) returns TaskService(Task(Xor.right(driveServiceFileSummaryEmptySeq)))
 
           val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
@@ -293,7 +293,7 @@ class CloudStorageProcessImplSpec
       "return a valid CloudStorageDevice when the service returns a valid Json" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-          driveServices.readFile(cloudId) returns CatsService(Task(Xor.right(driveServiceFile)))
+          driveServices.readFile(cloudId) returns TaskService(Task(Xor.right(driveServiceFile)))
 
           val result = cloudStorageProcess.getCloudStorageDevice(cloudId).value.run
           result must beLike {
@@ -308,7 +308,7 @@ class CloudStorageProcessImplSpec
       "return a CloudStorageProcessException when the service return a non valid Json" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-          driveServices.readFile(cloudId) returns CatsService(Task(Xor.right(invalidDriveServiceFileJson)))
+          driveServices.readFile(cloudId) returns TaskService(Task(Xor.right(invalidDriveServiceFileJson)))
 
           val result = cloudStorageProcess.getCloudStorageDevice(cloudId).value.run
           result must beLike {
@@ -338,7 +338,7 @@ class CloudStorageProcessImplSpec
             anArgThat[String, String](new JsonMatcher(validCloudStorageDeviceJson)),
             anyString,
             anyString,
-            anyString) returns CatsService(Task(Xor.right(driveServiceFileSummary)))
+            anyString) returns TaskService(Task(Xor.right(driveServiceFileSummary)))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
@@ -364,14 +364,14 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user.copy(deviceCloudId = None)))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user.copy(deviceCloudId = None)))))
 
           driveServices.createFile(
             anyString,
             anyString,
             anyString,
             anyString,
-            anyString) returns CatsService(Task(Xor.right(driveServiceFileSummary)))
+            anyString) returns TaskService(Task(Xor.right(driveServiceFileSummary)))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
@@ -386,13 +386,13 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
-          driveServices.fileExists(cloudId) returns CatsService(Task(Xor.right(true)))
+          driveServices.fileExists(cloudId) returns TaskService(Task(Xor.right(true)))
 
           driveServices.updateFile(
             anyString,
-            anyString) returns CatsService(Task(Xor.right(driveServiceFileSummary)))
+            anyString) returns TaskService(Task(Xor.right(driveServiceFileSummary)))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
@@ -407,16 +407,16 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
-          driveServices.fileExists(cloudId) returns CatsService(Task(Xor.right(false)))
+          driveServices.fileExists(cloudId) returns TaskService(Task(Xor.right(false)))
 
           driveServices.createFile(
             anyString,
             anyString,
             anyString,
             anyString,
-            anyString) returns CatsService(Task(Xor.right(driveServiceFileSummary)))
+            anyString) returns TaskService(Task(Xor.right(driveServiceFileSummary)))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
@@ -431,7 +431,7 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
@@ -450,7 +450,7 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
@@ -505,7 +505,7 @@ class CloudStorageProcessImplSpec
       "return a valid response when the service finds the device" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-          driveServices.deleteFile(cloudId) returns CatsService(Task(Xor.right(Unit)))
+          driveServices.deleteFile(cloudId) returns TaskService(Task(Xor.right(Unit)))
 
           val result = cloudStorageProcess.deleteCloudStorageDevice(cloudId).value.run
           result must beAnInstanceOf[Xor.Right[Unit]]

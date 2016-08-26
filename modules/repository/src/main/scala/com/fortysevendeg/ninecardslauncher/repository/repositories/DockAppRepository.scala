@@ -4,8 +4,8 @@ import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toDockApp
 import com.fortysevendeg.ninecardslauncher.repository.model.{DockApp, DockAppData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{DockAppEntity, NineCardsUri}
@@ -25,8 +25,8 @@ class DockAppRepository(
 
   val dockAppNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$dockAppUriPath")
 
-  def addDockApp(data: DockAppData): CatsService[DockApp] =
-    CatsService {
+  def addDockApp(data: DockAppData): TaskService[DockApp] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = createMapValues(data)
@@ -41,8 +41,8 @@ class DockAppRepository(
       }
     }
 
-  def addDockApps(datas: Seq[DockAppData]): CatsService[Seq[DockApp]] =
-    CatsService {
+  def addDockApps(datas: Seq[DockAppData]): TaskService[Seq[DockApp]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
 
@@ -61,8 +61,8 @@ class DockAppRepository(
       }
     }
 
-  def deleteDockApps(where: String = ""): CatsService[Int] =
-    CatsService {
+  def deleteDockApps(where: String = ""): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.delete(
@@ -73,8 +73,8 @@ class DockAppRepository(
       }
     }
 
-  def deleteDockApp(dockApp: DockApp): CatsService[Int] =
-    CatsService {
+  def deleteDockApp(dockApp: DockApp): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
@@ -85,8 +85,8 @@ class DockAppRepository(
       }
     }
 
-  def findDockAppById(id: Int): CatsService[Option[DockApp]] =
-    CatsService {
+  def findDockAppById(id: Int): TaskService[Option[DockApp]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.findById(
@@ -100,8 +100,8 @@ class DockAppRepository(
   def fetchDockApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = s"${DockAppEntity.position} asc"): CatsService[Seq[DockApp]] =
-    CatsService {
+    orderBy: String = s"${DockAppEntity.position} asc"): TaskService[Seq[DockApp]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
@@ -117,8 +117,8 @@ class DockAppRepository(
   def fetchIterableDockApps(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = s"${DockAppEntity.position} asc"): CatsService[IterableCursor[DockApp]] =
-    CatsService {
+    orderBy: String = s"${DockAppEntity.position} asc"): TaskService[IterableCursor[DockApp]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
@@ -131,8 +131,8 @@ class DockAppRepository(
       }
     }
 
-  def updateDockApp(item: DockApp): CatsService[Int] =
-    CatsService {
+  def updateDockApp(item: DockApp): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = createMapValues(item.data)
@@ -146,8 +146,8 @@ class DockAppRepository(
       }
     }
 
-  def updateDockApps(items: Seq[DockApp]): CatsService[Seq[Int]] =
-    CatsService {
+  def updateDockApps(items: Seq[DockApp]): TaskService[Seq[Int]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = items map { item =>
