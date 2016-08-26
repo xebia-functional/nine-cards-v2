@@ -25,22 +25,41 @@
         <TextView
             style="@style/WizardUserTitle"/>
 
-        <FrameLayout
-            style="@style/WizardUserSelectContent">
+        <LinearLayout
+            android:id="@+id/wizard_user_select_content_layout"
+            style="@style/WizardUserSelectContentLayout">
 
-            <Spinner
-                android:id="@+id/wizard_user_group"
-                style="@style/WizardUserSelect"/>
+            <FrameLayout
+                style="@style/WizardUserSelectContent">
 
-        </FrameLayout>
+                <Spinner
+                    android:id="@+id/wizard_user_group"
+                    style="@style/WizardUserSelect"/>
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/wizard_user_action"
-            style="@style/WizardUserButton"/>
+            </FrameLayout>
 
-        <CheckBox
-            android:id="@+id/wizard_user_terms"
-            style="@style/WizardUserTerms"/>
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/wizard_user_action"
+                style="@style/WizardUserButton"/>
+
+            <CheckBox
+                android:id="@+id/wizard_user_terms"
+                style="@style/WizardUserTerms"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/wizard_accounts_error_layout"
+            style="@style/WizardAccountsErrorContentLayout">
+
+            <TextView
+                style="@style/WizardAccountsErrorMessage"/>
+
+            <android.support.v7.widget.AppCompatButton
+                android:id="@+id/wizard_accounts_error_action"
+                style="@style/WizardAccountsErrorButton"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -65,9 +84,8 @@
 
         </ScrollView>
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/wizard_device_action"
-            android:text="@string/buttonContinue"
             style="@style/WizardDeviceButton"/>
 
     </LinearLayout>

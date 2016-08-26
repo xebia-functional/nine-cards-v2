@@ -1,14 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
-import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.{DockAppException, _}
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
+import com.fortysevendeg.ninecardslauncher.process.device.{GetByName, ImplicitsDeviceException}
 import com.google.android.gms.common.api.GoogleApiClient
 
 trait CreateCollectionsTasks
@@ -31,7 +28,7 @@ trait CreateCollectionsTasks
       dockApps <- di.deviceProcess.generateDockApps(dockAppsSize)
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ = setProcess(LoadingConfigProcess)
-      contacts <- di.deviceProcess.getFavoriteContacts
+      contacts <- di.deviceProcess.getFavoriteContacts.resolveTo(Seq.empty)
       _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
       momentCollections <- di.momentProcess.createMoments
