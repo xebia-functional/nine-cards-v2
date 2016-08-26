@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.api.version2
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import org.specs2.mock.Mockito
@@ -40,7 +40,7 @@ class ApiServiceSpec
       val response = LoginResponse(apiKey, sessionToken)
 
       mockedServiceClient.post[LoginRequest, LoginResponse](any, any, any, any, any)(any) returns
-        CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
+        TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
       val request = LoginRequest(email, loginId, tokenId)
 
@@ -70,7 +70,7 @@ class ApiServiceSpec
       val response = InstallationResponse(androidId, deviceToken)
 
       mockedServiceClient.put[InstallationRequest, InstallationResponse](any, any, any, any, any)(any) returns
-        CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
+        TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
       val request = InstallationRequest(deviceToken)
 
@@ -98,7 +98,7 @@ class ApiServiceSpec
         val response = CollectionsResponse(Seq(collection))
 
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
-          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
         val serviceClientResponse = apiService.latestCollections(category, offset, limit, serviceMarketHeader).value.run
 
@@ -125,7 +125,7 @@ class ApiServiceSpec
         val response = CollectionsResponse(Seq(collection))
 
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
-          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
         val serviceClientResponse = apiService.topCollections(category, offset, limit, serviceMarketHeader).value.run
 
@@ -150,7 +150,7 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.post[CreateCollectionRequest, CreateCollectionResponse](any, any, any, any, any)(any) returns
-          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(createCollectionResponse)))))
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(createCollectionResponse)))))
 
         val serviceClientResponse = apiService.createCollection(createCollectionRequest, serviceHeader).value.run
 
@@ -176,7 +176,7 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.put[UpdateCollectionRequest, UpdateCollectionResponse](any, any, any, any, any)(any) returns
-          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(updateCollectionResponse)))))
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(updateCollectionResponse)))))
 
         val serviceClientResponse = apiService.updateCollection(publicIdentifier, updateCollectionRequest, serviceHeader).value.run
 
@@ -204,7 +204,7 @@ class ApiServiceSpec
         val response = collection
 
         mockedServiceClient.get[Collection](any, any, any, any) returns
-          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
         val serviceClientResponse = apiService.getCollection(publicIdentifier, serviceMarketHeader).value.run
 
@@ -231,7 +231,7 @@ class ApiServiceSpec
         val response = CollectionsResponse(Seq(collection))
 
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
-          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
         val serviceClientResponse = apiService.getCollections(serviceMarketHeader).value.run
 
@@ -256,7 +256,7 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.post[CategorizeRequest, CategorizeResponse](any, any, any, any, any)(any) returns
-          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(categorizeResponse)))))
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(categorizeResponse)))))
 
         val serviceClientResponse = apiService.categorize(categorizeRequest, serviceMarketHeader).value.run
 
@@ -282,7 +282,7 @@ class ApiServiceSpec
       "return the status code and the response and call with the right category" in new ApiServiceScope {
 
         mockedServiceClient.post[RecommendationsRequest, RecommendationsResponse](any, any, any, any, any)(any) returns
-          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))))
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))))
 
         val serviceClientResponse = apiService.recommendations(category, recommendationsRequest, serviceMarketHeader).value.run
 
@@ -308,7 +308,7 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.post[RecommendationsByAppsRequest, RecommendationsByAppsResponse](any, any, any, any, any)(any) returns
-          CatsService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(recommendationsByAppsResponse)))))
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(recommendationsByAppsResponse)))))
 
         val serviceClientResponse = apiService.recommendationsByApps(recommendationsByAppsRequest, serviceMarketHeader).value.run
 

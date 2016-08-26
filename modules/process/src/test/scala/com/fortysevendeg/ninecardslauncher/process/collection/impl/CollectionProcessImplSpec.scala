@@ -6,8 +6,8 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
@@ -46,10 +46,10 @@ trait CollectionProcessImplSpecification
     val mockNineCardIntent = mock[NineCardIntent]
 
     val mockAppsServices = mock[AppsServices]
-    mockAppsServices.getInstalledApplications(contextSupport) returns CatsService(Task(Xor.right(Seq.empty)))
+    mockAppsServices.getInstalledApplications(contextSupport) returns TaskService(Task(Xor.right(Seq.empty)))
 
     val mockContactsServices = mock[ContactsServices]
-    mockContactsServices.getFavoriteContacts returns CatsService(Task(Xor.right(Seq.empty)))
+    mockContactsServices.getFavoriteContacts returns TaskService(Task(Xor.right(Seq.empty)))
 
     val mockApiServices = mock[ApiServices]
 
@@ -67,12 +67,12 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCards returns CatsService(Task(Xor.right(seqServicesCard)))
+    mockPersistenceServices.fetchCards returns TaskService(Task(Xor.right(seqServicesCard)))
 
-    mockPersistenceServices.updateCards(any) returns CatsService(Task(Xor.right(Seq(1))))
+    mockPersistenceServices.updateCards(any) returns TaskService(Task(Xor.right(Seq(1))))
 
     mockAppsServices.getApplication(packageName1)(contextSupport) returns
-      CatsService(Task(Xor.right(application1)))
+      TaskService(Task(Xor.right(application1)))
   }
 
   trait ValidCreateCollectionPersistenceServicesResponses
@@ -82,8 +82,8 @@ trait CollectionProcessImplSpecification
 
     val collections: Seq[Collection]
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollection)))
-    mockPersistenceServices.addCollections(any) returns CatsService(Task(Xor.right(collections)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
+    mockPersistenceServices.addCollections(any) returns TaskService(Task(Xor.right(collections)))
 
   }
 
@@ -93,10 +93,10 @@ trait CollectionProcessImplSpecification
     self: CollectionProcessScope =>
 
     mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId1)) returns
-      CatsService(Task(Xor.right(Some(collection1))))
+      TaskService(Task(Xor.right(Some(collection1))))
 
     mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId2)) returns
-      CatsService(Task(Xor.right(None)))
+      TaskService(Task(Xor.right(None)))
 
   }
 
@@ -105,9 +105,9 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockContactsServices.getFavoriteContacts returns CatsService(Task(Xor.right(seqContacts)))
+    mockContactsServices.getFavoriteContacts returns TaskService(Task(Xor.right(seqContacts)))
 
-    val tasks = seqContactsWithPhones map (contact => CatsService(Task(Xor.right(contact))))
+    val tasks = seqContactsWithPhones map (contact => TaskService(Task(Xor.right(contact))))
     mockContactsServices.findContactByLookupKey(anyString) returns (tasks(0), tasks.tail :_*)
 
   }
@@ -117,12 +117,12 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCards returns CatsService(Task(Xor.right(seqServicesCard)))
+    mockPersistenceServices.fetchCards returns TaskService(Task(Xor.right(seqServicesCard)))
 
-    mockPersistenceServices.updateCard(any) returns CatsService(Task(Xor.right(cardId)))
+    mockPersistenceServices.updateCard(any) returns TaskService(Task(Xor.right(cardId)))
 
     mockAppsServices.getApplication(packageName1)(contextSupport) returns
-      CatsService(Task(Xor.left(appsInstalledException)))
+      TaskService(Task(Xor.left(appsInstalledException)))
   }
 
   trait ErrorCreateCollectionPersistenceServicesResponses
@@ -130,8 +130,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.left(persistenceServiceException)))
-    mockPersistenceServices.addCollections(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.addCollections(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -141,7 +141,7 @@ trait CollectionProcessImplSpecification
     self: CollectionProcessScope =>
 
     mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId1)) returns
-      CatsService(Task(Xor.left(persistenceServiceException)))
+      TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -150,9 +150,9 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollection)))
-    mockPersistenceServices.addCollection(any) returns CatsService(Task(Xor.right(servicesCollectionAdded)))
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
+    mockPersistenceServices.addCollection(any) returns TaskService(Task(Xor.right(servicesCollectionAdded)))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(servicesCollection)))
 
   }
 
@@ -161,7 +161,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -170,8 +170,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollection)))
-    mockPersistenceServices.addCollection(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
+    mockPersistenceServices.addCollection(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -180,11 +180,11 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.deleteCollection(any) returns CatsService(Task(Xor.right(collectionId)))
-    mockPersistenceServices.deleteCardsByCollection(any) returns CatsService(Task(Xor.right(collectionId)))
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollection)))
-    mockPersistenceServices.updateCollections(any) returns CatsService(Task(Xor.right(Seq(collectionId))))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.deleteCollection(any) returns TaskService(Task(Xor.right(collectionId)))
+    mockPersistenceServices.deleteCardsByCollection(any) returns TaskService(Task(Xor.right(collectionId)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
+    mockPersistenceServices.updateCollections(any) returns TaskService(Task(Xor.right(Seq(collectionId))))
 
   }
 
@@ -193,8 +193,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.deleteAllCollections() returns CatsService(Task(Xor.right(collectionsRemoved)))
-    mockPersistenceServices.deleteAllCards() returns CatsService(Task(Xor.right(cardsRemoved)))
+    mockPersistenceServices.deleteAllCollections() returns TaskService(Task(Xor.right(collectionsRemoved)))
+    mockPersistenceServices.deleteAllCards() returns TaskService(Task(Xor.right(cardsRemoved)))
 
   }
 
@@ -203,8 +203,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.deleteAllCollections() returns CatsService(Task(Xor.left(persistenceServiceException)))
-    mockPersistenceServices.deleteAllCards() returns CatsService(Task(Xor.right(cardsRemoved)))
+    mockPersistenceServices.deleteAllCollections() returns TaskService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.deleteAllCards() returns TaskService(Task(Xor.right(cardsRemoved)))
 
   }
 
@@ -213,8 +213,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.deleteAllCollections() returns CatsService(Task(Xor.right(collectionsRemoved)))
-    mockPersistenceServices.deleteAllCards() returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.deleteAllCollections() returns TaskService(Task(Xor.right(collectionsRemoved)))
+    mockPersistenceServices.deleteAllCards() returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -223,7 +223,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -232,8 +232,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.deleteCollection(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.deleteCollection(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -242,9 +242,9 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.deleteCollection(any) returns CatsService(Task(Xor.right(collectionId)))
-    mockPersistenceServices.deleteCardsByCollection(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.deleteCollection(any) returns TaskService(Task(Xor.right(collectionId)))
+    mockPersistenceServices.deleteCardsByCollection(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -253,10 +253,10 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.deleteCollection(any) returns CatsService(Task(Xor.right(collectionId)))
-    mockPersistenceServices.deleteCardsByCollection(any) returns CatsService(Task(Xor.right(collectionId)))
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.deleteCollection(any) returns TaskService(Task(Xor.right(collectionId)))
+    mockPersistenceServices.deleteCardsByCollection(any) returns TaskService(Task(Xor.right(collectionId)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -265,11 +265,11 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.deleteCollection(any) returns CatsService(Task(Xor.right(collectionId)))
-    mockPersistenceServices.deleteCardsByCollection(any) returns CatsService(Task(Xor.right(collectionId)))
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollection)))
-    mockPersistenceServices.updateCollections(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.deleteCollection(any) returns TaskService(Task(Xor.right(collectionId)))
+    mockPersistenceServices.deleteCardsByCollection(any) returns TaskService(Task(Xor.right(collectionId)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
+    mockPersistenceServices.updateCollections(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -278,9 +278,9 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollectionByPosition(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollection)))
-    mockPersistenceServices.updateCollections(any) returns CatsService(Task(Xor.right(Seq(collectionId))))
+    mockPersistenceServices.fetchCollectionByPosition(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
+    mockPersistenceServices.updateCollections(any) returns TaskService(Task(Xor.right(Seq(collectionId))))
 
   }
 
@@ -289,7 +289,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -298,8 +298,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollectionByPosition(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollectionByPosition(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -308,9 +308,9 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCollectionByPosition(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.fetchCollections returns CatsService(Task(Xor.right(seqServicesCollection)))
-    mockPersistenceServices.updateCollections(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCollectionByPosition(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
+    mockPersistenceServices.updateCollections(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -319,8 +319,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.updateCollection(any) returns CatsService(Task(Xor.right(collectionId)))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.updateCollection(any) returns TaskService(Task(Xor.right(collectionId)))
 
   }
 
@@ -329,8 +329,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.updateCollection(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.updateCollection(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -339,8 +339,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.updateCollection(any) returns CatsService(Task(Xor.right(collectionId)))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.updateCollection(any) returns TaskService(Task(Xor.right(collectionId)))
 
   }
 
@@ -349,8 +349,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCollectionById(any) returns CatsService(Task(Xor.right(servicesCollection)))
-    mockPersistenceServices.updateCollection(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(servicesCollection)))
+    mockPersistenceServices.updateCollection(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -359,8 +359,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCardsByCollection(any) returns CatsService(Task(Xor.right(seqServicesCard)))
-    mockPersistenceServices.addCards(any) returns CatsService(Task(Xor.right(seqServicesCard)))
+    mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
+    mockPersistenceServices.addCards(any) returns TaskService(Task(Xor.right(seqServicesCard)))
 
   }
 
@@ -369,7 +369,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCardsByCollection(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -378,8 +378,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.fetchCardsByCollection(any) returns CatsService(Task(Xor.right(seqServicesCard)))
-    mockPersistenceServices.addCards(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
+    mockPersistenceServices.addCards(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -388,10 +388,10 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.right(Option(servicesCard))))
-    mockPersistenceServices.fetchCardsByCollection(any) returns CatsService(Task(Xor.right(seqServicesCard)))
-    mockPersistenceServices.deleteCard(any) returns CatsService(Task(Xor.right(cardId)))
-    mockPersistenceServices.updateCards(any) returns CatsService(Task(Xor.right(Seq(1))))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
+    mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
+    mockPersistenceServices.deleteCard(any) returns TaskService(Task(Xor.right(cardId)))
+    mockPersistenceServices.updateCards(any) returns TaskService(Task(Xor.right(Seq(1))))
 
   }
 
@@ -400,7 +400,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -409,8 +409,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.right(Option(servicesCard))))
-    mockPersistenceServices.fetchCardsByCollection(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
+    mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -419,9 +419,9 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.right(Option(servicesCard))))
-    mockPersistenceServices.fetchCardsByCollection(any) returns CatsService(Task(Xor.right(seqServicesCard)))
-    mockPersistenceServices.deleteCard(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
+    mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
+    mockPersistenceServices.deleteCard(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -430,10 +430,10 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.right(Option(servicesCard))))
-    mockPersistenceServices.fetchCardsByCollection(any) returns CatsService(Task(Xor.right(seqServicesCard)))
-    mockPersistenceServices.deleteCard(any) returns CatsService(Task(Xor.right(cardId)))
-    mockPersistenceServices.updateCards(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
+    mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
+    mockPersistenceServices.deleteCard(any) returns TaskService(Task(Xor.right(cardId)))
+    mockPersistenceServices.updateCards(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -442,9 +442,9 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.right(Option(servicesCard))))
-    mockPersistenceServices.fetchCardsByCollection(any) returns CatsService(Task(Xor.right(seqServicesCard)))
-    mockPersistenceServices.updateCards(any) returns CatsService(Task(Xor.right(Seq(1))))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
+    mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
+    mockPersistenceServices.updateCards(any) returns TaskService(Task(Xor.right(Seq(1))))
 
   }
 
@@ -453,7 +453,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -462,8 +462,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.right(Option(servicesCard))))
-    mockPersistenceServices.fetchCardsByCollection(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
+    mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -472,9 +472,9 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.right(Option(servicesCard))))
-    mockPersistenceServices.fetchCardsByCollection(any) returns CatsService(Task(Xor.right(seqServicesCard)))
-    mockPersistenceServices.updateCards(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
+    mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
+    mockPersistenceServices.updateCards(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -483,8 +483,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.right(Option(servicesCard))))
-    mockPersistenceServices.updateCard(any) returns CatsService(Task(Xor.right(cardId)))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
+    mockPersistenceServices.updateCard(any) returns TaskService(Task(Xor.right(cardId)))
 
   }
 
@@ -493,7 +493,7 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -503,8 +503,8 @@ trait CollectionProcessImplSpecification
 
     self: CollectionProcessScope =>
 
-    mockPersistenceServices.findCardById(any) returns CatsService(Task(Xor.right(Option(servicesCard))))
-    mockPersistenceServices.updateCard(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
+    mockPersistenceServices.updateCard(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 

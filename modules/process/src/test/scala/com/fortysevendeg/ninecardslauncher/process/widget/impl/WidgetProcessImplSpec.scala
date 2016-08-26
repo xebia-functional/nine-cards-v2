@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.widget.impl
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.widget.AppWidgetException
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
@@ -33,10 +33,10 @@ trait WidgetProcessImplSpecification
     self: WidgetProcessScope =>
 
     mockPersistenceServices.findWidgetById(widgetId) returns
-      CatsService(Task(Xor.right(servicesWidgetOption)))
+      TaskService(Task(Xor.right(servicesWidgetOption)))
 
     mockPersistenceServices.findWidgetById(nonExistentWidgetId) returns
-      CatsService(Task(Xor.right(None)))
+      TaskService(Task(Xor.right(None)))
 
   }
 
@@ -46,10 +46,10 @@ trait WidgetProcessImplSpecification
     self: WidgetProcessScope =>
 
     mockPersistenceServices.fetchWidgetByAppWidgetId(appWidgetId) returns
-      CatsService(Task(Xor.right(servicesWidgetOption)))
+      TaskService(Task(Xor.right(servicesWidgetOption)))
 
     mockPersistenceServices.fetchWidgetByAppWidgetId(nonExistentAppWidgetId) returns
-      CatsService(Task(Xor.right(None)))
+      TaskService(Task(Xor.right(None)))
 
   }
 
@@ -59,10 +59,10 @@ trait WidgetProcessImplSpecification
     self: WidgetProcessScope =>
 
     mockPersistenceServices.fetchWidgetsByMoment(momentId) returns
-      CatsService(Task(Xor.right(seqServicesWidget)))
+      TaskService(Task(Xor.right(seqServicesWidget)))
 
     mockPersistenceServices.fetchWidgetsByMoment(nonExistentMomentId) returns
-      CatsService(Task(Xor.right(Seq.empty)))
+      TaskService(Task(Xor.right(Seq.empty)))
 
   }
 
@@ -71,8 +71,8 @@ trait WidgetProcessImplSpecification
 
     self: WidgetProcessScope =>
 
-    mockPersistenceServices.findWidgetById(any) returns CatsService(Task(Xor.right(servicesWidgetOption)))
-    mockPersistenceServices.updateWidget(any) returns CatsService(Task(Xor.right(widgetId)))
+    mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Xor.right(servicesWidgetOption)))
+    mockPersistenceServices.updateWidget(any) returns TaskService(Task(Xor.right(widgetId)))
 
   }
 
@@ -81,7 +81,7 @@ trait WidgetProcessImplSpecification
 
     self: WidgetProcessScope =>
 
-    mockPersistenceServices.findWidgetById(any) returns CatsService(Task(Xor.right(None)))
+    mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Xor.right(None)))
 
   }
 
@@ -90,7 +90,7 @@ trait WidgetProcessImplSpecification
 
     self: WidgetProcessScope =>
 
-    mockPersistenceServices.findWidgetById(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -99,8 +99,8 @@ trait WidgetProcessImplSpecification
 
     self: WidgetProcessScope =>
 
-    mockPersistenceServices.findWidgetById(any) returns CatsService(Task(Xor.right(servicesWidgetOption)))
-    mockPersistenceServices.updateWidget(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+    mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Xor.right(servicesWidgetOption)))
+    mockPersistenceServices.updateWidget(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
   }
 
@@ -115,8 +115,8 @@ class WidgetProcessImplSpec
     "returns a sequence of widgets for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.fetchWidgets returns CatsService(Task(Xor.right(seqServicesWidget)))
-        mockPersistenceServices.addWidgets(any) returns CatsService(Task(Xor.right(widgets)))
+        mockPersistenceServices.fetchWidgets returns TaskService(Task(Xor.right(seqServicesWidget)))
+        mockPersistenceServices.addWidgets(any) returns TaskService(Task(Xor.right(widgets)))
 
         val widgets: Seq[Widget] = Seq.empty
 
@@ -131,8 +131,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.fetchWidgets returns CatsService(Task(Xor.left(persistenceServiceException)))
-        mockPersistenceServices.addWidgets(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.fetchWidgets returns TaskService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.addWidgets(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
         val result = widgetProcess.getWidgets.value.run
         result must beLike {
@@ -165,7 +165,7 @@ class WidgetProcessImplSpec
       new WidgetProcessScope {
 
         mockPersistenceServices.findWidgetById(widgetId) returns
-          CatsService(Task(Xor.left(persistenceServiceException)))
+          TaskService(Task(Xor.left(persistenceServiceException)))
 
         val result = widgetProcess.getWidgetById(widgetId).value.run
         result must beLike {
@@ -198,7 +198,7 @@ class WidgetProcessImplSpec
       new WidgetProcessScope {
 
         mockPersistenceServices.fetchWidgetByAppWidgetId(appWidgetId) returns
-          CatsService(Task(Xor.left(persistenceServiceException)))
+          TaskService(Task(Xor.left(persistenceServiceException)))
 
         val result = widgetProcess.getWidgetByAppWidgetId(appWidgetId).value.run
         result must beLike {
@@ -230,7 +230,7 @@ class WidgetProcessImplSpec
       new WidgetProcessScope {
 
         mockPersistenceServices.fetchWidgetsByMoment(momentId) returns
-          CatsService(Task(Xor.left(persistenceServiceException)))
+          TaskService(Task(Xor.left(persistenceServiceException)))
 
         val result = widgetProcess.getWidgetsByMoment(momentId).value.run
         result must beLike {
@@ -244,7 +244,7 @@ class WidgetProcessImplSpec
     "returns a the widget added for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.addWidget(any) returns CatsService(Task(Xor.right(servicesWidget)))
+        mockPersistenceServices.addWidget(any) returns TaskService(Task(Xor.right(servicesWidget)))
 
         val result = widgetProcess.addWidget(addWidgetRequest).value.run
         result must beLike {
@@ -256,7 +256,7 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception adding the new widget" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.addWidget(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.addWidget(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
         val result = widgetProcess.addWidget(addWidgetRequest).value.run
         result must beLike {
@@ -270,7 +270,7 @@ class WidgetProcessImplSpec
     "returns the widgets added for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.addWidgets(any) returns CatsService(Task(Xor.right(seqServicesWidget)))
+        mockPersistenceServices.addWidgets(any) returns TaskService(Task(Xor.right(seqServicesWidget)))
 
         val result = widgetProcess.addWidgets(seqAddWidgetRequest).value.run
         result must beLike {
@@ -282,7 +282,7 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception adding the new widgets" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.addWidgets(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.addWidgets(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
         val result = widgetProcess.addWidgets(seqAddWidgetRequest).value.run
         result must beLike {
@@ -368,7 +368,7 @@ class WidgetProcessImplSpec
     "returns a successful answer for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.deleteAllWidgets() returns CatsService(Task(Xor.right(items)))
+        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Xor.right(items)))
 
         val result = widgetProcess.deleteAllWidgets().value.run
         result must beLike {
@@ -380,7 +380,7 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception deleting the moments" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.deleteAllWidgets() returns CatsService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Xor.left(persistenceServiceException)))
 
         val result = widgetProcess.deleteAllWidgets().value.run
         result must beLike {
@@ -394,8 +394,8 @@ class WidgetProcessImplSpec
     "returns a successful answer for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns CatsService(Task(Xor.right(servicesWidgetOption)))
-        mockPersistenceServices.deleteWidget(any) returns CatsService(Task(Xor.right(items)))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Xor.right(servicesWidgetOption)))
+        mockPersistenceServices.deleteWidget(any) returns TaskService(Task(Xor.right(items)))
 
         val result = widgetProcess.deleteWidget(widgetId).value.run
         result must beLike {
@@ -415,8 +415,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception deleting the moments" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns CatsService(Task(Xor.right(servicesWidgetOption)))
-        mockPersistenceServices.deleteWidget(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Xor.right(servicesWidgetOption)))
+        mockPersistenceServices.deleteWidget(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
         val result = widgetProcess.deleteWidget(widgetId).value.run
         result must beLike {
@@ -430,7 +430,7 @@ class WidgetProcessImplSpec
     "returns a successful answer for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.deleteWidgetsByMoment(any) returns CatsService(Task(Xor.right(items)))
+        mockPersistenceServices.deleteWidgetsByMoment(any) returns TaskService(Task(Xor.right(items)))
 
         val result = widgetProcess.deleteWidgetsByMoment(momentId).value.run
         result must beLike {
@@ -442,7 +442,7 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception deleting the moments" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.deleteWidgetsByMoment(any) returns CatsService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.deleteWidgetsByMoment(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
         val result = widgetProcess.deleteWidgetsByMoment(momentId).value.run
         result must beLike {

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.recommendations
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 
@@ -14,7 +14,7 @@ trait RecommendationsProcess {
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
    * @throws RecommendedAppsException if there was an error fetching the recommended apps
    */
-  def getRecommendedAppsByCategory(category: NineCardCategory, excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport): CatsService[Seq[RecommendedApp]]
+  def getRecommendedAppsByCategory(category: NineCardCategory, excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport): TaskService[Seq[RecommendedApp]]
 
   /**
    * Get recommended apps based on a category
@@ -23,5 +23,5 @@ trait RecommendationsProcess {
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
    * @throws RecommendedAppsException if there was an error fetching the recommended apps
    */
-  def getRecommendedAppsByPackages(packages: Seq[String], excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport): CatsService[Seq[RecommendedApp]]
+  def getRecommendedAppsByPackages(packages: Seq[String], excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport): TaskService[Seq[RecommendedApp]]
 }

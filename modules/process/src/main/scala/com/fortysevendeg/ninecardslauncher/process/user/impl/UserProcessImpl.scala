@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.process.user.impl
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.user._
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -41,18 +41,18 @@ class UserProcessImpl(
 
   override def register(implicit context: ContextSupport) = {
 
-    def checkOrAddUser(id: Int)(implicit context: ContextSupport): CatsService[ServicesUser] =
+    def checkOrAddUser(id: Int)(implicit context: ContextSupport): TaskService[ServicesUser] =
       (for {
         maybeUser <- persistenceServices.findUserById(FindUserByIdRequest(id))
-        user <- maybeUser map (user => CatsService(Task(Xor.right(user)))) getOrElse {
+        user <- maybeUser map (user => TaskService(Task(Xor.right(user)))) getOrElse {
           persistenceServices.addUser(emptyUserRequest)
         }
       } yield user).resolve[UserException]
 
-    def getFirstOrAddUser(implicit context: ContextSupport): CatsService[ServicesUser] =
+    def getFirstOrAddUser(implicit context: ContextSupport): TaskService[ServicesUser] =
       (for {
         maybeUsers <- persistenceServices.fetchUsers
-        user <- maybeUsers.headOption map (user => CatsService(Task(Xor.right(user)))) getOrElse {
+        user <- maybeUsers.headOption map (user => TaskService(Task(Xor.right(user)))) getOrElse {
           persistenceServices.addUser(emptyUserRequest)
         }
       } yield user).resolve[UserException]
@@ -113,21 +113,21 @@ class UserProcessImpl(
       } yield ()).resolve[UserException]
     }
 
-  private[this] def withActiveUser[T](f: Int => CatsService[T])(implicit context: ContextSupport) =
+  private[this] def withActiveUser[T](f: Int => TaskService[T])(implicit context: ContextSupport) =
     context.getActiveUserId map f getOrElse {
-      CatsService(Task(Xor.left(UserException(noActiveUserErrorMessage))))
+      TaskService(Task(Xor.left(UserException(noActiveUserErrorMessage))))
     }
 
   private[this] def syncInstallation(
     user: ServicesUser,
-    deviceToken: Option[String])(implicit context: ContextSupport): CatsService[Int] =
+    deviceToken: Option[String])(implicit context: ContextSupport): TaskService[Int] =
     (user.apiKey, user.sessionToken) match {
       case (Some(apiKey), Some(sessionToken)) if user.deviceToken != deviceToken =>
         (for {
           androidId <- persistenceServices.getAndroidId
           response <- apiServices.updateInstallation(deviceToken)(RequestConfig(apiKey, sessionToken, androidId))
         } yield response.statusCode).resolve[UserException]
-      case _ => CatsService(Task(Xor.right(0)))
+      case _ => TaskService(Task(Xor.right(0)))
     }
 
 }

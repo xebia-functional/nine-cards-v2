@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.shortcuts.impl
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ImplicitsShortcutsExceptions, ShortcutServicesException, ShortcutsServices}
 
@@ -14,7 +14,7 @@ class ShortcutsServicesImpl
   extends ShortcutsServices
   with ImplicitsShortcutsExceptions {
 
-  override def getShortcuts(implicit context: ContextSupport) = CatsService {
+  override def getShortcuts(implicit context: ContextSupport) = TaskService {
     Task {
       XorCatchAll[ShortcutServicesException] {
         val packageManager = context.getPackageManager

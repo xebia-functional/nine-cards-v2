@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.WidgetEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.WidgetPersistenceServicesData
@@ -18,43 +18,43 @@ trait WidgetPersistenceServicesSpecification
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with WidgetPersistenceServicesData {
 
-    mockWidgetRepository.addWidget(repoWidgetData) returns CatsService(Task(Xor.right(repoWidget)))
+    mockWidgetRepository.addWidget(repoWidgetData) returns TaskService(Task(Xor.right(repoWidget)))
 
-    mockWidgetRepository.addWidgets(any) returns CatsService(Task(Xor.right(seqRepoWidget)))
+    mockWidgetRepository.addWidgets(any) returns TaskService(Task(Xor.right(seqRepoWidget)))
 
-    mockWidgetRepository.deleteWidgets() returns CatsService(Task(Xor.right(items)))
+    mockWidgetRepository.deleteWidgets() returns TaskService(Task(Xor.right(items)))
 
-    mockWidgetRepository.deleteWidget(repoWidget) returns CatsService(Task(Xor.right(item)))
+    mockWidgetRepository.deleteWidget(repoWidget) returns TaskService(Task(Xor.right(item)))
 
-    mockWidgetRepository.deleteWidgets(where = s"${WidgetEntity.momentId} = $momentId") returns CatsService(Task(Xor.right(items)))
+    mockWidgetRepository.deleteWidgets(where = s"${WidgetEntity.momentId} = $momentId") returns TaskService(Task(Xor.right(items)))
 
-    mockWidgetRepository.fetchWidgets() returns CatsService(Task(Xor.right(seqRepoWidget)))
+    mockWidgetRepository.fetchWidgets() returns TaskService(Task(Xor.right(seqRepoWidget)))
 
-    mockWidgetRepository.fetchWidgetByAppWidgetId(appWidgetId) returns CatsService(Task(Xor.right(Some(repoWidget))))
+    mockWidgetRepository.fetchWidgetByAppWidgetId(appWidgetId) returns TaskService(Task(Xor.right(Some(repoWidget))))
 
-    mockWidgetRepository.fetchWidgetsByMoment(momentId) returns CatsService(Task(Xor.right(seqRepoWidget)))
+    mockWidgetRepository.fetchWidgetsByMoment(momentId) returns TaskService(Task(Xor.right(seqRepoWidget)))
 
-    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = $momentId") returns CatsService(Task(Xor.right(seqRepoWidget)))
+    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = $momentId") returns TaskService(Task(Xor.right(seqRepoWidget)))
 
-    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${momentId + 1}") returns CatsService(Task(Xor.right(seqRepoWidget)))
+    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${momentId + 1}") returns TaskService(Task(Xor.right(seqRepoWidget)))
 
-    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${momentId + 2}") returns CatsService(Task(Xor.right(seqRepoWidget)))
+    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${momentId + 2}") returns TaskService(Task(Xor.right(seqRepoWidget)))
 
-    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${momentId + 3}") returns CatsService(Task(Xor.right(seqRepoWidget)))
+    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${momentId + 3}") returns TaskService(Task(Xor.right(seqRepoWidget)))
 
-    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${momentId + 4}") returns CatsService(Task(Xor.right(seqRepoWidget)))
+    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${momentId + 4}") returns TaskService(Task(Xor.right(seqRepoWidget)))
 
-    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = $nonExistentMomentId") returns CatsService(Task(Xor.right(Seq.empty)))
+    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = $nonExistentMomentId") returns TaskService(Task(Xor.right(Seq.empty)))
 
-    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${None.orNull}") returns CatsService(Task(Xor.right(Seq.empty)))
+    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${None.orNull}") returns TaskService(Task(Xor.right(Seq.empty)))
 
-    mockWidgetRepository.findWidgetById(widgetId) returns CatsService(Task(Xor.right(Option(repoWidget))))
+    mockWidgetRepository.findWidgetById(widgetId) returns TaskService(Task(Xor.right(Option(repoWidget))))
 
-    mockWidgetRepository.findWidgetById(nonExistentWidgetId) returns CatsService(Task(Xor.right(None)))
+    mockWidgetRepository.findWidgetById(nonExistentWidgetId) returns TaskService(Task(Xor.right(None)))
 
-    mockWidgetRepository.updateWidget(repoWidget) returns CatsService(Task(Xor.right(item)))
+    mockWidgetRepository.updateWidget(repoWidget) returns TaskService(Task(Xor.right(item)))
 
-    mockWidgetRepository.updateWidgets(seqRepoWidget) returns CatsService(Task(Xor.right(item to items)))
+    mockWidgetRepository.updateWidgets(seqRepoWidget) returns TaskService(Task(Xor.right(item to items)))
 
   }
 
@@ -62,35 +62,35 @@ trait WidgetPersistenceServicesSpecification
 
     val exception = RepositoryException("Irrelevant message")
 
-    mockWidgetRepository.addWidget(repoWidgetData) returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.addWidget(repoWidgetData) returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.addWidgets(any) returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.addWidgets(any) returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.deleteWidgets() returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.deleteWidgets() returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.deleteWidget(repoWidget) returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.deleteWidget(repoWidget) returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.deleteWidgets(where = s"${WidgetEntity.momentId} = $momentId") returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.deleteWidgets(where = s"${WidgetEntity.momentId} = $momentId") returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.fetchWidgetByAppWidgetId(appWidgetId) returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.fetchWidgetByAppWidgetId(appWidgetId) returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.fetchWidgetsByMoment(momentId) returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.fetchWidgetsByMoment(momentId) returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.fetchWidgets() returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.fetchWidgets() returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = $momentId") returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = $momentId") returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = $nonExistentMomentId") returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = $nonExistentMomentId") returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${None.orNull}") returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.fetchWidgets(where = s"${WidgetEntity.momentId} = ${None.orNull}") returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.findWidgetById(widgetId) returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.findWidgetById(widgetId) returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.findWidgetById(nonExistentWidgetId) returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.findWidgetById(nonExistentWidgetId) returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.updateWidget(repoWidget) returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.updateWidget(repoWidget) returns TaskService(Task(Xor.left(exception)))
 
-    mockWidgetRepository.updateWidgets(seqRepoWidget) returns CatsService(Task(Xor.left(exception)))
+    mockWidgetRepository.updateWidgets(seqRepoWidget) returns TaskService(Task(Xor.left(exception)))
   }
 
 }

@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.moment
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
 
 case class MomentException(message: String, cause : Option[Throwable] = None)

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.device.{DeviceConversions, DeviceProcess, ImplicitsDeviceException, ResetException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.ImplicitsPersistenceServiceExceptions
 

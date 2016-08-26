@@ -4,8 +4,8 @@ import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException, CollectionProcess}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
@@ -54,7 +54,7 @@ trait CardsProcessImpl extends CollectionProcess {
           cardList <- getCardsByCollectionId(collectionId)
           _ <- updateCardList(reorderList(cardList,card.position))
         } yield ()
-      else CatsService(Task(Xor.Right(Unit)))
+      else TaskService(Task(Xor.Right(Unit)))
     (for {
       card <- persistenceServices.findCardById(toFindCardByIdRequest(cardId)).resolveOption()
       _ <- reorderAux(card)

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
@@ -18,33 +18,33 @@ trait AppPersistenceServicesSpecSpecification
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with AppPersistenceServicesData {
 
-    mockAppRepository.fetchApps(any) returns CatsService(Task(Xor.right(seqRepoApp)))
+    mockAppRepository.fetchApps(any) returns TaskService(Task(Xor.right(seqRepoApp)))
 
-    mockAppRepository.fetchIterableApps(any, any, any) returns CatsService(Task(Xor.right(iterableCursorApp)))
+    mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
 
-    mockAppRepository.fetchAlphabeticalAppsCounter returns CatsService(Task(Xor.right(dataCounters)))
+    mockAppRepository.fetchAlphabeticalAppsCounter returns TaskService(Task(Xor.right(dataCounters)))
 
-    mockAppRepository.fetchCategorizedAppsCounter returns CatsService(Task(Xor.right(dataCounters)))
+    mockAppRepository.fetchCategorizedAppsCounter returns TaskService(Task(Xor.right(dataCounters)))
 
-    mockAppRepository.fetchInstallationDateAppsCounter returns CatsService(Task(Xor.right(dataCounters)))
+    mockAppRepository.fetchInstallationDateAppsCounter returns TaskService(Task(Xor.right(dataCounters)))
 
-    mockAppRepository.fetchAppsByCategory(any, any) returns CatsService(Task(Xor.right(seqRepoApp)))
+    mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(Task(Xor.right(seqRepoApp)))
 
-    mockAppRepository.fetchIterableAppsByCategory(any, any) returns CatsService(Task(Xor.right(iterableCursorApp)))
+    mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
 
-    mockAppRepository.fetchAppByPackage(packageName) returns CatsService(Task(Xor.right(Option(repoApp))))
+    mockAppRepository.fetchAppByPackage(packageName) returns TaskService(Task(Xor.right(Option(repoApp))))
 
-    mockAppRepository.fetchAppByPackage(nonExistentPackageName) returns CatsService(Task(Xor.right(None)))
+    mockAppRepository.fetchAppByPackage(nonExistentPackageName) returns TaskService(Task(Xor.right(None)))
 
-    mockAppRepository.addApp(repoAppData) returns CatsService(Task(Xor.right(repoApp)))
+    mockAppRepository.addApp(repoAppData) returns TaskService(Task(Xor.right(repoApp)))
 
-    mockAppRepository.addApps(Seq(repoAppData)) returns CatsService(Task(Xor.right(())))
+    mockAppRepository.addApps(Seq(repoAppData)) returns TaskService(Task(Xor.right(())))
 
-    mockAppRepository.deleteApps() returns CatsService(Task(Xor.right(items)))
+    mockAppRepository.deleteApps() returns TaskService(Task(Xor.right(items)))
 
-    mockAppRepository.deleteAppByPackage(packageName) returns CatsService(Task(Xor.right(item)))
+    mockAppRepository.deleteAppByPackage(packageName) returns TaskService(Task(Xor.right(item)))
 
-    mockAppRepository.updateApp(repoApp) returns CatsService(Task(Xor.right(item)))
+    mockAppRepository.updateApp(repoApp) returns TaskService(Task(Xor.right(item)))
 
   }
 
@@ -52,31 +52,31 @@ trait AppPersistenceServicesSpecSpecification
 
     val exception = RepositoryException("Irrelevant message")
 
-    mockAppRepository.fetchApps(any) returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.fetchApps(any) returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.fetchIterableApps(any, any, any) returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.fetchAlphabeticalAppsCounter returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.fetchAlphabeticalAppsCounter returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.fetchCategorizedAppsCounter returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.fetchCategorizedAppsCounter returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.fetchInstallationDateAppsCounter returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.fetchInstallationDateAppsCounter returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.fetchAppsByCategory(any, any) returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.fetchIterableAppsByCategory(any, any) returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.fetchAppByPackage(packageName) returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.fetchAppByPackage(packageName) returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.addApp(repoAppData) returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.addApp(repoAppData) returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.addApps(Seq(repoAppData)) returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.addApps(Seq(repoAppData)) returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.deleteApps() returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.deleteApps() returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.deleteAppByPackage(packageName) returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.deleteAppByPackage(packageName) returns TaskService(Task(Xor.left(exception)))
 
-    mockAppRepository.updateApp(repoApp) returns CatsService(Task(Xor.left(exception)))
+    mockAppRepository.updateApp(repoApp) returns TaskService(Task(Xor.left(exception)))
 
   }
 

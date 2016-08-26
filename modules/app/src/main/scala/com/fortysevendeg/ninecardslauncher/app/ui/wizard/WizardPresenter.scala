@@ -19,6 +19,8 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
 import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
 import com.fortysevendeg.ninecardslauncher.process.accounts.AccountsProcessOperationCancelledException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
@@ -306,18 +308,18 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   private[this] def loadDevices(maybeProfileName: Option[String]): Unit = {
 
-    def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = CatsService {
+    def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = TaskService {
       val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).value)
       Task.gatherUnordered(tasks) map (c => XorCatchAll[CloudStorageProcessException](c.collect { case Xor.Right(r) => r }))
     }
 
     // If we found some error when connecting to Backend V1 we just return an empty collection of devices
-    def loadDevicesFromV1(): CatsService[Seq[UserV1Device]] =
+    def loadDevicesFromV1(): TaskService[Seq[UserV1Device]] =
       di.userV1Process.getUserInfo(Build.MODEL, Seq(resGetString(R.string.android_market_oauth_scopes)))
         .map(_.devices)
         .resolveTo(Seq.empty)
 
-    def fakeUserConfigException: CatsService[Unit] = CatsService(Task(Xor.right(())))
+    def fakeUserConfigException: TaskService[Unit] = TaskService(Task(Xor.right(())))
 
     def verifyAndUpdate(
       cloudStorageProcess: CloudStorageProcess,

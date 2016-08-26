@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
@@ -150,7 +150,7 @@ trait FormedCollectionConversions
   def fillImageUri(formedCollections: Seq[FormedCollection], apps: Seq[Application])(implicit context: ContextSupport): Seq[FormedCollection] = {
     def fetchPhotoUri(
       extract: => Option[String],
-      service: String => CatsService[Option[Contact]]): Option[String] = {
+      service: String => TaskService[Option[Contact]]): Option[String] = {
       val maybeContact = extract flatMap { value =>
         val task = (for {
           s <- service(value)

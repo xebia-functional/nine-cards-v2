@@ -3,10 +3,10 @@ package com.fortysevendeg.ninecardslauncher.services.accounts.impl
 import android.accounts.{AccountManager, OperationCanceledException, Account => AndroidAccount}
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.accounts.models.{Account, AccountType}
-import com.fortysevendeg.ninecardslauncher.services.accounts.{AccountsServices, AccountsServicesExceptionImpl, ImplicitsAccountsServicesExceptions}
+import com.fortysevendeg.ninecardslauncher.services.accounts._
 import macroid.{ActivityContextWrapper, ContextWrapper}
 
 import scalaz.concurrent.Task
@@ -35,31 +35,32 @@ class AccountsServicesImpl
     def toServiceAccount(androidAccount: AndroidAccount): Account =
       Account(accountType = androidAccount.`type`, accountName = androidAccount.name)
 
-    CatsService {
+    TaskService {
       Task {
         Xor.catchNonFatal(getAccounts(getAccountManager) map toServiceAccount) leftMap {
-          case e: SecurityException => accountsServicesPermissionExceptionConverter(e)
-          case t: Throwable => accountsServicesExceptionConverter(t)
+          case e: SecurityException => AccountsServicesPermissionException(e.getMessage, Some(e))
+          case t: Throwable => AccountsServicesExceptionImpl(t.getMessage, Some(t))
         }
       }
     }
   }
 
-  override def getAuthToken(account: Account, scope: String)(implicit contextWrapper: ActivityContextWrapper): CatsService[String] =
-    CatsService {
+  override def getAuthToken(account: Account, scope: String)(implicit contextWrapper: ActivityContextWrapper): TaskService[String] =
+    TaskService {
       Task {
         Xor.catchNonFatal {
-          val result = getAccountManager.getAuthToken(account.toAndroid, scope, javaNull, contextWrapper.getOriginal, javaNull, javaNull).getResult
+          val activity = contextWrapper.original.get.getOrElse(throw new IllegalStateException("Activity instance is null"))
+          val result = getAccountManager.getAuthToken(account.toAndroid, scope, javaNull, activity, javaNull, javaNull).getResult
           Option(result.getString(AccountManager.KEY_AUTHTOKEN)) getOrElse (throw new RuntimeException("Received null token"))
         } leftMap {
-          case e: OperationCanceledException => accountsServicesOperationCancelledExceptionConverter(e)
-          case t: Throwable => accountsServicesExceptionConverter(t)
+          case e: OperationCanceledException => AccountsServicesOperationCancelledException(e.getMessage, Some(e))
+          case t: Throwable => AccountsServicesExceptionImpl(t.getMessage, Some(t))
         }
       }
     }
 
-  override def invalidateToken(accountType: String, token: String)(implicit contextWrapper: ContextWrapper): CatsService[Unit] =
-    CatsService {
+  override def invalidateToken(accountType: String, token: String)(implicit contextWrapper: ContextWrapper): TaskService[Unit] =
+    TaskService {
       Task {
         XorCatchAll[AccountsServicesExceptionImpl](getAccountManager.invalidateAuthToken(accountType, token))
       }

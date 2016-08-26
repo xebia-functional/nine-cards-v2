@@ -8,8 +8,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, MomentCollectionType, ShortcutCardType}
@@ -149,7 +149,7 @@ class CollectionsPagerPresenter(
   }
 
   private[this] def createShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]):
-  CatsService[Seq[Card]] = for {
+  TaskService[Seq[Card]] = for {
     path <- saveShortcutIcon(bitmap)
     addCardRequest = AddCardRequest(
       term = name,
@@ -160,8 +160,8 @@ class CollectionsPagerPresenter(
     cards <- di.collectionProcess.addCards(collectionId, Seq(addCardRequest))
   } yield cards
 
-  private[this] def saveShortcutIcon(bitmap: Option[Bitmap]): CatsService[String] =
-    bitmap map (di.deviceProcess.saveShortcutIcon(_)) getOrElse CatsService(Task(Xor.right(""))) // We use a empty string because the UI will generate an image
+  private[this] def saveShortcutIcon(bitmap: Option[Bitmap]): TaskService[String] =
+    bitmap map (di.deviceProcess.saveShortcutIcon(_)) getOrElse TaskService(Task(Xor.right(""))) // We use a empty string because the UI will generate an image
 
 }
 

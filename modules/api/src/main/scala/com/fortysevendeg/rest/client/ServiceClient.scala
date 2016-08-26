@@ -1,8 +1,8 @@
 package com.fortysevendeg.rest.client
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientResponse}
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import play.api.libs.json.{Json, Reads, Writes}
@@ -17,7 +17,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): CatsService[ServiceClientResponse[Res]] =
+    ): TaskService[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doGet(baseUrl.concat(path), headers)
       response <- readResponse(clientResponse, reads, emptyResponse)
@@ -29,7 +29,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): CatsService[ServiceClientResponse[Res]] =
+    ): TaskService[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doPost(baseUrl.concat(path), headers)
       response <- readResponse(clientResponse, reads, emptyResponse)
@@ -42,7 +42,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     body: Req,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    )(implicit writes: Writes[Req]): CatsService[ServiceClientResponse[Res]] =
+    )(implicit writes: Writes[Req]): TaskService[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doPost[Req](baseUrl.concat(path), headers, body)
       response <- readResponse(clientResponse, reads, emptyResponse)
@@ -53,7 +53,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): CatsService[ServiceClientResponse[Res]] =
+    ): TaskService[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doPut(baseUrl.concat(path), headers)
       response <- readResponse(clientResponse, reads, emptyResponse)
@@ -65,7 +65,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     body: Req,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    )(implicit writes: Writes[Req]): CatsService[ServiceClientResponse[Res]] =
+    )(implicit writes: Writes[Req]): TaskService[ServiceClientResponse[Res]] =
     for {
       httpResponse <- httpClient.doPut[Req](baseUrl.concat(path), headers, body)
       response <- readResponse(httpResponse, reads, emptyResponse)
@@ -77,7 +77,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): CatsService[ServiceClientResponse[Res]] =
+    ): TaskService[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doDelete(baseUrl.concat(path), headers)
       response <- readResponse(clientResponse, reads, emptyResponse)
@@ -87,12 +87,12 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     clientResponse: HttpClientResponse,
     maybeReads: Option[Reads[T]],
     emptyResponse: Boolean
-    ): CatsService[Option[T]] = {
+    ): TaskService[Option[T]] = {
 
     def isError: Boolean =
       clientResponse.statusCode >= 400 && clientResponse.statusCode < 600
 
-    CatsService {
+    TaskService {
       Task {
         if (isError) {
           val errorMessage = clientResponse.body getOrElse "No content"

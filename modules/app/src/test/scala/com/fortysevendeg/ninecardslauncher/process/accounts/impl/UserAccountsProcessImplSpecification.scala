@@ -2,8 +2,10 @@ package com.fortysevendeg.ninecardslauncher.process.accounts.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.services.accounts.AccountsServices
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.accounts.{AccountsProcessException, AccountsProcessOperationCancelledException, AccountsProcessPermissionException}
+import com.fortysevendeg.ninecardslauncher.services.accounts.{AccountsServices, AccountsServicesOperationCancelledException, AccountsServicesPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.accounts.models.GoogleAccount
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
@@ -14,8 +16,8 @@ import scalaz.concurrent.Task
 
 trait UserAccountsProcessImplSpecification
   extends Specification
-  with Mockito
-  with UserAccountsProcessImplData {
+    with Mockito
+    with UserAccountsProcessImplData {
 
   trait UserAccountsProcessImplScope
     extends Scope {
@@ -39,7 +41,7 @@ class UserAccountsProcessImplSpec
 
     "call getAccounts with the right parameters" in new UserAccountsProcessImplScope {
 
-      accountsServices.getAccounts(any)(any) returns CatsService(Task(Xor.right(accounts)))
+      accountsServices.getAccounts(any)(any) returns TaskService(Task(Xor.right(accounts)))
 
       val result = userAccountProcess.getGoogleAccounts.value.run
       result shouldEqual Xor.Right(accounts.map(_.accountName))
@@ -53,7 +55,7 @@ class UserAccountsProcessImplSpec
 
     "call getAuthToken with the right parameters" in new UserAccountsProcessImplScope {
 
-      accountsServices.getAuthToken(any, any)(any) returns CatsService(Task(Xor.right(authToken)))
+      accountsServices.getAuthToken(any, any)(any) returns TaskService(Task(Xor.right(authToken)))
 
       val result = userAccountProcess.getAuthToken(account1.accountName, scope).value.run
       result shouldEqual Xor.Right(authToken)
@@ -67,13 +69,51 @@ class UserAccountsProcessImplSpec
 
     "call invalidateToken with the right parameters" in new UserAccountsProcessImplScope {
 
-      accountsServices.invalidateToken(any, any)(any) returns CatsService(Task(Xor.right(())))
+      accountsServices.invalidateToken(any, any)(any) returns TaskService(Task(Xor.right(())))
 
       val result = userAccountProcess.invalidateToken(authToken).value.run
       result shouldEqual Xor.Right(())
 
       there was one(accountsServices).invalidateToken(account1.accountType, authToken)(activityContextWrapper)
     }
+
+  }
+
+  "mapServicesException" should {
+
+    "should map an AccountsServicesPermissionException into a AccountsProcessPermissionException" in
+      new UserAccountsProcessImplScope {
+
+        val exception = AccountsServicesPermissionException("Mocked permission exception", None)
+
+        val result = userAccountProcess.mapServicesException(exception)
+        result must beAnInstanceOf[AccountsProcessPermissionException]
+        result.cause must beSome(exception)
+      }
+
+    "should map an AccountsServicesOperationCancelledException into a AccountsProcessOperationCancelledException" in
+      new UserAccountsProcessImplScope {
+
+        val exception = AccountsServicesOperationCancelledException("Mocked operation cancelled exception", None)
+
+        val result = userAccountProcess.mapServicesException(exception)
+        result must beAnInstanceOf[AccountsProcessOperationCancelledException]
+        result.cause must beSome(exception)
+      }
+
+    "should map any other NineCardException into a AccountsProcessException" in
+      new UserAccountsProcessImplScope {
+
+        val exception = new NineCardException {
+          override def message: String = "Mocked exception"
+
+          override def cause: Option[Throwable] = None
+        }
+
+        val result = userAccountProcess.mapServicesException(exception)
+        result must haveInterface[AccountsProcessException]
+        result.cause must beSome(exception)
+      }
 
   }
 

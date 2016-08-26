@@ -8,7 +8,7 @@ import android.util.DisplayMetrics
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppDockType
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
@@ -68,143 +68,143 @@ trait DeviceProcessSpecification
     val mockAppsServices = mock[AppsServices]
 
     mockAppsServices.getInstalledApplications(contextSupport) returns
-      CatsService(Task(Xor.right(applications)))
+      TaskService(Task(Xor.right(applications)))
 
     mockAppsServices.getApplication(packageName1)(contextSupport) returns
-      CatsService(Task(Xor.right(applications.head)))
+      TaskService(Task(Xor.right(applications.head)))
 
     mockAppsServices.getDefaultApps(contextSupport) returns
-      CatsService(Task(Xor.right(applications)))
+      TaskService(Task(Xor.right(applications)))
 
     val mockApiServices = mock[ApiServices]
 
     mockApiServices.googlePlayPackages(any)(any) returns
-      CatsService(Task(Xor.right(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
+      TaskService(Task(Xor.right(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
 
     mockApiServices.googlePlayPackage(any)(any) returns
-      CatsService(Task(Xor.right(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
+      TaskService(Task(Xor.right(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
 
     val mockShortcutsServices = mock[ShortcutsServices]
 
     mockShortcutsServices.getShortcuts(contextSupport) returns
-      CatsService(Task(Xor.right(shortcuts)))
+      TaskService(Task(Xor.right(shortcuts)))
 
     val mockPersistenceServices = mock[PersistenceServices]
 
     mockPersistenceServices.deleteAllApps() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllWidgets() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllCollections() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllCards() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllDockApps() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.fetchApps(any, any) returns
-      CatsService(Task(Xor.right(appsPersistence)))
+      TaskService(Task(Xor.right(appsPersistence)))
 
     mockPersistenceServices.fetchIterableApps(any, any) returns
-      CatsService(Task(Xor.right(iterableCursorApps)))
+      TaskService(Task(Xor.right(iterableCursorApps)))
 
     mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns
-      CatsService(Task(Xor.right(iterableCursorApps)))
+      TaskService(Task(Xor.right(iterableCursorApps)))
 
     mockPersistenceServices.fetchAlphabeticalAppsCounter returns
-      CatsService(Task(Xor.right(appsCounters)))
+      TaskService(Task(Xor.right(appsCounters)))
 
     mockPersistenceServices.fetchCategorizedAppsCounter returns
-      CatsService(Task(Xor.right(categoryCounters)))
+      TaskService(Task(Xor.right(categoryCounters)))
 
     mockPersistenceServices.fetchInstallationDateAppsCounter returns
-      CatsService(Task(Xor.right(installationAppsCounters)))
+      TaskService(Task(Xor.right(installationAppsCounters)))
 
     mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns
-      CatsService(Task(Xor.right(iterableCursorApps)))
+      TaskService(Task(Xor.right(iterableCursorApps)))
 
     mockPersistenceServices.addApp(any[AddAppRequest]) returns(
-      CatsService(Task(Xor.right(appsPersistence.head))),
-      CatsService(Task(Xor.right(appsPersistence(1)))),
-      CatsService(Task(Xor.right(appsPersistence(2)))))
+      TaskService(Task(Xor.right(appsPersistence.head))),
+      TaskService(Task(Xor.right(appsPersistence(1)))),
+      TaskService(Task(Xor.right(appsPersistence(2)))))
 
     mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns
-      CatsService(Task(Xor.right(appsPersistence.head)))
+      TaskService(Task(Xor.right(appsPersistence.head)))
 
     mockPersistenceServices.deleteAppByPackage(any) returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.findAppByPackage(any) returns
-      CatsService(Task(Xor.right(appsPersistence.headOption)))
+      TaskService(Task(Xor.right(appsPersistence.headOption)))
 
     mockPersistenceServices.fetchAppByPackages(any) returns
-      CatsService(Task(Xor.right(appsPersistence)))
+      TaskService(Task(Xor.right(appsPersistence)))
 
     mockPersistenceServices.updateApp(any) returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     val mockContactsServices = mock[ContactsServices]
 
     mockContactsServices.getContacts returns
-      CatsService(Task(Xor.right(contacts)))
+      TaskService(Task(Xor.right(contacts)))
 
     mockContactsServices.getFavoriteContacts returns
-      CatsService(Task(Xor.right(contacts)))
+      TaskService(Task(Xor.right(contacts)))
 
     mockContactsServices.getContactsWithPhone returns
-      CatsService(Task(Xor.right(contacts)))
+      TaskService(Task(Xor.right(contacts)))
 
     mockContactsServices.getIterableContacts returns
-      CatsService(Task(Xor.right(iterableCursorContact)))
+      TaskService(Task(Xor.right(iterableCursorContact)))
 
     mockContactsServices.getAlphabeticalCounterContacts returns
-      CatsService(Task(Xor.right(contactsCounters)))
+      TaskService(Task(Xor.right(contactsCounters)))
 
     mockContactsServices.getIterableFavoriteContacts returns
-      CatsService(Task(Xor.right(iterableCursorContact)))
+      TaskService(Task(Xor.right(iterableCursorContact)))
 
     mockContactsServices.getIterableContactsWithPhone returns
-      CatsService(Task(Xor.right(iterableCursorContact)))
+      TaskService(Task(Xor.right(iterableCursorContact)))
 
     mockContactsServices.getIterableContactsByKeyword(keyword) returns
-      CatsService(Task(Xor.right(iterableCursorContact)))
+      TaskService(Task(Xor.right(iterableCursorContact)))
 
     mockContactsServices.findContactByLookupKey("lookupKey 1") returns
-      CatsService(Task(Xor.right(contacts.head)))
+      TaskService(Task(Xor.right(contacts.head)))
     mockContactsServices.findContactByLookupKey("lookupKey 2") returns
-      CatsService(Task(Xor.right(contacts(1))))
+      TaskService(Task(Xor.right(contacts(1))))
     mockContactsServices.findContactByLookupKey("lookupKey 3") returns
-      CatsService(Task(Xor.right(contacts(2))))
+      TaskService(Task(Xor.right(contacts(2))))
 
     val mockImageServices = mock[ImageServices]
 
     val mockWidgetsServices = mock[WidgetsServices]
 
     mockWidgetsServices.getWidgets(any) returns
-      CatsService(Task(Xor.right(widgetsServices)))
+      TaskService(Task(Xor.right(widgetsServices)))
 
     val mockCallsServices = mock[CallsServices]
 
     mockCallsServices.getLastCalls returns
-      CatsService(Task(Xor.right(callsServices)))
+      TaskService(Task(Xor.right(callsServices)))
 
     mockContactsServices.fetchContactByPhoneNumber(phoneNumber1) returns
-      CatsService(Task(Xor.right(Some(callsContacts(0)))))
+      TaskService(Task(Xor.right(Some(callsContacts(0)))))
 
     mockContactsServices.fetchContactByPhoneNumber(phoneNumber2) returns
-      CatsService(Task(Xor.right(Some(callsContacts(1)))))
+      TaskService(Task(Xor.right(Some(callsContacts(1)))))
 
     mockContactsServices.fetchContactByPhoneNumber(phoneNumber3) returns
-      CatsService(Task(Xor.right(Some(callsContacts(2)))))
+      TaskService(Task(Xor.right(Some(callsContacts(2)))))
 
     val mockWifiServices = mock[WifiServices]
 
     mockWifiServices.getConfiguredNetworks(contextSupport) returns
-      CatsService(Task(Xor.right(networks)))
+      TaskService(Task(Xor.right(networks)))
 
     val deviceProcess = new DeviceProcessImpl(
       mockAppsServices,
@@ -219,7 +219,7 @@ trait DeviceProcessSpecification
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
       apiUtils.getRequestConfig(contextSupport) returns
-        CatsService(Task(Xor.right(requestConfig)))
+        TaskService(Task(Xor.right(requestConfig)))
 
     }
 
@@ -228,15 +228,15 @@ trait DeviceProcessSpecification
   trait ErrorAppServicesProcessScope {
     self: DeviceProcessScope =>
 
-    mockAppsServices.getInstalledApplications(contextSupport) returns CatsService {
+    mockAppsServices.getInstalledApplications(contextSupport) returns TaskService {
       Task(Xor.left(appInstalledException))
     }
 
-    mockAppsServices.getApplication(packageName1)(contextSupport) returns CatsService {
+    mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService {
       Task(Xor.left(appInstalledException))
     }
 
-    mockAppsServices.getDefaultApps(contextSupport) returns CatsService {
+    mockAppsServices.getDefaultApps(contextSupport) returns TaskService {
       Task(Xor.left(appInstalledException))
     }
 
@@ -245,11 +245,11 @@ trait DeviceProcessSpecification
   trait ErrorApiServicesProcessScope {
     self: DeviceProcessScope =>
 
-    mockApiServices.googlePlayPackages(any)(any) returns CatsService {
+    mockApiServices.googlePlayPackages(any)(any) returns TaskService {
       Task(Xor.left(apiServiceException))
     }
 
-    mockApiServices.googlePlayPackage(any)(any) returns CatsService {
+    mockApiServices.googlePlayPackage(any)(any) returns TaskService {
       Task(Xor.left(apiServiceException))
     }
 
@@ -258,7 +258,7 @@ trait DeviceProcessSpecification
   trait ErrorPersistenceServicesDeleteAppsProcessScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.deleteAllApps returns CatsService {
+    mockPersistenceServices.deleteAllApps returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
   }
@@ -267,9 +267,9 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
-    mockPersistenceServices.deleteAllWidgets() returns CatsService {
+    mockPersistenceServices.deleteAllWidgets() returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
@@ -279,12 +279,12 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllWidgets() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
-    mockPersistenceServices.deleteAllCollections returns CatsService {
+    mockPersistenceServices.deleteAllCollections returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
@@ -294,15 +294,15 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllWidgets() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllCollections returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
-    mockPersistenceServices.deleteAllCards returns CatsService {
+    mockPersistenceServices.deleteAllCards returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
@@ -312,18 +312,18 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.deleteAllApps() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllWidgets() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllCollections() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
     mockPersistenceServices.deleteAllCards() returns
-      CatsService(Task(Xor.right(items)))
+      TaskService(Task(Xor.right(items)))
 
-    mockPersistenceServices.deleteAllDockApps() returns CatsService {
+    mockPersistenceServices.deleteAllDockApps() returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
   }
@@ -331,51 +331,51 @@ trait DeviceProcessSpecification
   trait ErrorPersistenceServicesProcessScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.fetchApps(any, any) returns CatsService {
+    mockPersistenceServices.fetchApps(any, any) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchIterableApps(any, any) returns CatsService {
+    mockPersistenceServices.fetchIterableApps(any, any) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns CatsService {
+    mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchAlphabeticalAppsCounter returns CatsService {
+    mockPersistenceServices.fetchAlphabeticalAppsCounter returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchCategorizedAppsCounter returns CatsService {
+    mockPersistenceServices.fetchCategorizedAppsCounter returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchInstallationDateAppsCounter returns CatsService {
+    mockPersistenceServices.fetchInstallationDateAppsCounter returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns CatsService {
+    mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.addApp(any[AddAppRequest]) returns CatsService {
+    mockPersistenceServices.addApp(any[AddAppRequest]) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns CatsService {
+    mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.deleteAppByPackage(any) returns CatsService {
+    mockPersistenceServices.deleteAppByPackage(any) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.findAppByPackage(any) returns CatsService {
+    mockPersistenceServices.findAppByPackage(any) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.updateApp(any) returns CatsService {
+    mockPersistenceServices.updateApp(any) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
@@ -384,7 +384,7 @@ trait DeviceProcessSpecification
   trait ShortcutsErrorScope {
     self: DeviceProcessScope =>
 
-    mockShortcutsServices.getShortcuts(contextSupport) returns CatsService {
+    mockShortcutsServices.getShortcuts(contextSupport) returns TaskService {
       Task(Xor.left(shortcutServicesException))
     }
 
@@ -393,7 +393,7 @@ trait DeviceProcessSpecification
   trait FavoriteContactsErrorScope {
     self: DeviceProcessScope =>
 
-    mockContactsServices.getFavoriteContacts returns CatsService {
+    mockContactsServices.getFavoriteContacts returns TaskService {
       Task(Xor.left(contactsServicesException))
     }
 
@@ -403,9 +403,9 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockContactsServices.getFavoriteContacts returns
-      CatsService(Task(Xor.right(contacts)))
+      TaskService(Task(Xor.right(contacts)))
 
-    mockContactsServices.findContactByLookupKey(any) returns CatsService {
+    mockContactsServices.findContactByLookupKey(any) returns TaskService {
       Task(Xor.left(contactsServicesException))
     }
 
@@ -419,13 +419,13 @@ trait DeviceProcessSpecification
     val saveBitmapPath = SaveBitmapPath(nameShortcut, fileNameShortcut)
 
     mockImageServices.saveBitmap(saveBitmap)(contextSupport) returns
-      CatsService(Task(Xor.right(saveBitmapPath)))
+      TaskService(Task(Xor.right(saveBitmapPath)))
   }
 
   trait SaveShortcutErrorScope {
     self: DeviceProcessScope =>
 
-    mockImageServices.saveBitmap(any[SaveBitmap])(any) returns CatsService {
+    mockImageServices.saveBitmap(any[SaveBitmap])(any) returns TaskService {
       Task(Xor.left(fileServicesException))
     }
   }
@@ -434,25 +434,25 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockContactsServices.findContactByLookupKey(anyString) returns
-      CatsService(Task(Xor.right(contact)))
+      TaskService(Task(Xor.right(contact)))
   }
 
   trait ContactsErrorScope {
     self: DeviceProcessScope =>
 
-    mockContactsServices.getContacts returns CatsService {
+    mockContactsServices.getContacts returns TaskService {
       Task(Xor.left(contactsServicesException))
     }
 
-    mockContactsServices.getIterableContacts returns CatsService {
+    mockContactsServices.getIterableContacts returns TaskService {
       Task(Xor.left(contactsServicesException))
     }
 
-    mockContactsServices.findContactByLookupKey(anyString) returns CatsService {
+    mockContactsServices.findContactByLookupKey(anyString) returns TaskService {
       Task(Xor.left(contactsServicesException))
     }
 
-    mockContactsServices.getIterableContactsByKeyword(keyword) returns CatsService {
+    mockContactsServices.getIterableContactsByKeyword(keyword) returns TaskService {
       Task(Xor.left(contactsServicesException))
     }
   }
@@ -460,7 +460,7 @@ trait DeviceProcessSpecification
   trait WidgetsErrorScope {
     self: DeviceProcessScope =>
 
-    mockWidgetsServices.getWidgets(any) returns CatsService {
+    mockWidgetsServices.getWidgets(any) returns TaskService {
       Task(Xor.left(widgetsServicesException))
     }
   }
@@ -468,7 +468,7 @@ trait DeviceProcessSpecification
   trait CallsErrorScope {
     self: DeviceProcessScope =>
 
-    mockCallsServices.getLastCalls returns CatsService {
+    mockCallsServices.getLastCalls returns TaskService {
       Task(Xor.left(callsServicesException))
     }
   }
@@ -477,9 +477,9 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockCallsServices.getLastCalls returns
-      CatsService(Task(Xor.right(callsServices)))
+      TaskService(Task(Xor.right(callsServices)))
 
-    mockContactsServices.fetchContactByPhoneNumber(any) returns CatsService {
+    mockContactsServices.fetchContactByPhoneNumber(any) returns TaskService {
       Task(Xor.left(contactsServicesException))
     }
   }
@@ -488,38 +488,38 @@ trait DeviceProcessSpecification
     self: DeviceProcessScope =>
 
     mockPersistenceServices.createOrUpdateDockApp(any) returns
-      CatsService(Task(Xor.right(dockAppSeq)))
+      TaskService(Task(Xor.right(dockAppSeq)))
 
     mockPersistenceServices.fetchDockApps returns
-      CatsService(Task(Xor.right(dockAppSeq)))
+      TaskService(Task(Xor.right(dockAppSeq)))
 
     mockPersistenceServices.deleteAllDockApps() returns
-      CatsService(Task(Xor.right(dockAppsRemoved)))
+      TaskService(Task(Xor.right(dockAppsRemoved)))
   }
 
   trait DockAppsFindErrorScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.fetchAppByPackages(any) returns CatsService {
+    mockPersistenceServices.fetchAppByPackages(any) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
     mockPersistenceServices.createOrUpdateDockApp(any) returns
-      CatsService(Task(Xor.right(dockAppSeq)))
+      TaskService(Task(Xor.right(dockAppSeq)))
   }
 
   trait DockAppsErrorScope {
     self: DeviceProcessScope =>
 
-    mockPersistenceServices.createOrUpdateDockApp(any) returns CatsService {
+    mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.fetchDockApps returns CatsService {
+    mockPersistenceServices.fetchDockApps returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
 
-    mockPersistenceServices.deleteAllDockApps() returns CatsService {
+    mockPersistenceServices.deleteAllDockApps() returns TaskService {
       Task(Xor.left(persistenceServiceException))
     }
   }
@@ -1247,7 +1247,7 @@ class DeviceProcessImplSpec
     "return the three dockApps saved" in
       new DeviceProcessScope with DockAppsScope {
 
-        mockPersistenceServices.createOrUpdateDockApp(any) returns CatsService(Task(Xor.right(dockAppSeq)))
+        mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Xor.right(dockAppSeq)))
 
         val result = deviceProcess.saveDockApps(saveDockAppRequestSeq).value.run
         result must beLike {

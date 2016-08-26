@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.services.plus.impl
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
 import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServices, GooglePlusServicesException, ImplicitsGooglePlusProcessExceptions}
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
@@ -44,7 +44,7 @@ class GooglePlusServicesImpl(googleApiClient: GoogleApiClient)
     coverUrl = fetchCoverUrl(person)
   } yield GooglePlusProfile(name, avatarUrl, coverUrl)).resolve[GooglePlusServicesException]
 
-  private[this] def loadPeopleApi: CatsService[LoadPeopleResult] = CatsService {
+  private[this] def loadPeopleApi: TaskService[LoadPeopleResult] = TaskService {
     Task {
       Try(Plus.PeopleApi.load(googleApiClient, me).await()) match {
         case Success(r) if validCodes.contains(r.getStatus.getStatusCode) => Xor.Right(r)
@@ -58,7 +58,7 @@ class GooglePlusServicesImpl(googleApiClient: GoogleApiClient)
     }
   }
 
-  private[this] def fetchPerson(loadPeopleResult: LoadPeopleResult): CatsService[Person] = CatsService {
+  private[this] def fetchPerson(loadPeopleResult: LoadPeopleResult): TaskService[Person] = TaskService {
     Task {
       XorCatchAll[GooglePlusServicesException] {
         val people = notNullOrThrow(loadPeopleResult, "LoadPeopleResult is null")

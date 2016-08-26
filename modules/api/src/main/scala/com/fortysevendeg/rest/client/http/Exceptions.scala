@@ -1,6 +1,6 @@
 package com.fortysevendeg.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
 
 case class HttpClientException(message: String, cause : Option[Throwable] = None)

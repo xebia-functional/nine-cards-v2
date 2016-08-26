@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollect
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
@@ -53,11 +53,11 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
 
   private[this] def getSharedCollections(
     category: NineCardCategory,
-    typeSharedCollection: TypeSharedCollection): CatsService[Seq[SharedCollection]] =
+    typeSharedCollection: TypeSharedCollection): TaskService[Seq[SharedCollection]] =
     di.sharedCollectionsProcess.getSharedCollectionsByCategory(category, typeSharedCollection)
 
   private[this] def addCollection(sharedCollection: SharedCollection):
-  CatsService[Collection] =
+  TaskService[Collection] =
     for {
       appsInstalled <- di.deviceProcess.getSavedApps(GetByName)
       collection <- di.collectionProcess.addCollection(toAddCollectionRequest(sharedCollection, getCards(appsInstalled, sharedCollection.resolvedPackages)))

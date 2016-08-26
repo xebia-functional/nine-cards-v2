@@ -4,8 +4,8 @@ import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact}
 import com.fortysevendeg.ninecardslauncher.process.device.{CallException, DeviceConversions, DeviceProcess, ImplicitsDeviceException}
 import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
@@ -27,7 +27,7 @@ trait LastCallsDeviceProcessImpl extends DeviceProcess {
       combinedContacts <- getCombinedContacts(simpleGroupCalls)
     } yield fillCombinedContacts(combinedContacts)).resolve[CallException]
 
-  private[this] def simpleGroupCalls(lastCalls: Seq[Call]): CatsService[Seq[LastCallsContact]] = CatsService {
+  private[this] def simpleGroupCalls(lastCalls: Seq[Call]): TaskService[Seq[LastCallsContact]] = TaskService {
     Task {
       XorCatchAll[CallException] {
         (lastCalls groupBy (_.number) map { case (k, v) => toSimpleLastCallsContact(k, v) }).toSeq
@@ -36,13 +36,13 @@ trait LastCallsDeviceProcessImpl extends DeviceProcess {
   }
 
   private[this] def getCombinedContacts(items: Seq[LastCallsContact]):
-  CatsService[Seq[(LastCallsContact, Option[Contact])]] = CatsService {
+  TaskService[Seq[(LastCallsContact, Option[Contact])]] = TaskService {
     val tasks = items map (item => combineContact(item).value)
     Task.gatherUnordered(tasks) map (list => XorCatchAll[ContactsServiceException](list.collect { case Xor.Right(combinedContact) => combinedContact }))
   }
 
   private[this] def combineContact(lastCallsContact: LastCallsContact):
-  CatsService[(LastCallsContact, Option[Contact])] =
+  TaskService[(LastCallsContact, Option[Contact])] =
     for {
       contact <- contactsServices.fetchContactByPhoneNumber(lastCallsContact.number)
     } yield (lastCallsContact, contact map toContact)

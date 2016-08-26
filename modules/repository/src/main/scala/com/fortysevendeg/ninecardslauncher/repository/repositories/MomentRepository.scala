@@ -5,8 +5,8 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toMoment
 import com.fortysevendeg.ninecardslauncher.repository.model.{Moment, MomentData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity._
@@ -27,8 +27,8 @@ class MomentRepository(
 
   val momentNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$momentUriPath")
 
-  def addMoment(data: MomentData): CatsService[Moment] =
-    CatsService {
+  def addMoment(data: MomentData): TaskService[Moment] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = createMapValues(data)
@@ -43,8 +43,8 @@ class MomentRepository(
       }
     }
 
-  def addMoments(datas: Seq[MomentData]): CatsService[Seq[Moment]] =
-    CatsService {
+  def addMoments(datas: Seq[MomentData]): TaskService[Seq[Moment]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
 
@@ -63,8 +63,8 @@ class MomentRepository(
       }
     }
 
-  def deleteMoments(where: String = ""): CatsService[Int] =
-    CatsService {
+  def deleteMoments(where: String = ""): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.delete(
@@ -75,8 +75,8 @@ class MomentRepository(
       }
     }
 
-  def deleteMoment(moment: Moment): CatsService[Int] =
-    CatsService {
+  def deleteMoment(moment: Moment): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
@@ -87,8 +87,8 @@ class MomentRepository(
       }
     }
 
-  def findMomentById(id: Int): CatsService[Option[Moment]] =
-    CatsService {
+  def findMomentById(id: Int): TaskService[Option[Moment]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.findById(
@@ -102,8 +102,8 @@ class MomentRepository(
   def fetchMoments(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[Seq[Moment]] =
-    CatsService {
+    orderBy: String = ""): TaskService[Seq[Moment]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
@@ -119,8 +119,8 @@ class MomentRepository(
   def fetchIterableMoments(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[IterableCursor[Moment]] =
-    CatsService {
+    orderBy: String = ""): TaskService[IterableCursor[Moment]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
@@ -133,8 +133,8 @@ class MomentRepository(
       }
     }
 
-  def updateMoment(item: Moment): CatsService[Int] =
-    CatsService {
+  def updateMoment(item: Moment): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = createMapValues(item.data)
