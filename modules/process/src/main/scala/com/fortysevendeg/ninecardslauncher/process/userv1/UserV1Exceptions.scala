@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.userv1
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
 case class UserV1Exception(message: String, cause : Option[Throwable] = None)
   extends RuntimeException(message)

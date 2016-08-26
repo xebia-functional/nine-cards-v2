@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.repository.repositories
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toUser
 import com.fortysevendeg.ninecardslauncher.repository.model.{User, UserData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
@@ -26,8 +26,8 @@ class UserRepository(
 
   val userNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$userUriPath")
 
-  def addUser(data: UserData): CatsService[User] =
-    CatsService {
+  def addUser(data: UserData): TaskService[User] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = createMapValues(data)
@@ -42,8 +42,8 @@ class UserRepository(
       }
     }
 
-  def deleteUsers(where: String = ""): CatsService[Int] =
-    CatsService {
+  def deleteUsers(where: String = ""): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.delete(
@@ -54,8 +54,8 @@ class UserRepository(
       }
     }
 
-  def deleteUser(user: User): CatsService[Int] =
-    CatsService {
+  def deleteUser(user: User): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
@@ -66,8 +66,8 @@ class UserRepository(
       }
     }
 
-  def findUserById(id: Int): CatsService[Option[User]] =
-    CatsService {
+  def findUserById(id: Int): TaskService[Option[User]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.findById(
@@ -78,8 +78,8 @@ class UserRepository(
       }
     }
 
-  def fetchUsers: CatsService[Seq[User]] =
-    CatsService {
+  def fetchUsers: TaskService[Seq[User]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
@@ -92,8 +92,8 @@ class UserRepository(
   def fetchIterableUsers(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[IterableCursor[User]] =
-    CatsService {
+    orderBy: String = ""): TaskService[IterableCursor[User]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
@@ -106,8 +106,8 @@ class UserRepository(
       }
     }
 
-  def updateUser(item: User): CatsService[Int] =
-    CatsService {
+  def updateUser(item: User): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = createMapValues(item.data)

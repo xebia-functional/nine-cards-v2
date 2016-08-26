@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.calls
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
 
 trait CallsServices {
@@ -11,5 +11,5 @@ trait CallsServices {
    *         information about the widget
    * @throws CallsServicesException if exist some problem to get the calls in the cell phone
    */
-  def getLastCalls: CatsService[Seq[Call]]
+  def getLastCalls: TaskService[Seq[Call]]
 }

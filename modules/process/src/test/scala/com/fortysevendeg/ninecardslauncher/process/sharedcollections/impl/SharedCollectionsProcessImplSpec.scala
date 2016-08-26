@@ -5,7 +5,7 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsExceptions
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreatedCollection
@@ -44,7 +44,7 @@ trait SharedCollectionsProcessImplSpecification
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
       apiUtils.getRequestConfig(contextSupport) returns
-        CatsService(Task(Xor.right(requestConfig)))
+        TaskService(Task(Xor.right(requestConfig)))
     }
 
   }
@@ -54,10 +54,10 @@ trait SharedCollectionsProcessImplSpecification
     self: SharedCollectionsProcessProcessScope =>
 
     mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
-      CatsService(Task(Xor.right(shareCollectionList)))
+      TaskService(Task(Xor.right(shareCollectionList)))
 
     mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
-      CatsService(Task(Xor.right(createSharedCollectionResponse)))
+      TaskService(Task(Xor.right(createSharedCollectionResponse)))
   }
 
   trait ErrorSharedCollectionsProcessProcessScope {
@@ -65,10 +65,10 @@ trait SharedCollectionsProcessImplSpecification
     self: SharedCollectionsProcessProcessScope =>
 
     mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
-      CatsService(Task(Xor.left(apiException)))
+      TaskService(Task(Xor.left(apiException)))
 
     mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
-      CatsService(Task(Xor.left(apiException)))
+      TaskService(Task(Xor.left(apiException)))
   }
 
 }

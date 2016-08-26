@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.user.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -59,9 +59,9 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.getAndroidId(any) returns CatsService(Task(Xor.right(deviceId)))
-        mockApiServices.login(any, any, any) returns CatsService(Task(Xor.right(loginResponse)))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.login(any, any, any) returns TaskService(Task(Xor.right(loginResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
         val result = userProcess.signIn(email, marketToken, emailTokenId)(mockContextSupport).value.run
 
@@ -80,10 +80,10 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.getAndroidId(any) returns CatsService(Task(Xor.right(deviceId)))
-        mockApiServices.login(any, any, any) returns CatsService(Task(Xor.right(loginResponse)))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(persistenceUser))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.login(any, any, any) returns TaskService(Task(Xor.right(loginResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = userProcess.signIn(email, marketToken, emailTokenId)(mockContextSupport).value.run
 
@@ -115,7 +115,7 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns None
-        mockPersistenceServices.fetchUsers returns CatsService(Task(Xor.right(Seq(persistenceUser, anotherUser))))
+        mockPersistenceServices.fetchUsers returns TaskService(Task(Xor.right(Seq(persistenceUser, anotherUser))))
 
         val result = userProcess.register(mockContextSupport).value.run
 
@@ -132,8 +132,8 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns None
-        mockPersistenceServices.fetchUsers returns CatsService(Task(Xor.right(Seq.empty)))
-        mockPersistenceServices.addUser(any) returns CatsService(Task(Xor.right(persistenceUser)))
+        mockPersistenceServices.fetchUsers returns TaskService(Task(Xor.right(Seq.empty)))
+        mockPersistenceServices.addUser(any) returns TaskService(Task(Xor.right(persistenceUser)))
 
         val result = userProcess.register(mockContextSupport).value.run
 
@@ -150,7 +150,7 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(persistenceUser))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser))))
 
         val result = userProcess.register(mockContextSupport).value.run
 
@@ -167,8 +167,8 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
-        mockPersistenceServices.addUser(any) returns CatsService(Task(Xor.right(persistenceUser)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
+        mockPersistenceServices.addUser(any) returns TaskService(Task(Xor.right(persistenceUser)))
 
         val result = userProcess.register(mockContextSupport).value.run
 
@@ -207,7 +207,7 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
         val result = userProcess.unregister(mockContextSupport).value.run
 
@@ -230,8 +230,8 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken),
           deviceToken = None)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = userProcess.unregister(mockContextSupport).value.run
 
@@ -252,8 +252,8 @@ class UserProcessImplSpec
           apiKey = None,
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = userProcess.unregister(mockContextSupport).value.run
 
@@ -274,8 +274,8 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = None,
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = userProcess.unregister(mockContextSupport).value.run
 
@@ -296,10 +296,10 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
-        mockPersistenceServices.getAndroidId(any) returns CatsService(Task(Xor.right(deviceId)))
-        mockApiServices.updateInstallation(any)(any) returns CatsService(Task(Xor.right(updateInstallationResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.updateInstallation(any)(any) returns TaskService(Task(Xor.right(updateInstallationResponse)))
 
         val result = userProcess.unregister(mockContextSupport).value.run
 
@@ -335,7 +335,7 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
         val result = userProcess.getUser(mockContextSupport).value.run
 
@@ -351,7 +351,7 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(persistenceUser))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser))))
 
         val result = userProcess.getUser(mockContextSupport).value.run
 
@@ -388,7 +388,7 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
         val result = userProcess.updateUserDevice(deviceName, deviceCloudId, Some(deviceToken))(mockContextSupport).value.run
 
@@ -410,8 +410,8 @@ class UserProcessImplSpec
         val user = persistenceUser.copy(
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(deviceToken))(mockContextSupport).value.run
 
@@ -436,8 +436,8 @@ class UserProcessImplSpec
           apiKey = None,
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(anotherDeviceToken))(mockContextSupport).value.run
 
@@ -462,8 +462,8 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = None,
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(anotherDeviceToken))(mockContextSupport).value.run
 
@@ -488,10 +488,10 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
-        mockPersistenceServices.getAndroidId(any) returns CatsService(Task(Xor.right(deviceId)))
-        mockApiServices.updateInstallation(any)(any) returns CatsService(Task(Xor.right(updateInstallationResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.updateInstallation(any)(any) returns TaskService(Task(Xor.right(updateInstallationResponse)))
 
         val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(anotherDeviceToken))(mockContextSupport).value.run
 
@@ -516,10 +516,10 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
-        mockPersistenceServices.getAndroidId(any) returns CatsService(Task(Xor.right(deviceId)))
-        mockApiServices.updateInstallation(any)(any) returns CatsService(Task(Xor.right(updateInstallationResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.updateInstallation(any)(any) returns TaskService(Task(Xor.right(updateInstallationResponse)))
 
         val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, None)(mockContextSupport).value.run
 
@@ -561,7 +561,7 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
         val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).value.run
 
@@ -583,8 +583,8 @@ class UserProcessImplSpec
         val user = persistenceUser.copy(
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).value.run
 
@@ -605,8 +605,8 @@ class UserProcessImplSpec
           apiKey = None,
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).value.run
 
@@ -627,8 +627,8 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = None,
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).value.run
 
@@ -649,10 +649,10 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns CatsService(Task(Xor.right(1)))
-        mockPersistenceServices.getAndroidId(any) returns CatsService(Task(Xor.right(deviceId)))
-        mockApiServices.updateInstallation(any)(any) returns CatsService(Task(Xor.right(updateInstallationResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.updateInstallation(any)(any) returns TaskService(Task(Xor.right(updateInstallationResponse)))
 
         val result = userProcess.updateDeviceToken(anotherDeviceToken)(mockContextSupport).value.run
 

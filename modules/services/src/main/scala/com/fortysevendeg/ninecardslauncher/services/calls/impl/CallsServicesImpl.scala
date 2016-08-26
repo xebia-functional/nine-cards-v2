@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.calls.impl
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.ContentResolverWrapper
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.calls.CallsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServices, CallsServicesException, ImplicitsCallsExceptions}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
@@ -16,7 +16,7 @@ class CallsServicesImpl(
   with ImplicitsCallsExceptions {
 
   override def getLastCalls =
-    CatsService {
+    TaskService {
       Task {
         XorCatchAll[CallsServicesException] {
           contentResolverWrapper.fetchAll(

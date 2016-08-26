@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.services
 
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
@@ -22,7 +22,7 @@ trait CreateCollectionsTasks
 
   def createNewConfiguration(
     client: GoogleApiClient,
-    deviceToken: Option[String]): CatsService[Seq[Collection]] = {
+    deviceToken: Option[String]): TaskService[Seq[Collection]] = {
     val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       _ <- di.deviceProcess.resetSavedItems()
@@ -47,7 +47,7 @@ trait CreateCollectionsTasks
   def loadConfiguration(
     client: GoogleApiClient,
     deviceToken: Option[String],
-    cloudId: String): CatsService[Seq[Collection]] = {
+    cloudId: String): TaskService[Seq[Collection]] = {
     val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       _ <- di.deviceProcess.resetSavedItems()

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, MomentEntity}
 import com.fortysevendeg.ninecardslauncher.services.persistence.FetchCollectionBySharedCollectionRequest
@@ -21,71 +21,71 @@ trait CollectionPersistenceServicesDataSpecification
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with PersistenceServicesData {
 
-    mockCardRepository.addCard(collectionId, repoCardData) returns CatsService(Task(Xor.right(repoCard)))
+    mockCardRepository.addCard(collectionId, repoCardData) returns TaskService(Task(Xor.right(repoCard)))
 
-    mockCardRepository.addCards(any) returns CatsService(Task(Xor.right(Seq(repoCard))))
+    mockCardRepository.addCards(any) returns TaskService(Task(Xor.right(Seq(repoCard))))
 
-    mockCardRepository.deleteCards() returns CatsService(Task(Xor.right(items)))
+    mockCardRepository.deleteCards() returns TaskService(Task(Xor.right(items)))
 
-    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns CatsService(Task(Xor.right(items)))
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns TaskService(Task(Xor.right(items)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(collectionId, repoCard) returns CatsService(Task(Xor.right(item)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns TaskService(Task(Xor.right(item)))
     }
 
     List.tabulate(5) { index =>
-      mockCardRepository.fetchCardsByCollection(collectionId + index) returns CatsService(Task(Xor.right(seqRepoCard)))
+      mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Xor.right(seqRepoCard)))
     }
 
-    mockMomentRepository.addMoments(any) returns CatsService(Task(Xor.right(Seq(repoMoment))))
+    mockMomentRepository.addMoments(any) returns TaskService(Task(Xor.right(Seq(repoMoment))))
 
-    mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns CatsService(Task(Xor.right(item)))
+    mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns TaskService(Task(Xor.right(item)))
 
-    mockMomentRepository.updateMoment(repoMoment) returns CatsService(Task(Xor.right(item)))
+    mockMomentRepository.updateMoment(repoMoment) returns TaskService(Task(Xor.right(item)))
 
-    mockMomentRepository.deleteMoment(repoMoment) returns CatsService(Task(Xor.right(item)))
+    mockMomentRepository.deleteMoment(repoMoment) returns TaskService(Task(Xor.right(item)))
 
-    mockMomentRepository.fetchMoments() returns CatsService(Task(Xor.right(seqRepoMoment)))
+    mockMomentRepository.fetchMoments() returns TaskService(Task(Xor.right(seqRepoMoment)))
 
-    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $collectionId") returns CatsService(Task(Xor.right(seqRepoMoment)))
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $collectionId") returns TaskService(Task(Xor.right(seqRepoMoment)))
 
-    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 1}") returns CatsService(Task(Xor.right(seqRepoMoment)))
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 1}") returns TaskService(Task(Xor.right(seqRepoMoment)))
 
-    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 2}") returns CatsService(Task(Xor.right(seqRepoMoment)))
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 2}") returns TaskService(Task(Xor.right(seqRepoMoment)))
 
-    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 3}") returns CatsService(Task(Xor.right(seqRepoMoment)))
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 3}") returns TaskService(Task(Xor.right(seqRepoMoment)))
 
-    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 4}") returns CatsService(Task(Xor.right(seqRepoMoment)))
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collectionId + 4}") returns TaskService(Task(Xor.right(seqRepoMoment)))
 
-    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $nonExistentCollectionId") returns CatsService(Task(Xor.right(Seq.empty)))
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $nonExistentCollectionId") returns TaskService(Task(Xor.right(Seq.empty)))
 
-    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${None.orNull}") returns CatsService(Task(Xor.right(Seq.empty)))
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${None.orNull}") returns TaskService(Task(Xor.right(Seq.empty)))
 
-    mockCollectionRepository.addCollection(repoCollectionData) returns CatsService(Task(Xor.right(repoCollection)))
+    mockCollectionRepository.addCollection(repoCollectionData) returns TaskService(Task(Xor.right(repoCollection)))
 
-    mockCollectionRepository.deleteCollections() returns CatsService(Task(Xor.right(items)))
+    mockCollectionRepository.deleteCollections() returns TaskService(Task(Xor.right(items)))
 
-    mockCollectionRepository.deleteCollection(repoCollection) returns CatsService(Task(Xor.right(item)))
+    mockCollectionRepository.deleteCollection(repoCollection) returns TaskService(Task(Xor.right(item)))
 
-    mockCollectionRepository.fetchCollectionByPosition(position) returns CatsService(Task(Xor.right(Option(repoCollection))))
+    mockCollectionRepository.fetchCollectionByPosition(position) returns TaskService(Task(Xor.right(Option(repoCollection))))
 
-    mockCollectionRepository.fetchCollectionByPosition(nonExistentPosition) returns CatsService(Task(Xor.right(None)))
+    mockCollectionRepository.fetchCollectionByPosition(nonExistentPosition) returns TaskService(Task(Xor.right(None)))
 
-    mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns CatsService(Task(Xor.right(Option(repoCollection))))
+    mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns TaskService(Task(Xor.right(Option(repoCollection))))
 
-    mockCollectionRepository.fetchCollectionBySharedCollectionId(nonExistentSharedCollectionId) returns CatsService(Task(Xor.right(None)))
+    mockCollectionRepository.fetchCollectionBySharedCollectionId(nonExistentSharedCollectionId) returns TaskService(Task(Xor.right(None)))
 
-    mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId) returns CatsService(Task(Xor.right(Option(repoCollection))))
+    mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId) returns TaskService(Task(Xor.right(Option(repoCollection))))
 
-    mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(nonExistentSharedCollectionId) returns CatsService(Task(Xor.right(None)))
+    mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(nonExistentSharedCollectionId) returns TaskService(Task(Xor.right(None)))
 
-    mockCollectionRepository.fetchSortedCollections returns CatsService(Task(Xor.right(seqRepoCollection)))
+    mockCollectionRepository.fetchSortedCollections returns TaskService(Task(Xor.right(seqRepoCollection)))
 
-    mockCollectionRepository.findCollectionById(collectionId) returns CatsService(Task(Xor.right(Option(repoCollection))))
+    mockCollectionRepository.findCollectionById(collectionId) returns TaskService(Task(Xor.right(Option(repoCollection))))
 
-    mockCollectionRepository.findCollectionById(nonExistentCollectionId) returns CatsService(Task(Xor.right(None)))
+    mockCollectionRepository.findCollectionById(nonExistentCollectionId) returns TaskService(Task(Xor.right(None)))
 
-    mockCollectionRepository.updateCollection(repoCollection) returns CatsService(Task(Xor.right(item)))
+    mockCollectionRepository.updateCollection(repoCollection) returns TaskService(Task(Xor.right(item)))
 
   }
 
@@ -93,43 +93,43 @@ trait CollectionPersistenceServicesDataSpecification
 
     val exception = RepositoryException("Irrelevant message")
 
-    mockCardRepository.addCard(collectionId, repoCardData) returns CatsService(Task(Xor.left(exception)))
+    mockCardRepository.addCard(collectionId, repoCardData) returns TaskService(Task(Xor.left(exception)))
 
-    mockCardRepository.deleteCards() returns CatsService(Task(Xor.left(exception)))
+    mockCardRepository.deleteCards() returns TaskService(Task(Xor.left(exception)))
 
-    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns CatsService(Task(Xor.left(exception)))
+    mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns TaskService(Task(Xor.left(exception)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(collectionId, repoCard) returns CatsService(Task(Xor.left(exception)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns TaskService(Task(Xor.left(exception)))
     }
 
     List.tabulate(5) { index =>
-      mockCardRepository.fetchCardsByCollection(collectionId + index) returns CatsService(Task(Xor.left(exception)))
+      mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Xor.left(exception)))
     }
 
-    mockMomentRepository.fetchMoments() returns CatsService(Task(Xor.left(exception)))
+    mockMomentRepository.fetchMoments() returns TaskService(Task(Xor.left(exception)))
 
-    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $collectionId") returns CatsService(Task(Xor.left(exception)))
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $collectionId") returns TaskService(Task(Xor.left(exception)))
 
-    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $nonExistentCollectionId") returns CatsService(Task(Xor.left(exception)))
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = $nonExistentCollectionId") returns TaskService(Task(Xor.left(exception)))
 
-    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${None.orNull}") returns CatsService(Task(Xor.left(exception)))
+    mockMomentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${None.orNull}") returns TaskService(Task(Xor.left(exception)))
 
-    mockCollectionRepository.addCollection(repoCollectionData) returns CatsService(Task(Xor.left(exception)))
+    mockCollectionRepository.addCollection(repoCollectionData) returns TaskService(Task(Xor.left(exception)))
 
-    mockCollectionRepository.deleteCollections() returns CatsService(Task(Xor.left(exception)))
+    mockCollectionRepository.deleteCollections() returns TaskService(Task(Xor.left(exception)))
 
-    mockCollectionRepository.deleteCollection(repoCollection) returns CatsService(Task(Xor.left(exception)))
+    mockCollectionRepository.deleteCollection(repoCollection) returns TaskService(Task(Xor.left(exception)))
 
-    mockCollectionRepository.fetchCollectionByPosition(position) returns CatsService(Task(Xor.left(exception)))
+    mockCollectionRepository.fetchCollectionByPosition(position) returns TaskService(Task(Xor.left(exception)))
 
-    mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns CatsService(Task(Xor.left(exception)))
+    mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns TaskService(Task(Xor.left(exception)))
 
-    mockCollectionRepository.fetchSortedCollections returns CatsService(Task(Xor.left(exception)))
+    mockCollectionRepository.fetchSortedCollections returns TaskService(Task(Xor.left(exception)))
 
-    mockCollectionRepository.findCollectionById(collectionId) returns CatsService(Task(Xor.left(exception)))
+    mockCollectionRepository.findCollectionById(collectionId) returns TaskService(Task(Xor.left(exception)))
 
-    mockCollectionRepository.updateCollection(repoCollection) returns CatsService(Task(Xor.left(exception)))
+    mockCollectionRepository.updateCollection(repoCollection) returns TaskService(Task(Xor.left(exception)))
 
   }
 

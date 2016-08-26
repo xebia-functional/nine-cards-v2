@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.process.social.impl
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.social.{Conversions, ImplicitsSocialProfileProcessExceptions, SocialProfileProcess, SocialProfileProcessException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
@@ -36,13 +36,13 @@ class SocialProfileProcessImpl(
         _ <- updateUser(maybeUser, googlePlusProfile)
       } yield ()).resolve[SocialProfileProcessException]
     } getOrElse {
-      CatsService(Task(Xor.left(SocialProfileProcessException(noActiveUserErrorMessage))))
+      TaskService(Task(Xor.left(SocialProfileProcessException(noActiveUserErrorMessage))))
     }
 
   private[this] def updateUser(maybeUser: Option[ServicesUser], googlePlusProfile: GooglePlusProfile) =
     maybeUser match {
       case Some(user) => persistenceServices.updateUser(toUpdateRequest(user, googlePlusProfile))
-      case None => CatsService(Task(Xor.left(PersistenceServiceException(noActiveUserErrorMessage))))
+      case None => TaskService(Task(Xor.left(PersistenceServiceException(noActiveUserErrorMessage))))
     }
 
 }

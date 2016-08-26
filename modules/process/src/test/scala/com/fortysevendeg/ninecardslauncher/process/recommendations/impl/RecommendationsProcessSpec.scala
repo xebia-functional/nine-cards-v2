@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.recommendations.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendedAppsException
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices, RecommendationResponse}
@@ -35,7 +35,7 @@ trait RecommendationsProcessSpecification
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
       apiUtils.getRequestConfig(contextSupport) returns
-        CatsService(Task(Xor.right(requestConfig)))
+        TaskService(Task(Xor.right(requestConfig)))
     }
 
   }
@@ -51,7 +51,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedApps(any, any, any)(any) returns
-          CatsService(Task(Xor.right(RecommendationResponse(statusCodeOk, recommendationApps))))
+          TaskService(Task(Xor.right(RecommendationResponse(statusCodeOk, recommendationApps))))
 
         val result = process.getRecommendedAppsByCategory(category)(contextSupport).value.run
 
@@ -68,7 +68,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedApps(any, any, any)(any) returns
-          CatsService(Task(Xor.left(apiException)))
+          TaskService(Task(Xor.left(apiException)))
 
         val result = process.getRecommendedAppsByCategory(category)(contextSupport).value.run
 
@@ -85,7 +85,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedAppsByPackages(any, any, any)(any) returns
-          CatsService(Task(Xor.right(RecommendationResponse(statusCodeOk, recommendationApps))))
+          TaskService(Task(Xor.right(RecommendationResponse(statusCodeOk, recommendationApps))))
 
         val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).value.run
 
@@ -102,7 +102,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedAppsByPackages(any, any, any)(any) returns
-          CatsService(Task(Xor.left(apiException)))
+          TaskService(Task(Xor.left(apiException)))
 
         val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).value.run
 

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.social
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 
 trait SocialProfileProcess {
 
@@ -10,6 +10,6 @@ trait SocialProfileProcess {
     *
     * @return the profile name
     */
-  def updateUserProfile()(implicit context: ContextSupport): CatsService[Option[String]]
+  def updateUserProfile()(implicit context: ContextSupport): TaskService[Option[String]]
 
 }

@@ -6,8 +6,8 @@ import android.os.Build
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageImplicits._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, Conversions, ImplicitsCloudStorageProcessExceptions}
@@ -66,12 +66,12 @@ class CloudStorageProcessImpl(
         maybeCloudId <- findUserDeviceCloudId(id)
       } yield driveServicesSeq map (file => toCloudStorageDeviceSummary(file, maybeCloudId))).resolve[CloudStorageProcessException]
     } getOrElse {
-      CatsService(Task(Xor.left(CloudStorageProcessException(noActiveUserErrorMessage))))
+      TaskService(Task(Xor.left(CloudStorageProcessException(noActiveUserErrorMessage))))
     }
 
   override def getCloudStorageDevice(cloudId: String) = {
 
-    def parseDevice(json: String): CatsService[CloudStorageDeviceData] = CatsService {
+    def parseDevice(json: String): TaskService[CloudStorageDeviceData] = TaskService {
       Task {
         Try(Json.parse(json).as[CloudStorageDeviceData]) match {
           case Success(s) => Xor.Right(s)
@@ -99,12 +99,12 @@ class CloudStorageProcessImpl(
     dockApps: Seq[CloudStorageDockApp])(implicit context: ContextSupport) = {
 
     def deviceExists(
-      maybeCloudId: Option[String]): CatsService[Boolean] =
+      maybeCloudId: Option[String]): TaskService[Boolean] =
       maybeCloudId match {
         case Some(cloudId) =>
           driveServices.fileExists(cloudId)
         case _ =>
-          CatsService(Task(Xor.right(false)))
+          TaskService(Task(Xor.right(false)))
       }
 
     context.getActiveUserId map { id =>
@@ -124,7 +124,7 @@ class CloudStorageProcessImpl(
           cloudStorageDeviceData = cloudStorageDeviceData)
       } yield device).resolve[CloudStorageProcessException]
     } getOrElse {
-      CatsService(Task(Xor.left(CloudStorageProcessException(noActiveUserErrorMessage))))
+      TaskService(Task(Xor.left(CloudStorageProcessException(noActiveUserErrorMessage))))
     }
   }
 
@@ -133,19 +133,19 @@ class CloudStorageProcessImpl(
 
   private[this] def createOrUpdateCloudStorageDevice(
     maybeCloudId: Option[String],
-    cloudStorageDeviceData: CloudStorageDeviceData): CatsService[CloudStorageDevice] = {
+    cloudStorageDeviceData: CloudStorageDeviceData): TaskService[CloudStorageDevice] = {
 
     def createOrUpdateFile(
       maybeCloudId: Option[String],
       title: String,
       content: String,
-      deviceId: String): CatsService[DriveServiceFileSummary] =
+      deviceId: String): TaskService[DriveServiceFileSummary] =
       maybeCloudId match {
         case Some(cloudId) => driveServices.updateFile(cloudId, content)
         case _ => driveServices.createFile(title, content, deviceId, userDeviceType, jsonMimeType)
       }
 
-    def deviceToJson(device: CloudStorageDeviceData): CatsService[String] = CatsService {
+    def deviceToJson(device: CloudStorageDeviceData): TaskService[String] = TaskService {
       Task {
         Try(Json.toJson(device).toString()) match {
           case Success(s) => Xor.right(s)
@@ -166,7 +166,7 @@ class CloudStorageProcessImpl(
     }).resolve[CloudStorageProcessException]
   }
 
-  private[this] def findUserDeviceCloudId(userId: Int): CatsService[Option[String]] = CatsService {
+  private[this] def findUserDeviceCloudId(userId: Int): TaskService[Option[String]] = TaskService {
     persistenceServices.findUserById(FindUserByIdRequest(userId)).value map {
       case Xor.Right(Some(user)) => Xor.Right(user.deviceCloudId)
       case Xor.Right(None) => Xor.Left(CloudStorageProcessException(userNotFoundErrorMessage(userId)))

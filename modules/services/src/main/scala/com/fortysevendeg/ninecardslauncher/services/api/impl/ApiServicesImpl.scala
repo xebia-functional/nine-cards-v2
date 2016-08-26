@@ -4,11 +4,11 @@ import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.api.version2.{CollectionUpdateInfo, CollectionsResponse}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 
 import scalaz.concurrent.Task
 
@@ -127,13 +127,13 @@ class ApiServicesImpl(
     offset: Int,
     limit: Int)(implicit requestConfig: RequestConfig) = {
 
-    def serviceCall: CatsService[ServiceClientResponse[CollectionsResponse]] =
+    def serviceCall: TaskService[ServiceClientResponse[CollectionsResponse]] =
       collectionType.toLowerCase match {
         case "top" =>
           apiService.topCollections(category, offset, limit, requestConfig.toGooglePlayHeader).resolve[ApiServiceException]
         case "latest" =>
           apiService.latestCollections(category, offset, limit, requestConfig.toGooglePlayHeader).resolve[ApiServiceException]
-        case _ => CatsService(Task(Xor.left(ApiServiceException(shareCollectionNotFoundMessage))))
+        case _ => TaskService(Task(Xor.left(ApiServiceException(shareCollectionNotFoundMessage))))
 
       }
 
@@ -193,7 +193,7 @@ class ApiServicesImpl(
       version2.ServiceMarketHeader(request.apiKey, request.sessionToken, request.androidId, request.marketToken)
   }
 
-  private[this] def readOption[T](maybe: Option[T], msg: String = ""): CatsService[T] = CatsService {
+  private[this] def readOption[T](maybe: Option[T], msg: String = ""): TaskService[T] = TaskService {
     Task {
       maybe match {
         case Some(v) => Xor.right(v)

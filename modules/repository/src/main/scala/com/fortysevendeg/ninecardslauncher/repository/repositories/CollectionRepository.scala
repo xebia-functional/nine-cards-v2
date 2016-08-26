@@ -6,8 +6,8 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CollectionEntity, NineCardsUri}
@@ -28,8 +28,8 @@ class CollectionRepository(
 
   val collectionNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$collectionUriPath")
 
-  def addCollection(data: CollectionData): CatsService[Collection] =
-    CatsService {
+  def addCollection(data: CollectionData): TaskService[Collection] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = createMapValues(data)
@@ -44,8 +44,8 @@ class CollectionRepository(
       }
     }
 
-  def addCollections(datas: Seq[CollectionData]): CatsService[Seq[Collection]] =
-    CatsService {
+  def addCollections(datas: Seq[CollectionData]): TaskService[Seq[Collection]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
 
@@ -64,8 +64,8 @@ class CollectionRepository(
       }
     }
 
-  def deleteCollections(where: String = ""): CatsService[Int] =
-    CatsService {
+  def deleteCollections(where: String = ""): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.delete(
@@ -76,8 +76,8 @@ class CollectionRepository(
       }
     }
 
-  def deleteCollection(collection: Collection): CatsService[Int] =
-    CatsService {
+  def deleteCollection(collection: Collection): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
@@ -88,8 +88,8 @@ class CollectionRepository(
       }
     }
 
-  def findCollectionById(id: Int): CatsService[Option[Collection]] =
-    CatsService {
+  def findCollectionById(id: Int): TaskService[Option[Collection]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.findById(
@@ -100,8 +100,8 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionBySharedCollectionId(id: String): CatsService[Option[Collection]] =
-    CatsService {
+  def fetchCollectionBySharedCollectionId(id: String): TaskService[Option[Collection]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           fetchCollection(
@@ -111,8 +111,8 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionByOriginalSharedCollectionId(sharedCollectionId: String): CatsService[Option[Collection]] =
-    CatsService {
+  def fetchCollectionByOriginalSharedCollectionId(sharedCollectionId: String): TaskService[Option[Collection]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           fetchCollection(
@@ -122,8 +122,8 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionByPosition(position: Int): CatsService[Option[Collection]] =
-    CatsService {
+  def fetchCollectionByPosition(position: Int): TaskService[Option[Collection]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           fetchCollection(selection = s"${CollectionEntity.position} = ?", selectionArgs = Seq(position.toString))
@@ -134,8 +134,8 @@ class CollectionRepository(
   def fetchIterableCollections(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): CatsService[IterableCursor[Collection]] =
-    CatsService {
+    orderBy: String = ""): TaskService[IterableCursor[Collection]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
@@ -148,8 +148,8 @@ class CollectionRepository(
       }
     }
 
-  def fetchSortedCollections: CatsService[Seq[Collection]] =
-    CatsService {
+  def fetchSortedCollections: TaskService[Seq[Collection]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           fetchCollections(sortOrder = s"${CollectionEntity.position} asc")
@@ -157,8 +157,8 @@ class CollectionRepository(
       }
     }
 
-  def updateCollection(collection: Collection): CatsService[Int] =
-    CatsService {
+  def updateCollection(collection: Collection): TaskService[Int] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = createMapValues(collection.data)
@@ -172,8 +172,8 @@ class CollectionRepository(
       }
     }
 
-  def updateCollections(collections: Seq[Collection]): CatsService[Seq[Int]] =
-    CatsService {
+  def updateCollections(collections: Seq[Collection]): TaskService[Seq[Int]] =
+    TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           val values = collections map { collection =>

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactException, ContactsFilter}
@@ -40,7 +40,7 @@ class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrap
   def addContact(maybeContact: Option[AddCardRequest]): Unit =
     (maybeContact map actions.contactAdded getOrElse actions.showGeneralError()).run
 
-  private[this] def getLoadContacts(order: ContactsFilter): CatsService[(IterableContacts, Seq[TermCounter])] =
+  private[this] def getLoadContacts(order: ContactsFilter): TaskService[(IterableContacts, Seq[TermCounter])] =
     for {
       iterableContacts <- di.deviceProcess.getIterableContacts(order)
       counters <- di.deviceProcess.getTermCountersForContacts(order)

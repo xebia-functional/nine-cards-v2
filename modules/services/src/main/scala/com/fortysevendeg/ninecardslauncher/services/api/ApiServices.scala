@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 
 trait ApiServices {
@@ -14,7 +14,7 @@ trait ApiServices {
    */
   def loginV1(
     email: String,
-    device: LoginV1Device): CatsService[LoginResponseV1]
+    device: LoginV1Device): TaskService[LoginResponseV1]
 
   /**
     * Tries to login with the email, the androidId and the tokenId
@@ -27,7 +27,7 @@ trait ApiServices {
   def login(
     email: String,
     androidId: String,
-    tokenId: String): CatsService[LoginResponse]
+    tokenId: String): TaskService[LoginResponse]
 
   /**
    * Updates an existing user installation
@@ -37,7 +37,7 @@ trait ApiServices {
    *         of the response
    * @throws ApiServiceException if there was an error in the request
    */
-  def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig): CatsService[UpdateInstallationResponse]
+  def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig): TaskService[UpdateInstallationResponse]
 
   /**
    * Fetches the package info from Google Play given a package name
@@ -47,7 +47,7 @@ trait ApiServices {
    *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
    * @throws ApiServiceException if there was an error in the request
    */
-  def googlePlayPackage(packageName: String)(implicit requestConfig: RequestConfig): CatsService[GooglePlayPackageResponse]
+  def googlePlayPackage(packageName: String)(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackageResponse]
 
   /**
    * Fetches a list of packages information from Google Play given a list of package names. The response is similar to
@@ -58,7 +58,7 @@ trait ApiServices {
    *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
    * @throws ApiServiceException if there was an error in the request
    */
-  def googlePlayPackages(packageNames: Seq[String])(implicit requestConfig: RequestConfig): CatsService[GooglePlayPackagesResponse]
+  def googlePlayPackages(packageNames: Seq[String])(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackagesResponse]
 
   /**
    * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfigV1]]
@@ -67,7 +67,7 @@ trait ApiServices {
    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserV1]]
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
    */
-  def getUserConfigV1()(implicit requestConfig: RequestConfigV1): CatsService[GetUserV1Response]
+  def getUserConfigV1()(implicit requestConfig: RequestConfigV1): TaskService[GetUserV1Response]
 
   /**
    * Fetches the recommended applications based on a category
@@ -81,7 +81,7 @@ trait ApiServices {
   def getRecommendedApps(
     category: String,
     excludePackages: Seq[String],
-    limit: Int)(implicit requestConfig: RequestConfig): CatsService[RecommendationResponse]
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[RecommendationResponse]
 
   /**
    * Fetches the recommended applications based on other packages
@@ -95,7 +95,7 @@ trait ApiServices {
   def getRecommendedAppsByPackages(
     packages: Seq[String],
     excludePackages: Seq[String],
-    limit: Int)(implicit requestConfig: RequestConfig): CatsService[RecommendationResponse]
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[RecommendationResponse]
 
   /**
     * Fetches the public collections based on some request params
@@ -111,7 +111,7 @@ trait ApiServices {
     category: String,
     collectionType: String,
     offset: Int,
-    limit: Int)(implicit requestConfig: RequestConfig): CatsService[SharedCollectionResponseList]
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[SharedCollectionResponseList]
 
   /**
     * Persists a new shared collection
@@ -132,7 +132,7 @@ trait ApiServices {
     packages: Seq[String],
     category: String,
     icon: String,
-    community: Boolean)(implicit requestConfig: RequestConfig): CatsService[CreateSharedCollectionResponse]
+    community: Boolean)(implicit requestConfig: RequestConfig): TaskService[CreateSharedCollectionResponse]
 
   /**
     * Updates an existing  shared collection
@@ -148,5 +148,5 @@ trait ApiServices {
     sharedCollectionId: String,
     name: Option[String],
     description: Option[String],
-    packages: Seq[String])(implicit requestConfig: RequestConfig): CatsService[UpdateSharedCollectionResponse]
+    packages: Seq[String])(implicit requestConfig: RequestConfig): TaskService[UpdateSharedCollectionResponse]
 }

@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.theme.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.commons.utils.{AssetException, FileUtils, ImplicitsAssetException}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsThemeImplicits._
@@ -25,7 +25,7 @@ class ThemeProcessImpl
     theme <- getNineCardsThemeFromJson(json)
   } yield theme
 
-  private[this] def getJsonFromThemeFile(defaultTheme: String)(implicit context: ContextSupport) = CatsService {
+  private[this] def getJsonFromThemeFile(defaultTheme: String)(implicit context: ContextSupport) = TaskService {
     Task {
       XorCatchAll[AssetException] {
         fileUtils.readFile(s"$defaultTheme.json") match {
@@ -36,7 +36,7 @@ class ThemeProcessImpl
     }
   }
 
-  private[this] def getNineCardsThemeFromJson(json: String) = CatsService {
+  private[this] def getNineCardsThemeFromJson(json: String) = TaskService {
     Task {
       XorCatchAll[ThemeException] {
           Json.parse(json).as[NineCardsTheme]

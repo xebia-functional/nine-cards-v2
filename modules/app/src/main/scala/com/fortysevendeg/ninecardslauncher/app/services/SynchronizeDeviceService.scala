@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
@@ -64,7 +64,7 @@ class SynchronizeDeviceService
   override def connected(client: GoogleApiClient): Unit = {
 
     def sync(
-      client: GoogleApiClient): CatsService[Unit] = {
+      client: GoogleApiClient): TaskService[Unit] = {
       val cloudStorageProcess = di.createCloudStorageProcess(client)
       for {
         collections <- di.collectionProcess.getCollections
@@ -96,7 +96,7 @@ class SynchronizeDeviceService
 
     def updateCollection(collectionId: Int) = {
 
-      def updateSharedCollection(collection: Collection): CatsService[Option[String]] =
+      def updateSharedCollection(collection: Collection): TaskService[Option[String]] =
         collection.sharedCollectionId match {
           case Some(id) =>
             di.sharedCollectionsProcess.updateSharedCollection(
@@ -105,7 +105,7 @@ class SynchronizeDeviceService
                 name = collection.name,
                 description = None,
                 packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName))).map(Option(_))
-          case _ => services.CatsService(Task(Xor.right(None)))
+          case _ => services.TaskService(Task(Xor.right(None)))
         }
 
       for {
@@ -118,7 +118,7 @@ class SynchronizeDeviceService
     val updateServices = ids filterNot (_.isEmpty) map (id => updateCollection(id.toInt).value)
     preferences.edit().remove(collectionIdsKey).apply()
 
-    services.CatsService {
+    services.TaskService {
       Task.gatherUnordered(updateServices, exceptionCancels = false) map { results =>
         XorCatchAll[SharedCollectionsExceptions](results.collect { case Xor.Right(r) => r })
       }

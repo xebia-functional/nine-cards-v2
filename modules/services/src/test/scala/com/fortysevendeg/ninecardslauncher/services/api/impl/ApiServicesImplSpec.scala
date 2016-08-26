@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.api._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.rest.client.http.HttpClientException
@@ -55,52 +55,52 @@ trait ApiServicesSpecification
     self: ApiServicesScope =>
 
     apiService.login(any)(any, any) returns
-      CatsService {
+      TaskService {
         Task(Xor.right(ServiceClientResponse[version2.LoginResponse](statusCode, Some(version2.LoginResponse(apiKey, sessionToken)))))
       }
 
     apiService.installations(any, any)(any, any) returns
-      CatsService {
+      TaskService {
         Task(Xor.right(ServiceClientResponse[version2.InstallationResponse](statusCode, Some(version2.InstallationResponse(androidId, deviceToken)))))
       }
 
     apiService.categorize(any, any)(any, any) returns
-      CatsService {
+      TaskService {
         Task(Xor.right(ServiceClientResponse[version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
       }
 
     apiServiceV1.login(any, any)(any, any) returns
-      CatsService {
+      TaskService {
         Task(Xor.right(ServiceClientResponse[version1.User](statusCode, Some(user))))
       }
 
     apiServiceV1.getUserConfig(any)(any) returns
-      CatsService {
+      TaskService {
         Task(Xor.right(ServiceClientResponse[version1.UserConfig](statusCode, Some(userConfig))))
       }
 
     apiService.recommendations(any, any, any)(any, any) returns
-      CatsService {
+      TaskService {
         Task(Xor.right(ServiceClientResponse[version2.RecommendationsResponse](statusCode, Some(recommendationResponse))))
       }
 
     apiService.recommendationsByApps(any, any)(any, any) returns
-      CatsService {
+      TaskService {
         Task(Xor.right(ServiceClientResponse[version2.RecommendationsByAppsResponse](statusCode, Some(recommendationByAppsResponse))))
       }
 
     apiService.latestCollections(any, any, any, any)(any) returns
-      CatsService {
+      TaskService {
         Task(Xor.right(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
       }
 
     apiService.topCollections(any, any, any, any)(any) returns
-      CatsService {
+      TaskService {
         Task(Xor.right(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
       }
 
     apiService.createCollection(any, any)(any, any) returns
-      CatsService {
+      TaskService {
         Task(Xor.right(ServiceClientResponse[version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
       }
   }
@@ -113,29 +113,29 @@ trait ApiServicesSpecification
 
     val exception = HttpClientException("")
 
-    apiService.login(any)(any, any) returns CatsService(Task(Xor.left(exception)))
+    apiService.login(any)(any, any) returns TaskService(Task(Xor.left(exception)))
 
-    apiService.installations(any, any)(any, any) returns CatsService(Task(Xor.left(exception)))
+    apiService.installations(any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
 
-    apiService.categorize(any, any)(any, any) returns CatsService(Task(Xor.left(exception)))
+    apiService.categorize(any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
 
-    apiService.categorize(any, any)(any, any) returns CatsService(Task(Xor.left(exception)))
+    apiService.categorize(any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
 
-    apiService.latestCollections(any, any, any, any)(any) returns CatsService(Task(Xor.left(exception)))
+    apiService.latestCollections(any, any, any, any)(any) returns TaskService(Task(Xor.left(exception)))
 
-    apiService.topCollections(any, any, any, any)(any) returns CatsService(Task(Xor.left(exception)))
+    apiService.topCollections(any, any, any, any)(any) returns TaskService(Task(Xor.left(exception)))
 
-    apiService.createCollection(any, any)(any, any) returns CatsService(Task(Xor.left(exception)))
+    apiService.createCollection(any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
 
-    apiService.recommendations(any, any, any)(any, any) returns CatsService(Task(Xor.left(exception)))
+    apiService.recommendations(any, any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
 
-    apiService.recommendationsByApps(any, any)(any, any) returns CatsService(Task(Xor.left(exception)))
+    apiService.recommendationsByApps(any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
 
-    apiServiceV1.login(any, any)(any, any) returns CatsService {
+    apiServiceV1.login(any, any)(any, any) returns TaskService {
       Task(Xor.left(exception))
     }
 
-    apiServiceV1.getUserConfig(any)(any) returns CatsService {
+    apiServiceV1.getUserConfig(any)(any) returns TaskService {
       Task(Xor.left(exception))
     }
   }

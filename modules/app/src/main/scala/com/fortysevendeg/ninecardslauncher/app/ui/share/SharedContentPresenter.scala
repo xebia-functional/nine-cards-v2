@@ -10,8 +10,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.share.models.{SharedContent, Web}
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, NineCardIntent, NineCardIntentExtras}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.ShortcutCardType
@@ -87,18 +87,18 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
         imagePath = imagePath)
     }
 
-    def saveBitmap(maybeUri: Option[Uri]): CatsService[String] = {
+    def saveBitmap(maybeUri: Option[Uri]): TaskService[String] = {
       maybeUri match {
         case Some(uri) =>
           val iconSize = resGetDimensionPixelSize(R.dimen.size_icon_card)
           di.deviceProcess.saveShortcutIcon(
             MediaStore.Images.Media.getBitmap(contextWrapper.bestAvailable.getContentResolver, uri),
             Some(IconResize(iconSize, iconSize)))
-        case _ => CatsService(Task(Xor.right("")))
+        case _ => TaskService(Task(Xor.right("")))
       }
     }
 
-    def addCard(sharedContent: SharedContent): CatsService[Unit] = for {
+    def addCard(sharedContent: SharedContent): TaskService[Unit] = for {
       imagePath <- saveBitmap(sharedContent.image)
       _ <- di.collectionProcess.addCards(collectionId, Seq(createRequest(sharedContent, imagePath)))
     } yield ()

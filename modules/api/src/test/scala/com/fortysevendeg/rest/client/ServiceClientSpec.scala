@@ -1,7 +1,7 @@
 package com.fortysevendeg.rest.client
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientException, HttpClientResponse}
 import org.hamcrest.core.IsEqual
 import org.specs2.mock.Mockito
@@ -45,27 +45,27 @@ trait ServiceClientSpecification
 
     mockResponse.body returns Some(json)
 
-    httpClient.doGet(any, any) returns CatsService {
+    httpClient.doGet(any, any) returns TaskService {
       Task(Xor.right(mockResponse))
     }
 
-    httpClient.doDelete(any, any) returns CatsService {
+    httpClient.doDelete(any, any) returns TaskService {
       Task(Xor.right(mockResponse))
     }
 
-    httpClient.doPost(any, any) returns CatsService {
+    httpClient.doPost(any, any) returns TaskService {
       Task(Xor.right(mockResponse))
     }
 
-    httpClient.doPost[SampleRequest](any, any, any)(any) returns CatsService {
+    httpClient.doPost[SampleRequest](any, any, any)(any) returns TaskService {
       Task(Xor.right(mockResponse))
     }
 
-    httpClient.doPut(any, any) returns CatsService {
+    httpClient.doPut(any, any) returns TaskService {
       Task(Xor.right(mockResponse))
     }
 
-    httpClient.doPut[SampleRequest](any, any, any)(any) returns CatsService {
+    httpClient.doPut[SampleRequest](any, any, any)(any) returns TaskService {
       Task(Xor.right(mockResponse))
     }
   }
@@ -76,27 +76,27 @@ trait ServiceClientSpecification
 
     val exception = HttpClientException("")
 
-    httpClient.doGet(any, any) returns CatsService {
+    httpClient.doGet(any, any) returns TaskService {
       Task(Xor.left(exception))
     }
 
-    httpClient.doDelete(any, any) returns CatsService {
+    httpClient.doDelete(any, any) returns TaskService {
       Task(Xor.left(exception))
     }
 
-    httpClient.doPost(any, any) returns CatsService {
+    httpClient.doPost(any, any) returns TaskService {
       Task(Xor.left(exception))
     }
 
-    httpClient.doPost[SampleRequest](any, any, any)(any) returns CatsService {
+    httpClient.doPost[SampleRequest](any, any, any)(any) returns TaskService {
       Task(Xor.left(exception))
     }
 
-    httpClient.doPut(any, any) returns CatsService {
+    httpClient.doPut(any, any) returns TaskService {
       Task(Xor.left(exception))
     }
 
-    httpClient.doPut[SampleRequest](any, any, any)(any) returns CatsService {
+    httpClient.doPut[SampleRequest](any, any, any)(any) returns TaskService {
       Task(Xor.left(exception))
     }
   }

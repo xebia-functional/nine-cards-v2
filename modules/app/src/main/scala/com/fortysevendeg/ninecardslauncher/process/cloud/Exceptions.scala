@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 import com.fortysevendeg.ninecardslauncher.services.drive._
 
 sealed trait CloudStorageError

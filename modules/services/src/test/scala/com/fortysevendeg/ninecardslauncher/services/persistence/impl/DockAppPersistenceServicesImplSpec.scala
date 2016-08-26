@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.DockAppPersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp
@@ -16,21 +16,21 @@ trait DockAppPersistenceServicesSpecification
 
   trait ValidRepositoryServicesResponses extends RepositoryServicesScope with DockAppPersistenceServicesData {
 
-    mockDockAppRepository.addDockApp(repoDockAppData) returns CatsService(Task(Xor.right(repoDockApp)))
+    mockDockAppRepository.addDockApp(repoDockAppData) returns TaskService(Task(Xor.right(repoDockApp)))
 
-    mockDockAppRepository.deleteDockApps() returns CatsService(Task(Xor.right(items)))
+    mockDockAppRepository.deleteDockApps() returns TaskService(Task(Xor.right(items)))
 
-    mockDockAppRepository.deleteDockApp(repoDockApp) returns CatsService(Task(Xor.right(item)))
+    mockDockAppRepository.deleteDockApp(repoDockApp) returns TaskService(Task(Xor.right(item)))
 
-    mockDockAppRepository.fetchDockApps() returns CatsService(Task(Xor.right(seqRepoDockApp)))
+    mockDockAppRepository.fetchDockApps() returns TaskService(Task(Xor.right(seqRepoDockApp)))
 
-    mockDockAppRepository.fetchIterableDockApps(any, any, any) returns CatsService(Task(Xor.right(iterableCursorDockApps)))
+    mockDockAppRepository.fetchIterableDockApps(any, any, any) returns TaskService(Task(Xor.right(iterableCursorDockApps)))
 
-    mockDockAppRepository.findDockAppById(dockAppId) returns CatsService(Task(Xor.right(Option(repoDockApp))))
+    mockDockAppRepository.findDockAppById(dockAppId) returns TaskService(Task(Xor.right(Option(repoDockApp))))
 
-    mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns CatsService(Task(Xor.right(None)))
+    mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns TaskService(Task(Xor.right(None)))
 
-    mockDockAppRepository.updateDockApp(repoDockApp) returns CatsService(Task(Xor.right(item)))
+    mockDockAppRepository.updateDockApp(repoDockApp) returns TaskService(Task(Xor.right(item)))
 
   }
 
@@ -38,21 +38,21 @@ trait DockAppPersistenceServicesSpecification
 
     val exception = RepositoryException("Irrelevant message")
 
-    mockDockAppRepository.addDockApp(repoDockAppData) returns CatsService(Task(Xor.left(exception)))
+    mockDockAppRepository.addDockApp(repoDockAppData) returns TaskService(Task(Xor.left(exception)))
 
-    mockDockAppRepository.deleteDockApps() returns CatsService(Task(Xor.left(exception)))
+    mockDockAppRepository.deleteDockApps() returns TaskService(Task(Xor.left(exception)))
 
-    mockDockAppRepository.deleteDockApp(repoDockApp) returns CatsService(Task(Xor.left(exception)))
+    mockDockAppRepository.deleteDockApp(repoDockApp) returns TaskService(Task(Xor.left(exception)))
 
-    mockDockAppRepository.fetchDockApps() returns CatsService(Task(Xor.left(exception)))
+    mockDockAppRepository.fetchDockApps() returns TaskService(Task(Xor.left(exception)))
 
-    mockDockAppRepository.fetchIterableDockApps(any, any, any) returns CatsService(Task(Xor.left(exception)))
+    mockDockAppRepository.fetchIterableDockApps(any, any, any) returns TaskService(Task(Xor.left(exception)))
 
-    mockDockAppRepository.findDockAppById(dockAppId) returns CatsService(Task(Xor.left(exception)))
+    mockDockAppRepository.findDockAppById(dockAppId) returns TaskService(Task(Xor.left(exception)))
 
-    mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns CatsService(Task(Xor.left(exception)))
+    mockDockAppRepository.findDockAppById(nonExistentDockAppId) returns TaskService(Task(Xor.left(exception)))
 
-    mockDockAppRepository.updateDockApp(repoDockApp) returns CatsService(Task(Xor.left(exception)))
+    mockDockAppRepository.updateDockApp(repoDockApp) returns TaskService(Task(Xor.left(exception)))
 
   }
 
@@ -64,11 +64,11 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a DockApp value for a valid request adding a dockApp" in new ValidRepositoryServicesResponses {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns CatsService(Task(Xor.right(Seq.empty)))
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns TaskService(Task(Xor.right(Seq.empty)))
 
-      mockDockAppRepository.addDockApps(any) returns CatsService(Task(Xor.right(Seq(repoDockApp))))
+      mockDockAppRepository.addDockApps(any) returns TaskService(Task(Xor.right(Seq(repoDockApp))))
 
-      mockDockAppRepository.updateDockApps(any) returns CatsService(Task(Xor.right(Seq.empty)))
+      mockDockAppRepository.updateDockApps(any) returns TaskService(Task(Xor.right(Seq.empty)))
 
       val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
 
@@ -79,11 +79,11 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a DockApp value for a valid request updating a dockApp" in new ValidRepositoryServicesResponses {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns CatsService(Task(Xor.right(seqRepoDockApp)))
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns TaskService(Task(Xor.right(seqRepoDockApp)))
 
-      mockDockAppRepository.addDockApps(any) returns CatsService(Task(Xor.right(Seq.empty)))
+      mockDockAppRepository.addDockApps(any) returns TaskService(Task(Xor.right(Seq.empty)))
 
-      mockDockAppRepository.updateDockApps(any) returns CatsService(Task(Xor.right(Seq(item))))
+      mockDockAppRepository.updateDockApps(any) returns TaskService(Task(Xor.right(Seq(item))))
 
       val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
 
@@ -94,7 +94,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a PersistenceServiceException if the service throws a exception fetching the dockApps" in new ErrorRepositoryServicesResponses {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns CatsService(Task(Xor.left(exception)))
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns TaskService(Task(Xor.left(exception)))
 
       val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
 
@@ -105,9 +105,9 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a PersistenceServiceException if the service throws a exception adding the dockApps" in new ErrorRepositoryServicesResponses {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns CatsService(Task(Xor.right(Seq.empty)))
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns TaskService(Task(Xor.right(Seq.empty)))
 
-      mockDockAppRepository.addDockApps(any) returns CatsService(Task(Xor.left(exception)))
+      mockDockAppRepository.addDockApps(any) returns TaskService(Task(Xor.left(exception)))
 
       val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
 
@@ -118,11 +118,11 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a PersistenceServiceException if the service throws a exception updating the dockApps" in new ErrorRepositoryServicesResponses {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns CatsService(Task(Xor.right(seqRepoDockApp)))
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns TaskService(Task(Xor.right(seqRepoDockApp)))
 
-      mockDockAppRepository.addDockApps(any) returns CatsService(Task(Xor.right(Seq.empty)))
+      mockDockAppRepository.addDockApps(any) returns TaskService(Task(Xor.right(Seq.empty)))
 
-      mockDockAppRepository.updateDockApps(any) returns CatsService(Task(Xor.left(exception)))
+      mockDockAppRepository.updateDockApps(any) returns TaskService(Task(Xor.left(exception)))
 
       val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
 

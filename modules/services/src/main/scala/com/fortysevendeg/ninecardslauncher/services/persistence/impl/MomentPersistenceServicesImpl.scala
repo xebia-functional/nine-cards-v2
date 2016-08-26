@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.Moment
 import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
@@ -62,8 +62,8 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
       updated <- momentRepository.updateMoment(toRepositoryMoment(request))
     } yield updated).resolve[PersistenceServiceException]
 
-  private[this] def getHead(maybeMoment: Option[Moment]): CatsService[Moment]=
+  private[this] def getHead(maybeMoment: Option[Moment]): TaskService[Moment]=
     maybeMoment map { m =>
-      CatsService(Task(Xor.right(m)))
-    } getOrElse CatsService(Task(Xor.left(RepositoryException("Moment not found"))))
+      TaskService(Task(Xor.right(m)))
+    } getOrElse TaskService(Task(Xor.left(RepositoryException("Moment not found"))))
 }

@@ -6,8 +6,8 @@ import java.net.URL
 import android.graphics._
 import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
@@ -20,7 +20,7 @@ trait ImageServicesTasks
 
   val resourceUtils = new ResourceUtils
 
-  def getPathByName(name: String)(implicit context: ContextSupport): CatsService[File] = CatsService {
+  def getPathByName(name: String)(implicit context: ContextSupport): TaskService[File] = TaskService {
     Task {
       XorCatchAll[FileException] {
         new File(resourceUtils.getPath(name))
@@ -28,7 +28,7 @@ trait ImageServicesTasks
     }
   }
 
-  def getBitmapFromURL(uri: String): CatsService[Bitmap] = CatsService {
+  def getBitmapFromURL(uri: String): TaskService[Bitmap] = TaskService {
     Task {
       XorCatchAll[BitmapTransformationException] {
         createInputStream(uri) match {
@@ -39,7 +39,7 @@ trait ImageServicesTasks
     }
   }
 
-  def saveBitmap(file: File, bitmap: Bitmap): CatsService[Unit] = CatsService {
+  def saveBitmap(file: File, bitmap: Bitmap): TaskService[Unit] = TaskService {
     Task {
       XorCatchAll[FileException] {
         val out = createFileOutputStream(file)

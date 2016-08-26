@@ -28,8 +28,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
@@ -348,7 +348,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         area.startX + area.spanX > WidgetsOps.columns ||
         area.startY + area.spanY > WidgetsOps.rows
 
-    def resizeIntersect(idWidget: Int): CatsService[Boolean] = {
+    def resizeIntersect(idWidget: Int): TaskService[Boolean] = {
 
       def convertSpace(widgetArea: WidgetArea) = {
         val r = ResizeWidgetRequest.tupled(operationArgs)
@@ -390,7 +390,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           }
       }
 
-    def moveIntersect(idWidget: Int): CatsService[Option[WidgetMovement]] =
+    def moveIntersect(idWidget: Int): TaskService[Option[WidgetMovement]] =
       for {
         widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption()
         widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
@@ -467,12 +467,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def getMoment = for {
       maybeMoment <- di.momentProcess.fetchMomentByType(momentType)
       moment <- maybeMoment match {
-        case Some(moment) => CatsService(Task(Xor.right[NineCardException, Moment](moment)))
+        case Some(moment) => TaskService(Task(Xor.right[NineCardException, Moment](moment)))
         case _ => di.momentProcess.createMomentWithoutCollection(momentType)
       }
       collection <- moment.collectionId match {
         case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
-        case _ => CatsService(Task(Xor.right[NineCardException, Option[Collection]](None)))
+        case _ => TaskService(Task(Xor.right[NineCardException, Option[Collection]](None)))
       }
 
     } yield (moment, collection)
@@ -495,13 +495,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       moment <- moments.find(_.momentType == currentMoment.momentType)
     } yield moment
 
-    def getCollectionById(collectionId: Option[Int]): CatsService[Option[Collection]] =
+    def getCollectionById(collectionId: Option[Int]): TaskService[Option[Collection]] =
       collectionId match {
         case Some(id) => di.collectionProcess.getCollectionById(id)
-        case _ => CatsService(Task(Xor.right(None)))
+        case _ => TaskService(Task(Xor.right(None)))
       }
 
-    def getCollection: CatsService[LauncherMoment] = for {
+    def getCollection: TaskService[LauncherMoment] = for {
       moments <- di.momentProcess.getMoments
       moment = selectMoment(moments)
       collection <- getCollectionById(moment flatMap (_.collectionId))
@@ -521,7 +521,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case _ => di.momentProcess.getBestAvailableMoment
     }
 
-    def getLauncherInfo: CatsService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
+    def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
       for {
         collections <- di.collectionProcess.getCollections
         dockApps <- di.deviceProcess.getDockApps
@@ -668,10 +668,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def addWidget(maybeAppWidgetId: Option[Int]): Unit = {
 
-    def getWidgetInfoById(appWidgetId: Int): CatsService[(ComponentName, Cell)] =
+    def getWidgetInfoById(appWidgetId: Int): TaskService[(ComponentName, Cell)] =
       actions.getWidgetInfoById(appWidgetId) match {
-        case Some(info) => CatsService(Task(Xor.right(info)))
-        case _ => CatsService(Task(Xor.left(MomentException("Info widget not found"))))
+        case Some(info) => TaskService(Task(Xor.right(info)))
+        case _ => TaskService(Task(Xor.left(MomentException("Info widget not found"))))
       }
 
     def createWidget(appWidgetId: Int, nineCardsMoment: NineCardsMoment) = for {
@@ -750,15 +750,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     // Check if the best available moment is different to the current moment, if it's different return Some(moment)
     // in the other case None
-    def getCheckMoment: CatsService[LauncherMoment] = {
+    def getCheckMoment: TaskService[LauncherMoment] = {
 
-      def getCollection(moment: Option[Moment]): CatsService[Option[Collection]] = {
-        val emptyService: CatsService[Option[Collection]] = CatsService(Task(Xor.right(None)))
+      def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
+        val emptyService: TaskService[Option[Collection]] = TaskService(Task(Xor.right(None)))
         val momentType = moment flatMap (_.momentType)
         val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
         val collectionId = moment flatMap (_.collectionId)
         if (momentType == currentMomentType) {
-          CatsService(Task(Xor.left(CollectionException("Best available moment is same of current moment"))))
+          TaskService(Task(Xor.left(CollectionException("Best available moment is same of current moment"))))
         } else {
           collectionId map di.collectionProcess.getCollectionById getOrElse emptyService
         }
@@ -778,13 +778,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       onException = (_) => Ui(reloadAppsMomentBar()))
   }
 
-  protected def getLoadApps(order: GetAppOrder): CatsService[(IterableApps, Seq[TermCounter])] =
+  protected def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
       iterableApps <- di.deviceProcess.getIterableApps(order)
       counters <- di.deviceProcess.getTermCountersForApps(order)
     } yield (iterableApps, counters)
 
-  protected def getLoadContacts(order: ContactsFilter): CatsService[(IterableContacts, Seq[TermCounter])] =
+  protected def getLoadContacts(order: ContactsFilter): TaskService[(IterableContacts, Seq[TermCounter])] =
     for {
       iterableContacts <- di.deviceProcess.getIterableContacts(order)
       counters <- di.deviceProcess.getTermCountersForContacts(order)
@@ -876,9 +876,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  private[this] def getSpaceInTheScreen(widgetsByMoment: Seq[AppWidget], spanX: Int, spanY: Int): CatsService[WidgetArea] = {
+  private[this] def getSpaceInTheScreen(widgetsByMoment: Seq[AppWidget], spanX: Int, spanY: Int): TaskService[WidgetArea] = {
 
-    def searchSpace(widgets: Seq[AppWidget]): CatsService[WidgetArea] = {
+    def searchSpace(widgets: Seq[AppWidget]): TaskService[WidgetArea] = {
       val emptySpaces = (for {
         column <- 0 to (WidgetsOps.columns - spanX)
         row <- 0 to (WidgetsOps.rows - spanY)
@@ -892,8 +892,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         if (hasConflict.isEmpty) Some(area) else None
       }).flatten
       emptySpaces.headOption match {
-        case Some(space) => CatsService(Task(Xor.right(space)))
-        case _ => CatsService(Task(Xor.left(SpaceException("Widget don't have space"))))
+        case Some(space) => TaskService(Task(Xor.right(space)))
+        case _ => TaskService(Task(Xor.left(SpaceException("Widget don't have space"))))
       }
     }
 

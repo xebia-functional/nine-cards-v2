@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.drive
 
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService.NineCardException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
 sealed trait GoogleDriveError
 

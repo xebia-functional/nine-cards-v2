@@ -5,7 +5,7 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.CatsService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
@@ -35,7 +35,7 @@ trait UserV1ProcessSpecification
     val mockApiServices = mock[ApiServices]
 
     val mockPersistenceServices = mock[PersistenceServices]
-    mockPersistenceServices.getAndroidId(any) returns CatsService(Task(Xor.right(deviceId)))
+    mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
 
     val userConfigProcess = new UserV1ProcessImpl(mockApiServices, mockPersistenceServices)
 
@@ -70,7 +70,7 @@ class UserV1ProcessImplSpec
 
         contextSupport.getActiveUserId returns Some(userId)
 
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
         result must beLike {
@@ -89,7 +89,7 @@ class UserV1ProcessImplSpec
 
         contextSupport.getActiveUserId returns Some(userId)
 
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(persistenceUser.copy(email = None)))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser.copy(email = None)))))
 
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
         result must beLike {
@@ -108,7 +108,7 @@ class UserV1ProcessImplSpec
 
         contextSupport.getActiveUserId returns Some(userId)
 
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(persistenceUser.copy(marketToken = None)))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser.copy(marketToken = None)))))
 
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
         result must beLike {
@@ -127,9 +127,9 @@ class UserV1ProcessImplSpec
 
         contextSupport.getActiveUserId returns Some(userId)
 
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(persistenceUser))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser))))
 
-        mockApiServices.loginV1(any, any) returns CatsService(Task(Xor.right(loginResponseV1.copy(sessionToken = None))))
+        mockApiServices.loginV1(any, any) returns TaskService(Task(Xor.right(loginResponseV1.copy(sessionToken = None))))
 
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
         result must beLike {
@@ -148,11 +148,11 @@ class UserV1ProcessImplSpec
 
         contextSupport.getActiveUserId returns Some(userId)
 
-        mockPersistenceServices.findUserById(any) returns CatsService(Task(Xor.right(Some(persistenceUser))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser))))
 
-        mockApiServices.loginV1(any, any) returns CatsService(Task(Xor.right(loginResponseV1)))
+        mockApiServices.loginV1(any, any) returns TaskService(Task(Xor.right(loginResponseV1)))
 
-        mockApiServices.getUserConfigV1()(any) returns CatsService(Task(Xor.right(getUserConfigResponse)))
+        mockApiServices.getUserConfigV1()(any) returns TaskService(Task(Xor.right(getUserConfigResponse)))
 
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
         result must beLike {
