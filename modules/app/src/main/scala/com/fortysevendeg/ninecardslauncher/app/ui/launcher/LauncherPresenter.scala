@@ -714,7 +714,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def preferencesChanged(changedPreferences: Array[String]): Unit = {
 
-    def needToRecreate(array: Array[String]): Boolean = array.contains(PreferencesValuesKeys.themeFile)
+    def needToRecreate(array: Array[String]): Boolean = array.contains(PreferencesValuesKeys.theme)
 
     def uiAction(prefKey: String): Ui[_] = prefKey match {
       case PreferencesValuesKeys.showClockMoment => actions.reloadMomentTopBar()

@@ -26,13 +26,22 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter:
 
   val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin)
 
+  var statuses = LauncherWidgetViewStatuses()
+
   val gestureDetector = new GestureDetector(getContext, new GestureDetector.SimpleOnGestureListener() {
-    override def onLongPress(e: MotionEvent): Unit = presenter.openModeEditWidgets(id)
+    override def onLongPress(e: MotionEvent): Unit = if (statuses.canEdit) presenter.openModeEditWidgets(id)
   })
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = gestureDetector.onTouchEvent(event)
 
-  override def onTouchEvent(event: MotionEvent): Boolean = true
+  override def onTouchEvent(event: MotionEvent): Boolean = {
+    event.getAction match {
+      case ACTION_DOWN => statuses = statuses.copy(canEdit = true)
+      case ACTION_UP | ACTION_CANCEL => statuses =  statuses.copy(canEdit = false)
+      case _ =>
+    }
+    true
+  }
 
   val viewBlockTouch = w[FrameLayout].get
   viewBlockTouch.setOnTouchListener(new OnTouchListener {
@@ -92,6 +101,8 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter:
   }
 
 }
+
+case class LauncherWidgetViewStatuses(canEdit: Boolean = true)
 
 object LauncherWidgetView {
   val cellKey = "cell"

@@ -24,8 +24,8 @@ class AppDrawerFragment
 
   override def onStart(): Unit = {
     super.onStart()
-    reloadLongPressActionText(AppDrawerLongPressAction.readValue(preferenceValues).name)
-    reloadAnimationText(AppDrawerAnimation.readValue(preferenceValues).name)
+    reloadLongPressActionText(AppDrawerLongPressAction.readValue(preferenceValues).value)
+    reloadAnimationText(AppDrawerAnimation.readValue(preferenceValues).value)
     find[ListPreference](AppDrawerLongPressAction).setOnPreferenceChangeListener(new OnPreferenceChangeListener {
       override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
         reloadLongPressActionText(newValue.toString)

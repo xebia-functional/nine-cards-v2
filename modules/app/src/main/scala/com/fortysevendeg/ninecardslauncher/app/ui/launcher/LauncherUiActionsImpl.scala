@@ -315,11 +315,9 @@ trait LauncherUiActionsImpl
     if (success) {
       Ui(presenter.configureOrAddWidget(Some(appWidgetId)))
     } else {
-//      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
       val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
       intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
       intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider)
-//      intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER_PROFILE, appWidgetInfo.getProfile)
       uiStartIntentForResult(intent, RequestCodes.goToWidgets)
     }
   }

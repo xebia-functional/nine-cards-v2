@@ -71,7 +71,7 @@ case object AppDrawerLongPressAction
   override val default: AppDrawerLongPressActionValue = AppDrawerLongPressActionOpenKeyboard
 
   override def readValue(pref: NineCardsPreferencesValue): AppDrawerLongPressActionValue =
-    AppDrawerLongPressActionValue(pref.getString(name, default.name))
+    AppDrawerLongPressActionValue(pref.getString(name, default.value))
 }
 
 case object AppDrawerAnimation
@@ -80,7 +80,7 @@ case object AppDrawerAnimation
   override val default: AppDrawerAnimationValue = AppDrawerAnimationCircle
 
   override def readValue(pref: NineCardsPreferencesValue): AppDrawerAnimationValue =
-    AppDrawerAnimationValue(pref.getString(name, default.name))
+    AppDrawerAnimationValue(pref.getString(name, default.value))
 }
 
 case object AppDrawerFavoriteContactsFirst
@@ -93,28 +93,20 @@ case object AppDrawerFavoriteContactsFirst
 
 // Theme Preferences
 
-case object ThemeFile
-  extends NineCardsPreferenceValue[String] {
+case object Theme
+  extends NineCardsPreferenceValue[ThemeValue] {
+  override val name: String = theme
+  override val default: ThemeValue = ThemeLight
 
-  private[this] val themeDark = "theme_dark"
-  private[this] val themeLight = "theme_light"
-  private[this] val defaultValue = "1"
+  override def readValue(pref: NineCardsPreferencesValue): ThemeValue =
+    ThemeValue(pref.getString(name, default.value))
 
-  override val name: String = themeFile
-  override val default: String = themeLight
-
-  private[this] def parseThemeJson(prefValue: Int): Option[String] = prefValue match {
-    case 0 => Some(themeDark)
-    case 1 => Some(themeLight)
-    case _ => None
+  def getThemeFile(pref: NineCardsPreferencesValue): String = Theme.readValue(pref) match {
+    case ThemeLight => "theme_light"
+    case ThemeDark => "theme_dark"
   }
-
-  override def readValue(pref: NineCardsPreferencesValue): String =
-    parseThemeJson(pref.getString(name, defaultValue).toInt) match {
-      case Some(s) => s
-      case _ => default
-    }
 }
+
 // Commons
 
 class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
@@ -151,7 +143,7 @@ object PreferencesValuesKeys {
   val showClockMoment = "showClockMoment"
 
   // Theme Keys
-  val themeFile = "theme"
+  val theme = "theme"
 
   // AppDrawer Keys
   val appDrawerLongPressAction = "appDrawerLongPressAction"
