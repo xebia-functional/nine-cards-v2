@@ -26,18 +26,18 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
       onPreTask = () => actions.showLoading(),
       onResult = (privateCollections: Seq[PrivateCollection]) => {
         if (privateCollections.isEmpty) {
-          actions.showEmptyMessage()
+          actions.showEmptyMessageInScreen()
         } else {
           actions.addPrivateCollections(privateCollections)
         }
       },
-      onException = (ex: Throwable) => actions.showContactUsError())
+      onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen())
   }
 
   def saveCollection(privateCollection: PrivateCollection): Unit = {
     Task.fork(di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection)).value).resolveAsyncUi(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
-      onException = (ex) => actions.showContactUsError())
+      onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }
 
   private[this] def getPrivateCollections:
@@ -70,9 +70,11 @@ trait PrivateCollectionsActions {
 
   def showLoading(): Ui[Any]
 
-  def showContactUsError(): Ui[Any]
+  def showErrorLoadingCollectionInScreen(): Ui[Any]
 
-  def showEmptyMessage(): Ui[Any]
+  def showErrorSavingCollectionInScreen(): Ui[Any]
+
+  def showEmptyMessageInScreen(): Ui[Any]
 
   def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any]
 

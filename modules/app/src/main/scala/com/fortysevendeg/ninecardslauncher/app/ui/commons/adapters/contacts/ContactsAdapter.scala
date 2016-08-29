@@ -78,7 +78,7 @@ case class ContactsIterableHolder(
   def bind(contact: Contact, position: Int): Ui[_] = {
     val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
     (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
-      (name <~ tvText(contactName) + tvColor(theme.get(DrawerTextColor))) ~
+      (name <~ tvText(contactName) <~ tvColor(theme.get(DrawerTextColor))) ~
       (favorite <~ (if (contact.favorite) vVisible else vGone)) ~
       (content <~
         On.click {

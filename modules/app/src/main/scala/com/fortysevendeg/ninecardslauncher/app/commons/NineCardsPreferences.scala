@@ -53,6 +53,8 @@ sealed trait NineCardsPreferenceValue[T]
   def readValue(pref: NineCardsPreferencesValue): T
 }
 
+// Moments Preferences
+
 case object ShowClockMoment
   extends NineCardsPreferenceValue[Boolean] {
   override val name: String = showClockMoment
@@ -61,28 +63,51 @@ case object ShowClockMoment
   override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
 }
 
-case object ThemeFile
-  extends NineCardsPreferenceValue[String] {
+// App Drawer Preferences
 
-  private[this] val themeDark = "theme_dark"
-  private[this] val themeLight = "theme_light"
-  private[this] val defaultValue = "1"
+case object AppDrawerLongPressAction
+  extends NineCardsPreferenceValue[AppDrawerLongPressActionValue] {
+  override val name: String = appDrawerLongPressAction
+  override val default: AppDrawerLongPressActionValue = AppDrawerLongPressActionOpenKeyboard
 
-  override val name: String = themeFile
-  override val default: String = themeLight
-
-  private[this] def parseThemeJson(prefValue: Int): Option[String] = prefValue match {
-    case 0 => Some(themeDark)
-    case 1 => Some(themeLight)
-    case _ => None
-  }
-
-  override def readValue(pref: NineCardsPreferencesValue): String =
-    parseThemeJson(pref.getString(name, defaultValue).toInt) match {
-      case Some(s) => s
-      case _ => default
-    }
+  override def readValue(pref: NineCardsPreferencesValue): AppDrawerLongPressActionValue =
+    AppDrawerLongPressActionValue(pref.getString(name, default.value))
 }
+
+case object AppDrawerAnimation
+  extends NineCardsPreferenceValue[AppDrawerAnimationValue] {
+  override val name: String = appDrawerAnimation
+  override val default: AppDrawerAnimationValue = AppDrawerAnimationCircle
+
+  override def readValue(pref: NineCardsPreferencesValue): AppDrawerAnimationValue =
+    AppDrawerAnimationValue(pref.getString(name, default.value))
+}
+
+case object AppDrawerFavoriteContactsFirst
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = appDrawerFavoriteContacts
+  override val default: Boolean = false
+
+  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+}
+
+// Theme Preferences
+
+case object Theme
+  extends NineCardsPreferenceValue[ThemeValue] {
+  override val name: String = theme
+  override val default: ThemeValue = ThemeLight
+
+  override def readValue(pref: NineCardsPreferencesValue): ThemeValue =
+    ThemeValue(pref.getString(name, default.value))
+
+  def getThemeFile(pref: NineCardsPreferencesValue): String = Theme.readValue(pref) match {
+    case ThemeLight => "theme_light"
+    case ThemeDark => "theme_dark"
+  }
+}
+
+// Commons
 
 class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
 
@@ -114,8 +139,16 @@ object PreferencesKeys {
 
 // Values for all preference keys used for values
 object PreferencesValuesKeys {
+  // Moment keys
   val showClockMoment = "showClockMoment"
-  val themeFile = "theme"
+
+  // Theme Keys
+  val theme = "theme"
+
+  // AppDrawer Keys
+  val appDrawerLongPressAction = "appDrawerLongPressAction"
+  val appDrawerAnimation = "appDrawerAnimation"
+  val appDrawerFavoriteContacts = "appDrawerFavoriteContacts"
 }
 
 

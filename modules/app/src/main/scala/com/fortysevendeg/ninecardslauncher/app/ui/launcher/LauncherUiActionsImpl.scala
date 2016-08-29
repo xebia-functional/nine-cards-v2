@@ -9,10 +9,12 @@ import android.support.v7.app.AppCompatActivity
 import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
+import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.NineCardsPreferencesValue
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
@@ -35,23 +37,21 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Edit
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{LauncherData, LauncherMoment}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.EditWidgetsMode
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets.WidgetsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.Arrow
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -65,6 +65,8 @@ trait LauncherUiActionsImpl
     with DrawerUiActions {
 
   self: TypedFindView with SystemBarsTint with Contexts[AppCompatActivity] =>
+
+  lazy val preferenceValues = new NineCardsPreferencesValue
 
   implicit val uiContext: UiContext[Activity]
 
@@ -144,8 +146,6 @@ trait LauncherUiActionsImpl
     (workspaces <~ lwsMoveCurrentWidget()) ~
       (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
       (editWidgetsTopPanel <~ ewtMoving)
-
-  override def arrowWidget(arrow: Arrow): Ui[Any] = workspaces <~ lwsArrowWidget(arrow)
 
   override def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any] = workspaces <~ lwsResizeWidgetById(id, resize)
 
@@ -473,9 +473,9 @@ trait LauncherUiActionsImpl
   }
 
   def reloadPager(currentPage: Int) = Transformer {
-    case imageView: TintableImageView if imageView.isPosition(currentPage) =>
+    case imageView: ImageView if imageView.isPosition(currentPage) =>
       imageView <~ vActivated(true) <~~ pagerAppear
-    case imageView: TintableImageView =>
+    case imageView: ImageView =>
       imageView <~ vActivated(false)
   }
 

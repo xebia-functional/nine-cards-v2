@@ -19,7 +19,7 @@ class WidgetsPresenter(actions: WidgetsUiActions)(implicit contextWrapper: Activ
     Task.fork(di.deviceProcess.getWidgets.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (widgets: Seq[AppsWithWidgets]) => actions.loadWidgets(widgets),
-      onException = (_) => actions.showMessageWidgetsFailed()
+      onException = (_) => actions.showErrorLoadingWidgetsInScreen()
     )
   }
 
@@ -35,7 +35,7 @@ trait WidgetsUiActions {
 
   def showLoading(): Ui[Any]
 
-  def showMessageWidgetsFailed(): Ui[Any]
+  def showErrorLoadingWidgetsInScreen(): Ui[Any]
 
   def close(): Ui[Any]
 

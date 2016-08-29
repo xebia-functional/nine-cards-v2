@@ -89,8 +89,8 @@ trait AppsIuActionsImpl
     getAdapter foreach(_.close())
   }
 
-  override def showLoadingAppsError(filter: AppsFilter): Ui[Any] =
-    showError(R.string.errorLoadingApps, presenter.loadApps(filter))
+  override def showErrorLoadingAppsInScreen(filter: AppsFilter): Ui[Any] =
+    showMessageInScreen(R.string.errorLoadingApps, error = true, presenter.loadApps(filter))
 
   override def showApps(
     category: NineCardCategory,

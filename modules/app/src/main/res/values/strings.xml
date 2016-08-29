@@ -48,8 +48,6 @@
 
     <string name="messageAcceptTerms">You should accept terms and conditions</string>
 
-    <string name="messageEmpty">There isn\'t data in this moment</string>
-
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
 
@@ -181,7 +179,14 @@
     <string name="errorLoadingApps">Error loading apps</string>
     <string name="errorLoadingShortcuts">Error loading shortcuts</string>
     <string name="errorLoadingRecommendations">Error loading recommendations</string>
+
     <string name="errorLoadingPrivateCollections">Error loading private collections</string>
+    <string name="errorSavingPrivateCollections">Error saving private collections</string>
+    <string name="emptyPrivateCollections">9Cards creates collections from your installed applications and you have all categories between your collection. Maybe another day we have some collection</string>
+
+    <string name="errorLoadingPublicCollections">Error loading public collections</string>
+    <string name="errorSavingPublicCollections">Error saving public collections</string>
+    <string name="emptyPublicCollections">There aren\'t collections published in this category. Maybe you can share one of your collections :-)</string>
 
     <!-- Contacts Info -->
 
@@ -218,7 +223,7 @@
 
     <string name="apps_alphabetical">Alphabetical</string>
     <string name="apps_categories">By categories</string>
-    <string name="apps_date">By installation date</string>
+    <string name="apps_date">Recently installed</string>
     <string name="contacts_alphabetical">Alphabetical</string>
     <string name="contacts_favorites">Favorites</string>
     <string name="contacts_last">Last calls</string>
@@ -360,24 +365,20 @@
     <string name="appDrawerPrefTitle">App Drawer</string>
     <string name="appDrawerPrefSummary">App Drawer Summary</string>
 
-    <string name="defaultWindowTitle">Default Window Open</string>
-    <string name="defaultWindowSummary">Default Window Summary</string>
+    <string name="appDrawerLongPressTitle">Long Press Action</string>
+    <string name="appDrawerLongPressSummary">Current Action: %s</string>
 
-    <string name="defaultWindowApps">Apps</string>
-    <string name="defaultWindowContacts">Contacts</string>
+    <string name="appDrawerOpenKeyboard">Open keyboard</string>
+    <string name="appDrawerOpenContacts">Open Contacts</string>
 
-    <string name="letterAnimationTitle">Letter Animation</string>
-    <string name="letterAnimationSummary">Animations to show the selected letter</string>
+    <string name="appDrawerOpenAnimationTitle">Open Animation</string>
+    <string name="appDrawerOpenAnimationSummary">Current Animation: %s</string>
 
-    <string name="letterAnimations1">TBD 1</string>
-    <string name="letterAnimations2">TBD 2</string>
-    <string name="letterAnimations3">TBD 3</string>
+    <string name="appDrawerOpenAnimationReveal">Circle reveal</string>
+    <string name="appDrawerOpenAnimationFade">Fade</string>
 
-    <string name="windowIconTitle">Window Icon</string>
-    <string name="windowIconSummary">Icon to access to window</string>
-
-    <string name="windowIconsClassic">Classic</string>
-    <string name="windowIconsNineCards">9Cards</string>
+    <string name="appDrawerFistTabContactTitle">Favorites Contacts First Tab</string>
+    <string name="appDrawerFistTabContactSummary">Favorites Contacts will appear in the first position</string>
 
     <!-- Sizes Preferences -->
 

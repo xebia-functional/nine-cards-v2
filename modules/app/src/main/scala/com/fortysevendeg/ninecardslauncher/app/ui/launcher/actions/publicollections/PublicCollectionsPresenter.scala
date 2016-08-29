@@ -41,14 +41,20 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
   def loadPublicCollections(): Unit = {
     Task.fork(getSharedCollections(statuses.category, statuses.typeSharedCollection).value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
-      onResult = (sharedCollections: Seq[SharedCollection]) => actions.loadPublicCollections(sharedCollections),
-      onException = (ex: Throwable) => actions.showContactUsError())
+      onResult = (sharedCollections: Seq[SharedCollection]) => {
+        if (sharedCollections.isEmpty) {
+          actions.showEmptyMessageInScreen()
+        } else {
+          actions.loadPublicCollections(sharedCollections)
+        }
+      },
+      onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen())
   }
 
   def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
     Task.fork(addCollection(sharedCollection).value).resolveAsyncUi(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
-      onException = (ex) => actions.showContactUsError())
+      onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }
 
   private[this] def getSharedCollections(
@@ -78,7 +84,11 @@ trait PublicCollectionsUiActions {
 
   def showLoading(): Ui[Any]
 
-  def showContactUsError(): Ui[Any]
+  def showErrorLoadingCollectionInScreen(): Ui[Any]
+
+  def showErrorSavingCollectionInScreen(): Ui[Any]
+
+  def showEmptyMessageInScreen(): Ui[Any]
 
   def addCollection(collection: Collection): Ui[Any]
 

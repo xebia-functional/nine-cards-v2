@@ -34,7 +34,7 @@ trait ShortcutUiActionsImpl
 
   override def close(): Ui[Any] = unreveal()
 
-  override def showLoadingShortcutsError(): Ui[Any] = showError(R.string.errorLoadingShortcuts, presenter.loadShortcuts())
+  override def showErrorLoadingShortcutsInScreen(): Ui[Any] = showMessageInScreen(R.string.errorLoadingShortcuts, error = true, presenter.loadShortcuts())
 
   override def loadShortcuts(shortcuts: Seq[Shortcut]): Ui[Any] = {
     val sortedShortcuts = shortcuts sortBy sortByTitle

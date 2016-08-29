@@ -40,7 +40,7 @@ case class AppsPresenter(
           actions.showApps(category, filter, apps, counters, reload) ~
             (if (actions.isTabsOpened) actions.closeTabs() else Ui.nop)
       },
-      onException = (ex: Throwable) => actions.showLoadingAppsError(filter)
+      onException = (ex: Throwable) => actions.showErrorLoadingAppsInScreen(filter)
     )
   }
 
@@ -81,7 +81,7 @@ trait AppsIuActions {
 
   def destroy(): Ui[Any]
 
-  def showLoadingAppsError(filter: AppsFilter): Ui[Any]
+  def showErrorLoadingAppsInScreen(filter: AppsFilter): Ui[Any]
 
   def showApps(
     category: NineCardCategory,

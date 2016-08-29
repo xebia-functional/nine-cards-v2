@@ -3,11 +3,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 import android.content.Intent
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, ContextSupportProvider, NineCardsPreferencesValue, ThemeFile}
+import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.ContextWrapper
+import rapture.core.Answer
 
 class Presenter(implicit contextWrapper: ContextWrapper)
   extends ContextSupportProvider {
@@ -17,7 +18,7 @@ class Presenter(implicit contextWrapper: ContextWrapper)
   lazy val preferenceValues = new NineCardsPreferencesValue
 
   def getTheme: NineCardsTheme =
-    di.themeProcess.getTheme(ThemeFile.readValue(preferenceValues)).value.run match {
+    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).value.run match {
       case Xor.Right(t) => t
       case _ => getDefaultTheme
     }

@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
+import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.util.AttributeSet
 import android.view.{MotionEvent, View}
@@ -81,7 +82,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ => Ui.nop
   }
 
-  def addWidget(widgetView: View, cell: Cell, widget: AppWidget): Unit = getView(0) match {
+  def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget): Unit = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView, cell, widget).run
     case None =>
       // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
@@ -95,15 +96,13 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def showRulesInMoment(): Unit = uiWithView(_.createRules)
 
-  def hideRulesInMoment(): Unit = uiWithView(_.removeRules)
+  def hideRulesInMoment(): Unit = uiWithView(_.removeRules())
 
   def reloadSelectedWidget(): Unit = uiWithView(_.reloadSelectedWidget)
 
   def resizeCurrentWidget(): Unit = uiWithView(_.resizeCurrentWidget)
 
   def moveCurrentWidget(): Unit = uiWithView(_.moveCurrentWidget)
-
-  def arrowWidget(arrow: Arrow): Unit = uiWithView(_.arrowWidget(arrow))
 
   def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Unit = uiWithView(_.resizeWidgetById(id, resize))
 
