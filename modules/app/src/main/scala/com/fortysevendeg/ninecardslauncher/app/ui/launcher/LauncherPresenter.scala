@@ -1,23 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
-import android.app.Activity
 import android.content.{ComponentName, Context, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions, PreferencesValuesKeys}
 import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, RequestCodes, WidgetsOps}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, WidgetsOps}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
@@ -42,7 +36,6 @@ import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import macroid.{ActivityContextWrapper, Ui}
 
-import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.Try
 import scalaz.concurrent.Task
@@ -595,28 +588,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       })
   }
 
-  def goToCollection(maybeCollection: Option[Collection], point: Point): Unit = {
-    def launchIntent(activity: Activity, collection: Collection) = {
-      val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
-      intent.putExtra(startPosition, collection.position)
-      intent.putExtra(indexColorToolbar, collection.themedColorIndex)
-      intent.putExtra(iconToolbar, collection.icon)
-      Lollipop.ifSupportedThen {
-        val color = resGetColor(getIndexColor(collection.themedColorIndex))
-        actions.rippleToCollection(color, point) ~~
-          Ui {
-            activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
-          }
-      } getOrElse {
-        Ui(activity.startActivity(intent))
-      }
-    }
-
-    ((for {
-      collection <- maybeCollection
-      activity <- contextWrapper.original.get
-    } yield launchIntent(activity, collection)) getOrElse actions.showContactUsError()).run
-  }
+  def goToCollection(maybeCollection: Option[Collection], point: Point): Unit = (maybeCollection match {
+    case Some(collection) => actions.goToCollection(collection, point)
+    case _ => actions.showContactUsError()
+  }).run
 
   def resetFromCollectionDetail(): Unit = actions.resetFromCollection().run
 
@@ -982,6 +957,8 @@ trait LauncherUiActions {
 
   def goToNextScreen(): Ui[Any]
 
+  def goToCollection(collection: Collection, point: Point): Ui[Any]
+
   def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
 
   def reloadCurrentMoment(): Ui[Any]
@@ -1002,8 +979,6 @@ trait LauncherUiActions {
     counters: Seq[TermCounter] = Seq.empty): Ui[Any]
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
-
-  def rippleToCollection(color: Int, point: Point): Ui[Future[Any]]
 
   def resetFromCollection(): Ui[Any]
 

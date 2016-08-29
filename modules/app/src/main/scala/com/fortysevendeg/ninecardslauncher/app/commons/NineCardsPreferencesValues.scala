@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.commons
 
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+
 // Animations Values
 
 sealed trait SpeedAnimationValue {
@@ -29,14 +31,17 @@ object SpeedAnimationValue {
 
 sealed trait CollectionOpeningValue {
   val value: String
+  val isSupported: Boolean
 }
 
 case object CircleOpeningCollectionAnimation extends CollectionOpeningValue {
   override val value: String = "0"
+  override val isSupported: Boolean = Lollipop.ifSupportedThen(()).isDefined
 }
 
 case object NoAnimationOpeningCollectionAnimation extends CollectionOpeningValue {
   override val value: String = "1"
+  override val isSupported: Boolean = true
 }
 
 object CollectionOpeningValue {
@@ -94,14 +99,17 @@ object AppDrawerLongPressActionValue {
 
 sealed trait AppDrawerAnimationValue {
   val value: String
+  val isSupported: Boolean
 }
 
 case object AppDrawerAnimationCircle extends AppDrawerAnimationValue {
   override val value: String = "0"
+  override val isSupported: Boolean = Lollipop.ifSupportedThen(()).isDefined
 }
 
 case object AppDrawerAnimationFade extends AppDrawerAnimationValue {
   override val value: String = "1"
+  override val isSupported: Boolean = true
 }
 
 object AppDrawerAnimationValue {

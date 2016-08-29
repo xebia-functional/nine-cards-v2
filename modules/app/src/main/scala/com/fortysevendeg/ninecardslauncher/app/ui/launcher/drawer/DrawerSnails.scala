@@ -5,7 +5,6 @@ import android.annotation.TargetApi
 import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.ninecardslauncher.app.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue, SpeedAnimations}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
@@ -22,8 +21,8 @@ object DrawerSnails {
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
-      (Lollipop.ifSupportedThen(), animation) match {
-        case (Some(_), AppDrawerAnimationCircle) => reveal(source, view)(animPromise.trySuccess(()))
+      animation match {
+        case anim @ AppDrawerAnimationCircle if anim.isSupported => reveal(source, view)(animPromise.trySuccess(()))
         case _ => fadeIn(view)(animPromise.trySuccess(()))
       }
 
@@ -36,8 +35,8 @@ object DrawerSnails {
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
-      (Lollipop.ifSupportedThen(), animation) match {
-        case (Some(_), AppDrawerAnimationCircle) => reveal(source, view, in = false)(animPromise.trySuccess(()))
+      animation match {
+        case anim @ AppDrawerAnimationCircle if anim.isSupported => reveal(source, view, in = false)(animPromise.trySuccess(()))
         case _ => fadeOut(view)(animPromise.trySuccess(()))
       }
 
