@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentC
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.moment.UpdateMomentRequest
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import macroid._
 
 import scalaz.concurrent.Task
@@ -23,7 +24,7 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
       collections <- di.collectionProcess.getCollections
     } yield (moment, collections)
 
-    Task.fork(getData.run).resolveAsyncUi(
+    Task.fork(getData.value).resolveAsyncUi(
       onResult = {
         case (moment: Moment, collections: Seq[Collection]) =>
           statuses = statuses.start(moment)
@@ -79,7 +80,7 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
   }
 
   def addWifi(): Unit = {
-    Task.fork(di.deviceProcess.getConfiguredNetworks.run).resolveAsyncUi(
+    Task.fork(di.deviceProcess.getConfiguredNetworks.value).resolveAsyncUi(
       onResult = actions.showWifiDialog,
       onException = (_) => actions.showFieldErrorMessage()
     )
@@ -116,7 +117,7 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
         headphone = moment.headphone,
         momentType = moment.momentType
       )
-      Task.fork(di.momentProcess.updateMoment(request).run).resolveAsyncUi(
+      Task.fork(di.momentProcess.updateMoment(request).value).resolveAsyncUi(
         onResult = (_) => Ui(momentConstrainsChangedBroadCastIfNecessary()) ~ actions.success(),
         onException = (_) => actions.showSavingMomentErrorMessage())
     case _ => actions.success().run

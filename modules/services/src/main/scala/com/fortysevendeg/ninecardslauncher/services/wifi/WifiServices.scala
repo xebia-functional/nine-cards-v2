@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.wifi
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 
 trait WifiServices {
 
@@ -11,7 +11,7 @@ trait WifiServices {
     * @return an Option[String] that contains the name of the SSID
     * @throws WifiServicesException if exist some problem to get the current SSID
     */
-  def getCurrentSSID(implicit contextSupport: ContextSupport): ServiceDef2[Option[String], WifiServicesException]
+  def getCurrentSSID(implicit contextSupport: ContextSupport): TaskService[Option[String]]
 
   /**
     * Get all configured networks sorted by name
@@ -19,6 +19,6 @@ trait WifiServices {
     * @return Seq[String] that contains all SSIDs
     * @throws WifiServicesException if exist some problem getting the information
     */
-  def getConfiguredNetworks(implicit contextSupport: ContextSupport): ServiceDef2[Seq[String], WifiServicesException]
+  def getConfiguredNetworks(implicit contextSupport: ContextSupport): TaskService[Seq[String]]
 
 }

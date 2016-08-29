@@ -1,21 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.Moment
 import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
-import rapture.core.{Answer, Errata}
 
 import scalaz.concurrent.Task
 
 trait MomentPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
-  
+
   def addMoment(request: AddMomentRequest) =
     (for {
       moment <- momentRepository.addMoment(toRepositoryMomentData(request))
@@ -62,8 +62,8 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
       updated <- momentRepository.updateMoment(toRepositoryMoment(request))
     } yield updated).resolve[PersistenceServiceException]
 
-  private[this] def getHead(maybeMoment: Option[Moment]): ServiceDef2[Moment, RepositoryException]=
+  private[this] def getHead(maybeMoment: Option[Moment]): TaskService[Moment]=
     maybeMoment map { m =>
-      Service(Task(Answer[Moment, RepositoryException](m)))
-    } getOrElse Service(Task(Errata(RepositoryException("Moment not found"))))
+      TaskService(Task(Xor.right(m)))
+    } getOrElse TaskService(Task(Xor.left(RepositoryException("Moment not found"))))
 }

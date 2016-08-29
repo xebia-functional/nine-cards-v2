@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Widget
 
 trait WidgetsServices {
@@ -11,5 +11,5 @@ trait WidgetsServices {
    *         information about the widget
    * @throws WidgetServicesException if exist some problem to get the widgets in the cell phone
    */
-  def getWidgets(implicit context: ContextSupport): ServiceDef2[Seq[Widget], WidgetServicesException]
+  def getWidgets(implicit context: ContextSupport): TaskService[Seq[Widget]]
 }

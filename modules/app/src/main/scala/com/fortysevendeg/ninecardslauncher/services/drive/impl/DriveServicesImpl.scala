@@ -2,8 +2,9 @@ package com.fortysevendeg.ninecardslauncher.services.drive.impl
 
 import java.io.{InputStream, OutputStreamWriter}
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.drive._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
@@ -12,13 +13,11 @@ import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, Pe
 import com.google.android.gms.drive._
 import com.google.android.gms.drive.metadata.CustomPropertyKey
 import com.google.android.gms.drive.query.{Filters, Query, SortOrder, SortableField}
-import rapture.core
-import rapture.core.{Answer, Errata}
 
 import scala.collection.JavaConversions._
 import scala.util.{Failure, Success, Try}
-import scalaz.concurrent.Task
 import scalaz.Scalaz._
+import scalaz.concurrent.Task
 
 class DriveServicesImpl(client: GoogleApiClient)
   extends DriveServices
@@ -51,7 +50,7 @@ class DriveServicesImpl(client: GoogleApiClient)
       val contents = driveContentsResult.getDriveContents
       val stringContent = scala.io.Source.fromInputStream(contents.getInputStream).mkString
       contents.discard(client)
-      Answer(DriveServiceFile(summary, stringContent))
+      Xor.Right(DriveServiceFile(summary, stringContent))
     }
 
   override def createFile(title: String, content: String, deviceId: String, fileType: String, mimeType: String) =
@@ -76,18 +75,18 @@ class DriveServicesImpl(client: GoogleApiClient)
         .foreach(writer.write))
 
   override def deleteFile(driveId: String) =
-    fetchDriveFile(driveId)(_.getDriveId.asDriveFile.delete(client).withResult(_ => Answer(Unit)))
+    fetchDriveFile(driveId)(_.getDriveId.asDriveFile.delete(client).withResult(_ => Xor.Right(Unit)))
 
   private[this] def newUUID = com.gilt.timeuuid.TimeUuid().toString
 
-  private[this] def searchFileByUUID[R](driveId: String)(f: (Option[DriveServiceFileSummary]) => R) = {
+  private[this] def searchFileByUUID[R](driveId: String)(f: (Option[DriveServiceFileSummary]) => R)= {
     val query = new Query.Builder()
       .addFilter(Filters.eq(propertyUUID, driveId))
       .build()
     searchFiles(query.some)(seq => f(seq.headOption))
   }
 
-  private[this] def searchFiles[R](query: Option[Query])(f: (Seq[DriveServiceFileSummary]) => R) = Service {
+  private[this] def searchFiles[R](query: Option[Query])(f: (Seq[DriveServiceFileSummary]) => R) = TaskService {
     Task {
       val request = query match {
         case Some(q) => appFolder.queryChildren(client, q)
@@ -118,7 +117,7 @@ class DriveServicesImpl(client: GoogleApiClient)
 
         val response = f((validFiles map toGoogleDriveFileSummary) ++ fixedFiles)
         buffer.release()
-        Answer(response)
+        Xor.Right(response)
       }
     }
   }
@@ -131,7 +130,7 @@ class DriveServicesImpl(client: GoogleApiClient)
     deviceId: String,
     fileType: String,
     mimeType: String,
-    f: (OutputStreamWriter) => Unit) = Service {
+    f: (OutputStreamWriter) => Unit) = TaskService {
     Task {
       Drive.DriveApi
         .newDriveContents(client)
@@ -153,7 +152,7 @@ class DriveServicesImpl(client: GoogleApiClient)
             .createFile(client, changeSet, driveContents)
             .withResult { nr =>
               val now = new java.util.Date
-              Answer(DriveServiceFileSummary(
+              Xor.Right(DriveServiceFileSummary(
                 uuid = uuid,
                 deviceId = Some(deviceId),
                 title = title,
@@ -171,11 +170,11 @@ class DriveServicesImpl(client: GoogleApiClient)
       val writer = new OutputStreamWriter(contents.getOutputStream)
       f(writer)
       writer.close()
-      contents.commit(client, javaNull).withResult(_ => Answer(summary))
+      contents.commit(client, javaNull).withResult(_ => Xor.Right(summary))
     }
 
-  private[this] def fetchDriveFile[R](driveId: String)(f: (Metadata) => core.Result[R, DriveServicesException]) =
-    Service {
+  private[this] def fetchDriveFile[R](driveId: String)(f: (Metadata) => Xor[DriveServicesException, R]) =
+    TaskService {
       Task {
         appFolder
           .queryChildren(client, queryUUID(driveId))
@@ -183,7 +182,7 @@ class DriveServicesImpl(client: GoogleApiClient)
             val buffer = r.getMetadataBuffer
             val response = buffer.iterator().toIterable.headOption match {
               case Some(metaData) => f(metaData)
-              case None => Errata(DriveServicesException(fileNotFoundError(driveId)))
+              case None => Xor.Left(DriveServicesException(fileNotFoundError(driveId)))
             }
             buffer.release()
             response
@@ -193,7 +192,7 @@ class DriveServicesImpl(client: GoogleApiClient)
 
   private[this] def openDriveFile[R](
     driveId: String,
-    mode: Int = DriveFile.MODE_READ_ONLY)(f: (DriveServiceFileSummary, DriveApi.DriveContentsResult) => core.Result[R, DriveServicesException]) =
+    mode: Int = DriveFile.MODE_READ_ONLY)(f: (DriveServiceFileSummary, DriveApi.DriveContentsResult) => Xor[DriveServicesException, R]) =
       fetchDriveFile(driveId) { metadata =>
         val driveServiceFileSummary = toGoogleDriveFileSummary(metadata)
         metadata.getDriveId.asDriveFile.open(client, mode, javaNull).withResult(f(driveServiceFileSummary, _))
@@ -221,26 +220,26 @@ object Extensions {
 
   implicit class PendingResultOps[T <: Result](pendingResult: PendingResult[T]) {
 
-    def withResult[R](f: (T) => core.Result[R, DriveServicesException]): core.Result[R, DriveServicesException] =
+    def withResult[R](f: (T) => Xor[DriveServicesException, R]): Xor[DriveServicesException, R] =
       withResult(f, None)
 
     def withResult[R](
-      f: (T) => core.Result[R, DriveServicesException],
-      validCodesAndDefault: Option[(Seq[Int],R)]): core.Result[R, DriveServicesException] =
+      f: (T) => Xor[DriveServicesException, R],
+      validCodesAndDefault: Option[(Seq[Int],R)]):Xor[DriveServicesException, R] =
       (fetchResult, validCodesAndDefault) match {
         case (Some(result), _) if result.getStatus.isSuccess =>
           Try(f(result)) match {
             case Success(r) => r
-            case Failure(e) => Errata(DriveServicesException(e.getMessage, cause = Some(e)))
+            case Failure(e) => Xor.Left(DriveServicesException(e.getMessage, cause = Some(e)))
           }
         case (Some(result), Some((validCodes, defaultValue))) if validCodes contains result.getStatus.getStatusCode =>
-          Answer[R, DriveServicesException](defaultValue)
+          Xor.Right(defaultValue)
         case (Some(result), _) =>
-          Errata(DriveServicesException(
+          Xor.Left(DriveServicesException(
             googleDriveError = statusCodeToError(result.getStatus.getStatusCode),
             message = result.getStatus.getStatusMessage))
         case _ =>
-          Errata(DriveServicesException(
+          Xor.Left(DriveServicesException(
             message = "Received a null reference in pending result",
             cause = new NullPointerException().some))
       }

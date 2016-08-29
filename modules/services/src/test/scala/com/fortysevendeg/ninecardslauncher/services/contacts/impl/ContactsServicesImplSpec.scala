@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
 import android.net.Uri
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider._
@@ -8,12 +9,11 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactNotFoundExc
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 trait ContactsServicesSpecification
   extends Specification
-  with Mockito
-  with ContactsServicesImplData {
+    with Mockito
+    with ContactsServicesImplData {
 
   val contentResolverException = new RuntimeException("Irrelevant message")
 
@@ -95,7 +95,7 @@ trait ContactsServicesSpecification
 
   trait ErrorContactsServicesResponses
     extends ContactsServicesScope
-    with ContactsServicesImplData {
+      with ContactsServicesImplData {
 
     contentResolverWrapper.fetchAll(
       uri = Fields.CONTENT_URI,
@@ -123,7 +123,7 @@ trait ContactsServicesSpecification
 
   trait ErrorIteratorContactsServicesResponses
     extends ContactsServicesScope
-    with ContactsServicesImplData {
+      with ContactsServicesImplData {
 
     lazy val contactsServicesException = new ContactsServicesImpl(contentResolverWrapper, uriCreator) {
       override protected def getNamesAlphabetically: Seq[String] =
@@ -133,7 +133,7 @@ trait ContactsServicesSpecification
 
   trait FavoriteContactsServicesResponses
     extends ContactsServicesScope
-    with ContactsServicesImplData {
+      with ContactsServicesImplData {
 
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
@@ -144,7 +144,7 @@ trait ContactsServicesSpecification
 
   trait ErrorFavoriteContactsServicesResponses
     extends ErrorContactsServicesResponses
-    with ContactsServicesImplData {
+      with ContactsServicesImplData {
 
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
@@ -156,7 +156,7 @@ trait ContactsServicesSpecification
 
   trait ContactsWithPhoneServicesResponses
     extends ContactsServicesScope
-    with ContactsServicesImplData {
+      with ContactsServicesImplData {
 
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
@@ -167,7 +167,7 @@ trait ContactsServicesSpecification
 
   trait ErrorContactsWithPhoneServicesResponses
     extends ErrorContactsServicesResponses
-    with ContactsServicesImplData {
+      with ContactsServicesImplData {
 
     contentResolverWrapper.fetchAll(
       Fields.CONTENT_URI,
@@ -188,24 +188,20 @@ class ContactsServicesImplSpec
 
       "returns all the contacts from the content resolver" in
         new ValidContactsServicesResponses {
-          val result = contactsServices.getContacts.run.run
+          val result = contactsServices.getContacts.value.run
 
           result must beLike {
-            case Answer(seq) => seq shouldEqual contacts
+            case Xor.Right(seq) => seq shouldEqual contacts
           }
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ErrorContactsServicesResponses {
-          val result = contactsServices.getContacts.run.run
+          val result = contactsServices.getContacts.value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
+            case Xor.Left(e) =>  e.cause must beSome.which(_ shouldEqual contentResolverException)
               }
-            }
-          }
         }
 
     }
@@ -214,23 +210,19 @@ class ContactsServicesImplSpec
 
       "return a sequence of ContactCounter sort alphabetically" in
         new ValidContactsServicesResponses {
-          val result = contactsServices.getAlphabeticalCounterContacts.run.run
+          val result = contactsServices.getAlphabeticalCounterContacts.value.run
 
           result must beLike {
-            case Answer(seq) => seq shouldEqual contactCounters
+            case Xor.Right(seq) => seq shouldEqual contactCounters
           }
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ErrorIteratorContactsServicesResponses {
-          val result = contactsServicesException.getAlphabeticalCounterContacts.run.run
+          val result = contactsServicesException.getAlphabeticalCounterContacts.value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
 
@@ -240,32 +232,28 @@ class ContactsServicesImplSpec
 
       "return the contact from the content resolver for an existent email" in
         new ValidContactsServicesResponses {
-          val result = contactsServices.fetchContactByEmail(emailHome).run.run
+          val result = contactsServices.fetchContactByEmail(emailHome).value.run
 
           result must beLike {
-            case Answer(c) => c must beEqualTo(contactWithEmail)
+            case Xor.Right(c) => c must beEqualTo(contactWithEmail)
           }
         }
 
       "return None from the content resolver for a non existent email" in
         new ValidContactsServicesResponses {
-          val result = contactsServices.fetchContactByEmail(nonExistentEmail).run.run
+          val result = contactsServices.fetchContactByEmail(nonExistentEmail).value.run
 
           result must beLike {
-            case Answer(c) => c must beNone
+            case Xor.Right(c) => c must beNone
           }
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ErrorContactsServicesResponses {
-          val result = contactsServices.fetchContactByEmail(emailHome).run.run
+          val result = contactsServices.fetchContactByEmail(emailHome).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
 
@@ -275,32 +263,28 @@ class ContactsServicesImplSpec
 
       "return the contact from the content resolver for an existent phone" in
         new ValidContactsServicesResponses {
-          val result = contactsServices.fetchContactByPhoneNumber(phoneHome).run.run
+          val result = contactsServices.fetchContactByPhoneNumber(phoneHome).value.run
 
           result must beLike {
-            case Answer(c) => c must beEqualTo(contactWithPhone)
+            case Xor.Right(c) => c must beEqualTo(contactWithPhone)
           }
         }
 
       "return None from the content resolver for a non existent email" in
         new ValidContactsServicesResponses {
-          val result = contactsServices.fetchContactByPhoneNumber(nonExistentPhone).run.run
+          val result = contactsServices.fetchContactByPhoneNumber(nonExistentPhone).value.run
 
           result must beLike {
-            case Answer(c) => c must beNone
+            case Xor.Right(c) => c must beNone
           }
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ErrorContactsServicesResponses {
-          val result = contactsServices.fetchContactByPhoneNumber(phoneHome).run.run
+          val result = contactsServices.fetchContactByPhoneNumber(phoneHome).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
 
@@ -310,35 +294,27 @@ class ContactsServicesImplSpec
 
       "return the contact from the content resolver for an existent lookup key" in
         new ValidContactsServicesResponses {
-          val result = contactsServices.findContactByLookupKey(firstLookupKey).run.run
+          val result = contactsServices.findContactByLookupKey(firstLookupKey).value.run
           result must beLike {
-            case Answer(c) => Some(c) shouldEqual contact
+            case Xor.Right(c) => Some(c) shouldEqual contact
           }
         }
 
       "return a ContactsServiceException with a ContactNotFoundException as cause for a non existent lookup key" in
         new ValidContactsServicesResponses {
-          val result = contactsServices.findContactByLookupKey(nonExistentLookupKey).run.run
+          val result = contactsServices.findContactByLookupKey(nonExistentLookupKey).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: ContactsServiceException => e.cause must beSome.which(_ must beAnInstanceOf[ContactNotFoundException])
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ must beAnInstanceOf[ContactNotFoundException])
           }
         }
 
       "return a ContactNotFoundException when the content resolver throws an exception" in
         new ErrorContactsServicesResponses {
-          val result = contactsServices.findContactByLookupKey(firstLookupKey).run.run
+          val result = contactsServices.findContactByLookupKey(firstLookupKey).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
 
@@ -348,50 +324,44 @@ class ContactsServicesImplSpec
 
       "returns favorites contacts from the content resolver" in
         new FavoriteContactsServicesResponses {
-          val result = contactsServices.getFavoriteContacts.run.run
+          val result = contactsServices.getFavoriteContacts.value.run
 
           result must beLike {
-            case Answer(seq) => seq shouldEqual contacts
+            case Xor.Right(seq) => seq shouldEqual contacts
           }
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ErrorFavoriteContactsServicesResponses {
-          val result = contactsServices.getFavoriteContacts.run.run
+          val result = contactsServices.getFavoriteContacts.value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
+
     }
 
     "getContactsWithPhone" should {
 
       "returns contacts with phone numbers from the content resolver" in
         new ContactsWithPhoneServicesResponses {
-          val result = contactsServices.getContactsWithPhone.run.run
+          val result = contactsServices.getContactsWithPhone.value.run
 
           result must beLike {
-            case Answer(seq) => seq shouldEqual contacts
+            case Xor.Right(seq) => seq shouldEqual contacts
           }
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ErrorContactsWithPhoneServicesResponses {
-          val result = contactsServices.getContactsWithPhone.run.run
+          val result = contactsServices.getContactsWithPhone.value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: ContactsServiceException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
+
     }
 
   }

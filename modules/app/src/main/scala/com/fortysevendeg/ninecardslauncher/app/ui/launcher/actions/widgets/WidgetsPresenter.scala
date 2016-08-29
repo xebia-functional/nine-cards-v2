@@ -16,7 +16,7 @@ class WidgetsPresenter(actions: WidgetsUiActions)(implicit contextWrapper: Activ
   }
 
   def loadWidgets(): Unit = {
-    Task.fork(di.deviceProcess.getWidgets.run).resolveAsyncUi(
+    Task.fork(di.deviceProcess.getWidgets.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (widgets: Seq[AppsWithWidgets]) => actions.loadWidgets(widgets),
       onException = (_) => actions.showErrorLoadingWidgetsInScreen()

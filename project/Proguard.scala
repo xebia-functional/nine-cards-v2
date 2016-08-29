@@ -37,7 +37,6 @@ object Proguard {
       pgJodaTime ::
       pgPlayApi ::
       pgWartRemover ::
-      pgRapture ::
       pgScalaz ::
       pgScala ::
       Nil
@@ -67,7 +66,6 @@ object Proguard {
     val pgPlayApi = "play.api"
     val pgWartRemover ="org.brianmckenna.wartremover"
 
-    val pgRapture = "rapture.core"
     val pgScalaz = "scalaz"
 
     val pgScala = "scala"

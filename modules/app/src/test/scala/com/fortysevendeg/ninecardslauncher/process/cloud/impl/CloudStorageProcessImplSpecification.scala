@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
@@ -10,13 +11,12 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import play.api.libs.json.Json
-import rapture.core.{Answer, Errata}
 
 import scalaz.concurrent.Task
 
 trait CloudStorageProcessImplSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   val driveServicesException = DriveServicesException("")
 
@@ -35,7 +35,7 @@ trait CloudStorageProcessImplSpecification
 
     val persistenceServices = mock[PersistenceServices]
 
-    persistenceServices.getAndroidId returns Service(Task(Answer(sampleId)))
+    persistenceServices.getAndroidId returns TaskService(Task(Xor.right(sampleId)))
 
     val cloudStorageProcess = new CloudStorageProcessImpl(driveServices, persistenceServices)
 
@@ -45,15 +45,15 @@ trait CloudStorageProcessImplSpecification
 
     self: CloudStorageProcessImplScope =>
 
-    driveServices.listFiles(any) returns Service(Task(Errata(driveServicesException)))
-    driveServices.fileExists(any) returns Service(Task(Errata(driveServicesException)))
-    driveServices.readFile(any) returns Service(Task(Errata(driveServicesException)))
-    driveServices.deleteFile(any) returns Service(Task(Errata(driveServicesException)))
-    driveServices.createFile(anyString, anyString, anyString, anyString, anyString) returns Service(Task(Errata(driveServicesException)))
-    driveServices.updateFile(anyString, anyString) returns Service(Task(Errata(driveServicesException)))
+    driveServices.listFiles(any) returns TaskService(Task(Xor.left(driveServicesException)))
+    driveServices.fileExists(any) returns TaskService(Task(Xor.left(driveServicesException)))
+    driveServices.readFile(any) returns TaskService(Task(Xor.left(driveServicesException)))
+    driveServices.deleteFile(any) returns TaskService(Task(Xor.left(driveServicesException)))
+    driveServices.createFile(anyString, anyString, anyString, anyString, anyString) returns TaskService(Task(Xor.left(driveServicesException)))
+    driveServices.updateFile(anyString, anyString) returns TaskService(Task(Xor.left(driveServicesException)))
 
-    persistenceServices.findUserById(any) returns Service(Task(Errata(persistenceServicesException)))
-    persistenceServices.getAndroidId returns Service(Task(Errata(androidIdNotFoundException)))
+    persistenceServices.findUserById(any) returns TaskService(Task(Xor.left(persistenceServicesException)))
+    persistenceServices.getAndroidId returns TaskService(Task(Xor.left(androidIdNotFoundException)))
 
   }
 
@@ -78,16 +78,16 @@ class CloudStorageProcessImplSpec
     "return the actual device and an empty list when passing only one element that corresponds to the device id" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        persistenceServices.getAndroidId returns Service(Task(Answer(deviceId)))
+        persistenceServices.getAndroidId returns TaskService(Task(Xor.right(deviceId)))
 
         val cloudStorageDevice = generateCloudStorageDevice(
           cloudId = cloudId,
           minusDays = 1,
           deviceId = deviceId)
 
-        val result = cloudStorageProcess.prepareForActualDevice(Seq(cloudStorageDevice)).run.run
+        val result = cloudStorageProcess.prepareForActualDevice(Seq(cloudStorageDevice)).value.run
         result must beLike {
-          case Answer((maybeUserDevice, devices)) =>
+          case Xor.Right((maybeUserDevice, devices)) =>
             maybeUserDevice must beSome(cloudStorageDevice)
         }
 
@@ -96,11 +96,11 @@ class CloudStorageProcessImplSpec
     "return an empty option and an empty list when passing a empty list" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        persistenceServices.getAndroidId returns Service(Task(Answer(deviceId)))
+        persistenceServices.getAndroidId returns TaskService(Task(Xor.right(deviceId)))
 
-        val result = cloudStorageProcess.prepareForActualDevice(Seq.empty).run.run
+        val result = cloudStorageProcess.prepareForActualDevice(Seq.empty).value.run
         result must beLike {
-          case Answer((maybeUserDevice, devices)) =>
+          case Xor.Right((maybeUserDevice, devices)) =>
             maybeUserDevice must beNone
             devices must beEmpty
         }
@@ -110,16 +110,16 @@ class CloudStorageProcessImplSpec
     "return an empty option and an empty list when passing only one element that not corresponds to the device id" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        persistenceServices.getAndroidId returns Service(Task(Answer(deviceId)))
+        persistenceServices.getAndroidId returns TaskService(Task(Xor.right(deviceId)))
 
         val cloudStorageDevice = generateCloudStorageDevice(
           cloudId = cloudId,
           minusDays = 1,
           deviceId = anotherDeviceId)
 
-        val result = cloudStorageProcess.prepareForActualDevice(Seq(cloudStorageDevice)).run.run
+        val result = cloudStorageProcess.prepareForActualDevice(Seq(cloudStorageDevice)).value.run
         result must beLike {
-          case Answer((maybeUserDevice, devices)) =>
+          case Xor.Right((maybeUserDevice, devices)) =>
             maybeUserDevice must beNone
         }
 
@@ -128,7 +128,7 @@ class CloudStorageProcessImplSpec
     "return the newest device when passing two elements that correspond with the device id" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        persistenceServices.getAndroidId returns Service(Task(Answer(deviceId)))
+        persistenceServices.getAndroidId returns TaskService(Task(Xor.right(deviceId)))
 
         val cloudStorageDevice1 = generateCloudStorageDevice(
           cloudId = cloudId,
@@ -140,9 +140,9 @@ class CloudStorageProcessImplSpec
           minusDays = 0,
           deviceId = deviceId)
 
-        val result = cloudStorageProcess.prepareForActualDevice(Seq(cloudStorageDevice1, cloudStorageDevice2)).run.run
+        val result = cloudStorageProcess.prepareForActualDevice(Seq(cloudStorageDevice1, cloudStorageDevice2)).value.run
         result must beLike {
-          case Answer((maybeUserDevice, devices)) =>
+          case Xor.Right((maybeUserDevice, devices)) =>
             maybeUserDevice must beSome(cloudStorageDevice2)
             devices shouldEqual Seq(cloudStorageDevice1)
         }
@@ -152,7 +152,7 @@ class CloudStorageProcessImplSpec
     "return the actual device and a sorted list when passing some elements and one of them correspond with the device id" in
       new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-        persistenceServices.getAndroidId returns Service(Task(Answer(deviceId)))
+        persistenceServices.getAndroidId returns TaskService(Task(Xor.right(deviceId)))
 
         val cloudStorageDevice = generateCloudStorageDevice(
           cloudId = cloudId,
@@ -173,9 +173,9 @@ class CloudStorageProcessImplSpec
 
         val allDevices = Seq(cloudStorageDeviceMiddle, cloudStorageDevice, cloudStorageDeviceLast, cloudStorageDeviceFirst)
 
-        val result = cloudStorageProcess.prepareForActualDevice(allDevices).run.run
+        val result = cloudStorageProcess.prepareForActualDevice(allDevices).value.run
         result must beLike {
-          case Answer((maybeUserDevice, devices)) =>
+          case Xor.Right((maybeUserDevice, devices)) =>
             maybeUserDevice must beSome(cloudStorageDevice)
             devices shouldEqual Seq(cloudStorageDeviceFirst, cloudStorageDeviceMiddle, cloudStorageDeviceLast)
         }
@@ -185,13 +185,9 @@ class CloudStorageProcessImplSpec
     "return a CloudStorageProcessException when the service returns an exception" in
       new CloudStorageProcessImplScope with WithErrorServices with CloudStorageProcessImplData {
 
-        val result = cloudStorageProcess.prepareForActualDevice(Seq.empty).run.run
+        val result = cloudStorageProcess.prepareForActualDevice(Seq.empty).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beLike {
-              case e: CloudStorageProcessException => e.cause must beSome(androidIdNotFoundException)
-            }
-          }
+          case Xor.Left(e) => e.cause must beSome(androidIdNotFoundException)
         }
 
       }
@@ -203,13 +199,13 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileSummarySeq)))
+          driveServices.listFiles(any) returns TaskService(Task(Xor.right(driveServiceFileSummarySeq)))
 
-          persistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
-          val result = cloudStorageProcess.getCloudStorageDevices.run.run
+          val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
-            case Answer(resultSeqCollection) =>
+            case Xor.Right(resultSeqCollection) =>
               resultSeqCollection.size shouldEqual driveServiceFileSummarySeq.size
               resultSeqCollection.map(_.deviceName) shouldEqual driveServiceFileSummarySeq.map(_.title)
               resultSeqCollection.map(_.cloudId) shouldEqual driveServiceFileSummarySeq.map(_.uuid)
@@ -222,13 +218,13 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileSummaryEmptySeq)))
+          driveServices.listFiles(any) returns TaskService(Task(Xor.right(driveServiceFileSummaryEmptySeq)))
 
-          persistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
-          val result = cloudStorageProcess.getCloudStorageDevices.run.run
+          val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
-            case Answer(resultSeqCollection) =>
+            case Xor.Right(resultSeqCollection) =>
               resultSeqCollection must beEmpty
           }
 
@@ -239,15 +235,11 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
-          val result = cloudStorageProcess.getCloudStorageDevices.run.run
+          val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: CloudStorageProcessException => e.cause must beSome(driveServicesException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome(driveServicesException)
           }
 
         }
@@ -257,11 +249,9 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns None
 
-          val result = cloudStorageProcess.getCloudStorageDevices.run.run
+          val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beAnInstanceOf[CloudStorageProcessException]
-            }
+            case Xor.Left(e) => e must beAnInstanceOf[CloudStorageProcessException]
           }
 
         }
@@ -271,15 +261,13 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileSummaryEmptySeq)))
+          driveServices.listFiles(any) returns TaskService(Task(Xor.right(driveServiceFileSummaryEmptySeq)))
 
-          persistenceServices.findUserById(any) returns Service(Task(Answer(None)))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
-          val result = cloudStorageProcess.getCloudStorageDevices.run.run
+          val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beAnInstanceOf[CloudStorageProcessException]
-            }
+            case Xor.Left(e) => e must beAnInstanceOf[CloudStorageProcessException]
           }
 
         }
@@ -289,15 +277,11 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          driveServices.listFiles(any) returns Service(Task(Answer(driveServiceFileSummaryEmptySeq)))
+          driveServices.listFiles(any) returns TaskService(Task(Xor.right(driveServiceFileSummaryEmptySeq)))
 
-          val result = cloudStorageProcess.getCloudStorageDevices.run.run
+          val result = cloudStorageProcess.getCloudStorageDevices.value.run
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: CloudStorageProcessException => e.cause must beSome(persistenceServicesException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome(persistenceServicesException)
           }
 
         }
@@ -309,11 +293,11 @@ class CloudStorageProcessImplSpec
       "return a valid CloudStorageDevice when the service returns a valid Json" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-          driveServices.readFile(cloudId) returns Service(Task(Answer(driveServiceFile)))
+          driveServices.readFile(cloudId) returns TaskService(Task(Xor.right(driveServiceFile)))
 
-          val result = cloudStorageProcess.getCloudStorageDevice(cloudId).run.run
+          val result = cloudStorageProcess.getCloudStorageDevice(cloudId).value.run
           result must beLike {
-            case Answer(device) =>
+            case Xor.Right(device) =>
               device.data.deviceId shouldEqual deviceId
               device.data.deviceName shouldEqual deviceName
               device.data.collections.size shouldEqual numCollections
@@ -324,26 +308,20 @@ class CloudStorageProcessImplSpec
       "return a CloudStorageProcessException when the service return a non valid Json" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-          driveServices.readFile(cloudId) returns Service(Task(Answer(invalidDriveServiceFileJson)))
+          driveServices.readFile(cloudId) returns TaskService(Task(Xor.right(invalidDriveServiceFileJson)))
 
-          val result = cloudStorageProcess.getCloudStorageDevice(cloudId).run.run
+          val result = cloudStorageProcess.getCloudStorageDevice(cloudId).value.run
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beAnInstanceOf[CloudStorageProcessException]
-            }
+            case Xor.Left(e) => e must beAnInstanceOf[CloudStorageProcessException]
           }
         }
 
       "return a CloudStorageProcessException when the service return an exception" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData with WithErrorServices {
 
-          val result = cloudStorageProcess.getCloudStorageDevice(cloudId).run.run
+          val result = cloudStorageProcess.getCloudStorageDevice(cloudId).value.run
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: CloudStorageProcessException => e.cause must beSome(driveServicesException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome(driveServicesException)
           }
 
         }
@@ -360,23 +338,19 @@ class CloudStorageProcessImplSpec
             anArgThat[String, String](new JsonMatcher(validCloudStorageDeviceJson)),
             anyString,
             anyString,
-            anyString) returns Service(Task(Answer(driveServiceFileSummary)))
+            anyString) returns TaskService(Task(Xor.right(driveServiceFileSummary)))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-          cloudStorageProcess.createCloudStorageDevice(cloudStorageServiceData).run.run
+          cloudStorageProcess.createCloudStorageDevice(cloudStorageServiceData).value.run
         }
 
       "return a CloudStorageProcessException when the service return an exception" in
         new CloudStorageProcessImplScope with WithErrorServices with CloudStorageProcessImplData {
 
-          val result = cloudStorageProcess.createCloudStorageDevice(generateCloudStorageDeviceData()).run.run
+          val result = cloudStorageProcess.createCloudStorageDevice(generateCloudStorageDeviceData()).value.run
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: CloudStorageProcessException => e.cause must beSome(driveServicesException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome(driveServicesException)
           }
 
         }
@@ -390,21 +364,21 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns Service(Task(Answer(Some(user.copy(deviceCloudId = None)))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user.copy(deviceCloudId = None)))))
 
           driveServices.createFile(
             anyString,
             anyString,
             anyString,
             anyString,
-            anyString) returns Service(Task(Answer(driveServiceFileSummary)))
+            anyString) returns TaskService(Task(Xor.right(driveServiceFileSummary)))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
           cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
             cloudStorageServiceData.moments getOrElse Seq.empty,
-            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
         }
 
       "call to update file in Service with a valid Json when the file does exists" in
@@ -412,20 +386,20 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
-          driveServices.fileExists(cloudId) returns Service(Task(Answer(true)))
+          driveServices.fileExists(cloudId) returns TaskService(Task(Xor.right(true)))
 
           driveServices.updateFile(
             anyString,
-            anyString) returns Service(Task(Answer(driveServiceFileSummary)))
+            anyString) returns TaskService(Task(Xor.right(driveServiceFileSummary)))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
           cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
             cloudStorageServiceData.moments getOrElse Seq.empty,
-            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
         }
 
       "call to create file in Service with a valid Json when the file doesn't exists" in
@@ -433,23 +407,23 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
-          driveServices.fileExists(cloudId) returns Service(Task(Answer(false)))
+          driveServices.fileExists(cloudId) returns TaskService(Task(Xor.right(false)))
 
           driveServices.createFile(
             anyString,
             anyString,
             anyString,
             anyString,
-            anyString) returns Service(Task(Answer(driveServiceFileSummary)))
+            anyString) returns TaskService(Task(Xor.right(driveServiceFileSummary)))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
           cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
             cloudStorageServiceData.moments getOrElse Seq.empty,
-            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
         }
 
       "return a CloudStorageProcessException when the user does exists" in
@@ -457,19 +431,17 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns Service(Task(Answer(None)))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
           val result = cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
             cloudStorageServiceData.moments getOrElse Seq.empty,
-            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beAnInstanceOf[CloudStorageProcessException]
-            }
+            case Xor.Left(e) => e must beAnInstanceOf[CloudStorageProcessException]
           }
         }
 
@@ -478,23 +450,18 @@ class CloudStorageProcessImplSpec
 
           context.getActiveUserId returns Some(activeUserId)
 
-          persistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
+          persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
           val cloudStorageServiceData = generateCloudStorageDeviceData()
 
           val result = cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
             cloudStorageServiceData.moments getOrElse Seq.empty,
-            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: CloudStorageProcessException => e.cause must beSome(androidIdNotFoundException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome(androidIdNotFoundException)
           }
-
         }
 
       "return a CloudStorageProcessException when the persistence service return an exception" in
@@ -507,16 +474,11 @@ class CloudStorageProcessImplSpec
           val result = cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
             cloudStorageServiceData.moments getOrElse Seq.empty,
-            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: CloudStorageProcessException => e.cause must beSome(androidIdNotFoundException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome(androidIdNotFoundException)
           }
-
         }
 
       "return a CloudStorageProcessException when there isn't a active user id" in
@@ -529,14 +491,11 @@ class CloudStorageProcessImplSpec
           val result = cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
             cloudStorageServiceData.collections,
             cloudStorageServiceData.moments getOrElse Seq.empty,
-            cloudStorageServiceData.dockApps getOrElse Seq.empty).run.run
+            cloudStorageServiceData.dockApps getOrElse Seq.empty).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beAnInstanceOf[CloudStorageProcessException]
-            }
+            case Xor.Left(e) => e must beAnInstanceOf[CloudStorageProcessException]
           }
-
         }
 
     }
@@ -546,24 +505,19 @@ class CloudStorageProcessImplSpec
       "return a valid response when the service finds the device" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData {
 
-          driveServices.deleteFile(cloudId) returns Service(Task(Answer(Unit)))
+          driveServices.deleteFile(cloudId) returns TaskService(Task(Xor.right(Unit)))
 
-          val result = cloudStorageProcess.deleteCloudStorageDevice(cloudId).run.run
-          result must beAnInstanceOf[Answer[Unit, CloudStorageProcessException]]
+          val result = cloudStorageProcess.deleteCloudStorageDevice(cloudId).value.run
+          result must beAnInstanceOf[Xor.Right[Unit]]
         }
 
       "return a CloudStorageProcessException when the service returns an exception" in
         new CloudStorageProcessImplScope with CloudStorageProcessImplData with WithErrorServices {
 
-          val result = cloudStorageProcess.deleteCloudStorageDevice(cloudId).run.run
+          val result = cloudStorageProcess.deleteCloudStorageDevice(cloudId).value.run
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, exception)) => exception must beLike {
-                case e: CloudStorageProcessException => e.cause must beSome(driveServicesException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome(driveServicesException)
           }
-
         }
 
     }

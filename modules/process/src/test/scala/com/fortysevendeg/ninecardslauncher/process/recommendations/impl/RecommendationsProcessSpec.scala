@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.recommendations.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendedAppsException
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices, RecommendationResponse}
@@ -9,7 +10,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServi
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata, Result}
 
 import scalaz.concurrent.Task
 
@@ -34,8 +34,8 @@ trait RecommendationsProcessSpecification
     val process = new RecommendationsProcessImpl(apiServices, mockPersistenceServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
-
-      apiUtils.getRequestConfig(contextSupport) returns Service(Task(Result.answer(requestConfig)))
+      apiUtils.getRequestConfig(contextSupport) returns
+        TaskService(Task(Xor.right(requestConfig)))
     }
 
   }
@@ -51,14 +51,14 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedApps(any, any, any)(any) returns
-              Service(Task(Result.answer(RecommendationResponse(statusCodeOk, recommendationApps))))
+          TaskService(Task(Xor.right(RecommendationResponse(statusCodeOk, recommendationApps))))
 
-        val result = process.getRecommendedAppsByCategory(category)(contextSupport).run.run
+        val result = process.getRecommendedAppsByCategory(category)(contextSupport).value.run
 
         there was one(apiServices).getRecommendedApps(category.name, Seq.empty, limit)(requestConfig)
 
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.seq.map(_.packageName).toSet shouldEqual recommendationApps.map(_.packageName).toSet
         }
 
@@ -68,15 +68,13 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedApps(any, any, any)(any) returns
-              Service(Task(Errata(apiException)))
+          TaskService(Task(Xor.left(apiException)))
 
-        val result = process.getRecommendedAppsByCategory(category)(contextSupport).run.run
+        val result = process.getRecommendedAppsByCategory(category)(contextSupport).value.run
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[RecommendedAppsException]
+          case Xor.Left(e) => e must beAnInstanceOf[RecommendedAppsException]
           }
-        }
       }
 
   }
@@ -87,14 +85,14 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedAppsByPackages(any, any, any)(any) returns
-              Service(Task(Result.answer(RecommendationResponse(statusCodeOk, recommendationApps))))
+          TaskService(Task(Xor.right(RecommendationResponse(statusCodeOk, recommendationApps))))
 
-        val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).run.run
+        val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).value.run
 
         there was one(apiServices).getRecommendedAppsByPackages(likePackages, Seq.empty, limit)(requestConfig)
 
         result must beLike {
-          case Answer(response) =>
+          case Xor.Right(response) =>
             response.seq.map(_.packageName).toSet shouldEqual recommendationApps.map(_.packageName).toSet
         }
 
@@ -104,15 +102,13 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedAppsByPackages(any, any, any)(any) returns
-              Service(Task(Errata(apiException)))
+          TaskService(Task(Xor.left(apiException)))
 
-        val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).run.run
+        val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).value.run
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[RecommendedAppsException]
+          case Xor.Left(e) => e must beAnInstanceOf[RecommendedAppsException]
           }
-        }
       }
 
   }

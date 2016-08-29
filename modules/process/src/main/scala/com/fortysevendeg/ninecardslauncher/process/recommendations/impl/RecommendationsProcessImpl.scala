@@ -1,12 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.process.recommendations.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.ResultTExtensions
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.recommendations.{ImplicitsRecommendationsException, RecommendedAppsException, Conversions, RecommendationsProcess}
+import com.fortysevendeg.ninecardslauncher.process.recommendations._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
+
 
 class RecommendationsProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
   extends RecommendationsProcess

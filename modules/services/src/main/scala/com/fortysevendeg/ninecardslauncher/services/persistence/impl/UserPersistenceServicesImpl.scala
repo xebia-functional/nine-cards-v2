@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
@@ -7,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conv
 trait UserPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
-  
+
   def addUser(request: AddUserRequest) =
     (for {
       user <- userRepository.addUser(toRepositoryUserData(request))

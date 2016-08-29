@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.FrameLayout
+import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -24,7 +25,6 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
-import rapture.core.Answer
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
@@ -45,8 +45,8 @@ trait BaseActionFragment
   lazy val preferenceValues = new NineCardsPreferencesValue
 
   implicit lazy val theme: NineCardsTheme =
-    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).run.run match {
-      case Answer(t) => t
+    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).value.run match {
+      case Xor.Right(t) => t
       case _ => getDefaultTheme
     }
 

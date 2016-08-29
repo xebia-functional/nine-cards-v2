@@ -1,12 +1,12 @@
 package com.fortysevendeg.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.rest.client.http.Methods._
 import play.api.libs.json.{Json, Writes}
-import scala.collection.JavaConverters._
 
+import scala.collection.JavaConverters._
 import scalaz.concurrent.Task
 
 class OkHttpClient(okHttpClient: okhttp3.OkHttpClient = new okhttp3.OkHttpClient)
@@ -20,21 +20,21 @@ class OkHttpClient(okHttpClient: okhttp3.OkHttpClient = new okhttp3.OkHttpClient
   override def doGet(
     url: String,
     httpHeaders: Seq[(String, String)]
-    ): ServiceDef2[HttpClientResponse, HttpClientException] =
+    ): TaskService[HttpClientResponse] =
     doMethod(GET, url, httpHeaders)
 
 
   override def doDelete(
     url: String,
     httpHeaders: Seq[(String, String)]
-    ): ServiceDef2[HttpClientResponse, HttpClientException] =
+    ): TaskService[HttpClientResponse] =
     doMethod(DELETE, url, httpHeaders)
 
 
   override def doPost(
     url: String,
     httpHeaders: Seq[(String, String)]
-    ): ServiceDef2[HttpClientResponse, HttpClientException] =
+    ): TaskService[HttpClientResponse] =
     doMethod(POST, url, httpHeaders)
 
 
@@ -42,13 +42,13 @@ class OkHttpClient(okHttpClient: okhttp3.OkHttpClient = new okhttp3.OkHttpClient
     url: String,
     httpHeaders: Seq[(String, String)],
     body: Req
-    ): ServiceDef2[HttpClientResponse, HttpClientException] =
+    ): TaskService[HttpClientResponse] =
     doMethod(POST, url, httpHeaders, Some(Json.toJson(body).toString()))
 
   override def doPut(
     url: String,
     httpHeaders: Seq[(String, String)]
-    ): ServiceDef2[HttpClientResponse, HttpClientException] =
+    ): TaskService[HttpClientResponse] =
     doMethod(PUT, url, httpHeaders)
 
 
@@ -56,7 +56,7 @@ class OkHttpClient(okHttpClient: okhttp3.OkHttpClient = new okhttp3.OkHttpClient
     url: String,
     httpHeaders: Seq[(String, String)],
     body: Req
-    ): ServiceDef2[HttpClientResponse, HttpClientException] =
+    ): TaskService[HttpClientResponse] =
     doMethod(PUT, url, httpHeaders, Some(Json.toJson(body).toString()))
 
 
@@ -65,9 +65,9 @@ class OkHttpClient(okHttpClient: okhttp3.OkHttpClient = new okhttp3.OkHttpClient
     url: String,
     httpHeaders: Seq[(String, String)],
     body: Option[String] = None,
-    responseHandler: okhttp3.Response => T = defaultResponseHandler _): ServiceDef2[T, HttpClientException] = Service {
+    responseHandler: okhttp3.Response => T = defaultResponseHandler _): TaskService[T] = TaskService {
     Task {
-      CatchAll[HttpClientException] {
+      XorCatchAll[HttpClientException] {
         val builder = createBuilderRequest(url, httpHeaders)
         val request = (method match {
           case GET => builder.get()

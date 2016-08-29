@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData, CardsWithCollectionId}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
@@ -28,10 +28,10 @@ class CardRepository(
   val cardNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$cardUriPath")
   val collectionNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$collectionUriPath")
 
-  def addCard(collectionId: Int, data: CardData): ServiceDef2[Card, RepositoryException] =
-    Service {
+  def addCard(collectionId: Int, data: CardData): TaskService[Card] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = createMapValues(data) + (CardEntity.collectionId -> collectionId)
 
           val id = contentResolverWrapper.insert(
@@ -44,10 +44,10 @@ class CardRepository(
       }
     }
 
-  def addCards(datas: Seq[CardsWithCollectionId]): ServiceDef2[Seq[Card], RepositoryException] =
-    Service {
+  def addCards(datas: Seq[CardsWithCollectionId]): TaskService[Seq[Card]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = datas flatMap { dataWithCollectionId =>
             dataWithCollectionId.data map { data =>
               createMapValues(data) +
@@ -65,17 +65,17 @@ class CardRepository(
             allValues = values,
             notificationUris = collectionNotificationUris :+ cardNotificationUri)
 
-          (datas flatMap(_.data)) zip ids map {
+          (datas flatMap (_.data)) zip ids map {
             case (data, id) => Card(id = id, data = data)
           }
         }
       }
     }
 
-  def deleteCards(where: String = ""): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def deleteCards(where: String = ""): TaskService[Int] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = cardUri,
             where = where,
@@ -84,10 +84,10 @@ class CardRepository(
       }
     }
 
-  def deleteCard(collectionId: Int, card: Card): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def deleteCard(collectionId: Int, card: Card): TaskService[Int] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = cardUri,
             id = card.id,
@@ -96,10 +96,10 @@ class CardRepository(
       }
     }
 
-  def findCardById(id: Int): ServiceDef2[Option[Card], RepositoryException] =
-    Service {
+  def findCardById(id: Int): TaskService[Option[Card]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.findById(
             uri = cardUri,
             id = id,
@@ -108,10 +108,10 @@ class CardRepository(
       }
     }
 
-  def fetchCardsByCollection(collectionId: Int): ServiceDef2[Seq[Card], RepositoryException] =
-    Service {
+  def fetchCardsByCollection(collectionId: Int): TaskService[Seq[Card]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = cardUri,
             projection = allFields,
@@ -122,10 +122,10 @@ class CardRepository(
       }
     }
 
-  def fetchCards: ServiceDef2[Seq[Card], RepositoryException] =
-    Service {
+  def fetchCards: TaskService[Seq[Card]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = cardUri,
             projection = allFields)(getListFromCursor(cardEntityFromCursor)) map toCard
@@ -136,10 +136,10 @@ class CardRepository(
   def fetchIterableCards(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursor[Card], RepositoryException] =
-    Service {
+    orderBy: String = ""): TaskService[IterableCursor[Card]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
             uri = cardUri,
             projection = allFields,
@@ -150,10 +150,10 @@ class CardRepository(
       }
     }
 
-  def updateCard(card: Card): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def updateCard(card: Card): TaskService[Int] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = createMapValues(card.data)
 
           contentResolverWrapper.updateById(
@@ -165,10 +165,10 @@ class CardRepository(
       }
     }
 
-  def updateCards(cards: Seq[Card]): ServiceDef2[Seq[Int], RepositoryException] =
-    Service {
+  def updateCards(cards: Seq[Card]): TaskService[Seq[Int]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = cards map { card =>
             (card.id, createMapValues(card.data))
           }

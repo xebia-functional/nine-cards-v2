@@ -1,13 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.process.social
 
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 import com.fortysevendeg.ninecardslauncher.services.plus.GooglePlusServicesException
 
 import scalaz.Scalaz._
 
-case class SocialProfileProcessException(
-  message: String,
-  cause: Option[Throwable] = None,
-  recoverable: Boolean = false) extends RuntimeException(message) {
+case class SocialProfileProcessException(  message: String,  cause: Option[Throwable] = None,  recoverable: Boolean = false)
+  extends RuntimeException(message)
+  with NineCardException{
 
   cause foreach initCause
 
@@ -15,11 +15,11 @@ case class SocialProfileProcessException(
 
 trait ImplicitsSocialProfileProcessExceptions {
 
-  implicit def googlePlusExceptionConverter = (throwable: Throwable) => {
-    throwable match {
+  implicit def googlePlusExceptionConverter = (t: Throwable) => {
+    t match {
       case gPlusException: GooglePlusServicesException =>
         SocialProfileProcessException(gPlusException.getMessage, gPlusException.some, gPlusException.recoverable)
-      case _ => SocialProfileProcessException(throwable.getMessage, throwable.some)
+      case _ => SocialProfileProcessException(t.getMessage, Option(t))
     }
   }
 

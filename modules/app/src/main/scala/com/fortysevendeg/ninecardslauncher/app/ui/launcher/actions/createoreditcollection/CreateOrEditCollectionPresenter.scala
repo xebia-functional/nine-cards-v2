@@ -21,7 +21,7 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
   }
 
   def findCollection(collectionId: Int): Unit =
-    Task.fork(di.collectionProcess.getCollectionById(collectionId).run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.getCollectionById(collectionId).value).resolveAsyncUi(
       onResult = {
         case Some(collection) => actions.initializeEditCollection(collection)
         case _ => actions.showMessageContactUsError
@@ -41,7 +41,7 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
         themedColorIndex = index,
         appsCategory = collection.appsCategory
       )
-      Task.fork(di.collectionProcess.editCollection(collection.id, request).run).resolveAsyncUi(
+      Task.fork(di.collectionProcess.editCollection(collection.id, request).value).resolveAsyncUi(
         onResult = (c) => actions.editCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError
       )
@@ -62,7 +62,7 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
         cards = Seq.empty,
         moment = None
       )
-      Task.fork(di.collectionProcess.addCollection(request).run).resolveAsyncUi(
+      Task.fork(di.collectionProcess.addCollection(request).value).resolveAsyncUi(
         onResult = (c) => actions.addCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError
       )

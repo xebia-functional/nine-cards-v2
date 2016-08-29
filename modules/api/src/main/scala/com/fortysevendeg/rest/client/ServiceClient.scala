@@ -1,11 +1,11 @@
 package com.fortysevendeg.rest.client
 
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientException, HttpClientResponse}
+import cats.data.Xor
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientResponse}
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import play.api.libs.json.{Json, Reads, Writes}
-import rapture.core.{Answer, Errata, Result}
 
 import scala.util.{Failure, Success, Try}
 import scalaz.concurrent.Task
@@ -17,7 +17,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
+    ): TaskService[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doGet(baseUrl.concat(path), headers)
       response <- readResponse(clientResponse, reads, emptyResponse)
@@ -29,7 +29,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
+    ): TaskService[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doPost(baseUrl.concat(path), headers)
       response <- readResponse(clientResponse, reads, emptyResponse)
@@ -42,7 +42,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     body: Req,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    )(implicit writes: Writes[Req]): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
+    )(implicit writes: Writes[Req]): TaskService[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doPost[Req](baseUrl.concat(path), headers, body)
       response <- readResponse(clientResponse, reads, emptyResponse)
@@ -53,7 +53,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
+    ): TaskService[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doPut(baseUrl.concat(path), headers)
       response <- readResponse(clientResponse, reads, emptyResponse)
@@ -65,7 +65,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     body: Req,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    )(implicit writes: Writes[Req]): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
+    )(implicit writes: Writes[Req]): TaskService[ServiceClientResponse[Res]] =
     for {
       httpResponse <- httpClient.doPut[Req](baseUrl.concat(path), headers, body)
       response <- readResponse(httpResponse, reads, emptyResponse)
@@ -77,7 +77,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     headers: Seq[(String, String)] = Seq.empty,
     reads: Option[Reads[Res]] = None,
     emptyResponse: Boolean = false
-    ): ServiceDef2[ServiceClientResponse[Res], HttpClientException with ServiceClientException] =
+    ): TaskService[ServiceClientResponse[Res]] =
     for {
       clientResponse <- httpClient.doDelete(baseUrl.concat(path), headers)
       response <- readResponse(clientResponse, reads, emptyResponse)
@@ -87,22 +87,22 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     clientResponse: HttpClientResponse,
     maybeReads: Option[Reads[T]],
     emptyResponse: Boolean
-    ): ServiceDef2[Option[T], ServiceClientException] = {
+    ): TaskService[Option[T]] = {
 
     def isError: Boolean =
       clientResponse.statusCode >= 400 && clientResponse.statusCode < 600
 
-    Service {
+    TaskService {
       Task {
         if (isError) {
           val errorMessage = clientResponse.body getOrElse "No content"
-          Errata(ServiceClientExceptionImpl(s"Status code ${clientResponse.statusCode}. $errorMessage"))
+          Xor.Left(ServiceClientException(s"Status code ${clientResponse.statusCode}. $errorMessage"))
         } else {
           (clientResponse.body, emptyResponse, maybeReads) match {
             case (Some(d), false, Some(r)) => transformResponse[T](d, r)
-            case (None, false, _) => Errata(ServiceClientExceptionImpl("No content"))
-            case (Some(d), false, None) => Errata(ServiceClientExceptionImpl("No transformer found for type"))
-            case _ => Answer(None)
+            case (None, false, _) => Xor.Left(ServiceClientException("No content"))
+            case (Some(d), false, None) => Xor.Left(ServiceClientException("No transformer found for type"))
+            case _ => Xor.Right(None)
           }
         }
       }
@@ -112,10 +112,10 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
   private def transformResponse[T](
     content: String,
     reads: Reads[T]
-    ): Result[Option[T], ServiceClientException] =
+    ): Xor[ServiceClientException, Some[T]] =
     Try(Json.parse(content).as[T](reads)) match {
-      case Success(s) => Answer(Some(s))
-      case Failure(e) => Errata(ServiceClientExceptionImpl(message = e.getMessage, cause = Some(e)))
+      case Success(s) => Xor.Right(Some(s))
+      case Failure(e) => Xor.Left(ServiceClientException(message = e.getMessage, cause = Some(e)))
     }
 
 }

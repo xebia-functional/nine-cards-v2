@@ -1,9 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.process.theme.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.utils.{ImplicitsAssetException, AssetException, FileUtils}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.commons.utils.{AssetException, FileUtils, ImplicitsAssetException}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsThemeImplicits._
 import com.fortysevendeg.ninecardslauncher.process.theme.{ImplicitsThemeException, ThemeException, ThemeProcess}
@@ -24,9 +25,9 @@ class ThemeProcessImpl
     theme <- getNineCardsThemeFromJson(json)
   } yield theme
 
-  private[this] def getJsonFromThemeFile(defaultTheme: String)(implicit context: ContextSupport) = Service {
+  private[this] def getJsonFromThemeFile(defaultTheme: String)(implicit context: ContextSupport) = TaskService {
     Task {
-      CatchAll[AssetException] {
+      XorCatchAll[AssetException] {
         fileUtils.readFile(s"$defaultTheme.json") match {
           case Success(json) => json
           case Failure(ex) => throw ex
@@ -35,9 +36,9 @@ class ThemeProcessImpl
     }
   }
 
-  private[this] def getNineCardsThemeFromJson(json: String) = Service {
+  private[this] def getNineCardsThemeFromJson(json: String) = TaskService {
     Task {
-      CatchAll[ThemeException] {
+      XorCatchAll[ThemeException] {
           Json.parse(json).as[NineCardsTheme]
         }
     }

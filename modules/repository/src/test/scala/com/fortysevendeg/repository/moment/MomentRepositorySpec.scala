@@ -1,6 +1,7 @@
 package com.fortysevendeg.repository.moment
 
 import android.net.Uri
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
@@ -14,12 +15,11 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 trait MomentRepositorySpecification
   extends Specification
-  with DisjunctionMatchers
-  with Mockito {
+    with DisjunctionMatchers
+    with Mockito {
 
   trait MomentRepositoryScope
     extends Scope {
@@ -59,13 +59,13 @@ trait MomentRepositorySpecification
       uri = mockUri,
       id = testId,
       projection = allFields)(
-        f = getEntityFromCursor(momentEntityFromCursor)) returns Some(momentEntity)
+      f = getEntityFromCursor(momentEntityFromCursor)) returns Some(momentEntity)
 
     contentResolverWrapper.findById(
       uri = mockUri,
       id = testNonExistingId,
       projection = allFields)(
-        f = getEntityFromCursor(momentEntityFromCursor)) returns None
+      f = getEntityFromCursor(momentEntityFromCursor)) returns None
 
     contentResolverWrapper.updateById(
       uri = mockUri,
@@ -138,7 +138,7 @@ trait MomentRepositorySpecification
       uri = mockUri,
       id = testId,
       projection = allFields)(
-        f = getEntityFromCursor(momentEntityFromCursor)) throws contentResolverException
+      f = getEntityFromCursor(momentEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.updateById(
       uri = mockUri,
@@ -159,22 +159,22 @@ trait MomentRepositorySpecification
 
 trait MomentMockCursor
   extends MockCursor
-  with MomentRepositoryTestData {
+    with MomentRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, momentSeq map (_.id), IntDataType),
-    (collectionId, 1, momentSeq map (_.data.collectionId getOrElse(javaNull)), IntDataType),
+    (collectionId, 1, momentSeq map (_.data.collectionId getOrElse (javaNull)), IntDataType),
     (timeslot, 2, momentSeq map (_.data.timeslot), StringDataType),
     (wifi, 4, momentSeq map (_.data.wifi), StringDataType),
     (headphone, 5, momentSeq map (item => if (item.data.headphone) 1 else 0), IntDataType),
-    (momentType, 6, momentSeq map (_.data.momentType getOrElse(javaNull)), StringDataType))
+    (momentType, 6, momentSeq map (_.data.momentType getOrElse (javaNull)), StringDataType))
 
   prepareCursor[Moment](momentSeq.size, cursorData)
 }
 
 trait EmptyMomentMockCursor
   extends MockCursor
-  with MomentRepositoryTestData {
+    with MomentRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -198,10 +198,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ValidMomentRepositoryResponses {
 
-          val result = momentRepository.addMoment(data = createMomentData).run.run
+          val result = momentRepository.addMoment(data = createMomentData).value.run
 
           result must beLike {
-            case Answer(momentResult) =>
+            case Xor.Right(momentResult) =>
               momentResult.id shouldEqual testId
               momentResult.data.collectionId shouldEqual testCollectionIdOption
           }
@@ -211,10 +211,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ValidMomentRepositoryCollectionResponses {
 
-          val result = momentRepository.addMoment(data = createMomentDataCollection).run.run
+          val result = momentRepository.addMoment(data = createMomentDataCollection).value.run
 
           result must beLike {
-            case Answer(momentResult) =>
+            case Xor.Right(momentResult) =>
               momentResult.id shouldEqual testId
               momentResult.data.collectionId shouldEqual None
           }
@@ -224,14 +224,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ErrorMomentRepositoryResponses {
 
-          val result = momentRepository.addMoment(data = createMomentData).run.run
+          val result = momentRepository.addMoment(data = createMomentData).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -242,10 +238,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ValidMomentRepositoryResponses {
 
-          val result = momentRepository.deleteMoments().run.run
+          val result = momentRepository.deleteMoments().value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -254,14 +250,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ErrorMomentRepositoryResponses {
 
-          val result = momentRepository.deleteMoments().run.run
+          val result = momentRepository.deleteMoments().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -272,10 +264,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ValidMomentRepositoryResponses {
 
-          val result = momentRepository.deleteMoment(moment).run.run
+          val result = momentRepository.deleteMoment(moment).value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -284,14 +276,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ErrorMomentRepositoryResponses {
 
-          val result = momentRepository.deleteMoment(moment).run.run
+          val result = momentRepository.deleteMoment(moment).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -302,10 +290,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ValidMomentRepositoryResponses {
 
-          val result = momentRepository.findMomentById(id = testId).run.run
+          val result = momentRepository.findMomentById(id = testId).value.run
 
           result must beLike {
-            case Answer(maybeMoment) =>
+            case Xor.Right(maybeMoment) =>
               maybeMoment must beSome[Moment].which { moment =>
                 moment.id shouldEqual testId
                 moment.data.collectionId shouldEqual testCollectionIdOption
@@ -316,10 +304,10 @@ class MomentRepositorySpec
       "return None when a non-existing id is given" in
         new MomentRepositoryScope
           with ValidMomentRepositoryResponses {
-          val result = momentRepository.findMomentById(id = testNonExistingId).run.run
+          val result = momentRepository.findMomentById(id = testNonExistingId).value.run
 
           result must beLike {
-            case Answer(maybeMoment) =>
+            case Xor.Right(maybeMoment) =>
               maybeMoment must beNone
           }
         }
@@ -328,14 +316,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ErrorMomentRepositoryResponses {
 
-          val result = momentRepository.findMomentById(id = testId).run.run
+          val result = momentRepository.findMomentById(id = testId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -346,10 +330,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ValidMomentRepositoryResponses {
 
-          val result = momentRepository.updateMoment(item = moment).run.run
+          val result = momentRepository.updateMoment(item = moment).value.run
 
           result must beLike {
-            case Answer(updated) =>
+            case Xor.Right(updated) =>
               updated shouldEqual 1
           }
         }
@@ -358,14 +342,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ErrorMomentRepositoryResponses {
 
-          val result = momentRepository.updateMoment(item = moment).run.run
+          val result = momentRepository.updateMoment(item = moment).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -376,10 +356,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ValidMomentRepositoryResponses {
 
-          val result = momentRepository.fetchMoments().run.run
+          val result = momentRepository.fetchMoments().value.run
 
           result must beLike {
-            case Answer(moments) =>
+            case Xor.Right(moments) =>
               moments shouldEqual momentSeq
           }
         }
@@ -388,10 +368,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ValidMomentRepositoryResponses {
 
-          val result = momentRepository.fetchMoments(where = s"$wifi = ?", whereParams = Seq(testWifi.toString)).run.run
+          val result = momentRepository.fetchMoments(where = s"$wifi = ?", whereParams = Seq(testWifi.toString)).value.run
 
           result must beLike {
-            case Answer(moments) =>
+            case Xor.Right(moments) =>
               moments shouldEqual momentSeq
           }
         }
@@ -400,14 +380,10 @@ class MomentRepositorySpec
         new MomentRepositoryScope
           with ErrorMomentRepositoryResponses {
 
-          val result = momentRepository.fetchMoments().run.run
+          val result = momentRepository.fetchMoments().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }

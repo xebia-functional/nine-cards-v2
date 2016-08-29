@@ -1,28 +1,28 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
 
 trait PersistenceServices {
 
   /**
-   * Obtains all the apps from the repository
-   * @param orderBy indicates the field to order by
-   * @param ascending indicates if it will be in ascending order or not
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
-   * @throws PersistenceServiceException if exist some problem obtaining the app
-   */
-  def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[Seq[App], PersistenceServiceException]
+    * Obtains all the apps from the repository
+    * @param orderBy   indicates the field to order by
+    * @param ascending indicates if it will be in ascending order or not
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
+    * @throws PersistenceServiceException if exist some problem obtaining the app
+    */
+  def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[Seq[App]]
 
   /**
     * Obtains iterable of apps from the repository
-    * @param orderBy indicates the field to order by
+    * @param orderBy   indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[IterableApps, PersistenceServiceException]
+  def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
 
   /**
     * Obtains iterable of apps by keywords from the repository
@@ -32,7 +32,7 @@ trait PersistenceServices {
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[IterableApps, PersistenceServiceException]
+  def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
 
   /**
     * Obtains all the apps by category from the repository
@@ -42,7 +42,7 @@ trait PersistenceServices {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[Seq[App], PersistenceServiceException]
+  def fetchAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[Seq[App]]
 
   /**
     * Obtains iterable of apps by category from the repository
@@ -52,36 +52,36 @@ trait PersistenceServices {
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): ServiceDef2[IterableApps, PersistenceServiceException]
+  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
 
   /**
     * Returns the number of times the first letter of a app is repeated alphabetically
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.DataCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchAlphabeticalAppsCounter: ServiceDef2[Seq[DataCounter], PersistenceServiceException]
+  def fetchAlphabeticalAppsCounter: TaskService[Seq[DataCounter]]
 
   /**
     * Returns the number of times in every category alphabetically
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.DataCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchCategorizedAppsCounter: ServiceDef2[Seq[DataCounter], PersistenceServiceException]
+  def fetchCategorizedAppsCounter: TaskService[Seq[DataCounter]]
 
   /**
     * Returns the number of times by installation date
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.DataCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchInstallationDateAppsCounter: ServiceDef2[Seq[DataCounter], PersistenceServiceException]
+  def fetchInstallationDateAppsCounter: TaskService[Seq[DataCounter]]
 
   /**
-   * Obtains an app from the repository by the package name
-   * @param packageName the package name of the app to get
-   * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
-   * @throws PersistenceServiceException if exist some problem obtaining the app
-   */
-  def findAppByPackage(packageName: String): ServiceDef2[Option[App], PersistenceServiceException]
+    * Obtains an app from the repository by the package name
+    * @param packageName the package name of the app to get
+    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
+    * @throws PersistenceServiceException if exist some problem obtaining the app
+    */
+  def findAppByPackage(packageName: String): TaskService[Option[App]]
 
   /**
     * Obtains apps from the repository by the package names
@@ -89,15 +89,15 @@ trait PersistenceServices {
     * @return an Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.App]
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchAppByPackages(packageNames: Seq[String]): ServiceDef2[Seq[App], PersistenceServiceException]
+  def fetchAppByPackages(packageNames: Seq[String]): TaskService[Seq[App]]
 
   /**
-   * Adds an app to the repository
-   * @param request includes the necessary data to create a new app in the repository
-   * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-   * @throws PersistenceServiceException if exist some problem creating the app
-   */
-  def addApp(request: AddAppRequest): ServiceDef2[App, PersistenceServiceException]
+    * Adds an app to the repository
+    * @param request includes the necessary data to create a new app in the repository
+    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.App
+    * @throws PersistenceServiceException if exist some problem creating the app
+    */
+  def addApp(request: AddAppRequest): TaskService[App]
 
   /**
     * Adds a sequence of apps to the repository
@@ -105,30 +105,30 @@ trait PersistenceServices {
     * @return Unit
     * @throws PersistenceServiceException if exist some problem creating apps
     */
-  def addApps(request: Seq[AddAppRequest]): ServiceDef2[Unit, PersistenceServiceException]
+  def addApps(request: Seq[AddAppRequest]): TaskService[Unit]
 
   /**
     * Deletes all apps from the repository by the where clause
     * @return an Int if the apps has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the apps
     */
-  def deleteAllApps(): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllApps(): TaskService[Int]
 
   /**
-   * Deletes an app from the repository by the package name
-   * @param packageName the package name of the app to delete
-   * @return an Int if the app has been deleted correctly
-   * @throws PersistenceServiceException if exist some problem deleting the app
-   */
-  def deleteAppByPackage(packageName: String): ServiceDef2[Int, PersistenceServiceException]
+    * Deletes an app from the repository by the package name
+    * @param packageName the package name of the app to delete
+    * @return an Int if the app has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the app
+    */
+  def deleteAppByPackage(packageName: String): TaskService[Int]
 
   /**
-   * Updates the data of an app from the repository
-   * @param request includes the data to update the app
-   * @return an Int if the app has been updated correctly
-   * @throws PersistenceServiceException if exist some problem updating the app
-   */
-  def updateApp(request: UpdateAppRequest): ServiceDef2[Int, PersistenceServiceException]
+    * Updates the data of an app from the repository
+    * @param request includes the data to update the app
+    * @return an Int if the app has been updated correctly
+    * @throws PersistenceServiceException if exist some problem updating the app
+    */
+  def updateApp(request: UpdateAppRequest): TaskService[Int]
 
   /**
     * Adds a card to the repository
@@ -136,7 +136,7 @@ trait PersistenceServices {
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
     */
-  def addCard(request: AddCardRequest): ServiceDef2[Card, PersistenceServiceException]
+  def addCard(request: AddCardRequest): TaskService[Card]
 
   /**
     * Adds a sequence of cards to the repository
@@ -144,14 +144,14 @@ trait PersistenceServices {
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
     */
-  def addCards(request: Seq[AddCardWithCollectionIdRequest]): ServiceDef2[Seq[Card], PersistenceServiceException]
+  def addCards(request: Seq[AddCardWithCollectionIdRequest]): TaskService[Seq[Card]]
 
   /**
     * Deletes all cards from the repository by the where clause
     * @return an Int if the cards has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the cards
     */
-  def deleteAllCards(): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllCards(): TaskService[Int]
 
   /**
     * Deletes a card from the repository by the card
@@ -159,7 +159,7 @@ trait PersistenceServices {
     * @return an Int if the card has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the card
     */
-  def deleteCard(request: DeleteCardRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteCard(request: DeleteCardRequest): TaskService[Int]
 
   /**
     * Deletes the cards from the repository by the collection id
@@ -167,7 +167,7 @@ trait PersistenceServices {
     * @return an Int if the cards have been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the cards
     */
-  def deleteCardsByCollection(collectionId: Int): ServiceDef2[Int, PersistenceServiceException]
+  def deleteCardsByCollection(collectionId: Int): TaskService[Int]
 
   /**
     * Obtains all the cards from the repository by the collection id
@@ -175,14 +175,14 @@ trait PersistenceServices {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the cards
     */
-  def fetchCardsByCollection(request: FetchCardsByCollectionRequest): ServiceDef2[Seq[Card], PersistenceServiceException]
+  def fetchCardsByCollection(request: FetchCardsByCollectionRequest): TaskService[Seq[Card]]
 
   /**
     * Obtains all the cards from the repository
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the cards
     */
-  def fetchCards: ServiceDef2[Seq[Card], PersistenceServiceException]
+  def fetchCards: TaskService[Seq[Card]]
 
   /**
     * Obtains a card from the repository by the id
@@ -190,7 +190,7 @@ trait PersistenceServices {
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the card
     */
-  def findCardById(request: FindCardByIdRequest): ServiceDef2[Option[Card], PersistenceServiceException]
+  def findCardById(request: FindCardByIdRequest): TaskService[Option[Card]]
 
   /**
     * Updates the data of an card from the repository
@@ -198,7 +198,7 @@ trait PersistenceServices {
     * @return an Int if the card has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
     */
-  def updateCard(request: UpdateCardRequest): ServiceDef2[Int, PersistenceServiceException]
+  def updateCard(request: UpdateCardRequest): TaskService[Int]
 
   /**
     * Bulk update of the data of some cards from the repository
@@ -206,7 +206,7 @@ trait PersistenceServices {
     * @return a Seq[Int] if the cards has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
     */
-  def updateCards(request: UpdateCardsRequest): ServiceDef2[Seq[Int], PersistenceServiceException]
+  def updateCards(request: UpdateCardsRequest): TaskService[Seq[Int]]
 
   /**
     * Adds an collection to the repository
@@ -214,7 +214,7 @@ trait PersistenceServices {
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
     * @throws PersistenceServiceException if exist some problem creating the collection
     */
-  def addCollection(request: AddCollectionRequest): ServiceDef2[Collection, PersistenceServiceException]
+  def addCollection(request: AddCollectionRequest): TaskService[Collection]
 
   /**
     * Adds collections to the repository
@@ -222,14 +222,14 @@ trait PersistenceServices {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem creating the collection
     */
-  def addCollections(requests: Seq[AddCollectionRequest]): ServiceDef2[Seq[Collection], PersistenceServiceException]
+  def addCollections(requests: Seq[AddCollectionRequest]): TaskService[Seq[Collection]]
 
   /**
     * Deletes all collections from the repository by the where clause
     * @return an Int if the collections has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the collections
     */
-  def deleteAllCollections(): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllCollections(): TaskService[Int]
 
   /**
     * Deletes a collection from the repository by the collection
@@ -237,14 +237,14 @@ trait PersistenceServices {
     * @return an Int if the collection has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the collection
     */
-  def deleteCollection(request: DeleteCollectionRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteCollection(request: DeleteCollectionRequest): TaskService[Int]
 
   /**
     * Obtains all the collections from the repository
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collections
     */
-  def fetchCollections: ServiceDef2[Seq[Collection], PersistenceServiceException]
+  def fetchCollections: TaskService[Seq[Collection]]
 
   /**
     * Obtains the collection from the repository by the sharedCollection id
@@ -252,7 +252,7 @@ trait PersistenceServices {
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
     */
-  def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest): ServiceDef2[Option[Collection], PersistenceServiceException]
+  def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest): TaskService[Option[Collection]]
 
   /**
     * Obtains the collection from the repository by the position
@@ -260,7 +260,7 @@ trait PersistenceServices {
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
     */
-  def fetchCollectionByPosition(request: FetchCollectionByPositionRequest): ServiceDef2[Option[Collection], PersistenceServiceException]
+  def fetchCollectionByPosition(request: FetchCollectionByPositionRequest): TaskService[Option[Collection]]
 
   /**
     * Obtains a collection from the repository by the id
@@ -268,7 +268,7 @@ trait PersistenceServices {
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
     */
-  def findCollectionById(request: FindCollectionByIdRequest): ServiceDef2[Option[Collection], PersistenceServiceException]
+  def findCollectionById(request: FindCollectionByIdRequest): TaskService[Option[Collection]]
 
   /**
     * Updates the data of an collection from the repository
@@ -276,7 +276,7 @@ trait PersistenceServices {
     * @return an Int if the collection has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the collection
     */
-  def updateCollection(request: UpdateCollectionRequest): ServiceDef2[Int, PersistenceServiceException]
+  def updateCollection(request: UpdateCollectionRequest): TaskService[Int]
 
   /**
     * Bulk update of the data of some collections from the repository
@@ -284,60 +284,60 @@ trait PersistenceServices {
     * @return a Seq[Int] if the cards has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
     */
-  def updateCollections(request: UpdateCollectionsRequest): ServiceDef2[Seq[Int], PersistenceServiceException]
+  def updateCollections(request: UpdateCollectionsRequest): TaskService[Seq[Int]]
 
   /**
     * Obtains the android id from the repository
     * @return an String with the android id
     * @throws AndroidIdNotFoundException if exist some problem obtaining the android id
     */
-  def getAndroidId(implicit context: ContextSupport): ServiceDef2[String, AndroidIdNotFoundException]
+  def getAndroidId(implicit context: ContextSupport): TaskService[String]
 
   /**
-   * Adds an user to the repository
-   * @param request includes the necessary data to create a new user in the repository
-   * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.User
-   * @throws PersistenceServiceException if exist some problem creating the user
-   */
-  def addUser(request: AddUserRequest): ServiceDef2[User, PersistenceServiceException]
+    * Adds an user to the repository
+    * @param request includes the necessary data to create a new user in the repository
+    * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.User
+    * @throws PersistenceServiceException if exist some problem creating the user
+    */
+  def addUser(request: AddUserRequest): TaskService[User]
 
   /**
     * Deletes all users from the repository by the where clause
     * @return an Int if the users has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the users
     */
-  def deleteAllUsers(): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllUsers(): TaskService[Int]
 
   /**
-   * Deletes an user from the repository by the user
-   * @param request includes the user to delete
-   * @return an Int if the user has been deleted correctly
-   * @throws PersistenceServiceException if exist some problem deleting the user
-   */
-  def deleteUser(request: DeleteUserRequest): ServiceDef2[Int, PersistenceServiceException]
+    * Deletes an user from the repository by the user
+    * @param request includes the user to delete
+    * @return an Int if the user has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the user
+    */
+  def deleteUser(request: DeleteUserRequest): TaskService[Int]
 
   /**
-   * Obtains all the users from the repository
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.User]
-   * @throws PersistenceServiceException if exist some problem obtaining the users
-   */
-  def fetchUsers: ServiceDef2[Seq[User], PersistenceServiceException]
+    * Obtains all the users from the repository
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.User]
+    * @throws PersistenceServiceException if exist some problem obtaining the users
+    */
+  def fetchUsers: TaskService[Seq[User]]
 
   /**
-   * Obtains an user from the repository by the id
-   * @param request includes the user id  of the user to get
-   * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.User]
-   * @throws PersistenceServiceException if exist some problem obtaining the user
-   */
-  def findUserById(request: FindUserByIdRequest): ServiceDef2[Option[User], PersistenceServiceException]
+    * Obtains an user from the repository by the id
+    * @param request includes the user id  of the user to get
+    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.User]
+    * @throws PersistenceServiceException if exist some problem obtaining the user
+    */
+  def findUserById(request: FindUserByIdRequest): TaskService[Option[User]]
 
   /**
-   * Updates the data of an user from the repository
-   * @param request includes the data to update the user
-   * @return an Int if the user has been updated correctly
-   * @throws PersistenceServiceException if exist some problem updating the user
-   */
-  def updateUser(request: UpdateUserRequest): ServiceDef2[Int, PersistenceServiceException]
+    * Updates the data of an user from the repository
+    * @param request includes the data to update the user
+    * @return an Int if the user has been updated correctly
+    * @throws PersistenceServiceException if exist some problem updating the user
+    */
+  def updateUser(request: UpdateUserRequest): TaskService[Int]
 
   /**
     * Creates or updates dock app to the repository
@@ -345,14 +345,14 @@ trait PersistenceServices {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem creating or updating the dock app
     */
-  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): ServiceDef2[Seq[DockApp], PersistenceServiceException]
+  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): TaskService[Seq[DockApp]]
 
   /**
     * Deletes all dock apps from the repository by the where clause
     * @return an Int if the dock apps has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the dock apps
     */
-  def deleteAllDockApps(): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllDockApps(): TaskService[Int]
 
   /**
     * Deletes a dock app from the repository by the dock app
@@ -360,21 +360,21 @@ trait PersistenceServices {
     * @return an Int if the dock app has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the dock app
     */
-  def deleteDockApp(request: DeleteDockAppRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteDockApp(request: DeleteDockAppRequest): TaskService[Int]
 
   /**
     * Obtains all the dock apps from the repository
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
-  def fetchDockApps: ServiceDef2[Seq[DockApp], PersistenceServiceException]
+  def fetchDockApps: TaskService[Seq[DockApp]]
 
   /**
     * Obtains iterable of dock apps from the repository
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.IterableDockApps
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
-  def fetchIterableDockApps: ServiceDef2[IterableDockApps, PersistenceServiceException]
+  def fetchIterableDockApps: TaskService[IterableDockApps]
 
   /**
     * Obtains a dock app from the repository by the id
@@ -382,7 +382,7 @@ trait PersistenceServices {
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock app
     */
-  def findDockAppById(request: FindDockAppByIdRequest): ServiceDef2[Option[DockApp], PersistenceServiceException]
+  def findDockAppById(request: FindDockAppByIdRequest): TaskService[Option[DockApp]]
 
   /**
     * Adds an moment to the repository
@@ -390,7 +390,7 @@ trait PersistenceServices {
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment
     * @throws PersistenceServiceException if exist some problem creating the moment
     */
-  def addMoment(request: AddMomentRequest): ServiceDef2[Moment, PersistenceServiceException]
+  def addMoment(request: AddMomentRequest): TaskService[Moment]
 
   /**
     * Adds moments to the repository
@@ -398,14 +398,14 @@ trait PersistenceServices {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment]
     * @throws PersistenceServiceException if exist some problem creating the moments
     */
-  def addMoments(request: Seq[AddMomentRequest]): ServiceDef2[Seq[Moment], PersistenceServiceException]
+  def addMoments(request: Seq[AddMomentRequest]): TaskService[Seq[Moment]]
 
   /**
     * Deletes all moments from the repository by the where clause
     * @return an Int if the moments has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the moments
     */
-  def deleteAllMoments(): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllMoments(): TaskService[Int]
 
   /**
     * Deletes an moment from the repository by the moment
@@ -413,14 +413,14 @@ trait PersistenceServices {
     * @return an Int if the moment has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the moment
     */
-  def deleteMoment(request: DeleteMomentRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteMoment(request: DeleteMomentRequest): TaskService[Int]
 
   /**
     * Obtains all the moments from the repository
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment]
     * @throws PersistenceServiceException if exist some problem obtaining the moments
     */
-  def fetchMoments: ServiceDef2[Seq[Moment], PersistenceServiceException]
+  def fetchMoments: TaskService[Seq[Moment]]
 
   /**
     * Obtains an moment from the repository by the id
@@ -428,7 +428,7 @@ trait PersistenceServices {
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment]
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
-  def findMomentById(request: FindMomentByIdRequest): ServiceDef2[Option[Moment], PersistenceServiceException]
+  def findMomentById(request: FindMomentByIdRequest): TaskService[Option[Moment]]
 
   /**
     * Obtains an moment from the repository by type. Return exception if the type doesn't exist
@@ -436,7 +436,7 @@ trait PersistenceServices {
     * @return an com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
-  def getMomentByType(momentType: String): ServiceDef2[Moment, PersistenceServiceException]
+  def getMomentByType(momentType: String): TaskService[Moment]
 
   /**
     * Obtains an moment from the repository by type. Return None if the type doesn't exist
@@ -444,7 +444,8 @@ trait PersistenceServices {
     * @return an com.fortysevendeg.ninecardslauncher.services.persistence.models.Moment
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
-  def fetchMomentByType(momentType: String): ServiceDef2[Option[Moment], PersistenceServiceException]
+
+  def fetchMomentByType(momentType: String): TaskService[Option[Moment]]
 
   /**
     * Updates the data of an moment from the repository
@@ -452,7 +453,7 @@ trait PersistenceServices {
     * @return an Int if the moment has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the moment
     */
-  def updateMoment(request: UpdateMomentRequest): ServiceDef2[Int, PersistenceServiceException]
+  def updateMoment(request: UpdateMomentRequest): TaskService[Int]
 
   /**
     * Add a widget to the repository
@@ -460,7 +461,7 @@ trait PersistenceServices {
     * @return the com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget
     * @throws PersistenceServiceException if exist some problem creating the widgets
     */
-  def addWidget(request: AddWidgetRequest): ServiceDef2[Widget, PersistenceServiceException]
+  def addWidget(request: AddWidgetRequest): TaskService[Widget]
 
   /**
     * Adds widgets to the repository
@@ -468,14 +469,14 @@ trait PersistenceServices {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem creating the widgets
     */
-  def addWidgets(request: Seq[AddWidgetRequest]): ServiceDef2[Seq[Widget], PersistenceServiceException]
+  def addWidgets(request: Seq[AddWidgetRequest]): TaskService[Seq[Widget]]
 
   /**
     * Deletes all widgets from the repository
     * @return an Int if the widgets has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the widgets
     */
-  def deleteAllWidgets(): ServiceDef2[Int, PersistenceServiceException]
+  def deleteAllWidgets(): TaskService[Int]
 
   /**
     * Deletes a widget from the repository
@@ -483,7 +484,7 @@ trait PersistenceServices {
     * @return an Int if the widget has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the widget
     */
-  def deleteWidget(request: DeleteWidgetRequest): ServiceDef2[Int, PersistenceServiceException]
+  def deleteWidget(request: DeleteWidgetRequest): TaskService[Int]
 
   /**
     * Deletes the widgets from the repository by the moment id
@@ -491,14 +492,14 @@ trait PersistenceServices {
     * @return an Int if the widgets have been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the widgets
     */
-  def deleteWidgetsByMoment(momentId: Int): ServiceDef2[Int, PersistenceServiceException]
+  def deleteWidgetsByMoment(momentId: Int): TaskService[Int]
 
   /**
     * Obtains all the widgets from the repository
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widgets
     */
-  def fetchWidgets: ServiceDef2[Seq[Widget], PersistenceServiceException]
+  def fetchWidgets: TaskService[Seq[Widget]]
 
   /**
     * Obtains a widget from the repository by the id
@@ -506,7 +507,7 @@ trait PersistenceServices {
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
     */
-  def findWidgetById(widgetId: Int): ServiceDef2[Option[Widget], PersistenceServiceException]
+  def findWidgetById(widgetId: Int): TaskService[Option[Widget]]
 
   /**
     * Obtains the widget from the repository by the appWidgetId
@@ -514,7 +515,7 @@ trait PersistenceServices {
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
     */
-  def fetchWidgetByAppWidgetId(appWidgetId: Int): ServiceDef2[Option[Widget], PersistenceServiceException]
+  def fetchWidgetByAppWidgetId(appWidgetId: Int): TaskService[Option[Widget]]
 
   /**
     * Obtains all widgets from the repository by the moment id
@@ -522,7 +523,7 @@ trait PersistenceServices {
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widgets
     */
-  def fetchWidgetsByMoment(momentId: Int): ServiceDef2[Seq[Widget], PersistenceServiceException]
+  def fetchWidgetsByMoment(momentId: Int): TaskService[Seq[Widget]]
 
   /**
     * Updates the data of a widget from the repository
@@ -530,7 +531,7 @@ trait PersistenceServices {
     * @return an Int if the widget has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the widget
     */
-  def updateWidget(request: UpdateWidgetRequest): ServiceDef2[Int, PersistenceServiceException]
+  def updateWidget(request: UpdateWidgetRequest): TaskService[Int]
 
   /**
     * Bulk update of the data of some widgets from the repository
@@ -538,6 +539,6 @@ trait PersistenceServices {
     * @return a Seq[Int] if the widgets has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the widget
     */
-  def updateWidgets(request: UpdateWidgetsRequest): ServiceDef2[Seq[Int], PersistenceServiceException]
+  def updateWidgets(request: UpdateWidgetsRequest): TaskService[Seq[Int]]
 
 }

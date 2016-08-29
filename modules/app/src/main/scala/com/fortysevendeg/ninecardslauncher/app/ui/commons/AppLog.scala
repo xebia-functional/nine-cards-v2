@@ -15,10 +15,10 @@ object AppLog {
     } catch { case _: Throwable => }
   }
 
-  def printErrorTaskMessage(header: String, exs: Seq[Throwable]) = {
+  def printErrorTaskMessage(header: String, ex: Throwable) = {
     try {
       Log.e(tag, header)
-      exs foreach (ex => printErrorMessage(ex, Some(errorMessage(ex))))
+      printErrorMessage(ex, Some(errorMessage(ex)))
     } catch { case _: Throwable => }
   }
 

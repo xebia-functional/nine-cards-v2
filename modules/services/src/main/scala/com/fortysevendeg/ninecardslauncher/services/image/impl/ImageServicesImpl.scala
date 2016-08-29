@@ -3,6 +3,8 @@ package com.fortysevendeg.ninecardslauncher.services.image.impl
 import android.media.ThumbnailUtils
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.image._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+
 
 class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageServicesTasks = ImageServicesTasks)
   extends ImageServices

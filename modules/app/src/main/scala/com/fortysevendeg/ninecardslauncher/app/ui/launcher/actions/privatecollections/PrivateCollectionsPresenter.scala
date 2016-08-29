@@ -3,11 +3,10 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecolle
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models._
-import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetByName}
-import com.fortysevendeg.ninecardslauncher.process.moment.{MomentConversions, MomentException}
+import com.fortysevendeg.ninecardslauncher.process.device.GetByName
+import com.fortysevendeg.ninecardslauncher.process.moment.MomentConversions
 import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
@@ -23,7 +22,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   }
 
   def loadPrivateCollections(): Unit = {
-    Task.fork(getPrivateCollections.run).resolveAsyncUi(
+    Task.fork(getPrivateCollections.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (privateCollections: Seq[PrivateCollection]) => {
         if (privateCollections.isEmpty) {
@@ -36,13 +35,13 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   }
 
   def saveCollection(privateCollection: PrivateCollection): Unit = {
-    Task.fork(di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection)).run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection)).value).resolveAsyncUi(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
       onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }
 
   private[this] def getPrivateCollections:
-  ServiceDef2[Seq[PrivateCollection], AppException with CollectionException with MomentException] =
+  TaskService[Seq[PrivateCollection]] =
     for {
       collections <- di.collectionProcess.getCollections
       moments <- di.momentProcess.getMoments
