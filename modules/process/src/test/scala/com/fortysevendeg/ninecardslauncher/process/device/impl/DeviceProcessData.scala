@@ -11,11 +11,10 @@ import com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, CallData, LastCallsContact, Widget, _}
 import com.fortysevendeg.ninecardslauncher.process.device.types._
 import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp}
-import com.fortysevendeg.ninecardslauncher.services.api.RequestConfig
-import com.fortysevendeg.ninecardslauncher.services.api.models._
+import com.fortysevendeg.ninecardslauncher.services.api.{CategorizedPackage, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => ServicesCall}
-import com.fortysevendeg.ninecardslauncher.services.commons.{EmailCategory => ServicesEmailCategory, EmailHome => ServicesEmailHome, EmailOther => ServicesEmailOther, EmailWork => ServicesEmailWork, PhoneCategory => ServicesPhoneCategory, PhoneFaxHome => ServicesPhoneFaxHome, PhoneFaxWork => ServicesPhoneFaxWork, PhoneHome => ServicesPhoneHome, PhoneMain => ServicesPhoneMain, PhoneMobile => ServicesPhoneMobile, PhoneOther => ServicesPhoneOther, PhonePager => ServicesPhonePager, PhoneWork => ServicesPhoneWork}
+import com.fortysevendeg.ninecardslauncher.services.commons.{EmailHome => ServicesEmailHome, PhoneHome => ServicesPhoneHome, PhoneMobile => ServicesPhoneMobile, PhoneOther => ServicesPhoneOther, PhoneWork => ServicesPhoneWork}
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
@@ -272,16 +271,7 @@ trait DeviceProcessData
       className = className3,
       path = path3))
 
-  val googlePlaySimplePackageNoCached = GooglePlaySimplePackage(
-    packageName = packageName4,
-    appType = "APP",
-    appCategory = "SOCIAL",
-    starRating = 4.5,
-    numDownloads = "+100.000",
-    ratingCount = 5000,
-    commentCount = 40000)
-
-  val requestConfig = RequestConfig("fake-device-id", "fake-token", Some("fake-android-token"))
+  val requestConfig = RequestConfig("fake-api-key", "fake-session-token", "fake-android-id", Some("fake-android-token"))
 
   val packageNameForCreateImage = "com.example"
 
@@ -294,19 +284,9 @@ trait DeviceProcessData
     url = urlForCreateImage,
     path = pathForCreateImage)
 
-  val googlePlayPackage = GooglePlayPackage(
-    GooglePlayApp(
-      docid = packageNameForCreateImage,
-      title = "",
-      creator = "",
-      descriptionHtml = None,
-      icon = Some(urlForCreateImage),
-      background = None,
-      screenshots = Seq.empty,
-      video = None,
-      details = GooglePlayDetails(GooglePlayAppDetails(Seq("SOCIAL"), "", None, None, None, Option(1), Option("1"), None, Seq.empty)),
-      offer = Seq.empty,
-      aggregateRating = GooglePlayAggregateRating(0, None, 0, 0, 0, 0, 0, 0)))
+  val categorizedPackage = CategorizedPackage(
+    packageName = packageNameForCreateImage,
+    category = Some("SOCIAL"))
 
   val shortcuts: Seq[Shortcut] = Seq(
     Shortcut(
@@ -681,5 +661,7 @@ trait DeviceProcessData
     ServicesDataCounter("twoWeeks", 1),
     ServicesDataCounter("oneMonth", 6),
     ServicesDataCounter("twoMonths", 5))
+
+  val networks = 0 to 10 map (c => s"Networks $c")
 
 }

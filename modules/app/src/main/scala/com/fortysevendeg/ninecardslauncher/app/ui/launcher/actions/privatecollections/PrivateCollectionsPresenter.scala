@@ -27,18 +27,18 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
       onPreTask = () => actions.showLoading(),
       onResult = (privateCollections: Seq[PrivateCollection]) => {
         if (privateCollections.isEmpty) {
-          actions.showEmptyMessage()
+          actions.showEmptyMessageInScreen()
         } else {
           actions.addPrivateCollections(privateCollections)
         }
       },
-      onException = (ex: Throwable) => actions.showContactUsError())
+      onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen())
   }
 
   def saveCollection(privateCollection: PrivateCollection): Unit = {
     Task.fork(di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection)).run).resolveAsyncUi(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
-      onException = (ex) => actions.showContactUsError())
+      onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }
 
   private[this] def getPrivateCollections:
@@ -57,8 +57,10 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
           case _ => false
         }
       }
-      val privateMoments = newMomentCollections filterNot (newMomentCollection => moments map (_.momentType) contains newMomentCollection.moment)
-      privateCollections ++ privateMoments
+      val privateMoments = newMomentCollections filterNot { newMomentCollection =>
+        moments find (_.momentType == newMomentCollection.moment) exists (_.collectionId.isDefined)
+      }
+      privateMoments ++ privateCollections
     }
 
 }
@@ -69,9 +71,11 @@ trait PrivateCollectionsActions {
 
   def showLoading(): Ui[Any]
 
-  def showContactUsError(): Ui[Any]
+  def showErrorLoadingCollectionInScreen(): Ui[Any]
 
-  def showEmptyMessage(): Ui[Any]
+  def showErrorSavingCollectionInScreen(): Ui[Any]
+
+  def showEmptyMessageInScreen(): Ui[Any]
 
   def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any]
 

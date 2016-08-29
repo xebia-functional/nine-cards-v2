@@ -7,6 +7,4 @@ class ResourceUtils {
   def getPath(filename: String)(implicit context: ContextSupport): String =
     s"${context.getAppIconsDir.getPath}/$filename"
 
-  private[this] def replace(text: String) = text.toLowerCase.replace(".", "_")
-
 }

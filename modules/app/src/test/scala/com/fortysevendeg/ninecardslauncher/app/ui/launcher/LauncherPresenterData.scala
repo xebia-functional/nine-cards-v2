@@ -78,7 +78,7 @@ trait LauncherPresenterData {
     imagePath = imagePath,
     position = 0)
 
-  val userId = "fake-user-id"
+  val apiKey = "fake-api-key"
 
   val userToken = "fake-user-token"
 
@@ -88,13 +88,11 @@ trait LauncherPresenterData {
     id = 1,
     sessionToken = Option(userToken),
     email = Option(email),
-    userId = Option(userId),
-    installationId = None,
+    apiKey = Option(apiKey),
     deviceToken = None,
-    androidToken = None,
+    marketToken = None,
     deviceName = None,
     deviceCloudId = None,
-    name = Option(name),
     userProfile = UserProfile(name = None, avatar = None, cover = None))
 
 }

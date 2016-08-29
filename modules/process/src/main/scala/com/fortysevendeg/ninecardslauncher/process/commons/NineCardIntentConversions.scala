@@ -69,4 +69,11 @@ trait NineCardIntentConversions {
       (intent, ContactCardType.name)
   }
 
+  def packageToNineCardIntent(packageName: String): NineCardIntent = {
+    val intent = NineCardIntent(NineCardIntentExtras(
+      package_name = Option(packageName)))
+    intent.setAction(models.NineCardsIntentExtras.openNoInstalledApp)
+    intent
+  }
+
 }

@@ -21,34 +21,22 @@
         <item>1</item>
     </string-array>
 
-    <string-array name="defaultWindows">
-        <item>@string/defaultWindowApps</item>
-        <item>@string/defaultWindowContacts</item>
+    <string-array name="drawerActions">
+        <item>@string/appDrawerOpenKeyboard</item>
+        <item>@string/appDrawerOpenContacts</item>
     </string-array>
 
-    <string-array name="defaultWindowsValues">
+    <string-array name="drawerActionsValues">
         <item>0</item>
         <item>1</item>
     </string-array>
 
-    <string-array name="letterAnimations">
-        <item>@string/letterAnimations1</item>
-        <item>@string/letterAnimations2</item>
-        <item>@string/letterAnimations3</item>
+    <string-array name="appDrawerOpenAnimations">
+        <item>@string/appDrawerOpenAnimationReveal</item>
+        <item>@string/appDrawerOpenAnimationFade</item>
     </string-array>
 
-    <string-array name="letterAnimationsValues">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
-    <string-array name="windowIcons">
-        <item>@string/windowIconsClassic</item>
-        <item>@string/windowIconsNineCards</item>
-    </string-array>
-
-    <string-array name="windowIconsValues">
+    <string-array name="appDrawerOpenAnimationsValues">
         <item>0</item>
         <item>1</item>
     </string-array>
@@ -159,6 +147,16 @@
         <item>0</item>
         <item>1</item>
         <item>2</item>
+    </string-array>
+
+    <string-array name="days_letters">
+        <item>S</item>
+        <item>M</item>
+        <item>T</item>
+        <item>W</item>
+        <item>T</item>
+        <item>F</item>
+        <item>S</item>
     </string-array>
 
 </resources>

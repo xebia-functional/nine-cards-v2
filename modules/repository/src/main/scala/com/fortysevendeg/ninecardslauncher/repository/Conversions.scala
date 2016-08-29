@@ -54,7 +54,7 @@ object Conversions {
   def toMoment(momentEntity: MomentEntity): Moment = Moment(
     id = momentEntity.id,
     data = MomentData(
-      collectionId = Option[Int](momentEntity.data.collectionId),
+      collectionId = momentEntity.data.collectionId,
       timeslot = momentEntity.data.timeslot,
       wifi = momentEntity.data.wifi,
       headphone = momentEntity.data.headphone,
@@ -63,12 +63,11 @@ object Conversions {
   def toUser(userEntity: UserEntity): User = User(
     id = userEntity.id,
     data = UserData(
-      userId = Option[String](userEntity.data.userId),
       email = Option[String](userEntity.data.email),
+      apiKey = Option[String](userEntity.data.apiKey),
       sessionToken = Option[String](userEntity.data.sessionToken),
-      installationId = Option[String](userEntity.data.installationId),
       deviceToken = Option[String](userEntity.data.deviceToken),
-      androidToken = Option[String](userEntity.data.androidToken),
+      marketToken = Option[String](userEntity.data.marketToken),
       name = Option[String](userEntity.data.name),
       avatar = Option[String](userEntity.data.avatar),
       cover = Option[String](userEntity.data.cover),

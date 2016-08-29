@@ -14,12 +14,15 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{Collections
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
+import android.appwidget.AppWidgetHostView
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentPresenter
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import macroid._
@@ -56,7 +59,7 @@ object LauncherWorkSpacesTweaks {
     view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
   }
 
-  def lwsAddWidget(widgetView: View, cell: Cell, widget: AppWidget) = Tweak[W] (_.addWidget(widgetView, cell, widget))
+  def lwsAddWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget) = Tweak[W] (_.addWidget(widgetView, cell, widget))
 
   def lwsShowRules() = Tweak[W] (_.showRulesInMoment())
 
@@ -67,8 +70,6 @@ object LauncherWorkSpacesTweaks {
   def lwsResizeCurrentWidget() = Tweak[W] (_.resizeCurrentWidget())
 
   def lwsMoveCurrentWidget() = Tweak[W] (_.moveCurrentWidget())
-
-  def lwsArrowWidget(arrow: Arrow) = Tweak[W] (_.arrowWidget(arrow))
 
   def lwsResizeWidgetById(id: Int, resize: ResizeWidgetRequest) = Tweak[W] (_.resizeWidgetById(id, resize))
 
@@ -397,8 +398,8 @@ object TopBarLayoutTweaks {
   def tblInit(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.init.run)
 
-  def tblReloadMoment(collection: Collection)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
-    Tweak[W] (_.reloadMoment(collection).run)
+  def tblReloadMoment(moment: NineCardsMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.reloadMoment(moment).run)
 
   def tblReloadByType(workSpaceType: WorkSpaceType)(implicit contextWrapper: ContextWrapper) =
     Tweak[W] (_.reloadByType(workSpaceType).run)
@@ -439,4 +440,20 @@ object EditWidgetsBottomPanelLayoutTweaks {
   def ewbAnimateActions = Tweak[W] (_.animateActions().run)
 
   def ewbAnimateCursors(implicit launcherPresenter: LauncherPresenter) = Tweak[W] (_.animateCursors.run)
+}
+
+object EditHourMomentLayoutTweaks {
+  type W = EditHourMomentLayout
+
+  def ehmPopulate(timeSlot: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter) =
+    Tweak[W] (_.populate(timeSlot, position).run)
+
+}
+
+object EditWifiMomentLayoutTweaks {
+  type W = EditWifiMomentLayout
+
+  def ewmPopulate(wifi: String, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter) =
+    Tweak[W] (_.populate(wifi, position).run)
+
 }

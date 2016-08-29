@@ -373,7 +373,7 @@ class MomentProcessImplSpec
         val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
         result must beLike {
           case Answer(resultMoment) =>
-            resultMoment shouldEqual Some(workMoment)
+            resultMoment shouldEqual Some(transitMoment)
         }
       }
 
@@ -386,7 +386,7 @@ class MomentProcessImplSpec
         val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
         result must beLike {
           case Answer(resultMoment) =>
-            resultMoment shouldEqual Some(homeMorningMoment)
+            resultMoment shouldEqual Some(transitMoment)
         }
       }
 
@@ -399,7 +399,7 @@ class MomentProcessImplSpec
         val result = momentProcess.getBestAvailableMoment(contextSupport).run.run
         result must beLike {
           case Answer(resultMoment) =>
-            resultMoment shouldEqual Some(homeNightMoment)
+            resultMoment shouldEqual Some(transitMoment)
         }
       }
 

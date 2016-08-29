@@ -99,9 +99,14 @@ trait PublicCollectionsActionsImpl
         }) ~
       (recycler <~ recyclerStyle)
 
-  override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError, () => {
-    collectionPresenter.loadPublicCollections()
-  })
+  override def showErrorLoadingCollectionInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.errorLoadingPublicCollections, error = true, action = collectionPresenter.loadPublicCollections())
+
+  override def showErrorSavingCollectionInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.errorSavingPublicCollections, error = true, action = collectionPresenter.loadPublicCollections())
+
+  override def showEmptyMessageInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.emptyPublicCollections, error = false, collectionPresenter.loadPublicCollections())
 
   override def loadPublicCollections(
     sharedCollections: Seq[SharedCollection]): Ui[Any] = {
@@ -184,7 +189,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
       (addCollection <~ On.click(Ui(presenter.saveSharedCollection(collection)))) ~
-      (shareCollection <~ On.click(Ui(presenter.launchShare(collection.shareLink))))
+      (shareCollection <~ On.click(Ui(presenter.launchShareCollection(collection.sharedCollectionId))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

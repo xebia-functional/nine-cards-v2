@@ -2,64 +2,64 @@ package com.fortysevendeg.ninecardslauncher.services.api
 
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 
-case class RequestConfig(deviceId: String, token: String, androidToken: Option[String])
+case class RequestConfigV1(deviceId: String, token: String, marketToken: Option[String])
+
+case class RequestConfig(
+  apiKey: String,
+  sessionToken: String,
+  androidId: String,
+  marketToken: Option[String] = None)
 
 case class LoginResponse(
-  statusCode: Int,
-  user: User)
+  apiKey: String,
+  sessionToken: String)
 
-case class InstallationResponse(
+case class LoginResponseV1(
   statusCode: Int,
-  installation: Installation)
+  userId: Option[String],
+  sessionToken: Option[String],
+  email: Option[String],
+  devices: Seq[LoginV1Device])
 
 case class UpdateInstallationResponse(
   statusCode: Int)
 
 case class GooglePlayPackageResponse(
   statusCode: Int,
-  app: GooglePlayApp)
+  app: CategorizedPackage)
+
+case class CategorizedPackage(
+  packageName: String,
+  category: Option[String])
 
 case class GooglePlayPackagesResponse(
   statusCode: Int,
-  packages: Seq[GooglePlayPackage])
+  packages: Seq[CategorizedPackage])
 
-case class GooglePlaySimplePackagesResponse(
-  statusCode: Int,
-  apps: GooglePlaySimplePackages)
-
-trait UserConfigResponse {
+trait UserV1Response {
   def statusCode: Int
 
-  def userConfig: UserConfig
+  def userConfig: UserV1
 }
 
-case class GetUserConfigResponse(
+case class GetUserV1Response(
   statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
-case class SaveDeviceResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
-case class CheckpointPurchaseProductResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
-case class CheckpointCustomCollectionResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
-case class CheckpointJoinedByResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
-
-case class TesterResponse(
-  statusCode: Int,
-  userConfig: UserConfig) extends UserConfigResponse
+  userConfig: UserV1) extends UserV1Response
 
 case class RecommendationResponse(
   statusCode: Int,
-  seq: Seq[GooglePlayApp])
+  seq: Seq[RecommendationApp])
+
+case class RecommendationApp(
+  packageName: String,
+  name: String,
+  downloads: String,
+  icon: String,
+  stars: Double,
+  free: Boolean,
+  description: String,
+  screenshots: Seq[String]
+)
 
 case class SharedCollectionResponseList(
   statusCode: Int,
@@ -70,11 +70,8 @@ case class SharedCollectionResponse(
   sharedCollectionId: String,
   publishedOn: Long,
   description: String,
-  screenshots: Seq[String],
   author: String,
-  tags: Seq[String],
   name: String,
-  shareLink: String,
   packages: Seq[String],
   resolvedPackages: Seq[SharedCollectionPackageResponse],
   views: Int,
@@ -85,7 +82,6 @@ case class SharedCollectionResponse(
 case class SharedCollectionPackageResponse(
   packageName: String,
   title: String,
-  description: String,
   icon: String,
   stars: Double,
   downloads: String,
@@ -93,15 +89,8 @@ case class SharedCollectionPackageResponse(
 
 case class CreateSharedCollectionResponse(
   statusCode: Int,
-  newSharedCollection: CreateSharedCollection)
+  sharedCollectionId: String)
 
-case class CreateSharedCollection(
-  name: String,
-  description: String,
-  author: String,
-  packages: Seq[String],
-  category: String,
-  shareLink: String,
-  sharedCollectionId: String,
-  icon: String,
-  community: Boolean)
+case class UpdateSharedCollectionResponse(
+  statusCode: Int,
+  sharedCollectionId: String)

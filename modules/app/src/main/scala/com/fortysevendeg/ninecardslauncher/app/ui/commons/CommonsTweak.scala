@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.Paint
+import android.graphics.{Paint, PorterDuff}
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable._
 import android.os.Vibrator
@@ -14,7 +14,8 @@ import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
-import android.widget.{EditText, ImageView, Spinner, TextView}
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -124,11 +125,23 @@ object ExtraTweaks {
 
   def dlCloseDrawerEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.closeDrawer(GravityCompat.END))
 
+  def dlLockedClosedStart: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.START))
+
+  def dlLockedClosedEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED, GravityCompat.END))
+
   def dlLockedClosed: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED))
 
   def dlUnlocked: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED))
 
+  def dlUnlockedStart: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.START))
+
+  def dlUnlockedEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED, GravityCompat.END))
+
   def dlLockedOpen: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN))
+
+  def dlLockedOpenStart: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, GravityCompat.START))
+
+  def dlLockedOpenEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_OPEN, GravityCompat.END))
 
   def dlSwapDrawer: Tweak[DrawerLayout] = Tweak[DrawerLayout] { view =>
     if (view.isDrawerOpen(GravityCompat.START)) {
@@ -154,6 +167,24 @@ object ExtraTweaks {
 
   def sSelection(position: Int) = Tweak[Spinner](_.setSelection(position))
 
+  def sItemSelectedListener(onItem: (Int => Unit)) = Tweak[Spinner](_.setOnItemSelectedListener(new OnItemSelectedListener {
+    override def onNothingSelected(parent: AdapterView[_]): Unit = {}
+
+    override def onItemSelected(parent: AdapterView[_], view: View, position: Int, id: Long): Unit = onItem(position)
+  }))
+
+  def sChangeDropdownColor(color: Int) = Tweak[Spinner](_.getBackground.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
+
   def tvHintColor(color: Int): Tweak[TextView] = Tweak[TextView](_.setHintTextColor(color))
+
+}
+
+object CommonsResourcesExtras {
+
+  def resGetQuantityString(resourceId: Int, quantity: Int)(implicit c: ContextWrapper): String =
+    c.bestAvailable.getResources.getQuantityString(resourceId, quantity)
+
+  def resGetQuantityString(resourceId: Int, quantity: Int, formatArgs: AnyRef*)(implicit c: ContextWrapper): String =
+    c.bestAvailable.getResources.getQuantityString(resourceId, quantity, formatArgs: _*)
 
 }

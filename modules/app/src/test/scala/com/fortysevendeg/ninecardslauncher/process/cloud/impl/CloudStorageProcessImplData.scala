@@ -22,12 +22,11 @@ trait CloudStorageProcessImplData {
 
   val user = User(
     activeUserId,
-    userId = Some("user-id"),
     email = Some("email"),
+    apiKey = Some("api-key"),
     sessionToken = Some("session-token"),
-    installationId = Some("installation-id"),
     deviceToken = Some("device-token"),
-    androidToken = Some("android-token"),
+    marketToken = Some("android-token"),
     name = None,
     avatar = None,
     cover = None,

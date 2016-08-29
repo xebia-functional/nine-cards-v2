@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntity, CardEntity, MomentEntity}
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.PersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByCategory, OrderByInstallDate, OrderByName, PersistenceServiceException}
+import com.fortysevendeg.ninecardslauncher.services.persistence._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -57,7 +57,7 @@ trait PersistenceServicesSpecification
     mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.answer(items)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.answer(item)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns Service(Task(Result.answer(item)))
     }
 
     List.tabulate(5) { index =>
@@ -87,6 +87,10 @@ trait PersistenceServicesSpecification
     mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns Service(Task(Result.answer(Option(repoCollection))))
 
     mockCollectionRepository.fetchCollectionBySharedCollectionId(nonExistentSharedCollectionId) returns Service(Task(Result.answer(None)))
+
+    mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId) returns Service(Task(Result.answer(Option(repoCollection))))
+
+    mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(nonExistentSharedCollectionId) returns Service(Task(Result.answer(None)))
 
     mockCollectionRepository.fetchSortedCollections returns Service(Task(Result.answer(seqRepoCollection)))
 
@@ -121,6 +125,8 @@ trait PersistenceServicesSpecification
     mockMomentRepository.deleteMoments() returns Service(Task(Result.answer(items)))
 
     mockMomentRepository.deleteMoment(repoMoment) returns Service(Task(Result.answer(item)))
+
+    mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns Service(Task(Result.answer(item)))
 
     mockMomentRepository.fetchMoments() returns Service(Task(Result.answer(seqRepoMoment)))
 
@@ -182,7 +188,7 @@ trait PersistenceServicesSpecification
     mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns Service(Task(Result.errata(exception)))
 
     seqRepoCard foreach { repoCard =>
-      mockCardRepository.deleteCard(repoCard) returns Service(Task(Result.errata(exception)))
+      mockCardRepository.deleteCard(collectionId, repoCard) returns Service(Task(Result.errata(exception)))
     }
 
     List.tabulate(5) { index =>
@@ -1034,8 +1040,9 @@ class PersistenceServicesSpec
 
   "fetchCollectionBySharedCollection" should {
 
-    "return a Collection for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId)).run.run
+    "return a Collection for a valid request and original to true" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(
+        FetchCollectionBySharedCollectionRequest(sharedCollectionId, original = true)).run.run
 
       result must beLike {
         case Answer(maybeCollection) =>
@@ -1046,8 +1053,32 @@ class PersistenceServicesSpec
       }
     }
 
-    "return None when a non-existent id is given" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(nonExistentSharedCollectionId)).run.run
+    "return a Collection for a valid request and original to false" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(
+        FetchCollectionBySharedCollectionRequest(sharedCollectionId, original = false)).run.run
+
+      result must beLike {
+        case Answer(maybeCollection) =>
+          maybeCollection must beSome[Collection].which { collection =>
+            collection.id shouldEqual collectionId
+            collection.sharedCollectionId shouldEqual Option(sharedCollectionId)
+          }
+      }
+    }
+
+    "return None when a non-existent id and original to true is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(
+        FetchCollectionBySharedCollectionRequest(nonExistentSharedCollectionId, original = true)).run.run
+
+      result must beLike {
+        case Answer(maybeCollection) =>
+          maybeCollection must beNone
+      }
+    }
+
+    "return None when a non-existent id and original to false is given" in new ValidRepositoryServicesResponses {
+      val result = persistenceServices.fetchCollectionBySharedCollection(
+        FetchCollectionBySharedCollectionRequest(nonExistentSharedCollectionId, original = false)).run.run
 
       result must beLike {
         case Answer(maybeCollection) =>
@@ -1056,7 +1087,8 @@ class PersistenceServicesSpec
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchCollectionBySharedCollection(createFetchCollectionBySharedCollection(sharedCollectionId)).run.run
+      val result = persistenceServices.fetchCollectionBySharedCollection(
+        FetchCollectionBySharedCollectionRequest(sharedCollectionId, original = false)).run.run
 
       result must beLike {
         case Errata(e) => e.headOption must beSome.which {
@@ -1159,7 +1191,7 @@ class PersistenceServicesSpec
       result must beLike {
         case Answer(user) =>
           user.id shouldEqual uId
-          user.userId shouldEqual Some(userId)
+          user.email shouldEqual Some(email)
       }
     }
 

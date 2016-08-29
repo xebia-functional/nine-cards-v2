@@ -12,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.AppDockType
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.api.models.GooglePlaySimplePackages
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServices, CallsServicesException}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
@@ -20,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
 import com.fortysevendeg.ninecardslauncher.services.widgets.{WidgetServicesException, WidgetsServices}
+import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -78,14 +78,11 @@ trait DeviceProcessSpecification
 
     val mockApiServices = mock[ApiServices]
 
-    mockApiServices.googlePlaySimplePackages(any)(any) returns
-      Service(Task(Result.answer(GooglePlaySimplePackagesResponse(statusCodeOk, GooglePlaySimplePackages(Seq.empty, Seq.empty)))))
-
     mockApiServices.googlePlayPackages(any)(any) returns
       Service(Task(Result.answer(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
 
     mockApiServices.googlePlayPackage(any)(any) returns
-      Service(Task(Result.answer(GooglePlayPackageResponse(statusCodeOk, googlePlayPackage.app))))
+      Service(Task(Result.answer(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
 
     val mockShortcutsServices = mock[ShortcutsServices]
 
@@ -204,6 +201,11 @@ trait DeviceProcessSpecification
     mockContactsServices.fetchContactByPhoneNumber(phoneNumber3) returns
       Service(Task(Result.answer(Some(callsContacts(2)))))
 
+    val mockWifiServices = mock[WifiServices]
+
+    mockWifiServices.getConfiguredNetworks(contextSupport) returns
+      Service(Task(Result.answer(networks)))
+
     val deviceProcess = new DeviceProcessImpl(
       mockAppsServices,
       mockApiServices,
@@ -212,11 +214,12 @@ trait DeviceProcessSpecification
       mockContactsServices,
       mockImageServices,
       mockWidgetsServices,
-      mockCallsServices) {
+      mockCallsServices,
+      mockWifiServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
-      apiUtils.getRequestConfig(contextSupport) returns
-        Service(Task(Result.answer(requestConfig)))
+
+      apiUtils.getRequestConfig(contextSupport) returns Service(Task(Result.answer(requestConfig)))
 
     }
 
@@ -1372,6 +1375,19 @@ class DeviceProcessImplSpec
           }
         }
       }
+  }
+
+  "getConfiguredNetworks" should {
+
+    "returns all networks for a valid request" in
+      new DeviceProcessScope with DockAppsScope {
+        val result = deviceProcess.getConfiguredNetworks(contextSupport).run.run
+        result must beLike {
+          case Answer(r) =>
+            r shouldEqual networks
+        }
+      }
+
   }
 
 }

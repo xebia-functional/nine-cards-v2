@@ -10,7 +10,7 @@ import rapture.core.{Answer, Errata, Result}
 import scala.util.{Failure, Success, Try}
 import scalaz.concurrent.Task
 
-class ServiceClient(httpClient: HttpClient, baseUrl: String) {
+class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
 
   def get[Res](
     path: String,
@@ -87,13 +87,24 @@ class ServiceClient(httpClient: HttpClient, baseUrl: String) {
     clientResponse: HttpClientResponse,
     maybeReads: Option[Reads[T]],
     emptyResponse: Boolean
-    ): ServiceDef2[Option[T], ServiceClientException] = Service {
-    Task {
-      (clientResponse.body, emptyResponse, maybeReads) match {
-        case (Some(d), false, Some(r)) => transformResponse[T](d, r)
-        case (None, false, _) => Errata(ServiceClientExceptionImpl("No content"))
-        case (Some(d), false, None) => Errata(ServiceClientExceptionImpl("No transformer found for type"))
-        case _ => Answer(None)
+    ): ServiceDef2[Option[T], ServiceClientException] = {
+
+    def isError: Boolean =
+      clientResponse.statusCode >= 400 && clientResponse.statusCode < 600
+
+    Service {
+      Task {
+        if (isError) {
+          val errorMessage = clientResponse.body getOrElse "No content"
+          Errata(ServiceClientExceptionImpl(s"Status code ${clientResponse.statusCode}. $errorMessage"))
+        } else {
+          (clientResponse.body, emptyResponse, maybeReads) match {
+            case (Some(d), false, Some(r)) => transformResponse[T](d, r)
+            case (None, false, _) => Errata(ServiceClientExceptionImpl("No content"))
+            case (Some(d), false, None) => Errata(ServiceClientExceptionImpl("No transformer found for type"))
+            case _ => Answer(None)
+          }
+        }
       }
     }
   }

@@ -8,7 +8,7 @@ import android.speech.RecognizerIntent
 import android.widget.Toast
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardIntent, NineCardsIntentExtras}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
@@ -96,6 +96,9 @@ trait LauncherExecutor {
       val chooserIntent = Intent.createChooser(sendIntent, resGetString(R.string.sendTo))
       tryOrError(activity, chooserIntent)
     }
+
+  def launchShareCollection(sharedCollectionId: String)(implicit activityContext: ActivityContextWrapper) =
+    launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
 
   def launchSearch(implicit activityContext: ActivityContextWrapper) =
     for {

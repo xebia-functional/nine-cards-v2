@@ -2,18 +2,16 @@ package com.fortysevendeg.ninecardslauncher.repository.provider
 
 import android.database.Cursor
 import com.fortysevendeg.ninecardslauncher.repository.model.User
-import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions._
 
 case class UserEntity(id: Int, data: UserEntityData)
 
 case class UserEntityData(
-  userId: String,
   email: String,
+  apiKey: String,
   sessionToken: String,
-  installationId: String,
   deviceToken: String,
-  androidToken: String,
+  marketToken: String,
   name: String,
   avatar: String,
   cover: String,
@@ -22,12 +20,11 @@ case class UserEntityData(
 
 object UserEntity {
   val table = "User"
-  val userId = "userId"
   val email = "email"
+  val apiKey = "apiKey"
   val sessionToken = "sessionToken"
-  val installationId = "installationId"
   val deviceToken = "deviceToken"
-  val androidToken = "androidToken"
+  val marketToken = "marketToken"
   val name = "name"
   val avatar = "avatar"
   val cover = "cover"
@@ -36,12 +33,11 @@ object UserEntity {
 
   val allFields = Seq[String](
     NineCardsSqlHelper.id,
-    userId,
     email,
+    apiKey,
     sessionToken,
-    installationId,
     deviceToken,
-    androidToken,
+    marketToken,
     name,
     avatar,
     cover,
@@ -52,12 +48,11 @@ object UserEntity {
     UserEntity(
       id = cursor.getInt(cursor.getColumnIndex(NineCardsSqlHelper.id)),
       data = UserEntityData(
-        userId = cursor.getString(cursor.getColumnIndex(userId)),
         email = cursor.getString(cursor.getColumnIndex(email)),
+        apiKey = cursor.getString(cursor.getColumnIndex(apiKey)),
         sessionToken = cursor.getString(cursor.getColumnIndex(sessionToken)),
-        installationId = cursor.getString(cursor.getColumnIndex(installationId)),
         deviceToken = cursor.getString(cursor.getColumnIndex(deviceToken)),
-        androidToken = cursor.getString(cursor.getColumnIndex(androidToken)),
+        marketToken = cursor.getString(cursor.getColumnIndex(marketToken)),
         name = cursor.getString(cursor.getColumnIndex(name)),
         avatar = cursor.getString(cursor.getColumnIndex(avatar)),
         cover = cursor.getString(cursor.getColumnIndex(cover)),
@@ -69,12 +64,11 @@ object UserEntity {
   def createTableSQL: String =
     s"""CREATE TABLE ${UserEntity.table}
         |(${NineCardsSqlHelper.id} INTEGER PRIMARY KEY AUTOINCREMENT,
-        |${UserEntity.userId} TEXT,
         |${UserEntity.email} TEXT,
-        |${UserEntity.sessionToken} INTEGER,
-        |${UserEntity.installationId} TEXT,
+        |${UserEntity.apiKey} TEXT,
+        |${UserEntity.sessionToken} TEXT,
         |${UserEntity.deviceToken} TEXT,
-        |${UserEntity.androidToken} INTEGER,
+        |${UserEntity.marketToken} TEXT,
         |${UserEntity.name} TEXT,
         |${UserEntity.avatar } TEXT,
         |${UserEntity.cover} TEXT,

@@ -43,7 +43,7 @@ class RecommendationsPresenter(
     Task.fork(task.run).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (recommendations: Seq[RecommendedApp]) => actions.loadRecommendations(recommendations),
-      onException = (_) => actions.showLoadingRecommendationError())
+      onException = (_) => actions.showErrorLoadingRecommendationInScreen())
   }
 
 }
@@ -54,7 +54,7 @@ trait RecommendationsUiActions {
 
   def showLoading(): Ui[Any]
 
-  def showLoadingRecommendationError(): Ui[Any]
+  def showErrorLoadingRecommendationInScreen(): Ui[Any]
 
   def loadRecommendations(recommendations: Seq[RecommendedApp]): Ui[Any]
 

@@ -1,10 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
 
+import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
+import android.view.View
 import android.view.ViewGroup.LayoutParams._
-import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -24,9 +25,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
+import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
@@ -35,15 +36,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   with Contexts[View]
   with TypedFindView {
 
-  LayoutInflater.from(context).inflate(R.layout.moment_workspace_layout, this)
-
   val ruleTag = "rule"
-
-  val content = findView(TR.launcher_moment_content)
-
-  val widgets = findView(TR.launcher_moment_widgets)
-
-  val message = findView(TR.launcher_moment_message)
 
   val radius = resGetDimensionPixelSize(R.dimen.radius_default)
 
@@ -58,17 +51,8 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     d
   }
 
-  def populate(moment: LauncherMoment): Ui[Any] = {
-    (for {
-      collection <- moment.collection
-    } yield {
-      (message <~ vGone) ~
-        (widgets <~ vVisible) ~
-        (moment.momentType map (moment => Ui(presenter.loadWidgetsForMoment(moment))) getOrElse clearWidgets)
-    }) getOrElse
-      ((message <~ vVisible) ~
-        (widgets <~ vGone))
-  }
+  def populate(moment: LauncherMoment): Ui[Any] =
+     moment.momentType map (moment => Ui(presenter.loadWidgetsForMoment(moment))) getOrElse clearWidgets
 
   def reloadSelectedWidget: Ui[Any] = this <~ Transformer {
     case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeSelected()
@@ -85,12 +69,6 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     case widget: LauncherWidgetView => widget.deactivateSelected()
   }
 
-  def arrowWidget(arrow: Arrow): Ui[Any] = (presenter.statuses.idWidget, presenter.statuses.transformation) match {
-    case (Some(id), Some(ResizeTransformation)) => applyResize(id, arrow)
-    case (Some(id), Some(MoveTransformation)) => applyMove(id, arrow)
-    case _ => Ui.nop
-  }
-
   def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any] = this <~ Transformer {
     case i: LauncherWidgetView if i.id == id =>
       (for {
@@ -101,7 +79,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
           spanX = widget.area.spanX + resize.increaseX,
           spanY = widget.area.spanY + resize.increaseY))
         (i <~ vAddField(widgetKey, newWidget)) ~
-          Ui(i.setLayoutParams(createParams(cell, newWidget)))
+          i.adaptSize(newWidget)
       }) getOrElse Ui.nop
   }
 
@@ -115,20 +93,19 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
           startX = widget.area.startX + move.displaceX,
           startY = widget.area.startY + move.displaceY))
         (i <~ vAddField(widgetKey, newWidget)) ~
-          Ui(i.setLayoutParams(createParams(cell, newWidget)))
+          i.adaptSize(newWidget)
       }) getOrElse Ui.nop
   }
 
-  def addWidget(widgetView: View, cell: Cell, widget: AppWidget): Ui[Any] = {
-    val params = createParams(cell, widget)
+  def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget): Ui[Any] = {
     val launcherWidgetView = (LauncherWidgetView(widget.id, widgetView, presenter) <~ saveInfoInTag(cell, widget)).get
-    widgets <~ vgAddView(launcherWidgetView, params)
+    this <~ launcherWidgetView.addView(cell, widget)
   }
 
-  def clearWidgets: Ui[Any] = widgets <~ vgRemoveAllViews
+  def clearWidgets: Ui[Any] = this <~ vgRemoveAllViews
 
-  def unhostWiget(id: Int): Ui[Any] = widgets <~ Transformer {
-    case i: LauncherWidgetView if i.id == id => widgets <~ vgRemoveView(i)
+  def unhostWiget(id: Int): Ui[Any] = this <~ Transformer {
+    case i: LauncherWidgetView if i.id == id => this <~ vgRemoveView(i)
   }
 
   def createRules: Ui[Any] = {
@@ -162,52 +139,8 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     Ui.sequence(uis: _*)
   }
 
-  def removeRules: Ui[Any] = this <~ Transformer {
+  def removeRules(): Ui[Any] = this <~ Transformer {
     case i: ImageView if i.getTag == ruleTag => this <~ vgRemoveView(i)
-  }
-
-  private[this] def applyMove(id: Int, arrow: Arrow) = this <~ Transformer {
-    case i: LauncherWidgetView if i.id == id =>
-      (for {
-        cell <- i.getField[Cell](cellKey)
-        widget <- i.getField[AppWidget](widgetKey)
-      } yield {
-        val newWidget = arrow match {
-          case ArrowUp => widget.copy(area = widget.area.copy(startY = widget.area.startY - 1))
-          case ArrowDown => widget.copy(area = widget.area.copy(startY = widget.area.startY + 1))
-          case ArrowLeft => widget.copy(area = widget.area.copy(startX = widget.area.startX - 1))
-          case ArrowRight => widget.copy(area = widget.area.copy(startX = widget.area.startX + 1))
-        }
-        (i <~ vAddField(widgetKey, newWidget)) ~
-          Ui(i.setLayoutParams(createParams(cell, newWidget)))
-      }) getOrElse Ui.nop
-  }
-
-  private[this] def applyResize(id: Int, arrow: Arrow) = this <~ Transformer {
-    case i: LauncherWidgetView if i.id == id =>
-      (for {
-        cell <- i.getField[Cell](cellKey)
-        widget <- i.getField[AppWidget](widgetKey)
-      } yield {
-        val newWidget = arrow match {
-          case ArrowUp => widget.copy(area = widget.area.copy(spanY = widget.area.spanY - 1))
-          case ArrowDown => widget.copy(area = widget.area.copy(spanY = widget.area.spanY + 1))
-          case ArrowLeft => widget.copy(area = widget.area.copy(spanX = widget.area.spanX - 1))
-          case ArrowRight => widget.copy(area = widget.area.copy(spanX = widget.area.spanX + 1))
-        }
-        (i <~ vAddField(widgetKey, newWidget)) ~
-          Ui(i.setLayoutParams(createParams(cell, newWidget)))
-      }) getOrElse Ui.nop
-  }
-
-  private[this] def createParams(cell: Cell, widget: AppWidget) = {
-    val (width, height) = cell.getSize(widget.area.spanX, widget.area.spanY)
-    val (startX, startY) = cell.getSize(widget.area.startX, widget.area.startY)
-    val params = new LayoutParams(width  + stroke, height + stroke)
-    val left = paddingDefault + startX
-    val top = paddingDefault + startY
-    params.setMargins(left, top, paddingDefault, paddingDefault)
-    params
   }
 
   private[this] def saveInfoInTag(cell: Cell, widget: AppWidget) =

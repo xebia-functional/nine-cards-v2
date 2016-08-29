@@ -51,7 +51,7 @@ case class AddCardWithCollectionIdRequest(
 
 case class DeleteCardsRequest(where: String)
 
-case class DeleteCardRequest(card: Card)
+case class DeleteCardRequest(collectionId: Int, card: Card)
 
 case class FindCardByIdRequest(id: Int)
 
@@ -97,7 +97,7 @@ case class DeleteCollectionRequest(collection: Collection)
 
 case class FetchCollectionByPositionRequest(position: Int)
 
-case class FetchCollectionBySharedCollectionRequest(sharedCollectionId: String)
+case class FetchCollectionBySharedCollectionRequest(sharedCollectionId: String, original: Boolean)
 
 case class FindCollectionByIdRequest(id: Int)
 
@@ -117,12 +117,11 @@ case class UpdateCollectionRequest(
 case class UpdateCollectionsRequest(updateCollectionsRequests: Seq[UpdateCollectionRequest])
 
 case class AddUserRequest(
-  userId: Option[String],
   email: Option[String],
+  apiKey: Option[String],
   sessionToken: Option[String],
-  installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String],
+  marketToken: Option[String],
   name: Option[String],
   avatar: Option[String],
   cover: Option[String],
@@ -137,12 +136,11 @@ case class FindUserByIdRequest(id: Int)
 
 case class UpdateUserRequest(
   id: Int,
-  userId: Option[String],
   email: Option[String],
+  apiKey: Option[String],
   sessionToken: Option[String],
-  installationId: Option[String],
   deviceToken: Option[String],
-  androidToken: Option[String],
+  marketToken: Option[String],
   name: Option[String],
   avatar: Option[String],
   cover: Option[String],

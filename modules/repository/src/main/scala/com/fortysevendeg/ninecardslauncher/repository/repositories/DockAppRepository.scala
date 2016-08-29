@@ -23,7 +23,7 @@ class DockAppRepository(
 
   val dockAppUri = uriCreator.parse(dockAppUriString)
 
-  val dockAppNotificationUri = uriCreator.parse(dockAppUriNotificationString)
+  val dockAppNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$dockAppUriPath")
 
   def addDockApp(data: DockAppData): ServiceDef2[DockApp, RepositoryException] =
     Service {
@@ -34,7 +34,7 @@ class DockAppRepository(
           val id = contentResolverWrapper.insert(
             uri = dockAppUri,
             values = values,
-            notificationUri = Some(dockAppNotificationUri))
+            notificationUris = Seq(dockAppNotificationUri))
 
           DockApp(id = id, data = data)
         }
@@ -52,7 +52,7 @@ class DockAppRepository(
             authority = NineCardsUri.authorityPart,
             uri = dockAppUri,
             allValues = values,
-            notificationUri = Some(dockAppNotificationUri))
+            notificationUris = Seq(dockAppNotificationUri))
 
           datas zip ids map {
             case (data, id) => DockApp(id = id, data = data)
@@ -68,7 +68,7 @@ class DockAppRepository(
           contentResolverWrapper.delete(
             uri = dockAppUri,
             where = where,
-            notificationUri = Some(dockAppNotificationUri))
+            notificationUris = Seq(dockAppNotificationUri))
         }
       }
     }
@@ -80,7 +80,7 @@ class DockAppRepository(
           contentResolverWrapper.deleteById(
             uri = dockAppUri,
             id = dockApp.id,
-            notificationUri = Some(dockAppNotificationUri))
+            notificationUris = Seq(dockAppNotificationUri))
         }
       }
     }
@@ -141,7 +141,7 @@ class DockAppRepository(
             uri = dockAppUri,
             id = item.id,
             values = values,
-            notificationUri = Some(dockAppNotificationUri))
+            notificationUris = Seq(dockAppNotificationUri))
         }
       }
     }

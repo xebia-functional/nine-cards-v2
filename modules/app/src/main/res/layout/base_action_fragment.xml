@@ -28,13 +28,13 @@
         android:id="@+id/actions_content_error_layout"
         style="@style/BaseActionsErrorContent">
 
+        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            android:id="@+id/actions_content_error_icon"
+            style="@style/BaseActionsErrorIcon"/>
+
         <TextView
             android:id="@+id/actions_content_error_message"
             style="@style/BaseActionsErrorMessage"/>
-
-        <ImageView
-            android:id="@+id/actions_content_error_icon"
-            style="@style/BaseActionsErrorIcon"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/actions_content_error_button"

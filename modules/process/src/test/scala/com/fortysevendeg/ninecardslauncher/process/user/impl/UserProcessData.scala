@@ -1,80 +1,100 @@
 package com.fortysevendeg.ninecardslauncher.process.user.impl
 
-import com.fortysevendeg.ninecardslauncher.services.api.models.{AndroidDevice, GoogleDevice, Installation, User}
-import com.fortysevendeg.ninecardslauncher.services.persistence.FindUserByIdRequest
+import com.fortysevendeg.ninecardslauncher.process.user.models.{User, UserProfile}
+import com.fortysevendeg.ninecardslauncher.services.api.{LoginResponse, UpdateInstallationResponse}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddUserRequest, UpdateUserRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
+
+import scala.util.Random
 
 trait UserProcessData
   extends Scope
   with Mockito {
 
-  val statusCodeUser = 101
-
   val statusCodeOk = 200
 
-  val userDBId = 1
+  val userId = 1
 
-  val userId = "fake-user-id"
-
-  val userToken = "fake-user-token"
+  val anotherUserId = 1
 
   val email = "example@47deg.com"
 
   val deviceName = "Nexus 47"
+  val anotherDeviceName = "Another device"
 
   val deviceId = "XX-47-XX"
 
-  val secretToken = "EE-47-47-EE"
-
-  val permissions = Seq.empty
-
   val deviceCloudId = "fake-device-cloud-id"
+  val anotherDeviceCloudId = "fake-device-cloud-id-2"
 
-  val googleDevice = GoogleDevice(
-    name = deviceName,
-    deviceId = deviceId,
-    secretToken = secretToken,
-    permissions = permissions)
-
-  val user = User(
-    id = Option(userId),
-    sessionToken = Option(userToken),
-    email = Option(email),
-    devices = Seq(googleDevice))
+  val apiKey = "apiKey"
+  val sessionToken = "sessionToken"
+  val deviceToken = "deviceToken"
+  val anotherDeviceToken = "anotherDeviceToken"
+  val marketToken = "marketToken"
+  val emailTokenId = "emailTokenId"
 
   val persistenceUser = ServicesUser(
-    id = userDBId,
-    userId = None,
-    email = None,
+    id = userId,
+    email = Some(email),
+    apiKey = None,
     sessionToken = None,
-    installationId = None,
-    deviceToken = None,
-    androidToken = None,
-    name = None,
-    avatar = None,
-    cover = None,
+    deviceToken = Some(deviceToken),
+    marketToken = Some(marketToken),
+    name = Some(Random.nextString(10)),
+    avatar = Some(Random.nextString(10)),
+    cover = Some(Random.nextString(10)),
     deviceName = Some(deviceName),
     deviceCloudId = Some(deviceCloudId))
 
-  val installationStatusCode = 102
+  val processUser = User(
+    id = persistenceUser.id,
+    email = persistenceUser.email,
+    apiKey = persistenceUser.apiKey,
+    sessionToken = persistenceUser.sessionToken,
+    deviceToken = persistenceUser.deviceToken,
+    marketToken = persistenceUser.marketToken,
+    deviceName = persistenceUser.deviceName,
+    deviceCloudId = persistenceUser.deviceCloudId,
+    userProfile = UserProfile(
+      name = persistenceUser.name,
+      avatar = persistenceUser.avatar,
+      cover = persistenceUser.cover))
 
-  val installationId = "fake-installation-id"
-  val installationToken = "fake-user-token"
-  val deviceType = Some(AndroidDevice)
+  val anotherUser = ServicesUser(
+    id = anotherUserId,
+    email = None,
+    apiKey = None,
+    sessionToken = None,
+    deviceToken = None,
+    marketToken = None,
+    name = Some(Random.nextString(10)),
+    avatar = Some(Random.nextString(10)),
+    cover = Some(Random.nextString(10)),
+    deviceName = None,
+    deviceCloudId = None)
 
-  val initialInstallation = Installation(None, deviceType, None, None)
+  val emptyAddUserRequest = AddUserRequest(None, None, None, None, None, None, None, None, None, None)
 
-  val installation = Installation(
-    id = Option(installationId),
-    deviceType = deviceType,
-    deviceToken = Option(installationToken),
-    userId = Option(userId)
-  )
+  val emptyUpdateUserRequest = UpdateUserRequest(userId, None, None, None, None, None, None, None, None, None, None)
 
-  val fileFolder = "/file/example"
+  val updateUserRequest = UpdateUserRequest(
+    id = userId,
+    email = persistenceUser.email,
+    apiKey = persistenceUser.apiKey,
+    sessionToken = persistenceUser.sessionToken,
+    deviceToken = persistenceUser.deviceToken,
+    marketToken = persistenceUser.marketToken,
+    name = persistenceUser.name,
+    avatar = persistenceUser.avatar,
+    cover = persistenceUser.cover,
+    deviceName = persistenceUser.deviceName,
+    deviceCloudId = persistenceUser.deviceCloudId)
 
-  val findUserByIdRequest = FindUserByIdRequest(userDBId)
+  val updateInstallationResponse = UpdateInstallationResponse(statusCodeOk)
+
+  val loginResponse = LoginResponse(apiKey, sessionToken)
 
 }

@@ -254,8 +254,12 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_default</item>
         <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:textColor">@color/item_list_popup_moments_menu</item>
         <item name="android:layout_marginLeft">@dimen/padding_default</item>
+    </style>
+
+    <style name="SelectMomentItemClose">
+        <item name="android:layout_width">@dimen/size_icon_default</item>
+        <item name="android:layout_height">@dimen/size_icon_default</item>
     </style>
 
     <!-- SelectCollectionDialog -->
@@ -294,7 +298,6 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_default</item>
         <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:textColor">@color/item_list_popup_moments_menu</item>
         <item name="android:layout_marginLeft">@dimen/padding_default</item>
     </style>
 

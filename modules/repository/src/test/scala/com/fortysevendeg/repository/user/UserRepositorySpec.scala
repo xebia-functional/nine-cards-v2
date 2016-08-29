@@ -46,12 +46,11 @@ trait UserMockCursor
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, userSeq map (_.id), IntDataType),
-    (userId, 1, userSeq map (_.data.userId orNull), StringDataType),
-    (email, 2, userSeq map (_.data.email orNull), StringDataType),
+    (email, 1, userSeq map (_.data.email orNull), StringDataType),
+    (apiKey, 2, userSeq map (_.data.apiKey orNull), StringDataType),
     (sessionToken, 3, userSeq map (_.data.sessionToken orNull), StringDataType),
-    (installationId, 4, userSeq map (_.data.installationId orNull), StringDataType),
     (deviceToken, 5, userSeq map (_.data.deviceToken orNull), StringDataType),
-    (androidToken, 6, userSeq map (_.data.androidToken orNull), StringDataType),
+    (marketToken, 6, userSeq map (_.data.marketToken orNull), StringDataType),
     (name, 7, userSeq map (_.data.name orNull), StringDataType),
     (avatar, 8, userSeq map (_.data.avatar orNull), StringDataType),
     (cover, 9, userSeq map (_.data.cover orNull), StringDataType),
@@ -67,17 +66,16 @@ trait EmptyUserMockCursor
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
-    (userId, 1, Seq.empty, StringDataType),
-    (email, 2, Seq.empty, StringDataType),
+    (email, 1, Seq.empty, StringDataType),
+    (apiKey, 2, Seq.empty, StringDataType),
     (sessionToken, 3, Seq.empty, StringDataType),
-    (installationId, 4, Seq.empty, StringDataType),
-    (deviceToken, 5, Seq.empty, StringDataType),
-    (androidToken, 6, Seq.empty, StringDataType),
-    (name, 7, Seq.empty, StringDataType),
-    (avatar, 8, Seq.empty, StringDataType),
-    (cover, 9, Seq.empty, StringDataType),
-    (deviceName, 10, Seq.empty, StringDataType),
-    (deviceCloudId, 11, Seq.empty, StringDataType))
+    (deviceToken, 4, Seq.empty, StringDataType),
+    (marketToken, 5, Seq.empty, StringDataType),
+    (name, 6, Seq.empty, StringDataType),
+    (avatar, 7, Seq.empty, StringDataType),
+    (cover, 8, Seq.empty, StringDataType),
+    (deviceName, 9, Seq.empty, StringDataType),
+    (deviceCloudId, 10, Seq.empty, StringDataType))
 
   prepareCursor[User](0, cursorData)
 }
@@ -100,10 +98,10 @@ class UserRepositorySpec
           result must beLike {
             case Answer(userResponse) =>
               userResponse.id shouldEqual testId
-              userResponse.data.userId should beSome(testUserId)
+              userResponse.data.email should beSome(testEmail)
           }
 
-          there was one(contentResolverWrapper).insert(mockUri, createUserValues, Some(mockUri))
+          there was one(contentResolverWrapper).insert(mockUri, createUserValues, Seq(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -121,7 +119,7 @@ class UserRepositorySpec
             }
           }
 
-          there was one(contentResolverWrapper).insert(mockUri, createUserValues, Some(mockUri))
+          there was one(contentResolverWrapper).insert(mockUri, createUserValues, Seq(mockUri))
         }
     }
 
@@ -142,7 +140,7 @@ class UserRepositorySpec
           there was one(contentResolverWrapper).delete(
             uri = mockUri,
             where = "",
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -163,7 +161,7 @@ class UserRepositorySpec
           there was one(contentResolverWrapper).delete(
             uri = mockUri,
             where = "",
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
     }
 
@@ -184,7 +182,7 @@ class UserRepositorySpec
           there was one(contentResolverWrapper).deleteById(
             uri = mockUri,
             id = testId,
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -205,7 +203,7 @@ class UserRepositorySpec
           there were one(contentResolverWrapper).deleteById(
             uri = mockUri,
             id = testId,
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
     }
 
@@ -222,7 +220,7 @@ class UserRepositorySpec
             case Answer(maybeUser) =>
               maybeUser must beSome[User].which { user =>
                 user.id shouldEqual testId
-                user.data.userId should beSome(testUserId)
+                user.data.email should beSome(testEmail)
               }
           }
 
@@ -293,7 +291,7 @@ class UserRepositorySpec
             uri = mockUri,
             id = testId,
             values = createUserValues,
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -315,7 +313,7 @@ class UserRepositorySpec
             uri = mockUri,
             id = testId,
             values = createUserValues,
-            notificationUri = Some(mockUri))
+            notificationUris = Seq(mockUri))
         }
     }
 

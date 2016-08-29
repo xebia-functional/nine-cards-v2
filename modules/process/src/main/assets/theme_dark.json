@@ -7,7 +7,7 @@
     },
     {
       "styleType": "SearchBackgroundColor",
-      "color": "#333333"
+      "color": "#37474F"
     },
     {
       "styleType": "SearchPressedColor",
@@ -19,7 +19,7 @@
     },
     {
       "styleType": "SearchIconsColor",
-      "color": "#ffffff"
+      "color": "#deffffff"
     },
     {
       "styleType": "SearchTextColor",
@@ -31,11 +31,15 @@
     },
     {
       "styleType": "DrawerBackgroundColor",
-      "color": "#333333"
+      "color": "#37474F"
     },
     {
       "styleType": "DrawerTextColor",
-      "color": "#ffffff"
+      "color": "#deffffff"
+    },
+    {
+      "styleType": "DrawerIconColor",
+      "color": "#deffffff"
     },
     {
       "styleType": "DockPressedColor",
@@ -43,15 +47,15 @@
     },
     {
       "styleType": "CardLayoutBackgroundColor",
-      "color": "#222222"
+      "color": "#37474F"
     },
     {
       "styleType": "CardTextColor",
-      "color": "#ffffff"
+      "color": "#deffffff"
     },
     {
       "styleType": "CardBackgroundColor",
-      "color": "#444444"
+      "color": "#455A64"
     },
     {
       "styleType": "CardBackgroundPressedColor",
@@ -64,10 +68,6 @@
     {
       "styleType": "CollectionDetailTextTabDefaultColor",
       "color": "#80ffffff"
-    },
-    {
-      "styleType": "DrawerIconColor",
-      "color": "#ffffff"
     }
   ]
 }

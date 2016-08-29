@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
 
-import android.content.{Context, Intent}
-import android.net.Uri
+import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
@@ -12,13 +11,14 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesValue, ShowClockMoment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardsMomentOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -45,6 +45,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   lazy val momentContent = Option(findView(TR.launcher_moment_content))
 
+  lazy val momentIconContent = Option(findView(TR.launcher_moment_icon_content))
+
   lazy val momentIcon = Option(findView(TR.launcher_moment_icon))
 
   lazy val momentText = Option(findView(TR.launcher_moment_text))
@@ -68,22 +70,29 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   (this <~
     vgAddViews(Seq(momentWorkspace, collectionWorkspace))).run
 
-  def init(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] =
-    (momentWorkspace <~ vInvisible) ~
+  def init(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
+    val iconColor = theme.get(SearchIconsColor)
+    val pressedColor = theme.get(SearchPressedColor)
+    val iconBackground = new TopBarMomentBackgroundDrawable
+    val edgeBackground = new TopBarMomentEdgeBackgroundDrawable
+    (momentWorkspace <~ vInvisible <~ vBackground(edgeBackground)) ~
+      (momentIconContent <~ vBackground(iconBackground) <~ vLayerTypeSoftware(iconBackground.paint)) ~
+      (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(pressedColor)) ~
       (collectionsSearchPanel <~
         vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))) ~
       (collectionsBurgerIcon <~
-        tivDefaultColor(theme.get(SearchIconsColor)) <~
-        tivPressedColor(theme.get(SearchPressedColor)) <~
+        tivDefaultColor(iconColor) <~
+        tivPressedColor(pressedColor) <~
         On.click(Ui(presenter.launchMenu()))) ~
       (collectionsGoogleIcon <~
         tivDefaultColor(theme.get(SearchGoogleColor)) <~
-        tivPressedColor(theme.get(SearchPressedColor)) <~
+        tivPressedColor(pressedColor) <~
         On.click(Ui(presenter.launchSearch))) ~
       (collectionsMicIcon <~
-        tivDefaultColor(theme.get(SearchIconsColor)) <~
-        tivPressedColor(theme.get(SearchPressedColor)) <~
+        tivDefaultColor(iconColor) <~
+        tivPressedColor(pressedColor) <~
         On.click(Ui(presenter.launchVoiceSearch)))
+  }
 
   def movement(from: LauncherData, to: LauncherData, isFromLeft: Boolean, fraction: Float): Unit =
     if (from.workSpaceType != to.workSpaceType) {
@@ -97,19 +106,18 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           vVisible)).run
     }
 
-  def reloadMoment(collection: Collection)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
-    val resIcon = iconCollectionDetail(collection.icon)
+  def reloadMoment(moment: NineCardsMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
     val showClock = ShowClockMoment.readValue(preferenceValues)
     val text = if (showClock) {
-      s"${collection.name} ${resGetString(R.string.atHour)}"
-    } else collection.name
+      s"${moment.getName} ${resGetString(R.string.atHour)}"
+    } else moment.getName
     (momentContent <~
       On.click(Ui(presenter.goToChangeMoment())) <~
       On.longClick(Ui(presenter.goToEditMoment()) ~ Ui(true))) ~
       (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~
       (momentClock <~ (if (showClock) vVisible else vGone)) ~
       (momentIcon <~
-        ivSrc(resIcon)) ~
+        ivSrc(moment.getIconCollectionDetail)) ~
       (momentText <~
         tvText(text)) ~
       (momentWeather <~

@@ -90,6 +90,18 @@
     <string name="editMoment">Editar Momento</string>
     <string name="changeMoment">Cambiar Momento</string>
 
+    <string name="linkCollection">Acceso Rápido a Colección</string>
+    <string name="hours">Horas</string>
+    <string name="wifi">Wifi</string>
+
+    <string name="noLinkCollectionToMoment">No vincular colección a este momento</string>
+
+    <string name="addHoursToEditMoment">Añade restricciones de tiempo a este momento y será mostrado en 9Cards sólo esas horas</string>
+
+    <string name="addWifiToEditMoment">Añade tus Wifi a este momento y lo mostraremos cuando estés conectado a uno de ellos</string>
+
+    <string name="linkCollectionMessage">Puedes seleccionar una colección y acceder rápidamente a las aplicaciones, contactos y accesos directos de esta colección desde una barra a la derecha de 9Cards. Sólo tienes que hacer clic en el fondo o un swipe desde el borde derecho del Launcher</string>
+
     <string name="widgetsErrorMessage">Hemos tenido problemas cargando los widgets. Inténtalo más tarde</string>
 
     <!-- Collections -->
@@ -109,8 +121,6 @@
     <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta colección?</string>
 
     <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
-
-    <string name="emptyMoment">No tienes momentos definidos</string>
 
     <string name="momentNotFoundMessage">Momento no encontrado. Tu deberías crear colecciones desde la sección Mis Collections</string>
 
@@ -161,7 +171,14 @@
     <string name="errorLoadingApps">Error cargando aplicaciones</string>
     <string name="errorLoadingShortcuts">Error cargando accesos directos</string>
     <string name="errorLoadingRecommendations">Error cargando recomendaciones</string>
+
     <string name="errorLoadingPrivateCollections">Error cargando colleciones privadas</string>
+    <string name="errorSavingPrivateCollections">Error guardando colleción privada</string>
+    <string name="emptyPrivateCollections">9Cards crea colecciones de tus aplicaciones instaladas y ya tienes todas las categorías entre tus collections. Pásate otro día por si tenemos algunas colección para ti</string>
+
+    <string name="errorLoadingPublicCollections">Error cargando colleciones públicas</string>
+    <string name="errorSavingPublicCollections">Error guardando colleción pública</string>
+    <string name="emptyPublicCollections">No hay colecciones publicadas en esta categoría. Quizás podrías crear tu una :-)</string>
 
     <!-- Contacts Info -->
 
@@ -193,7 +210,7 @@
 
     <string name="apps_alphabetical">Alfabético</string>
     <string name="apps_categories">Por categorías</string>
-    <string name="apps_date">Por fecha de instalación</string>
+    <string name="apps_date">Reciente instalado</string>
     <string name="contacts_alphabetical">Alfabético</string>
     <string name="contacts_favorites">Favoritos</string>
     <string name="contacts_last">Últimas llamadas</string>
@@ -334,24 +351,20 @@
     <string name="appDrawerPrefTitle">Cajón de Aplicaciones</string>
     <string name="appDrawerPrefSummary">Resumen de Cajón de Aplicaciones</string>
 
-    <string name="defaultWindowTitle">Apertura de Ventana por defecto</string>
-    <string name="defaultWindowSummary">Resumen de Apertura de Ventana por defecto</string>
+    <string name="appDrawerLongPressTitle">Acción en Long-press</string>
+    <string name="appDrawerLongPressSummary">Acción actual: %s</string>
 
-    <string name="defaultWindowApps">Aplicaciones</string>
-    <string name="defaultWindowContacts">Contactos</string>
+    <string name="appDrawerOpenKeyboard">Abrir teclado</string>
+    <string name="appDrawerOpenContacts">Abrir contactos</string>
 
-    <string name="letterAnimationTitle">Animación de la Letra</string>
-    <string name="letterAnimationSummary">Animaciones para mostrar la letra seleccionada</string>
+    <string name="appDrawerOpenAnimationTitle">Animación</string>
+    <string name="appDrawerOpenAnimationSummary">Actual animación: %s</string>
 
-    <string name="letterAnimations1">TBD 1</string>
-    <string name="letterAnimations2">TBD 2</string>
-    <string name="letterAnimations3">TBD 3</string>
+    <string name="appDrawerOpenAnimationReveal">Aparición en círculo</string>
+    <string name="appDrawerOpenAnimationFade">Fade</string>
 
-    <string name="windowIconTitle">Icono de ventana</string>
-    <string name="windowIconSummary">Icono para acceder a la ventana</string>
-
-    <string name="windowIconsClassic">Clásico</string>
-    <string name="windowIconsNineCards">9Cards</string>
+    <string name="appDrawerFistTabContactTitle">Contactos Favoritos al entrar</string>
+    <string name="appDrawerFistTabContactSummary">Los Contacts Favorites aparecerán al entrar en el área de contactos</string>
 
     <!-- Sizes Preferences -->
 
@@ -477,6 +490,18 @@
     <string name="sharedContentErrorNotSupported">Contenido compartido no soportado</string>
     <string name="sharedContentErrorUnexpected">Error inesperado</string>
 
+    <string name="sharedCollectionChangedNotificationTitle">¡Colección actualizada!</string>
+    <string name="sharedCollectionChangedNotificationMsg">La colección \'%s\' ha sido actualizada</string>
+    <string name="sharedCollectionChangedNotificationUnsubscribe">Desubscribirse</string>
+    <string name="sharedCollectionChangedNotificationSynchronize">Sincronizar</string>
+    <string name="sharedCollectionUnsubscribed">Desubscrito correctamente de la coleción</string>
+    <string name="sharedCollectionUpdated">Colección correctamente actualizada</string>
+
+    <plurals name="sharedCollectionChangedNotificationBigMsg">
+        <item quantity="one">La colección \'%s\' ha sido actualizada con una nueva aplicación. Pulsa aquí para añadirla a tu colleción.</item>
+        <item quantity="other">La colección \'%s\' ha sido actualizada con nuevas aplicaciones. Pulsa aquí para añadirlas a tu colleción.</item>
+    </plurals>
+
     <!-- Edit Widgets -->
     <string name="editingWidgets">Editando widgets</string>
     <string name="movingWidgets">Moviendo widgets</string>
@@ -485,5 +510,8 @@
     <string name="noSpaceForWidget">El widget no tiene espacio actualmente</string>
     <string name="noMoveForWidget">El widget no puede moverse ahí</string>
     <string name="noResizeForWidget">El widget no puede redimensionarse ahí</string>
+
+    <!-- Edit Moment -->
+    <string name="addDuplicateItemError">Elemento duplicado</string>
 
 </resources>

@@ -7,7 +7,7 @@ import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.FrameLayout
+import android.widget.{FrameLayout, ImageView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -30,14 +30,14 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
@@ -47,6 +47,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
@@ -165,6 +166,11 @@ trait CollectionsUiActions
     showAction(f[CreateOrEditCollectionFragment], view, resGetColor(getIndexColor(collection.themedColorIndex)), collectionMap)
   }
 
+  def showEditMoment(momentType: String): Ui[Any] = {
+    val momentMap = Map(EditMomentFragment.momentKey -> momentType)
+    showAction(f[EditMomentFragment], topBarPanel, resGetColor(R.color.collection_fab_button_item_edit_moment), momentMap)
+  }
+
   def showMessage(message: Int, args: Seq[String] = Seq.empty): Ui[Any] =
     workspaces <~ Tweak[View] { view =>
       val snackbar = Snackbar.make(view, activityContextWrapper.application.getString(message, args:_*), Snackbar.LENGTH_SHORT)
@@ -274,8 +280,16 @@ trait CollectionsUiActions
     (w[WorkspaceItemMenu] <~
       workspaceButtonEditMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
-      On.click {
-        closeCollectionMenu() ~~ Ui(presenter.goToEditMoment())
+      FuncOn.click { view: View =>
+        val momentType = getData.headOption flatMap (_.moment) flatMap (_.momentType) map (_.name)
+        momentType match {
+          case Some(moment) =>
+            val iconView = getIconView(view)
+            val momentMap = Map(EditMomentFragment.momentKey -> moment)
+            showAction(f[EditMomentFragment], iconView, resGetColor(R.color.collection_fab_button_item_edit_moment), momentMap)
+          case _ => Ui.nop
+        }
+
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonChangeMomentStyle <~
@@ -335,7 +349,7 @@ trait CollectionsUiActions
   def reloadWorkspacePager: Ui[Any] = (workspaces ~> lwsCurrentPage()).get map createPager getOrElse Ui.nop
 
   def pagination(position: Int) =
-    (w[TintableImageView] <~ paginationItemStyle <~ vSetPosition(position)).get
+    (w[ImageView] <~ paginationItemStyle <~ vSetPosition(position)).get
 
   protected def showAction[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty): Ui[Any] = {
@@ -355,7 +369,7 @@ trait CollectionsUiActions
       case (key, value) => args.putString(key, value)
     }
     args.putInt(BaseActionFragment.colorPrimary, color)
-    (drawerLayout <~ dlLockedClosed) ~
+    (drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
       closeCollectionMenu() ~
       (actionFragmentContent <~ vBackgroundColor(Color.BLACK.alpha(maxBackgroundPercent))) ~
       (fragmentContent <~ vClickable(true)) ~

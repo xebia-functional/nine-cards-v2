@@ -30,6 +30,10 @@ case class CallException(message: String, cause: Option[Throwable] = None) exten
   cause map initCause
 }
 
+case class DeviceException(message: String, cause: Option[Throwable] = None) extends RuntimeException(message) {
+  cause map initCause
+}
+
 trait DockAppException
   extends RuntimeException {
 
@@ -61,4 +65,6 @@ trait ImplicitsDeviceException {
   implicit def callException = (t: Throwable) => CallException(t.getMessage, t.some)
 
   implicit def dockAppException = (t: Throwable) => DockAppExceptionImpl(t.getMessage, t.some)
+
+  implicit def deviceException = (t: Throwable) => DeviceException(t.getMessage, t.some)
 }
