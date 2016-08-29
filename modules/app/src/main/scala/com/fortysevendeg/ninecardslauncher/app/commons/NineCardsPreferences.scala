@@ -63,11 +63,40 @@ case object ShowClockMoment
   override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
 }
 
+// Animations Preferences
+
+case object SpeedAnimations
+  extends NineCardsPreferenceValue[SpeedAnimationValue] {
+  override val name: String = appDrawerLongPressAction
+  override val default: SpeedAnimationValue = NormalAnimation
+
+  override def readValue(pref: NineCardsPreferencesValue): SpeedAnimationValue =
+    SpeedAnimationValue(pref.getString(name, default.value))
+}
+
+case object CollectionOpeningAnimations
+  extends NineCardsPreferenceValue[CollectionOpeningValue] {
+  override val name: String = collectionOpening
+  override val default: CollectionOpeningValue = CircleOpeningCollectionAnimation
+
+  override def readValue(pref: NineCardsPreferencesValue): CollectionOpeningValue =
+    CollectionOpeningValue(pref.getString(name, default.value))
+}
+
+case object WorkspaceAnimations
+  extends NineCardsPreferenceValue[WorkspaceAnimationValue] {
+  override val name: String = workspaceAnimation
+  override val default: WorkspaceAnimationValue = HorizontalSlideWorkspaceAnimation
+
+  override def readValue(pref: NineCardsPreferencesValue): WorkspaceAnimationValue =
+    WorkspaceAnimationValue(pref.getString(name, default.value))
+}
+
 // App Drawer Preferences
 
 case object AppDrawerLongPressAction
   extends NineCardsPreferenceValue[AppDrawerLongPressActionValue] {
-  override val name: String = appDrawerLongPressAction
+  override val name: String = speed
   override val default: AppDrawerLongPressActionValue = AppDrawerLongPressActionOpenKeyboard
 
   override def readValue(pref: NineCardsPreferencesValue): AppDrawerLongPressActionValue =
@@ -149,6 +178,11 @@ object PreferencesValuesKeys {
   val appDrawerLongPressAction = "appDrawerLongPressAction"
   val appDrawerAnimation = "appDrawerAnimation"
   val appDrawerFavoriteContacts = "appDrawerFavoriteContacts"
+
+  // Speed
+  val speed = "speed"
+  val collectionOpening = "collectionOpening"
+  val workspaceAnimation = "workspaceAnimation"
 }
 
 
