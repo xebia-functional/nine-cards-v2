@@ -1,6 +1,7 @@
 package com.fortysevendeg.repository.dockapp
 
 import android.net.Uri
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
@@ -13,12 +14,11 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 trait DockAppRepositorySpecification
   extends Specification
-  with DisjunctionMatchers
-  with Mockito {
+    with DisjunctionMatchers
+    with Mockito {
 
   trait DockAppRepositoryScope
     extends Scope {
@@ -58,13 +58,13 @@ trait DockAppRepositorySpecification
       uri = mockUri,
       id = testId,
       projection = allFields)(
-        f = getEntityFromCursor(dockAppEntityFromCursor)) returns Some(dockAppEntity)
+      f = getEntityFromCursor(dockAppEntityFromCursor)) returns Some(dockAppEntity)
 
     contentResolverWrapper.findById(
       uri = mockUri,
       id = testNonExistingId,
       projection = allFields)(
-        f = getEntityFromCursor(dockAppEntityFromCursor)) returns None
+      f = getEntityFromCursor(dockAppEntityFromCursor)) returns None
 
     contentResolverWrapper.updateById(
       uri = mockUri,
@@ -124,7 +124,7 @@ trait DockAppRepositorySpecification
       uri = mockUri,
       id = testId,
       projection = allFields)(
-        f = getEntityFromCursor(dockAppEntityFromCursor)) throws contentResolverException
+      f = getEntityFromCursor(dockAppEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.updateById(
       uri = mockUri,
@@ -145,7 +145,7 @@ trait DockAppRepositorySpecification
 
 trait DockAppMockCursor
   extends MockCursor
-  with DockAppRepositoryTestData {
+    with DockAppRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, dockAppSeq map (_.id), IntDataType),
@@ -160,7 +160,7 @@ trait DockAppMockCursor
 
 trait EmptyDockAppMockCursor
   extends MockCursor
-  with DockAppRepositoryTestData {
+    with DockAppRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -184,10 +184,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ValidDockAppRepositoryResponses {
 
-          val result = dockAppRepository.addDockApp(data = createDockAppData).run.run
+          val result = dockAppRepository.addDockApp(data = createDockAppData).value.run
 
           result must beLike {
-            case Answer(dockAppResult) =>
+            case Xor.Right(dockAppResult) =>
               dockAppResult.id shouldEqual testId
               dockAppResult.data.name shouldEqual testName
           }
@@ -197,14 +197,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
-          val result = dockAppRepository.addDockApp(data = createDockAppData).run.run
+          val result = dockAppRepository.addDockApp(data = createDockAppData).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -215,10 +211,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ValidDockAppRepositoryResponses {
 
-          val result = dockAppRepository.deleteDockApps().run.run
+          val result = dockAppRepository.deleteDockApps().value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -227,14 +223,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
-          val result = dockAppRepository.deleteDockApps().run.run
+          val result = dockAppRepository.deleteDockApps().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -245,10 +237,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ValidDockAppRepositoryResponses {
 
-          val result = dockAppRepository.deleteDockApp(dockApp).run.run
+          val result = dockAppRepository.deleteDockApp(dockApp).value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -257,14 +249,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
-          val result = dockAppRepository.deleteDockApp(dockApp).run.run
+          val result = dockAppRepository.deleteDockApp(dockApp).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -275,10 +263,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ValidDockAppRepositoryResponses {
 
-          val result = dockAppRepository.findDockAppById(id = testId).run.run
+          val result = dockAppRepository.findDockAppById(id = testId).value.run
 
           result must beLike {
-            case Answer(maybeDockApp) =>
+            case Xor.Right(maybeDockApp) =>
               maybeDockApp must beSome[DockApp].which { dockApp =>
                 dockApp.id shouldEqual testId
                 dockApp.data.name shouldEqual testName
@@ -289,10 +277,10 @@ class DockAppRepositorySpec
       "return None when a non-existing id is given" in
         new DockAppRepositoryScope
           with ValidDockAppRepositoryResponses {
-          val result = dockAppRepository.findDockAppById(id = testNonExistingId).run.run
+          val result = dockAppRepository.findDockAppById(id = testNonExistingId).value.run
 
           result must beLike {
-            case Answer(maybeDockApp) =>
+            case Xor.Right(maybeDockApp) =>
               maybeDockApp must beNone
           }
         }
@@ -301,14 +289,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
-          val result = dockAppRepository.findDockAppById(id = testId).run.run
+          val result = dockAppRepository.findDockAppById(id = testId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -319,10 +303,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ValidDockAppRepositoryResponses {
 
-          val result = dockAppRepository.updateDockApp(item = dockApp).run.run
+          val result = dockAppRepository.updateDockApp(item = dockApp).value.run
 
           result must beLike {
-            case Answer(updated) =>
+            case Xor.Right(updated) =>
               updated shouldEqual 1
           }
         }
@@ -331,14 +315,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
-          val result = dockAppRepository.updateDockApp(item = dockApp).run.run
+          val result = dockAppRepository.updateDockApp(item = dockApp).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -349,10 +329,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ValidDockAppRepositoryResponses {
 
-          val result = dockAppRepository.fetchDockApps().run.run
+          val result = dockAppRepository.fetchDockApps().value.run
 
           result must beLike {
-            case Answer(dockApps) =>
+            case Xor.Right(dockApps) =>
               dockApps shouldEqual dockAppSeq
           }
         }
@@ -361,10 +341,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ValidDockAppRepositoryResponses {
 
-          val result = dockAppRepository.fetchDockApps(where = s"$position = ?", whereParams = Seq(testPosition.toString)).run.run
+          val result = dockAppRepository.fetchDockApps(where = s"$position = ?", whereParams = Seq(testPosition.toString)).value.run
 
           result must beLike {
-            case Answer(dockApps) =>
+            case Xor.Right(dockApps) =>
               dockApps shouldEqual dockAppSeq
           }
         }
@@ -373,14 +353,10 @@ class DockAppRepositorySpec
         new DockAppRepositoryScope
           with ErrorDockAppRepositoryResponses {
 
-          val result = dockAppRepository.fetchDockApps().run.run
+          val result = dockAppRepository.fetchDockApps().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }

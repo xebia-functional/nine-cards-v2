@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 
 import scala.util.{Failure, Try}
 import scalaz.concurrent.Task
@@ -56,7 +57,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
 
   def initialize(): Unit = {
-    Task.fork(di.userProcess.getUser.run).resolveAsync(
+    Task.fork(di.userProcess.getUser.value).resolveAsync(
       onResult = user => {
         (user.userProfile.name, user.email) match {
           case (Some(name), Some(email)) =>
@@ -129,7 +130,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         _ <- di.userProcess.unregister
       } yield ()
 
-    Task.fork(logout.run).resolveAsyncUi(
+    Task.fork(logout.value).resolveAsyncUi(
       onResult = (_) => Ui {
         contextWrapper.original.get foreach { activity =>
           activity.setResult(ResultCodes.logoutSuccessful)
@@ -154,7 +155,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
 
     withConnectedClient { client =>
-      Task.fork(deleteAccountDevice(client, cloudId).run).resolveAsyncUi(
+      Task.fork(deleteAccountDevice(client, cloudId).value).resolveAsyncUi(
         onResult = (_) => Ui(loadUserAccounts(client, Seq(cloudId))),
         onException = (_) => actions.showContactUsError(() => deleteDevice(cloudId)),
         onPreTask = () => actions.showLoading())
@@ -174,7 +175,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     maybeName match {
       case Some(name) if name.length > 0 =>
         withConnectedClient { client =>
-          Task.fork(copyAccountDevice(name, client, cloudId).run).resolveAsyncUi(
+          Task.fork(copyAccountDevice(name, client, cloudId).value).resolveAsyncUi(
             onResult = (_) => Ui(loadUserAccounts(client)),
             onException = (_) => actions.showContactUsError(() => copyDevice(maybeName, cloudId)),
             onPreTask = () => actions.showLoading())
@@ -224,7 +225,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       }
     }
 
-    Task.fork(loadAccounts(client, filterOutResourceIds).run).resolveAsyncUi(
+    Task.fork(loadAccounts(client, filterOutResourceIds).value).resolveAsyncUi(
       onResult = accountSyncs => {
         syncEnabled = true
         if (accountSyncs.isEmpty) {
@@ -244,7 +245,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     def loadUserEmail() = di.userProcess.getUser.map(_.email)
 
     def loadUserInfo(): Unit =
-      Task.fork(loadUserEmail().run).resolveAsyncUi(
+      Task.fork(loadUserEmail().value).resolveAsyncUi(
         onResult = email => Ui {
           val client = email map createGoogleDriveClient
           clientStatuses = clientStatuses.copy(apiClient = client)

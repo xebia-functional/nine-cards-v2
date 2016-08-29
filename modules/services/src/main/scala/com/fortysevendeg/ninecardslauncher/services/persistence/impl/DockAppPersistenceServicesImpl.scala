@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -50,5 +51,5 @@ trait DockAppPersistenceServicesImpl extends PersistenceServices {
     (for {
       maybeDockApp <- dockAppRepository.findDockAppById(request.id)
     } yield maybeDockApp map toDockApp).resolve[PersistenceServiceException]
-  
+
 }

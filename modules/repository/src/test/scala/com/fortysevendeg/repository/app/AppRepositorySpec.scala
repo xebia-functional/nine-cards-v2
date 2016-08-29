@@ -1,9 +1,9 @@
 package com.fortysevendeg.repository.app
 
 import android.net.Uri
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.App
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.provider._
@@ -13,7 +13,6 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 trait AppRepositorySpecification
   extends Specification
@@ -249,10 +248,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.addApp(data = createAppData).run.run
+          val result = appRepository.addApp(data = createAppData).value.run
 
           result must beLike {
-            case Answer(appResult) =>
+            case Xor.Right(appResult) =>
               appResult.id shouldEqual testAppId
               appResult.data.packageName shouldEqual testPackageName
           }
@@ -262,14 +261,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorAppRepositoryResponses {
 
-          val result = appRepository.addApp(data = createAppData).run.run
+          val result = appRepository.addApp(data = createAppData).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -280,10 +275,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.fetchAlphabeticalAppsCounter.run.run
+          val result = appRepository.fetchAlphabeticalAppsCounter.value.run
 
           result must beLike {
-            case Answer(counters) =>
+            case Xor.Right(counters) =>
               counters shouldEqual appsDataCounters
           }
         }
@@ -292,13 +287,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorCounterAppRepositoryResponses {
 
-          val result = appRepositoryException.fetchAlphabeticalAppsCounter.run.run
+          val result = appRepositoryException.fetchAlphabeticalAppsCounter.value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
             }
           }
         }
@@ -310,10 +302,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.fetchCategorizedAppsCounter.run.run
+          val result = appRepository.fetchCategorizedAppsCounter.value.run
 
           result must beLike {
-            case Answer(counters) =>
+            case Xor.Right(counters) =>
               counters shouldEqual categoryDataCounters
           }
         }
@@ -322,14 +314,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorCounterAppRepositoryResponses {
 
-          val result = appRepositoryException.fetchCategorizedAppsCounter.run.run
+          val result = appRepositoryException.fetchCategorizedAppsCounter.value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -340,10 +328,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.fetchInstallationDateAppsCounter.run.run
+          val result = appRepository.fetchInstallationDateAppsCounter.value.run
 
           result must beLike {
-            case Answer(counters) =>
+            case Xor.Right(counters) =>
               counters shouldEqual installationDateDateCounters
           }
         }
@@ -352,14 +340,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorCounterAppRepositoryResponses {
 
-          val result = appRepositoryException.fetchInstallationDateAppsCounter.run.run
+          val result = appRepositoryException.fetchInstallationDateAppsCounter.value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -370,10 +354,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.deleteApps().run.run
+          val result = appRepository.deleteApps().value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -382,14 +366,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorAppRepositoryResponses {
 
-          val result = appRepository.deleteApps().run.run
+          val result = appRepository.deleteApps().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -400,10 +380,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.deleteApp(app = app).run.run
+          val result = appRepository.deleteApp(app = app).value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -412,14 +392,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorAppRepositoryResponses {
 
-          val result = appRepository.deleteApp(app = app).run.run
+          val result = appRepository.deleteApp(app = app).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -430,10 +406,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.deleteAppByPackage(packageName = testPackageName).run.run
+          val result = appRepository.deleteAppByPackage(packageName = testPackageName).value.run
 
           result must beLike {
-            case Answer(deleted) =>
+            case Xor.Right(deleted) =>
               deleted shouldEqual 1
           }
         }
@@ -442,14 +418,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorAppRepositoryResponses {
 
-          val result = appRepository.deleteAppByPackage(packageName = testPackageName).run.run
+          val result = appRepository.deleteAppByPackage(packageName = testPackageName).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -460,10 +432,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.fetchApps().run.run
+          val result = appRepository.fetchApps().value.run
 
           result must beLike {
-            case Answer(apps) =>
+            case Xor.Right(apps) =>
               apps shouldEqual appSeq
           }
         }
@@ -472,14 +444,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorAppRepositoryResponses {
 
-          val result = appRepository.fetchApps().run.run
+          val result = appRepository.fetchApps().value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -490,10 +458,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.findAppById(id = testAppId).run.run
+          val result = appRepository.findAppById(id = testAppId).value.run
 
           result must beLike {
-            case Answer(maybeApp) =>
+            case Xor.Right(maybeApp) =>
               maybeApp must beSome[App].which { app =>
                 app.id shouldEqual testAppId
                 app.data.packageName shouldEqual testPackageName
@@ -505,10 +473,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.findAppById(id = testNonExistingAppId).run.run
+          val result = appRepository.findAppById(id = testNonExistingAppId).value.run
 
           result must beLike {
-            case Answer(maybeApp) =>
+            case Xor.Right(maybeApp) =>
               maybeApp must beNone
           }
         }
@@ -517,14 +485,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorAppRepositoryResponses {
 
-          val result = appRepository.findAppById(id = testAppId).run.run
+          val result = appRepository.findAppById(id = testAppId).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -534,10 +498,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.fetchAppByPackage(packageName = testPackageName).run.run
+          val result = appRepository.fetchAppByPackage(packageName = testPackageName).value.run
 
           result must beLike {
-            case Answer(maybeApp) =>
+            case Xor.Right(maybeApp) =>
               maybeApp must beSome[App].which { app =>
                 app.id shouldEqual testAppId
                 app.data.packageName shouldEqual testPackageName
@@ -549,10 +513,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.fetchAppByPackage(packageName = testNonExistingPackageName).run.run
+          val result = appRepository.fetchAppByPackage(packageName = testNonExistingPackageName).value.run
 
           result must beLike {
-            case Answer(maybeApp) =>
+            case Xor.Right(maybeApp) =>
               maybeApp must beNone
           }
         }
@@ -561,14 +525,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorAppRepositoryResponses {
 
-          val result = appRepository.fetchAppByPackage(packageName = testPackageName).run.run
+          val result = appRepository.fetchAppByPackage(packageName = testPackageName).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -578,10 +538,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.fetchAppsByCategory(category = testCategory).run.run
+          val result = appRepository.fetchAppsByCategory(category = testCategory).value.run
 
           result must beLike {
-            case Answer(apps) =>
+            case Xor.Right(apps) =>
               apps shouldEqual appSeq
           }
         }
@@ -590,10 +550,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.fetchAppsByCategory(category = testNonExistingCategory).run.run
+          val result = appRepository.fetchAppsByCategory(category = testNonExistingCategory).value.run
 
           result must beLike {
-            case Answer(apps) =>
+            case Xor.Right(apps) =>
               apps shouldEqual Seq.empty
           }
         }
@@ -602,14 +562,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorAppRepositoryResponses {
 
-          val result = appRepository.fetchAppsByCategory(category = testCategory).run.run
+          val result = appRepository.fetchAppsByCategory(category = testCategory).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -620,10 +576,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ValidAppRepositoryResponses {
 
-          val result = appRepository.updateApp(app = app).run.run
+          val result = appRepository.updateApp(app = app).value.run
 
           result must beLike {
-            case Answer(updated) =>
+            case Xor.Right(updated) =>
               updated shouldEqual 1
           }
         }
@@ -632,14 +588,10 @@ class AppRepositorySpec
         new AppRepositoryScope
           with ErrorAppRepositoryResponses {
 
-          val result = appRepository.updateApp(app = app).run.run
+          val result = appRepository.updateApp(app = app).value.run
 
           result must beLike {
-            case Errata(e) => e.headOption must beSome.which {
-              case (_, (_, repositoryException)) => repositoryException must beLike {
-                case e: RepositoryException => e.cause must beSome.which(_ shouldEqual contentResolverException)
-              }
-            }
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
           }
         }
     }
@@ -687,6 +639,5 @@ class AppRepositorySpec
           result shouldEqual appEntitySeq
         }
     }
-  }
 
 }

@@ -3,10 +3,11 @@ package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 import java.util.Date
 
 import android.os.Build
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageImplicits._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, Conversions, ImplicitsCloudStorageProcessExceptions}
@@ -14,7 +15,6 @@ import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFil
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
 import play.api.libs.json.Json
-import rapture.core.{Answer, Errata, Result, Unforeseen}
 
 import scala.reflect.ClassTag
 import scala.util.{Failure, Success, Try}
@@ -66,16 +66,16 @@ class CloudStorageProcessImpl(
         maybeCloudId <- findUserDeviceCloudId(id)
       } yield driveServicesSeq map (file => toCloudStorageDeviceSummary(file, maybeCloudId))).resolve[CloudStorageProcessException]
     } getOrElse {
-      Service(Task(Result.errata[Seq[CloudStorageDeviceSummary], CloudStorageProcessException](CloudStorageProcessException(noActiveUserErrorMessage))))
+      TaskService(Task(Xor.left(CloudStorageProcessException(noActiveUserErrorMessage))))
     }
 
   override def getCloudStorageDevice(cloudId: String) = {
 
-    def parseDevice(json: String): ServiceDef2[CloudStorageDeviceData, CloudStorageProcessException] = Service {
+    def parseDevice(json: String): TaskService[CloudStorageDeviceData] = TaskService {
       Task {
         Try(Json.parse(json).as[CloudStorageDeviceData]) match {
-          case Success(s) => Answer(s)
-          case Failure(e) => Errata(CloudStorageProcessException(message = e.getMessage, cause = e.some))
+          case Success(s) => Xor.Right(s)
+          case Failure(e) => Xor.Left(CloudStorageProcessException(message = e.getMessage, cause = e.some))
         }
       }
     }
@@ -99,12 +99,12 @@ class CloudStorageProcessImpl(
     dockApps: Seq[CloudStorageDockApp])(implicit context: ContextSupport) = {
 
     def deviceExists(
-      maybeCloudId: Option[String]): ServiceDef2[Boolean, DriveServicesException] =
+      maybeCloudId: Option[String]): TaskService[Boolean] =
       maybeCloudId match {
         case Some(cloudId) =>
           driveServices.fileExists(cloudId)
         case _ =>
-          Service(Task(Result.answer[Boolean, DriveServicesException](false)))
+          TaskService(Task(Xor.right(false)))
       }
 
     context.getActiveUserId map { id =>
@@ -124,7 +124,7 @@ class CloudStorageProcessImpl(
           cloudStorageDeviceData = cloudStorageDeviceData)
       } yield device).resolve[CloudStorageProcessException]
     } getOrElse {
-      Service(Task(Result.errata[CloudStorageDevice, CloudStorageProcessException](CloudStorageProcessException(noActiveUserErrorMessage))))
+      TaskService(Task(Xor.left(CloudStorageProcessException(noActiveUserErrorMessage))))
     }
   }
 
@@ -133,23 +133,23 @@ class CloudStorageProcessImpl(
 
   private[this] def createOrUpdateCloudStorageDevice(
     maybeCloudId: Option[String],
-    cloudStorageDeviceData: CloudStorageDeviceData): ServiceDef2[CloudStorageDevice, CloudStorageProcessException] = {
+    cloudStorageDeviceData: CloudStorageDeviceData): TaskService[CloudStorageDevice] = {
 
     def createOrUpdateFile(
       maybeCloudId: Option[String],
       title: String,
       content: String,
-      deviceId: String): ServiceDef2[DriveServiceFileSummary, DriveServicesException] =
+      deviceId: String): TaskService[DriveServiceFileSummary] =
       maybeCloudId match {
         case Some(cloudId) => driveServices.updateFile(cloudId, content)
         case _ => driveServices.createFile(title, content, deviceId, userDeviceType, jsonMimeType)
       }
 
-    def deviceToJson(device: CloudStorageDeviceData): ServiceDef2[String, CloudStorageProcessException] = Service {
+    def deviceToJson(device: CloudStorageDeviceData): TaskService[String] = TaskService {
       Task {
         Try(Json.toJson(device).toString()) match {
-          case Success(s) => Answer(s)
-          case Failure(e) => Errata(CloudStorageProcessException(message = e.getMessage, cause = Some(e)))
+          case Success(s) => Xor.right(s)
+          case Failure(e) => Xor.left(CloudStorageProcessException(message = e.getMessage, cause = Some(e)))
         }
       }
     }
@@ -166,14 +166,11 @@ class CloudStorageProcessImpl(
     }).resolve[CloudStorageProcessException]
   }
 
-  private[this] def findUserDeviceCloudId(userId: Int): ServiceDef2[Option[String], CloudStorageProcessException] = Service {
-    persistenceServices.findUserById(FindUserByIdRequest(userId)).run map {
-      case Answer(Some(user)) => Result.answer[Option[String], CloudStorageProcessException](user.deviceCloudId)
-      case Answer(None) => Result.errata[Option[String], CloudStorageProcessException](CloudStorageProcessException(userNotFoundErrorMessage(userId)))
-      case e@Errata(_) =>
-        val exs = e.exceptions map (ie => (implicitly[ClassTag[CloudStorageProcessException]], (ie.getMessage, cloudStorageExceptionConverter(ie))))
-        Errata[Option[String], CloudStorageProcessException](exs)
-      case Unforeseen(ex) => Result.errata[Option[String], CloudStorageProcessException](CloudStorageProcessException("", Some(ex)))
+  private[this] def findUserDeviceCloudId(userId: Int): TaskService[Option[String]] = TaskService {
+    persistenceServices.findUserById(FindUserByIdRequest(userId)).value map {
+      case Xor.Right(Some(user)) => Xor.Right(user.deviceCloudId)
+      case Xor.Right(None) => Xor.Left(CloudStorageProcessException(userNotFoundErrorMessage(userId)))
+      case Xor.Left(e) => Xor.left(CloudStorageProcessException(e.getMessage, Some(e)))
     }
   }
 

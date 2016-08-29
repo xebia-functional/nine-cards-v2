@@ -1,10 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toUser
 import com.fortysevendeg.ninecardslauncher.repository.model.{User, UserData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
@@ -26,10 +26,10 @@ class UserRepository(
 
   val userNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$userUriPath")
 
-  def addUser(data: UserData): ServiceDef2[User, RepositoryException] =
-    Service {
+  def addUser(data: UserData): TaskService[User] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
@@ -42,10 +42,10 @@ class UserRepository(
       }
     }
 
-  def deleteUsers(where: String = ""): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def deleteUsers(where: String = ""): TaskService[Int] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = userUri,
             where = where,
@@ -54,10 +54,10 @@ class UserRepository(
       }
     }
 
-  def deleteUser(user: User): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def deleteUser(user: User): TaskService[Int] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = userUri,
             id = user.id,
@@ -66,10 +66,10 @@ class UserRepository(
       }
     }
 
-  def findUserById(id: Int): ServiceDef2[Option[User], RepositoryException] =
-    Service {
+  def findUserById(id: Int): TaskService[Option[User]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.findById(
             uri = userUri,
             id = id,
@@ -78,10 +78,10 @@ class UserRepository(
       }
     }
 
-  def fetchUsers: ServiceDef2[Seq[User], RepositoryException] =
-    Service {
+  def fetchUsers: TaskService[Seq[User]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = userUri,
             projection = allFields)(getListFromCursor(userEntityFromCursor)) map toUser
@@ -92,10 +92,10 @@ class UserRepository(
   def fetchIterableUsers(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursor[User], RepositoryException] =
-    Service {
+    orderBy: String = ""): TaskService[IterableCursor[User]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
             uri = userUri,
             projection = allFields,
@@ -106,10 +106,10 @@ class UserRepository(
       }
     }
 
-  def updateUser(item: User): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def updateUser(item: User): TaskService[Int] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = createMapValues(item.data)
 
           contentResolverWrapper.updateById(

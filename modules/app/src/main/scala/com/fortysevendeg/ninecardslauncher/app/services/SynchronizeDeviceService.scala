@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.services
 
 import android.app.{IntentService, Service}
 import android.content.{Context, Intent}
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.observers.NineCardsObserver._
@@ -10,25 +11,17 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
-import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageMoment
-import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
-import com.fortysevendeg.ninecardslauncher.process.device.DockAppException
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{ImplicitsSharedCollectionsExceptions, SharedCollectionsExceptions}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.UpdateSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.widget.AppWidgetException
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{ImplicitsSharedCollectionsExceptions, SharedCollectionsExceptions}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
-import rapture.core.Answer
 
 import scalaz.concurrent.Task
 
@@ -51,7 +44,7 @@ class SynchronizeDeviceService
   override def onHandleIntent(intent: Intent): Unit = {
     registerDispatchers
 
-    Task.fork(updateCollections().run).resolveAsync()
+    Task.fork(updateCollections().value).resolveAsync()
 
     synchronizeDevice
   }
@@ -71,14 +64,14 @@ class SynchronizeDeviceService
   override def connected(client: GoogleApiClient): Unit = {
 
     def sync(
-      client: GoogleApiClient): ServiceDef2[Unit, CollectionException with MomentException with AppWidgetException with DockAppException with CloudStorageProcessException with UserException] = {
+      client: GoogleApiClient): TaskService[Unit] = {
       val cloudStorageProcess = di.createCloudStorageProcess(client)
       for {
         collections <- di.collectionProcess.getCollections
         moments <- di.momentProcess.getMoments
         widgets <- di.widgetsProcess.getWidgets
         dockApps <- di.deviceProcess.getDockApps
-        cloudStorageMoments = moments.filter(_.collectionId.isEmpty) map { moment => // TODO Remove :Seq[CloudStorageMoment]
+        cloudStorageMoments = moments.filter(_.collectionId.isEmpty) map { moment =>
           val widgetSeq = widgets.filter(_.momentId == moment.id) match {
             case wSeq if wSeq.isEmpty => None
             case wSeq => Some(wSeq)
@@ -93,7 +86,7 @@ class SynchronizeDeviceService
       } yield ()
     }
 
-    Task.fork(sync(client).run).resolveAsync(
+    Task.fork(sync(client).value).resolveAsync(
       _ => sendStateAndFinish(stateSuccess),
       throwable => {
         error(
@@ -111,7 +104,7 @@ class SynchronizeDeviceService
 
     def updateCollection(collectionId: Int) = {
 
-      def updateSharedCollection(collection: Collection): ServiceDef2[Option[String], SharedCollectionsExceptions] =
+      def updateSharedCollection(collection: Collection): TaskService[Option[String]] =
         collection.sharedCollectionId match {
           case Some(id) =>
             di.sharedCollectionsProcess.updateSharedCollection(
@@ -120,22 +113,22 @@ class SynchronizeDeviceService
                 name = collection.name,
                 description = None,
                 packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName))).map(Option(_))
-          case _ => services.Service(Task(Answer(None)))
+          case _ => services.TaskService(Task(Xor.right(None)))
         }
 
       for {
-        Some(collection) <- di.collectionProcess.getCollectionById(collectionId)
+        collection <- di.collectionProcess.getCollectionById(collectionId).resolveOption()
         _ <- updateSharedCollection(collection)
       } yield ()
     }
 
     val ids = preferences.getString(collectionIdsKey, "").split(",")
-    val updateServices = ids filterNot (_.isEmpty) map (id => updateCollection(id.toInt).run)
+    val updateServices = ids filterNot (_.isEmpty) map (id => updateCollection(id.toInt).value)
     preferences.edit().remove(collectionIdsKey).apply()
 
-    services.Service {
+    services.TaskService {
       Task.gatherUnordered(updateServices, exceptionCancels = false) map { results =>
-        CatchAll[SharedCollectionsExceptions](results.collect { case Answer(r) => r })
+        XorCatchAll[SharedCollectionsExceptions](results.collect { case Xor.Right(r) => r })
       }
     }
   }

@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.theme.impl
 
 import android.content.res.Resources
 import android.util.DisplayMetrics
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.process.theme.ThemeException
@@ -10,7 +11,6 @@ import com.fortysevendeg.ninecardslauncher.commons.utils.AssetException
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 import scala.util.Success
 
@@ -83,10 +83,10 @@ class ThemeProcessImplSpec
 
     "return a valid NineCardsTheme object for a valid request" in
       new ThemeProcessScope with ValidFileUtilsResponses {
-        val result = themeProcess.getTheme("")(mockContextSupport).run.run
+        val result = themeProcess.getTheme("")(mockContextSupport).value.run
 
         result must beLike {
-          case Answer(theme) =>
+          case Xor.Right(theme) =>
             theme.name mustEqual defaultThemeName
             theme.get(SearchBackgroundColor) mustEqual intSampleColorWithoutAlpha
             theme.get(SearchPressedColor) mustEqual intSampleColorWithAlpha
@@ -95,42 +95,34 @@ class ThemeProcessImplSpec
 
     "return a ThemeException if the JSON is not valid" in
       new ThemeProcessScope with WrongJsonFileUtilsResponses {
-        val result = themeProcess.getTheme("")(mockContextSupport).run.run
+        val result = themeProcess.getTheme("")(mockContextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ThemeException]
+          case Xor.Left(e) => e must beAnInstanceOf[ThemeException]
           }
-        }
       }
 
     "return a ThemeException if a wrong theme style type is included in the JSON" in
       new ThemeProcessScope with WrongThemeStyleTypeFileUtilsResponses {
-        val result = themeProcess.getTheme("")(mockContextSupport).run.run
+        val result = themeProcess.getTheme("")(mockContextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ThemeException]
+          case Xor.Left(e) => e must beAnInstanceOf[ThemeException]
           }
-        }
       }
 
     "return a ThemeException if a wrong theme style color is included in the JSON" in
       new ThemeProcessScope with WrongThemeStyleColorFileUtilsResponses {
-        val result = themeProcess.getTheme("")(mockContextSupport).run.run
+        val result = themeProcess.getTheme("")(mockContextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[ThemeException]
+          case Xor.Left(e) => e must beAnInstanceOf[ThemeException]
           }
-        }
       }
 
     "return a AssetException if getJsonFromFile throws a exception" in
       new ThemeProcessScope with ErrorFileUtilsResponses {
-        val result = themeProcess.getTheme("")(mockContextSupport).run.run
+        val result = themeProcess.getTheme("")(mockContextSupport).value.run
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[AssetException]
+          case Xor.Left(e) => e must beAnInstanceOf[AssetException]
           }
-        }
       }
   }
 

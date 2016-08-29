@@ -1,6 +1,7 @@
 import java.text.SimpleDateFormat
 import java.util.Date
 
+import Libraries.cats._
 import Libraries.android._
 import Libraries.graphics._
 import Libraries.json._
@@ -84,7 +85,7 @@ object Settings {
   lazy val basicSettings = Seq(
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
-    libraryDependencies ++= Seq(scalaz, scalazConcurrent)
+    libraryDependencies ++= Seq(scalaz, scalazConcurrent, cats)
   )
 
   lazy val duplicatedFiles = Set(

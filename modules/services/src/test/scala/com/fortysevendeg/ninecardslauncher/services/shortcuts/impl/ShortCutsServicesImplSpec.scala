@@ -1,19 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.services.shortcuts.impl
 
 import android.content.Intent
-import android.content.pm.{ApplicationInfo, ActivityInfo, ResolveInfo, PackageManager}
+import android.content.pm.{ActivityInfo, ApplicationInfo, PackageManager, ResolveInfo}
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutServicesException
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Errata, Answer}
+
 import scala.collection.JavaConversions._
 
 trait ShortcutsImplSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   trait ShortcutsImplScope
     extends Scope
@@ -62,25 +62,21 @@ trait ShortcutsImplSpecification
 }
 
 class ShortcutsServicesImplSpec
-  extends  ShortcutsImplSpecification {
+  extends ShortcutsImplSpecification {
 
   "returns the ordered list of shortcuts when they exist" in
     new ShortcutsImplScope {
-      val result = shortcutsServicesImpl.getShortcuts(contextSupport).run.run
+      val result = shortcutsServicesImpl.getShortcuts(contextSupport).value.run
       result must beLike {
-        case Answer(resultShortCutList) => resultShortCutList shouldEqual shotcutsList.sortBy(_.title)
+        case Xor.Right(resultShortCutList) => resultShortCutList shouldEqual shotcutsList.sortBy(_.title)
       }
     }
 
   "returns an ShortcutException when no shortcuts exist" in
     new ShortcutsImplScope with ShortcutsErrorScope {
-      val result = shortcutsServicesImpl.getShortcuts(contextSupport).run.run
+      val result = shortcutsServicesImpl.getShortcuts(contextSupport).value.run
       result must beLike {
-        case Errata(e) => e.headOption must beSome.which {
-          case (_, (_, shortcutsException)) => shortcutsException must beLike {
-            case e: ShortcutServicesException => e.cause must beSome.which(_ shouldEqual exception)
-          }
-        }
+        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
       }
     }
 

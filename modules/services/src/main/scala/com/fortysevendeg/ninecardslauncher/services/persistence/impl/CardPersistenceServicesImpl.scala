@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
-import rapture.core.Result
 
 import scalaz.concurrent.Task
 
@@ -21,7 +21,7 @@ trait CardPersistenceServicesImpl extends PersistenceServices {
           card <- cardRepository.addCard(collectionId, toRepositoryCardData(request))
         } yield toCard(card)).resolve[PersistenceServiceException]
       case None =>
-        Service(Task(Result.errata[Card, PersistenceServiceException](PersistenceServiceException("CollectionId can't be empty"))))
+        TaskService(Task(Xor.Left(PersistenceServiceException("CollectionId can't be empty"))))
     }
 
   def addCards(request: Seq[AddCardWithCollectionIdRequest]) =

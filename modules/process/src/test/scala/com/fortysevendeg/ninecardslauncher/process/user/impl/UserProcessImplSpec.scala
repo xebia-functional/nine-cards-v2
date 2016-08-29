@@ -1,14 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.process.user.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Errata, Answer}
 
 import scalaz.concurrent.Task
 
@@ -42,7 +42,7 @@ class UserProcessImplSpec
 
         mockContextSupport.getActiveUserId returns None
 
-        val result = userProcess.signIn(email, marketToken, emailTokenId)(mockContextSupport).run.run
+        val result = userProcess.signIn(email, marketToken, emailTokenId)(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was no(mockPersistenceServices).getAndroidId(any)
@@ -51,9 +51,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).updateUser(any)
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[UserException]
         }
       }
 
@@ -61,11 +59,11 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(deviceId)))
-        mockApiServices.login(any, any, any) returns Service(Task(Answer(loginResponse)))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(None)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.login(any, any, any) returns TaskService(Task(Xor.right(loginResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
-        val result = userProcess.signIn(email, marketToken, emailTokenId)(mockContextSupport).run.run
+        val result = userProcess.signIn(email, marketToken, emailTokenId)(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
@@ -74,9 +72,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).updateUser(any)
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[UserException]
         }
       }
 
@@ -84,12 +80,12 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(deviceId)))
-        mockApiServices.login(any, any, any) returns Service(Task(Answer(loginResponse)))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(persistenceUser))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.login(any, any, any) returns TaskService(Task(Xor.right(loginResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
-        val result = userProcess.signIn(email, marketToken, emailTokenId)(mockContextSupport).run.run
+        val result = userProcess.signIn(email, marketToken, emailTokenId)(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
@@ -108,7 +104,7 @@ class UserProcessImplSpec
           deviceName = persistenceUser.deviceName,
           deviceCloudId = persistenceUser.deviceCloudId))
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
   }
@@ -119,9 +115,9 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns None
-        mockPersistenceServices.fetchUsers returns Service(Task(Answer(Seq(persistenceUser, anotherUser))))
+        mockPersistenceServices.fetchUsers returns TaskService(Task(Xor.right(Seq(persistenceUser, anotherUser))))
 
-        val result = userProcess.register(mockContextSupport).run.run
+        val result = userProcess.register(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).fetchUsers
@@ -129,17 +125,17 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).findUserById(any)
         there was no(mockPersistenceServices).addUser(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "register as active a new user when fetchUsers return an empty seq and there is no active user id" in
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns None
-        mockPersistenceServices.fetchUsers returns Service(Task(Answer(Seq.empty)))
-        mockPersistenceServices.addUser(any) returns Service(Task(Answer(persistenceUser)))
+        mockPersistenceServices.fetchUsers returns TaskService(Task(Xor.right(Seq.empty)))
+        mockPersistenceServices.addUser(any) returns TaskService(Task(Xor.right(persistenceUser)))
 
-        val result = userProcess.register(mockContextSupport).run.run
+        val result = userProcess.register(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).fetchUsers
@@ -147,16 +143,16 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).addUser(emptyAddUserRequest)
         there was no(mockPersistenceServices).findUserById(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "not register an active user when there is one active user id and it exists in the database" in
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(persistenceUser))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser))))
 
-        val result = userProcess.register(mockContextSupport).run.run
+        val result = userProcess.register(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -164,17 +160,17 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).addUser(emptyAddUserRequest)
         there was no(mockPersistenceServices).fetchUsers
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "register as active a new user when there is one active user id but it doesn't exists in the database" in
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(None)))
-        mockPersistenceServices.addUser(any) returns Service(Task(Answer(persistenceUser)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
+        mockPersistenceServices.addUser(any) returns TaskService(Task(Xor.right(persistenceUser)))
 
-        val result = userProcess.register(mockContextSupport).run.run
+        val result = userProcess.register(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -182,7 +178,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).addUser(emptyAddUserRequest)
         there was no(mockPersistenceServices).fetchUsers
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
   }
@@ -194,7 +190,7 @@ class UserProcessImplSpec
 
         mockContextSupport.getActiveUserId returns None
 
-        val result = userProcess.unregister(mockContextSupport).run.run
+        val result = userProcess.unregister(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was no(mockPersistenceServices).findUserById(any)
@@ -203,9 +199,7 @@ class UserProcessImplSpec
         there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[UserException]
         }
       }
 
@@ -213,9 +207,9 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
-        val result = userProcess.unregister(mockContextSupport).run.run
+        val result = userProcess.unregister(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -224,9 +218,7 @@ class UserProcessImplSpec
         there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[UserException]
         }
       }
 
@@ -238,10 +230,10 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken),
           deviceToken = None)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
-        val result = userProcess.unregister(mockContextSupport).run.run
+        val result = userProcess.unregister(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -249,7 +241,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "update the user in the database but don't call to update installation if the user doesn't have an api key" in
@@ -260,10 +252,10 @@ class UserProcessImplSpec
           apiKey = None,
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
-        val result = userProcess.unregister(mockContextSupport).run.run
+        val result = userProcess.unregister(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -271,7 +263,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "update the user in the database but don't call to update installation if the user doesn't have a session token" in
@@ -282,10 +274,10 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = None,
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
-        val result = userProcess.unregister(mockContextSupport).run.run
+        val result = userProcess.unregister(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -293,7 +285,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "update the user in the database and call to update installation with None if the user has a device token, api key and session token" in
@@ -304,12 +296,12 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
-        mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(deviceId)))
-        mockApiServices.updateInstallation(any)(any) returns Service(Task(Answer(updateInstallationResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.updateInstallation(any)(any) returns TaskService(Task(Xor.right(updateInstallationResponse)))
 
-        val result = userProcess.unregister(mockContextSupport).run.run
+        val result = userProcess.unregister(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -317,7 +309,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
         there was one(mockApiServices).updateInstallation(None)(RequestConfig(apiKey, sessionToken, deviceId))
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
   }
@@ -329,15 +321,13 @@ class UserProcessImplSpec
 
         mockContextSupport.getActiveUserId returns None
 
-        val result = userProcess.getUser(mockContextSupport).run.run
+        val result = userProcess.getUser(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was no(mockPersistenceServices).findUserById(any)
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[UserException]
         }
       }
 
@@ -345,17 +335,15 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
-        val result = userProcess.getUser(mockContextSupport).run.run
+        val result = userProcess.getUser(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[UserException]
         }
       }
 
@@ -363,15 +351,15 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(persistenceUser))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser))))
 
-        val result = userProcess.getUser(mockContextSupport).run.run
+        val result = userProcess.getUser(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
 
         result must beLike {
-          case Answer(user) => user shouldEqual processUser
+          case Xor.Right(user) => user shouldEqual processUser
         }
       }
   }
@@ -383,7 +371,7 @@ class UserProcessImplSpec
 
         mockContextSupport.getActiveUserId returns None
 
-        val result = userProcess.updateUserDevice(deviceName, deviceCloudId, Some(deviceToken))(mockContextSupport).run.run
+        val result = userProcess.updateUserDevice(deviceName, deviceCloudId, Some(deviceToken))(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was no(mockPersistenceServices).findUserById(any)
@@ -392,9 +380,7 @@ class UserProcessImplSpec
         there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[UserException]
         }
       }
 
@@ -402,9 +388,9 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
-        val result = userProcess.updateUserDevice(deviceName, deviceCloudId, Some(deviceToken))(mockContextSupport).run.run
+        val result = userProcess.updateUserDevice(deviceName, deviceCloudId, Some(deviceToken))(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -413,9 +399,7 @@ class UserProcessImplSpec
         there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[UserException]
         }
       }
 
@@ -426,10 +410,10 @@ class UserProcessImplSpec
         val user = persistenceUser.copy(
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
-        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(deviceToken))(mockContextSupport).run.run
+        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(deviceToken))(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -441,7 +425,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "updates the user in the database with the new data but doesn't call to update installation when the user doesn't have api key" in
@@ -452,10 +436,10 @@ class UserProcessImplSpec
           apiKey = None,
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
-        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(anotherDeviceToken))(mockContextSupport).run.run
+        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(anotherDeviceToken))(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -467,7 +451,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "updates the user in the database with the new data but doesn't call to update installation when the user doesn't have session key" in
@@ -478,10 +462,10 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = None,
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
-        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(anotherDeviceToken))(mockContextSupport).run.run
+        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(anotherDeviceToken))(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -493,7 +477,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "updates the user in the database with the new data and calls to update installation when the user have an api key, a session key and the device token is different" in
@@ -504,12 +488,12 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
-        mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(deviceId)))
-        mockApiServices.updateInstallation(any)(any) returns Service(Task(Answer(updateInstallationResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.updateInstallation(any)(any) returns TaskService(Task(Xor.right(updateInstallationResponse)))
 
-        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(anotherDeviceToken))(mockContextSupport).run.run
+        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(anotherDeviceToken))(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -521,7 +505,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
         there was one(mockApiServices).updateInstallation(Some(anotherDeviceToken))(RequestConfig(apiKey, sessionToken, deviceId))
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "updates the user in the database with the new data and calls to update installation passing the user device token when is called with no device token" in
@@ -532,12 +516,12 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
-        mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(deviceId)))
-        mockApiServices.updateInstallation(any)(any) returns Service(Task(Answer(updateInstallationResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.updateInstallation(any)(any) returns TaskService(Task(Xor.right(updateInstallationResponse)))
 
-        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, None)(mockContextSupport).run.run
+        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, None)(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -549,7 +533,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
         there was one(mockApiServices).updateInstallation(Some(deviceToken))(RequestConfig(apiKey, sessionToken, deviceId))
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
   }
 
@@ -560,7 +544,7 @@ class UserProcessImplSpec
 
         mockContextSupport.getActiveUserId returns None
 
-        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).run.run
+        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was no(mockPersistenceServices).findUserById(any)
@@ -569,9 +553,7 @@ class UserProcessImplSpec
         there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[UserException]
         }
       }
 
@@ -579,9 +561,9 @@ class UserProcessImplSpec
       new UserProcessScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
-        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).run.run
+        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -590,9 +572,7 @@ class UserProcessImplSpec
         there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beLike {
-          case Errata(e) => e.headOption must beSome.which {
-            case (_, (_, exception)) => exception must beAnInstanceOf[UserException]
-          }
+          case Xor.Left(e) => e must beAnInstanceOf[UserException]
         }
       }
 
@@ -603,10 +583,10 @@ class UserProcessImplSpec
         val user = persistenceUser.copy(
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
-        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).run.run
+        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -614,7 +594,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "updates the user in the database with the new data but doesn't call to update installation when the user doesn't have api key" in
@@ -625,10 +605,10 @@ class UserProcessImplSpec
           apiKey = None,
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
-        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).run.run
+        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -636,7 +616,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "updates the user in the database with the new data but doesn't call to update installation when the user doesn't have session key" in
@@ -647,10 +627,10 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = None,
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
-        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).run.run
+        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -658,7 +638,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
 
     "updates the user in the database with the new data and calls to update installation when the user have an api key, a session key and the device token is different" in
@@ -669,12 +649,12 @@ class UserProcessImplSpec
           apiKey = Some(apiKey),
           sessionToken = Some(sessionToken),
           deviceToken = Some(deviceToken))
-        mockPersistenceServices.findUserById(any) returns Service(Task(Answer(Some(user))))
-        mockPersistenceServices.updateUser(any) returns Service(Task(Answer(1)))
-        mockPersistenceServices.getAndroidId(any) returns Service(Task(Answer(deviceId)))
-        mockApiServices.updateInstallation(any)(any) returns Service(Task(Answer(updateInstallationResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        mockPersistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
+        mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+        mockApiServices.updateInstallation(any)(any) returns TaskService(Task(Xor.right(updateInstallationResponse)))
 
-        val result = userProcess.updateDeviceToken(anotherDeviceToken)(mockContextSupport).run.run
+        val result = userProcess.updateDeviceToken(anotherDeviceToken)(mockContextSupport).value.run
 
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -683,7 +663,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
         there was one(mockApiServices).updateInstallation(Some(anotherDeviceToken))(RequestConfig(apiKey, sessionToken, deviceId))
 
-        result must beAnInstanceOf[Answer[Unit, UserException]]
+        result must beAnInstanceOf[Xor.Right[Unit]]
       }
   }
 

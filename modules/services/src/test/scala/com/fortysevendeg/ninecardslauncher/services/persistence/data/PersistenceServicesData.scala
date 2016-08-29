@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -17,7 +16,6 @@ trait PersistenceServicesData extends Conversions {
   val items = 5
   val item = 1
 
-  val appId: Int =  Random.nextInt(10)
   val className: String = Random.nextString(5)
   val resourceIcon: Int = Random.nextInt(10)
   val dateInstalled: Long = Random.nextLong()
@@ -53,19 +51,6 @@ trait PersistenceServicesData extends Conversions {
   val imagePath: String = Random.nextString(5)
   val notification: String = Random.nextString(5)
 
-  val uId: Int = Random.nextInt(10)
-  val nonExistentUserId: Int = Random.nextInt(10) + 100
-  val email: String = Random.nextString(5)
-  val apiKey: String = Random.nextString(20)
-  val sessionToken: String = Random.nextString(5)
-  val deviceToken: String = Random.nextString(5)
-  val marketToken: String = Random.nextString(5)
-  val nameUser: String = Random.nextString(5)
-  val avatar: String = Random.nextString(5)
-  val cover: String = Random.nextString(5)
-  val deviceName: String = Random.nextString(5)
-  val deviceCloudId: String = Random.nextString(5)
-
   val momentId: Int = Random.nextInt(10)
   val nonExistentMomentId: Int = Random.nextInt(10) + 100
   val wifi1: String = Random.nextString(5)
@@ -86,56 +71,6 @@ trait PersistenceServicesData extends Conversions {
   val repoMomentData: RepositoryMomentData = createRepoMomentData()
   val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
   val repoMoment: RepositoryMoment = seqRepoMoment(0)
-
-  def createSeqApp(
-    num: Int = 5,
-    id: Int = appId,
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    imagePath: String = imagePath,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[App] = List.tabulate(num)(
-    item => App(
-      id = id + item,
-      name = name,
-      packageName = packageName,
-      className = className,
-      category = category,
-      imagePath = imagePath,
-      dateInstalled = dateInstalled,
-      dateUpdate = dateUpdate,
-      version = version,
-      installedFromGooglePlay = installedFromGooglePlay))
-
-  def createSeqRepoApp(
-    num: Int = 5,
-    id: Int = appId,
-    data: RepositoryAppData = createRepoAppData()): Seq[RepositoryApp] =
-    List.tabulate(num)(item => RepositoryApp(id = id + item, data = data))
-
-  def createRepoAppData(
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    imagePath: String = imagePath,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): RepositoryAppData = RepositoryAppData(
-    name = name,
-    packageName = packageName,
-    className = className,
-    category = category,
-    imagePath = imagePath,
-    dateInstalled = dateInstalled,
-    dateUpdate = dateUpdate,
-    version = version,
-    installedFromGooglePlay = installedFromGooglePlay)
 
   def createSeqCollection(
     num: Int = 5,
@@ -256,62 +191,6 @@ trait PersistenceServicesData extends Conversions {
       imagePath = imagePath,
       notification = Option(notification))
 
-  def createSeqUser(
-    num: Int = 5,
-    id: Int = uId,
-    email: String = email,
-    apiKey: String = apiKey,
-    sessionToken: String = sessionToken,
-    deviceToken: String = deviceToken,
-    marketToken: String = marketToken,
-    name: String = nameUser,
-    avatar: String = avatar,
-    cover: String = cover,
-    deviceName: String = deviceName,
-    deviceCloudId: String = deviceCloudId): Seq[User] = List.tabulate(num)(
-    item =>
-      User(
-        id = id + item,
-        email = Option(email),
-        apiKey = Option(apiKey),
-        sessionToken = Option(sessionToken),
-        deviceToken = Option(deviceToken),
-        marketToken = Option(marketToken),
-        name = Option(name),
-        avatar = Option(avatar),
-        cover = Option(cover),
-        deviceName = Option(deviceName),
-        deviceCloudId = Option(deviceCloudId)))
-
-  def createSeqRepoUser(
-    num: Int = 5,
-    id: Int = uId,
-    data: RepositoryUserData = createRepoUserData()): Seq[RepositoryUser] =
-    List.tabulate(num)(item => RepositoryUser(id = id + item, data = data))
-
-  def createRepoUserData(
-    email: String = email,
-    apiKey: String = apiKey,
-    sessionToken: String = sessionToken,
-    deviceToken: String = deviceToken,
-    marketToken: String = marketToken,
-    name: String = nameUser,
-    avatar: String = avatar,
-    cover: String = cover,
-    deviceName: String = deviceName,
-    deviceCloudId: String = deviceCloudId): RepositoryUserData =
-    RepositoryUserData(
-      email = Option(email),
-      apiKey = Option(apiKey),
-      sessionToken = Option(sessionToken),
-      deviceToken = Option(deviceToken),
-      marketToken = Option(marketToken),
-      name = Option(name),
-      avatar = Option(avatar),
-      cover = Option(cover),
-      deviceName = Option(deviceName),
-      deviceCloudId = Option(deviceCloudId))
-
   def createSeqMoment(
     num: Int = 5,
     id: Int = momentId,
@@ -348,12 +227,6 @@ trait PersistenceServicesData extends Conversions {
       headphone = headphone,
       momentType = momentType)
 
-  val seqApp: Seq[App] = createSeqApp()
-  val app: App = seqApp(0)
-  val repoAppData: RepositoryAppData = createRepoAppData()
-  val seqRepoApp: Seq[RepositoryApp] = createSeqRepoApp(data = repoAppData)
-  val repoApp: RepositoryApp = seqRepoApp(0)
-
   val seqCard: Seq[Card] = createSeqCard()
   val card: Card = seqCard(0)
   val repoCardData: RepositoryCardData = createRepoCardData()
@@ -366,57 +239,7 @@ trait PersistenceServicesData extends Conversions {
   val seqRepoCollection: Seq[RepositoryCollection] = createSeqRepoCollection(data = repoCollectionData)
   val repoCollection: RepositoryCollection = seqRepoCollection(0)
 
-  val seqUser: Seq[User] = createSeqUser()
-  val user: User = seqUser(0)
-  val repoUserData: RepositoryUserData = createRepoUserData()
-  val seqRepoUser: Seq[RepositoryUser] = createSeqRepoUser(data = repoUserData)
-  val repoUser: RepositoryUser = seqRepoUser(0)
-
   val where: String = ""
-
-  def createAddAppRequest(
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    imagePath: String = imagePath,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): AddAppRequest =
-    AddAppRequest(
-      name = name,
-      packageName = packageName,
-      className = className,
-      category = category,
-      imagePath = imagePath,
-      dateInstalled = dateInstalled,
-      dateUpdate = dateUpdate,
-      version = version,
-      installedFromGooglePlay = installedFromGooglePlay)
-
-  def createUpdateAppRequest(
-    id: Int = appId,
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    imagePath: String = imagePath,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): UpdateAppRequest =
-    UpdateAppRequest(
-      id = id,
-      name = name,
-      packageName = packageName,
-      className = className,
-      category = category,
-      imagePath = imagePath,
-      dateInstalled = dateInstalled,
-      dateUpdate = dateUpdate,
-      version = version,
-      installedFromGooglePlay = installedFromGooglePlay)
 
   def createAddCardRequest(
     collectionId: Int = collectionId,
@@ -526,75 +349,6 @@ trait PersistenceServicesData extends Conversions {
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
       cards = seqCard)
 
-  def createAddUserRequest(
-    email: String = email,
-    apiKey: String = apiKey,
-    sessionToken: String = sessionToken,
-    deviceToken: String = deviceToken,
-    marketToken: String = marketToken,
-    name: String = nameUser,
-    avatar: String = avatar,
-    cover: String = cover,
-    deviceName: String = deviceName,
-    deviceCloudId: String = deviceCloudId): AddUserRequest =
-    AddUserRequest(
-      email = Option(email),
-      apiKey = Option(apiKey),
-      sessionToken = Option(sessionToken),
-      deviceToken = Option(deviceToken),
-      marketToken = Option(marketToken),
-      name = Option(name),
-      avatar = Option(avatar),
-      cover = Option(cover),
-      deviceName = Option(deviceName),
-      deviceCloudId = Option(deviceCloudId))
-
-  def createDeleteUserRequest(user: User): DeleteUserRequest =
-    DeleteUserRequest(user = user)
-
-  def createFindUserByIdRequest(id: Int): FindUserByIdRequest =
-    FindUserByIdRequest(id = id)
-
-  def createUpdateUserRequest(
-    id: Int = uId,
-    email: String = email,
-    apiKey: String = apiKey,
-    sessionToken: String = sessionToken,
-    deviceToken: String = deviceToken,
-    marketToken: String = marketToken,
-    name: String = nameUser,
-    avatar: String = avatar,
-    cover: String = cover,
-    deviceName: String = deviceName,
-    deviceCloudId: String = deviceCloudId): UpdateUserRequest =
-    UpdateUserRequest(
-      id = id,
-      email = Option(email),
-      apiKey = Option(apiKey),
-      sessionToken = Option(sessionToken),
-      deviceToken = Option(deviceToken),
-      marketToken = Option(marketToken),
-      name = Option(name),
-      avatar = Option(avatar),
-      cover = Option(cover),
-      deviceName = Option(deviceName),
-      deviceCloudId = Option(deviceCloudId))
-
-  def createDataCounter(i: Int): RepositoryDataCounter =
-    RepositoryDataCounter(
-      term = s"$i - $termDataCounter",
-      count = countDataCounter
-    )
-
-  val iterableCursorApp = new IterableCursor[RepositoryApp] {
-    override def count(): Int = seqRepoApp.length
-    override def moveToPosition(pos: Int): RepositoryApp = seqRepoApp(pos)
-    override def close(): Unit = ()
-  }
-  val iterableApps = new IterableApps(iterableCursorApp)
-
-  val keyword = "fake-keyword"
-
   def createAddMomentRequest(
     collectionId: Option[Int] = collectionIdOption,
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
@@ -628,8 +382,6 @@ trait PersistenceServicesData extends Conversions {
       wifi = wifi,
       headphone = headphone,
       momentType = momentType)
-
-  val dataCounters = 1 to 10 map createDataCounter
 
   val addCollectionRequest = createAddCollectionRequest()
 

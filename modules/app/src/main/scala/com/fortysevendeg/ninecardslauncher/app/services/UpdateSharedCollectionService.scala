@@ -39,11 +39,11 @@ class UpdateSharedCollectionService
 
     (collectionId, action) match {
       case (Some(id), Some(`actionUnsubscribe`)) =>
-        Task.fork(di.collectionProcess.unsubscribeSharedCollection(id).run).resolveAsync(
+        Task.fork(di.collectionProcess.unsubscribeSharedCollection(id).value).resolveAsync(
           onResult = (_) => uiShortToast(R.string.sharedCollectionUnsubscribed),
           onException = e => printErrorMessage(e))
       case (Some(id), Some(`actionSync`)) =>
-        Task.fork(di.collectionProcess.addPackages(id, packages.toSeq).run).resolveAsync(
+        Task.fork(di.collectionProcess.addPackages(id, packages.toSeq).value).resolveAsync(
           onResult = (_) => uiShortToast(R.string.sharedCollectionUpdated),
           onException = e => printErrorMessage(e))
       case _ =>

@@ -40,7 +40,7 @@ class RecommendationsPresenter(
     } else {
       di.recommendationsProcess.getRecommendedAppsByPackages(packages, packages)
     }
-    Task.fork(task.run).resolveAsyncUi(
+    Task.fork(task.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (recommendations: Seq[RecommendedApp]) => actions.loadRecommendations(recommendations),
       onException = (_) => actions.showErrorLoadingRecommendationInScreen())

@@ -1,20 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
+import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsExceptions
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreateSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
-import rapture.core.{Answer, Errata}
 
 import scalaz.concurrent.Task
 
@@ -41,7 +38,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
       description <- maybeDescription
       category <- maybeCategory
     } yield {
-      Task.fork(createPublishedCollection(name, description, category).run).resolveAsyncUi(
+      Task.fork(createPublishedCollection(name, description, category).value).resolveAsyncUi(
         onPreTask = () => actions.goToPublishCollectionPublishing(),
         onResult = (sharedCollectionId: String) => actions.goToPublishCollectionEnd(sharedCollectionId),
         onException = (ex: Throwable) => {
@@ -50,7 +47,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
         })
     }) getOrElse actions.showMessageFormFieldError.run
 
-  private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): ServiceDef2[String, UserException with SharedCollectionsExceptions with CollectionException] =
+  private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): TaskService[String] =
     for {
       user <- di.userProcess.getUser
       collection <- getCollection
@@ -66,9 +63,9 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
       _ <- di.collectionProcess.updateSharedCollection(collection.id, sharedCollectionId)
     } yield sharedCollectionId
 
-  private[this] def getCollection: ServiceDef2[Collection, SharedCollectionsExceptions] = statuses.collection map { col =>
-    Service(Task(Answer[Collection, SharedCollectionsExceptions](col)))
-  } getOrElse Service(Task(Errata(SharedCollectionsExceptions("", None))))
+  private[this] def getCollection: TaskService[Collection] = statuses.collection map { col =>
+    TaskService(Task(Xor.right(col)))
+  } getOrElse TaskService(Task(Xor.left(SharedCollectionsExceptions("", None))))
 
 }
 

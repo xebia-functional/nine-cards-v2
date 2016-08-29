@@ -1,11 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.services.wifi
 
-import scalaz.Scalaz._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
-case class WifiServicesException(message: String, cause : Option[Throwable] = None) extends RuntimeException(message) {
+case class WifiServicesException(message: String, cause : Option[Throwable] = None)
+  extends RuntimeException(message)
+  with NineCardException{
   cause map initCause
 }
 
 trait ImplicitsWifiExceptions {
-  implicit def wifiServicesException = (t: Throwable) => WifiServicesException(t.getMessage, t.some)
+  implicit def wifiServicesException = (t: Throwable) => WifiServicesException(t.getMessage, Option(t))
 }

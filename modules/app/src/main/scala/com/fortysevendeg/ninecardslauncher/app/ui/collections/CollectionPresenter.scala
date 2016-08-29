@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import macroid.{ActivityContextWrapper, Ui}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 
 import scalaz.concurrent.Task
 
@@ -32,13 +33,13 @@ case class CollectionPresenter(
   def startReorderCards(holder: ViewHolder): Unit = if (!actions.isPulling()) actions.startReorder(holder).run
 
   def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit = {
-    Task.fork(di.collectionProcess.reorderCard(collectionId, cardId, position).run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.reorderCard(collectionId, cardId, position).value).resolveAsyncUi(
       onResult = (_) => actions.reloadCards()
     )
   }
 
   def moveToCollection(card: Card): Unit =
-    Task.fork(di.collectionProcess.getCollections.run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.getCollections.value).resolveAsyncUi(
       onResult = (collections) => actions.moveToCollection(collections, card),
       onException = (_) => actions.showContactUsError())
 
@@ -69,7 +70,7 @@ case class CollectionPresenter(
 
     cardName match {
       case Some(name) if name.length > 0 =>
-          Task.fork(saveCard(collectionId, cardId, name).run).resolveAsyncUi(
+          Task.fork(saveCard(collectionId, cardId, name).value).resolveAsyncUi(
             onResult = (card) => actions.reloadCard(card),
             onException = (_) => actions.showContactUsError())
       case _ => actions.showMessageFormFieldError.run

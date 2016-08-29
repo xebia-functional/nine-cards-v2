@@ -1,13 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CollectionEntity, NineCardsUri}
@@ -28,10 +28,10 @@ class CollectionRepository(
 
   val collectionNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$collectionUriPath")
 
-  def addCollection(data: CollectionData): ServiceDef2[Collection, RepositoryException] =
-    Service {
+  def addCollection(data: CollectionData): TaskService[Collection] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
@@ -44,10 +44,10 @@ class CollectionRepository(
       }
     }
 
-  def addCollections(datas: Seq[CollectionData]): ServiceDef2[Seq[Collection], RepositoryException] =
-    Service {
+  def addCollections(datas: Seq[CollectionData]): TaskService[Seq[Collection]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
 
           val values = datas map createMapValues
 
@@ -64,10 +64,10 @@ class CollectionRepository(
       }
     }
 
-  def deleteCollections(where: String = ""): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def deleteCollections(where: String = ""): TaskService[Int] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = collectionUri,
             where = where,
@@ -76,10 +76,10 @@ class CollectionRepository(
       }
     }
 
-  def deleteCollection(collection: Collection): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def deleteCollection(collection: Collection): TaskService[Int] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = collectionUri,
             id = collection.id,
@@ -88,10 +88,10 @@ class CollectionRepository(
       }
     }
 
-  def findCollectionById(id: Int): ServiceDef2[Option[Collection], RepositoryException] =
-    Service {
+  def findCollectionById(id: Int): TaskService[Option[Collection]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.findById(
             uri = collectionUri,
             id = id,
@@ -100,10 +100,10 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionBySharedCollectionId(id: String): ServiceDef2[Option[Collection], RepositoryException] =
-    Service {
+  def fetchCollectionBySharedCollectionId(id: String): TaskService[Option[Collection]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           fetchCollection(
             selection = s"$sharedCollectionId = ?",
             selectionArgs = Seq(id.toString))
@@ -111,10 +111,10 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionByOriginalSharedCollectionId(sharedCollectionId: String): ServiceDef2[Option[Collection], RepositoryException] =
-    Service {
+  def fetchCollectionByOriginalSharedCollectionId(sharedCollectionId: String): TaskService[Option[Collection]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           fetchCollection(
             selection = s"$originalSharedCollectionId = ?",
             selectionArgs = Seq(sharedCollectionId.toString))
@@ -122,10 +122,10 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionByPosition(position: Int): ServiceDef2[Option[Collection], RepositoryException] =
-    Service {
+  def fetchCollectionByPosition(position: Int): TaskService[Option[Collection]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           fetchCollection(selection = s"${CollectionEntity.position} = ?", selectionArgs = Seq(position.toString))
         }
       }
@@ -134,10 +134,10 @@ class CollectionRepository(
   def fetchIterableCollections(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): ServiceDef2[IterableCursor[Collection], RepositoryException] =
-    Service {
+    orderBy: String = ""): TaskService[IterableCursor[Collection]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
             uri = collectionUri,
             projection = allFields,
@@ -148,19 +148,19 @@ class CollectionRepository(
       }
     }
 
-  def fetchSortedCollections: ServiceDef2[Seq[Collection], RepositoryException] =
-    Service {
+  def fetchSortedCollections: TaskService[Seq[Collection]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           fetchCollections(sortOrder = s"${CollectionEntity.position} asc")
         }
       }
     }
 
-  def updateCollection(collection: Collection): ServiceDef2[Int, RepositoryException] =
-    Service {
+  def updateCollection(collection: Collection): TaskService[Int] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = createMapValues(collection.data)
 
           contentResolverWrapper.updateById(
@@ -172,10 +172,10 @@ class CollectionRepository(
       }
     }
 
-  def updateCollections(collections: Seq[Collection]): ServiceDef2[Seq[Int], RepositoryException] =
-    Service {
+  def updateCollections(collections: Seq[Collection]): TaskService[Seq[Int]] =
+    TaskService {
       Task {
-        CatchAll[RepositoryException] {
+        XorCatchAll[RepositoryException] {
           val values = collections map { collection =>
             (collection.id, createMapValues(collection.data))
           }

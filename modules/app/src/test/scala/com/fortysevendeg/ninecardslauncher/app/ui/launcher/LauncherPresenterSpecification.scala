@@ -1,19 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.LauncherPresenterStatuses
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionExceptionImpl, CollectionProcess}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionProcess}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.{DeviceProcess, DockAppException}
-import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcess}
+import com.fortysevendeg.ninecardslauncher.process.device.DeviceProcess
+import com.fortysevendeg.ninecardslauncher.process.moment.MomentProcess
 import macroid.{ActivityContextWrapper, Ui}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import rapture.core.{Answer, Errata}
 
 import scala.concurrent.duration._
 import scalaz.concurrent.Task
@@ -27,13 +27,7 @@ trait LauncherPresenterSpecification
 
   implicit val contextWrapper = mock[ActivityContextWrapper]
 
-  case class LauncherAppsException(message: String, cause: Option[Throwable] = None)
-    extends RuntimeException(message)
-    with CollectionException
-    with DockAppException
-    with MomentException
-
-  val collectionException = CollectionExceptionImpl("", None)
+  val collectionException = CollectionException("", None)
 
   trait WizardPresenterScope
     extends Scope {
@@ -47,13 +41,13 @@ trait LauncherPresenterSpecification
     val mockInjector = mock[Injector]
 
     val mockCollectionProcess = mock[CollectionProcess]
-    mockCollectionProcess.getCollections returns Service(Task(Answer(Seq(collection))))
+    mockCollectionProcess.getCollections returns TaskService(Task(Xor.right(Seq(collection))))
 
     val mockDeviceProcess = mock[DeviceProcess]
-    mockDeviceProcess.getDockApps returns Service(Task(Answer(Seq(dockApp))))
+    mockDeviceProcess.getDockApps returns TaskService(Task(Xor.right(Seq(dockApp))))
 
     val mockMomentProcess = mock[MomentProcess]
-    mockMomentProcess.getBestAvailableMoment(any[ContextSupport]) returns Service(Task(Answer(Some(moment))))
+    mockMomentProcess.getBestAvailableMoment(any[ContextSupport]) returns TaskService(Task(Xor.right(Some(moment))))
 
     mockInjector.collectionProcess returns mockCollectionProcess
     mockInjector.deviceProcess returns mockDeviceProcess
@@ -129,7 +123,7 @@ class LauncherPresenterSpec
     "returning a empty list the information isn't loaded" in
       new WizardPresenterScope {
 
-        mockCollectionProcess.getCollections returns Service(Task(Answer(Seq.empty[Collection])))
+        mockCollectionProcess.getCollections returns TaskService(Task(Xor.right(Seq.empty[Collection])))
 
         presenter.loadLauncherInfo()
         there was after(1 seconds).no(mockActions).loadLauncherInfo(any, any)
@@ -138,7 +132,7 @@ class LauncherPresenterSpec
     "go to wizard returning a failed loading collections" in
       new WizardPresenterScope {
 
-        mockCollectionProcess.getCollections returns Service(Task(Errata(collectionException)))
+        mockCollectionProcess.getCollections returns TaskService(Task(Xor.left(collectionException)))
 
         presenter.loadLauncherInfo()
         there was after(1 seconds).no(mockActions).loadLauncherInfo(any, any)

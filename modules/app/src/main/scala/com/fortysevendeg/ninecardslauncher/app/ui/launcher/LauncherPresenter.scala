@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.{ComponentName, Context, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
+import cats.data.Xor
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
@@ -21,26 +22,25 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialog
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.exceptions.{SpaceException, SpaceExceptionImpl}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.exceptions.SpaceException
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException, CollectionExceptionImpl}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentExceptionImpl}
+import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
-import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, AppWidgetException, MoveWidgetRequest, ResizeWidgetRequest}
+import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import macroid.{ActivityContextWrapper, Ui}
-import rapture.core.{Answer, Errata, Result}
 
 import scala.concurrent.Future
 import scala.language.postfixOps
@@ -66,7 +66,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def initialize(): Unit = {
     Try(FirebaseAnalytics.getInstance(contextWrapper.bestAvailable))
-    Task.fork(di.userProcess.register.run).resolveAsync()
+    Task.fork(di.userProcess.register.value).resolveAsync()
     actions.initialize.run
   }
 
@@ -117,7 +117,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def endAddItemToCollection(): Unit = {
     (actions.getCollection(statuses.currentDraggingPosition), statuses.cardAddItemMode) match {
       case (Some(collection: Collection), Some(request: AddCardRequest)) =>
-        Task.fork(di.collectionProcess.addCards(collection.id, Seq(request)).run).resolveAsyncUi(
+        Task.fork(di.collectionProcess.addCards(collection.id, Seq(request)).value).resolveAsyncUi(
           onResult = (_) => {
             actions.showAddItemMessage(collection.name) ~
               Ui(momentReloadBroadCastIfNecessary())
@@ -134,11 +134,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case Some(card: AddCardRequest) =>
         card.cardType match {
           case AppCardType =>
-            Task.fork(createOrUpdateDockApp(card, AppDockType, position).run).resolveAsyncUi(
+            Task.fork(createOrUpdateDockApp(card, AppDockType, position).value).resolveAsyncUi(
               onResult = (_) => actions.reloadDockApps(DockApp(card.term, AppDockType, card.intent, card.imagePath, position)),
               onException = (_) => actions.showContactUsError())
           case ContactCardType =>
-            Task.fork(createOrUpdateDockApp(card, ContactDockType, position).run).resolveAsyncUi(
+            Task.fork(createOrUpdateDockApp(card, ContactDockType, position).value).resolveAsyncUi(
               onResult = (_) => actions.reloadDockApps(DockApp(card.term, ContactDockType, card.intent, card.imagePath, position)),
               onException = (_) => actions.showContactUsError())
           case _ =>
@@ -202,7 +202,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     val from = statuses.startPositionReorderMode
     val to = statuses.currentDraggingPosition
     if (from != to) {
-      Task.fork(di.collectionProcess.reorderCollection(from, to).run).resolveAsyncUi(
+      Task.fork(di.collectionProcess.reorderCollection(from, to).value).resolveAsyncUi(
         onResult = (_) => {
           val data = reorderCollectionsInCurrentData(from, to)
           actions.reloadWorkspaces(data)
@@ -296,7 +296,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def removeCollection(collection: Collection): Unit = {
-    Task.fork(di.collectionProcess.deleteCollection(collection.id).run).resolveAsyncUi(
+    Task.fork(di.collectionProcess.deleteCollection(collection.id).value).resolveAsyncUi(
       onResult = (_) => {
         val (page, data) = removeCollectionToCurrentData(collection.id)
         actions.reloadWorkspaces(data, Some(page)) ~
@@ -348,7 +348,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         area.startX + area.spanX > WidgetsOps.columns ||
         area.startY + area.spanY > WidgetsOps.rows
 
-    def resizeIntersect(idWidget: Int): ServiceDef2[Boolean, AppWidgetException] = {
+    def resizeIntersect(idWidget: Int): TaskService[Boolean] = {
 
       def convertSpace(widgetArea: WidgetArea) = {
         val r = ResizeWidgetRequest.tupled(operationArgs)
@@ -390,7 +390,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           }
       }
 
-    def moveIntersect(idWidget: Int): ServiceDef2[Option[WidgetMovement], AppWidgetException] =
+    def moveIntersect(idWidget: Int): TaskService[Option[WidgetMovement]] =
       for {
         widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption()
         widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
@@ -415,23 +415,23 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     (statuses.idWidget, statuses.transformation) match {
       case (Some(id), Some(ResizeTransformation)) =>
-        Task.fork(resizeIntersect(id).run).resolveAsync(
+        Task.fork(resizeIntersect(id).value).resolveAsync(
           onResult = (intersect: Boolean) => {
             if (intersect) {
               actions.showWidgetCantResizeMessage().run
             } else {
               val resizeRequest= ResizeWidgetRequest.tupled(operationArgs)
-              Task.fork(di.widgetsProcess.resizeWidget(id, resizeRequest).run).resolveAsyncUi(
+              Task.fork(di.widgetsProcess.resizeWidget(id, resizeRequest).value).resolveAsyncUi(
                 onResult = (_) => actions.resizeWidgetById(id, resizeRequest),
                 onException = (_) => actions.showContactUsError())
             }
           },
           onException = (_) => actions.showContactUsError().run)
       case (Some(id), Some(MoveTransformation)) =>
-        Task.fork(moveIntersect(id).run).resolveAsync(
+        Task.fork(moveIntersect(id).value).resolveAsync(
           onResult = {
             case Some((idWidget, moveWidgetRequest)) =>
-              Task.fork(di.widgetsProcess.moveWidget(id, moveWidgetRequest).run).resolveAsyncUi(
+              Task.fork(di.widgetsProcess.moveWidget(id, moveWidgetRequest).value).resolveAsyncUi(
                 onResult = (_) => actions.moveWidgetById(idWidget, moveWidgetRequest),
                 onException = (_) => actions.showContactUsError())
             case _ => actions.showWidgetCantMoveMessage().run
@@ -467,17 +467,17 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def getMoment = for {
       maybeMoment <- di.momentProcess.fetchMomentByType(momentType)
       moment <- maybeMoment match {
-        case Some(moment) => Service(Task(Answer[Moment, MomentException](moment)))
+        case Some(moment) => TaskService(Task(Xor.right[NineCardException, Moment](moment)))
         case _ => di.momentProcess.createMomentWithoutCollection(momentType)
       }
       collection <- moment.collectionId match {
         case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
-        case _ => Service(Task(Answer[Option[Collection], CollectionException](None)))
+        case _ => TaskService(Task(Xor.right[NineCardException, Option[Collection]](None)))
       }
 
     } yield (moment, collection)
 
-    Task.fork(getMoment.run).resolveAsyncUi(
+    Task.fork(getMoment.value).resolveAsyncUi(
       onResult = {
         case (moment, collection) =>
           val data = LauncherData(MomentWorkSpace, Some(LauncherMoment(moment.momentType, collection)))
@@ -495,19 +495,19 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       moment <- moments.find(_.momentType == currentMoment.momentType)
     } yield moment
 
-    def getCollectionById(collectionId: Option[Int]): ServiceDef2[Option[Collection], CollectionException] =
+    def getCollectionById(collectionId: Option[Int]): TaskService[Option[Collection]] =
       collectionId match {
         case Some(id) => di.collectionProcess.getCollectionById(id)
-        case _ => Service(Task(Answer(None)))
+        case _ => TaskService(Task(Xor.right(None)))
       }
 
-    def getCollection: ServiceDef2[LauncherMoment, MomentException with CollectionException] = for {
+    def getCollection: TaskService[LauncherMoment] = for {
       moments <- di.momentProcess.getMoments
       moment = selectMoment(moments)
       collection <- getCollectionById(moment flatMap (_.collectionId))
     } yield LauncherMoment(moment flatMap (_.momentType), collection)
 
-    Task.fork(getCollection.run).resolveAsyncUi(
+    Task.fork(getCollection.value).resolveAsyncUi(
       onResult = {
         case launcherMoment: LauncherMoment => actions.reloadBarMoment(launcherMoment)
         case _ => Ui.nop
@@ -521,19 +521,19 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case _ => di.momentProcess.getBestAvailableMoment
     }
 
-    def getLauncherInfo: ServiceDef2[(Seq[Collection], Seq[DockApp], Option[Moment]), CollectionException with DockAppException with MomentException] =
+    def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
       for {
         collections <- di.collectionProcess.getCollections
         dockApps <- di.deviceProcess.getDockApps
         moment <- getMoment
       } yield (collections, dockApps, moment)
 
-    Task.fork(getLauncherInfo.run).resolveAsyncUi(
+    Task.fork(getLauncherInfo.value).resolveAsyncUi(
       onResult = {
         // Check if there are collections in DB, if there aren't we go to wizard
         case (Nil, _, _) => Ui(goToWizard())
         case (collections, apps, moment) =>
-          Task.fork(di.userProcess.getUser.run).resolveAsyncUi(
+          Task.fork(di.userProcess.getUser.value).resolveAsyncUi(
             onResult = user => actions.showUserProfile(
               email = user.email,
               name = user.userProfile.name,
@@ -555,7 +555,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
-    Task.fork(getLoadApps(getAppOrder).run).resolveAsyncUi(
+    Task.fork(getLoadApps(getAppOrder).value).resolveAsyncUi(
       onResult = {
         case (apps: IterableApps, counters: Seq[TermCounter]) =>
           actions.reloadAppsInDrawer(
@@ -569,11 +569,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
     contactsMenuOption match {
       case ContactsByLastCall =>
-        Task.fork(di.deviceProcess.getLastCalls.run).resolveAsyncUi(
+        Task.fork(di.deviceProcess.getLastCalls.value).resolveAsyncUi(
           onResult = (contacts: Seq[LastCallsContact]) => actions.reloadLastCallContactsInDrawer(contacts))
       case _ =>
         val getContactFilter = toGetContactFilter(contactsMenuOption)
-        Task.fork(getLoadContacts(getContactFilter).run).resolveAsyncUi(
+        Task.fork(getLoadContacts(getContactFilter).value).resolveAsyncUi(
           onResult = {
             case (contacts: IterableContacts, counters: Seq[TermCounter]) =>
               actions.reloadContactsInDrawer(contacts = contacts, counters = counters)
@@ -582,14 +582,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def loadAppsByKeyword(keyword: String): Unit = {
-    Task.fork(di.deviceProcess.getIterableAppsByKeyWord(keyword, GetByName).run).resolveAsyncUi(
+    Task.fork(di.deviceProcess.getIterableAppsByKeyWord(keyword, GetByName).value).resolveAsyncUi(
       onResult = {
         case (apps: IterableApps) => actions.reloadAppsInDrawer(apps = apps)
       })
   }
 
   def loadContactsByKeyword(keyword: String): Unit = {
-    Task.fork(di.deviceProcess.getIterableContactsByKeyWord(keyword).run).resolveAsyncUi(
+    Task.fork(di.deviceProcess.getIterableContactsByKeyWord(keyword).value).resolveAsyncUi(
       onResult = {
         case (contacts: IterableContacts) => actions.reloadContactsInDrawer(contacts = contacts)
       })
@@ -638,7 +638,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def deleteDBWidget(): Unit =
     statuses.idWidget match {
       case Some(id) =>
-        Task.fork(di.widgetsProcess.deleteWidget(id).run).resolveAsyncUi(
+        Task.fork(di.widgetsProcess.deleteWidget(id).value).resolveAsyncUi(
           onResult = (_) => {
             closeModeEditWidgets()
             actions.unhostWidget(id)
@@ -655,7 +655,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       widgets <- di.widgetsProcess.getWidgetsByMoment(moment.id)
     } yield widgets
 
-    Task.fork(getWidgets.run).resolveAsyncUi(
+    Task.fork(getWidgets.value).resolveAsyncUi(
       onPreTask = actions.clearWidgets,
       onResult = {
         case Nil => Ui.nop
@@ -668,15 +668,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def addWidget(maybeAppWidgetId: Option[Int]): Unit = {
 
-    def getWidgetInfoById(appWidgetId: Int): ServiceDef2[(ComponentName, Cell), MomentException] =
+    def getWidgetInfoById(appWidgetId: Int): TaskService[(ComponentName, Cell)] =
       actions.getWidgetInfoById(appWidgetId) match {
-        case Some(info) => Service(Task(Answer[(ComponentName, Cell), MomentException](info)))
-        case _ => Service(Task(Errata(MomentExceptionImpl("Info widget not found"))))
+        case Some(info) => TaskService(Task(Xor.right(info)))
+        case _ => TaskService(Task(Xor.left(MomentException("Info widget not found"))))
       }
 
     def createWidget(appWidgetId: Int, nineCardsMoment: NineCardsMoment) = for {
       moment <- di.momentProcess.getMomentByType(nineCardsMoment)
-      (provider, cell) <- getWidgetInfoById(appWidgetId)
+      widgetInfo <- getWidgetInfoById(appWidgetId)
+      (provider, cell) = widgetInfo
       widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(moment.id)
       space <- getSpaceInTheScreen(widgetsByMoment, cell.spanX, cell.spanY)
       appWidgetRequest = AddWidgetRequest(
@@ -698,7 +699,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       moment <- data.moment
       nineCardMoment <- moment.momentType
     } yield {
-      Task.fork(createWidget(appWidgetId, nineCardMoment).run).resolveAsyncUi(
+      Task.fork(createWidget(appWidgetId, nineCardMoment).value).resolveAsyncUi(
         onResult = (widget: AppWidget) => actions.addWidgets(Seq(widget)),
         onException = (ex) => ex match {
           case ex: SpaceException => actions.showWidgetNoHaveSpaceMessage()
@@ -749,15 +750,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     // Check if the best available moment is different to the current moment, if it's different return Some(moment)
     // in the other case None
-    def getCheckMoment: ServiceDef2[LauncherMoment, CollectionException with MomentException] = {
+    def getCheckMoment: TaskService[LauncherMoment] = {
 
-      def getCollection(moment: Option[Moment]): ServiceDef2[Option[Collection], CollectionException] = {
-        val emptyService = Service(Task(Result.answer[Option[Collection], CollectionException](None)))
+      def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
+        val emptyService: TaskService[Option[Collection]] = TaskService(Task(Xor.right(None)))
         val momentType = moment flatMap (_.momentType)
         val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
         val collectionId = moment flatMap (_.collectionId)
         if (momentType == currentMomentType) {
-          Service(Task(Result.errata(CollectionExceptionImpl("Best available moment is same of current moment"))))
+          TaskService(Task(Xor.left(CollectionException("Best available moment is same of current moment"))))
         } else {
           collectionId map di.collectionProcess.getCollectionById getOrElse emptyService
         }
@@ -769,7 +770,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       } yield LauncherMoment(moment flatMap (_.momentType), collection)
     }
 
-    Task.fork(getCheckMoment.run).resolveAsyncUi(
+    Task.fork(getCheckMoment.value).resolveAsyncUi(
       onResult = (launcherMoment) => {
         val data = LauncherData(MomentWorkSpace, Some(launcherMoment))
         actions.reloadMoment(data)
@@ -777,13 +778,13 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       onException = (_) => Ui(reloadAppsMomentBar()))
   }
 
-  protected def getLoadApps(order: GetAppOrder): ServiceDef2[(IterableApps, Seq[TermCounter]), AppException] =
+  protected def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
       iterableApps <- di.deviceProcess.getIterableApps(order)
       counters <- di.deviceProcess.getTermCountersForApps(order)
     } yield (iterableApps, counters)
 
-  protected def getLoadContacts(order: ContactsFilter): ServiceDef2[(IterableContacts, Seq[TermCounter]), ContactException] =
+  protected def getLoadContacts(order: ContactsFilter): TaskService[(IterableContacts, Seq[TermCounter])] =
     for {
       iterableContacts <- di.deviceProcess.getIterableContacts(order)
       counters <- di.deviceProcess.getTermCountersForContacts(order)
@@ -875,9 +876,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  private[this] def getSpaceInTheScreen(widgetsByMoment: Seq[AppWidget], spanX: Int, spanY: Int): ServiceDef2[WidgetArea, SpaceException] = {
+  private[this] def getSpaceInTheScreen(widgetsByMoment: Seq[AppWidget], spanX: Int, spanY: Int): TaskService[WidgetArea] = {
 
-    def searchSpace(widgets: Seq[AppWidget]): ServiceDef2[WidgetArea, SpaceException] = {
+    def searchSpace(widgets: Seq[AppWidget]): TaskService[WidgetArea] = {
       val emptySpaces = (for {
         column <- 0 to (WidgetsOps.columns - spanX)
         row <- 0 to (WidgetsOps.rows - spanY)
@@ -891,8 +892,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         if (hasConflict.isEmpty) Some(area) else None
       }).flatten
       emptySpaces.headOption match {
-        case Some(space) => Service(Task(Answer[WidgetArea, SpaceException](space)))
-        case _ => Service(Task(Errata(SpaceExceptionImpl("Widget don't have space"))))
+        case Some(space) => TaskService(Task(Xor.right(space)))
+        case _ => TaskService(Task(Xor.left(SpaceException("Widget don't have space"))))
       }
     }
 

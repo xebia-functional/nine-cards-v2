@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.drive
 
-import scalaz.Scalaz._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
 sealed trait GoogleDriveError
 
@@ -10,15 +10,14 @@ case object DriveRateLimitExceeded extends GoogleDriveError
 
 case object DriveResourceNotAvailable extends GoogleDriveError
 
-case class DriveServicesException(
-  message: String,
-  googleDriveError: Option[GoogleDriveError] = None,
-  cause: Option[Throwable] = None) extends RuntimeException(message) {
+case class DriveServicesException(message: String, googleDriveError: Option[GoogleDriveError] = None, cause: Option[Throwable] = None)
+  extends RuntimeException(message)
+  with NineCardException{
 
   cause foreach initCause
 
 }
 
 trait ImplicitsDriveServicesExceptions {
-  implicit def driveServicesExceptionConverter = (t: Throwable) => DriveServicesException(t.getMessage, cause = t.some)
+  implicit def driveServicesExceptionConverter = (t: Throwable) => DriveServicesException(t.getMessage, cause = Option(t))
 }

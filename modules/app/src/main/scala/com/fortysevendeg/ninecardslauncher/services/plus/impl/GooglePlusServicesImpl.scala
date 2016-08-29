@@ -1,8 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.services.plus.impl
 
+import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.Service
-import com.fortysevendeg.ninecardslauncher.commons.services.Service.ServiceDef2
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
 import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServices, GooglePlusServicesException, ImplicitsGooglePlusProcessExceptions}
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
@@ -10,7 +12,6 @@ import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient}
 import com.google.android.gms.plus.People.LoadPeopleResult
 import com.google.android.gms.plus.Plus
 import com.google.android.gms.plus.model.people.Person
-import rapture.core.{Answer, Errata}
 
 import scala.util.{Failure, Success, Try}
 import scalaz.concurrent.Task
@@ -43,23 +44,23 @@ class GooglePlusServicesImpl(googleApiClient: GoogleApiClient)
     coverUrl = fetchCoverUrl(person)
   } yield GooglePlusProfile(name, avatarUrl, coverUrl)).resolve[GooglePlusServicesException]
 
-  private[this] def loadPeopleApi: ServiceDef2[LoadPeopleResult, GooglePlusServicesException] = Service {
+  private[this] def loadPeopleApi: TaskService[LoadPeopleResult] = TaskService {
     Task {
       Try(Plus.PeopleApi.load(googleApiClient, me).await()) match {
-        case Success(r) if validCodes.contains(r.getStatus.getStatusCode) => Answer(r)
+        case Success(r) if validCodes.contains(r.getStatus.getStatusCode) => Xor.Right(r)
         case Success(r) =>
           val message = Option(r.getStatus.getStatusMessage) getOrElse "Unknown error with Google API"
-          Errata(GooglePlusServicesException(
+          Xor.Left(GooglePlusServicesException(
             message = message,
             recoverable = recoverableStatusCodes.contains(r.getStatus.getStatusCode)))
-        case Failure(e) => Errata(GooglePlusServicesException(message = e.getMessage, cause = Some(e)))
+        case Failure(e) => Xor.Left(GooglePlusServicesException(message = e.getMessage, cause = Some(e)))
       }
     }
   }
 
-  private[this] def fetchPerson(loadPeopleResult: LoadPeopleResult): ServiceDef2[Person, GooglePlusServicesException] = Service {
+  private[this] def fetchPerson(loadPeopleResult: LoadPeopleResult): TaskService[Person] = TaskService {
     Task {
-      CatchAll[GooglePlusServicesException] {
+      XorCatchAll[GooglePlusServicesException] {
         val people = notNullOrThrow(loadPeopleResult, "LoadPeopleResult is null")
         val personBuffer = notNullOrThrow(people.getPersonBuffer, "PersonBuffer on LoadPeopleResult is null")
         if (personBuffer.getCount > 0) {

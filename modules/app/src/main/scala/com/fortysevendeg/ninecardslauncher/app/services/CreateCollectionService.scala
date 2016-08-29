@@ -60,7 +60,7 @@ class CreateCollectionService
 
     val hasKey = Option(intent) exists (_.hasExtra(cloudIdKey))
 
-    Task.fork(di.userProcess.getUser.run).resolveAsync(
+    Task.fork(di.userProcess.getUser.value).resolveAsync(
       onResult = (user: User) => {
         if (hasKey && user.deviceCloudId.isEmpty) {
           selectedCloudId = Option(intent) flatMap { i =>
@@ -133,7 +133,7 @@ class CreateCollectionService
       case _ => createNewConfiguration(client, readToken)
     }
 
-    Task.fork(service.run).resolveAsync(
+    Task.fork(service.value).resolveAsync(
       onResult = collections => {
         setState(stateSuccess, close = true)
       },

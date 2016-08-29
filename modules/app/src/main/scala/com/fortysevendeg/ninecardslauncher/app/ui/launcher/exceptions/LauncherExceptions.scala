@@ -1,22 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.exceptions
 
-import scalaz.Scalaz._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
-trait SpaceException
-  extends RuntimeException {
 
-  val message: String
-
-  val cause: Option[Throwable]
-
-}
-
-case class SpaceExceptionImpl(message: String, cause : Option[Throwable] = None)
+case class SpaceException(message: String, cause : Option[Throwable] = None)
   extends RuntimeException(message)
-  with SpaceException {
+  with NineCardException {
   cause map initCause
 }
 
 trait ImplicitsSpaceException {
-  implicit def momentException = (t: Throwable) => SpaceExceptionImpl(t.getMessage, t.some)
+  implicit def momentException = (t: Throwable) => SpaceException(t.getMessage, Option(t))
 }

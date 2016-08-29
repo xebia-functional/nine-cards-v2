@@ -5,6 +5,8 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.device.{DeviceConversions, DeviceProcess, IconResize, ImplicitsDeviceException, ShortcutException}
 import com.fortysevendeg.ninecardslauncher.services.image.SaveBitmap
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+
 
 trait ShorcutsDeviceProcessImpl extends DeviceProcess {
 
