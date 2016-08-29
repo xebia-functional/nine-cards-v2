@@ -8,7 +8,6 @@ import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.ContextWrapper
-import rapture.core.Answer
 
 class Presenter(implicit contextWrapper: ContextWrapper)
   extends ContextSupportProvider {
