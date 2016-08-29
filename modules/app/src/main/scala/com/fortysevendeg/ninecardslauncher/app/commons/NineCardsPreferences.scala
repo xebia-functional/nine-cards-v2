@@ -67,7 +67,7 @@ case object ShowClockMoment
 
 case object SpeedAnimations
   extends NineCardsPreferenceValue[SpeedAnimationValue] {
-  override val name: String = appDrawerLongPressAction
+  override val name: String = speed
   override val default: SpeedAnimationValue = NormalAnimation
 
   override def readValue(pref: NineCardsPreferencesValue): SpeedAnimationValue =
@@ -96,7 +96,7 @@ case object WorkspaceAnimations
 
 case object AppDrawerLongPressAction
   extends NineCardsPreferenceValue[AppDrawerLongPressActionValue] {
-  override val name: String = speed
+  override val name: String = appDrawerLongPressAction
   override val default: AppDrawerLongPressActionValue = AppDrawerLongPressActionOpenKeyboard
 
   override def readValue(pref: NineCardsPreferencesValue): AppDrawerLongPressActionValue =
