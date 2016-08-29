@@ -11,6 +11,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
@@ -178,7 +179,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
         dragEnded()
       case (ACTION_DROP | ACTION_DRAG_ENDED, true, true) =>
         // we are waiting that the animation is finished in order to reset views
-        delayedTask(dragEnded, resGetInteger(R.integer.anim_duration_normal))
+        delayedTask(dragEnded, SpeedAnimations.getDuration)
       case (ACTION_DRAG_EXITED, _, _) => clearMoveTask()
       case _ =>
     }

@@ -47,7 +47,9 @@
     <dimen name="shadow_displacement_default">1dp</dimen>
     <dimen name="shadow_radius_default">1dp</dimen>
 
-    <integer name="anim_duration_normal">200</integer>
+    <integer name="anim_duration_fast">170</integer>
+    <integer name="anim_duration_normal">220</integer>
+    <integer name="anim_duration_slow">270</integer>
 
     <!-- Top bar -->
     <dimen name="width_icon_content_top_bar_moment">54dp</dimen>

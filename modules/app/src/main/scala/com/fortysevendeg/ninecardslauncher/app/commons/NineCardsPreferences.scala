@@ -4,6 +4,8 @@ import PreferencesKeys._
 import PreferencesValuesKeys._
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
 sealed trait NineCardsPreferences {
@@ -72,6 +74,14 @@ case object SpeedAnimations
 
   override def readValue(pref: NineCardsPreferencesValue): SpeedAnimationValue =
     SpeedAnimationValue(pref.getString(name, default.value))
+
+  def getDuration(implicit contextWrapper: ContextWrapper): Int = {
+    resGetInteger(readValue(new NineCardsPreferencesValue) match {
+      case NormalAnimation => R.integer.anim_duration_normal
+      case SlowAnimation => R.integer.anim_duration_slow
+      case FastAnimation => R.integer.anim_duration_fast
+    })
+  }
 }
 
 case object CollectionOpeningAnimations
