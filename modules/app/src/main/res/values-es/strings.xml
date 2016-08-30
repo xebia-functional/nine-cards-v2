@@ -43,8 +43,6 @@
 
     <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
 
-    <string name="messageEmpty">No hay datos en este moment</string>
-
     <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
 

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
 
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -19,6 +19,22 @@ object CollectionOps {
       collection.originalSharedCollectionId map { c =>
         resGetString(R.string.shared_collection_url, c)
       }
+
+    def getIconWorkspace(implicit context: ContextWrapper): Int =
+      resGetDrawableIdentifier(s"icon_collection_${collection.icon.toLowerCase}") getOrElse R.drawable.icon_collection_default
+
+    def getIconDetail(implicit context: ContextWrapper): Int =
+      resGetDrawableIdentifier(s"icon_collection_${collection.icon.toLowerCase}_detail") getOrElse R.drawable.icon_collection_default_detail
+
+  }
+
+  implicit class CollectionStringsOp(icon: String) {
+
+    def getIconWorkspace(implicit context: ContextWrapper): Int =
+      resGetDrawableIdentifier(s"icon_collection_${icon.toLowerCase}") getOrElse R.drawable.icon_collection_default
+
+    def getIconDetail(implicit context: ContextWrapper): Int =
+      resGetDrawableIdentifier(s"icon_collection_${icon.toLowerCase}_detail") getOrElse R.drawable.icon_collection_default_detail
 
   }
 

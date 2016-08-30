@@ -16,10 +16,10 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.SharedCollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
@@ -179,7 +179,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
     val apps = collection.resolvedPackages slice(0, appsCount)
     val plus = collection.resolvedPackages.length - appsCount
     (iconContent <~ vBackground(background)) ~
-      (icon <~ ivSrc(iconCollectionDetail(collection.icon))) ~
+      (icon <~ ivSrc(collection.getIconCollectionDetail)) ~
       (appsIcons <~
         vgRemoveAllViews <~
         automaticAlignment(apps, plus)) ~

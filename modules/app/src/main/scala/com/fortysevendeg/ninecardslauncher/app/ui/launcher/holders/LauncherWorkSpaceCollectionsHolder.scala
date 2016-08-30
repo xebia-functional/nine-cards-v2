@@ -14,9 +14,8 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{DragObject, PositionsUtils}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DropBackgroundDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
@@ -29,6 +28,7 @@ import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -369,7 +369,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
     def populate(collection: Collection): Unit = {
       this.collection = Some(collection)
       positionInGrid = collection.position
-      val resIcon = iconCollectionWorkspace(collection.icon)
+      val resIcon = collection.getIconWorkspace
       ((layout <~
         FuncOn.click { view: View =>
           val (x, y) = PositionsUtils.calculateAnchorViewPosition(view)

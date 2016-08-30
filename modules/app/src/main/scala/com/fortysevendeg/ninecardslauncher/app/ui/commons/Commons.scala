@@ -28,16 +28,6 @@ object Constants {
 
 }
 
-object ImageResourceNamed {
-
-  def iconCollectionWorkspace(category: String)(implicit context: ContextWrapper): Int =
-    resGetDrawableIdentifier(s"icon_collection_${category.toLowerCase}") getOrElse R.drawable.icon_collection_default
-
-  def iconCollectionDetail(category: String)(implicit context: ContextWrapper): Int =
-    resGetDrawableIdentifier(s"icon_collection_${category.toLowerCase}_detail") getOrElse R.drawable.icon_collection_default_detail
-
-}
-
 object RequestCodes {
 
   val shortcutAdded = 1
