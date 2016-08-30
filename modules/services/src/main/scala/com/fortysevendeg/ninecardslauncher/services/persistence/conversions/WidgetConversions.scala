@@ -8,6 +8,24 @@ trait WidgetConversions {
 
   def toWidgetSeq(widget: Seq[RepositoryWidget]): Seq[Widget] = widget map toWidget
 
+  def toAddWidgetRequestSeq(momentId: Int, widgetRequest: Seq[SaveWidgetRequest]) =
+    widgetRequest map (widget => toAddWidgetRequest(momentId, widget))
+
+  def toAddWidgetRequest(momentId: Int, widget: SaveWidgetRequest) =
+    AddWidgetRequest(
+      momentId = momentId,
+      packageName = widget.packageName,
+      className = widget.className,
+      appWidgetId = widget.appWidgetId,
+      startX = widget.startX,
+      startY = widget.startY,
+      spanX = widget.spanX,
+      spanY = widget.spanY,
+      widgetType = widget.widgetType,
+      label = widget.label,
+      imagePath = widget.imagePath,
+      intent = widget.intent)
+
   def toWidget(widget: RepositoryWidget): Widget =
     Widget(
       id = widget.id,
@@ -72,4 +90,5 @@ trait WidgetConversions {
       label = request.label,
       imagePath = request.imagePath,
       intent = request.intent)
+
 }

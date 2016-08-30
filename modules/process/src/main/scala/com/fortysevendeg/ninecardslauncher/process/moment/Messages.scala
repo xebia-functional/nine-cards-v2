@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.moment
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models.MomentTimeSlot
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Widget, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 
 case class MomentProcessConfig(
@@ -19,4 +19,5 @@ case class SaveMomentRequest(
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
   headphone: Boolean,
-  momentType: Option[NineCardsMoment])
+  momentType: Option[NineCardsMoment],
+  widgets: Option[Seq[Widget]])
