@@ -22,7 +22,8 @@ trait MomentRepositorySpecification
     with Mockito {
 
   trait MomentRepositoryScope
-    extends Scope {
+    extends Scope
+      with MomentRepositoryTestData {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
 
@@ -31,128 +32,10 @@ trait MomentRepositorySpecification
     lazy val momentRepository = new MomentRepository(contentResolverWrapper, uriCreator)
 
     lazy val mockUri = mock[Uri]
-  }
-
-  trait ValidMomentRepositoryResponses
-    extends MomentRepositoryTestData {
-
-    self: MomentRepositoryScope =>
 
     uriCreator.parse(any) returns mockUri
-
-    contentResolverWrapper.insert(
-      uri = mockUri,
-      values = createMomentValues,
-      notificationUris = Seq(mockUri)) returns testId
-
-    contentResolverWrapper.delete(
-      uri = mockUri,
-      where = "",
-      notificationUris = Seq(mockUri)) returns 1
-
-    contentResolverWrapper.deleteById(
-      uri = mockUri,
-      id = testId,
-      notificationUris = Seq(mockUri)) returns 1
-
-    contentResolverWrapper.findById(
-      uri = mockUri,
-      id = testId,
-      projection = allFields)(
-      f = getEntityFromCursor(momentEntityFromCursor)) returns Some(momentEntity)
-
-    contentResolverWrapper.findById(
-      uri = mockUri,
-      id = testNonExistingId,
-      projection = allFields)(
-      f = getEntityFromCursor(momentEntityFromCursor)) returns None
-
-    contentResolverWrapper.updateById(
-      uri = mockUri,
-      id = testId,
-      values = createMomentValues,
-      notificationUris = Seq(mockUri)) returns 1
-
-    contentResolverWrapper.fetchAll(
-      uri = mockUri,
-      projection = allFields,
-      where = "",
-      whereParams = Seq.empty,
-      orderBy = "")(
-      f = getListFromCursor(momentEntityFromCursor)) returns momentEntitySeq
-
-    contentResolverWrapper.fetchAll(
-      uri = mockUri,
-      projection = allFields,
-      where = s"$wifi = ?",
-      whereParams = Seq(testWifi.toString),
-      orderBy = "")(
-      f = getListFromCursor(momentEntityFromCursor)) returns momentEntitySeq
-
-    contentResolverWrapper.fetchAll(
-      uri = mockUri,
-      projection = allFields,
-      where = s"$wifi = ?",
-      whereParams = Seq(testWifi.toString))(
-      f = getListFromCursor(momentEntityFromCursor)) returns momentEntitySeq
-  }
-
-  trait ValidMomentRepositoryCollectionResponses
-    extends MomentRepositoryTestData {
-
-    self: MomentRepositoryScope =>
-
-    uriCreator.parse(any) returns mockUri
-
-    contentResolverWrapper.insert(
-      uri = mockUri,
-      values = createMomentValuesCollection,
-      notificationUris = Seq(mockUri)) returns testId
-  }
-
-  trait ErrorMomentRepositoryResponses
-    extends MomentRepositoryTestData {
-
-    self: MomentRepositoryScope =>
 
     val contentResolverException = new RuntimeException("Irrelevant message")
-
-    uriCreator.parse(any) returns mockUri
-
-    contentResolverWrapper.insert(
-      uri = mockUri,
-      values = createMomentValues,
-      notificationUris = Seq(mockUri)) throws contentResolverException
-
-    contentResolverWrapper.delete(
-      uri = mockUri,
-      where = "",
-      notificationUris = Seq(mockUri)) throws contentResolverException
-
-    contentResolverWrapper.deleteById(
-      uri = mockUri,
-      id = testId,
-      notificationUris = Seq(mockUri)) throws contentResolverException
-
-    contentResolverWrapper.findById(
-      uri = mockUri,
-      id = testId,
-      projection = allFields)(
-      f = getEntityFromCursor(momentEntityFromCursor)) throws contentResolverException
-
-    contentResolverWrapper.updateById(
-      uri = mockUri,
-      id = testId,
-      values = createMomentValues,
-      notificationUris = Seq(mockUri)) throws contentResolverException
-
-    contentResolverWrapper.fetchAll(
-      uri = mockUri,
-      projection = allFields,
-      where = "",
-      whereParams = Seq.empty,
-      orderBy = "")(
-      f = getListFromCursor(momentEntityFromCursor)) throws contentResolverException
   }
 
 }
@@ -195,9 +78,9 @@ class MomentRepositorySpec
     "addMoment" should {
 
       "return a Moment object with a valid request" in
-        new MomentRepositoryScope
-          with ValidMomentRepositoryResponses {
+        new MomentRepositoryScope {
 
+          contentResolverWrapper.insert(uri = mockUri, values = createMomentValues, notificationUris = Seq(mockUri)) returns testId
           val result = momentRepository.addMoment(data = createMomentData).value.run
 
           result must beLike {
@@ -208,9 +91,9 @@ class MomentRepositorySpec
         }
 
       "return a Moment object with a collectionId = None with a valid request with a collectionId = None" in
-        new MomentRepositoryScope
-          with ValidMomentRepositoryCollectionResponses {
+        new MomentRepositoryScope {
 
+          contentResolverWrapper.insert(uri = mockUri, values = createMomentValuesCollection, notificationUris = Seq(mockUri)) returns testId
           val result = momentRepository.addMoment(data = createMomentDataCollection).value.run
 
           result must beLike {
@@ -221,75 +104,63 @@ class MomentRepositorySpec
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new MomentRepositoryScope
-          with ErrorMomentRepositoryResponses {
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.insert(uri = mockUri, values = createMomentValues, notificationUris = Seq(mockUri)) throws contentResolverException
 
           val result = momentRepository.addMoment(data = createMomentData).value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
 
     "deleteMoments" should {
 
       "return a successful result when all the moments are deleted" in
-        new MomentRepositoryScope
-          with ValidMomentRepositoryResponses {
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.delete(uri = mockUri, where = "", notificationUris = Seq(mockUri)) returns 1
 
           val result = momentRepository.deleteMoments().value.run
-
-          result must beLike {
-            case Xor.Right(deleted) =>
-              deleted shouldEqual 1
-          }
+          result shouldEqual Xor.Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new MomentRepositoryScope
-          with ErrorMomentRepositoryResponses {
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.delete(uri = mockUri, where = "", notificationUris = Seq(mockUri)) throws contentResolverException
 
           val result = momentRepository.deleteMoments().value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
 
     "deleteMoment" should {
 
       "return a successful result when a valid moment id is given" in
-        new MomentRepositoryScope
-          with ValidMomentRepositoryResponses {
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.deleteById(uri = mockUri, id = testId, notificationUris = Seq(mockUri)) returns 1
 
           val result = momentRepository.deleteMoment(moment).value.run
-
-          result must beLike {
-            case Xor.Right(deleted) =>
-              deleted shouldEqual 1
-          }
+          result shouldEqual Xor.Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new MomentRepositoryScope
-          with ErrorMomentRepositoryResponses {
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.deleteById(uri = mockUri, id = testId, notificationUris = Seq(mockUri)) throws contentResolverException
 
           val result = momentRepository.deleteMoment(moment).value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
 
     "findMomentById" should {
 
       "return a Moment object when a existing id is given" in
-        new MomentRepositoryScope
-          with ValidMomentRepositoryResponses {
+        new MomentRepositoryScope {
 
+          contentResolverWrapper.findById(uri = mockUri, id = testId, projection = allFields)(f = getEntityFromCursor(momentEntityFromCursor)) returns Some(momentEntity)
           val result = momentRepository.findMomentById(id = testId).value.run
 
           result must beLike {
@@ -302,89 +173,84 @@ class MomentRepositorySpec
         }
 
       "return None when a non-existing id is given" in
-        new MomentRepositoryScope
-          with ValidMomentRepositoryResponses {
-          val result = momentRepository.findMomentById(id = testNonExistingId).value.run
+        new MomentRepositoryScope {
 
-          result must beLike {
-            case Xor.Right(maybeMoment) =>
-              maybeMoment must beNone
-          }
+          contentResolverWrapper.findById(uri = mockUri, id = testNonExistingId, projection = allFields)(f = getEntityFromCursor(momentEntityFromCursor)) returns None
+
+          val result = momentRepository.findMomentById(id = testNonExistingId).value.run
+          result shouldEqual Xor.Right(None)
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new MomentRepositoryScope
-          with ErrorMomentRepositoryResponses {
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.findById(uri = mockUri, id = testId, projection = allFields)(f = getEntityFromCursor(momentEntityFromCursor)) throws contentResolverException
 
           val result = momentRepository.findMomentById(id = testId).value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
 
     "updateMoment" should {
 
       "return a successful result when the moment is updated" in
-        new MomentRepositoryScope
-          with ValidMomentRepositoryResponses {
+        new MomentRepositoryScope {
+          contentResolverWrapper.updateById(uri = mockUri, id = testId, values = createMomentValues, notificationUris = Seq(mockUri)) returns 1
 
           val result = momentRepository.updateMoment(item = moment).value.run
-
-          result must beLike {
-            case Xor.Right(updated) =>
-              updated shouldEqual 1
-          }
+          result shouldEqual Xor.Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new MomentRepositoryScope
-          with ErrorMomentRepositoryResponses {
+        new MomentRepositoryScope {
+          contentResolverWrapper.updateById(uri = mockUri, id = testId, values = createMomentValues, notificationUris = Seq(mockUri)) throws contentResolverException
 
           val result = momentRepository.updateMoment(item = moment).value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
 
     "fetchMoments" should {
 
       "return all Moments" in
-        new MomentRepositoryScope
-          with ValidMomentRepositoryResponses {
-
+        new MomentRepositoryScope {
+          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields, where = "", whereParams = Seq.empty, orderBy = "")(f = getListFromCursor(momentEntityFromCursor)) returns momentEntitySeq
           val result = momentRepository.fetchMoments().value.run
+          result shouldEqual Xor.Right(momentSeq)
 
-          result must beLike {
-            case Xor.Right(moments) =>
-              moments shouldEqual momentSeq
-          }
         }
 
       "return all Moments that match the where clause" in
-        new MomentRepositoryScope
-          with ValidMomentRepositoryResponses {
+        new MomentRepositoryScope {
+          contentResolverWrapper.fetchAll(
+             uri = mockUri,
+             projection = allFields,
+             where = s"$wifi = ?",
+             whereParams = Seq(testWifi.toString),
+             orderBy = "")(f = getListFromCursor(momentEntityFromCursor)) returns momentEntitySeq
+
+          contentResolverWrapper.fetchAll(
+             uri = mockUri,
+             projection = allFields,
+             where = s"$wifi = ?",
+             whereParams = Seq(testWifi.toString))(f = getListFromCursor(momentEntityFromCursor)) returns momentEntitySeq
 
           val result = momentRepository.fetchMoments(where = s"$wifi = ?", whereParams = Seq(testWifi.toString)).value.run
+          result shouldEqual Xor.Right(momentSeq)
 
-          result must beLike {
-            case Xor.Right(moments) =>
-              moments shouldEqual momentSeq
-          }
         }
 
       "return a RepositoryException when a exception is thrown" in
-        new MomentRepositoryScope
-          with ErrorMomentRepositoryResponses {
-
+        new MomentRepositoryScope {
+          contentResolverWrapper.fetchAll(
+            uri = mockUri,
+            projection = allFields,
+            where = "",
+            whereParams = Seq.empty,
+            orderBy = "")(
+            f = getListFromCursor(momentEntityFromCursor)) throws contentResolverException
           val result = momentRepository.fetchMoments().value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
 
