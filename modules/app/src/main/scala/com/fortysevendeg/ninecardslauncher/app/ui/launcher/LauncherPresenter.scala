@@ -695,6 +695,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     def uiAction(prefKey: String): Ui[_] = prefKey match {
       case PreferencesValuesKeys.showClockMoment => actions.reloadMomentTopBar()
+      case PreferencesValuesKeys.googleLogo => actions.reloadTopBar()
       case _ => Ui.nop
     }
 
@@ -967,6 +968,8 @@ trait LauncherUiActions {
   def reloadCurrentMoment(): Ui[Any]
 
   def reloadMomentTopBar(): Ui[Any]
+
+  def reloadTopBar(): Ui[Any]
 
   def reloadMoment(moment: LauncherData): Ui[Any]
 

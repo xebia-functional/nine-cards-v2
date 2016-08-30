@@ -243,6 +243,8 @@ trait LauncherUiActionsImpl
     topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank)
   }
 
+  override def reloadTopBar(): Ui[Any] = topBarPanel <~ tblReload
+
   override def reloadMoment(data: LauncherData): Ui[Any] = {
     val momentType = data.moment.flatMap(_.momentType)
     val launcherMoment = data.moment

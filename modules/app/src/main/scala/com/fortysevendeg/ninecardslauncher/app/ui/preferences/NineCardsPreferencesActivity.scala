@@ -23,7 +23,7 @@ class NineCardsPreferencesActivity
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
-    actionBar foreach{ab =>
+    actionBar foreach { ab =>
       ab.setDisplayHomeAsUpEnabled(true)
       ab.setDisplayShowHomeEnabled(false)
       ab.setDisplayShowTitleEnabled(true)
