@@ -21,7 +21,8 @@ trait CollectionRepositorySpecification
     with Mockito {
 
   trait CollectionRepositoryScope
-    extends Scope {
+    extends Scope
+      with CollectionRepositoryTestData {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
 
@@ -30,104 +31,10 @@ trait CollectionRepositorySpecification
     lazy val collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator)
 
     lazy val mockUri = mock[Uri]
-  }
-
-  trait ValidCollectionRepositoryResponses
-    extends CollectionRepositoryTestData {
-
-    self: CollectionRepositoryScope =>
 
     uriCreator.parse(any) returns mockUri
-
-    contentResolverWrapper.insert(
-      uri = mockUri,
-      values = createCollectionValues,
-      notificationUris = Seq(mockUri)) returns testCollectionId
-
-    contentResolverWrapper.delete(
-      uri = mockUri,
-      where = "",
-      notificationUris = Seq(mockUri)) returns 1
-
-    contentResolverWrapper.deleteById(
-      uri = mockUri,
-      id = testCollectionId,
-      notificationUris = Seq(mockUri)) returns 1
-
-    contentResolverWrapper.findById(
-      uri = mockUri,
-      id = testCollectionId,
-      projection = allFields)(
-      f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
-
-    contentResolverWrapper.findById(
-      uri = mockUri,
-      id = testNonExistingCollectionId,
-      projection = allFields)(
-      f = getEntityFromCursor(collectionEntityFromCursor)) returns None
-
-    contentResolverWrapper.fetchAll(
-      uri = mockUri,
-      projection = allFields,
-      where = "",
-      whereParams = Seq.empty,
-      orderBy = s"$position asc")(
-      f = getListFromCursor(collectionEntityFromCursor)) returns collectionEntitySeq
-
-    contentResolverWrapper.fetch(
-      uri = mockUri,
-      projection = allFields,
-      where = s"$position = ?",
-      whereParams = Seq(testPosition.toString),
-      orderBy = "")(
-      f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
-
-    contentResolverWrapper.fetch(
-      uri = mockUri,
-      projection = allFields,
-      where = s"$position = ?",
-      whereParams = Seq(testNonExistingPosition.toString),
-      orderBy = "")(
-      f = getEntityFromCursor(collectionEntityFromCursor)) returns None
-
-    contentResolverWrapper.fetch(
-      uri = mockUri,
-      projection = allFields,
-      where = s"$sharedCollectionId = ?",
-      whereParams = Seq(testSharedCollectionId),
-      orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
-
-    contentResolverWrapper.fetch(
-      uri = mockUri,
-      projection = allFields,
-      where = s"$originalSharedCollectionId = ?",
-      whereParams = Seq(testSharedCollectionId),
-      orderBy = "")(
-      f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
-
-    contentResolverWrapper.fetch(
-      uri = mockUri,
-      projection = allFields,
-      where = s"$sharedCollectionId = ?",
-      whereParams = Seq(testNonExistingSharedCollectionId),
-      orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor)) returns None
-
-    contentResolverWrapper.fetch(
-      uri = mockUri,
-      projection = allFields,
-      where = s"$originalSharedCollectionId = ?",
-      whereParams = Seq(testNonExistingSharedCollectionId),
-      orderBy = "")(
-      f = getEntityFromCursor(collectionEntityFromCursor)) returns None
-
-    contentResolverWrapper.updateById(
-      uri = mockUri,
-      id = testCollectionId,
-      values = createCollectionValues,
-      notificationUris = Seq(mockUri)) returns 1
   }
+
 
   trait ErrorCollectionRepositoryResponses
     extends CollectionRepositoryTestData {
@@ -181,7 +88,7 @@ trait CollectionRepositorySpecification
       where = s"$sharedCollectionId = ?",
       whereParams = Seq(testSharedCollectionId),
       orderBy = "")(
-        f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
+      f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
     contentResolverWrapper.fetch(
       uri = mockUri,
@@ -248,9 +155,11 @@ class CollectionRepositorySpec
     "addCollection" should {
 
       "return a Collection object with a valid request" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
-
+        new CollectionRepositoryScope {
+          contentResolverWrapper.insert(
+            uri = mockUri,
+            values = createCollectionValues,
+            notificationUris = Seq(mockUri)) returns testCollectionId
           val result = collectionRepository.addCollection(data = createCollectionData).value.run
 
           result must beLike {
@@ -265,25 +174,20 @@ class CollectionRepositorySpec
           with ErrorCollectionRepositoryResponses {
 
           val result = collectionRepository.addCollection(data = createCollectionData).value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
 
     "deleteCollections" should {
 
       "return a successful result when all collections are deleted" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
+        new CollectionRepositoryScope {
+
+          contentResolverWrapper.delete(uri = mockUri, where = "", notificationUris = Seq(mockUri)) returns 1
 
           val result = collectionRepository.deleteCollections().value.run
+          result shouldEqual Xor.Right(1)
 
-          result must beLike {
-            case Xor.Right(deleted) =>
-              deleted shouldEqual 1
-          }
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -291,25 +195,19 @@ class CollectionRepositorySpec
           with ErrorCollectionRepositoryResponses {
 
           val result = collectionRepository.deleteCollections().value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
 
     "deleteCollection" should {
 
       "return a successful result when a valid collection id is given" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
+        new CollectionRepositoryScope {
+
+          contentResolverWrapper.deleteById(uri = mockUri, id = testCollectionId, notificationUris = Seq(mockUri)) returns 1
 
           val result = collectionRepository.deleteCollection(collection).value.run
-
-          result must beLike {
-            case Xor.Right(deleted) =>
-              deleted shouldEqual 1
-          }
+          result shouldEqual Xor.Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -317,19 +215,20 @@ class CollectionRepositorySpec
           with ErrorCollectionRepositoryResponses {
 
           val result = collectionRepository.deleteCollection(collection).value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
 
     "findCollectionById" should {
 
       "return a Collection object when a existing id is given" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
+        new CollectionRepositoryScope {
 
+          contentResolverWrapper.findById(
+            uri = mockUri,
+            id = testCollectionId,
+            projection = allFields)(
+            f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
           val result = collectionRepository.findCollectionById(id = testCollectionId).value.run
 
           result must beLike {
@@ -342,14 +241,16 @@ class CollectionRepositorySpec
         }
 
       "return None when a non-existing id is given" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
-          val result = collectionRepository.findCollectionById(id = testNonExistingCollectionId).value.run
+        new CollectionRepositoryScope {
 
-          result must beLike {
-            case Xor.Right(maybeCollection) =>
-              maybeCollection must beNone
-          }
+          contentResolverWrapper.findById(
+            uri = mockUri,
+            id = testNonExistingCollectionId,
+            projection = allFields)(
+            f = getEntityFromCursor(collectionEntityFromCursor)) returns None
+          val result = collectionRepository.findCollectionById(id = testNonExistingCollectionId).value.run
+          result shouldEqual Xor.Right(None)
+
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -357,19 +258,21 @@ class CollectionRepositorySpec
           with ErrorCollectionRepositoryResponses {
 
           val result = collectionRepository.findCollectionById(id = testCollectionId).value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
 
     "fetchCollectionBySharedCollectionId" should {
 
       "return a Collection object when a existing shared collection id is given" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
-
+        new CollectionRepositoryScope {
+          contentResolverWrapper.fetch(
+            uri = mockUri,
+            projection = allFields,
+            where = s"$sharedCollectionId = ?",
+            whereParams = Seq(testSharedCollectionId),
+            orderBy = "")(
+            f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
           val result = collectionRepository.fetchCollectionBySharedCollectionId(id = testSharedCollectionId).value.run
 
           result must beLike {
@@ -382,15 +285,18 @@ class CollectionRepositorySpec
         }
 
       "return None when a non-existing shared collection id is given" in
-        new CollectionRepositoryScope
-          with ValidCollectionRepositoryResponses {
+        new CollectionRepositoryScope {
 
+          contentResolverWrapper.fetch(
+            uri = mockUri,
+            projection = allFields,
+            where = s"$sharedCollectionId = ?",
+            whereParams = Seq(testNonExistingSharedCollectionId),
+            orderBy = "")(
+            f = getEntityFromCursor(collectionEntityFromCursor)) returns None
           val result = collectionRepository.fetchCollectionBySharedCollectionId(id = testNonExistingSharedCollectionId).value.run
 
-          result must beLike {
-            case Xor.Right(maybeCollection) =>
-              maybeCollection must beNone
-          }
+          result shouldEqual Xor.Right(None)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -398,19 +304,22 @@ class CollectionRepositorySpec
           with ErrorCollectionRepositoryResponses {
 
           val result = collectionRepository.fetchCollectionBySharedCollectionId(id = testSharedCollectionId).value.run
-
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-          }
+          result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
 
 
       "fetchCollectionByOriginalSharedCollectionId" should {
 
         "return a Collection object when a existing shared collection id is given" in
-          new CollectionRepositoryScope
-            with ValidCollectionRepositoryResponses {
+          new CollectionRepositoryScope {
 
+            contentResolverWrapper.fetch(
+              uri = mockUri,
+              projection = allFields,
+              where = s"$originalSharedCollectionId = ?",
+              whereParams = Seq(testSharedCollectionId),
+              orderBy = "")(
+              f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
             val result = collectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId = testSharedCollectionId).value.run
 
             result must beLike {
@@ -423,15 +332,18 @@ class CollectionRepositorySpec
           }
 
         "return None when a non-existing shared collection id is given" in
-          new CollectionRepositoryScope
-            with ValidCollectionRepositoryResponses {
+          new CollectionRepositoryScope {
 
+            contentResolverWrapper.fetch(
+              uri = mockUri,
+              projection = allFields,
+              where = s"$originalSharedCollectionId = ?",
+              whereParams = Seq(testNonExistingSharedCollectionId),
+              orderBy = "")(
+              f = getEntityFromCursor(collectionEntityFromCursor)) returns None
             val result = collectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId = testNonExistingSharedCollectionId).value.run
 
-            result must beLike {
-              case Xor.Right(maybeCollection) =>
-                maybeCollection must beNone
-            }
+            result shouldEqual Xor.Right(None)
           }
 
         "return a RepositoryException when a exception is thrown" in
@@ -439,10 +351,7 @@ class CollectionRepositorySpec
             with ErrorCollectionRepositoryResponses {
 
             val result = collectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId = testSharedCollectionId).value.run
-
-            result must beLike {
-              case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-            }
+            result must beAnInstanceOf[Xor.Left[RepositoryException]]
           }
 
       }
@@ -450,9 +359,15 @@ class CollectionRepositorySpec
       "fetchCollectionByPosition" should {
 
         "return a Collection object when a existing position is given" in
-          new CollectionRepositoryScope
-            with ValidCollectionRepositoryResponses {
+          new CollectionRepositoryScope {
 
+            contentResolverWrapper.fetch(
+              uri = mockUri,
+              projection = allFields,
+              where = s"$position = ?",
+              whereParams = Seq(testPosition.toString),
+              orderBy = "")(
+              f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
             val result = collectionRepository.fetchCollectionByPosition(position = testPosition).value.run
 
             result must beLike {
@@ -465,14 +380,17 @@ class CollectionRepositorySpec
           }
 
         "return None when a non-existing position is given" in
-          new CollectionRepositoryScope
-            with ValidCollectionRepositoryResponses {
-            val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).value.run
+          new CollectionRepositoryScope {
 
-            result must beLike {
-              case Xor.Right(maybeCollection) =>
-                maybeCollection must beNone
-            }
+            contentResolverWrapper.fetch(
+              uri = mockUri,
+              projection = allFields,
+              where = s"$position = ?",
+              whereParams = Seq(testNonExistingPosition.toString),
+              orderBy = "")(
+              f = getEntityFromCursor(collectionEntityFromCursor)) returns None
+            val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).value.run
+            result shouldEqual Xor.Right(None)
           }
 
         "return a RepositoryException when a exception is thrown" in
@@ -480,25 +398,26 @@ class CollectionRepositorySpec
             with ErrorCollectionRepositoryResponses {
 
             val result = collectionRepository.fetchCollectionByPosition(position = testPosition).value.run
-
-            result must beLike {
-              case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-            }
+            result must beAnInstanceOf[Xor.Left[RepositoryException]]
           }
       }
 
       "fetchSortedCollections" should {
 
         "return all the cache categories stored in the database" in
-          new CollectionRepositoryScope
-            with ValidCollectionRepositoryResponses {
+          new CollectionRepositoryScope {
+
+            contentResolverWrapper.fetchAll(
+              uri = mockUri,
+              projection = allFields,
+              where = "",
+              whereParams = Seq.empty,
+              orderBy = s"$position asc")(
+              f = getListFromCursor(collectionEntityFromCursor)) returns collectionEntitySeq
 
             val result = collectionRepository.fetchSortedCollections.value.run
+            result shouldEqual Xor.Right(collectionSeq)
 
-            result must beLike {
-              case Xor.Right(collections) =>
-                collections shouldEqual collectionSeq
-            }
           }
 
         "return a RepositoryException when a exception is thrown" in
@@ -506,25 +425,20 @@ class CollectionRepositorySpec
             with ErrorCollectionRepositoryResponses {
 
             val result = collectionRepository.fetchSortedCollections.value.run
+            result must beAnInstanceOf[Xor.Left[RepositoryException]]
 
-            result must beLike {
-              case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-            }
           }
       }
 
       "updateCollection" should {
 
         "return a successful result when the collection is updated" in
-          new CollectionRepositoryScope
-            with ValidCollectionRepositoryResponses {
+          new CollectionRepositoryScope {
 
+            contentResolverWrapper.updateById(uri = mockUri, id = testCollectionId, values = createCollectionValues, notificationUris = Seq(mockUri)) returns 1
             val result = collectionRepository.updateCollection(collection = collection).value.run
+            result shouldEqual Xor.Right(1)
 
-            result must beLike {
-              case Xor.Right(updated) =>
-                updated shouldEqual 1
-            }
           }
 
         "return a RepositoryException when a exception is thrown" in
@@ -532,10 +446,8 @@ class CollectionRepositorySpec
             with ErrorCollectionRepositoryResponses {
 
             val result = collectionRepository.updateCollection(collection = collection).value.run
+            result must beAnInstanceOf[Xor.Left[RepositoryException]]
 
-            result must beLike {
-              case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
-            }
           }
       }
 
