@@ -725,30 +725,32 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     // Check if the best available moment is different to the current moment, if it's different return Some(moment)
     // in the other case None
-    def getCheckMoment: TaskService[LauncherMoment] = {
+    def getCheckMoment: TaskService[Option[LauncherMoment]] = {
 
       def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
-        val emptyService: TaskService[Option[Collection]] = TaskService(Task(Xor.right(None)))
-        val momentType = moment flatMap (_.momentType)
-        val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
         val collectionId = moment flatMap (_.collectionId)
-        if (momentType == currentMomentType) {
-          TaskService(Task(Xor.left(CollectionException("Best available moment is same of current moment"))))
-        } else {
-          collectionId map di.collectionProcess.getCollectionById getOrElse emptyService
-        }
+        collectionId map di.collectionProcess.getCollectionById getOrElse TaskService(Task(Xor.right(None)))
       }
 
       for {
         moment <- di.momentProcess.getBestAvailableMoment
         collection <- getCollection(moment)
-      } yield LauncherMoment(moment flatMap (_.momentType), collection)
+        currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
+        momentType = moment flatMap (_.momentType)
+      } yield {
+        currentMomentType match {
+          case `momentType` => None
+          case _ => Option(LauncherMoment(moment flatMap (_.momentType), collection))
+        }
+      }
     }
 
     Task.fork(getCheckMoment.value).resolveAsyncUi(
-      onResult = (launcherMoment) => {
-        val data = LauncherData(MomentWorkSpace, Some(launcherMoment))
-        actions.reloadMoment(data)
+      onResult = {
+        case launcherMoment @ Some(_) =>
+          val data = LauncherData(MomentWorkSpace, launcherMoment)
+          actions.reloadMoment(data)
+        case _ => Ui.nop
       },
       onException = (_) => Ui(reloadAppsMomentBar()))
   }

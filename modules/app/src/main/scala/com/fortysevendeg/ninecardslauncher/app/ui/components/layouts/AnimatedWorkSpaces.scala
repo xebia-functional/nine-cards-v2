@@ -90,13 +90,13 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   (self <~ vgAddViews(Seq(
     (w[FrameLayout] <~
-      wire(parentViewTwo) <~
+      wire(parentViewOne) <~
       vAddField(positionViewKey, NextView)).get,
     (w[FrameLayout] <~
-      wire(parentViewThree) <~
+      wire(parentViewTwo) <~
       vAddField(positionViewKey, FrontView)).get,
     (w[FrameLayout] <~
-      wire(parentViewOne) <~
+      wire(parentViewThree) <~
       vAddField(positionViewKey, PreviousView)).get), params)).run
 
   def animationPref = WorkspaceAnimations.readValue(new NineCardsPreferencesValue)
