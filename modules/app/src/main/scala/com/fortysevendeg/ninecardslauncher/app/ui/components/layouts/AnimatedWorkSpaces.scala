@@ -90,14 +90,14 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   (self <~ vgAddViews(Seq(
     (w[FrameLayout] <~
-      wire(parentViewOne) <~
-      vAddField(positionViewKey, PreviousView)).get,
-    (w[FrameLayout] <~
       wire(parentViewTwo) <~
       vAddField(positionViewKey, NextView)).get,
     (w[FrameLayout] <~
       wire(parentViewThree) <~
-      vAddField(positionViewKey, FrontView)).get), params)).run
+      vAddField(positionViewKey, FrontView)).get,
+    (w[FrameLayout] <~
+      wire(parentViewOne) <~
+      vAddField(positionViewKey, PreviousView)).get), params)).run
 
   def animationPref = WorkspaceAnimations.readValue(new NineCardsPreferencesValue)
 
@@ -349,9 +349,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       case (ACTION_MOVE, Scrolling) =>
         requestDisallowInterceptTouchEvent(true)
         val deltaX = statuses.deltaX(x)
-        val deltaY = statuses.deltaY(y)
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        if (overScroll(deltaX, deltaY)) {
+        if (overScroll()) {
           resetView(getFrontView).run
         } else {
           performScroll(deltaX).run
@@ -376,12 +375,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (action, x, y)
   }
 
-  private[this] def overScroll(deltaX: Float, deltaY: Float): Boolean = getFrontView exists { view =>
-    val xView = view.getX
-    val yView = view.getY
-    (statuses.infinite, xView, yView, deltaX, deltaY) match {
-      case (false, x, _, dx, _) if x >= 0 && dx < 0 && isFirst => true
-      case (false, x, _, dx, _) if x <= 0 && dx > 0 && isLast => true
+  private[this] def overScroll(deltaX: Option[Float] = None): Boolean = getFrontView exists { view =>
+    (statuses.infinite, view.getX, deltaX) match {
+      case (false, x, Some(dx)) if x >= 0 && dx < 0 && isFirst => true
+      case (false, x, Some(dx)) if x <= 0 && dx > 0 && isLast => true
+      case (false, x, None) if x > 0 && isFirst => true
+      case (false, x, None) if x < 0 && isLast => true
       case _ => false
     }
   }
@@ -426,8 +425,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   private[this] def computeFling() = statuses.velocityTracker foreach {
     tracker =>
       tracker.computeCurrentVelocity(1000, maximumVelocity)
-      if (statuses.isScrolling && !overScroll(-tracker.getXVelocity, -tracker.getYVelocity)) {
-        val velocity = tracker.getXVelocity
+      val velocity = tracker.getXVelocity
+      if (statuses.isScrolling && !overScroll(Some(-velocity))) {
         (if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination()).run
       }
       tracker.recycle()
