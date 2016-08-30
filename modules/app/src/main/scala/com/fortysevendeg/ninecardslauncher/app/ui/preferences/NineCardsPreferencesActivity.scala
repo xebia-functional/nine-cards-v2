@@ -62,13 +62,11 @@ class NineCardsPreferencesActivity
       super.onCreate(savedInstanceState)
       addPreferencesFromResource(R.xml.preferences_headers)
 
-      findPreference(ThemesPreferences.name).setOnPreferenceClickListener(preferenceClick(ThemesPreferences.name, new ThemesFragment()))
+      findPreference(LookFeelPreferences.name).setOnPreferenceClickListener(preferenceClick(LookFeelPreferences.name, new LookFeelFragment()))
 
       findPreference(MomentsPreferences.name).setOnPreferenceClickListener(preferenceClick(MomentsPreferences.name, new MomentsFragment()))
 
       findPreference(AppDrawerPreferences.name).setOnPreferenceClickListener(preferenceClick(AppDrawerPreferences.name, new AppDrawerFragment()))
-
-      findPreference(SizesPreferences.name).setOnPreferenceClickListener(preferenceClick(SizesPreferences.name, new SizesFragment()))
 
       findPreference(AnimationsPreferences.name).setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
 

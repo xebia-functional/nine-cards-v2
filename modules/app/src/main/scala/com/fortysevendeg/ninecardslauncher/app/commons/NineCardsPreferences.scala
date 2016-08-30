@@ -12,8 +12,8 @@ sealed trait NineCardsPreferences {
   val name: String
 }
 
-case object ThemesPreferences extends NineCardsPreferences {
-  override val name: String = themesKey
+case object LookFeelPreferences extends NineCardsPreferences {
+  override val name: String = lookFeelKey
 }
 
 case object MomentsPreferences extends NineCardsPreferences {
@@ -130,7 +130,7 @@ case object AppDrawerFavoriteContactsFirst
   override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
 }
 
-// Theme Preferences
+// Look & Feel Preferences
 
 case object Theme
   extends NineCardsPreferenceValue[ThemeValue] {
@@ -144,6 +144,42 @@ case object Theme
     case ThemeLight => "theme_light"
     case ThemeDark => "theme_dark"
   }
+}
+
+case object GoogleLogo
+  extends NineCardsPreferenceValue[GoogleLogoValue] {
+  override val name: String = googleLogo
+  override val default: GoogleLogoValue = GoogleLogoTheme
+
+  override def readValue(pref: NineCardsPreferencesValue): GoogleLogoValue =
+    GoogleLogoValue(pref.getString(name, default.value))
+}
+
+case object FontSize
+  extends NineCardsPreferenceValue[FontSizeValue] {
+  override val name: String = fontsSize
+  override val default: FontSizeValue = FontSizeMedium
+
+  override def readValue(pref: NineCardsPreferencesValue): FontSizeValue =
+    FontSizeValue(pref.getString(name, default.value))
+}
+
+case object IconsSize
+  extends NineCardsPreferenceValue[IconsSizeValue] {
+  override val name: String = iconsSize
+  override val default: IconsSizeValue = IconsSizeMedium
+
+  override def readValue(pref: NineCardsPreferencesValue): IconsSizeValue =
+    IconsSizeValue(pref.getString(name, default.value))
+}
+
+case object CardPadding
+  extends NineCardsPreferenceValue[IconsSizeValue] {
+  override val name: String = cardPadding
+  override val default: IconsSizeValue = IconsSizeMedium
+
+  override def readValue(pref: NineCardsPreferencesValue): IconsSizeValue =
+    IconsSizeValue(pref.getString(name, default.value))
 }
 
 // Commons
@@ -164,7 +200,7 @@ class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
 // This values should be the same that the keys used in XML preferences_headers
 object PreferencesKeys {
   val defaultLauncherKey = "defaultLauncherKey"
-  val themesKey = "themesKey"
+  val lookFeelKey = "lookFeelKey"
   val momentKey = "momentKey"
   val appDrawerKey = "appDrawerKey"
   val sizesKey = "sizesKey"
@@ -181,8 +217,12 @@ object PreferencesValuesKeys {
   // Moment keys
   val showClockMoment = "showClockMoment"
 
-  // Theme Keys
+  // Look and Feel Keys
   val theme = "theme"
+  val googleLogo = "googleLogo"
+  val fontsSize = "fontsSize"
+  val iconsSize = "iconsSize"
+  val cardPadding = "cardPadding"
 
   // AppDrawer Keys
   val appDrawerLongPressAction = "appDrawerLongPressAction"

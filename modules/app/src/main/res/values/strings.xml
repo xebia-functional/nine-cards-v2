@@ -337,8 +337,8 @@
 
     <!-- Theme Preferences -->
 
-    <string name="themesPrefTitle">Themes</string>
-    <string name="themesPrefSummary">Themes Summary</string>
+    <string name="lookFeelPrefTitle">Look &amp; feel</string>
+    <string name="lookFeelPrefSummary">Change theme and others graphics styles</string>
 
     <string name="selectThemeTitle">Select Theme</string>
     <string name="selectThemeSummary">Select Theme Summary</string>
@@ -347,10 +347,31 @@
     <string name="themesLight">Light</string>
 
     <string name="googleLogoTitle">Google Logo</string>
-    <string name="googleLogoSummary">Google Logo Summary</string>
+    <string name="googleLogoSummary">Type of Google Logo on Search Bar</string>
 
     <string name="colouredGoogleLogo">Coloured</string>
     <string name="themeColourGoogleLogo">Theme\'s Colour</string>
+
+    <string name="fontsTitle">Fonts Size</string>
+    <string name="fontsSummary">General Fonts Size</string>
+
+    <string name="fontsSmall">Small</string>
+    <string name="fontsMedium">Medium</string>
+    <string name="fontsLarge">Large</string>
+
+    <string name="iconsTitle">Icons Size</string>
+    <string name="iconsSummary">General Icons Size</string>
+
+    <string name="iconsSmall">Small</string>
+    <string name="iconsMedium">Medium</string>
+    <string name="iconsLarge">Large</string>
+
+    <string name="cardPaddingTitle">Card Padding</string>
+    <string name="cardPaddingSummary">Padding between cards on Collections</string>
+
+    <string name="cardPaddingSmall">Small</string>
+    <string name="cardPaddingMedium">Medium</string>
+    <string name="cardPaddingLarge">Large</string>
 
     <!-- Moment Preferences -->
 
@@ -379,32 +400,6 @@
 
     <string name="appDrawerFistTabContactTitle">Favorites Contacts First Tab</string>
     <string name="appDrawerFistTabContactSummary">Favorites Contacts will appear in the first position</string>
-
-    <!-- Sizes Preferences -->
-
-    <string name="sizesPrefTitle">Sizes</string>
-    <string name="sizesPrefSummary">Sizes Summary</string>
-
-    <string name="fontsTitle">Fonts</string>
-    <string name="fontsSummary">Fonts Summary</string>
-
-    <string name="fontsSmall">Small</string>
-    <string name="fontsMedium">Medium</string>
-    <string name="fontsBigger">Bigger</string>
-
-    <string name="iconsTitle">Icons</string>
-    <string name="iconsSummary">Icons Summary</string>
-
-    <string name="iconsSmall">Small</string>
-    <string name="iconsMedium">Medium</string>
-    <string name="iconsBigger">Bigger</string>
-
-    <string name="cardPaddingsTitle">Card Paddings</string>
-    <string name="cardPaddingsSummary">Card Paddings Summary</string>
-
-    <string name="cardPaddingsSmall">Small</string>
-    <string name="cardPaddingsMedium">Medium</string>
-    <string name="cardPaddingsBigger">Bigger</string>
 
     <!-- Animations Preferences -->
 
