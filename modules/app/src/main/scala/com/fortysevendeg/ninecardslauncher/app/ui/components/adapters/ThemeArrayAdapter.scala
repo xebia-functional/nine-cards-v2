@@ -24,20 +24,17 @@ class ThemeArrayAdapter(icons: Seq[Int], values: Seq[String])(implicit contextWr
   override def getItem(position: Int): String = values lift position getOrElse javaNull
 
   override def getView(position: Int, convertView: View, parent: ViewGroup): View =
-    (w[TextView] <~ commonStyle(position, withIcon = false)).get
+    (w[TextView] <~ commonStyle(position)).get
 
-  override def getDropDownView(position: Int, convertView: View, parent: ViewGroup): View = {
-    val backgroundColor = theme.get(DrawerBackgroundColor)
-    (w[TextView] <~
-      commonStyle(position, withIcon = true) <~
-      vBackgroundColor(backgroundColor)).get
-  }
+  override def getDropDownView(position: Int, convertView: View, parent: ViewGroup): View =
+    (w[TextView] <~ commonStyle(position)).get
 
-  private[this] def commonStyle(position: Int, withIcon: Boolean) = {
+  private[this] def commonStyle(position: Int) = {
     val textColor = theme.get(DrawerTextColor)
     val iconColor = theme.get(DrawerIconColor)
-    val drawableTweak = (withIcon, icons lift position) match {
-      case (true, Some(res)) =>
+    val backgroundColor = theme.get(DrawerBackgroundColor)
+    val drawableTweak = icons lift position match {
+      case Some(res) =>
         val drawable = resGetDrawable(res).colorize(iconColor)
         tvCompoundDrawablesWithIntrinsicBounds(left = Some(drawable)) + tvDrawablePadding(padding)
       case _ => Tweak.blank
@@ -47,7 +44,8 @@ class ThemeArrayAdapter(icons: Seq[Int], values: Seq[String])(implicit contextWr
       drawableTweak +
       tvColor(textColor) +
       tvSizeResource(R.dimen.text_large) +
-      tvText(values.lift(position) getOrElse "")
+      tvText(values.lift(position) getOrElse "") +
+      vBackgroundColor(backgroundColor)
   }
 
 }

@@ -13,6 +13,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
@@ -75,22 +76,18 @@ trait PublicCollectionsActionsImpl
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (typeFilter <~
         On.click {
-          typeFilter <~ vPopupMenuShow(
-            menu = R.menu.type_public_collection_menu,
-            onMenuItemClickListener = (item: MenuItem) => {
-              collectionPresenter.loadPublicCollectionsByTypeSharedCollection(
-                item.getItemId match {
-                  case R.id.top => TopSharedCollection
-                  case _ => LatestSharedCollection
-                })
-              true
+          val values = Seq(resGetString(R.string.top), resGetString(R.string.latest))
+          typeFilter <~ vListThemedPopupWindowShow(
+            values = values,
+            onItemClickListener = {
+              case 0 => collectionPresenter.loadPublicCollectionsByTypeSharedCollection(TopSharedCollection)
+              case _ => collectionPresenter.loadPublicCollectionsByTypeSharedCollection(LatestSharedCollection)
             })
         }) ~
       (categoryFilter <~
         On.click {
-          categoryFilter <~ vListPopupWindowShow(
-            layout = R.layout.list_item_popup_menu,
-            menu = categoryNamesMenu,
+          categoryFilter <~ vListThemedPopupWindowShow(
+            values = categoryNamesMenu,
             onItemClickListener = (position: Int) => {
               categories.lift(position) foreach collectionPresenter.loadPublicCollectionsByCategory
             },

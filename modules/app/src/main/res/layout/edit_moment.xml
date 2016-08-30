@@ -26,7 +26,7 @@
         <ImageView
             style="@style/ActionsLine"/>
 
-        <Spinner
+        <TextView
             android:id="@+id/edit_moment_collection"
             style="@style/EditMomentHeaderSelectCollection" />
 
