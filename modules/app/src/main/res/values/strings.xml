@@ -411,47 +411,24 @@
     <string name="animationsPrefTitle">Animations</string>
     <string name="animationsPrefSummary">Animations Summary</string>
 
-    <string name="speedTitle">Speed</string>
-    <string name="speedSummary">Speed Summary</string>
+    <string name="speedTitle">Speed Animations</string>
+    <string name="speedSummary">Speed that you can use in all animations in 9Cards</string>
 
     <string name="speedsSlow">Slow</string>
     <string name="speedsNormal">Normal</string>
     <string name="speedsFast">Fast</string>
 
     <string name="collectionOpeningTitle">Opening Collection</string>
-    <string name="collectionOpeningSummary">Opening Collection Summary</string>
+    <string name="collectionOpeningSummary">Animation for opening collection from 9Cards</string>
 
-    <string name="collectionOpeningsMoveIcon">Move Icon</string>
     <string name="collectionOpeningsCircleReveal">Circle Reveal</string>
-    <string name="collectionOpeningsSimple">Simple</string>
     <string name="collectionOpeningsNoAnimation">No Animation</string>
 
-    <string name="appDrawerOpeningTitle">Opening AppDrawer</string>
-    <string name="appDrawerOpeningSummary">Opening AppDrawer Summary</string>
-
-    <string name="appDrawerOpeningsCircleReveal">Circle Reveal</string>
-    <string name="appDrawerOpeningsFade">Fade</string>
-    <string name="appDrawerOpeningsNoAnimation">No Animation</string>
-
     <string name="workspaceAnimationTitle">Workspace Animation</string>
-    <string name="workspaceAnimationSummary">Workspace Animation Summary</string>
+    <string name="workspaceAnimationSummary">Animation between workspaces in main screen</string>
 
     <string name="workspaceAnimationsHorizontalSlide">Horizontal Slide</string>
-    <string name="workspaceAnimationsTBD">TBD</string>
-
-    <string name="appDrawerAppsAnimationTitle">Apps Animation in AppDrawer</string>
-    <string name="appDrawerAppsAnimationSummary">Opening AppDrawer Summary</string>
-
-    <string name="appDrawerAppsAnimationsSlide">Slide from the bottom</string>
-    <string name="appDrawerAppsAnimationsTBD">TBD</string>
-    <string name="appDrawerAppsAnimationsNoAnimation">No Animation</string>
-
-    <string name="collectionDetailCardAnimationTitle">Cards Animation in Collection Detail</string>
-    <string name="collectionDetailCardAnimationSummary">Cards Animation in Collection Detail Summary</string>
-
-    <string name="collectionDetailCardAnimationsSlide">Slide from the bottom</string>
-    <string name="collectionDetailCardAnimationsTBD">TBD</string>
-    <string name="collectionDetailCardAnimationsNoAnimation">No Animation</string>
+    <string name="workspaceAnimationsAppearsBehind">Appears from behind</string>
 
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[

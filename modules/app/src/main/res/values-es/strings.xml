@@ -43,8 +43,6 @@
 
     <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
 
-    <string name="messageEmpty">No hay datos en este moment</string>
-
     <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
 
@@ -397,47 +395,24 @@
     <string name="animationsPrefTitle">Animaciones</string>
     <string name="animationsPrefSummary">Resumen de Animaciones</string>
 
-    <string name="speedTitle">Velocidad</string>
-    <string name="speedSummary">Resumen de Velocidad</string>
+    <string name="speedTitle">Velocidad de las Animaciones</string>
+    <string name="speedSummary">Velocidad que quieres usar en todas las animaciones en 9Cards</string>
 
     <string name="speedsSlow">Lenta</string>
     <string name="speedsNormal">Normal</string>
     <string name="speedsFast">Rápida</string>
 
     <string name="collectionOpeningTitle">Abrir Colecciones</string>
-    <string name="collectionOpeningSummary">Resumen de Abrir Colecciones</string>
+    <string name="collectionOpeningSummary">Animación al abrir un colección en 9Cards</string>
 
-    <string name="collectionOpeningsMoveIcon">Mover Icono</string>
     <string name="collectionOpeningsCircleReveal">Círculo</string>
-    <string name="collectionOpeningsSimple">Simple</string>
     <string name="collectionOpeningsNoAnimation">Sin Animación</string>
 
-    <string name="appDrawerOpeningTitle">Abrir Cajón de Aplicaciones</string>
-    <string name="appDrawerOpeningSummary">Resumen de Abrir Cajón de Aplicaciones</string>
-
-    <string name="appDrawerOpeningsCircleReveal">Círculo</string>
-    <string name="appDrawerOpeningsFade">Desvanecer</string>
-    <string name="appDrawerOpeningsNoAnimation">Sin Animación</string>
-
     <string name="workspaceAnimationTitle">Animación de Escritorio</string>
-    <string name="workspaceAnimationSummary">Resumen de Animación de Escritorio</string>
+    <string name="workspaceAnimationSummary">Animación entre las pantallas del escritorio en la pantalla principal</string>
 
     <string name="workspaceAnimationsHorizontalSlide">Deslizamiento Horizontal</string>
-    <string name="workspaceAnimationsTBD">TBD</string>
-
-    <string name="appDrawerAppsAnimationTitle">Animaciones de las Aplicaciones en el Cajón</string>
-    <string name="appDrawerAppsAnimationSummary">Resumen de Animaciones de las Aplicaciones en el Cajón</string>
-
-    <string name="appDrawerAppsAnimationsSlide">Deslizamiento desde el fondo</string>
-    <string name="appDrawerAppsAnimationsTBD">TBD</string>
-    <string name="appDrawerAppsAnimationsNoAnimation">Sin Animación</string>
-
-    <string name="collectionDetailCardAnimationTitle">Animación de las Tarjetas en el Detalle de la Colección</string>
-    <string name="collectionDetailCardAnimationSummary">Resumen de Animación de las Tarjetas en el Detalle de la Colección</string>
-
-    <string name="collectionDetailCardAnimationsSlide">Deslizamiento de las Tarjetas en el Detalle de la Colecció</string>
-    <string name="collectionDetailCardAnimationsTBD">TBD</string>
-    <string name="collectionDetailCardAnimationsNoAnimation">Sin Animación</string>
+    <string name="workspaceAnimationsAppearsBehind">Aparece desde atrás</string>
 
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[

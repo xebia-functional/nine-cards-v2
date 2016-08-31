@@ -13,8 +13,8 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.ContactsCategory
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
@@ -69,7 +69,7 @@ case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: Con
 
     val primaryColor = theme.get(PrimaryColor)
 
-    val colorizeDrawable = resGetDrawable(iconCollectionDetail(data.icon)).colorize(theme.get(DrawerIconColor))
+    val colorizeDrawable = resGetDrawable(data.icon.getIconDetail).colorize(theme.get(DrawerIconColor))
 
     val drawable = PathMorphDrawable(
       defaultIcon = IconTypes.CHECK,

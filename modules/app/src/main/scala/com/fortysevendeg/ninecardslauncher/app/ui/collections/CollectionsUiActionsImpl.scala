@@ -15,7 +15,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, BroadcastDispatcher}
+import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
@@ -24,22 +24,21 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.PublishColl
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -98,7 +97,7 @@ trait CollectionsUiActionsImpl
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
-      (icon <~ ivSrc(iconCollectionDetail(iconCollection))) ~
+      (icon <~ ivSrc(iconCollection.getIconDetail)) ~
       Ui(initSystemStatusBarTint) ~
       (if (isStateChanged) Ui.nop else toolbar <~ enterToolbar)
 
@@ -348,10 +347,11 @@ trait CollectionsUiActionsImpl
 
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] = getAdapter map {
     adapter =>
+      val resIcon = collection.getIconDetail
       (pageMovement match {
-        case Start | Idle => icon <~ ivSrc(iconCollectionDetail(collection.icon))
-        case Left => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = true)
-        case Right | Jump => icon <~ changeIcon(iconCollectionDetail(collection.icon), fromLeft = false)
+        case Start | Idle => icon <~ ivSrc(resIcon)
+        case Left => icon <~ changeIcon(resIcon, fromLeft = true)
+        case Right | Jump => icon <~ changeIcon(resIcon, fromLeft = false)
         case _ => Ui.nop
       }) ~ adapter.notifyChanged(position) ~ (if (collection.cards.isEmpty) {
         val color = getIndexColor(collection.themedColorIndex)
