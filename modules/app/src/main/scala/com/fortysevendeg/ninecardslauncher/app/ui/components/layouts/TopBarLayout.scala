@@ -90,9 +90,13 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       case GoogleLogoColoured =>
         ivSrc(R.drawable.search_bar_logo_google_color) + tivClean
     }
+    val sizeRes = FontSize.getTitleSizeResource
     (momentWorkspace <~ vBackground(edgeBackground)) ~
       (momentIconContent <~ vBackground(iconBackground)) ~
       (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(pressedColor)) ~
+      (momentText <~ tvSizeResource(sizeRes)) ~
+      (momentDigitalClock <~ tvSizeResource(sizeRes)) ~
+      (momentClock <~ tvSizeResource(sizeRes)) ~
       (collectionsSearchPanel <~
         vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))) ~
       (collectionsBurgerIcon <~

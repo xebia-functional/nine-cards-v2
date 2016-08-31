@@ -17,6 +17,10 @@
 
     <dimen name="radius_default">3dp</dimen>
 
+    <dimen name="card_padding_small">2dp</dimen>
+    <dimen name="card_padding_medium">4dp</dimen>
+    <dimen name="card_padding_large">8dp</dimen>
+
     <dimen name="text_xxxxlarge">26sp</dimen>
     <dimen name="text_xxxlarge">22sp</dimen>
     <dimen name="text_xxlarge">20sp</dimen>

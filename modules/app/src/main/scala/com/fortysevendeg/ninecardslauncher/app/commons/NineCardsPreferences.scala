@@ -163,13 +163,30 @@ case object FontSize
   override def readValue(pref: NineCardsPreferencesValue): FontSizeValue =
     FontSizeValue(pref.getString(name, default.value))
 
-  def getSize(implicit contextWrapper: ContextWrapper): Int = {
-    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+  def getSizeResource(implicit contextWrapper: ContextWrapper): Int = {
+    readValue(new NineCardsPreferencesValue) match {
       case FontSizeSmall => R.dimen.text_medium
       case FontSizeMedium => R.dimen.text_default
       case FontSizeLarge => R.dimen.text_large
-    })
+    }
   }
+
+  def getTitleSizeResource(implicit contextWrapper: ContextWrapper): Int = {
+    readValue(new NineCardsPreferencesValue) match {
+      case FontSizeSmall => R.dimen.text_large
+      case FontSizeMedium => R.dimen.text_xlarge
+      case FontSizeLarge => R.dimen.text_xxlarge
+    }
+  }
+
+  def getContactSizeResource(implicit contextWrapper: ContextWrapper): Int = {
+    readValue(new NineCardsPreferencesValue) match {
+      case FontSizeSmall => R.dimen.text_default
+      case FontSizeMedium => R.dimen.text_large
+      case FontSizeLarge => R.dimen.text_xlarge
+    }
+  }
+
 }
 
 case object IconsSize
@@ -205,6 +222,14 @@ case object CardPadding
 
   override def readValue(pref: NineCardsPreferencesValue): IconsSizeValue =
     IconsSizeValue(pref.getString(name, default.value))
+
+  def getPadding(implicit contextWrapper: ContextWrapper): Int = {
+    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+      case IconsSizeSmall => R.dimen.card_padding_small
+      case IconsSizeMedium => R.dimen.card_padding_medium
+      case IconsSizeLarge => R.dimen.card_padding_large
+    })
+  }
 }
 
 // Commons

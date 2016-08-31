@@ -183,7 +183,8 @@
     </style>
 
     <style name="LauncherMomentText">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textColor">@color/text_launcher_moment_panel</item>
         <item name="android:textSize">@dimen/text_xlarge</item>
