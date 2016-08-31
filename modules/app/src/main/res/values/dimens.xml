@@ -138,8 +138,6 @@
 
     <dimen name="distance_to_valid_action">32dp</dimen>
 
-    <dimen name="size_icon_card">60dp</dimen>
-
     <dimen name="height_selected_tab">2dp</dimen>
     <dimen name="text_tabs">14sp</dimen>
 
@@ -165,7 +163,9 @@
 
     <dimen name="header_height">150dp</dimen>
 
-    <dimen name="size_icon_app">60dp</dimen>
+    <dimen name="size_icon_app_small">52dp</dimen>
+    <dimen name="size_icon_app_medium">60dp</dimen>
+    <dimen name="size_icon_app_large">68dp</dimen>
 
     <dimen name="size_icon_shortcut">40dp</dimen>
 

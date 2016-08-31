@@ -78,7 +78,6 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
       val nineCardIntent = NineCardIntent(NineCardIntentExtras())
       nineCardIntent.fill(intent)
 
-
       AddCardRequest(
         term = sharedContent.title,
         packageName = None,
@@ -90,7 +89,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
     def saveBitmap(maybeUri: Option[Uri]): TaskService[String] = {
       maybeUri match {
         case Some(uri) =>
-          val iconSize = resGetDimensionPixelSize(R.dimen.size_icon_card)
+          val iconSize = resGetDimensionPixelSize(R.dimen.size_icon_app_medium)
           di.deviceProcess.saveShortcutIcon(
             MediaStore.Images.Media.getBitmap(contextWrapper.bestAvailable.getContentResolver, uri),
             Some(IconResize(iconSize, iconSize)))

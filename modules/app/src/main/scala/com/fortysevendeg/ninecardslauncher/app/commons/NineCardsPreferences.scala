@@ -162,6 +162,14 @@ case object FontSize
 
   override def readValue(pref: NineCardsPreferencesValue): FontSizeValue =
     FontSizeValue(pref.getString(name, default.value))
+
+  def getSize(implicit contextWrapper: ContextWrapper): Int = {
+    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+      case FontSizeSmall => R.dimen.text_medium
+      case FontSizeMedium => R.dimen.text_default
+      case FontSizeLarge => R.dimen.text_large
+    })
+  }
 }
 
 case object IconsSize
@@ -171,6 +179,14 @@ case object IconsSize
 
   override def readValue(pref: NineCardsPreferencesValue): IconsSizeValue =
     IconsSizeValue(pref.getString(name, default.value))
+
+  def getIconApp(implicit contextWrapper: ContextWrapper): Int = {
+    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+      case IconsSizeSmall => R.dimen.size_icon_app_small
+      case IconsSizeMedium => R.dimen.size_icon_app_medium
+      case IconsSizeLarge => R.dimen.size_icon_app_large
+    })
+  }
 }
 
 case object CardPadding

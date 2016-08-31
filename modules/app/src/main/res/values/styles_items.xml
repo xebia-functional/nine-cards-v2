@@ -30,8 +30,8 @@
     </style>
 
     <style name="AppItemIcon">
-        <item name="android:layout_width">@dimen/size_icon_app</item>
-        <item name="android:layout_height">@dimen/size_icon_app</item>
+        <item name="android:layout_width">@dimen/size_icon_app_medium</item>
+        <item name="android:layout_height">@dimen/size_icon_app_medium</item>
     </style>
 
     <style name="AppItemName">
