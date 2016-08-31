@@ -5,9 +5,8 @@ import android.annotation.TargetApi
 import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.SnailsUtils
-import com.fortysevendeg.ninecardslauncher.app.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue}
+import com.fortysevendeg.ninecardslauncher.app.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue, SpeedAnimations}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.{ContextWrapper, Snail}
@@ -22,8 +21,8 @@ object DrawerSnails {
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
-      (Lollipop.ifSupportedThen(), animation) match {
-        case (Some(_), AppDrawerAnimationCircle) => reveal(source, view)(animPromise.trySuccess(()))
+      animation match {
+        case anim @ AppDrawerAnimationCircle if anim.isSupported => reveal(source, view)(animPromise.trySuccess(()))
         case _ => fadeIn(view)(animPromise.trySuccess(()))
       }
 
@@ -36,8 +35,8 @@ object DrawerSnails {
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
-      (Lollipop.ifSupportedThen(), animation) match {
-        case (Some(_), AppDrawerAnimationCircle) => reveal(source, view, in = false)(animPromise.trySuccess(()))
+      animation match {
+        case anim @ AppDrawerAnimationCircle if anim.isSupported => reveal(source, view, in = false)(animPromise.trySuccess(()))
         case _ => fadeOut(view)(animPromise.trySuccess(()))
       }
 
@@ -53,6 +52,7 @@ object DrawerSnails {
     val (startRadius, endRadius) = if (in) (fromRadius, toRadius) else (toRadius, fromRadius)
 
     val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx + fromRadius, cy + fromRadius, startRadius, endRadius)
+    reveal.setDuration(SpeedAnimations.getDuration)
     reveal.addListener(new AnimatorListenerAdapter {
       override def onAnimationStart(animation: Animator): Unit = {
         super.onAnimationStart(animation)
@@ -73,9 +73,10 @@ object DrawerSnails {
     reveal.start()
   }
 
-  private[this] def fadeIn(view: View)(animationEnd: => Unit = ()): Unit = {
+  private[this] def fadeIn(view: View)(animationEnd: => Unit = ())(implicit context: ContextWrapper): Unit = {
     view.setAlpha(0f)
     view.animate()
+      .setDuration(SpeedAnimations.getDuration)
       .setInterpolator(new DecelerateInterpolator)
       .alpha(1f)
       .setListener(new AnimatorListenerAdapter {
@@ -92,9 +93,10 @@ object DrawerSnails {
     }).start()
   }
 
-  private[this] def fadeOut(view: View)(animationEnd: => Unit = ()): Unit = {
+  private[this] def fadeOut(view: View)(animationEnd: => Unit = ())(implicit context: ContextWrapper): Unit = {
     view.setAlpha(1f)
     view.animate()
+      .setDuration(SpeedAnimations.getDuration)
       .setInterpolator(new DecelerateInterpolator)
       .alpha(0f)
       .setListener(new AnimatorListenerAdapter {

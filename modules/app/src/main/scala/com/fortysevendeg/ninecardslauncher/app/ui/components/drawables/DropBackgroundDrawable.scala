@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import android.view.animation.DecelerateInterpolator
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SnailsUtils
+import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
@@ -16,7 +17,7 @@ class DropBackgroundDrawable(implicit contextWrapper: ContextWrapper)
 
   private[this] var percentage: Float = 0
 
-  private[this] val duration = resGetInteger(R.integer.anim_duration_normal)
+  private[this] val duration = SpeedAnimations.getDuration
 
   lazy val circlePaint = {
     val paint = new Paint

@@ -1,5 +1,81 @@
 package com.fortysevendeg.ninecardslauncher.app.commons
 
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+
+// Animations Values
+
+sealed trait SpeedAnimationValue {
+  val value: String
+}
+
+case object SlowAnimation extends SpeedAnimationValue {
+  override val value: String = "0"
+}
+
+case object NormalAnimation extends SpeedAnimationValue {
+  override val value: String = "1"
+}
+
+case object FastAnimation extends SpeedAnimationValue {
+  override val value: String = "2"
+}
+
+object SpeedAnimationValue {
+
+  val values = Seq(SlowAnimation, NormalAnimation, FastAnimation)
+
+  def apply(value: String): SpeedAnimationValue =
+    values find (_.value == value) getOrElse NormalAnimation
+
+}
+
+sealed trait CollectionOpeningValue {
+  val value: String
+  val isSupported: Boolean
+}
+
+case object CircleOpeningCollectionAnimation extends CollectionOpeningValue {
+  override val value: String = "0"
+  override val isSupported: Boolean = Lollipop.ifSupportedThen(()).isDefined
+}
+
+case object NoAnimationOpeningCollectionAnimation extends CollectionOpeningValue {
+  override val value: String = "1"
+  override val isSupported: Boolean = true
+}
+
+object CollectionOpeningValue {
+
+  val values = Seq(CircleOpeningCollectionAnimation, NoAnimationOpeningCollectionAnimation)
+
+  def apply(value: String): CollectionOpeningValue =
+    values find (_.value == value) getOrElse CircleOpeningCollectionAnimation
+
+}
+
+sealed trait WorkspaceAnimationValue {
+  val value: String
+}
+
+case object HorizontalSlideWorkspaceAnimation extends WorkspaceAnimationValue {
+  override val value: String = "0"
+}
+
+case object AppearBehindWorkspaceAnimation extends WorkspaceAnimationValue {
+  override val value: String = "1"
+}
+
+object WorkspaceAnimationValue {
+
+  val values = Seq(HorizontalSlideWorkspaceAnimation, AppearBehindWorkspaceAnimation)
+
+  def apply(value: String): WorkspaceAnimationValue =
+    values find (_.value == value) getOrElse HorizontalSlideWorkspaceAnimation
+
+}
+
+// App Drawer Values
+
 sealed trait AppDrawerLongPressActionValue {
   val value: String
 }
@@ -23,14 +99,17 @@ object AppDrawerLongPressActionValue {
 
 sealed trait AppDrawerAnimationValue {
   val value: String
+  val isSupported: Boolean
 }
 
 case object AppDrawerAnimationCircle extends AppDrawerAnimationValue {
   override val value: String = "0"
+  override val isSupported: Boolean = Lollipop.ifSupportedThen(()).isDefined
 }
 
 case object AppDrawerAnimationFade extends AppDrawerAnimationValue {
   override val value: String = "1"
+  override val isSupported: Boolean = true
 }
 
 object AppDrawerAnimationValue {
@@ -41,6 +120,8 @@ object AppDrawerAnimationValue {
     values find (_.value == value) getOrElse AppDrawerAnimationCircle
 
 }
+
+// Theme Values
 
 sealed trait ThemeValue {
   val value: String

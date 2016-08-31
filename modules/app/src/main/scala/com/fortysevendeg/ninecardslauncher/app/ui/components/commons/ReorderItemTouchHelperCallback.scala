@@ -6,8 +6,8 @@ import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.support.v7.widget.helper.ItemTouchHelper._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TryOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TryOps._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 

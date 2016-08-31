@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
 
 import android.appwidget.AppWidgetProviderInfo
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

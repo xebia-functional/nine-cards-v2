@@ -19,35 +19,11 @@
             android:summary="@string/collectionOpeningSummary"/>
 
     <ListPreference
-            android:key="appDrawerOpening"
-            android:defaultValue="0"
-            android:entries="@array/appDrawerOpenings"
-            android:entryValues="@array/appDrawerOpeningsValues"
-            android:title="@string/appDrawerOpeningTitle"
-            android:summary="@string/appDrawerOpeningSummary"/>
-
-    <ListPreference
             android:key="workspaceAnimation"
             android:defaultValue="0"
             android:entries="@array/workspaceAnimations"
             android:entryValues="@array/workspaceAnimationsValues"
             android:title="@string/workspaceAnimationTitle"
             android:summary="@string/workspaceAnimationSummary"/>
-
-    <ListPreference
-            android:key="appDrawerAppsAnimation"
-            android:defaultValue="0"
-            android:entries="@array/appDrawerAppsAnimations"
-            android:entryValues="@array/appDrawerAppsAnimationsValues"
-            android:title="@string/appDrawerAppsAnimationTitle"
-            android:summary="@string/appDrawerAppsAnimationSummary"/>
-
-    <ListPreference
-            android:key="collectionDetailCardAnimation"
-            android:defaultValue="0"
-            android:entries="@array/collectionDetailCardAnimations"
-            android:entryValues="@array/collectionDetailCardAnimationsValues"
-            android:title="@string/collectionDetailCardAnimationTitle"
-            android:summary="@string/collectionDetailCardAnimationSummary"/>
 
 </PreferenceScreen>

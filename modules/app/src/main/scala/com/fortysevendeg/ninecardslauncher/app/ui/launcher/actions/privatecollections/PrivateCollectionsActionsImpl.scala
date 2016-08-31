@@ -16,14 +16,14 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.PrivateCollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCard, PrivateCollection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, CardTextColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -112,7 +112,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
     val cardsRow1 = privateCollection.cards slice(0, appsByRow)
     val cardsRow2 = privateCollection.cards slice(appsByRow, appsByRow * 2)
     (iconContent <~ vBackground(d)) ~
-      (icon <~ ivSrc(iconCollectionDetail(privateCollection.icon))) ~
+      (icon <~ ivSrc(privateCollection.getIconCollectionDetail)) ~
       (appsRow1 <~
         vgRemoveAllViews <~
         automaticAlignment(appsRow1, cardsRow1)) ~
