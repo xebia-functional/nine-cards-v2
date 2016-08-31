@@ -212,7 +212,7 @@ trait NineCardIntentConversions {
       wifi = cloudStorageMoment.wifi,
       headphone = cloudStorageMoment.headphones,
       momentType = cloudStorageMoment.momentType,
-      widgets = cloudStorageMoment.widgets map toSaveWidgetRequestSeq)
+      widgets = cloudStorageMoment.widgets map toFormedWidgetSeq)
 
   def toSaveMomentRequest(cloudStorageMoment: CloudStorageMoment): SaveMomentRequest =
     SaveMomentRequest(
@@ -221,13 +221,13 @@ trait NineCardIntentConversions {
       wifi = cloudStorageMoment.wifi,
       headphone = cloudStorageMoment.headphones,
       momentType = cloudStorageMoment.momentType,
-      widgets = cloudStorageMoment.widgets map toSaveWidgetRequestSeq)
+      widgets = cloudStorageMoment.widgets map toFormedWidgetSeq)
 
-  def toSaveWidgetRequestSeq(widgets: Seq[CloudStorageWidget]) =
-    widgets map toSaveWidgetRequest
+  def toFormedWidgetSeq(widgets: Seq[CloudStorageWidget]) =
+    widgets map toFormedWidget
 
-  def toSaveWidgetRequest(widget: CloudStorageWidget): Widget =
-    Widget(
+  def toFormedWidget(widget: CloudStorageWidget): FormedWidget =
+    FormedWidget(
       packageName = widget.packageName,
       className = widget.className,
       startX = widget.area.startX,

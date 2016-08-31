@@ -82,7 +82,7 @@ trait CommonConversions extends NineCardIntentConversions {
       momentType = Option(moment.name),
       widgets = Seq.empty)
 
-  def toServiceSaveWidgetRequest(widget: Widget): ServiceSaveWidgetRequest =
+  def toServiceSaveWidgetRequest(widget: FormedWidget): ServiceSaveWidgetRequest =
     ServiceSaveWidgetRequest(
       packageName = widget.packageName,
       className = widget.className,

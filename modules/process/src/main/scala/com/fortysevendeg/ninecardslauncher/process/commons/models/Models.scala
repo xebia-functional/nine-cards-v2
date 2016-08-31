@@ -62,7 +62,7 @@ case class MomentTimeSlot(
   to: String,
   days: Seq[Int])
 
-case class Widget(
+case class FormedWidget(
   packageName: String,
   className: String,
   startX: Int,
