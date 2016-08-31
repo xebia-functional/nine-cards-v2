@@ -187,6 +187,15 @@ case object IconsSize
       case IconsSizeLarge => R.dimen.size_icon_app_large
     })
   }
+
+  def getIconCollection(implicit contextWrapper: ContextWrapper): Int = {
+    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+      case IconsSizeSmall => R.dimen.size_group_collection_small
+      case IconsSizeMedium => R.dimen.size_group_collection_medium
+      case IconsSizeLarge => R.dimen.size_group_collection_large
+    })
+  }
+
 }
 
 case object CardPadding

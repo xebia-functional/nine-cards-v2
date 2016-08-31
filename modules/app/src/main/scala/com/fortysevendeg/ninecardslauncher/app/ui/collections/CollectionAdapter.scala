@@ -5,6 +5,8 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.IconsSize
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.CollectionAdapterStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchListener
@@ -93,7 +95,7 @@ case class ViewHolderCollectionAdapter(
   }) ~ (iconContent <~ iconContentStyle(heightCard))).run
 
   def bind(card: Card)(implicit uiContext: UiContext[_]): Ui[_] =
-    (icon <~ iconCardTransform(card)) ~
+    (icon <~ vResize(IconsSize.getIconApp) <~ iconCardTransform(card)) ~
       (name <~ tvText(card.term) <~ nameStyle(card.cardType)) ~
       (badge <~ (getBadge(card.cardType) map {
         ivSrc(_) + vVisible

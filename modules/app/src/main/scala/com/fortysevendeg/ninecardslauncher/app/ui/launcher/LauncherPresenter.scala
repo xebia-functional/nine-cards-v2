@@ -691,7 +691,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def preferencesChanged(changedPreferences: Array[String]): Unit = {
 
-    def needToRecreate(array: Array[String]): Boolean = array.contains(PreferencesValuesKeys.theme)
+    def needToRecreate(array: Array[String]): Boolean =
+      array.intersect(
+        Seq(PreferencesValuesKeys.theme,
+        PreferencesValuesKeys.iconsSize,
+        PreferencesValuesKeys.fontsSize)).nonEmpty
 
     def uiAction(prefKey: String): Ui[_] = prefKey match {
       case PreferencesValuesKeys.showClockMoment => actions.reloadMomentTopBar()
@@ -699,16 +703,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case _ => Ui.nop
     }
 
-    (contextWrapper.original.get, Option(changedPreferences)) match {
-        case (Some(activity), Some(array)) if array.nonEmpty =>
-          if (needToRecreate(array)) {
-            activity.recreate()
-          } else {
-            (array map uiAction reduce (_ ~ _)).run
-          }
-        case _ =>
-      }
+    Option(changedPreferences) match {
+      case Some(array) if array.nonEmpty =>
+        if (needToRecreate(array)) {
+          actions.reloadAllViews().run
+        } else {
+          (array map uiAction reduce (_ ~ _)).run
+        }
+      case _ =>
     }
+  }
 
   def cleanPersistedMoment() = {
     persistMoment.clean()
@@ -970,6 +974,8 @@ trait LauncherUiActions {
   def reloadMomentTopBar(): Ui[Any]
 
   def reloadTopBar(): Ui[Any]
+
+  def reloadAllViews(): Ui[Any]
 
   def reloadMoment(moment: LauncherData): Ui[Any]
 

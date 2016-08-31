@@ -11,8 +11,9 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
+import com.fortysevendeg.ninecardslauncher.app.commons.{IconsSize, SpeedAnimations}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
@@ -383,7 +384,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
           } getOrElse Ui.nop).run
           Ui(true)
         }) ~
-        (icon <~ ivSrc(resIcon) <~ vBackgroundCollection(collection.themedColorIndex)) ~
+        (icon <~ vResize(IconsSize.getIconCollection) <~ ivSrc(resIcon) <~ vBackgroundCollection(collection.themedColorIndex)) ~
         (name <~ tvText(collection.name))).run
     }
 
