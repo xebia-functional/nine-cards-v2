@@ -7,6 +7,7 @@ import com.bumptech.glide.load.ResourceDecoder
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.load.resource.bitmap.BitmapResource
 import com.bumptech.glide.util.Util
+import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
 import macroid.ContextWrapper
 
 class IconFromPackageDecoder(packageName: String)(implicit contextWrapper: ContextWrapper)
@@ -16,8 +17,12 @@ class IconFromPackageDecoder(packageName: String)(implicit contextWrapper: Conte
 
   override def decode(source: Int, width: Int, height: Int): Resource[Bitmap] = {
 
-    val icon =
-      contextWrapper.application.getPackageManager.getResourcesForApplication(packageName).getDrawable(source, null).asInstanceOf[BitmapDrawable].getBitmap
+    val resources = contextWrapper.application.getPackageManager.getResourcesForApplication(packageName)
+    val icon = Marshmallow ifSupportedThen {
+      resources.getDrawable(source, null).asInstanceOf[BitmapDrawable].getBitmap
+    } getOrElse {
+      resources.getDrawable(source).asInstanceOf[BitmapDrawable].getBitmap
+    }
 
     val pool = Glide.get(contextWrapper.bestAvailable).getBitmapPool
 
