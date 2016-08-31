@@ -399,7 +399,7 @@
     <string name="speedsFast">Rápida</string>
 
     <string name="collectionOpeningTitle">Abrir Colecciones</string>
-    <string name="collectionOpeningSummary">Animation al abrir un collection desde 9Cards</string>
+    <string name="collectionOpeningSummary">Animación al abrir un colección en 9Cards</string>
 
     <string name="collectionOpeningsCircleReveal">Círculo</string>
     <string name="collectionOpeningsNoAnimation">Sin Animación</string>
