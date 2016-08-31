@@ -32,10 +32,6 @@ case object AnimationsPreferences extends NineCardsPreferences {
   override val name: String = animationsKey
 }
 
-case object NewAppPreferences extends NineCardsPreferences {
-  override val name: String = newAppKey
-}
-
 case object AppInfoPreferences extends NineCardsPreferences {
   override val name: String = appInfoKey
 }
@@ -255,7 +251,6 @@ object PreferencesKeys {
   val appDrawerKey = "appDrawerKey"
   val sizesKey = "sizesKey"
   val animationsKey = "animationsKey"
-  val newAppKey = "newAppKey"
   val aboutKey = "aboutKey"
   val helpKey = "helpKey"
   val appInfoKey = "appInfoKey"

@@ -361,7 +361,7 @@
     <!-- Moment Preferences -->
 
     <string name="momentsPrefTitle">Momentos</string>
-    <string name="momentsPrefSummary">Resumen Momentos</string>
+    <string name="momentsPrefSummary">Configura opciones para tus momentos</string>
 
     <string name="showClockTitle">Mostrar reloj</string>
     <string name="showClockSummary">Resumen de Mostrar reloj</string>
@@ -369,7 +369,7 @@
     <!-- AppDrawer Preferences -->
 
     <string name="appDrawerPrefTitle">Cajón de Aplicaciones</string>
-    <string name="appDrawerPrefSummary">Resumen de Cajón de Aplicaciones</string>
+    <string name="appDrawerPrefSummary">Configura pantalla de aplicaciones in contactos en App Drawer</string>
 
     <string name="appDrawerLongPressTitle">Acción en Long-press</string>
     <string name="appDrawerLongPressSummary">Acción actual: %s</string>
@@ -389,7 +389,7 @@
     <!-- Animations Preferences -->
 
     <string name="animationsPrefTitle">Animaciones</string>
-    <string name="animationsPrefSummary">Resumen de Animaciones</string>
+    <string name="animationsPrefSummary">Elige las animaciones a usar en 9Cards</string>
 
     <string name="speedTitle">Velocidad de las Animaciones</string>
     <string name="speedSummary">Velocidad que quieres usar en todas las animaciones en 9Cards</string>
@@ -415,12 +415,6 @@
             Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +
         ]]>
     </string>
-
-    <!-- New App Preferences -->
-
-    <string name="newAppPrefTitle">Nueva aplicación</string>
-    <string name="newAppPrefSummary">Resumen de Nueva Aplicación</string>
-    <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->
     <string name="others">Otros</string>

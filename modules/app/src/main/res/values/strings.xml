@@ -376,7 +376,7 @@
     <!-- Moment Preferences -->
 
     <string name="momentsPrefTitle">Moments</string>
-    <string name="momentsPrefSummary">Moments Summary</string>
+    <string name="momentsPrefSummary">Configure options for your moments</string>
 
     <string name="showClockTitle">Show Clock</string>
     <string name="showClockSummary">Show Clock Summary</string>
@@ -384,7 +384,7 @@
     <!-- App Drawer Preferences -->
 
     <string name="appDrawerPrefTitle">App Drawer</string>
-    <string name="appDrawerPrefSummary">App Drawer Summary</string>
+    <string name="appDrawerPrefSummary">Configure Apps and Contacts Screen in your App Drawer</string>
 
     <string name="appDrawerLongPressTitle">Long Press Action</string>
     <string name="appDrawerLongPressSummary">Current Action: %s</string>
@@ -404,7 +404,7 @@
     <!-- Animations Preferences -->
 
     <string name="animationsPrefTitle">Animations</string>
-    <string name="animationsPrefSummary">Animations Summary</string>
+    <string name="animationsPrefSummary">Select animations in 9Cards</string>
 
     <string name="speedTitle">Speed Animations</string>
     <string name="speedSummary">Speed that you can use in all animations in 9Cards</string>
@@ -430,12 +430,6 @@
             This collection doesn\'t have cards. You can add <b>apps, contacts, recommendations or shortcuts</b> from the + button
         ]]>
     </string>
-
-    <!-- New App Preferences -->
-
-    <string name="newAppPrefTitle">New App</string>
-    <string name="newAppPrefSummary">New App Summary</string>
-    <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->
     <string name="others">Others</string>

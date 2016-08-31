@@ -70,8 +70,6 @@ class NineCardsPreferencesActivity
 
       findPreference(AnimationsPreferences.name).setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
 
-      findPreference(NewAppPreferences.name).setOnPreferenceClickListener(preferenceClick(NewAppPreferences.name, new NewAppFragment()))
-
       findPreference(AppInfoPreferences.name).setOnPreferenceClickListener(preferenceActionClick(AboutPreferences.name, () => {
         launchSettings(getPackageName)
       }))
