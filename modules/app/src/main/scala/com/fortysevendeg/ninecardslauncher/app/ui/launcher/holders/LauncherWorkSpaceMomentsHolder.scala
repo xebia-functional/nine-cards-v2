@@ -13,16 +13,15 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DottedDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget

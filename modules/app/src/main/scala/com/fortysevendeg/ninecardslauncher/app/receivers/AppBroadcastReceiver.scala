@@ -4,7 +4,7 @@ import android.content.Intent._
 import android.content._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportPreferences}
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.AppInstalledActionFilter
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 

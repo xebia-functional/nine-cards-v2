@@ -4,6 +4,7 @@ import android.animation.{Animator, AnimatorListenerAdapter, ObjectAnimator, Val
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Snail, Ui}
 
@@ -13,7 +14,7 @@ class TranslationAnimator(
   translation: Translation = NoTranslation,
   update: (Float) => Ui[_])(implicit context: ContextWrapper) {
 
-  val duration = resGetInteger(R.integer.anim_duration_normal)
+  val duration = SpeedAnimations.getDuration
 
   private[this] val animator: ValueAnimator = translation match {
     case NoTranslation => new ValueAnimator

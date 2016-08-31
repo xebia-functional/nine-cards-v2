@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCollectionRequest, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.FreeCollectionType

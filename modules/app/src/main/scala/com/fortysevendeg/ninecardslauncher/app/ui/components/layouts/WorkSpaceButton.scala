@@ -11,12 +11,12 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GenericUiContext, UiContext}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -49,7 +49,7 @@ class WorkSpaceButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
   }
 
   def populateCollection(collection: Collection): Ui[Any] = {
-    val resIcon = iconCollectionDetail(collection.icon)
+    val resIcon = collection.getIconDetail
     (title <~ tvText(collection.name)) ~
       (content <~ vPaddings(padding)) ~
       (icon <~

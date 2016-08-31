@@ -5,9 +5,9 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.NineCardsCategoryOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
@@ -166,7 +166,7 @@ trait AppsIuActionsImpl
 
   private[this] def generateTabs(category: NineCardCategory) = Seq(
     TabInfo(
-      iconCollectionDetail(category.getIconResource),
+      category.getIconCollectionDetail,
       resGetString(category.getStringResource) getOrElse getString(R.string.appsByCategory)),
     TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.all_apps))
   )

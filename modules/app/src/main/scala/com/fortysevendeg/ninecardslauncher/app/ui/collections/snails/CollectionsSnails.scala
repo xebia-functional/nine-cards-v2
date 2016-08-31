@@ -7,6 +7,7 @@ import android.view.animation.{AccelerateDecelerateInterpolator, DecelerateInter
 import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -67,7 +68,7 @@ object CollectionsSnails {
       view.setAlpha(0)
       view
         .animate
-        .setDuration(resGetInteger(R.integer.anim_duration_normal))
+        .setDuration(SpeedAnimations.getDuration)
         .setInterpolator(new DecelerateInterpolator())
         .alpha(1f)
         .setListener(new AnimatorListenerAdapter {
@@ -88,7 +89,7 @@ object CollectionsSnails {
       val move = resGetDimensionPixelSize(R.dimen.space_enter_views_collection_detail)
       view
         .animate
-        .setDuration(resGetInteger(R.integer.anim_duration_normal))
+        .setDuration(SpeedAnimations.getDuration)
         .setInterpolator(new AccelerateDecelerateInterpolator())
         .translationY(move)
         .alpha(0)

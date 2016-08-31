@@ -14,16 +14,19 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardsPreferencesValue
+import com.fortysevendeg.ninecardslauncher.app.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, CollectionOpeningValue, NineCardsPreferencesValue}
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
@@ -184,6 +187,36 @@ trait LauncherUiActionsImpl
     goToNextWorkspace().ifUi(canMoveToNextScreen)
   }
 
+  override def goToCollection(collection: Collection, point: Point): Ui[Any] = {
+
+    def rippleToCollection: Ui[Future[Any]] = {
+      val color = resGetColor(getIndexColor(collection.themedColorIndex))
+      val y = KitKat.ifSupportedThen(point.y - getStatusBarHeight) getOrElse point.y
+      val background = new RippleCollectionDrawable(point.x, y, color)
+      (foreground <~
+        vVisible <~
+        vBackground(background)) ~
+        background.start()
+    }
+
+    activityContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) =>
+        val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
+        intent.putExtra(startPosition, collection.position)
+        intent.putExtra(indexColorToolbar, collection.themedColorIndex)
+        intent.putExtra(iconToolbar, collection.icon)
+        CollectionOpeningAnimations.readValue(preferenceValues) match {
+          case anim @ CircleOpeningCollectionAnimation if anim.isSupported =>
+            rippleToCollection ~~
+              Ui {
+                activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
+              }
+          case _ => Ui(activity.startActivity(intent))
+        }
+      case _ => showContactUsError()
+    }
+  }
+
   override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] = {
     val momentType = data.headOption.flatMap(_.moment).flatMap(_.momentType)
     val launcherMoment = data.headOption.flatMap(_.moment)
@@ -255,15 +288,6 @@ trait LauncherUiActionsImpl
 
   override def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any] =
     addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact))
-
-  override def rippleToCollection(color: Int, point: Point): Ui[Future[Any]] = {
-    val y = KitKat.ifSupportedThen(point.y - getStatusBarHeight) getOrElse point.y
-    val background = new RippleCollectionDrawable(point.x, y, color)
-    (foreground <~
-      vVisible <~
-      vBackground(background)) ~
-      background.start()
-  }
 
   override def resetFromCollection(): Ui[Any] = foreground <~ vBlankBackground <~ vGone
 

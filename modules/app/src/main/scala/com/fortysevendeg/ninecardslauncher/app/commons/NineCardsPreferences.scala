@@ -4,6 +4,8 @@ import PreferencesKeys._
 import PreferencesValuesKeys._
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
 sealed trait NineCardsPreferences {
@@ -61,6 +63,43 @@ case object ShowClockMoment
   override val default: Boolean = false
 
   override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+}
+
+// Animations Preferences
+
+case object SpeedAnimations
+  extends NineCardsPreferenceValue[SpeedAnimationValue] {
+  override val name: String = speed
+  override val default: SpeedAnimationValue = NormalAnimation
+
+  override def readValue(pref: NineCardsPreferencesValue): SpeedAnimationValue =
+    SpeedAnimationValue(pref.getString(name, default.value))
+
+  def getDuration(implicit contextWrapper: ContextWrapper): Int = {
+    resGetInteger(readValue(new NineCardsPreferencesValue) match {
+      case NormalAnimation => R.integer.anim_duration_normal
+      case SlowAnimation => R.integer.anim_duration_slow
+      case FastAnimation => R.integer.anim_duration_fast
+    })
+  }
+}
+
+case object CollectionOpeningAnimations
+  extends NineCardsPreferenceValue[CollectionOpeningValue] {
+  override val name: String = collectionOpening
+  override val default: CollectionOpeningValue = CircleOpeningCollectionAnimation
+
+  override def readValue(pref: NineCardsPreferencesValue): CollectionOpeningValue =
+    CollectionOpeningValue(pref.getString(name, default.value))
+}
+
+case object WorkspaceAnimations
+  extends NineCardsPreferenceValue[WorkspaceAnimationValue] {
+  override val name: String = workspaceAnimation
+  override val default: WorkspaceAnimationValue = HorizontalSlideWorkspaceAnimation
+
+  override def readValue(pref: NineCardsPreferencesValue): WorkspaceAnimationValue =
+    WorkspaceAnimationValue(pref.getString(name, default.value))
 }
 
 // App Drawer Preferences
@@ -149,6 +188,11 @@ object PreferencesValuesKeys {
   val appDrawerLongPressAction = "appDrawerLongPressAction"
   val appDrawerAnimation = "appDrawerAnimation"
   val appDrawerFavoriteContacts = "appDrawerFavoriteContacts"
+
+  // Speed
+  val speed = "speed"
+  val collectionOpening = "collectionOpening"
+  val workspaceAnimation = "workspaceAnimation"
 }
 
 

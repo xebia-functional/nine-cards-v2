@@ -90,63 +90,23 @@
     </string-array>
 
     <string-array name="collectionOpenings">
-        <item>@string/collectionOpeningsMoveIcon</item>
         <item>@string/collectionOpeningsCircleReveal</item>
-        <item>@string/collectionOpeningsSimple</item>
         <item>@string/collectionOpeningsNoAnimation</item>
     </string-array>
 
     <string-array name="collectionOpeningsValues">
         <item>0</item>
         <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
-
-    <string-array name="appDrawerOpenings">
-        <item>@string/appDrawerOpeningsCircleReveal</item>
-        <item>@string/appDrawerOpeningsFade</item>
-        <item>@string/appDrawerOpeningsNoAnimation</item>
-    </string-array>
-
-    <string-array name="appDrawerOpeningsValues">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
     </string-array>
 
     <string-array name="workspaceAnimations">
         <item>@string/workspaceAnimationsHorizontalSlide</item>
-        <item>@string/workspaceAnimationsTBD</item>
+        <item>@string/workspaceAnimationsAppearsBehind</item>
     </string-array>
 
     <string-array name="workspaceAnimationsValues">
         <item>0</item>
         <item>1</item>
-    </string-array>
-
-    <string-array name="appDrawerAppsAnimations">
-        <item>@string/appDrawerAppsAnimationsSlide</item>
-        <item>@string/appDrawerAppsAnimationsTBD</item>
-        <item>@string/appDrawerAppsAnimationsNoAnimation</item>
-    </string-array>
-
-    <string-array name="appDrawerAppsAnimationsValues">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
-    </string-array>
-
-    <string-array name="collectionDetailCardAnimations">
-        <item>@string/collectionDetailCardAnimationsSlide</item>
-        <item>@string/collectionDetailCardAnimationsTBD</item>
-        <item>@string/collectionDetailCardAnimationsNoAnimation</item>
-    </string-array>
-
-    <string-array name="collectionDetailCardAnimationsValues">
-        <item>0</item>
-        <item>1</item>
-        <item>2</item>
     </string-array>
 
     <string-array name="days_letters">

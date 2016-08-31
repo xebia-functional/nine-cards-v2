@@ -6,6 +6,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import android.graphics._
 import android.view.animation.DecelerateInterpolator
 import com.fortysevendeg.macroid.extras.SnailsUtils
+import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
@@ -19,7 +20,7 @@ class RippleCollectionDrawable(
 
   var percentage: Float = 0
 
-  val duration = resGetInteger(R.integer.anim_duration_normal)
+  val duration = SpeedAnimations.getDuration
 
   lazy val circlePaint = {
     val paint = new Paint

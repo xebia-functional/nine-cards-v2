@@ -1,6 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
 
 import cats.data.Xor
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import macroid.Ui
 

@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
+import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
@@ -38,6 +38,8 @@ class CollectionsDetailsActivity
   val defaultStateChanged = false
 
   var firstTime = true
+
+  lazy val preferenceValues = new NineCardsPreferencesValue
 
   override lazy val collectionsPagerPresenter = new CollectionsPagerPresenter(self)
 
@@ -84,7 +86,8 @@ class CollectionsDetailsActivity
   }
 
   override def onResume(): Unit = {
-    if (firstTime && Lollipop.ifSupportedThen(()).isDefined) {
+    val anim = CollectionOpeningAnimations.readValue(preferenceValues)
+    if (firstTime && anim == CircleOpeningCollectionAnimation && anim.isSupported) {
       overridePendingTransition(0, 0)
       firstTime = false
     } else {

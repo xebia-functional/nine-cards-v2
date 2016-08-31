@@ -1,4 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
+
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
 
 import scala.util.{Failure, Try}
 

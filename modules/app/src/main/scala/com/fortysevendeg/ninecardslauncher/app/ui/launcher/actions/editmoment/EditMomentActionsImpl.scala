@@ -3,23 +3,22 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 import android.support.v4.app.DialogFragment
 import android.view.Gravity
 import android.widget.TextView
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImageResourceNamed, RequestCodes}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWifiMomentLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.adapters.ThemeArrayAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditHourMomentLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWifiMomentLayoutTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
@@ -30,13 +29,13 @@ import macroid._
 
 trait EditMomentActionsImpl
   extends EditMomentActions
-  with Styles{
+  with Styles {
 
   self: TypedFindView with BaseActionFragment =>
 
   implicit val editPresenter: EditMomentPresenter
 
-  val defaultIcon = "default"
+  val defaultIcon = R.drawable.icon_collection_default_detail
 
   val tagDialog = "dialog"
 
@@ -67,6 +66,7 @@ trait EditMomentActionsImpl
   override def initialize(moment: Moment, collections: Seq[Collection]): Ui[Any] = {
     val iconColor = theme.get(DrawerIconColor)
     val textColor = theme.get(DrawerTextColor)
+    val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
     (toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.editMoment) <~
@@ -80,7 +80,10 @@ trait EditMomentActionsImpl
       (nameWifi <~ tvColor(textColor)) ~
       (nameHour <~ tvColor(textColor)) ~
       (nameLinkCollection <~ tvColor(textColor)) ~
-      (momentCollection <~ sChangeDropdownColor(iconColor)) ~
+      (momentCollection <~
+        tvColor(textColor) <~
+        tvSizeResource(R.dimen.text_large) <~
+        tvCompoundDrawablesWithIntrinsicBounds(right = Option(arrow))) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(editPresenter.saveMoment()))) ~
@@ -141,15 +144,26 @@ trait EditMomentActionsImpl
   private[this] def loadCategories(moment: Moment, collections: Seq[Collection]): Ui[Any] = {
     val collectionIds = 0 +: (collections map (_.id))
     val collectionNames = resGetString(R.string.noLinkCollectionToMoment) +: (collections map (_.name))
-    val icons = (defaultIcon +: (collections map (_.icon))) map ImageResourceNamed.iconCollectionDetail
-    val sa = new ThemeArrayAdapter(icons, collectionNames)
+    val icons = defaultIcon +: (collections map (_.getIconDetail))
 
-    val spinnerPosition = moment.collectionId map collectionIds.indexOf getOrElse -1
+    def setName(position: Int) = momentCollection <~ tvText(collectionNames.lift(position) getOrElse "NO")
 
-    momentCollection <~
-      sAdapter(sa) <~
-      sItemSelectedListener((position) => editPresenter.setCollectionId(collectionIds.lift(position))) <~
-      (if (spinnerPosition > 0) sSelection(spinnerPosition) else Tweak.blank)
+    val spinnerPosition = moment.collectionId map collectionIds.indexOf getOrElse 0
+
+    (momentCollection <~
+      On.click {
+        momentCollection <~
+          vListThemedPopupWindowShow(
+            icons = icons,
+            values = collectionNames,
+            onItemClickListener = (position) => {
+              setName(position).run
+              editPresenter.setCollectionId(collectionIds.lift(position))
+            },
+            height = Option(resGetDimensionPixelSize(R.dimen.height_list_popup_menu))
+          )
+      }) ~
+      setName(spinnerPosition)
   }
 
   private[this] def showDialog(dialog: DialogFragment, requestCode: Int) = Ui {

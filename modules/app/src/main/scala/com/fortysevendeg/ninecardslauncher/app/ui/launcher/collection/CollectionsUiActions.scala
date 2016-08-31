@@ -19,13 +19,13 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
