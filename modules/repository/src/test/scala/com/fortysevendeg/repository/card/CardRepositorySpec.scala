@@ -162,12 +162,7 @@ class CardRepositorySpec
       "return a Card object when a existent id is given" in
         new CardRepositoryScope {
 
-          contentResolverWrapper.findById(
-            uri = mockUri,
-            id = testCardId,
-            projection = allFields)(
-            f = getEntityFromCursor(cardEntityFromCursor)) returns Some(cardEntity)
-
+          contentResolverWrapper.findById[CardEntity](any, any, any, any, any, any)(any) returns Some(cardEntity)
           val result = cardRepository.findCardById(id = testCardId).value.run
 
           result must beLike {
@@ -182,12 +177,7 @@ class CardRepositorySpec
       "return None when a non-existent id is given" in
         new CardRepositoryScope {
 
-          contentResolverWrapper.findById(
-            uri = mockUri,
-            id = testNonExistingCardId,
-            projection = allFields)(
-            f = getEntityFromCursor(cardEntityFromCursor)) returns None
-
+          contentResolverWrapper.findById(any, any, any, any, any, any)(any) returns None
           val result = cardRepository.findCardById(id = testNonExistingCardId).value.run
           result shouldEqual Xor.Right(None)
         }
@@ -195,12 +185,7 @@ class CardRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new CardRepositoryScope {
 
-          contentResolverWrapper.findById(
-            uri = mockUri,
-            id = testCardId,
-            projection = allFields)(
-            f = getEntityFromCursor(cardEntityFromCursor)) throws contentResolverException
-
+          contentResolverWrapper.findById(any, any, any, any, any, any)(any) throws contentResolverException
           val result = cardRepository.findCardById(id = testCardId).value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }

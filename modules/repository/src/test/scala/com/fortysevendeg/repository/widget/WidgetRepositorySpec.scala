@@ -96,7 +96,6 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope {
 
           contentResolverWrapper.insert(any, any, any) returns testWidgetId
-
           val result = widgetRepository.addWidget(data = createWidgetData).value.run
 
           result must beLike {
@@ -110,7 +109,6 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope {
 
           contentResolverWrapper.insert(any, any, any) throws contentResolverException
-
           val result = widgetRepository.addWidget(data = createWidgetData).value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
@@ -122,7 +120,6 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope {
 
           contentResolverWrapper.inserts(any, any, any, any) returns widgetIdSeq
-
           val result = widgetRepository.addWidgets(datas = widgetDataSeq).value.run
 
           result must beLike {
@@ -136,7 +133,6 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope {
 
           contentResolverWrapper.inserts(any, any, any, any) throws contentResolverException
-
           val result = widgetRepository.addWidgets(datas = widgetDataSeq).value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
@@ -148,7 +144,6 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope {
 
           contentResolverWrapper.delete(any, any, any, any) returns 1
-
           val result = widgetRepository.deleteWidgets().value.run
           result shouldEqual Xor.Right(1)
 
@@ -157,8 +152,7 @@ class WidgetRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new WidgetRepositoryScope {
 
-          contentResolverWrapper.delete(uri = mockUri, where = "", notificationUris = Seq(mockUri)) throws contentResolverException
-
+          contentResolverWrapper.delete(any, any, any, any) throws contentResolverException
           val result = widgetRepository.deleteWidgets().value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
@@ -170,17 +164,14 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope {
 
           contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
-
           val result = widgetRepository.deleteWidget(widget).value.run
           result shouldEqual Xor.Right(1)
-
         }
 
       "return a RepositoryException when a exception is thrown" in
         new WidgetRepositoryScope {
 
-          contentResolverWrapper.deleteById(uri = mockUri, id = testWidgetId, notificationUris = Seq(mockUri)) throws contentResolverException
-
+          contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
           val result = widgetRepository.deleteWidget(widget).value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
@@ -191,8 +182,7 @@ class WidgetRepositorySpec
       "return a Widget object when a existing id is given" in
         new WidgetRepositoryScope {
 
-          contentResolverWrapper.findById(uri = mockUri, id = testWidgetId, projection = allFields)(f = getEntityFromCursor(widgetEntityFromCursor)) returns Some(widgetEntity)
-
+          contentResolverWrapper.findById[WidgetEntity](any, any, any, any, any, any)(any) returns Some(widgetEntity)
           val result = widgetRepository.findWidgetById(id = testWidgetId).value.run
 
           result must beLike {
@@ -207,18 +197,15 @@ class WidgetRepositorySpec
       "return None when a non-existing id is given" in
         new WidgetRepositoryScope {
 
-          contentResolverWrapper.findById(uri = mockUri, id = testNonExistingWidgetId, projection = allFields)(f = getEntityFromCursor(widgetEntityFromCursor)) returns None
-
+          contentResolverWrapper.findById(any, any, any, any, any, any)(any) returns None
           val result = widgetRepository.findWidgetById(id = testNonExistingWidgetId).value.run
           result shouldEqual Xor.Right(None)
-
         }
 
       "return a RepositoryException when a exception is thrown" in
         new WidgetRepositoryScope {
 
-          contentResolverWrapper.findById(uri = mockUri, id = testWidgetId, projection = allFields)(f = getEntityFromCursor(widgetEntityFromCursor)) throws contentResolverException
-
+          contentResolverWrapper.findById(any, any, any, any, any, any)(any) throws contentResolverException
           val result = widgetRepository.findWidgetById(id = testWidgetId).value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
@@ -287,7 +274,6 @@ class WidgetRepositorySpec
 
           val result = widgetRepository.fetchWidgetsByMoment(momentId = testMomentId).value.run
           result shouldEqual Xor.Right(widgetSeq)
-
         }
 
       "fetchWidgetsByMoment should return an empty sequence when a non-existent moment id is given" in
@@ -324,17 +310,24 @@ class WidgetRepositorySpec
       "return all Widgets" in
         new WidgetRepositoryScope {
 
-          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields, where = "", whereParams = Seq.empty, orderBy = "")(f = getListFromCursor(widgetEntityFromCursor)) returns widgetEntitySeq
+          contentResolverWrapper.fetchAll(
+            uri = mockUri,
+            projection = allFields,
+            where = "",
+            whereParams = Seq.empty, orderBy = "")(f = getListFromCursor(widgetEntityFromCursor)) returns widgetEntitySeq
 
           val result = widgetRepository.fetchWidgets().value.run
           result shouldEqual Xor.Right(widgetSeq)
-
         }
 
       "return a RepositoryException when a exception is thrown" in
         new WidgetRepositoryScope {
 
-          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields, where = "", whereParams = Seq.empty, orderBy = "")(f = getListFromCursor(widgetEntityFromCursor)) throws contentResolverException
+          contentResolverWrapper.fetchAll(
+            uri = mockUri,
+            projection = allFields,
+            where = "",
+            whereParams = Seq.empty, orderBy = "")(f = getListFromCursor(widgetEntityFromCursor)) throws contentResolverException
 
           val result = widgetRepository.fetchWidgets().value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
@@ -347,7 +340,6 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope {
 
           contentResolverWrapper.updateById(any, any, any, any) returns 1
-
           val result = widgetRepository.updateWidget(widget = widget).value.run
           result shouldEqual Xor.Right(1)
 
@@ -356,8 +348,7 @@ class WidgetRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new WidgetRepositoryScope {
 
-          contentResolverWrapper.updateById(uri = mockUri, id = testWidgetId, values = widgetValues, notificationUris = Seq(mockUri)) throws contentResolverException
-
+          contentResolverWrapper.updateById(any, any, any, any) throws contentResolverException
           val result = widgetRepository.updateWidget(widget = widget).value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
@@ -369,17 +360,14 @@ class WidgetRepositorySpec
         new WidgetRepositoryScope {
 
           contentResolverWrapper.updateByIds(any, any, any, any) returns Seq(5)
-
           val result = widgetRepository.updateWidgets(widgets = widgetSeq).value.run
           result shouldEqual Xor.Right(Seq(5))
-
         }
 
       "return a RepositoryException when a exception is thrown" in
         new WidgetRepositoryScope {
 
-          contentResolverWrapper.updateByIds(authority = NineCardsUri.authorityPart, uri = mockUri, idAndValues = widgetIdAndValuesSeq, notificationUris = Seq(mockUri)) throws contentResolverException
-
+          contentResolverWrapper.updateByIds(any, any, any, any) throws contentResolverException
           val result = widgetRepository.updateWidgets(widgets = widgetSeq).value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
@@ -391,7 +379,6 @@ class WidgetRepositorySpec
         new EmptyWidgetMockCursor with Scope {
 
           val result = getEntityFromCursor(widgetEntityFromCursor)(mockCursor)
-
           result must beNone
         }
 
@@ -413,7 +400,6 @@ class WidgetRepositorySpec
         new EmptyWidgetMockCursor with Scope {
 
           val result = getListFromCursor(widgetEntityFromCursor)(mockCursor)
-
           result should beEmpty
         }
 
@@ -421,7 +407,6 @@ class WidgetRepositorySpec
         new WidgetMockCursor with Scope {
 
           val result = getListFromCursor(widgetEntityFromCursor)(mockCursor)
-
           result shouldEqual widgetEntitySeq
         }
     }

@@ -79,8 +79,7 @@ class DockAppRepositorySpec
       "return a DockApp object with a valid request" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.insert(uri = mockUri, values = createDockAppValues, notificationUris = Seq(mockUri)) returns testId
-
+          contentResolverWrapper.insert(any, any, any) returns testId
           val result = dockAppRepository.addDockApp(data = createDockAppData).value.run
 
           result must beLike {
@@ -93,8 +92,7 @@ class DockAppRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.insert(uri = mockUri, values = createDockAppValues, notificationUris = Seq(mockUri)) throws contentResolverException
-
+          contentResolverWrapper.insert(any, any, any) throws contentResolverException
           val result = dockAppRepository.addDockApp(data = createDockAppData).value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
@@ -105,17 +103,15 @@ class DockAppRepositorySpec
       "return a successful result when all the dockApps are deleted" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.delete(uri = mockUri, where = "", notificationUris = Seq(mockUri)) returns 1
+          contentResolverWrapper.delete(any, any, any, any) returns 1
           val result = dockAppRepository.deleteDockApps().value.run
-
           result shouldEqual Xor.Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.delete(uri = mockUri, where = "", notificationUris = Seq(mockUri)) throws contentResolverException
-
+          contentResolverWrapper.delete(any, any, any, any) throws contentResolverException
           val result = dockAppRepository.deleteDockApps().value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
@@ -126,18 +122,16 @@ class DockAppRepositorySpec
       "return a successful result when a valid dockApp id is given" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.deleteById(uri = mockUri, id = testId, notificationUris = Seq(mockUri)) returns 1
+          contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
           val result = dockAppRepository.deleteDockApp(dockApp).value.run
-
           result shouldEqual Xor.Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.deleteById(uri = mockUri, id = testId, notificationUris = Seq(mockUri)) throws contentResolverException
+          contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
           val result = dockAppRepository.deleteDockApp(dockApp).value.run
-
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
@@ -147,11 +141,7 @@ class DockAppRepositorySpec
       "return a DockApp object when a existing id is given" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.findById(
-            uri = mockUri,
-            id = testId,
-            projection = allFields)(f = getEntityFromCursor(dockAppEntityFromCursor)) returns Some(dockAppEntity)
-
+          contentResolverWrapper.findById[DockAppEntity](any, any, any, any, any, any)(any) returns Some(dockAppEntity)
           val result = dockAppRepository.findDockAppById(id = testId).value.run
 
           result must beLike {
@@ -166,26 +156,16 @@ class DockAppRepositorySpec
       "return None when a non-existing id is given" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.findById(
-            uri = mockUri,
-            id = testNonExistingId,
-            projection = allFields)(
-            f = getEntityFromCursor(dockAppEntityFromCursor)) returns None
+          contentResolverWrapper.findById(any, any, any, any, any, any)(any) returns None
           val result = dockAppRepository.findDockAppById(id = testNonExistingId).value.run
-
           result shouldEqual Xor.Right(None)
         }
 
       "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.findById(
-            uri = mockUri,
-            id = testId,
-            projection = allFields)(
-            f = getEntityFromCursor(dockAppEntityFromCursor)) throws contentResolverException
+          contentResolverWrapper.findById(any, any, any, any, any, any)(any) throws contentResolverException
           val result = dockAppRepository.findDockAppById(id = testId).value.run
-
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
@@ -195,22 +175,16 @@ class DockAppRepositorySpec
       "return a successful result when the dockApp is updated" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.updateById(uri = mockUri, id = testId, values = createDockAppValues, notificationUris = Seq(mockUri)) returns 1
+          contentResolverWrapper.updateById(any, any, any, any) returns 1
           val result = dockAppRepository.updateDockApp(item = dockApp).value.run
-
           result shouldEqual Xor.Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.updateById(
-            uri = mockUri,
-            id = testId,
-            values = createDockAppValues,
-            notificationUris = Seq(mockUri)) throws contentResolverException
+          contentResolverWrapper.updateById(any, any, any, any) throws contentResolverException
           val result = dockAppRepository.updateDockApp(item = dockApp).value.run
-
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
@@ -227,10 +201,9 @@ class DockAppRepositorySpec
             whereParams = Seq.empty,
             orderBy = s"${DockAppEntity.position} asc")(
             f = getListFromCursor(dockAppEntityFromCursor)) returns dockAppEntitySeq
+
           val result = dockAppRepository.fetchDockApps().value.run
-
           result shouldEqual Xor.Right(dockAppSeq)
-
         }
 
       "return all DockApps that match the where clause" in
@@ -243,9 +216,9 @@ class DockAppRepositorySpec
             whereParams = Seq(testPosition.toString),
             orderBy = s"${DockAppEntity.position} asc")(
             f = getListFromCursor(dockAppEntityFromCursor)) returns dockAppEntitySeq
+
           val result = dockAppRepository.fetchDockApps(where = s"$position = ?", whereParams = Seq(testPosition.toString)).value.run
           result shouldEqual Xor.Right(dockAppSeq)
-
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -258,8 +231,8 @@ class DockAppRepositorySpec
             whereParams = Seq.empty,
             orderBy = s"${DockAppEntity.position} asc")(
             f = getListFromCursor(dockAppEntityFromCursor)) throws contentResolverException
-          val result = dockAppRepository.fetchDockApps().value.run
 
+          val result = dockAppRepository.fetchDockApps().value.run
           result must beAnInstanceOf[Xor.Left[RepositoryException]]
         }
     }
@@ -271,7 +244,6 @@ class DockAppRepositorySpec
           with Scope {
 
           val result = getEntityFromCursor(dockAppEntityFromCursor)(mockCursor)
-
           result must beNone
         }
 
@@ -295,7 +267,6 @@ class DockAppRepositorySpec
           with Scope {
 
           val result = getListFromCursor(dockAppEntityFromCursor)(mockCursor)
-
           result should beEmpty
         }
 
@@ -304,7 +275,6 @@ class DockAppRepositorySpec
           with Scope {
 
           val result = getListFromCursor(dockAppEntityFromCursor)(mockCursor)
-
           result shouldEqual dockAppEntitySeq
         }
     }
