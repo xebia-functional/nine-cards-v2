@@ -324,8 +324,8 @@
 
     <!-- Theme Preferences -->
 
-    <string name="themesPrefTitle">Temas</string>
-    <string name="themesPrefSummary">Resumen de Temas</string>
+    <string name="lookFeelPrefTitle">Aspecto General</string>
+    <string name="lookFeelPrefSummary">Modifica el tema y otros aspectos generales</string>
 
     <string name="selectThemeTitle">Seleccionar Tema</string>
     <string name="selectThemeSummary">Resumen de Seleccionar Tema</string>
@@ -334,15 +334,37 @@
     <string name="themesLight">Claro</string>
 
     <string name="googleLogoTitle">Logo de Google</string>
-    <string name="googleLogoSummary">Resumen de Logo de Google</string>
+    <string name="googleLogoSummary">Tipo de Logo de Google en la barra de búsqueda</string>
 
     <string name="colouredGoogleLogo">Coloreado</string>
     <string name="themeColourGoogleLogo">Color del Tema</string>
 
+    <string name="fontsTitle">Tamaño de Fuente</string>
+    <string name="fontsSummary">Tamaño general de la fuente</string>
+
+    <string name="fontsSmall">Pequeña</string>
+    <string name="fontsMedium">Mediana</string>
+    <string name="fontsLarge">Grande</string>
+
+    <string name="iconsTitle">Tamaño de Iconos</string>
+    <string name="iconsSummary">Tamaño general de los iconos</string>
+
+    <string name="iconsSmall">Pequeño</string>
+    <string name="iconsMedium">Mediano</string>
+    <string name="iconsLarge">Grande</string>
+
+    <string name="cardPaddingTitle">Márgenes de Tarjetas</string>
+    <string name="cardPaddingSummary">Márgenes entre tarjetas en las colecciones</string>
+
+    <string name="cardPaddingSmall">Pequeño</string>
+    <string name="cardPaddingMedium">Mediano</string>
+    <string name="cardPaddingLarge">Grande</string>
+
+
     <!-- Moment Preferences -->
 
     <string name="momentsPrefTitle">Momentos</string>
-    <string name="momentsPrefSummary">Resumen Momentos</string>
+    <string name="momentsPrefSummary">Configura opciones para tus momentos</string>
 
     <string name="showClockTitle">Mostrar reloj</string>
     <string name="showClockSummary">Resumen de Mostrar reloj</string>
@@ -350,7 +372,7 @@
     <!-- AppDrawer Preferences -->
 
     <string name="appDrawerPrefTitle">Cajón de Aplicaciones</string>
-    <string name="appDrawerPrefSummary">Resumen de Cajón de Aplicaciones</string>
+    <string name="appDrawerPrefSummary">Configura pantalla de aplicaciones y contactos en App Drawer</string>
 
     <string name="appDrawerLongPressTitle">Acción en Long-press</string>
     <string name="appDrawerLongPressSummary">Acción actual: %s</string>
@@ -367,36 +389,10 @@
     <string name="appDrawerFistTabContactTitle">Contactos Favoritos al entrar</string>
     <string name="appDrawerFistTabContactSummary">Los Contacts Favorites aparecerán al entrar en el área de contactos</string>
 
-    <!-- Sizes Preferences -->
-
-    <string name="sizesPrefTitle">Tamaños</string>
-    <string name="sizesPrefSummary">Resumen de Tamaños</string>
-
-    <string name="fontsTitle">Fuentes</string>
-    <string name="fontsSummary">Resumen de Fuentes</string>
-
-    <string name="fontsSmall">Pequeña</string>
-    <string name="fontsMedium">Mediana</string>
-    <string name="fontsBigger">Grande</string>
-
-    <string name="iconsTitle">Iconos</string>
-    <string name="iconsSummary">Resumen de Iconos</string>
-
-    <string name="iconsSmall">Pequeño</string>
-    <string name="iconsMedium">Mediano</string>
-    <string name="iconsBigger">Grande</string>
-
-    <string name="cardPaddingsTitle">Márgenes de Tarjetas</string>
-    <string name="cardPaddingsSummary">Resumen de Márgenes de Tarjetas</string>
-
-    <string name="cardPaddingsSmall">Pequeño</string>
-    <string name="cardPaddingsMedium">Mediano</string>
-    <string name="cardPaddingsBigger">Grande</string>
-
     <!-- Animations Preferences -->
 
     <string name="animationsPrefTitle">Animaciones</string>
-    <string name="animationsPrefSummary">Resumen de Animaciones</string>
+    <string name="animationsPrefSummary">Elige las animaciones a usar en 9Cards</string>
 
     <string name="speedTitle">Velocidad de las Animaciones</string>
     <string name="speedSummary">Velocidad que quieres usar en todas las animaciones en 9Cards</string>
@@ -422,12 +418,6 @@
             Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +
         ]]>
     </string>
-
-    <!-- New App Preferences -->
-
-    <string name="newAppPrefTitle">Nueva aplicación</string>
-    <string name="newAppPrefSummary">Resumen de Nueva Aplicación</string>
-    <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->
     <string name="others">Otros</string>
