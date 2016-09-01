@@ -297,7 +297,6 @@ trait LauncherUiActionsImpl
 
   override def addWidgets(widgets: Seq[AppWidget]): Ui[Any] = {
     val uiWidgets = widgets map { widget =>
-
       val widthContent = workspaces map (_.getWidth) getOrElse 0
       val heightContent = workspaces map (_.getHeight) getOrElse 0
 
@@ -317,6 +316,20 @@ trait LauncherUiActionsImpl
     Ui.sequence(uiWidgets: _*)
   }
 
+  override def replaceWidget(widget: AppWidget): Ui[Any] = widget.appWidgetId match {
+    case Some(appWidgetId) =>
+      val widthContent = workspaces map (_.getWidth) getOrElse 0
+      val heightContent = workspaces map (_.getHeight) getOrElse 0
+
+      val (wCell, hCell) = sizeCell(widthContent, heightContent)
+
+      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+      val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+      hostView.setAppWidget(appWidgetId, appWidgetInfo)
+      workspaces <~ lwsReplaceWidget(hostView, wCell, hCell, widget)
+    case _ => Ui.nop
+  }
+
   override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()
 
   override def deleteSelectedWidget(): Ui[Any] = Ui {
@@ -333,11 +346,11 @@ trait LauncherUiActionsImpl
     }
   }
 
-  def unhostWidget(id: Int): Ui[Any] = workspaces <~ lwsUnhostWidget(id)
+  override def unhostWidget(id: Int): Ui[Any] = workspaces <~ lwsUnhostWidget(id)
 
-  override def hostWidget(widget: Widget): Ui[Any] = {
+  override def hostWidget(packageName: String, className: String): Ui[Any] = {
     val appWidgetId = appWidgetHost.allocateAppWidgetId()
-    val provider = new ComponentName(widget.packageName, widget.className)
+    val provider = new ComponentName(packageName, className)
     val success = appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, provider)
     if (success) {
       Ui(presenter.configureOrAddWidget(Some(appWidgetId)))

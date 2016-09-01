@@ -17,7 +17,8 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 import macroid.FullDsl._
 
-case class LauncherNoConfiguredWidgetView(wCell: Int, hCell: Int, widget: AppWidget, presenter: LauncherPresenter)(implicit contextWrapper: ContextWrapper)
+case class LauncherNoConfiguredWidgetView(id: Int, wCell: Int, hCell: Int, widget: AppWidget, presenter: LauncherPresenter)
+  (implicit contextWrapper: ContextWrapper)
   extends FrameLayout(contextWrapper.bestAvailable) {
 
   implicit lazy val uiContext: UiContext[Context] = GenericUiContext(getContext)
@@ -32,7 +33,10 @@ case class LauncherNoConfiguredWidgetView(wCell: Int, hCell: Int, widget: AppWid
       ivSrcByPackageName(Some(widget.packageName), "W") <~
       flLayoutGravity(Gravity.CENTER)).get
 
-  (this <~ vBackgroundColor(Color.GRAY) <~ vgAddView(icon)).run
+  (this <~
+    vBackgroundColor(Color.GRAY) <~
+    vgAddView(icon) <~
+    On.click(Ui(presenter.hostNoConfiguredWidget(widget)))).run
 
   def addView(): Tweak[FrameLayout] = {
     vgAddView(this, createParams())

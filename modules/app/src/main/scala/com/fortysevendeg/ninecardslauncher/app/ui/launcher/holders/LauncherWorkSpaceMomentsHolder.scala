@@ -102,8 +102,15 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   }
 
   def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: AppWidget): Ui[Any] = {
-    val noConfiguredWidgetView = LauncherNoConfiguredWidgetView(wCell, hCell, widget, presenter)
+    val noConfiguredWidgetView = LauncherNoConfiguredWidgetView(widget.id, wCell, hCell, widget, presenter)
     this <~ noConfiguredWidgetView.addView()
+  }
+
+  def addReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: AppWidget): Ui[Any] = {
+    val cell = Cell(widget.area.spanX, widget.area.spanY, wCell, hCell)
+    (this <~ Transformer {
+      case i: LauncherNoConfiguredWidgetView if i.id == widget.id => this <~ vgRemoveView(i)
+    }) ~ addWidget(widgetView, cell, widget)
   }
 
   def clearWidgets: Ui[Any] = this <~ vgRemoveAllViews

@@ -79,6 +79,16 @@ trait WidgetProcess {
   def resizeWidget(widgetId: Int, resizeWidgetRequest: ResizeWidgetRequest): TaskService[AppWidget]
 
   /**
+    * Update app widget id of Android SDK in database
+    *
+    * @param widgetId the Id of the Widget
+    * @param appWidgetId app widget id in Android SDK
+    * @return the [[AppWidget]] with the new position
+    * @throws AppWidgetException if there was an error finding the widget or resizing it
+    */
+  def updateAppWidgetId(widgetId: Int, appWidgetId: Int): TaskService[AppWidget]
+
+  /**
     * Delete all widgets in database
     *
     * @throws AppWidgetException if exist some problem deleting the widgets
