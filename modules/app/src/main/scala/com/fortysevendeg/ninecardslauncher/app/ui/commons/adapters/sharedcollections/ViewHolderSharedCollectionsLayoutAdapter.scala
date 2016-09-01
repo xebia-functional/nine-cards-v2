@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.commons.sharedcollections
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -24,7 +24,9 @@ import macroid.FullDsl._
 import macroid._
 
 case class ViewHolderSharedCollectionsLayoutAdapter(
-  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: SharedCollectionsPresenter, val theme: NineCardsTheme)
+  content: ViewGroup,
+  onAddCollection: (SharedCollection) => Unit,
+  onShareCollection: (SharedCollection) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], val theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
     with TypedFindView
     with CollectionCardsStyles {
@@ -75,8 +77,8 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
       (description <~ (if (collection.description.isEmpty) vGone else vVisible + tvText(collection.description))) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
-      (addCollection <~ On.click(Ui(presenter.saveSharedCollection(collection)))) ~
-      (shareCollection <~ On.click(Ui(presenter.launchShareCollection(collection.sharedCollectionId))))
+      (addCollection <~ On.click(Ui(onAddCollection(collection)))) ~
+      (shareCollection <~ On.click(Ui(onShareCollection(collection))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

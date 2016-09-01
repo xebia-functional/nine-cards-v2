@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.commons.sharedcollections.SharedCollectionsPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
@@ -15,7 +15,8 @@ import macroid.{ActivityContextWrapper, Ui}
 import scalaz.concurrent.Task
 
 class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends SharedCollectionsPresenter
+  extends Presenter
+  with LauncherExecutor
   with Conversions {
 
   protected var statuses = PublicCollectionStatuses(Communication, TopSharedCollection)
@@ -37,6 +38,15 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
     loadPublicCollections()
   }
 
+  def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
+    Task.fork(addCollection(sharedCollection).value).resolveAsyncUi(
+      onResult = (c) => actions.addCollection(c) ~ actions.close(),
+      onException = (ex) => actions.showErrorSavingCollectionInScreen())
+  }
+
+  def shareCollection(sharedCollection: SharedCollection): Unit =
+    launchShareCollection(sharedCollection.id)
+
   def loadPublicCollections(): Unit = {
     Task.fork(getSharedCollections(statuses.category, statuses.typeSharedCollection).value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
@@ -44,16 +54,10 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
         if (sharedCollections.isEmpty) {
           actions.showEmptyMessageInScreen()
         } else {
-          actions.loadPublicCollections(sharedCollections)
+          actions.loadPublicCollections(sharedCollections, saveSharedCollection, shareCollection)
         }
       },
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen())
-  }
-
-  override def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
-    Task.fork(addCollection(sharedCollection).value).resolveAsyncUi(
-      onResult = (c) => actions.addCollection(c) ~ actions.close(),
-      onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }
 
   private[this] def getSharedCollections(
@@ -91,7 +95,10 @@ trait PublicCollectionsUiActions {
 
   def addCollection(collection: Collection): Ui[Any]
 
-  def loadPublicCollections(sharedCollections: Seq[SharedCollection]): Ui[Any]
+  def loadPublicCollections(
+    sharedCollections: Seq[SharedCollection],
+    onAddCollection: (SharedCollection) => Unit,
+    onShareCollection: (SharedCollection) => Unit): Ui[Any]
 
   def updateCategory(category: NineCardCategory): Ui[Any]
 

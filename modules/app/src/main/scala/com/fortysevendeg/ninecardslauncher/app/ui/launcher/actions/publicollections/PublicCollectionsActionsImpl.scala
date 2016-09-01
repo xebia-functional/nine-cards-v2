@@ -7,7 +7,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.commons.sharedcollections.SharedCollectionsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
@@ -94,8 +94,10 @@ trait PublicCollectionsActionsImpl
     showMessageInScreen(R.string.emptyPublicCollections, error = false, collectionPresenter.loadPublicCollections())
 
   override def loadPublicCollections(
-    sharedCollections: Seq[SharedCollection]): Ui[Any] = {
-    val adapter = SharedCollectionsAdapter(sharedCollections)
+    sharedCollections: Seq[SharedCollection],
+    onAddCollection: (SharedCollection) => Unit,
+    onShareCollection: (SharedCollection) => Unit): Ui[Any] = {
+    val adapter = SharedCollectionsAdapter(sharedCollections, onAddCollection, onShareCollection)
     (recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
