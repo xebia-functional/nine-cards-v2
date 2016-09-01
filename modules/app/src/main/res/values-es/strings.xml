@@ -369,7 +369,7 @@
     <!-- AppDrawer Preferences -->
 
     <string name="appDrawerPrefTitle">Cajón de Aplicaciones</string>
-    <string name="appDrawerPrefSummary">Configura pantalla de aplicaciones in contactos en App Drawer</string>
+    <string name="appDrawerPrefSummary">Configura pantalla de aplicaciones y contactos en App Drawer</string>
 
     <string name="appDrawerLongPressTitle">Acción en Long-press</string>
     <string name="appDrawerLongPressSummary">Acción actual: %s</string>
