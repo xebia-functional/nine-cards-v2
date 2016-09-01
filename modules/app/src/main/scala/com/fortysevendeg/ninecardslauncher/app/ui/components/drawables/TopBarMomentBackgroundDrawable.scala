@@ -25,10 +25,11 @@ class TopBarMomentBackgroundDrawable(implicit theme: NineCardsTheme, contextWrap
   override def draw(canvas: Canvas): Unit = {
     val bounds = getBounds
     canvas.drawRoundRect(
-      bounds.left + radius,
-      bounds.top + radius,
-      bounds.right - radius,
-      bounds.bottom - radius,
+      new RectF(
+        bounds.left + radius,
+        bounds.top + radius,
+        bounds.right - radius,
+        bounds.bottom - radius),
       radiusIcon,
       radiusIcon,
       paint)

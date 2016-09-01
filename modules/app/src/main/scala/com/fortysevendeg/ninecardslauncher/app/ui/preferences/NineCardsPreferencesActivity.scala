@@ -23,7 +23,7 @@ class NineCardsPreferencesActivity
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
-    actionBar foreach{ab =>
+    actionBar foreach { ab =>
       ab.setDisplayHomeAsUpEnabled(true)
       ab.setDisplayShowHomeEnabled(false)
       ab.setDisplayShowTitleEnabled(true)
@@ -62,17 +62,13 @@ class NineCardsPreferencesActivity
       super.onCreate(savedInstanceState)
       addPreferencesFromResource(R.xml.preferences_headers)
 
-      findPreference(ThemesPreferences.name).setOnPreferenceClickListener(preferenceClick(ThemesPreferences.name, new ThemesFragment()))
+      findPreference(LookFeelPreferences.name).setOnPreferenceClickListener(preferenceClick(LookFeelPreferences.name, new LookFeelFragment()))
 
       findPreference(MomentsPreferences.name).setOnPreferenceClickListener(preferenceClick(MomentsPreferences.name, new MomentsFragment()))
 
       findPreference(AppDrawerPreferences.name).setOnPreferenceClickListener(preferenceClick(AppDrawerPreferences.name, new AppDrawerFragment()))
 
-      findPreference(SizesPreferences.name).setOnPreferenceClickListener(preferenceClick(SizesPreferences.name, new SizesFragment()))
-
       findPreference(AnimationsPreferences.name).setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
-
-      findPreference(NewAppPreferences.name).setOnPreferenceClickListener(preferenceClick(NewAppPreferences.name, new NewAppFragment()))
 
       findPreference(AppInfoPreferences.name).setOnPreferenceClickListener(preferenceActionClick(AboutPreferences.name, () => {
         launchSettings(getPackageName)

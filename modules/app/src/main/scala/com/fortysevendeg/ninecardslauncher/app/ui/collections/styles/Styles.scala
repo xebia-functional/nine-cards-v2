@@ -16,6 +16,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.IconsSize
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -136,13 +137,7 @@ trait CollectionAdapterStyles {
       view.requestLayout()
   }
 
-  private[this] def reduceLayout(implicit context: ContextWrapper): Tweak[View] = Tweak[View] {
-    view =>
-      val size = resGetDimensionPixelSize(R.dimen.size_icon_card)
-      val params = view.getLayoutParams
-      params.height = size
-      params.width = size
-      view.requestLayout()
-  }
+  private[this] def reduceLayout(implicit context: ContextWrapper): Tweak[View] =
+    vResize(IconsSize.getIconApp)
 
 }

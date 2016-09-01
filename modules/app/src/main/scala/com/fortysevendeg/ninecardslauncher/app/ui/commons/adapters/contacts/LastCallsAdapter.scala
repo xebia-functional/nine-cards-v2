@@ -12,6 +12,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.FontSize
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
@@ -83,8 +84,8 @@ case class LastCallsContactHolder(content: View)(implicit context: ActivityConte
     val time = new PrettyTime().format(date)
     val color = theme.get(DrawerTextColor)
     (icon <~ ivUriContact(contact.photoUri getOrElse "", contact.title, circular = true)) ~
-      (name <~ tvText(contact.title) <~ tvColor(color)) ~
-      (hour <~ tvText(time) <~ tvColor(color)) ~
+      (name <~ tvSizeResource(FontSize.getContactSizeResource) <~ tvText(contact.title) <~ tvColor(color)) ~
+      (hour <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(time) <~ tvColor(color)) ~
       (callTypes <~ addCallTypesView(contact.calls take maxCalls map (_.callType))) ~
       (content <~ vSetPosition(position))
   }

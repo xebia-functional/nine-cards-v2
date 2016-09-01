@@ -126,6 +126,16 @@ object ExtraTweaks {
 
   // TODO - Move to macroid extras
 
+  def vResize(size: Int): Tweak[View] = vResize(size, size)
+
+  def vResize(width: Int, height: Int): Tweak[View] = Tweak[View] {
+    view =>
+      val params = view.getLayoutParams
+      params.height = width
+      params.width = height
+      view.requestLayout()
+  }
+
   def vgAddViewByIndexParams[V <: View](view: V, index: Int, params: ViewGroup.LayoutParams): Tweak[ViewGroup] =
     Tweak[ViewGroup](_.addView(view, index, params))
 

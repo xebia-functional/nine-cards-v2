@@ -12,6 +12,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.CardPadding
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -345,8 +346,10 @@ trait CollectionUiActionsImpl
     }
 
   private[this] def createAdapter(collection: Collection) = {
-    // In Android Design Library 23.0.1 has a problem calculating the height. We have to subtract 25 dp. We should to check this when we'll change to a new version
-    val heightCard = recyclerView map (view => (view.getHeight - (25 dp) - (view.getPaddingBottom + view.getPaddingTop)) / numInLine) getOrElse 0
+    val heightCard = recyclerView map { view =>
+      val allPadding = (CardPadding.getPadding * 2) * 3
+      (view.getHeight - allPadding - (view.getPaddingBottom + view.getPaddingTop)) / numInLine
+    } getOrElse 0
     CollectionAdapter(collection, heightCard)
   }
 

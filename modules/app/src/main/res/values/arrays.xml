@@ -12,8 +12,8 @@
     </string-array>
 
     <string-array name="googleLogos">
-        <item>@string/colouredGoogleLogo</item>
         <item>@string/themeColourGoogleLogo</item>
+        <item>@string/colouredGoogleLogo</item>
     </string-array>
 
     <string-array name="googleLogosValues">
@@ -44,7 +44,7 @@
     <string-array name="fonts">
         <item>@string/fontsSmall</item>
         <item>@string/fontsMedium</item>
-        <item>@string/fontsBigger</item>
+        <item>@string/fontsLarge</item>
     </string-array>
 
     <string-array name="fontsValues">
@@ -56,7 +56,7 @@
     <string-array name="icons">
         <item>@string/iconsSmall</item>
         <item>@string/iconsMedium</item>
-        <item>@string/iconsBigger</item>
+        <item>@string/iconsLarge</item>
     </string-array>
 
     <string-array name="iconsValues">
@@ -65,13 +65,13 @@
         <item>2</item>
     </string-array>
 
-    <string-array name="cardPaddings">
-        <item>@string/cardPaddingsSmall</item>
-        <item>@string/cardPaddingsMedium</item>
-        <item>@string/cardPaddingsBigger</item>
+    <string-array name="cardPadding">
+        <item>@string/cardPaddingSmall</item>
+        <item>@string/cardPaddingMedium</item>
+        <item>@string/cardPaddingLarge</item>
     </string-array>
 
-    <string-array name="cardPaddingsValues">
+    <string-array name="cardPaddingValues">
         <item>0</item>
         <item>1</item>
         <item>2</item>
