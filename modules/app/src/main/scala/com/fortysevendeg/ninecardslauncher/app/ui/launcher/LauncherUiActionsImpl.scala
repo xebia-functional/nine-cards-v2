@@ -312,9 +312,12 @@ trait LauncherUiActionsImpl
           val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
           val cell = appWidgetInfo.getCell(widthContent, heightContent)
 
-          val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
-          hostView.setAppWidget(appWidgetId, appWidgetInfo)
-          workspaces <~ lwsAddWidget(hostView, cell, widget)
+          Ui {
+            // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
+            val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+            hostView.setAppWidget(appWidgetId, appWidgetInfo)
+            (workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+          }
         case _ =>
           val (wCell, hCell) = sizeCell(widthContent, heightContent)
           workspaces <~ lwsAddNoConfiguredWidget(wCell, hCell, widget)
@@ -330,10 +333,13 @@ trait LauncherUiActionsImpl
 
       val (wCell, hCell) = sizeCell(widthContent, heightContent)
 
-      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-      val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
-      hostView.setAppWidget(appWidgetId, appWidgetInfo)
-      workspaces <~ lwsReplaceWidget(hostView, wCell, hCell, widget)
+      Ui {
+        // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
+        val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+        val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+        hostView.setAppWidget(appWidgetId, appWidgetInfo)
+        (workspaces <~ lwsReplaceWidget(hostView, wCell, hCell, widget)).run
+      }
     case _ => Ui.nop
   }
 
