@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import android.widget.{FrameLayout, ImageView}
 import android.widget.FrameLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -23,6 +24,8 @@ case class LauncherNoConfiguredWidgetView(id: Int, wCell: Int, hCell: Int, widge
 
   implicit lazy val uiContext: UiContext[Context] = GenericUiContext(getContext)
 
+  val letter = "W"
+
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
 
   val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin)
@@ -30,11 +33,11 @@ case class LauncherNoConfiguredWidgetView(id: Int, wCell: Int, hCell: Int, widge
   val icon = (
     w[ImageView] <~
       vWrapContent <~
-      ivSrcByPackageName(Some(widget.packageName), "W") <~
+      ivSrcByPackageName(Some(widget.packageName), letter) <~
       flLayoutGravity(Gravity.CENTER)).get
 
   (this <~
-    vBackgroundColor(Color.GRAY) <~
+    vBackgroundColor(Color.GRAY.alpha(.5f)) <~
     vgAddView(icon) <~
     On.click(Ui(presenter.hostNoConfiguredWidget(widget)))).run
 
