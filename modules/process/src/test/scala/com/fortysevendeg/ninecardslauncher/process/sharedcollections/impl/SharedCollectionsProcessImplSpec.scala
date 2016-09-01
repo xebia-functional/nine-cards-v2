@@ -48,29 +48,6 @@ trait SharedCollectionsProcessImplSpecification
     }
 
   }
-
-  trait ValidSharedCollectionsProcessProcessScope {
-
-    self: SharedCollectionsProcessProcessScope =>
-
-    mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
-      TaskService(Task(Xor.right(shareCollectionList)))
-
-    mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
-      TaskService(Task(Xor.right(createSharedCollectionResponse)))
-  }
-
-  trait ErrorSharedCollectionsProcessProcessScope {
-
-    self: SharedCollectionsProcessProcessScope =>
-
-    mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
-      TaskService(Task(Xor.left(apiException)))
-
-    mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
-      TaskService(Task(Xor.left(apiException)))
-  }
-
 }
 
 class SharedCollectionsProcessImplSpec
@@ -79,7 +56,11 @@ class SharedCollectionsProcessImplSpec
   "getSharedCollectionsByCategory" should {
 
     "returns a sequence of shared collections for a valid request" in
-      new SharedCollectionsProcessProcessScope with ValidSharedCollectionsProcessProcessScope {
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
+          TaskService(Task(Xor.right(shareCollectionList)))
+
         val result = sharedCollectionsProcess.getSharedCollectionsByCategory(
           category,
           typeShareCollection,
@@ -93,38 +74,72 @@ class SharedCollectionsProcessImplSpec
       }
 
     "returns a SharedCollectionsExceptions if the service throws a exception" in
-      new SharedCollectionsProcessProcessScope with ErrorSharedCollectionsProcessProcessScope {
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
+          TaskService(Task(Xor.left(apiException)))
+
         val result = sharedCollectionsProcess.getSharedCollectionsByCategory(
           category,
           typeShareCollection,
           offset,
           limit)(contextSupport).value.run
+        result must beAnInstanceOf[Xor.Left[SharedCollectionsExceptions]]
+      }
+  }
+
+  "getPublishedCollections" should {
+
+    "returns a sequence of published collections for a valid request" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.getPublishedCollections()(any) returns
+          TaskService(Task(Xor.right(shareCollectionList)))
+
+        val result = sharedCollectionsProcess.getPublishedCollections()(contextSupport).value.run
         result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[SharedCollectionsExceptions]
+          case Xor.Right(shareCollections) =>
+            shareCollections.size shouldEqual shareCollectionList.items.size
+            shareCollections map (_.name) shouldEqual shareCollectionList.items.map(_.name)
         }
+      }
+
+    "returns a SharedCollectionsExceptions if the service throws a exception" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.getPublishedCollections()(any) returns
+          TaskService(Task(Xor.left(apiException)))
+
+        val result = sharedCollectionsProcess.getPublishedCollections()(contextSupport).value.run
+        result must beAnInstanceOf[Xor.Left[SharedCollectionsExceptions]]
       }
   }
 
   "createNewCollection" should {
 
     "successfully create a collection for a valid request" in
-      new SharedCollectionsProcessProcessScope with ValidSharedCollectionsProcessProcessScope {
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
+          TaskService(Task(Xor.right(createSharedCollectionResponse)))
+
         val result = sharedCollectionsProcess.createSharedCollection(
           createSharedCollection
         )(contextSupport).value.run
 
-        result mustEqual Xor.Right(sharedCollectionId)
+        result shouldEqual Xor.Right(sharedCollectionId)
       }
 
     "return a SharedCollectionsException if the service throws an exception" in
-      new SharedCollectionsProcessProcessScope with ErrorSharedCollectionsProcessProcessScope {
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
+          TaskService(Task(Xor.left(apiException)))
+
         val result = sharedCollectionsProcess.createSharedCollection(
           createSharedCollection
         )(contextSupport).value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[SharedCollectionsExceptions]
-        }
+        result must beAnInstanceOf[Xor.Left[SharedCollectionsExceptions]]
       }
   }
 }

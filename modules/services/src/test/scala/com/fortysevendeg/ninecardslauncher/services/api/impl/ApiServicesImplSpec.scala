@@ -103,6 +103,11 @@ trait ApiServicesSpecification
       TaskService {
         Task(Xor.right(ServiceClientResponse[version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
       }
+
+    apiService.getCollections(any)(any) returns
+      TaskService {
+        Task(Xor.right(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
+      }
   }
 
   trait ErrorApiServicesImplResponses
@@ -126,6 +131,8 @@ trait ApiServicesSpecification
     apiService.topCollections(any, any, any, any)(any) returns TaskService(Task(Xor.left(exception)))
 
     apiService.createCollection(any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
+
+    apiService.getCollections(any)(any) returns TaskService(Task(Xor.left(exception)))
 
     apiService.recommendations(any, any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
 
@@ -373,6 +380,28 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the calue the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
+        result must beLike {
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
+        }
+      }
+
+  }
+
+  "getPublishedCollections" should {
+
+    "return a valid response if the services return a valid response" in
+      new ApiServicesScope with ValidApiServicesImplResponses {
+        val result = apiServices.getPublishedCollections().value.run
+        result must beLike {
+          case Xor.Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.items.size shouldEqual collections.size
+        }
+      }
+
+    "return an ApiServiceException with the calue the exception returned by the service" in
+      new ApiServicesScope with ErrorApiServicesImplResponses {
+        val result = apiServices.getPublishedCollections().value.run
         result must beLike {
           case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
