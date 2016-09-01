@@ -80,9 +80,9 @@ trait ProfileUiActionsImpl
 
   override def showLoading(): Ui[_] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
 
-  override def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingPublicCollections, clickAction)  //TODO: Create new message string
+  override def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingPublishedCollections, clickAction)
 
-  override def showEmptyMessageInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.emptyPublicCollections, clickAction) //TODO: Create new message string
+  override def showEmptyMessageInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.emptyPublishedCollections, clickAction)
 
   override def showContactUsError(clickAction: () => Unit): Ui[Any] = showError(R.string.contactUsError, clickAction)
 
