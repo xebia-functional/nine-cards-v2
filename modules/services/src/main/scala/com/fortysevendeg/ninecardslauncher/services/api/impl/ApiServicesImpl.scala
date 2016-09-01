@@ -78,10 +78,8 @@ class ApiServicesImpl(
     } yield LoginResponse(loginResponse.apiKey, loginResponse.sessionToken)).resolve[ApiServiceException]
 
   override def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig) = {
-    // TODO - Use `deviceToken getOrElse ""` in https://github.com/47deg/nine-cards-v2/issues/654
-    val fixedDeviceToken = "fake-device-token"
     (for {
-      response <- apiService.installations(version2.InstallationRequest(fixedDeviceToken), requestConfig.toServiceHeader)
+      response <- apiService.installations(version2.InstallationRequest(deviceToken getOrElse ""), requestConfig.toServiceHeader)
       installation <- readOption(response.data, installationNotFoundMessage)
     } yield UpdateInstallationResponse(response.statusCode)).resolve[ApiServiceException]
   }
