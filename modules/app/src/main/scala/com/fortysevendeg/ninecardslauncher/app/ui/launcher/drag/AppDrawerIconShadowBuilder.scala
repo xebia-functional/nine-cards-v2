@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 class AppDrawerIconShadowBuilder(view: View)(implicit contextWrapper: ContextWrapper)
   extends View.DragShadowBuilder(view) {
 
-  val size: Int = (resGetDimensionPixelSize(R.dimen.size_icon_app) * 1.2f).toInt
+  val size: Int = (resGetDimensionPixelSize(R.dimen.size_icon_app_medium) * 1.2f).toInt
 
   val scale: Float = size.toFloat / view.getWidth.toFloat
 

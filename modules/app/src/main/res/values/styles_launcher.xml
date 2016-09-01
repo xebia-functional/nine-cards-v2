@@ -140,7 +140,6 @@
         <item name="android:layout_width">0px</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:src">@drawable/search_bar_logo_google_light</item>
         <item name="android:scaleType">fitStart</item>
         <item name="android:paddingTop">@dimen/padding_default</item>
         <item name="android:paddingBottom">@dimen/padding_default</item>
@@ -189,6 +188,8 @@
         <item name="android:textColor">@color/text_launcher_moment_panel</item>
         <item name="android:textSize">@dimen/text_xlarge</item>
         <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="LauncherMomentClock" parent="LauncherMomentText">
@@ -309,14 +310,15 @@
     </style>
 
     <style name="LauncherCollectionItemIconRoot">
-        <item name="android:layout_width">@dimen/size_drag_group_collection</item>
-        <item name="android:layout_height">@dimen/size_drag_group_collection</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:padding">@dimen/padding_default</item>
     </style>
 
     <style name="LauncherCollectionItemIconParent">
-        <item name="android:layout_width">@dimen/size_group_collection</item>
-        <item name="android:layout_height">@dimen/size_group_collection</item>
+        <item name="android:layout_width">@dimen/size_group_collection_medium</item>
+        <item name="android:layout_height">@dimen/size_group_collection_medium</item>
         <item name="android:layout_gravity">center</item>
     </style>
 
@@ -330,7 +332,6 @@
         <item name="android:lines">2</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:layout_marginTop">@dimen/margin_top_name_group_collection</item>
         <item name="android:layout_gravity">center_horizontal</item>
     </style>
 

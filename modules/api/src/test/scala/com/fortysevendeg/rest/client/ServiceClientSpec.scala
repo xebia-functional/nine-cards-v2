@@ -185,41 +185,32 @@ class ServiceClientSpec
     "throws a ServiceClientException when no Reads found for the response type" in
       new ServiceClientScope with WithSuccessfullyHttpClientMock {
         val response = serviceClient.get[Test](baseUrl, Seq.empty).value.run
-        response must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[ServiceClientException]
-          }
+        response must beAnInstanceOf[Xor.Left[HttpClientException]]
       }
 
     "return a HttpClientException response when the call to get method throw an exception" in
       new ServiceClientScope with WithFailedHttpClientMock {
         val response = serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
-        response must beLike {
-          case Xor.Left(e) =>  e shouldEqual exception
-          }
+        response must beAnInstanceOf[Xor.Left[HttpClientException]]
       }
 
     "return a HttpClientException when the call to delete method throw an exception" in
       new ServiceClientScope with WithFailedHttpClientMock {
         val response = serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
-        response must beLike {
-          case Xor.Left(e) =>  e shouldEqual exception
-          }
+        response must beAnInstanceOf[Xor.Left[HttpClientException]]
       }
 
     "return a HttpClientException when the call to post method throw an exception" in
       new ServiceClientScope with WithFailedHttpClientMock {
         val response = serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
-        response must beLike {
-          case Xor.Left(e) =>  e shouldEqual exception
-          }
+        response must beAnInstanceOf[Xor.Left[HttpClientException]]
       }
 
     "return a HttpClientException when the call to put method throw an exception" in
       new ServiceClientScope with WithFailedHttpClientMock {
+
         val response = serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
-        response must beLike {
-          case Xor.Left(e) => e shouldEqual exception
-        }
+        response must beAnInstanceOf[Xor.Left[HttpClientException]]
       }
 
   }

@@ -402,8 +402,11 @@ object TopBarLayoutTweaks {
 
   type W = TopBarLayout
 
-  def tblInit(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
-    Tweak[W] (_.init.run)
+  def tblInit(workSpaceType: WorkSpaceType)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.init(workSpaceType).run)
+
+  def tblReload(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.populate.run)
 
   def tblReloadMoment(moment: NineCardsMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.reloadMoment(moment).run)

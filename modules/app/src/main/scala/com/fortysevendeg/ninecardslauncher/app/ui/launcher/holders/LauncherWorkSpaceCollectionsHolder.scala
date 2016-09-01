@@ -11,8 +11,9 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
+import com.fortysevendeg.ninecardslauncher.app.commons.{FontSize, IconsSize, SpeedAnimations}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
@@ -380,11 +381,10 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
           presenter.startReorder(this.collection, positionInGrid)
           (this.collection map { _ =>
             (this <~ vInvisible) ~ convertToDraggingItem() ~ (layout <~ startDragStyle(collection.id.toString, collection.name))
-          } getOrElse Ui.nop).run
-          Ui(true)
+          } getOrElse Ui.nop) ~ Ui(true)
         }) ~
-        (icon <~ ivSrc(resIcon) <~ vBackgroundCollection(collection.themedColorIndex)) ~
-        (name <~ tvText(collection.name))).run
+        (icon <~ vResize(IconsSize.getIconCollection) <~ ivSrc(resIcon) <~ vBackgroundCollection(collection.themedColorIndex)) ~
+        (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(collection.name))).run
     }
 
     def convertToDraggingItem(): Ui[Any] = Ui(positionInGrid = positionDraggingItem)
