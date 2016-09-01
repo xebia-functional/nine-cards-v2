@@ -61,6 +61,8 @@ object LauncherWorkSpacesTweaks {
 
   def lwsAddWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget) = Tweak[W] (_.addWidget(widgetView, cell, widget))
 
+  def lwsAddNoConfiguredWidget(wCell: Int, hCell: Int, widget: AppWidget) = Tweak[W] (_.addNoConfiguredWidget(wCell, hCell, widget))
+
   def lwsShowRules() = Tweak[W] (_.showRulesInMoment())
 
   def lwsHideRules() = Tweak[W] (_.hideRulesInMoment())

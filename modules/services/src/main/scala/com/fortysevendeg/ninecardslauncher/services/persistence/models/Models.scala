@@ -77,7 +77,7 @@ case class Widget(
   momentId: Int,
   packageName: String,
   className: String,
-  appWidgetId: Int,
+  appWidgetId: Option[Int],
   startX: Int,
   startY: Int,
   spanX: Int,

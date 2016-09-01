@@ -297,17 +297,21 @@ trait LauncherUiActionsImpl
 
   override def addWidgets(widgets: Seq[AppWidget]): Ui[Any] = {
     val uiWidgets = widgets map { widget =>
-      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
 
       val widthContent = workspaces map (_.getWidth) getOrElse 0
       val heightContent = workspaces map (_.getHeight) getOrElse 0
 
-      val cell = appWidgetInfo.getCell(widthContent, heightContent)
+      widget.appWidgetId match {
+        case Some(appWidgetId) =>
+          val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+          val cell = appWidgetInfo.getCell(widthContent, heightContent)
 
-      Ui {
-        val hostView = appWidgetHost.createView(activityContextWrapper.application, widget.appWidgetId, appWidgetInfo)
-        hostView.setAppWidget(widget.appWidgetId, appWidgetInfo)
-        (workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+          val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+          hostView.setAppWidget(appWidgetId, appWidgetInfo)
+          workspaces <~ lwsAddWidget(hostView, cell, widget)
+        case _ =>
+          val (wCell, hCell) = sizeCell(widthContent, heightContent)
+          workspaces <~ lwsAddNoConfiguredWidget(wCell, hCell, widget)
       }
     }
     Ui.sequence(uiWidgets: _*)

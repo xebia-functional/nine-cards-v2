@@ -19,7 +19,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DottedDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{LauncherNoConfiguredWidgetView, LauncherWidgetView}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -99,6 +99,11 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
   def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget): Ui[Any] = {
     val launcherWidgetView = (LauncherWidgetView(widget.id, widgetView, presenter) <~ saveInfoInTag(cell, widget)).get
     this <~ launcherWidgetView.addView(cell, widget)
+  }
+
+  def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: AppWidget): Ui[Any] = {
+    val noConfiguredWidgetView = LauncherNoConfiguredWidgetView(wCell, hCell, widget, presenter)
+    this <~ noConfiguredWidgetView.addView()
   }
 
   def clearWidgets: Ui[Any] = this <~ vgRemoveAllViews
