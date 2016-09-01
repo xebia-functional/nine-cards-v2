@@ -129,7 +129,7 @@ trait CollectionsUiActions
           true
         })) ~
       (paginationPanel <~ On.longClick((workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
-      (topBarPanel <~ tblInit) ~
+      (topBarPanel <~ tblInit(CollectionsWorkSpace)) ~
       (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (menuCollectionRoot <~ vGone) ~

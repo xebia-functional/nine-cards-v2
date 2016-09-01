@@ -6,6 +6,8 @@ import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.{FontSize, IconsSize}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
@@ -69,8 +71,8 @@ case class AppsIterableHolder(
   lazy val name = Option(findView(TR.simple_item_name))
 
   def bind(app: App): Ui[_] =
-    (icon <~ ivSrcByPackageName(Some(app.packageName), app.name)) ~
-      (name <~ tvText(app.name) + tvColor(theme.get(DrawerTextColor))) ~
+    (icon <~ vResize(IconsSize.getIconApp) <~ ivSrcByPackageName(Some(app.packageName), app.name)) ~
+      (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(app.name) + tvColor(theme.get(DrawerTextColor))) ~
       (content <~
         On.click {
           Ui(clickListener(app))

@@ -18,8 +18,8 @@
     </style>
 
     <style name="CardIcon">
-        <item name="android:layout_width">@dimen/size_icon_card</item>
-        <item name="android:layout_height">@dimen/size_icon_card</item>
+        <item name="android:layout_width">@dimen/size_icon_app_medium</item>
+        <item name="android:layout_height">@dimen/size_icon_app_medium</item>
         <item name="android:layout_gravity">center</item>
     </style>
 

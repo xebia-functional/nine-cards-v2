@@ -121,7 +121,7 @@ object AppDrawerAnimationValue {
 
 }
 
-// Theme Values
+// Look and Feel Values
 
 sealed trait ThemeValue {
   val value: String
@@ -141,5 +141,101 @@ object ThemeValue {
 
   def apply(value: String): ThemeValue =
     values find (_.value == value) getOrElse ThemeLight
+
+}
+
+sealed trait GoogleLogoValue {
+  val value: String
+}
+
+case object GoogleLogoTheme extends GoogleLogoValue {
+  override val value: String = "0"
+}
+
+case object GoogleLogoColoured extends GoogleLogoValue {
+  override val value: String = "1"
+}
+
+object GoogleLogoValue {
+
+  val values = Seq(GoogleLogoTheme, GoogleLogoColoured)
+
+  def apply(value: String): GoogleLogoValue =
+    values find (_.value == value) getOrElse GoogleLogoTheme
+
+}
+
+sealed trait FontSizeValue {
+  val value: String
+}
+
+case object FontSizeSmall extends FontSizeValue {
+  override val value: String = "0"
+}
+
+case object FontSizeMedium extends FontSizeValue {
+  override val value: String = "1"
+}
+
+case object FontSizeLarge extends FontSizeValue {
+  override val value: String = "2"
+}
+
+object FontSizeValue {
+
+  val values = Seq(FontSizeSmall, FontSizeMedium, FontSizeLarge)
+
+  def apply(value: String): FontSizeValue =
+    values find (_.value == value) getOrElse FontSizeMedium
+
+}
+
+sealed trait IconsSizeValue {
+  val value: String
+}
+
+case object IconsSizeSmall extends IconsSizeValue {
+  override val value: String = "0"
+}
+
+case object IconsSizeMedium extends IconsSizeValue {
+  override val value: String = "1"
+}
+
+case object IconsSizeLarge extends IconsSizeValue {
+  override val value: String = "2"
+}
+
+object IconsSizeValue {
+
+  val values = Seq(IconsSizeSmall, IconsSizeMedium, IconsSizeLarge)
+
+  def apply(value: String): IconsSizeValue =
+    values find (_.value == value) getOrElse IconsSizeMedium
+
+}
+
+sealed trait CardPaddingValue {
+  val value: String
+}
+
+case object CardPaddingSmall extends CardPaddingValue {
+  override val value: String = "0"
+}
+
+case object CardPaddingMedium extends CardPaddingValue {
+  override val value: String = "1"
+}
+
+case object CardPaddingLarge extends CardPaddingValue {
+  override val value: String = "2"
+}
+
+object CardPaddingValue {
+
+  val values = Seq(CardPaddingSmall, CardPaddingMedium, CardPaddingLarge)
+
+  def apply(value: String): CardPaddingValue =
+    values find (_.value == value) getOrElse CardPaddingMedium
 
 }
