@@ -278,7 +278,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   private[this] def swapViews(): Ui[_] = {
     statuses = statuses.copy(currentItem = goToItem())
     (this <~ (if (statuses.isFromLeft) reloadPreviousPositionView else reloadNextPositionView)) ~
-      (if (statuses.isFromLeft) recreate(PreviousView) else recreate(NextView)) ~
+      (if (statuses.isFromLeft)
+        recreate(PreviousView) ~ resetView(NextView) else
+        recreate(NextView) ~ resetView(PreviousView)) ~
       Ui {
         statuses = statuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
       }
@@ -298,10 +300,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   private[this] def recreate(positionView: PositionView): Ui[Any] = {
     val currentItem = statuses.currentItem
 
-    val (position, displacement) = positionView match {
-      case PreviousView =>  (if (currentItem - 1 < 0) views.length - 1 else currentItem - 1, -getSizeWidget)
-      case NextView => (if (currentItem + 1 > views.length - 1) 0 else currentItem + 1, getSizeWidget)
-      case FrontView => (currentItem, 0)
+    val position = positionView match {
+      case PreviousView =>  if (currentItem - 1 < 0) views.length - 1 else currentItem - 1
+      case NextView => if (currentItem + 1 > views.length - 1) 0 else currentItem + 1
+      case FrontView => currentItem
     }
 
     val view = getView(positionView)
@@ -309,11 +311,18 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (view <~
       vgRemoveAllViews <~
       vgAddView(views(position), params)) ~
-      resetView(view, displacement)
+      resetView(positionView)
   }
 
-  def resetView(view: Option[FrameLayout], displacement: Int = 0) =
+  def resetView(positionView: PositionView) = {
+    val view = getView(positionView)
+    val displacement = positionView match {
+      case PreviousView =>  -getSizeWidget
+      case NextView => getSizeWidget
+      case FrontView => 0
+    }
     view <~ vTranslationX(displacement) <~ vScaleX(1) <~ vScaleY(1) <~ vAlpha(1)
+  }
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
     super.onSizeChanged(w, h, oldw, oldh)
@@ -351,7 +360,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
         val deltaX = statuses.deltaX(x)
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
         if (overScroll()) {
-          resetView(getFrontView).run
+          resetView(FrontView).run
         } else {
           performScroll(deltaX).run
         }

@@ -12,8 +12,8 @@ sealed trait NineCardsPreferences {
   val name: String
 }
 
-case object ThemesPreferences extends NineCardsPreferences {
-  override val name: String = themesKey
+case object LookFeelPreferences extends NineCardsPreferences {
+  override val name: String = lookFeelKey
 }
 
 case object MomentsPreferences extends NineCardsPreferences {
@@ -30,10 +30,6 @@ case object SizesPreferences extends NineCardsPreferences {
 
 case object AnimationsPreferences extends NineCardsPreferences {
   override val name: String = animationsKey
-}
-
-case object NewAppPreferences extends NineCardsPreferences {
-  override val name: String = newAppKey
 }
 
 case object AppInfoPreferences extends NineCardsPreferences {
@@ -130,7 +126,7 @@ case object AppDrawerFavoriteContactsFirst
   override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
 }
 
-// Theme Preferences
+// Look & Feel Preferences
 
 case object Theme
   extends NineCardsPreferenceValue[ThemeValue] {
@@ -143,6 +139,92 @@ case object Theme
   def getThemeFile(pref: NineCardsPreferencesValue): String = Theme.readValue(pref) match {
     case ThemeLight => "theme_light"
     case ThemeDark => "theme_dark"
+  }
+}
+
+case object GoogleLogo
+  extends NineCardsPreferenceValue[GoogleLogoValue] {
+  override val name: String = googleLogo
+  override val default: GoogleLogoValue = GoogleLogoTheme
+
+  override def readValue(pref: NineCardsPreferencesValue): GoogleLogoValue =
+    GoogleLogoValue(pref.getString(name, default.value))
+}
+
+case object FontSize
+  extends NineCardsPreferenceValue[FontSizeValue] {
+  override val name: String = fontsSize
+  override val default: FontSizeValue = FontSizeMedium
+
+  override def readValue(pref: NineCardsPreferencesValue): FontSizeValue =
+    FontSizeValue(pref.getString(name, default.value))
+
+  def getSizeResource(implicit contextWrapper: ContextWrapper): Int = {
+    readValue(new NineCardsPreferencesValue) match {
+      case FontSizeSmall => R.dimen.text_medium
+      case FontSizeMedium => R.dimen.text_default
+      case FontSizeLarge => R.dimen.text_large
+    }
+  }
+
+  def getTitleSizeResource(implicit contextWrapper: ContextWrapper): Int = {
+    readValue(new NineCardsPreferencesValue) match {
+      case FontSizeSmall => R.dimen.text_large
+      case FontSizeMedium => R.dimen.text_xlarge
+      case FontSizeLarge => R.dimen.text_xxlarge
+    }
+  }
+
+  def getContactSizeResource(implicit contextWrapper: ContextWrapper): Int = {
+    readValue(new NineCardsPreferencesValue) match {
+      case FontSizeSmall => R.dimen.text_default
+      case FontSizeMedium => R.dimen.text_large
+      case FontSizeLarge => R.dimen.text_xlarge
+    }
+  }
+
+}
+
+case object IconsSize
+  extends NineCardsPreferenceValue[IconsSizeValue] {
+  override val name: String = iconsSize
+  override val default: IconsSizeValue = IconsSizeMedium
+
+  override def readValue(pref: NineCardsPreferencesValue): IconsSizeValue =
+    IconsSizeValue(pref.getString(name, default.value))
+
+  def getIconApp(implicit contextWrapper: ContextWrapper): Int = {
+    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+      case IconsSizeSmall => R.dimen.size_icon_app_small
+      case IconsSizeMedium => R.dimen.size_icon_app_medium
+      case IconsSizeLarge => R.dimen.size_icon_app_large
+    })
+  }
+
+  def getIconCollection(implicit contextWrapper: ContextWrapper): Int = {
+    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+      case IconsSizeSmall => R.dimen.size_group_collection_small
+      case IconsSizeMedium => R.dimen.size_group_collection_medium
+      case IconsSizeLarge => R.dimen.size_group_collection_large
+    })
+  }
+
+}
+
+case object CardPadding
+  extends NineCardsPreferenceValue[IconsSizeValue] {
+  override val name: String = cardPadding
+  override val default: IconsSizeValue = IconsSizeMedium
+
+  override def readValue(pref: NineCardsPreferencesValue): IconsSizeValue =
+    IconsSizeValue(pref.getString(name, default.value))
+
+  def getPadding(implicit contextWrapper: ContextWrapper): Int = {
+    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+      case IconsSizeSmall => R.dimen.card_padding_small
+      case IconsSizeMedium => R.dimen.card_padding_medium
+      case IconsSizeLarge => R.dimen.card_padding_large
+    })
   }
 }
 
@@ -164,12 +246,11 @@ class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
 // This values should be the same that the keys used in XML preferences_headers
 object PreferencesKeys {
   val defaultLauncherKey = "defaultLauncherKey"
-  val themesKey = "themesKey"
+  val lookFeelKey = "lookFeelKey"
   val momentKey = "momentKey"
   val appDrawerKey = "appDrawerKey"
   val sizesKey = "sizesKey"
   val animationsKey = "animationsKey"
-  val newAppKey = "newAppKey"
   val aboutKey = "aboutKey"
   val helpKey = "helpKey"
   val appInfoKey = "appInfoKey"
@@ -181,8 +262,12 @@ object PreferencesValuesKeys {
   // Moment keys
   val showClockMoment = "showClockMoment"
 
-  // Theme Keys
+  // Look and Feel Keys
   val theme = "theme"
+  val googleLogo = "googleLogo"
+  val fontsSize = "fontsSize"
+  val iconsSize = "iconsSize"
+  val cardPadding = "cardPadding"
 
   // AppDrawer Keys
   val appDrawerLongPressAction = "appDrawerLongPressAction"

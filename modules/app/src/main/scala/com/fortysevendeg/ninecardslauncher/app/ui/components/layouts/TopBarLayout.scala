@@ -9,7 +9,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesValue, ShowClockMoment}
+import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
@@ -67,17 +67,36 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val momentWorkspace = LayoutInflater.from(context).inflate(R.layout.moment_bar_view_panel, javaNull)
 
-  (this <~
-    vgAddViews(Seq(momentWorkspace, collectionWorkspace))).run
+  (this <~ vgAddViews(Seq(momentWorkspace, collectionWorkspace))).run
 
-  def init(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
+  def init(workSpaceType: WorkSpaceType)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
+    populate ~
+      (workSpaceType match {
+        case CollectionsWorkSpace => (momentWorkspace <~ vInvisible) ~ (collectionWorkspace <~ vVisible)
+        case MomentWorkSpace => (momentWorkspace <~ vVisible) ~ (collectionWorkspace <~ vInvisible)
+      })
+  }
+
+  def populate(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
     val iconColor = theme.get(SearchIconsColor)
     val pressedColor = theme.get(SearchPressedColor)
     val iconBackground = new TopBarMomentBackgroundDrawable
     val edgeBackground = new TopBarMomentEdgeBackgroundDrawable
-    (momentWorkspace <~ vInvisible <~ vBackground(edgeBackground)) ~
-      (momentIconContent <~ vBackground(iconBackground) <~ vLayerTypeSoftware(iconBackground.paint)) ~
+    val googleLogoTweaks = GoogleLogo.readValue(preferenceValues) match {
+      case GoogleLogoTheme =>
+        ivSrc(R.drawable.search_bar_logo_google_light) +
+          tivDefaultColor(theme.get(SearchGoogleColor)) +
+          tivPressedColor(pressedColor)
+      case GoogleLogoColoured =>
+        ivSrc(R.drawable.search_bar_logo_google_color) + tivClean
+    }
+    val sizeRes = FontSize.getTitleSizeResource
+    (momentWorkspace <~ vBackground(edgeBackground)) ~
+      (momentIconContent <~ vBackground(iconBackground)) ~
       (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(pressedColor)) ~
+      (momentText <~ tvSizeResource(sizeRes)) ~
+      (momentDigitalClock <~ tvSizeResource(sizeRes)) ~
+      (momentClock <~ tvSizeResource(sizeRes)) ~
       (collectionsSearchPanel <~
         vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))) ~
       (collectionsBurgerIcon <~
@@ -85,8 +104,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         tivPressedColor(pressedColor) <~
         On.click(Ui(presenter.launchMenu()))) ~
       (collectionsGoogleIcon <~
-        tivDefaultColor(theme.get(SearchGoogleColor)) <~
-        tivPressedColor(pressedColor) <~
+        googleLogoTweaks <~
         On.click(Ui(presenter.launchSearch))) ~
       (collectionsMicIcon <~
         tivDefaultColor(iconColor) <~

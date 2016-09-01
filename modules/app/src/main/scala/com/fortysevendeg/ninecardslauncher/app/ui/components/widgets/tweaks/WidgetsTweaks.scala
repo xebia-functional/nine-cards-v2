@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks
 
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.animation.AnimationUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -19,6 +20,12 @@ object TintableImageViewTweaks {
   }
 
   def tivPressedColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.pressedColor = color)
+
+  def tivClean(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { view =>
+    view.defaultColor = Color.WHITE
+    view.pressedColor = Color.WHITE
+    view.setTint(Color.WHITE)
+  }
 
 }
 

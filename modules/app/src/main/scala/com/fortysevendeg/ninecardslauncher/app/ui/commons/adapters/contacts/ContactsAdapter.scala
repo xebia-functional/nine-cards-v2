@@ -8,6 +8,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.FontSize
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
@@ -78,7 +79,7 @@ case class ContactsIterableHolder(
   def bind(contact: Contact, position: Int): Ui[_] = {
     val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
     (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
-      (name <~ tvText(contactName) <~ tvColor(theme.get(DrawerTextColor))) ~
+      (name <~ tvSizeResource(FontSize.getContactSizeResource) <~ tvText(contactName) <~ tvColor(theme.get(DrawerTextColor))) ~
       (favorite <~ (if (contact.favorite) vVisible else vGone)) ~
       (content <~
         On.click {
