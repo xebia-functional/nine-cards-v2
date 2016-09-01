@@ -81,7 +81,7 @@ object Conversions {
   def toCloudStorageWidget(widget: AppWidget) =
     CloudStorageWidget(
       packageName = widget.packageName,
-      className = widget.packageName,
+      className = widget.className,
       area = toCloudStorageWidgetArea(widget.area),
       widgetType = widget.widgetType,
       label = widget.label,
