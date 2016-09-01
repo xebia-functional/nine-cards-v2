@@ -13,6 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
@@ -95,8 +96,16 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   def loadUserAccounts(): Unit = withConnectedClient(loadUserAccounts(_))
 
   def loadPublications(): Unit = {
-    // TODO - Load publications and set adapter
-    actions.setPublicationsAdapter(sampleItems("Publication")).run
+    Task.fork(di.sharedCollectionsProcess.getPublishedCollections().value).resolveAsyncUi(
+      onPreTask = () => actions.showLoading(),
+      onResult = (sharedCollections: Seq[SharedCollection]) => {
+        if (sharedCollections.isEmpty) {
+          actions.showEmptyMessageInScreen(() => loadPublications())
+        } else {
+          actions.loadPublications(sharedCollections)
+        }
+      },
+      onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen(() => loadPublications()))
   }
 
   def loadSubscriptions(): Unit = {
@@ -280,6 +289,10 @@ trait ProfileUiActions {
 
   def showLoading(): Ui[Any]
 
+  def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any]
+
+  def showEmptyMessageInScreen(clickAction: () => Unit): Ui[Any]
+
   def showContactUsError(clickAction: () => Unit): Ui[Any]
 
   def showConnectingGoogleError(clickAction: () => Unit): Ui[Any]
@@ -296,11 +309,11 @@ trait ProfileUiActions {
 
   def showDialogForCopyDevice(resourceId: String): Unit
 
+  def loadPublications(sharedCollections: Seq[SharedCollection]): Ui[Any]
+
   def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_]
 
   def setAccountsAdapter(items: Seq[AccountSync]): Ui[Any]
-
-  def setPublicationsAdapter(items: Seq[String]): Ui[Any]
 
   def setSubscriptionsAdapter(items: Seq[String]): Ui[Any]
 
