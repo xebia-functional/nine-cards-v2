@@ -61,7 +61,7 @@ trait WidgetProcessImplData {
           momentId = momentId,
           packageName = packageName,
           className = className,
-          appWidgetId = appWidgetId,
+          appWidgetId = Option(appWidgetId),
           WidgetArea(
             startX = startX,
             startY = startY,
@@ -93,7 +93,7 @@ trait WidgetProcessImplData {
         momentId = momentId,
         packageName = packageName,
         className = className,
-        appWidgetId = appWidgetId,
+        appWidgetId = Option(appWidgetId),
         startX = startX,
         startY = startY,
         spanX = spanX,
