@@ -385,13 +385,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (action, x, y)
   }
 
-  private[this] def overScroll(deltaX: Float): Boolean = getFrontView exists { view =>
-    (view.getX, deltaX) match {
+  private[this] def overScroll(deltaX: Float): Boolean =
+    (statuses.displacement, deltaX) match {
       case (x, dx) if isFirst && dx < 0 && x - dx >= 0 => true
       case (x, dx) if isLast && dx > 0 && x - dx <= 0 => true
       case _ => false
     }
-  }
 
   def setStateIfNeeded(x: Float, y: Float) = {
     if (statuses.enabled) {
@@ -432,9 +431,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     tracker =>
       tracker.computeCurrentVelocity(1000, maximumVelocity)
       val velocity = tracker.getXVelocity
-      if (statuses.isScrolling && !overScroll(-velocity)) {
-        (if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination()).run
-      }
+      ((statuses.isScrolling, math.abs(velocity) > minimumVelocity) match {
+        case (true, true) => snap(velocity)
+        case _ => snapDestination()
+      }).run
       tracker.recycle()
       statuses = statuses.copy(velocityTracker = None)
   }
