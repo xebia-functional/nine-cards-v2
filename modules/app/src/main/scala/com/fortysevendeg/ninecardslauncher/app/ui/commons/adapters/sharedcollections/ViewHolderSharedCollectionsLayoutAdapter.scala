@@ -45,7 +45,7 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
 
   lazy val downloads = findView(TR.public_collections_item_downloads)
 
-  lazy val description = findView(TR.public_collections_item_description)
+  lazy val subscriptions = findView(TR.public_collections_item_subscriptions)
 
   lazy val appsIcons = findView(TR.public_collections_item_apps)
 
@@ -57,7 +57,7 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
     (name <~ textStyle) ~
     (author <~ textStyle) ~
     (downloads <~ leftDrawableTextStyle(R.drawable.icon_dialog_collection_downloaded)) ~
-    (description <~ textStyle) ~
+    (subscriptions <~ leftDrawableTextStyle(R.drawable.icon_dialog_collection_downloaded)) ~
     (addCollection <~ buttonStyle) ~
     (shareCollection <~ ivSrc(tintDrawable(R.drawable.icon_dialog_collection_share)))).run
 
@@ -74,7 +74,7 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
         automaticAlignment(apps, plus)) ~
       (name <~ tvText(resGetString(collection.name) getOrElse collection.name)) ~
       (author <~ tvText(collection.author)) ~
-      (description <~ (if (collection.description.isEmpty) vGone else vVisible + tvText(collection.description))) ~
+      (subscriptions <~ (if (collection.views < 0) vGone else vVisible + tvText(s"${collection.views}" + " " + resGetString(R.string.subscriptions).toLowerCase))) ~ //TODO Change collection.views for collection.subscriptions: Option[Int] and hide when it's a None
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
       (addCollection <~ On.click(Ui(onAddCollection(collection)))) ~
