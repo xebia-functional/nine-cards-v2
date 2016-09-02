@@ -72,7 +72,7 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
       (appsIcons <~
         vgRemoveAllViews <~
         automaticAlignment(apps, plus)) ~
-      (name <~ tvText(resGetString(collection.category.getStringResource) getOrElse collection.category.getStringResource)) ~
+      (name <~ tvText(resGetString(collection.name) getOrElse collection.name)) ~
       (author <~ tvText(collection.author)) ~
       (description <~ (if (collection.description.isEmpty) vGone else vVisible + tvText(collection.description))) ~
       (downloads <~ tvText(s"${collection.views}")) ~

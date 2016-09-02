@@ -13,14 +13,15 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TabLayoutTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, PublicationsAdapter, SubscriptionsAdapter}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, SubscriptionsAdapter}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{CopyAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
@@ -39,8 +40,6 @@ trait ProfileUiActionsImpl
   implicit lazy val theme = presenter.getTheme
 
   val tagDialog = "dialog"
-//
-//  lazy val recycler = Option(findView(TR.actions_recycler))
 
   lazy val rootLayout = Option(findView(TR.profile_root))
 
@@ -98,6 +97,8 @@ trait ProfileUiActionsImpl
       R.string.errorEmptyNameForDeviceButton,
       () => showDialogForCopyDevice(resourceId))
 
+  override def showErrorSavingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorSavingPublicCollections, clickAction)
+
   override def showMessageAccountSynced(): Ui[Any] = showMessage(R.string.accountSynced) ~ (loadingView <~ vInvisible)
 
   override def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_] =
@@ -136,9 +137,15 @@ trait ProfileUiActionsImpl
     showDialog(new CopyAccountDeviceDialogFragment(cloudId))
 
   override def loadPublications(
-    sharedCollections: Seq[SharedCollection]): Ui[Any] = {
-    (recyclerView <~ vVisible <~ rvAdapter(PublicationsAdapter(sharedCollections map (_.name)))) ~
+    sharedCollections: Seq[SharedCollection],
+    onAddCollection: (SharedCollection) => Unit,
+    onShareCollection: (SharedCollection) => Unit): Ui[Any] = {
+    (recyclerView <~ vVisible <~ rvAdapter(SharedCollectionsAdapter(sharedCollections, onAddCollection, onShareCollection))) ~
       (loadingView <~ vInvisible)
+  }
+
+  override def addCollection(collection: Collection): Ui[Any] = Ui {
+
   }
 
   private[this] def showDialog(dialog: DialogFragment): Unit = {
