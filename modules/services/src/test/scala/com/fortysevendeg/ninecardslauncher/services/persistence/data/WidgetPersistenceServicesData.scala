@@ -8,21 +8,8 @@ import scala.util.Random
 
 trait WidgetPersistenceServicesData extends PersistenceServicesData {
 
-  val widgetId: Int = Random.nextInt(10)
   val nonExistentWidgetId: Int = Random.nextInt(10) + 100
-  val appWidgetId: Int = Random.nextInt(10)
   val nonExistentAppWidgetId: Int = Random.nextInt(10) + 100
-  val startX: Int = Random.nextInt(8)
-  val startY: Int = Random.nextInt(8)
-  val spanX: Int = Random.nextInt(8)
-  val spanY: Int = Random.nextInt(8)
-  val widgetType: String = Random.nextString(5)
-  val label: String = Random.nextString(5)
-  val widgetImagePath: String = Random.nextString(5)
-  val widgetIntent: String = Random.nextString(5)
-  val labelOption = Option(label)
-  val widgetImagePathOption = Option(widgetImagePath)
-  val widgetIntentOption = Option(widgetIntent)
 
   def createSeqWidget(
     num: Int = 5,
@@ -45,7 +32,7 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
         momentId = momentId,
         packageName = packageName,
         className = className,
-        appWidgetId = appWidgetId,
+        appWidgetId = Option(appWidgetId),
         startX = startX,
         startY = startY,
         spanX = spanX,
@@ -55,43 +42,8 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
         imagePath = imagePath,
         intent = intent))
 
-  def createSeqRepoWidget(
-    num: Int = 5,
-    id: Int = widgetId,
-    data: RepositoryWidgetData = createRepoWidgetData()): Seq[RepositoryWidget] =
-    List.tabulate(num)(item => RepositoryWidget(id = id + item, data = data))
-
-  def createRepoWidgetData(
-    momentId: Int = momentId,
-    packageName: String = packageName,
-    className: String = className,
-    appWidgetId: Int = appWidgetId,
-    startX: Int = startX,
-    startY: Int = startY,
-    spanX: Int = spanX,
-    spanY: Int = spanY,
-    widgetType: String = widgetType,
-    label: Option[String] = labelOption,
-    imagePath: Option[String] = widgetImagePathOption,
-    intent: Option[String] = widgetIntentOption): RepositoryWidgetData =
-    RepositoryWidgetData(
-      momentId = momentId,
-      packageName = packageName,
-      className = className,
-      appWidgetId = appWidgetId,
-      startX = startX,
-      startY = startY,
-      spanX = spanX,
-      spanY = spanY,
-      widgetType = widgetType,
-      label = label,
-      imagePath = imagePath,
-      intent = intent)
-
   val seqWidget: Seq[Widget] = createSeqWidget()
   val servicesWidget: Widget = seqWidget(0)
-  val repoWidgetData: RepositoryWidgetData = createRepoWidgetData()
-  val seqRepoWidget: Seq[RepositoryWidget] = createSeqRepoWidget(data = repoWidgetData)
   val repoWidget: RepositoryWidget = seqRepoWidget(0)
 
   def createAddWidgetRequest(
@@ -148,7 +100,7 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
       momentId = momentId,
       packageName = packageName,
       className = className,
-      appWidgetId = appWidgetId,
+      appWidgetId = Option(appWidgetId),
       startX = startX,
       startY = startY,
       spanX = spanX,

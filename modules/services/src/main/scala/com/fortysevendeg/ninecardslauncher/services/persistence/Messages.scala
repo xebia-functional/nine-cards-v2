@@ -165,7 +165,8 @@ case class AddMomentRequest(
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
   headphone: Boolean,
-  momentType: Option[String])
+  momentType: Option[String],
+  widgets: Seq[SaveWidgetRequest])
 
 case class DeleteMomentsRequest(where: String)
 
@@ -195,6 +196,19 @@ case class AddWidgetRequest(
   imagePath: Option[String],
   intent: Option[String])
 
+case class SaveWidgetRequest(
+  packageName: String,
+  className: String,
+  appWidgetId: Int,
+  startX: Int,
+  startY: Int,
+  spanX: Int,
+  spanY: Int,
+  widgetType: String,
+  label: Option[String],
+  imagePath: Option[String],
+  intent: Option[String])
+
 case class DeleteWidgetsRequest(where: String)
 
 case class DeleteWidgetRequest(widget: Widget)
@@ -204,7 +218,7 @@ case class UpdateWidgetRequest(
   momentId: Int,
   packageName: String,
   className: String,
-  appWidgetId: Int,
+  appWidgetId: Option[Int],
   startX: Int,
   startY: Int,
   spanX: Int,

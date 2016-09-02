@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.FormedMomen
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot, _}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.{SaveMomentRequest, UpdateMomentRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddMomentRequest, UpdateMomentRequest => ServiceUpdateMomentRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateMomentRequest => ServiceUpdateMomentRequest, SaveWidgetRequest => ServiceSaveWidgetRequest, AddMomentRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 
 trait CommonConversions extends NineCardIntentConversions {
@@ -52,7 +52,8 @@ trait CommonConversions extends NineCardIntentConversions {
       timeslot = moment.timeslot map toServicesMomentTimeSlot,
       wifi = moment.wifi,
       headphone = moment.headphone,
-      momentType = moment.momentType map (_.name))
+      momentType = moment.momentType map (_.name),
+      widgets = moment.widgets getOrElse Seq.empty map toServiceSaveWidgetRequest)
 
   def toAddMomentRequest(moment: Moment): AddMomentRequest =
     AddMomentRequest(
@@ -60,7 +61,8 @@ trait CommonConversions extends NineCardIntentConversions {
       timeslot = moment.timeslot map toServicesMomentTimeSlot,
       wifi = moment.wifi,
       headphone = moment.headphone,
-      momentType = moment.momentType map (_.name))
+      momentType = moment.momentType map (_.name),
+      widgets = Seq.empty)
 
   def toAddMomentRequest(moment: FormedMoment): AddMomentRequest =
     AddMomentRequest(
@@ -68,7 +70,8 @@ trait CommonConversions extends NineCardIntentConversions {
       timeslot = moment.timeslot map toServicesMomentTimeSlot,
       wifi = moment.wifi,
       headphone = moment.headphone,
-      momentType = moment.momentType map (_.name))
+      momentType = moment.momentType map (_.name),
+      widgets = moment.widgets getOrElse Seq.empty map toServiceSaveWidgetRequest)
 
   def toAddMomentRequest(collectionId: Option[Int], moment: NineCardsMoment): AddMomentRequest =
     AddMomentRequest(
@@ -76,7 +79,22 @@ trait CommonConversions extends NineCardIntentConversions {
       timeslot = toServicesMomentTimeSlotSeq(moment),
       wifi = toWifiSeq(moment),
       headphone = false,
-      momentType = Option(moment.name))
+      momentType = Option(moment.name),
+      widgets = Seq.empty)
+
+  def toServiceSaveWidgetRequest(widget: FormedWidget): ServiceSaveWidgetRequest =
+    ServiceSaveWidgetRequest(
+      packageName = widget.packageName,
+      className = widget.className,
+      appWidgetId = 0,
+      startX = widget.startX,
+      startY = widget.startY,
+      spanX = widget.spanX,
+      spanY = widget.spanY,
+      widgetType = widget.widgetType.name,
+      label = widget.label,
+      imagePath = widget.imagePath,
+      intent = widget.intent)
 
   def toServiceUpdateMomentRequest(moment: UpdateMomentRequest): ServiceUpdateMomentRequest =
     ServiceUpdateMomentRequest(

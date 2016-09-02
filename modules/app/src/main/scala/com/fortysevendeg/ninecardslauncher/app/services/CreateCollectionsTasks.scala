@@ -2,13 +2,9 @@ package com.fortysevendeg.ninecardslauncher.app.services
 
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.collection.CollectionException
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.{DockAppException, _}
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
+import com.fortysevendeg.ninecardslauncher.process.device._
 import com.google.android.gms.common.api.GoogleApiClient
 
 trait CreateCollectionsTasks
@@ -37,7 +33,7 @@ trait CreateCollectionsTasks
       momentCollections <- di.momentProcess.createMoments
       storedCollections <- di.collectionProcess.getCollections
       savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-        collections = storedCollections map toCloudStorageCollection,
+        collections = storedCollections map (collection => toCloudStorageCollection(collection, None)),
         moments = Seq.empty,
         dockApps = dockApps map toCloudStorageDockApp)
       _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId, deviceToken)

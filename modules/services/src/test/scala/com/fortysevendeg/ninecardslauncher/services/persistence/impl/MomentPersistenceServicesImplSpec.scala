@@ -28,6 +28,8 @@ trait MomentPersistenceServicesSpecification
 
     mockMomentRepository.addMoments(any) returns TaskService(Task(Xor.right(Seq(repoMoment))))
 
+    mockWidgetRepository.addWidgets(any) returns TaskService(Task(Xor.right(seqRepoWidget)))
+
     mockMomentRepository.deleteMoments() returns TaskService(Task(Xor.right(items)))
 
     mockMomentRepository.deleteMoment(repoMoment) returns TaskService(Task(Xor.right(item)))
@@ -61,6 +63,8 @@ trait MomentPersistenceServicesSpecification
     val exception = RepositoryException("Irrelevant message")
 
     mockMomentRepository.addMoment(repoMomentData) returns TaskService(Task(Xor.left(exception)))
+
+    mockWidgetRepository.addWidgets(any) returns TaskService(Task(Xor.left(exception)))
 
     mockMomentRepository.deleteMoments() returns TaskService(Task(Xor.left(exception)))
 

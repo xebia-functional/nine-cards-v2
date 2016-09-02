@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData}
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData, Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models._
@@ -65,6 +65,20 @@ trait PersistenceServicesData extends Conversions {
   val termDataCounter: String = Random.nextString(1)
   val countDataCounter: Int = Random.nextInt(2)
   val momentType1: String = "HOME"
+
+  val widgetId: Int = Random.nextInt(10)
+  val widgetType: String = Random.nextString(5)
+  val appWidgetId: Int = Random.nextInt(10)
+  val startX: Int = Random.nextInt(8)
+  val startY: Int = Random.nextInt(8)
+  val spanX: Int = Random.nextInt(8)
+  val spanY: Int = Random.nextInt(8)
+  val label: String = Random.nextString(5)
+  val widgetImagePath: String = Random.nextString(5)
+  val widgetIntent: String = Random.nextString(5)
+  val labelOption = Option(label)
+  val widgetImagePathOption = Option(widgetImagePath)
+  val widgetIntentOption = Option(widgetIntent)
 
   val seqMoment: Seq[Moment] = createSeqMoment()
   val servicesMoment: Moment = seqMoment(0)
@@ -349,6 +363,71 @@ trait PersistenceServicesData extends Conversions {
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
       cards = seqCard)
 
+  def createSeqRepoWidget(
+    num: Int = 5,
+    id: Int = widgetId,
+    data: RepositoryWidgetData = createRepoWidgetData()): Seq[RepositoryWidget] =
+    List.tabulate(num)(item => RepositoryWidget(id = id + item, data = data))
+
+  def createRepoWidgetData(
+    momentId: Int = momentId,
+    packageName: String = packageName,
+    className: String = className,
+    appWidgetId: Int = appWidgetId,
+    startX: Int = startX,
+    startY: Int = startY,
+    spanX: Int = spanX,
+    spanY: Int = spanY,
+    widgetType: String = widgetType,
+    label: Option[String] = labelOption,
+    imagePath: Option[String] = widgetImagePathOption,
+    intent: Option[String] = widgetIntentOption): RepositoryWidgetData =
+    RepositoryWidgetData(
+      momentId = momentId,
+      packageName = packageName,
+      className = className,
+      appWidgetId = appWidgetId,
+      startX = startX,
+      startY = startY,
+      spanX = spanX,
+      spanY = spanY,
+      widgetType = widgetType,
+      label = label,
+      imagePath = imagePath,
+      intent = intent)
+
+  def createSaveWidgetRequest(
+    num: Int = 5,
+    packageName: String = packageName,
+    className: String = className,
+    appWidgetId: Int = appWidgetId,
+    startX: Int = startX,
+    startY: Int = startX,
+    spanX: Int = startX,
+    spanY: Int = startX,
+    widgetType: String = widgetType,
+    label: Option[String] = None,
+    imagePath: Option[String] = None,
+    intent: Option[String] = None) =
+    (0 until 5) map (
+      item =>
+        SaveWidgetRequest(
+          packageName = packageName + item,
+          className = className + item,
+          appWidgetId = appWidgetId,
+          startX = startX + item,
+          startY = startY + item,
+          spanX = spanX + item,
+          spanY = spanY + item,
+          widgetType = widgetType,
+          label = label,
+          imagePath = imagePath,
+          intent = intent))
+
+  val repoWidgetData: RepositoryWidgetData = createRepoWidgetData()
+  val seqRepoWidget: Seq[RepositoryWidget] = createSeqRepoWidget(data = repoWidgetData)
+  val saveWidgetRequest = createSaveWidgetRequest()
+
   def createAddMomentRequest(
     collectionId: Option[Int] = collectionIdOption,
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
@@ -360,7 +439,8 @@ trait PersistenceServicesData extends Conversions {
       timeslot = timeslot,
       wifi = wifi,
       headphone = headphone,
-      momentType = momentType)
+      momentType = momentType,
+      widgets = saveWidgetRequest)
 
   def createDeleteMomentRequest(moment: Moment): DeleteMomentRequest =
     DeleteMomentRequest(moment = moment)
