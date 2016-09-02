@@ -120,6 +120,7 @@ object Settings {
     aar(playServicesDrive),
     aar(playServicesAuth),
     aar(playServicesPlus),
+    aar(playServicesAwareness),
     aar(multiDexLib),
     aar(crashlytics),
     aar(firebaseCore),
