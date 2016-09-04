@@ -5,10 +5,8 @@ import android.os.Bundle
 import android.preference.{ListPreference, PreferenceFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import macroid.Contexts
-
-import scalaz.concurrent.Task
 
 class AppDrawerFragment
   extends PreferenceFragment
@@ -27,7 +25,7 @@ class AppDrawerFragment
 
   override def onStart(): Unit = {
     super.onStart()
-    Task.fork(appDrawerJobs.initialize().value).resolveAsync()
+    appDrawerJobs.initialize().resolveAsync()
   }
 
 }

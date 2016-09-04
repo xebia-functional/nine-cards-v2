@@ -3,12 +3,10 @@ package com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers
 import android.app.Fragment
 import android.os.Bundle
 import android.preference.{Preference, PreferenceFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FindPreferences, Headphones, ProbablyActivity, Weather}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
-
-import scalaz.concurrent.Task
 
 class DeveloperFragment
   extends PreferenceFragment
@@ -24,7 +22,7 @@ class DeveloperFragment
     Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.developerPrefTitle)))
     addPreferencesFromResource(R.xml.preferences_dev)
 
-    Task.fork(preferencesJobs.initialize().value).resolveAsync()
+    preferencesJobs.initialize().resolveAsync()
 
   }
 
