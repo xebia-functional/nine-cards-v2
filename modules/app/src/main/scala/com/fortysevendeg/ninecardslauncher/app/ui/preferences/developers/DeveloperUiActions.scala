@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments
+package com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._

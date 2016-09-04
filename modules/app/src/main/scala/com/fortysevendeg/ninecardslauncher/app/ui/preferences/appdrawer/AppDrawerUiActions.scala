@@ -1,52 +1,42 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments
+package com.fortysevendeg.ninecardslauncher.app.ui.preferences.appdrawer
 
-import android.os.Bundle
-import android.preference.{ListPreference, Preference, PreferenceFragment}
-import android.app.Fragment
+import android.preference.Preference
 import android.preference.Preference.OnPreferenceChangeListener
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.Contexts
+import macroid.{ContextWrapper, Ui}
 
-class AppDrawerFragment
-  extends PreferenceFragment
-  with Contexts[Fragment]
-  with FindPreferences {
+class AppDrawerUiActions(dom: AppDrawerDOM)(implicit contextWrapper: ContextWrapper) {
 
   lazy val preferenceValues = new NineCardsPreferencesValue
 
-  override def onCreate(savedInstanceState: Bundle): Unit = {
-    super.onCreate(savedInstanceState)
-    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.appDrawerPrefTitle)))
-    addPreferencesFromResource(R.xml.preferences_app_drawer)
-  }
-
-  override def onStart(): Unit = {
-    super.onStart()
+  def initialize(): TaskService[Unit] = Ui {
     reloadLongPressActionText(AppDrawerLongPressAction.readValue(preferenceValues).value)
     reloadAnimationText(AppDrawerAnimation.readValue(preferenceValues).value)
-    find[ListPreference](AppDrawerLongPressAction).setOnPreferenceChangeListener(new OnPreferenceChangeListener {
+    dom.longPressPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener {
       override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
         reloadLongPressActionText(newValue.toString)
         true
       }
     })
 
-    find[ListPreference](AppDrawerAnimation).setOnPreferenceChangeListener(new OnPreferenceChangeListener {
+    dom.animationPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener {
       override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
         reloadAnimationText(newValue.toString)
         true
       }
     })
-  }
+  }.toService
 
   private[this] def reloadLongPressActionText(value: String) = {
     val textValue = AppDrawerLongPressActionValue(value) match {
       case AppDrawerLongPressActionOpenKeyboard => resGetString(R.string.appDrawerOpenKeyboard)
       case AppDrawerLongPressActionOpenContacts => resGetString(R.string.appDrawerOpenContacts)
     }
-    find[ListPreference](AppDrawerLongPressAction).setSummary(resGetString(R.string.appDrawerLongPressSummary, textValue))
+    dom.longPressPreference.setSummary(resGetString(R.string.appDrawerLongPressSummary, textValue))
   }
 
   private[this] def reloadAnimationText(value: String) = {
@@ -54,7 +44,7 @@ class AppDrawerFragment
       case AppDrawerAnimationCircle => resGetString(R.string.appDrawerOpenAnimationReveal)
       case AppDrawerAnimationFade => resGetString(R.string.appDrawerOpenAnimationFade)
     }
-    find[ListPreference](AppDrawerAnimation).setSummary(resGetString(R.string.appDrawerOpenAnimationSummary, textValue))
+    dom.animationPreference.setSummary(resGetString(R.string.appDrawerOpenAnimationSummary, textValue))
   }
 
 }

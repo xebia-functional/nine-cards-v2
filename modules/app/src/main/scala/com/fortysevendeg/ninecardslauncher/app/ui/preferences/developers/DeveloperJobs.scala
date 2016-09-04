@@ -1,12 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences
+package com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers
 
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments.DeveloperUiActions
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import cats.implicits._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import macroid.ContextWrapper
 
-class PreferencesJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrapper)
+class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrapper)
   extends Jobs {
 
   def initialize() = (loadMostProbableActivity |@| loadHeadphone |@| loadWeather).tupled

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.commons
+package com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons
 
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 

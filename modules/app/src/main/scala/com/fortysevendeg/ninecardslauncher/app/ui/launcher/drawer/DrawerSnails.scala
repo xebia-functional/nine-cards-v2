@@ -6,8 +6,8 @@ import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.SnailsUtils
-import com.fortysevendeg.ninecardslauncher.app.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue, SpeedAnimations}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue, SpeedAnimations}
 import com.fortysevendeg.ninecardslauncher.commons._
 import macroid.{ContextWrapper, Snail}
 
