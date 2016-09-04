@@ -32,6 +32,10 @@ case object AnimationsPreferences extends NineCardsPreferences {
   override val name: String = animationsKey
 }
 
+case object DeveloperPreferences extends NineCardsPreferences {
+  override val name: String = developerKey
+}
+
 case object AppInfoPreferences extends NineCardsPreferences {
   override val name: String = appInfoKey
 }
@@ -228,6 +232,33 @@ case object CardPadding
   }
 }
 
+// Developer Preferences
+
+case object ProbablyActivity
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = probablyActivity
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+case object Headphones
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = headphones
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+case object Weather
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = weather
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+
 // Commons
 
 class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
@@ -251,6 +282,7 @@ object PreferencesKeys {
   val appDrawerKey = "appDrawerKey"
   val sizesKey = "sizesKey"
   val animationsKey = "animationsKey"
+  val developerKey = "developerKey"
   val aboutKey = "aboutKey"
   val helpKey = "helpKey"
   val appInfoKey = "appInfoKey"
@@ -278,6 +310,11 @@ object PreferencesValuesKeys {
   val speed = "speed"
   val collectionOpening = "collectionOpening"
   val workspaceAnimation = "workspaceAnimation"
+
+  // Developer Preferences
+  val probablyActivity = "probablyActivity"
+  val headphones = "headphones"
+  val weather = "weather"
 }
 
 

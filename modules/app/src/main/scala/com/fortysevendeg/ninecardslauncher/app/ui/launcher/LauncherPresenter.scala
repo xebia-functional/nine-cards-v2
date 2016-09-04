@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Jobs}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
@@ -42,7 +42,7 @@ import scala.util.Try
 import scalaz.concurrent.Task
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Presenter
+  extends Jobs
   with Conversions
   with NineCardIntentConversions
   with LauncherExecutor

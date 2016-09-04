@@ -4,7 +4,7 @@ import android.content.Context
 import android.support.v7.widget.RecyclerView.ViewHolder
 import com.fortysevendeg.ninecardslauncher.app.analytics.{NoValue, RemovedInCollectionAction, RemovedInCollectionValue, _}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
@@ -17,7 +17,7 @@ case class CollectionPresenter(
   animateCards: Boolean,
   maybeCollection: Option[Collection],
   actions: CollectionUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Presenter
+  extends Jobs
   with AnalyticDispatcher { self =>
 
   override def getApplicationContext: Context = contextWrapper.application
