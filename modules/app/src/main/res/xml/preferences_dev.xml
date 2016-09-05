@@ -2,16 +2,21 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <Preference
-        android:key="probablyActivity"
-        android:title="@string/devProbablyActivityTitle"/>
+    <PreferenceCategory
+        android:title="@string/devAwarenessAPIPrefTitle">
 
-    <Preference
-        android:key="headphones"
-        android:title="@string/devHeadphonesTitle"/>
+        <Preference
+            android:key="probablyActivity"
+            android:title="@string/devProbablyActivityTitle"/>
 
-    <Preference
-        android:key="weather"
-        android:title="@string/devWeatherTitle"/>
+        <Preference
+            android:key="headphones"
+            android:title="@string/devHeadphonesTitle"/>
+
+        <Preference
+            android:key="weather"
+            android:title="@string/devWeatherTitle"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

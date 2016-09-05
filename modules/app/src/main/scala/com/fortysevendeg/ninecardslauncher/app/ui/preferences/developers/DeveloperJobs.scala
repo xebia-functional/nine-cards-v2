@@ -8,7 +8,7 @@ import macroid.ContextWrapper
 class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrapper)
   extends Jobs {
 
-  def initialize() = (loadMostProbableActivity |@| loadHeadphone |@| loadWeather).tupled
+  def initialize() = (ui.initialize(this) |@| loadMostProbableActivity |@| loadHeadphone |@| loadWeather).tupled
 
   def loadMostProbableActivity = for {
     probableActivity <- di.recognitionProcess.getMostProbableActivity
@@ -17,12 +17,12 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
 
   def loadHeadphone = for {
     headphone <- di.recognitionProcess.getHeadphone
-    _ <- ui.setHeadphonesSummary(headphone.connected.toString)
+    _ <- ui.setHeadphonesSummary(headphone.connected)
   } yield ()
 
   def loadWeather = for {
     weather <- di.recognitionProcess.getWeather
-    _ <- ui.setWeatherSummary(weather.toString)
+    _ <- ui.setWeatherSummary(weather)
   } yield ()
 
 }

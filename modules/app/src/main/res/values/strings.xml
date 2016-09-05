@@ -432,6 +432,8 @@
     <string name="developerPrefTitle">Developer Option</string>
     <string name="developerPrefSummary">Only if you are a Android/Scala Dev :-)</string>
 
+    <string name="devAwarenessAPIPrefTitle">Awareness API</string>
+
     <string name="devProbablyActivityTitle">Probably Activity</string>
     <string name="devHeadphonesTitle">Headphones</string>
     <string name="devWeatherTitle">Weather</string>
