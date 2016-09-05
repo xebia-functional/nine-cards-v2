@@ -8,7 +8,7 @@ import scalaz.concurrent.Task
 
 package object services {
 
-    object TaskService {
+  object TaskService {
 
     implicit val taskFunctor = new Functor[Task] {
       override def map[A, B](fa: Task[A])(f: (A) => B): Task[B] = fa.map(f)
@@ -26,7 +26,7 @@ package object services {
 
     type TaskService[A] = XorT[Task, NineCardException, A]
 
-    def apply[A](f: Task[NineCardException Xor A]) : TaskService[A] = {
+    def apply[A](f: Task[NineCardException Xor A]): TaskService[A] = {
       XorT[Task, NineCardException, A](f)
     }
 

@@ -169,8 +169,8 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
     clientStatuses.plusApiClient match {
       case Some(apiClient) =>
-        val googlePlusProcess = di.createGooglePlusProcess(apiClient)
-        Task.fork(googlePlusProcess.updateUserProfile().value).resolveAsync(
+        val socialProfileProcess = di.createSocialProfileProcess(apiClient)
+        Task.fork(socialProfileProcess.updateUserProfile().value).resolveAsync(
           onResult = loadDevices,
           onException = error,
           onPreTask = () => actions.showLoading().run
