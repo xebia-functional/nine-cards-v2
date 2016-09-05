@@ -16,9 +16,11 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.IconsSize
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
@@ -66,8 +68,6 @@ trait CollectionAdapterStyles {
 
   val alphaDefault = .1f
 
-  val colorAllNotInstalled = Color.BLACK.alpha(.2f)
-
   def rootStyle(heightCard: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     Tweak[CardView] { view =>
       view.getLayoutParams.height = heightCard
@@ -99,12 +99,12 @@ trait CollectionAdapterStyles {
   def nameStyle(cardType: CardType)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
     cardType match {
       case NoInstalledAppCardType =>
-        tvColor(colorAllNotInstalled)
+        tvColor(theme.get(CardTextColor).alpha(.4f))
       case _ =>
         tvColor(theme.get(CardTextColor))
     }
 
-  def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_]) =
+  def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
     card.cardType match {
       case cardType if cardType.isContact =>
         ivUriContact(card.imagePath, card.term) +
@@ -114,8 +114,11 @@ trait CollectionAdapterStyles {
       case AppCardType => ivSrcByPackageName(card.packageName, card.term)
       case NoInstalledAppCardType =>
         val shape = new ShapeDrawable(new OvalShape)
-        shape.getPaint.setColor(colorAllNotInstalled)
+        shape.getPaint.setColor(theme.get(CardTextColor).alpha(.4f))
+        val iconColor = theme.get(CardBackgroundColor)
         ivSrc(R.drawable.icon_card_not_installed) +
+          tivDefaultColor(iconColor) +
+          tivPressedColor(iconColor) +
           vBackground(shape) +
           reduceLayout +
           ivScaleType(ScaleType.CENTER_INSIDE)
@@ -134,13 +137,7 @@ trait CollectionAdapterStyles {
       view.requestLayout()
   }
 
-  private[this] def reduceLayout(implicit context: ContextWrapper): Tweak[View] = Tweak[View] {
-    view =>
-      val size = resGetDimensionPixelSize(R.dimen.size_icon_card)
-      val params = view.getLayoutParams
-      params.height = size
-      params.width = size
-      view.requestLayout()
-  }
+  private[this] def reduceLayout(implicit context: ContextWrapper): Tweak[View] =
+    vResize(IconsSize.getIconApp)
 
 }

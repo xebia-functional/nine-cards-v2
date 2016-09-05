@@ -9,8 +9,9 @@ import com.fortysevendeg.ninecardslauncher.app.observers.NineCardsObserver._
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
@@ -21,7 +22,6 @@ import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{ImplicitsS
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 
 import scalaz.concurrent.Task
 
@@ -69,10 +69,18 @@ class SynchronizeDeviceService
       for {
         collections <- di.collectionProcess.getCollections
         moments <- di.momentProcess.getMoments
+        widgets <- di.widgetsProcess.getWidgets
         dockApps <- di.deviceProcess.getDockApps
+        cloudStorageMoments = moments.filter(_.collectionId.isEmpty) map { moment =>
+          val widgetSeq = widgets.filter(_.momentId == moment.id) match {
+            case wSeq if wSeq.isEmpty => None
+            case wSeq => Some(wSeq)
+          }
+          toCloudStorageMoment(moment, widgetSeq)
+        }
         savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-          collections = collections map toCloudStorageCollection,
-          moments = moments.filter(_.collectionId.isEmpty) map toCloudStorageMoment,
+          collections = collections map (collection => toCloudStorageCollection(collection, collection.moment map (moment => widgets.filter(_.momentId == moment.id)))),
+          moments = cloudStorageMoments,
           dockApps = dockApps map toCloudStorageDockApp)
         _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId)
       } yield ()

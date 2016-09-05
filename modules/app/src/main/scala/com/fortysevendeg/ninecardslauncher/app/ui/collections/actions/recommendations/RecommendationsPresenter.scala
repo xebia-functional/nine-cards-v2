@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations
 
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NoInstalledAppCardType}
@@ -43,7 +43,7 @@ class RecommendationsPresenter(
     Task.fork(task.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (recommendations: Seq[RecommendedApp]) => actions.loadRecommendations(recommendations),
-      onException = (_) => actions.showLoadingRecommendationError())
+      onException = (_) => actions.showErrorLoadingRecommendationInScreen())
   }
 
 }
@@ -54,7 +54,7 @@ trait RecommendationsUiActions {
 
   def showLoading(): Ui[Any]
 
-  def showLoadingRecommendationError(): Ui[Any]
+  def showErrorLoadingRecommendationInScreen(): Ui[Any]
 
   def loadRecommendations(recommendations: Seq[RecommendedApp]): Ui[Any]
 

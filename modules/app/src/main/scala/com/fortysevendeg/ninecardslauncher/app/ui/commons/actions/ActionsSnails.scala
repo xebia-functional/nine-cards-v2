@@ -8,6 +8,7 @@ import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SnailsUtils
+import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -20,14 +21,14 @@ object ActionsSnails {
   def revealIn(x: Int, y: Int, w: Int, h: Int, sizeIcon: Int)(implicit context: ContextWrapper): Snail[View] =
     Lollipop ifSupportedThen {
       val startRadius = sizeIcon / 2
-      revealIn(x, y, w, h, startRadius, resGetInteger(R.integer.anim_duration_normal))
+      revealIn(x, y, w, h, startRadius, SpeedAnimations.getDuration)
     } getOrElse {
       applyFadeIn()
     }
 
   def revealOut(x: Int, y: Int, w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] =
     Lollipop ifSupportedThen {
-      revealOut(x, y, w, h, resGetInteger(R.integer.anim_duration_normal))
+      revealOut(x, y, w, h, SpeedAnimations.getDuration)
     } getOrElse {
       applyFadeOut()
     }
@@ -37,7 +38,7 @@ object ActionsSnails {
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
-      val duration = resGetInteger(R.integer.anim_duration_normal)
+      val duration = SpeedAnimations.getDuration
       view.setPivotY(0)
       view
         .animate
@@ -59,7 +60,7 @@ object ActionsSnails {
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
-      val duration = resGetInteger(R.integer.anim_duration_normal)
+      val duration = SpeedAnimations.getDuration
       view.setVisibility(View.VISIBLE)
       view.setAlpha(0)
       view
@@ -83,7 +84,7 @@ object ActionsSnails {
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
-      val duration = resGetInteger(R.integer.anim_duration_normal)
+      val duration = SpeedAnimations.getDuration
       view.setVisibility(View.VISIBLE)
       view.setScaleX(0)
       view.setScaleY(0)

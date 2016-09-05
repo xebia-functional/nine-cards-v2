@@ -2,12 +2,13 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import android.view.View
 import android.view.animation.{AccelerateDecelerateInterpolator, AccelerateInterpolator, DecelerateInterpolator}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Snail, Ui}
@@ -64,7 +65,7 @@ object SnailsCommons {
 
   def animFabMenuItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
-      val duration = resGetInteger(R.integer.anim_duration_normal)
+      val duration = SpeedAnimations.getDuration
       val translationY = resGetDimensionPixelSize(R.dimen.padding_default)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
@@ -88,7 +89,7 @@ object SnailsCommons {
 
   def animFabMenuTitleItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
-      val duration = resGetInteger(R.integer.anim_duration_normal)
+      val duration = SpeedAnimations.getDuration
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
@@ -111,7 +112,7 @@ object SnailsCommons {
 
   def animFabMenuIconItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
-      val duration = resGetInteger(R.integer.anim_duration_normal)
+      val duration = SpeedAnimations.getDuration
       val size = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
@@ -141,7 +142,7 @@ object SnailsCommons {
 
   def fadeBackground(color: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
-      val duration = resGetInteger(R.integer.anim_duration_normal)
+      val duration = SpeedAnimations.getDuration
       view.clearAnimation()
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
@@ -206,7 +207,7 @@ object SnailsCommons {
           }
         })
 
-      animator.setDuration(duration getOrElse resGetInteger(R.integer.anim_duration_normal))
+      animator.setDuration(duration getOrElse SpeedAnimations.getDuration)
       x foreach animator.translationX
       y foreach animator.translationY
       xBy foreach animator.translationXBy

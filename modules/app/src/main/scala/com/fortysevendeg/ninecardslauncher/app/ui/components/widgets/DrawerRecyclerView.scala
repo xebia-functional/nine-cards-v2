@@ -4,7 +4,6 @@ import android.content.Context
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams
-import android.view.animation.AnimationUtils
 import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -150,6 +149,7 @@ case class DrawerRecyclerViewListener(
 
 case class DrawerRecyclerStatuses(
   contentView: ContentView = AppsView,
+  lastTimeContentViewWasChanged: Boolean = false,
   disableClickItems: Boolean = false,
   displacement: Float = 0,
   swap: Boolean = false) {

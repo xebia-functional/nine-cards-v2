@@ -7,7 +7,7 @@ import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.View
-import android.widget.FrameLayout
+import android.widget.{FrameLayout, ImageView}
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -19,23 +19,22 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentFragment
@@ -130,7 +129,7 @@ trait CollectionsUiActions
           true
         })) ~
       (paginationPanel <~ On.longClick((workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
-      (topBarPanel <~ tblInit) ~
+      (topBarPanel <~ tblInit(CollectionsWorkSpace)) ~
       (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (menuCollectionRoot <~ vGone) ~
@@ -350,7 +349,7 @@ trait CollectionsUiActions
   def reloadWorkspacePager: Ui[Any] = (workspaces ~> lwsCurrentPage()).get map createPager getOrElse Ui.nop
 
   def pagination(position: Int) =
-    (w[TintableImageView] <~ paginationItemStyle <~ vSetPosition(position)).get
+    (w[ImageView] <~ paginationItemStyle <~ vSetPosition(position)).get
 
   protected def showAction[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty): Ui[Any] = {

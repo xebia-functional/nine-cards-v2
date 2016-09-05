@@ -9,7 +9,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
@@ -56,7 +56,7 @@ class CollectionDialog(
         onCollection(collection.id)
         dialog.dismiss()
       })) ~
-      (icon <~ ivSrc(iconCollectionDetail(collection.icon)) <~ tivDefaultColor(theme.get(DrawerIconColor))) ~
+      (icon <~ ivSrc(collection.getIconDetail) <~ tivDefaultColor(theme.get(DrawerIconColor))) ~
       (text <~ tvText(collection.name) <~ tvColor(theme.get(DrawerTextColor)))).run
 
 

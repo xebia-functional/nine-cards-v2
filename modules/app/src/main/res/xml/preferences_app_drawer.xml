@@ -3,27 +3,23 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-            android:key="defaultWindow"
+            android:key="appDrawerLongPressAction"
             android:defaultValue="0"
-            android:entries="@array/defaultWindows"
-            android:entryValues="@array/defaultWindowsValues"
-            android:title="@string/defaultWindowTitle"
-            android:summary="@string/defaultWindowSummary"/>
+            android:entries="@array/drawerActions"
+            android:entryValues="@array/drawerActionsValues"
+            android:title="@string/appDrawerLongPressTitle"/>
 
     <ListPreference
-            android:key="letterAnimation"
+            android:key="appDrawerAnimation"
             android:defaultValue="0"
-            android:entries="@array/letterAnimations"
-            android:entryValues="@array/letterAnimationsValues"
-            android:title="@string/letterAnimationTitle"
-            android:summary="@string/letterAnimationSummary"/>
+            android:entries="@array/appDrawerOpenAnimations"
+            android:entryValues="@array/appDrawerOpenAnimationsValues"
+            android:title="@string/appDrawerOpenAnimationTitle"/>
 
-    <ListPreference
-            android:key="windowIcon"
-            android:defaultValue="0"
-            android:entries="@array/windowIcons"
-            android:entryValues="@array/windowIconsValues"
-            android:title="@string/windowIconTitle"
-            android:summary="@string/windowIconSummary"/>
+    <CheckBoxPreference
+            android:key="appDrawerFavoriteContacts"
+            android:defaultValue="false"
+            android:title="@string/appDrawerFistTabContactTitle"
+            android:summary="@string/appDrawerFistTabContactSummary"/>
 
 </PreferenceScreen>

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppsWithWidgets
 import macroid._
 
@@ -19,7 +19,7 @@ class WidgetsPresenter(actions: WidgetsUiActions)(implicit contextWrapper: Activ
     Task.fork(di.deviceProcess.getWidgets.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = (widgets: Seq[AppsWithWidgets]) => actions.loadWidgets(widgets),
-      onException = (_) => actions.showMessageWidgetsFailed()
+      onException = (_) => actions.showErrorLoadingWidgetsInScreen()
     )
   }
 
@@ -35,7 +35,7 @@ trait WidgetsUiActions {
 
   def showLoading(): Ui[Any]
 
-  def showMessageWidgetsFailed(): Ui[Any]
+  def showErrorLoadingWidgetsInScreen(): Ui[Any]
 
   def close(): Ui[Any]
 

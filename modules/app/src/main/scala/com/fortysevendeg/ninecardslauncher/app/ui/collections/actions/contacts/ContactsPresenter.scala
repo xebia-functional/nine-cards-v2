@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
@@ -29,7 +29,7 @@ class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrap
         actions.showContacts(filter, contacts, counters, reload) ~
           (if (actions.isTabsOpened) actions.closeTabs() else Ui.nop)
     },
-    onException = (ex: Throwable) => actions.showLoadingContactsError(filter)
+    onException = (ex: Throwable) => actions.showErrorLoadingContactsInScreen(filter)
   )
 
   def showContact(lookupKey: String): Unit = Task.fork(di.deviceProcess.getContact(lookupKey).value).resolveAsyncUi(
@@ -64,7 +64,7 @@ trait ContactsUiActions {
     counters: Seq[TermCounter],
     reload: Boolean): Ui[Any]
 
-  def showLoadingContactsError(filter: ContactsFilter): Ui[Any]
+  def showErrorLoadingContactsInScreen(filter: ContactsFilter): Ui[Any]
 
   def showGeneralError(): Ui[Any]
 

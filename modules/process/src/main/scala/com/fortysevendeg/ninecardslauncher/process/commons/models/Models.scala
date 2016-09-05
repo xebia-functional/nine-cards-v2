@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.commons.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, CollectionType, NineCardCategory, NineCardsMoment}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 
 case class Collection(
   id: Int,
@@ -61,3 +61,15 @@ case class MomentTimeSlot(
   from: String,
   to: String,
   days: Seq[Int])
+
+case class FormedWidget(
+  packageName: String,
+  className: String,
+  startX: Int,
+  startY: Int,
+  spanX: Int,
+  spanY: Int,
+  widgetType: WidgetType = AppWidgetType,
+  label: Option[String] = None,
+  imagePath: Option[String] = None,
+  intent: Option[String] = None)

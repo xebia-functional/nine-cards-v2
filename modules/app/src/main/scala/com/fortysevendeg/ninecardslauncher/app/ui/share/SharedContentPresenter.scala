@@ -8,7 +8,7 @@ import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.share.models.{SharedContent, Web}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -78,7 +78,6 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
       val nineCardIntent = NineCardIntent(NineCardIntentExtras())
       nineCardIntent.fill(intent)
 
-
       AddCardRequest(
         term = sharedContent.title,
         packageName = None,
@@ -90,7 +89,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
     def saveBitmap(maybeUri: Option[Uri]): TaskService[String] = {
       maybeUri match {
         case Some(uri) =>
-          val iconSize = resGetDimensionPixelSize(R.dimen.size_icon_card)
+          val iconSize = resGetDimensionPixelSize(R.dimen.size_icon_app_medium)
           di.deviceProcess.saveShortcutIcon(
             MediaStore.Images.Media.getBitmap(contextWrapper.bestAvailable.getContentResolver, uri),
             Some(IconResize(iconSize, iconSize)))

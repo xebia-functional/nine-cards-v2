@@ -1,23 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
-import android.app.Activity
 import android.content.{ComponentName, Context, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions, PreferencesValuesKeys}
 import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, RequestCodes, WidgetsOps}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
@@ -42,7 +37,6 @@ import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import macroid.{ActivityContextWrapper, Ui}
 
-import scala.concurrent.Future
 import scala.language.postfixOps
 import scala.util.Try
 import scalaz.concurrent.Task
@@ -595,28 +589,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       })
   }
 
-  def goToCollection(maybeCollection: Option[Collection], point: Point): Unit = {
-    def launchIntent(activity: Activity, collection: Collection) = {
-      val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
-      intent.putExtra(startPosition, collection.position)
-      intent.putExtra(indexColorToolbar, collection.themedColorIndex)
-      intent.putExtra(iconToolbar, collection.icon)
-      Lollipop.ifSupportedThen {
-        val color = resGetColor(getIndexColor(collection.themedColorIndex))
-        actions.rippleToCollection(color, point) ~~
-          Ui {
-            activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
-          }
-      } getOrElse {
-        Ui(activity.startActivity(intent))
-      }
-    }
-
-    ((for {
-      collection <- maybeCollection
-      activity <- contextWrapper.original.get
-    } yield launchIntent(activity, collection)) getOrElse actions.showContactUsError()).run
-  }
+  def goToCollection(maybeCollection: Option[Collection], point: Point): Unit = (maybeCollection match {
+    case Some(collection) => actions.goToCollection(collection, point)
+    case _ => actions.showContactUsError()
+  }).run
 
   def resetFromCollectionDetail(): Unit = actions.resetFromCollection().run
 
@@ -693,14 +669,31 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       widget <- di.widgetsProcess.addWidget(appWidgetRequest)
     } yield widget
 
+    def replaceWidget(id: Int, appWidgetId: Int) = for {
+      widget <- di.widgetsProcess.updateAppWidgetId(id, appWidgetId)
+    } yield widget
+
     (for {
       appWidgetId <- maybeAppWidgetId
       data <- actions.getData.headOption
       moment <- data.moment
       nineCardMoment <- moment.momentType
     } yield {
-      Task.fork(createWidget(appWidgetId, nineCardMoment).value).resolveAsyncUi(
-        onResult = (widget: AppWidget) => actions.addWidgets(Seq(widget)),
+      val hostingWidgetId = statuses.hostingNoConfiguredWidget map (_.id)
+      val task = hostingWidgetId match {
+        case Some(id) => replaceWidget(id, appWidgetId).value
+        case _ => createWidget(appWidgetId, nineCardMoment).value
+      }
+      Task.fork(task).resolveAsyncUi(
+        onResult = (widget: AppWidget) => {
+          hostingWidgetId match {
+            case Some(_) =>
+              statuses = statuses.copy(hostingNoConfiguredWidget = None)
+              actions.replaceWidget(widget)
+            case _ =>
+              actions.addWidgets(Seq(widget))
+          }
+        },
         onException = (ex) => ex match {
           case ex: SpaceException => actions.showWidgetNoHaveSpaceMessage()
           case _ => actions.showContactUsError()
@@ -708,30 +701,43 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }) getOrElse actions.showContactUsError().run
   }
 
-  def hostWidget(widget: Widget): Unit = actions.hostWidget(widget).run
+  def hostNoConfiguredWidget(widget: AppWidget): Unit = {
+    statuses = statuses.copy(hostingNoConfiguredWidget = Option(widget))
+    actions.hostWidget(widget.packageName, widget.className).run
+  }
+
+  def hostWidget(widget: Widget): Unit = {
+    statuses = statuses.copy(hostingNoConfiguredWidget = None)
+    actions.hostWidget(widget.packageName, widget.className).run
+  }
 
   def configureOrAddWidget(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map actions.configureWidget getOrElse actions.showContactUsError()).run
 
   def preferencesChanged(changedPreferences: Array[String]): Unit = {
 
-    def needToRecreate(array: Array[String]): Boolean = array.contains(PreferencesValuesKeys.themeFile)
+    def needToRecreate(array: Array[String]): Boolean =
+      array.intersect(
+        Seq(PreferencesValuesKeys.theme,
+        PreferencesValuesKeys.iconsSize,
+        PreferencesValuesKeys.fontsSize)).nonEmpty
 
     def uiAction(prefKey: String): Ui[_] = prefKey match {
       case PreferencesValuesKeys.showClockMoment => actions.reloadMomentTopBar()
+      case PreferencesValuesKeys.googleLogo => actions.reloadTopBar()
       case _ => Ui.nop
     }
 
-    (contextWrapper.original.get, Option(changedPreferences)) match {
-        case (Some(activity), Some(array)) if array.nonEmpty =>
-          if (needToRecreate(array)) {
-            activity.recreate()
-          } else {
-            (array map uiAction reduce (_ ~ _)).run
-          }
-        case _ =>
-      }
+    Option(changedPreferences) match {
+      case Some(array) if array.nonEmpty =>
+        if (needToRecreate(array)) {
+          actions.reloadAllViews().run
+        } else {
+          (array map uiAction reduce (_ ~ _)).run
+        }
+      case _ =>
     }
+  }
 
   def cleanPersistedMoment() = {
     persistMoment.clean()
@@ -750,30 +756,32 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     // Check if the best available moment is different to the current moment, if it's different return Some(moment)
     // in the other case None
-    def getCheckMoment: TaskService[LauncherMoment] = {
+    def getCheckMoment: TaskService[Option[LauncherMoment]] = {
 
       def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
-        val emptyService: TaskService[Option[Collection]] = TaskService(Task(Xor.right(None)))
-        val momentType = moment flatMap (_.momentType)
-        val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
         val collectionId = moment flatMap (_.collectionId)
-        if (momentType == currentMomentType) {
-          TaskService(Task(Xor.left(CollectionException("Best available moment is same of current moment"))))
-        } else {
-          collectionId map di.collectionProcess.getCollectionById getOrElse emptyService
-        }
+        collectionId map di.collectionProcess.getCollectionById getOrElse TaskService(Task(Xor.right(None)))
       }
 
       for {
         moment <- di.momentProcess.getBestAvailableMoment
         collection <- getCollection(moment)
-      } yield LauncherMoment(moment flatMap (_.momentType), collection)
+        currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
+        momentType = moment flatMap (_.momentType)
+      } yield {
+        currentMomentType match {
+          case `momentType` => None
+          case _ => Option(LauncherMoment(moment flatMap (_.momentType), collection))
+        }
+      }
     }
 
     Task.fork(getCheckMoment.value).resolveAsyncUi(
-      onResult = (launcherMoment) => {
-        val data = LauncherData(MomentWorkSpace, Some(launcherMoment))
-        actions.reloadMoment(data)
+      onResult = {
+        case launcherMoment @ Some(_) =>
+          val data = LauncherData(MomentWorkSpace, launcherMoment)
+          actions.reloadMoment(data)
+        case _ => Ui.nop
       },
       onException = (_) => Ui(reloadAppsMomentBar()))
   }
@@ -950,8 +958,6 @@ trait LauncherUiActions {
 
   def moveWidget(): Ui[Any]
 
-  def arrowWidget(arrow: Arrow): Ui[Any]
-
   def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any]
 
   def moveWidgetById(id: Int, move: MoveWidgetRequest): Ui[Any]
@@ -984,11 +990,17 @@ trait LauncherUiActions {
 
   def goToNextScreen(): Ui[Any]
 
+  def goToCollection(collection: Collection, point: Point): Ui[Any]
+
   def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
 
   def reloadCurrentMoment(): Ui[Any]
 
   def reloadMomentTopBar(): Ui[Any]
+
+  def reloadTopBar(): Ui[Any]
+
+  def reloadAllViews(): Ui[Any]
 
   def reloadMoment(moment: LauncherData): Ui[Any]
 
@@ -1005,8 +1017,6 @@ trait LauncherUiActions {
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
 
-  def rippleToCollection(color: Int, point: Point): Ui[Future[Any]]
-
   def resetFromCollection(): Ui[Any]
 
   def editCollection(collection: Collection): Ui[Any]
@@ -1015,11 +1025,13 @@ trait LauncherUiActions {
 
   def addWidgets(widgets: Seq[AppWidget]): Ui[Any]
 
+  def replaceWidget(widget: AppWidget): Ui[Any]
+
   def deleteSelectedWidget(): Ui[Any]
 
   def unhostWidget(id: Int): Ui[Any]
 
-  def hostWidget(widget: Widget): Ui[Any]
+  def hostWidget(packageName: String, className: String): Ui[Any]
 
   def configureWidget(appWidgetId: Int): Ui[Any]
 
@@ -1059,6 +1071,7 @@ object Statuses {
 
   case class LauncherPresenterStatuses(
     touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
+    hostingNoConfiguredWidget: Option[AppWidget] = None,
     mode: LauncherMode = NormalMode,
     transformation: Option[EditWidgetTransformation] = None,
     idWidget: Option[Int] = None,

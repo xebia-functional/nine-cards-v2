@@ -11,8 +11,8 @@ import play.api.libs.json.Json
 
 trait OkHttpClientSpecification
   extends Specification
-  with DisjunctionMatchers
-  with Mockito {
+    with DisjunctionMatchers
+    with Mockito {
 
   trait OkHttpClientScope
     extends Scope {
@@ -96,9 +96,7 @@ class OkHttpClientSpec
 
       val response = okHttpClient.doGet(baseUrl, Seq.empty).value.run
 
-      response must beLike {
-        case Xor.Right(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
-      }
+      response shouldEqual Xor.Right(HttpClientResponse(statusCode, Some(json)))
     }
 
     "return the response for a successfully delete request" in new OkHttpClientScope {
@@ -107,9 +105,7 @@ class OkHttpClientSpec
 
       val response = okHttpClient.doDelete(baseUrl, Seq.empty).value.run
 
-      response must beLike {
-        case Xor.Right(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
-      }
+      response shouldEqual Xor.Right(HttpClientResponse(statusCode, Some(json)))
     }
 
     "return the response for a successfully empty post request" in new OkHttpClientScope {
@@ -118,9 +114,7 @@ class OkHttpClientSpec
 
       val response = okHttpClient.doPost(baseUrl, Seq.empty).value.run
 
-      response must beLike {
-        case Xor.Right(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
-      }
+      response shouldEqual Xor.Right(HttpClientResponse(statusCode, Some(json)))
     }
 
     "return the response for a successfully post request" in new OkHttpClientScope {
@@ -132,9 +126,7 @@ class OkHttpClientSpec
 
       val response = okHttpClient.doPost[SampleRequest](baseUrl, Seq.empty, sampleRequest).value.run
 
-      response must beLike {
-        case Xor.Right(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
-      }
+      response shouldEqual Xor.Right(HttpClientResponse(statusCode, Some(json)))
     }
 
     "return the response for a successfully empty put request" in new OkHttpClientScope {
@@ -143,9 +135,7 @@ class OkHttpClientSpec
 
       val response = okHttpClient.doPut(baseUrl, Seq.empty).value.run
 
-      response must beLike {
-        case Xor.Right(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
-      }
+      response shouldEqual Xor.Right(HttpClientResponse(statusCode, Some(json)))
     }
 
     "return the response for a successfully put request" in new OkHttpClientScope {
@@ -157,9 +147,7 @@ class OkHttpClientSpec
 
       val response = okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, sampleRequest).value.run
 
-      response must beLike {
-        case Xor.Right(r) => r shouldEqual HttpClientResponse(statusCode, Some(json))
-      }
+      response shouldEqual Xor.Right(HttpClientResponse(statusCode, Some(json)))
     }
 
     "return an Exception for an unexpected method" in new OkHttpClientScope {
@@ -168,9 +156,7 @@ class OkHttpClientSpec
 
       val response = okHttpClient.doDelete(baseUrl, Seq.empty).value.run
 
-      response must beLike {
-        case Xor.Left(e) =>  e.getCause shouldEqual baseException
-        }
+      response must beAnInstanceOf[Xor.Left[IllegalArgumentException]]
     }
 
     "return an Exception for an unexpected request" in new OkHttpClientScope {
@@ -181,9 +167,7 @@ class OkHttpClientSpec
 
       val response = okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")).value.run
 
-      response must beLike {
-        case Xor.Left(e) =>  e.getCause shouldEqual baseException
-        }
+      response must beAnInstanceOf[Xor.Left[IllegalArgumentException]]
     }
 
   }

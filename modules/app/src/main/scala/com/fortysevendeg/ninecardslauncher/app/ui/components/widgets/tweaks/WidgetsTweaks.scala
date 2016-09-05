@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks
 
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.animation.AnimationUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -19,6 +20,12 @@ object TintableImageViewTweaks {
   }
 
   def tivPressedColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.pressedColor = color)
+
+  def tivClean(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { view =>
+    view.defaultColor = Color.WHITE
+    view.pressedColor = Color.WHITE
+    view.setTint(Color.WHITE)
+  }
 
 }
 
@@ -73,12 +80,20 @@ object DrawerRecyclerViewTweaks {
   type W = DrawerRecyclerView
 
   def drvSetType(option: AppsMenuOption) = Tweak[W] { view =>
-    view.statuses = view.statuses.copy(contentView = AppsView)
+    if (view.statuses.contentView == AppsView) {
+      view.statuses = view.statuses.copy(lastTimeContentViewWasChanged = false)
+    } else {
+      view.statuses = view.statuses.copy(contentView = AppsView, lastTimeContentViewWasChanged = true)
+    }
     (view <~ vSetType(option.name)).run
   }
 
   def drvSetType(option: ContactsMenuOption) = Tweak[W] { view =>
-    view.statuses = view.statuses.copy(contentView = ContactView)
+    if (view.statuses.contentView == ContactView) {
+      view.statuses = view.statuses.copy(lastTimeContentViewWasChanged = false)
+    } else {
+      view.statuses = view.statuses.copy(contentView = ContactView, lastTimeContentViewWasChanged = true)
+    }
     (view <~ vSetType(option.name)).run
   }
 

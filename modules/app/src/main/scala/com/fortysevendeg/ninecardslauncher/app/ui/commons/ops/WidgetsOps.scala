@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
 
 import android.appwidget.AppWidgetProviderInfo
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -12,13 +12,20 @@ object WidgetsOps {
 
   val columns = 5
 
+  def sizeCell(
+    widthContent: Int,
+    heightContent: Int)(implicit contextWrapper: ContextWrapper) = {
+    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
+    val widthW = widthContent - (padding * 2)
+    val heightW = heightContent - (padding * 2)
+    (widthW / columns, heightW / rows)
+  }
+
   def dimensionToCell(
     widthContent: Int,
     heightContent: Int,
     minWidth: Int,
-    minHeight: Int,
-    minResizeWidth: Int,
-    minResizeHeight: Int)(implicit contextWrapper: ContextWrapper) = {
+    minHeight: Int)(implicit contextWrapper: ContextWrapper) = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
 
     val widthW = widthContent - (padding * 2)
@@ -43,9 +50,7 @@ object WidgetsOps {
         widthContent = widthContent,
         heightContent = heightContent,
         minWidth = info.minWidth,
-        minHeight = info.minHeight,
-        minResizeWidth = info.minResizeWidth,
-        minResizeHeight = info.minResizeHeight)
+        minHeight = info.minHeight)
 
   }
 
@@ -56,9 +61,7 @@ object WidgetsOps {
         widthContent = widthContent,
         heightContent = heightContent,
         minWidth = widget.minWidth,
-        minHeight = widget.minHeight,
-        minResizeWidth = widget.minResizeWidth,
-        minResizeHeight = widget.minResizeHeight)
+        minHeight = widget.minHeight)
 
   }
 
@@ -67,6 +70,8 @@ object WidgetsOps {
     spanY: Int,
     widthCell: Int,
     heightCell: Int) {
+
+    def getSize(): (Int, Int) = (spanX * widthCell, spanY * heightCell)
 
     def getSize(sX: Int, sY: Int): (Int, Int) = (sX * widthCell, sY * heightCell)
 

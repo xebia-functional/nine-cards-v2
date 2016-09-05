@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Size by density -->
+
+    <dimen name="text_xxxxlarge">26sp</dimen>
+    <dimen name="text_xxxlarge">22sp</dimen>
+    <dimen name="text_xxlarge">20sp</dimen>
+    <dimen name="text_xlarge">18sp</dimen>
+    <dimen name="text_large">16sp</dimen>
+    <dimen name="text_default">14sp</dimen>
+    <dimen name="text_medium">12sp</dimen>
+    <dimen name="text_small">10sp</dimen>
+    <dimen name="text_micro">8sp</dimen>
+
+    <dimen name="card_padding_small">2dp</dimen>
+    <dimen name="card_padding_medium">4dp</dimen>
+    <dimen name="card_padding_large">8dp</dimen>
+
+    <dimen name="size_group_collection_small">64dp</dimen>
+    <dimen name="size_group_collection_medium">72dp</dimen>
+    <dimen name="size_group_collection_large">80dp</dimen>
+
+    <dimen name="size_icon_app_small">52dp</dimen>
+    <dimen name="size_icon_app_medium">60dp</dimen>
+    <dimen name="size_icon_app_large">68dp</dimen>
+
+    <dimen name="height_search_box">48dp</dimen>
+
+</resources>

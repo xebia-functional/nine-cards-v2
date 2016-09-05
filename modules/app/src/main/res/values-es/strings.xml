@@ -43,8 +43,6 @@
 
     <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
 
-    <string name="messageEmpty">No hay datos en este moment</string>
-
     <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
 
@@ -122,8 +120,6 @@
 
     <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
 
-    <string name="emptyMoment">No tienes momentos definidos</string>
-
     <string name="momentNotFoundMessage">Momento no encontrado. Tu deberías crear colecciones desde la sección Mis Collections</string>
 
     <!-- Collections Detail -->
@@ -173,7 +169,14 @@
     <string name="errorLoadingApps">Error cargando aplicaciones</string>
     <string name="errorLoadingShortcuts">Error cargando accesos directos</string>
     <string name="errorLoadingRecommendations">Error cargando recomendaciones</string>
+
     <string name="errorLoadingPrivateCollections">Error cargando colleciones privadas</string>
+    <string name="errorSavingPrivateCollections">Error guardando colleción privada</string>
+    <string name="emptyPrivateCollections">9Cards crea colecciones de tus aplicaciones instaladas y ya tienes todas las categorías entre tus collections. Pásate otro día por si tenemos algunas colección para ti</string>
+
+    <string name="errorLoadingPublicCollections">Error cargando colleciones públicas</string>
+    <string name="errorSavingPublicCollections">Error guardando colleción pública</string>
+    <string name="emptyPublicCollections">No hay colecciones publicadas en esta categoría. Quizás podrías crear tu una :-)</string>
 
     <!-- Contacts Info -->
 
@@ -205,7 +208,7 @@
 
     <string name="apps_alphabetical">Alfabético</string>
     <string name="apps_categories">Por categorías</string>
-    <string name="apps_date">Por fecha de instalación</string>
+    <string name="apps_date">Reciente instalado</string>
     <string name="contacts_alphabetical">Alfabético</string>
     <string name="contacts_favorites">Favoritos</string>
     <string name="contacts_last">Últimas llamadas</string>
@@ -318,8 +321,8 @@
 
     <!-- Theme Preferences -->
 
-    <string name="themesPrefTitle">Temas</string>
-    <string name="themesPrefSummary">Resumen de Temas</string>
+    <string name="lookFeelPrefTitle">Aspecto General</string>
+    <string name="lookFeelPrefSummary">Modifica el tema y otros aspectos generales</string>
 
     <string name="selectThemeTitle">Seleccionar Tema</string>
     <string name="selectThemeSummary">Resumen de Seleccionar Tema</string>
@@ -328,15 +331,37 @@
     <string name="themesLight">Claro</string>
 
     <string name="googleLogoTitle">Logo de Google</string>
-    <string name="googleLogoSummary">Resumen de Logo de Google</string>
+    <string name="googleLogoSummary">Tipo de Logo de Google en la barra de búsqueda</string>
 
     <string name="colouredGoogleLogo">Coloreado</string>
     <string name="themeColourGoogleLogo">Color del Tema</string>
 
+    <string name="fontsTitle">Tamaño de Fuente</string>
+    <string name="fontsSummary">Tamaño general de la fuente</string>
+
+    <string name="fontsSmall">Pequeña</string>
+    <string name="fontsMedium">Mediana</string>
+    <string name="fontsLarge">Grande</string>
+
+    <string name="iconsTitle">Tamaño de Iconos</string>
+    <string name="iconsSummary">Tamaño general de los iconos</string>
+
+    <string name="iconsSmall">Pequeño</string>
+    <string name="iconsMedium">Mediano</string>
+    <string name="iconsLarge">Grande</string>
+
+    <string name="cardPaddingTitle">Márgenes de Tarjetas</string>
+    <string name="cardPaddingSummary">Márgenes entre tarjetas en las colecciones</string>
+
+    <string name="cardPaddingSmall">Pequeño</string>
+    <string name="cardPaddingMedium">Mediano</string>
+    <string name="cardPaddingLarge">Grande</string>
+
+
     <!-- Moment Preferences -->
 
     <string name="momentsPrefTitle">Momentos</string>
-    <string name="momentsPrefSummary">Resumen Momentos</string>
+    <string name="momentsPrefSummary">Configura opciones para tus momentos</string>
 
     <string name="showClockTitle">Mostrar reloj</string>
     <string name="showClockSummary">Resumen de Mostrar reloj</string>
@@ -344,111 +369,52 @@
     <!-- AppDrawer Preferences -->
 
     <string name="appDrawerPrefTitle">Cajón de Aplicaciones</string>
-    <string name="appDrawerPrefSummary">Resumen de Cajón de Aplicaciones</string>
+    <string name="appDrawerPrefSummary">Configura pantalla de aplicaciones y contactos en App Drawer</string>
 
-    <string name="defaultWindowTitle">Apertura de Ventana por defecto</string>
-    <string name="defaultWindowSummary">Resumen de Apertura de Ventana por defecto</string>
+    <string name="appDrawerLongPressTitle">Acción en Long-press</string>
+    <string name="appDrawerLongPressSummary">Acción actual: %s</string>
 
-    <string name="defaultWindowApps">Aplicaciones</string>
-    <string name="defaultWindowContacts">Contactos</string>
+    <string name="appDrawerOpenKeyboard">Abrir teclado</string>
+    <string name="appDrawerOpenContacts">Abrir contactos</string>
 
-    <string name="letterAnimationTitle">Animación de la Letra</string>
-    <string name="letterAnimationSummary">Animaciones para mostrar la letra seleccionada</string>
+    <string name="appDrawerOpenAnimationTitle">Animación</string>
+    <string name="appDrawerOpenAnimationSummary">Actual animación: %s</string>
 
-    <string name="letterAnimations1">TBD 1</string>
-    <string name="letterAnimations2">TBD 2</string>
-    <string name="letterAnimations3">TBD 3</string>
+    <string name="appDrawerOpenAnimationReveal">Aparición en círculo</string>
+    <string name="appDrawerOpenAnimationFade">Fade</string>
 
-    <string name="windowIconTitle">Icono de ventana</string>
-    <string name="windowIconSummary">Icono para acceder a la ventana</string>
-
-    <string name="windowIconsClassic">Clásico</string>
-    <string name="windowIconsNineCards">9Cards</string>
-
-    <!-- Sizes Preferences -->
-
-    <string name="sizesPrefTitle">Tamaños</string>
-    <string name="sizesPrefSummary">Resumen de Tamaños</string>
-
-    <string name="fontsTitle">Fuentes</string>
-    <string name="fontsSummary">Resumen de Fuentes</string>
-
-    <string name="fontsSmall">Pequeña</string>
-    <string name="fontsMedium">Mediana</string>
-    <string name="fontsBigger">Grande</string>
-
-    <string name="iconsTitle">Iconos</string>
-    <string name="iconsSummary">Resumen de Iconos</string>
-
-    <string name="iconsSmall">Pequeño</string>
-    <string name="iconsMedium">Mediano</string>
-    <string name="iconsBigger">Grande</string>
-
-    <string name="cardPaddingsTitle">Márgenes de Tarjetas</string>
-    <string name="cardPaddingsSummary">Resumen de Márgenes de Tarjetas</string>
-
-    <string name="cardPaddingsSmall">Pequeño</string>
-    <string name="cardPaddingsMedium">Mediano</string>
-    <string name="cardPaddingsBigger">Grande</string>
+    <string name="appDrawerFistTabContactTitle">Contactos Favoritos al entrar</string>
+    <string name="appDrawerFistTabContactSummary">Los Contacts Favorites aparecerán al entrar en el área de contactos</string>
 
     <!-- Animations Preferences -->
 
     <string name="animationsPrefTitle">Animaciones</string>
-    <string name="animationsPrefSummary">Resumen de Animaciones</string>
+    <string name="animationsPrefSummary">Elige las animaciones a usar en 9Cards</string>
 
-    <string name="speedTitle">Velocidad</string>
-    <string name="speedSummary">Resumen de Velocidad</string>
+    <string name="speedTitle">Velocidad de las Animaciones</string>
+    <string name="speedSummary">Velocidad que quieres usar en todas las animaciones en 9Cards</string>
 
     <string name="speedsSlow">Lenta</string>
     <string name="speedsNormal">Normal</string>
     <string name="speedsFast">Rápida</string>
 
     <string name="collectionOpeningTitle">Abrir Colecciones</string>
-    <string name="collectionOpeningSummary">Resumen de Abrir Colecciones</string>
+    <string name="collectionOpeningSummary">Animación al abrir un colección en 9Cards</string>
 
-    <string name="collectionOpeningsMoveIcon">Mover Icono</string>
     <string name="collectionOpeningsCircleReveal">Círculo</string>
-    <string name="collectionOpeningsSimple">Simple</string>
     <string name="collectionOpeningsNoAnimation">Sin Animación</string>
 
-    <string name="appDrawerOpeningTitle">Abrir Cajón de Aplicaciones</string>
-    <string name="appDrawerOpeningSummary">Resumen de Abrir Cajón de Aplicaciones</string>
-
-    <string name="appDrawerOpeningsCircleReveal">Círculo</string>
-    <string name="appDrawerOpeningsFade">Desvanecer</string>
-    <string name="appDrawerOpeningsNoAnimation">Sin Animación</string>
-
     <string name="workspaceAnimationTitle">Animación de Escritorio</string>
-    <string name="workspaceAnimationSummary">Resumen de Animación de Escritorio</string>
+    <string name="workspaceAnimationSummary">Animación entre las pantallas del escritorio en la pantalla principal</string>
 
     <string name="workspaceAnimationsHorizontalSlide">Deslizamiento Horizontal</string>
-    <string name="workspaceAnimationsTBD">TBD</string>
-
-    <string name="appDrawerAppsAnimationTitle">Animaciones de las Aplicaciones en el Cajón</string>
-    <string name="appDrawerAppsAnimationSummary">Resumen de Animaciones de las Aplicaciones en el Cajón</string>
-
-    <string name="appDrawerAppsAnimationsSlide">Deslizamiento desde el fondo</string>
-    <string name="appDrawerAppsAnimationsTBD">TBD</string>
-    <string name="appDrawerAppsAnimationsNoAnimation">Sin Animación</string>
-
-    <string name="collectionDetailCardAnimationTitle">Animación de las Tarjetas en el Detalle de la Colección</string>
-    <string name="collectionDetailCardAnimationSummary">Resumen de Animación de las Tarjetas en el Detalle de la Colección</string>
-
-    <string name="collectionDetailCardAnimationsSlide">Deslizamiento de las Tarjetas en el Detalle de la Colecció</string>
-    <string name="collectionDetailCardAnimationsTBD">TBD</string>
-    <string name="collectionDetailCardAnimationsNoAnimation">Sin Animación</string>
+    <string name="workspaceAnimationsAppearsBehind">Aparece desde atrás</string>
 
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
             Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +
         ]]>
     </string>
-
-    <!-- New App Preferences -->
-
-    <string name="newAppPrefTitle">Nueva aplicación</string>
-    <string name="newAppPrefSummary">Resumen de Nueva Aplicación</string>
-    <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->
     <string name="others">Otros</string>

@@ -11,7 +11,6 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
@@ -20,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -34,17 +34,17 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   LayoutInflater.from(context).inflate(R.layout.apps_moment_layout, this)
 
-  lazy val iconContent = findView(TR.launcher_moment_icon_content)
+  lazy val iconContent = findView(TR.moment_bar_icon_content)
 
-  lazy val icon = findView(TR.launcher_moment_icon)
+  lazy val icon = findView(TR.moment_bar_icon)
 
-  lazy val appsContent = findView(TR.launcher_moment_apps)
+  lazy val appsContent = findView(TR.moment_bar_apps)
 
   (Lollipop.ifSupportedThen(iconContent <~ vElevation(resGetDimensionPixelSize(R.dimen.elevation_default))) getOrElse Ui.nop).run
 
   def populate(moment: LauncherMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = moment.collection match {
     case Some(collection: Collection) =>
-      val resIcon = iconCollectionDetail(collection.icon)
+      val resIcon = collection.getIconDetail
       val color = resGetColor(getIndexColor(collection.themedColorIndex))
       (this <~
         vBackgroundColor(theme.get(DrawerBackgroundColor))) ~

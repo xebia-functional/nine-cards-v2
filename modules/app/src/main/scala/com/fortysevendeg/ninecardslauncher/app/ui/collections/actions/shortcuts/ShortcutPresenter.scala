@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
 import macroid.{ActivityContextWrapper, Ui}
 
@@ -20,7 +20,7 @@ class ShortcutPresenter(actions: ShortcutUiActions)(implicit activityContextWrap
     Task.fork(di.deviceProcess.getAvailableShortcuts.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult =  actions.loadShortcuts,
-      onException = (ex: Throwable) => actions.showLoadingShortcutsError()
+      onException = (ex: Throwable) => actions.showErrorLoadingShortcutsInScreen()
     )
 
   def configureShortcut(shortcut: Shortcut) = {
@@ -40,6 +40,6 @@ trait ShortcutUiActions {
 
   def loadShortcuts(shortcuts: Seq[Shortcut]): Ui[Any]
 
-  def showLoadingShortcutsError(): Ui[Any]
+  def showErrorLoadingShortcutsInScreen(): Ui[Any]
 
 }

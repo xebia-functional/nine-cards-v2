@@ -8,7 +8,7 @@ import android.view.ViewGroup.LayoutParams
 import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
 import com.fortysevendeg.ninecardslauncher.commons._
-import macroid.{Contexts, ContextWrapper}
+import macroid.Contexts
 
 class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends RecyclerView(context, attr, defStyleAttr)

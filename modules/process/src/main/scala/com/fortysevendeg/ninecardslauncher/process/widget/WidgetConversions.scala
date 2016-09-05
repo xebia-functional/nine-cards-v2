@@ -51,6 +51,9 @@ trait WidgetConversions {
         spanX = widget.area.spanX + resizeWidgetRequest.increaseX,
         spanY = widget.area.spanY + resizeWidgetRequest.increaseY))
 
+  def toUpdatedWidget(widget: AppWidget, appWidgetId: Int): AppWidget =
+    widget.copy(appWidgetId = Option(appWidgetId))
+
   def toServicesUpdateWidgetRequest(widget: AppWidget): ServicesUpdateWidgetRequest = ServicesUpdateWidgetRequest(
     id = widget.id,
     momentId = widget.momentId,
