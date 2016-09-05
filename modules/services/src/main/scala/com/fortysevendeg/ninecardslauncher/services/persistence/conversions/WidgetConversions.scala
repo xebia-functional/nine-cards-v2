@@ -8,13 +8,31 @@ trait WidgetConversions {
 
   def toWidgetSeq(widget: Seq[RepositoryWidget]): Seq[Widget] = widget map toWidget
 
+  def toAddWidgetRequestSeq(momentId: Int, widgetRequest: Seq[SaveWidgetRequest]) =
+    widgetRequest map (widget => toAddWidgetRequest(momentId, widget))
+
+  def toAddWidgetRequest(momentId: Int, widget: SaveWidgetRequest) =
+    AddWidgetRequest(
+      momentId = momentId,
+      packageName = widget.packageName,
+      className = widget.className,
+      appWidgetId = widget.appWidgetId,
+      startX = widget.startX,
+      startY = widget.startY,
+      spanX = widget.spanX,
+      spanY = widget.spanY,
+      widgetType = widget.widgetType,
+      label = widget.label,
+      imagePath = widget.imagePath,
+      intent = widget.intent)
+
   def toWidget(widget: RepositoryWidget): Widget =
     Widget(
       id = widget.id,
       momentId = widget.data.momentId,
       packageName = widget.data.packageName,
       className = widget.data.className,
-      appWidgetId = widget.data.appWidgetId,
+      appWidgetId = if (widget.data.appWidgetId == 0) None else Some(widget.data.appWidgetId),
       startX = widget.data.startX,
       startY = widget.data.startY,
       spanX = widget.data.spanX,
@@ -31,7 +49,7 @@ trait WidgetConversions {
         momentId = widget.momentId,
         packageName = widget.packageName,
         className = widget.className,
-        appWidgetId = widget.appWidgetId,
+        appWidgetId = widget.appWidgetId getOrElse 0,
         startX = widget.startX,
         startY = widget.startY,
         spanX = widget.spanX,
@@ -48,7 +66,7 @@ trait WidgetConversions {
         momentId = request.momentId,
         packageName = request.packageName,
         className = request.className,
-        appWidgetId = request.appWidgetId,
+        appWidgetId = request.appWidgetId getOrElse 0,
         startX = request.startX,
         startY = request.startY,
         spanX = request.spanX,
@@ -72,4 +90,5 @@ trait WidgetConversions {
       label = request.label,
       imagePath = request.imagePath,
       intent = request.intent)
+
 }

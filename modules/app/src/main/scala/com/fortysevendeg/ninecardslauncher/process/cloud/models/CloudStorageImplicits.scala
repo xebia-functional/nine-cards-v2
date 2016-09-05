@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.json.{DockTypeImplicits, NineCardsMomentImplicits, CollectionTypeImplicits, NineCardCategoryImplicits}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.json._
 
 object CloudStorageImplicits {
 
@@ -9,7 +9,10 @@ object CloudStorageImplicits {
   import NineCardsMomentImplicits._
   import CollectionTypeImplicits._
   import DockTypeImplicits._
+  import WidgetTypeImplicits._
 
+  implicit val cloudStorageWidgetAreaReads= Json.reads[CloudStorageWidgetArea]
+  implicit val cloudStorageWidgetReads = Json.reads[CloudStorageWidget]
   implicit val cloudStorageDockAppReads = Json.reads[CloudStorageDockApp]
   implicit val cloudStorageMomentTimeSlotReads = Json.reads[CloudStorageMomentTimeSlot]
   implicit val cloudStorageMomentReads = Json.reads[CloudStorageMoment]
@@ -17,6 +20,8 @@ object CloudStorageImplicits {
   implicit val cloudStorageCollectionReads = Json.reads[CloudStorageCollection]
   implicit val cloudStorageDeviceReads = Json.reads[CloudStorageDeviceData]
 
+  implicit val cloudStorageWidgetAreaWrites = Json.writes[CloudStorageWidgetArea]
+  implicit val cloudStorageWidgetWrites = Json.writes[CloudStorageWidget]
   implicit val cloudStorageDockAppWrites = Json.writes[CloudStorageDockApp]
   implicit val cloudStorageMomentTimeSlotWrites = Json.writes[CloudStorageMomentTimeSlot]
   implicit val cloudStorageMomentWrites = Json.writes[CloudStorageMoment]

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.cloud.models
 
 import java.util.Date
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{DockType, NineCardsMoment, NineCardCategory, CollectionType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 
 trait CloudStorageResource {
   def cloudId: String
@@ -59,12 +59,28 @@ case class CloudStorageMoment(
   timeslot: Seq[CloudStorageMomentTimeSlot],
   wifi: Seq[String],
   headphones: Boolean,
-  momentType: Option[NineCardsMoment])
+  momentType: Option[NineCardsMoment],
+  widgets: Option[Seq[CloudStorageWidget]])
 
 case class CloudStorageMomentTimeSlot(
   from: String,
   to: String,
   days: Seq[Int])
+
+case class CloudStorageWidget(
+  packageName: String,
+  className: String,
+  area: CloudStorageWidgetArea,
+  widgetType: WidgetType,
+  label: Option[String],
+  imagePath: Option[String],
+  intent: Option[String])
+
+case class CloudStorageWidgetArea(
+  startX: Int,
+  startY: Int,
+  spanX: Int,
+  spanY: Int)
 
 case class CloudStorageDockApp(
   name: String,

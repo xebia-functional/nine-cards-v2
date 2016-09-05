@@ -7,7 +7,7 @@ case class AppWidget(
   momentId: Int,
   packageName: String,
   className: String,
-  appWidgetId: Int,
+  appWidgetId: Option[Int],
   area: WidgetArea,
   widgetType: WidgetType,
   label: Option[String],

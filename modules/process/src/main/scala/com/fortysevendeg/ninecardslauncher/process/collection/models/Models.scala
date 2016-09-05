@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models.MomentTimeSlot
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory, NineCardsMoment}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{FormedWidget, MomentTimeSlot}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 
 case class UnformedApp(
   name: String,
@@ -50,4 +50,5 @@ case class FormedMoment(
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
   headphone: Boolean,
-  momentType: Option[NineCardsMoment])
+  momentType: Option[NineCardsMoment],
+  widgets: Option[Seq[FormedWidget]])

@@ -67,6 +67,11 @@ trait CollectionProcessImplData {
   val momentId = Random.nextInt(5)
   val momentType = Random.nextString(5)
 
+  val startX: Int = Random.nextInt(8)
+  val startY: Int = Random.nextInt(8)
+  val spanX: Int = Random.nextInt(8)
+  val spanY: Int = Random.nextInt(8)
+
   val application1 = Application(
     name = name1,
     packageName = packageName1,
@@ -99,12 +104,41 @@ trait CollectionProcessImplData {
     to = "19:00",
     days = Seq(0, 1, 1, 1, 1, 1, 0))
 
+  def createSeqFormedWidgets(
+    num: Int = 5,
+    packageName: String = packageName,
+    className: String = className,
+    startX: Int = startX,
+    startY: Int = startX,
+    spanX: Int = startX,
+    spanY: Int = startX,
+    widgetType: WidgetType = AppWidgetType,
+    label: Option[String] = None,
+    imagePath: Option[String] = None,
+    intent: Option[String] = None) =
+    (0 until 5) map (
+      item =>
+        FormedWidget(
+          packageName = packageName + item,
+          className = className + item,
+          startX = startX + item,
+          startY = startY + item,
+          spanX = spanX + item,
+          spanY = spanY + item,
+          widgetType = widgetType,
+          label = label,
+          imagePath = imagePath,
+          intent = intent))
+
+  val seqFormedWidgets = createSeqFormedWidgets()
+
   val formedMoment = FormedMoment(
     collectionId = Option(collectionId1),
     timeslot = Seq(momentTimeSlot),
     wifi = Seq.empty,
     headphone = false,
-    momentType = Option(HomeMorningMoment))
+    momentType = Option(HomeMorningMoment),
+    widgets = Option(seqFormedWidgets))
 
   def createSeqCollection(
     num: Int = 5,

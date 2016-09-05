@@ -127,6 +127,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         _ <- di.collectionProcess.cleanCollections()
         _ <- di.deviceProcess.deleteAllDockApps()
         _ <- di.momentProcess.deleteAllMoments()
+        _ <- di.widgetsProcess.deleteAllWidgets()
         _ <- di.userProcess.unregister
       } yield ()
 
