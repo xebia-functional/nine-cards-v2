@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.accounts
 
+import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import macroid.{ActivityContextWrapper, ContextWrapper}
 
 trait UserAccountsProcess {
 
@@ -11,7 +11,7 @@ trait UserAccountsProcess {
     * @throws AccountsProcessPermissionException if the user didn't grant permission for reading the accounts
     * @throws AccountsProcessException if the service found a problem getting the accounts
     */
-  def getGoogleAccounts(implicit contextWrapper: ContextWrapper): TaskService[Seq[String]]
+  def getGoogleAccounts(implicit contextSupport: ContextSupport): TaskService[Seq[String]]
 
   /**
     * Get the auth token associated to the specified account and token
@@ -21,13 +21,13 @@ trait UserAccountsProcess {
     * @throws AccountsProcessOperationCancelledException if the user cancelled the token request
     * @throws AccountsProcessException if the service found a problem getting the token
     */
-  def getAuthToken(accountName: String, scope: String)(implicit contextWrapper: ActivityContextWrapper): TaskService[String]
+  def getAuthToken(accountName: String, scope: String)(implicit contextSupport: ActivityContextSupport): TaskService[String]
 
   /**
     * Invalidates the token
     * @param token the token to invalidate
     * @throws AccountsProcessException if the service found a problem invalidating the token
     */
-  def invalidateToken(token: String)(implicit contextWrapper: ContextWrapper): TaskService[Unit]
+  def invalidateToken(token: String)(implicit contextSupport: ContextSupport): TaskService[Unit]
 
 }

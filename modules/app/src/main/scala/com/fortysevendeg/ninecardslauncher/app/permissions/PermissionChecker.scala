@@ -5,23 +5,9 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import macroid.ActivityContextWrapper
 
-object PermissionChecker {
+class PermissionChecker {
 
-  sealed trait AppPermission {
-    val value: String
-  }
-
-  case object GetAccounts extends AppPermission {
-    override val value: String = android.Manifest.permission.GET_ACCOUNTS
-  }
-
-  case object ReadContacts extends AppPermission {
-    override val value: String = android.Manifest.permission.READ_CONTACTS
-  }
-
-  case class PermissionResult(permission: AppPermission, result: Boolean) {
-    def hasPermission(p: AppPermission): Boolean = permission == p && result
-  }
+  import PermissionChecker._
 
   private[this] def parsePermission(value: String): Option[AppPermission] =
     value match {
@@ -60,5 +46,25 @@ object PermissionChecker {
       case (permission, grantResult) =>
         parsePermission(permission) map (PermissionResult(_, grantResult == PackageManager.PERMISSION_GRANTED))
     }
+
+}
+
+object PermissionChecker {
+
+  sealed trait AppPermission {
+    val value: String
+  }
+
+  case object GetAccounts extends AppPermission {
+    override val value: String = android.Manifest.permission.GET_ACCOUNTS
+  }
+
+  case object ReadContacts extends AppPermission {
+    override val value: String = android.Manifest.permission.READ_CONTACTS
+  }
+
+  case class PermissionResult(permission: AppPermission, result: Boolean) {
+    def hasPermission(p: AppPermission): Boolean = permission == p && result
+  }
 
 }

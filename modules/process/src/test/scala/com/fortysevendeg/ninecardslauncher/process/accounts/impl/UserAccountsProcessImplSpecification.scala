@@ -1,13 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.accounts.impl
 
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.accounts.{AccountsProcessException, AccountsProcessOperationCancelledException, AccountsProcessPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.accounts.{AccountsServices, AccountsServicesOperationCancelledException, AccountsServicesPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.accounts.models.GoogleAccount
-import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -22,9 +21,7 @@ trait UserAccountsProcessImplSpecification
   trait UserAccountsProcessImplScope
     extends Scope {
 
-    implicit val context = mock[ContextSupport]
-
-    implicit val activityContextWrapper = mock[ActivityContextWrapper]
+    implicit val activityContextSupport = mock[ActivityContextSupport]
 
     val accountsServices = mock[AccountsServices]
 
@@ -46,7 +43,7 @@ class UserAccountsProcessImplSpec
       val result = userAccountProcess.getGoogleAccounts.value.run
       result shouldEqual Xor.Right(accounts.map(_.accountName))
 
-      there was one(accountsServices).getAccounts(Some(GoogleAccount))(activityContextWrapper)
+      there was one(accountsServices).getAccounts(Some(GoogleAccount))(activityContextSupport)
     }
 
   }
@@ -60,7 +57,7 @@ class UserAccountsProcessImplSpec
       val result = userAccountProcess.getAuthToken(account1.accountName, scope).value.run
       result shouldEqual Xor.Right(authToken)
 
-      there was one(accountsServices).getAuthToken(account1, scope)(activityContextWrapper)
+      there was one(accountsServices).getAuthToken(account1, scope)(activityContextSupport)
     }
 
   }
@@ -74,7 +71,7 @@ class UserAccountsProcessImplSpec
       val result = userAccountProcess.invalidateToken(authToken).value.run
       result shouldEqual Xor.Right(())
 
-      there was one(accountsServices).invalidateToken(account1.accountType, authToken)(activityContextWrapper)
+      there was one(accountsServices).invalidateToken(account1.accountType, authToken)(activityContextSupport)
     }
 
   }
