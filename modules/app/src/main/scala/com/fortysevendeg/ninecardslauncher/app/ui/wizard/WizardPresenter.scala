@@ -12,8 +12,8 @@ import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider, GooglePlusApiClientProvider}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
@@ -54,11 +54,11 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   val requestPermissionCode = 2002
 
+  val permissionChecker = new PermissionChecker
+
   var clientStatuses = WizardPresenterStatuses()
 
-  def initialize(): Unit = {
-    actions.initialize().run
-  }
+  def initialize(): Unit = actions.initialize().run
 
   def goToUser(): Unit = actions.goToUser().run
 
@@ -76,15 +76,15 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   def deviceSelected(maybeKey: Option[String]): Unit = {
     clientStatuses = clientStatuses.copy(deviceKey = maybeKey)
-    if (havePermission(ReadContacts)) {
+    if (permissionChecker.havePermission(ReadContacts)) {
       generateCollections(maybeKey)
     } else {
-      requestPermission(requestPermissionCode, ReadContacts)
+      permissionChecker.requestPermission(requestPermissionCode, ReadContacts)
     }
   }
 
   def finishWizard(): Unit =
-    contextWrapper.original.get match {
+    contextSupport.getActivity match {
       case Some(activity) =>
         activity.setResult(Activity.RESULT_OK)
         activity.finish()
@@ -150,13 +150,13 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     permissions: Array[String],
     grantResults: Array[Int]): Unit = {
     if (requestCode == requestPermissionCode) {
-      val result = readPermissionRequestResult(permissions, grantResults)
+      val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
       if (result.exists(_.hasPermission(ReadContacts))) {
         generateCollections(clientStatuses.deviceKey)
-      } else if (shouldRequestPermission(ReadContacts)) {
+      } else if (permissionChecker.shouldRequestPermission(ReadContacts)) {
         showErrorDialog(
           message = R.string.errorReadContactsMessage,
-          action = () => requestPermission(requestPermissionCode, ReadContacts),
+          action = () => permissionChecker.requestPermission(requestPermissionCode, ReadContacts),
           negativeAction = () => generateCollections(clientStatuses.deviceKey))
       } else {
         generateCollections(clientStatuses.deviceKey)
