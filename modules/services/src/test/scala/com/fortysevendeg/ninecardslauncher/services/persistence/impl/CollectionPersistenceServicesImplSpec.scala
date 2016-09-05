@@ -34,7 +34,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return a Collection value for a valid request" in new CollectionServicesResponses {
 
-      mockCollectionRepository.addCollection(repoCollectionData) returns TaskService(Task(Xor.right(repoCollection)))
+      mockCollectionRepository.addCollection(any) returns TaskService(Task(Xor.right(repoCollection)))
       mockCardRepository.addCards(any) returns TaskService(Task(Xor.right(Seq(repoCard))))
       mockMomentRepository.fetchMoments() returns TaskService(Task(Xor.right(seqRepoMoment)))
       mockMomentRepository.updateMoment(repoMoment) returns TaskService(Task(Xor.right(item)))
@@ -50,7 +50,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
-      mockCollectionRepository.addCollection(repoCollectionData) returns TaskService(Task(Xor.left(exception)))
+      mockCollectionRepository.addCollection(any) returns TaskService(Task(Xor.left(exception)))
       val result = persistenceServices.addCollection(addCollectionRequest).value.run
       result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
@@ -81,7 +81,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return the number of elements deleted for a valid request" in new CollectionServicesResponses {
 
-      mockCollectionRepository.deleteCollection(repoCollection) returns TaskService(Task(Xor.right(item)))
+      mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Xor.right(item)))
       mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns TaskService(Task(Xor.right(items)))
       mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns TaskService(Task(Xor.right(item)))
 
@@ -91,7 +91,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
-      mockCollectionRepository.deleteCollection(repoCollection) returns TaskService(Task(Xor.left(exception)))
+      mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Xor.left(exception)))
       mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns TaskService(Task(Xor.left(exception)))
 
       val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).value.run
@@ -103,7 +103,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return a Collection for a valid request" in new CollectionServicesResponses {
 
-      mockCollectionRepository.fetchCollectionByPosition(position) returns TaskService(Task(Xor.right(Option(repoCollection))))
+      mockCollectionRepository.fetchCollectionByPosition(any) returns TaskService(Task(Xor.right(Option(repoCollection))))
       List.tabulate(5) { index =>
         mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Xor.right(seqRepoCard)))
       }
@@ -122,14 +122,14 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return None when a non-existent id is given" in new CollectionServicesResponses {
 
-      mockCollectionRepository.fetchCollectionByPosition(nonExistentPosition) returns TaskService(Task(Xor.right(None)))
+      mockCollectionRepository.fetchCollectionByPosition(any) returns TaskService(Task(Xor.right(None)))
       val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(nonExistentPosition)).value.run
       result shouldEqual Xor.Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
-      mockCollectionRepository.fetchCollectionByPosition(position) returns TaskService(Task(Xor.left(exception)))
+      mockCollectionRepository.fetchCollectionByPosition(any) returns TaskService(Task(Xor.left(exception)))
       val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position)).value.run
       result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
@@ -139,7 +139,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return a Collection for a valid request and original to true" in new CollectionServicesResponses {
 
-      mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId) returns TaskService(Task(Xor.right(Option(repoCollection))))
+      mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(any) returns TaskService(Task(Xor.right(Option(repoCollection))))
       List.tabulate(5) { index =>
         mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Xor.right(seqRepoCard)))
       }
@@ -159,7 +159,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return a Collection for a valid request and original to false" in new CollectionServicesResponses {
 
-      mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns TaskService(Task(Xor.right(Option(repoCollection))))
+      mockCollectionRepository.fetchCollectionBySharedCollectionId(any) returns TaskService(Task(Xor.right(Option(repoCollection))))
       List.tabulate(5) { index =>
         mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Xor.right(seqRepoCard)))
       }
@@ -179,7 +179,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return None when a non-existent id and original to true is given" in new CollectionServicesResponses {
 
-      mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(nonExistentSharedCollectionId) returns TaskService(Task(Xor.right(None)))
+      mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(any) returns TaskService(Task(Xor.right(None)))
       val result = persistenceServices.fetchCollectionBySharedCollection(
         FetchCollectionBySharedCollectionRequest(nonExistentSharedCollectionId, original = true)).value.run
       result shouldEqual Xor.Right(None)
@@ -187,7 +187,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return None when a non-existent id and original to false is given" in new CollectionServicesResponses {
 
-      mockCollectionRepository.fetchCollectionBySharedCollectionId(nonExistentSharedCollectionId) returns TaskService(Task(Xor.right(None)))
+      mockCollectionRepository.fetchCollectionBySharedCollectionId(any) returns TaskService(Task(Xor.right(None)))
       val result = persistenceServices.fetchCollectionBySharedCollection(
         FetchCollectionBySharedCollectionRequest(nonExistentSharedCollectionId, original = false)).value.run
       result shouldEqual Xor.Right(None)
@@ -195,7 +195,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
-      mockCollectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId) returns TaskService(Task(Xor.left(exception)))
+      mockCollectionRepository.fetchCollectionBySharedCollectionId(any) returns TaskService(Task(Xor.left(exception)))
       val result = persistenceServices.fetchCollectionBySharedCollection(
         FetchCollectionBySharedCollectionRequest(sharedCollectionId, original = false)).value.run
       result must beAnInstanceOf[Xor.Left[RepositoryException]]
@@ -231,7 +231,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return a Collection for a valid request" in new CollectionServicesResponses {
 
-      mockCollectionRepository.findCollectionById(collectionId) returns TaskService(Task(Xor.right(Option(repoCollection))))
+      mockCollectionRepository.findCollectionById(any) returns TaskService(Task(Xor.right(Option(repoCollection))))
       List.tabulate(5) { index =>
         mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Xor.right(seqRepoCard)))
       }
@@ -249,14 +249,14 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return None when a non-existent id is given" in new CollectionServicesResponses {
 
-      mockCollectionRepository.findCollectionById(nonExistentCollectionId) returns TaskService(Task(Xor.right(None)))
+      mockCollectionRepository.findCollectionById(any) returns TaskService(Task(Xor.right(None)))
       val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = nonExistentCollectionId)).value.run
       result shouldEqual Xor.Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
-      mockCollectionRepository.findCollectionById(collectionId) returns TaskService(Task(Xor.left(exception)))
+      mockCollectionRepository.findCollectionById(any) returns TaskService(Task(Xor.left(exception)))
       val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId)).value.run
       result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
@@ -266,14 +266,14 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return the number of elements updated for a valid request" in new CollectionServicesResponses {
 
-      mockCollectionRepository.updateCollection(repoCollection) returns TaskService(Task(Xor.right(item)))
+      mockCollectionRepository.updateCollection(any) returns TaskService(Task(Xor.right(item)))
       val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).value.run
       result shouldEqual Xor.Right(item)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
-      mockCollectionRepository.updateCollection(repoCollection) returns TaskService(Task(Xor.left(exception)))
+      mockCollectionRepository.updateCollection(any) returns TaskService(Task(Xor.left(exception)))
       val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).value.run
       result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }

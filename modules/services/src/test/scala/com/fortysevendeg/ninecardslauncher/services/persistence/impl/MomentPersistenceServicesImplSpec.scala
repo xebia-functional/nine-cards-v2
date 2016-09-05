@@ -35,6 +35,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
     "return a Moment for a valid request" in new MomentPersistenceServicesScope {
 
       mockMomentRepository.addMoment(any) returns TaskService(Task(Xor.right(repoMoment)))
+      mockWidgetRepository.addWidgets(any) returns TaskService(Task(Xor.right(seqRepoWidget)))
       val result = persistenceServices.addMoment(createAddMomentRequest()).value.run
 
       result must beLike {
@@ -47,6 +48,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
     "return a Moment with a empty wifi sequence for a valid request with a empty wifi sequence" in new MomentPersistenceServicesScope {
 
       mockMomentRepository.addMoment(any) returns TaskService(Task(Xor.right(createSeqRepoMoment(data = createRepoMomentData(wifiString = ""))(0))))
+      mockWidgetRepository.addWidgets(any) returns TaskService(Task(Xor.right(seqRepoWidget)))
       val result = persistenceServices.addMoment(createAddMomentRequest(wifi = Seq.empty)).value.run
 
       result must beLike {
@@ -59,6 +61,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
     "return a Moment with an empty timeslot sequence for a valid request with an empty timeslot" in new MomentPersistenceServicesScope {
 
       mockMomentRepository.addMoment(any) returns TaskService(Task(Xor.right(createSeqRepoMoment(data = createRepoMomentData(timeslot = "[]"))(0))))
+      mockWidgetRepository.addWidgets(any) returns TaskService(Task(Xor.right(seqRepoWidget)))
       val result = persistenceServices.addMoment(createAddMomentRequest(timeslot = Seq.empty)).value.run
 
       result must beLike {
