@@ -31,6 +31,7 @@ object ContactsContentProvider {
     Fields.EMAIL_STARRED)
 
   val allEmailFields = Seq(
+    Fields.EMAIL_LOOKUP_KEY,
     Fields.EMAIL_TYPE,
     Fields.EMAIL_ADDRESS)
 
@@ -47,6 +48,12 @@ object ContactsContentProvider {
       address = cursor.getString(cursor.getColumnIndex(Fields.EMAIL_ADDRESS)),
       category = parseEmailType(cursor.getInt(cursor.getColumnIndex(Fields.EMAIL_TYPE))))
 
+  def lookupKeyAndEmailFromCursor(cursor: Cursor): (String, ContactEmail) =
+    (cursor.getString(cursor.getColumnIndex(Fields.EMAIL_LOOKUP_KEY)),
+    ContactEmail(
+      address = cursor.getString(cursor.getColumnIndex(Fields.EMAIL_ADDRESS)),
+      category = parseEmailType(cursor.getInt(cursor.getColumnIndex(Fields.EMAIL_TYPE)))))
+
   def parseEmailType(phoneType: Int): EmailCategory =
     phoneType match {
       case Fields.EMAIL_TYPE_HOME => EmailHome
@@ -61,6 +68,7 @@ object ContactsContentProvider {
     Fields.PHONE_STARRED)
 
   val allPhoneFields = Seq(
+    Fields.PHONE_LOOKUP_KEY,
     Fields.PHONE_TYPE,
     Fields.PHONE_NUMBER,
     Fields.PHONE_CUSTOM_RINGTONE)
@@ -77,6 +85,12 @@ object ContactsContentProvider {
     ContactPhone(
       number = cursor.getString(cursor.getColumnIndex(Fields.PHONE_NUMBER)),
       category = parsePhoneType(cursor.getInt(cursor.getColumnIndex(Fields.PHONE_TYPE))))
+
+  def lookupKeyAndPhoneFromCursor(cursor: Cursor): (String, ContactPhone) =
+    (cursor.getString(cursor.getColumnIndex(Fields.PHONE_LOOKUP_KEY)),
+    ContactPhone(
+      number = cursor.getString(cursor.getColumnIndex(Fields.PHONE_NUMBER)),
+      category = parsePhoneType(cursor.getInt(cursor.getColumnIndex(Fields.PHONE_TYPE)))))
 
   def parsePhoneType(phoneType: Int): PhoneCategory =
     phoneType match {

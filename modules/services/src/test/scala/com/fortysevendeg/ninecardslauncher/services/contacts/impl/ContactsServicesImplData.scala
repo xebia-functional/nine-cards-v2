@@ -24,13 +24,13 @@ trait ContactsServicesImplData {
 
   val contacts = generateContacts(num = 10, withEmails = false, withPhones = false)
 
-  val contact = generateContacts(1, withEmails = true, withPhones = true).headOption
+  val contact = generateContacts(1, withEmails = true, withPhones = true).head.copy(lookupKey = firstLookupKey)
 
-  val contactInfo = contact flatMap (_.info)
+  val contactInfo = contact.info
 
-  val contactEmails = contactInfo map (_.emails) getOrElse Seq.empty
+  val contactLookupKeyAndEmails = contactInfo.map(_.emails.map(email => (contact.lookupKey, email))).toSeq.flatten
 
-  val contactPhones = contactInfo map (_.phones) getOrElse Seq.empty
+  val contactLookupKeyAndPhones = contactInfo.map(_.phones.map(phone => (contact.lookupKey, phone))).toSeq.flatten
 
   val contactWithEmail = generateContacts(1, withEmails = true, withPhones = false).headOption
 

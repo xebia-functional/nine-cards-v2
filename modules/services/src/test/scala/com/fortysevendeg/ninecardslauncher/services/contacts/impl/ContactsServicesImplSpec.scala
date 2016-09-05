@@ -1,10 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
+import android.database.Cursor
 import android.net.Uri
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider._
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactPhone}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactNotFoundException, ContactsServiceException, Fields}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -67,30 +69,6 @@ trait ContactsServicesSpecification
       uri = nonExistentMockUri,
       projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor)) returns None
 
-    contentResolverWrapper.fetch(
-      uri = Fields.CONTENT_URI,
-      projection = allFields,
-      where = Fields.LOOKUP_SELECTION,
-      whereParams = Seq(firstLookupKey))(getEntityFromCursor(contactFromCursor)) returns contact
-
-    contentResolverWrapper.fetchAll(
-      uri = Fields.EMAIL_CONTENT_URI,
-      projection = allEmailFields,
-      where = Fields.EMAIL_CONTACT_SELECTION,
-      whereParams = Seq(firstLookupKey))(getListFromCursor(emailFromCursor)) returns contactEmails
-
-    contentResolverWrapper.fetchAll(
-      uri = Fields.PHONE_CONTENT_URI,
-      projection = allPhoneFields,
-      where = Fields.PHONE_CONTACT_SELECTION,
-      whereParams = Seq(firstLookupKey))(getListFromCursor(phoneFromCursor)) returns contactPhones
-
-    contentResolverWrapper.fetch(
-      uri = Fields.CONTENT_URI,
-      projection = allFields,
-      where = Fields.LOOKUP_SELECTION,
-      whereParams = Seq(nonExistentLookupKey))(getEntityFromCursor(contactFromCursor)) returns None
-
   }
 
   trait ErrorContactsServicesResponses
@@ -113,11 +91,11 @@ trait ContactsServicesSpecification
       uri = mockUri,
       projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor)) throws contentResolverException
 
-    contentResolverWrapper.fetch(
+    contentResolverWrapper.fetchAll(
       uri = Fields.CONTENT_URI,
       projection = allFields,
       where = Fields.LOOKUP_SELECTION,
-      whereParams = Seq(firstLookupKey))(getEntityFromCursor(contactFromCursor)) throws contentResolverException
+      whereParams = Seq(firstLookupKey))(getListFromCursor(contactFromCursor)) throws contentResolverException
 
   }
 
@@ -293,25 +271,83 @@ class ContactsServicesImplSpec
     "findContactByLookupKey" should {
 
       "return the contact from the content resolver for an existent lookup key" in
-        new ValidContactsServicesResponses {
+        new ContactsServicesScope {
+
+          contentResolverWrapper.fetchAll(
+            uri = Fields.CONTENT_URI,
+            projection = allFields,
+            where = Fields.LOOKUP_SELECTION,
+            whereParams = Seq(firstLookupKey))(getListFromCursor(contactFromCursor)) returns Seq(contact)
+
+          contentResolverWrapper.fetchAll(
+            uri = Fields.EMAIL_CONTENT_URI,
+            projection = allEmailFields,
+            where = Fields.EMAIL_CONTACT_SELECTION,
+            whereParams = Seq(firstLookupKey))(getListFromCursor(lookupKeyAndEmailFromCursor)) returns contactLookupKeyAndEmails
+
+          contentResolverWrapper.fetchAll(
+            uri = Fields.PHONE_CONTENT_URI,
+            projection = allPhoneFields,
+            where = Fields.PHONE_CONTACT_SELECTION,
+            whereParams = Seq(firstLookupKey))(getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
+
           val result = contactsServices.findContactByLookupKey(firstLookupKey).value.run
-          result must beLike {
-            case Xor.Right(c) => Some(c) shouldEqual contact
-          }
+          result shouldEqual Xor.Right(contact)
         }
 
       "return a ContactsServiceException with a ContactNotFoundException as cause for a non existent lookup key" in
-        new ValidContactsServicesResponses {
+        new ContactsServicesScope {
+
+          contentResolverWrapper.fetchAll(any, any, any, any, any)(any) returns Seq.empty
+
           val result = contactsServices.findContactByLookupKey(nonExistentLookupKey).value.run
 
           result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ must beAnInstanceOf[ContactNotFoundException])
+            case Xor.Left(e) => e must beAnInstanceOf[ContactNotFoundException]
           }
         }
 
       "return a ContactNotFoundException when the content resolver throws an exception" in
-        new ErrorContactsServicesResponses {
+        new ContactsServicesScope {
+
+          contentResolverWrapper.fetchAll(any, any, any, any, any)(any) throws contentResolverException
+
           val result = contactsServices.findContactByLookupKey(firstLookupKey).value.run
+
+          result must beLike {
+            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)
+          }
+        }
+
+    }
+
+    "populateContactInfo" should {
+
+      "return the contact from the content resolver with the info field populated" in
+        new ContactsServicesScope {
+
+          contentResolverWrapper.fetchAll(
+            uri = Fields.EMAIL_CONTENT_URI,
+            projection = allEmailFields,
+            where = Fields.EMAIL_CONTACT_SELECTION,
+            whereParams = Seq(firstLookupKey))(getListFromCursor(lookupKeyAndEmailFromCursor)) returns contactLookupKeyAndEmails
+
+          contentResolverWrapper.fetchAll(
+            uri = Fields.PHONE_CONTENT_URI,
+            projection = allPhoneFields,
+            where = Fields.PHONE_CONTACT_SELECTION,
+            whereParams = Seq(firstLookupKey))(getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
+
+          val result = contactsServices.populateContactInfo(Seq(contact.copy(info = None))).value.run
+          result shouldEqual Xor.Right(Seq(contact))
+        }
+
+      "return a ContactNotFoundException when the content resolver throws an exception" in
+        new ContactsServicesScope {
+
+          contentResolverWrapper.fetchAll(any, any, any, any, any)(any) throws contentResolverException
+
+          val result = contactsServices.populateContactInfo(Seq(contact)).value.run
 
           result must beLike {
             case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual contentResolverException)

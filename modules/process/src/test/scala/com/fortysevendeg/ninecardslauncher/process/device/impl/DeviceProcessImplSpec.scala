@@ -155,6 +155,9 @@ trait DeviceProcessSpecification
     mockContactsServices.getFavoriteContacts returns
       TaskService(Task(Xor.right(contacts)))
 
+    mockContactsServices.populateContactInfo(any) returns
+      TaskService(Task(Xor.right(contacts)))
+
     mockContactsServices.getContactsWithPhone returns
       TaskService(Task(Xor.right(contacts)))
 
@@ -405,7 +408,7 @@ trait DeviceProcessSpecification
     mockContactsServices.getFavoriteContacts returns
       TaskService(Task(Xor.right(contacts)))
 
-    mockContactsServices.findContactByLookupKey(any) returns TaskService {
+    mockContactsServices.populateContactInfo(any) returns TaskService {
       Task(Xor.left(contactsServicesException))
     }
 
@@ -534,10 +537,7 @@ class DeviceProcessImplSpec
     "deletes all apps, cards, collections and dockApps" in
       new DeviceProcessScope {
         val result = deviceProcess.resetSavedItems().value.run
-        result must beLike {
-          case Xor.Right(result) =>
-            result shouldEqual ((): Unit)
-        }
+        result shouldEqual Xor.Right(())
       }
 
     "returns ResetException when persistence service fails deleting the apps" in
@@ -607,10 +607,7 @@ class DeviceProcessImplSpec
     "get favorite contacts" in
       new DeviceProcessScope {
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
-        result must beLike {
-          // TODO - This is a workaround and need to be fixed in ticket 9C-284
-          case Xor.Right(r) => r.map(_.name).sorted shouldEqual contacts.map(_.name).sorted
-        }
+        result shouldEqual Xor.right(deviceProcess.toContactSeq(contacts))
       }
 
     "returns ContactException when ContactsServices fails getting the favorite contacts" in
@@ -618,15 +615,14 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
         result must beLike {
           case Xor.Left(e) => e must beAnInstanceOf[ContactException]
-          }
+        }
       }
 
-    "returns an empty list if ContactsServices fails filling the contacts" in
+    "returns ContactException when ContactsServices fails filling the contacts" in
       new DeviceProcessScope with FilledFavoriteContactsErrorScope {
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
         result must beLike {
-          case Xor.Right(resultContacts) =>
-            resultContacts shouldEqual Seq()
+          case Xor.Left(e) => e must beAnInstanceOf[ContactException]
         }
       }
 

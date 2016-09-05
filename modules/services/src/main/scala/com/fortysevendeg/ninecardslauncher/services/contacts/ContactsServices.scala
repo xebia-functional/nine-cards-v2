@@ -65,9 +65,19 @@ trait ContactsServices {
     *
     * @return the com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact contains
     *         information about contacts
-    * @throws ContactsServiceException if exist some problem accessing to contact provider or lookup key don't exits
+    * @throws ContactsServiceException if exist some problem accessing to contact provider
+    * @throws ContactNotFoundException if the lookup key doesn't exits
     */
   def findContactByLookupKey(lookupKey: String): TaskService[Contact]
+
+  /**
+    * Populate the info field in every contact
+    *
+    * @return sequence of the com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
+    * @throws ContactsServiceException if exist some problem accessing to contact provider
+    * @throws ContactNotFoundException if any contact doesn't exits
+    */
+  def populateContactInfo(contacts: Seq[Contact]): TaskService[Seq[Contact]]
 
   /**
     * Return favorite contacts. The info field is not filled

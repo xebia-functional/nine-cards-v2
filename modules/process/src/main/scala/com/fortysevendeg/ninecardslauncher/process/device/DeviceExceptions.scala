@@ -32,6 +32,12 @@ case class ContactException(message: String, cause: Option[Throwable] = None)
   cause map initCause
 }
 
+case class ContactPermissionException(message: String, cause: Option[Throwable] = None)
+  extends RuntimeException(message)
+  with NineCardException {
+  cause map initCause
+}
+
 case class WidgetException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)
   with NineCardException {
