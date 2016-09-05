@@ -3,7 +3,26 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory
-        android:title="@string/devAwarenessAPIPrefTitle">
+        android:title="@string/devAppsCategorizedTitle">
+
+        <Preference
+            android:key="appsCategorized"
+            android:title="@string/devAppsCategorizedTitle"/>
+
+        <Preference
+            android:key="androidToken"
+            android:title="@string/devAndroidTokenTitle"
+            android:summary="@string/devClickClipboard"/>
+
+        <Preference
+            android:key="deviceCloudId"
+            android:title="@string/devDeviceCloudIdTitle"
+            android:summary="@string/devClickClipboard"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/devAwarenessAPICategory">
 
         <Preference
             android:key="probablyActivity"

@@ -244,6 +244,30 @@ case object IsDeveloper
   def convertToDeveloper(pref: NineCardsPreferencesValue): Unit = pref.setBoolean(name, value = true)
 }
 
+case object AppsCategorized
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = appsCategorized
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+case object AndroidToken
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = androidToken
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+case object DeviceCloudId
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = deviceCloudId
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
 case object ProbablyActivity
   extends NineCardsPreferenceValue[String] {
   override val name: String = probablyActivity
@@ -329,6 +353,9 @@ object PreferencesValuesKeys {
 
   // Developer Preferences
   val isDeveloper = "isDeveloper"
+  val appsCategorized = "appsCategorized"
+  val androidToken = "androidToken"
+  val deviceCloudId = "deviceCloudId"
   val probablyActivity = "probablyActivity"
   val headphones = "headphones"
   val weather = "weather"

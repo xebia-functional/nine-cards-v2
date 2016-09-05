@@ -417,7 +417,7 @@
     <string name="developerPrefTitle">Opciones para Desarrolladores</string>
     <string name="developerPrefSummary">Sólo si eres un Android/Scala Developer :-)</string>
 
-    <string name="devAwarenessAPIPrefTitle">Awareness API</string>
+    <string name="devAwarenessAPICategory">Awareness API</string>
 
     <string name="devProbablyActivityTitle">Probable Actividad</string>
     <string name="devHeadphonesTitle">Auriculares</string>

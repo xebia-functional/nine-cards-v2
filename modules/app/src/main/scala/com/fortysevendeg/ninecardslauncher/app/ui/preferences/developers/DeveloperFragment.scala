@@ -4,7 +4,7 @@ import android.app.Fragment
 import android.os.Bundle
 import android.preference.{Preference, PreferenceFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FindPreferences, Headphones, ProbablyActivity, Weather}
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
 
@@ -30,6 +30,9 @@ class DeveloperFragment
 
 case class DeveloperDOM(dom: FindPreferences) {
 
+  def appsCategorizedPreferences = dom.find[Preference](AppsCategorized)
+  def androidTokenPreferences = dom.find[Preference](AndroidToken)
+  def deviceCloudIdPreferences = dom.find[Preference](DeviceCloudId)
   def probablyActivityPreference = dom.find[Preference](ProbablyActivity)
   def headphonesPreference = dom.find[Preference](Headphones)
   def weatherPreference = dom.find[Preference](Weather)
