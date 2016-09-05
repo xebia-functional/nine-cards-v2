@@ -26,13 +26,7 @@
             style="@style/WizardUserTitle"/>
 
         <FrameLayout
-            style="@style/WizardUserSelectContent">
-
-            <Spinner
-                android:id="@+id/wizard_user_group"
-                style="@style/WizardUserSelect"/>
-
-        </FrameLayout>
+            style="@style/WizardUserSelectContent"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/wizard_user_action"
@@ -65,9 +59,8 @@
 
         </ScrollView>
 
-        <Button
+        <android.support.v7.widget.AppCompatButton
             android:id="@+id/wizard_device_action"
-            android:text="@string/buttonContinue"
             style="@style/WizardDeviceButton"/>
 
     </LinearLayout>

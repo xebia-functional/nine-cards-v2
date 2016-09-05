@@ -1,23 +1,26 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
-import android.accounts.{Account, AccountManager, OperationCanceledException}
+import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 import android.os.{Build, Bundle}
 import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider, GooglePlusApiClientProvider}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.accounts.AccountsProcessOperationCancelledException
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
@@ -33,28 +36,29 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scala.util.{Failure, Try}
 import scalaz.concurrent.Task
-import scalaz.{-\/, \/, \/-}
 
 class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Presenter
     with GoogleDriveApiClientProvider
     with GooglePlusApiClientProvider
-    with ImplicitsCloudStorageProcessExceptions
-    with ImplicitsAuthTokenException {
+    with ImplicitsCloudStorageProcessExceptions {
 
   import Statuses._
+  import PermissionChecker._
 
   val accountType = "com.google"
 
   val tagDialog = "dialog-not-accepted"
 
-  lazy val accounts: Seq[Account] = accountManager.getAccountsByType(accountType).toSeq
+  val requestAccount = 2001
 
-  lazy val accountManager: AccountManager = AccountManager.get(contextSupport.context)
+  val requestPermissionCode = 2002
+
+  val permissionChecker = new PermissionChecker
 
   var clientStatuses = WizardPresenterStatuses()
 
-  def initialize(): Unit = actions.initialize(accounts).run
+  def initialize(): Unit = actions.initialize().run
 
   def goToUser(): Unit = actions.goToUser().run
 
@@ -62,37 +66,25 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   def processFinished(): Unit = actions.showDiveIn().run
 
-  def connectAccount(username: String, termsAccept: Boolean): Unit = {
-
-    def getAccount(username: String): Option[Account] = accounts find (_.name == username)
-
+  def connectAccount(termsAccept: Boolean): Unit =
     if (termsAccept) {
-      getAccount(username) match {
-        case Some(acc) =>
-          val googleApiClient = createGoogleDriveClient(acc.name)
-          clientStatuses = clientStatuses.copy(
-            driveApiClient = Some(googleApiClient),
-            email = Some(acc.name))
-          requestAndroidMarketPermission(acc, googleApiClient)
-        case _ => actions.showErrorSelectUser().run
-      }
+      val intent = AccountManager.newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
+      uiStartIntentForResult(intent, requestAccount).run
     } else {
       actions.showErrorAcceptTerms().run
     }
+
+  def deviceSelected(maybeKey: Option[String]): Unit = {
+    clientStatuses = clientStatuses.copy(deviceKey = maybeKey)
+    if (permissionChecker.havePermission(ReadContacts)) {
+      generateCollections(maybeKey)
+    } else {
+      permissionChecker.requestPermission(requestPermissionCode, ReadContacts)
+    }
   }
 
-  def generateCollections(maybeKey: Option[String]): Unit =
-    contextWrapper.original.get match {
-      case Some(activity) =>
-        val intent = createIntent(activity, classOf[CreateCollectionService])
-        intent.putExtra(CreateCollectionService.cloudIdKey, maybeKey.getOrElse(CreateCollectionService.newConfiguration))
-        activity.startService(intent)
-        actions.goToWizard().run
-      case _ =>
-    }
-
   def finishWizard(): Unit =
-    contextWrapper.original.get match {
+    contextSupport.getActivity match {
       case Some(activity) =>
         activity.setResult(Activity.RESULT_OK)
         activity.finish()
@@ -103,7 +95,27 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
     def tryToConnect(): Unit = clientStatuses.driveApiClient foreach (_.connect())
 
+    def verifyAccountName(maybeAccount: Option[String]) = maybeAccount match {
+      case Some(account) =>
+        val googleApiClient = createGoogleDriveClient(account)
+        clientStatuses = clientStatuses.copy(
+          driveApiClient = Some(googleApiClient),
+          email = Some(account))
+        requestAndroidMarketPermission(account, googleApiClient)
+      case None => actions.goToUser().run
+    }
+
     (requestCode, resultCode) match {
+      case (`requestAccount`, Activity.RESULT_OK) =>
+        val account = Option(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
+        verifyAccountName(account)
+        true
+      case (`requestAccount`, _) =>
+        showErrorDialog(
+          message = R.string.errorAccountsMessage,
+          action = () => connectAccount(true),
+          negativeAction = () => contextWrapper.original.get.foreach(_.finish()))
+        true
       case (`resolveGooglePlayConnection`, Activity.RESULT_OK) =>
         tryToConnect()
         true
@@ -130,6 +142,25 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         connectionError()
         true
       case _ => false
+    }
+  }
+
+  def requestPermissionsResult(
+    requestCode: Int,
+    permissions: Array[String],
+    grantResults: Array[Int]): Unit = {
+    if (requestCode == requestPermissionCode) {
+      val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
+      if (result.exists(_.hasPermission(ReadContacts))) {
+        generateCollections(clientStatuses.deviceKey)
+      } else if (permissionChecker.shouldRequestPermission(ReadContacts)) {
+        showErrorDialog(
+          message = R.string.errorReadContactsMessage,
+          action = () => permissionChecker.requestPermission(requestPermissionCode, ReadContacts),
+          negativeAction = () => generateCollections(clientStatuses.deviceKey))
+      } else {
+        generateCollections(clientStatuses.deviceKey)
+      }
     }
   }
 
@@ -181,6 +212,16 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   protected def createIntent[T](activity: Activity, targetClass: Class[T]): Intent = new Intent(activity, targetClass)
 
+  private[this] def generateCollections(maybeKey: Option[String]): Unit =
+    contextWrapper.original.get match {
+      case Some(activity) =>
+        val intent = createIntent(activity, classOf[CreateCollectionService])
+        intent.putExtra(CreateCollectionService.cloudIdKey, maybeKey.getOrElse(CreateCollectionService.newConfiguration))
+        activity.startService(intent)
+        actions.goToWizard().run
+      case _ =>
+    }
+
   private[this] def onConnectionFailed(connectionResult: ConnectionResult): Unit = {
 
     def withActivity(f: (AppCompatActivity => Unit)) =
@@ -211,70 +252,54 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }
   }
 
-  private[this] def requestToken(
-    account: Account,
-    scopes: String,
-    client: GoogleApiClient): TaskService[String] = TaskService {
-    Task {
-      \/.fromTryCatchNonFatal {
-        val result = accountManager.getAuthToken(account, scopes, javaNull, contextWrapper.getOriginal, javaNull, javaNull).getResult
-        result.getString(AccountManager.KEY_AUTHTOKEN)
-      } match {
-        case \/-(x) => Xor.right(x)
-        case -\/(e: OperationCanceledException) => Xor.left(AuthTokenOperationCancelledException(e.getMessage, Option(e)))
-        case -\/(e) => Xor.left(AuthTokenException(e.getMessage, Some(e)))
-      }
-    }
-  }
-
   private[this] def connectionError(): Unit = actions.showErrorConnectingGoogle().run
 
   private[this] def requestAndroidMarketPermission(
-    account: Account,
+    account: String,
     client: GoogleApiClient): Unit = {
 
     def invalidateToken(): Unit = {
       clientStatuses.androidMarketToken foreach { token =>
-        accountManager.invalidateAuthToken(accountType, token)
+        Task.fork(di.userAccountsProcess.invalidateToken(token).value).resolveAsync()
       }
     }
 
     invalidateToken()
     val scopes = resGetString(R.string.android_market_oauth_scopes)
-    Task.fork(requestToken(account, scopes, client).value).resolveAsync(
+    Task.fork(di.userAccountsProcess.getAuthToken(account, scopes).value).resolveAsync(
       onResult = (token: String) => {
         clientStatuses = clientStatuses.copy(androidMarketToken = Some(token))
         requestGooglePermission(account, client)
       },
       onException = (ex: Throwable) => ex match {
-        case ex: AuthTokenOperationCancelledException =>
+        case ex: AccountsProcessOperationCancelledException =>
           showErrorDialog(
             message = R.string.errorAndroidMarketPermissionNotAccepted,
-            action = () => requestAndroidMarketPermission(account, client))
+            action = () => requestAndroidMarketPermission(account, client),
+            negativeAction = () => actions.goToUser().run)
         case ex: Throwable => actions.showErrorConnectingGoogle().run
       },
       onPreTask = () => actions.showLoading().run)
   }
 
   private[this] def requestGooglePermission(
-    account: Account,
+    account: String,
     client: GoogleApiClient): Unit = {
     val scopes = resGetString(R.string.profile_and_drive_oauth_scopes)
-    Task.fork(requestToken(account, scopes, client).value).resolveAsync(
-      onResult = (_) => {
-        clientStatuses.driveApiClient foreach (_.connect())
-      },
+    Task.fork(di.userAccountsProcess.getAuthToken(account, scopes).value).resolveAsync(
+      onResult = (_) => clientStatuses.driveApiClient foreach (_.connect()),
       onException = (ex: Throwable) => ex match {
-        case ex: AuthTokenOperationCancelledException =>
+        case ex: AccountsProcessOperationCancelledException =>
           showErrorDialog(
             message = R.string.errorGooglePermissionNotAccepted,
-            action = () => requestGooglePermission(account, client))
-        case ex: Throwable => actions.showErrorConnectingGoogle()
+            action = () => requestGooglePermission(account, client),
+            negativeAction = () => actions.goToUser().run)
+        case ex: Throwable => actions.showErrorConnectingGoogle().run
       },
       onPreTask = () => actions.showLoading().run)
   }
 
-  private[this] def showErrorDialog(message: Int, action: () => Unit): Unit =
+  private[this] def showErrorDialog(message: Int, action: () => Unit, negativeAction: () => Unit): Unit =
     contextWrapper.original.get match {
       case Some(activity: AppCompatActivity) =>
         val fm = activity.getSupportFragmentManager
@@ -283,7 +308,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         val dialog = new AlertDialogFragment(
           message = message,
           positiveAction = action,
-          negativeAction = () => actions.goToUser().run)
+          negativeAction = negativeAction)
         ft.add(dialog, tagDialog).addToBackStack(javaNull)
         ft.commitAllowingStateLoss()
       case _ =>
@@ -349,7 +374,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }
 
     clientStatuses match {
-      case WizardPresenterStatuses(Some(client), _, Some(email), Some(androidMarketToken), Some(emailTokenId)) =>
+      case WizardPresenterStatuses(_, Some(client), _, Some(email), Some(androidMarketToken), Some(emailTokenId)) =>
         Task.fork(loadCloudDevices(client, email, androidMarketToken, emailTokenId).value).resolveAsyncUi(
           onPreTask = () => actions.showLoading(),
           onResult = (devices: UserCloudDevices) => actions.showDevices(devices),
@@ -368,6 +393,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 object Statuses {
 
   case class WizardPresenterStatuses(
+    deviceKey: Option[String] = None,
     driveApiClient: Option[GoogleApiClient] = None,
     plusApiClient: Option[GoogleApiClient] = None,
     email: Option[String] = None,
@@ -378,7 +404,7 @@ object Statuses {
 
 trait WizardUiActions {
 
-  def initialize(accounts: Seq[Account]): Ui[Any]
+  def initialize(): Ui[Any]
 
   def goToUser(): Ui[Any]
 

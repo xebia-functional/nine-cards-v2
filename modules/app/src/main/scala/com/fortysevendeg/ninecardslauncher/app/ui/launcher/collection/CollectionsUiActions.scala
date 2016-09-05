@@ -157,7 +157,7 @@ trait CollectionsUiActions
       (menuLauncherSettings <~ On.click {
         closeCollectionMenu() ~~ uiStartIntentForResult(
           intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
-          result = goToPreferences)
+          requestCode = goToPreferences)
       })
 
   def showEditCollection(collection: Collection): Ui[Any] = {
