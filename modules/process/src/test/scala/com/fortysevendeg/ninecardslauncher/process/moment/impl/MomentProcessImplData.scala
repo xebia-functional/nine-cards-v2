@@ -42,6 +42,7 @@ trait MomentProcessImplData {
   val position: Int = Random.nextInt(10)
   val term: String = Random.nextString(5)
   val packageName = Random.nextString(5)
+  val className = Random.nextString(5)
   val cardType: CardType = cardTypes(Random.nextInt(cardTypes.length))
   val imagePath: String = Random.nextString(5)
   val notification: String = Random.nextString(5)
@@ -57,6 +58,11 @@ trait MomentProcessImplData {
   val workAppPackageName = "com.google.android.apps.photos"
   val transitAppPackageName = "com.google.android.apps.maps"
   val momentType = Seq("HOME", "WORK", "NIGHT", "TRANSIT")
+
+  val startX: Int = Random.nextInt(8)
+  val startY: Int = Random.nextInt(8)
+  val spanX: Int = Random.nextInt(8)
+  val spanY: Int = Random.nextInt(8)
 
   val ssid: String = Random.nextString(5)
 
@@ -241,6 +247,34 @@ trait MomentProcessImplData {
         to = to,
         days = days))
 
+  def createSeqFormedWidgets(
+    num: Int = 5,
+    packageName: String = packageName,
+    className: String = className,
+    startX: Int = startX,
+    startY: Int = startX,
+    spanX: Int = startX,
+    spanY: Int = startX,
+    widgetType: WidgetType = AppWidgetType,
+    label: Option[String] = None,
+    imagePath: Option[String] = None,
+    intent: Option[String] = None) =
+    (0 until 5) map (
+      item =>
+        FormedWidget(
+          packageName = packageName + item,
+          className = className + item,
+          startX = startX + item,
+          startY = startY + item,
+          spanX = spanX + item,
+          spanY = spanY + item,
+          widgetType = widgetType,
+          label = label,
+          imagePath = imagePath,
+          intent = intent))
+
+  val seqFormedWidgets = createSeqFormedWidgets()
+
   def createSeqMoment(
     num: Int = 4,
     collectionId: Option[Int] = Option(collectionId1),
@@ -254,7 +288,8 @@ trait MomentProcessImplData {
         timeslot = timeslot,
         wifi = wifi,
         headphone = headphone,
-        momentType = Option(NineCardsMoment(momentType(item)))))
+        momentType = Option(NineCardsMoment(momentType(item))),
+        widgets = Option(seqFormedWidgets)))
 
   def createSeqMomentTimeSlot(
     from: String = from,

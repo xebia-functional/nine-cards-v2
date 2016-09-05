@@ -13,13 +13,14 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.SharedCollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
@@ -75,22 +76,18 @@ trait PublicCollectionsActionsImpl
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (typeFilter <~
         On.click {
-          typeFilter <~ vPopupMenuShow(
-            menu = R.menu.type_public_collection_menu,
-            onMenuItemClickListener = (item: MenuItem) => {
-              collectionPresenter.loadPublicCollectionsByTypeSharedCollection(
-                item.getItemId match {
-                  case R.id.top => TopSharedCollection
-                  case _ => LatestSharedCollection
-                })
-              true
+          val values = Seq(resGetString(R.string.top), resGetString(R.string.latest))
+          typeFilter <~ vListThemedPopupWindowShow(
+            values = values,
+            onItemClickListener = {
+              case 0 => collectionPresenter.loadPublicCollectionsByTypeSharedCollection(TopSharedCollection)
+              case _ => collectionPresenter.loadPublicCollectionsByTypeSharedCollection(LatestSharedCollection)
             })
         }) ~
       (categoryFilter <~
         On.click {
-          categoryFilter <~ vListPopupWindowShow(
-            layout = R.layout.list_item_popup_menu,
-            menu = categoryNamesMenu,
+          categoryFilter <~ vListThemedPopupWindowShow(
+            values = categoryNamesMenu,
             onItemClickListener = (position: Int) => {
               categories.lift(position) foreach collectionPresenter.loadPublicCollectionsByCategory
             },
@@ -99,9 +96,14 @@ trait PublicCollectionsActionsImpl
         }) ~
       (recycler <~ recyclerStyle)
 
-  override def showContactUsError(): Ui[Any] = showError(R.string.contactUsError, () => {
-    collectionPresenter.loadPublicCollections()
-  })
+  override def showErrorLoadingCollectionInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.errorLoadingPublicCollections, error = true, action = collectionPresenter.loadPublicCollections())
+
+  override def showErrorSavingCollectionInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.errorSavingPublicCollections, error = true, action = collectionPresenter.loadPublicCollections())
+
+  override def showEmptyMessageInScreen(): Ui[Any] =
+    showMessageInScreen(R.string.emptyPublicCollections, error = false, collectionPresenter.loadPublicCollections())
 
   override def loadPublicCollections(
     sharedCollections: Seq[SharedCollection]): Ui[Any] = {
@@ -174,7 +176,7 @@ case class ViewHolderPublicCollectionsLayoutAdapter(
     val apps = collection.resolvedPackages slice(0, appsCount)
     val plus = collection.resolvedPackages.length - appsCount
     (iconContent <~ vBackground(background)) ~
-      (icon <~ ivSrc(iconCollectionDetail(collection.icon))) ~
+      (icon <~ ivSrc(collection.getIconCollectionDetail)) ~
       (appsIcons <~
         vgRemoveAllViews <~
         automaticAlignment(apps, plus)) ~

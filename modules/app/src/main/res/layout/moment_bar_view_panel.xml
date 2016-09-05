@@ -8,9 +8,15 @@
         android:id="@+id/launcher_moment_content"
         style="@style/LauncherMomentInfoContent">
 
-        <ImageView
-            style="@style/LauncherMomentIcon"
-            android:id="@+id/launcher_moment_icon"/>
+        <FrameLayout
+            android:id="@+id/launcher_moment_icon_content"
+            style="@style/LauncherMomentIconContent">
+
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                style="@style/LauncherMomentIcon"
+                android:id="@+id/launcher_moment_icon"/>
+
+        </FrameLayout>
 
         <TextView
             style="@style/LauncherMomentText"

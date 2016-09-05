@@ -13,10 +13,11 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.commons._
 import AnimatedWorkSpaces._
+import com.fortysevendeg.ninecardslauncher.app.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, NineCardsPreferencesValue, WorkspaceAnimations}
 import macroid.FullDsl._
 import macroid._
 
@@ -56,9 +57,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   private[this] var views: Seq[Holder] = Seq.empty
 
-  var statuses = AnimatedWorkSpacesStatuses(
-    horizontalGallery = true,
-    infinite = false)
+  var statuses = AnimatedWorkSpacesStatuses()
 
   var onPageChangedObservers: Seq[PageChangedObserver] = Seq.empty
 
@@ -74,10 +73,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   val durationAnimation = resGetInteger(android.R.integer.config_shortAnimTime)
 
   val moveItemsAnimator = new TranslationAnimator(
-    translation = if (statuses.horizontalGallery) TranslationX else TranslationY,
+    translation = NoTranslation,
     update = (value: Float) => {
       statuses = statuses.copy(displacement = value)
-      transformPanelCanvas()
+      transformOutPanel() ~ transformInPanel()
     }
   )
 
@@ -92,13 +91,15 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   (self <~ vgAddViews(Seq(
     (w[FrameLayout] <~
       wire(parentViewOne) <~
-      vAddField(positionViewKey, PreviousView)).get,
-    (w[FrameLayout] <~
-      wire(parentViewTwo) <~
       vAddField(positionViewKey, NextView)).get,
     (w[FrameLayout] <~
+      wire(parentViewTwo) <~
+      vAddField(positionViewKey, FrontView)).get,
+    (w[FrameLayout] <~
       wire(parentViewThree) <~
-      vAddField(positionViewKey, FrontView)).get), params)).run
+      vAddField(positionViewKey, PreviousView)).get), params)).run
+
+  def animationPref = WorkspaceAnimations.readValue(new NineCardsPreferencesValue)
 
   def createEmptyView(): Holder
 
@@ -181,7 +182,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def addMovementObservers(f: MovementObserver) = onMovementObservers = onMovementObservers :+ f
 
-  private[this] def getSizeWidget = if (statuses.horizontalGallery) getWidth else getHeight
+  private[this] def getSizeWidget = getWidth
 
   def isPosition(position: Int): Boolean = statuses.currentItem == position
 
@@ -191,9 +192,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def isLast: Boolean = isPosition(data.length - 1)
 
-  def canGoToPrevious = !isFirst || (isFirst && statuses.infinite)
+  def canGoToPrevious = !isFirst
 
-  def canGoToNext = !isLast || (isLast && statuses.infinite)
+  def canGoToNext = !isLast
 
   private[this] def snap(velocity: Float): Ui[_] = {
     moveItemsAnimator.cancel()
@@ -218,7 +219,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     moveItemsAnimator.cancel()
     statuses = statuses.updateDisplacement(getSizeWidget, delta)
 
-    applyTranslation(getFrontView, statuses.displacement) ~ transformPanelCanvas()
+    transformOutPanel() ~ transformInPanel()
   }
 
   def selectPosition(position: Int): Unit = {
@@ -226,22 +227,44 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (reset() ~ reset()).run // TODO Change that
   }
 
-  private[this] def applyTranslation(view: Option[ViewGroup], translate: Float): Ui[_] =
-    view <~ (if (statuses.horizontalGallery) vTranslationX(translate) else vTranslationY(translate))
-
-  private[this] def transformPanelCanvas(): Ui[_] = {
+  private[this] def transformOutPanel(): Ui[_] = {
     val percent = statuses.percent(getSizeWidget)
-    val fromLeft = statuses.isFromLeft
-    notifyMovementObservers(percent)
-    applyTransformer(if (fromLeft) getPreviousView else getNextView, percent, fromLeft)
+    getFrontView <~ ((animationPref, statuses.isFromLeft) match {
+      case (HorizontalSlideWorkspaceAnimation, _) =>
+        vTranslationX(statuses.displacement)
+      case (AppearBehindWorkspaceAnimation, true) =>
+        val alpha = 1 - percent
+        val scale = .5f + (alpha / 2)
+        vScaleX(scale) + vScaleY(scale) + vAlpha(alpha)
+      case (AppearBehindWorkspaceAnimation, false) =>
+        vTranslationX(statuses.displacement)
+    })
   }
 
-  private[this] def applyTransformer(view: Option[ViewGroup], percent: Float, fromLeft: Boolean): Ui[_] = {
-    val translate = {
-      val start = if (fromLeft) -getSizeWidget else getSizeWidget
-      start - (start * percent)
-    }
-    applyTranslation(view, translate)
+  private[this] def transformInPanel(): Ui[_] = {
+    val percent = statuses.percent(getSizeWidget)
+    val fromLeft = statuses.isFromLeft
+    val view = if (fromLeft) getPreviousView else getNextView
+    notifyMovementObservers(percent)
+
+    view <~ ((animationPref, fromLeft) match {
+      case (HorizontalSlideWorkspaceAnimation, _) =>
+        val translate = {
+          val start = if (fromLeft) -getSizeWidget else getSizeWidget
+          start - (start * percent)
+        }
+        vTranslationX(translate)
+      case (AppearBehindWorkspaceAnimation, true) =>
+        val translate = {
+          val start = -getSizeWidget
+          start - (start * percent)
+        }
+        vTranslationX(translate)
+      case (AppearBehindWorkspaceAnimation, false) =>
+        val scale = .5f + (percent / 2)
+        vTranslationX(0) + vScaleX(scale) + vScaleY(scale) + vAlpha(percent)
+    })
+
   }
 
   private[this] def animateViews(dest: Int, duration: Int): Ui[_] = {
@@ -255,15 +278,16 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   private[this] def swapViews(): Ui[_] = {
     statuses = statuses.copy(currentItem = goToItem())
     (this <~ (if (statuses.isFromLeft) reloadPreviousPositionView else reloadNextPositionView)) ~
-      (if (statuses.isFromLeft) recreate(PreviousView) else recreate(NextView)) ~
+      (if (statuses.isFromLeft)
+        recreate(PreviousView) ~ resetView(NextView) else
+        recreate(NextView) ~ resetView(PreviousView)) ~
       Ui {
         statuses = statuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
       }
   }
 
   private[this] def resetAnimationEnd(): Ui[_] =
-    (if (statuses.swap) swapViews() else Ui.nop) ~
-      (self <~ vLayerHardware(activate = false))
+    (if (statuses.swap) swapViews() else Ui.nop) ~ layerHardware(true)
 
   def reset(): Ui[_] = {
     statuses = statuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
@@ -276,10 +300,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   private[this] def recreate(positionView: PositionView): Ui[Any] = {
     val currentItem = statuses.currentItem
 
-    val (position, displacement) = positionView match {
-      case PreviousView =>  (if (currentItem - 1 < 0) views.length - 1 else currentItem - 1, -getSizeWidget)
-      case NextView => (if (currentItem + 1 > views.length - 1) 0 else currentItem + 1, getSizeWidget)
-      case FrontView => (currentItem, 0)
+    val position = positionView match {
+      case PreviousView =>  if (currentItem - 1 < 0) views.length - 1 else currentItem - 1
+      case NextView => if (currentItem + 1 > views.length - 1) 0 else currentItem + 1
+      case FrontView => currentItem
     }
 
     val view = getView(positionView)
@@ -287,8 +311,17 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (view <~
       vgRemoveAllViews <~
       vgAddView(views(position), params)) ~
-      applyTranslation(view, displacement)
+      resetView(positionView)
+  }
 
+  def resetView(positionView: PositionView) = {
+    val view = getView(positionView)
+    val displacement = positionView match {
+      case PreviousView =>  -getSizeWidget
+      case NextView => getSizeWidget
+      case FrontView => 0
+    }
+    view <~ vTranslationX(displacement) <~ vScaleX(1) <~ vScaleY(1) <~ vAlpha(1)
   }
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
@@ -325,12 +358,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       case (ACTION_MOVE, Scrolling) =>
         requestDisallowInterceptTouchEvent(true)
         val deltaX = statuses.deltaX(x)
-        val deltaY = statuses.deltaY(y)
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        if (overScroll(deltaX, deltaY)) {
-          applyTranslation(getFrontView, 0).run
+        if (overScroll(deltaX)) {
+          notifyMovementObservers(0f)
+          resetView(FrontView).run
         } else {
-          performScroll(if (statuses.horizontalGallery) deltaX else deltaY).run
+          performScroll(deltaX).run
         }
       case (ACTION_MOVE, Stopped) => setStateIfNeeded(x, y)
       case (ACTION_DOWN, _) =>
@@ -352,17 +385,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (action, x, y)
   }
 
-  private[this] def overScroll(deltaX: Float, deltaY: Float): Boolean = getFrontView exists { view =>
-    val xView = view.getX
-    val yView = view.getY
-    (statuses.infinite, statuses.horizontalGallery, xView, yView, deltaX, deltaY) match {
-      case (false, true, x, _, dx, _) if x >= 0 && dx < 0 && isFirst => true
-      case (false, true, x, _, dx, _) if x <= 0 && dx > 0 && isLast => true
-      case (false, false, _, y, _, dy) if y >= 0 && dy < 0 && isFirst => true
-      case (false, false, _, y, _, dy) if y <= 0 && dy > 0 && isLast => true
+  private[this] def overScroll(deltaX: Float): Boolean =
+    (statuses.displacement, deltaX) match {
+      case (x, dx) if isFirst && dx < 0 && x - dx >= 0 => true
+      case (x, dx) if isLast && dx > 0 && x - dx <= 0 => true
       case _ => false
     }
-  }
 
   def setStateIfNeeded(x: Float, y: Float) = {
     if (statuses.enabled) {
@@ -374,35 +402,39 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
       if (xMoved || yMoved) {
         val penultimate = data.length - 2
-        val isScrolling = (statuses.infinite, statuses.horizontalGallery, xDiff > yDiff, moveItemsAnimator.isRunning) match {
-          case (true, true, true, _) => true
-          case (true, false, false, _) => true
-          case (false, true, true, true) if x - statuses.lastMotionX > 0 && isPosition(1) => false
-          case (false, true, true, true) if x - statuses.lastMotionX < 0 && isPosition(penultimate) => false
-          case (false, false, false, true) if y - statuses.lastMotionY > 0 && isPosition(1) => false
-          case (false, false, false, true) if y - statuses.lastMotionY < 0 && isPosition(penultimate) => false
-          case (false, true, true, _) if x - statuses.lastMotionX > 0 && !isFirst => true
-          case (false, true, true, _) if x - statuses.lastMotionX < 0 && !isLast => true
-          case (false, false, false, _) if y - statuses.lastMotionY > 0 && !isFirst => true
-          case (false, false, false, _) if y - statuses.lastMotionY < 0 && !isLast => true
+        val isScrolling = (xDiff > yDiff, moveItemsAnimator.isRunning) match {
+          case (true, true) if x - statuses.lastMotionX > 0 && isPosition(1) => false
+          case (true, true) if x - statuses.lastMotionX < 0 && isPosition(penultimate) => false
+          case (false, true) if y - statuses.lastMotionY > 0 && isPosition(1) => false
+          case (false, true) if y - statuses.lastMotionY < 0 && isPosition(penultimate) => false
+          case (true, _) if x - statuses.lastMotionX > 0 && !isFirst => true
+          case (true, _) if x - statuses.lastMotionX < 0 && !isLast => true
+          case (false, _) if y - statuses.lastMotionY > 0 && !isFirst => true
+          case (false, _) if y - statuses.lastMotionY < 0 && !isLast => true
           case _ => false
         }
         if (isScrolling) {
           statuses = statuses.copy(touchState = Scrolling)
-          (self <~ vLayerHardware(activate = true)).run
+          layerHardware(true).run
         }
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
       }
     }
   }
 
+  private[this] def layerHardware(activate: Boolean) =
+    (getFrontView <~ vLayerHardware(activate = activate)) ~
+      (getNextView <~ vLayerHardware(activate = activate)) ~
+      (getPreviousView <~ vLayerHardware(activate = activate))
+
   private[this] def computeFling() = statuses.velocityTracker foreach {
     tracker =>
       tracker.computeCurrentVelocity(1000, maximumVelocity)
-      if (statuses.isScrolling && !overScroll(-tracker.getXVelocity, -tracker.getYVelocity)) {
-        val velocity = if (statuses.horizontalGallery) tracker.getXVelocity else tracker.getYVelocity
-        (if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination()).run
-      }
+      val velocity = tracker.getXVelocity
+      ((statuses.isScrolling, math.abs(velocity) > minimumVelocity) match {
+        case (true, true) => snap(velocity)
+        case _ => snapDestination()
+      }).run
       tracker.recycle()
       statuses = statuses.copy(velocityTracker = None)
   }
@@ -445,8 +477,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 }
 
 case class AnimatedWorkSpacesStatuses(
-  horizontalGallery: Boolean,
-  infinite: Boolean,
   dimen: Dimen = Dimen(),
   touchState: ViewState = Stopped,
   enabled: Boolean = false,

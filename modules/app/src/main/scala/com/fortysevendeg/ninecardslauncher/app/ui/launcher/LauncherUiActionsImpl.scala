@@ -9,19 +9,24 @@ import android.support.v7.app.AppCompatActivity
 import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
+import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, CollectionOpeningValue, NineCardsPreferencesValue}
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
@@ -35,23 +40,21 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Edit
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{LauncherData, LauncherMoment}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.EditWidgetsMode
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets.WidgetsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.Arrow
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -65,6 +68,8 @@ trait LauncherUiActionsImpl
     with DrawerUiActions {
 
   self: TypedFindView with SystemBarsTint with Contexts[AppCompatActivity] =>
+
+  lazy val preferenceValues = new NineCardsPreferencesValue
 
   implicit val uiContext: UiContext[Activity]
 
@@ -145,8 +150,6 @@ trait LauncherUiActionsImpl
       (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
       (editWidgetsTopPanel <~ ewtMoving)
 
-  override def arrowWidget(arrow: Arrow): Ui[Any] = workspaces <~ lwsArrowWidget(arrow)
-
   override def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any] = workspaces <~ lwsResizeWidgetById(id, resize)
 
   override def moveWidgetById(id: Int, move: MoveWidgetRequest): Ui[Any] = workspaces <~ lwsMoveWidgetById(id, move)
@@ -184,6 +187,36 @@ trait LauncherUiActionsImpl
     goToNextWorkspace().ifUi(canMoveToNextScreen)
   }
 
+  override def goToCollection(collection: Collection, point: Point): Ui[Any] = {
+
+    def rippleToCollection: Ui[Future[Any]] = {
+      val color = resGetColor(getIndexColor(collection.themedColorIndex))
+      val y = KitKat.ifSupportedThen(point.y - getStatusBarHeight) getOrElse point.y
+      val background = new RippleCollectionDrawable(point.x, y, color)
+      (foreground <~
+        vVisible <~
+        vBackground(background)) ~
+        background.start()
+    }
+
+    activityContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) =>
+        val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
+        intent.putExtra(startPosition, collection.position)
+        intent.putExtra(indexColorToolbar, collection.themedColorIndex)
+        intent.putExtra(iconToolbar, collection.icon)
+        CollectionOpeningAnimations.readValue(preferenceValues) match {
+          case anim @ CircleOpeningCollectionAnimation if anim.isSupported =>
+            rippleToCollection ~~
+              Ui {
+                activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
+              }
+          case _ => Ui(activity.startActivity(intent))
+        }
+      case _ => showContactUsError()
+    }
+  }
+
   override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] = {
     val momentType = data.headOption.flatMap(_.moment).flatMap(_.momentType)
     val launcherMoment = data.headOption.flatMap(_.moment)
@@ -208,6 +241,13 @@ trait LauncherUiActionsImpl
   override def reloadMomentTopBar(): Ui[Any] = {
     val momentType = getData.headOption.flatMap(_.moment).flatMap(_.momentType)
     topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank)
+  }
+
+  override def reloadTopBar(): Ui[Any] = topBarPanel <~ tblReload
+
+  override def reloadAllViews(): Ui[Any] = activityContextWrapper.original.get match {
+    case Some(activity: AppCompatActivity) => Ui(activity.recreate())
+    case _ => Ui.nop
   }
 
   override def reloadMoment(data: LauncherData): Ui[Any] = {
@@ -256,15 +296,6 @@ trait LauncherUiActionsImpl
   override def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any] =
     addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact))
 
-  override def rippleToCollection(color: Int, point: Point): Ui[Future[Any]] = {
-    val y = KitKat.ifSupportedThen(point.y - getStatusBarHeight) getOrElse point.y
-    val background = new RippleCollectionDrawable(point.x, y, color)
-    (foreground <~
-      vVisible <~
-      vBackground(background)) ~
-      background.start()
-  }
-
   override def resetFromCollection(): Ui[Any] = foreground <~ vBlankBackground <~ vGone
 
   override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
@@ -273,20 +304,43 @@ trait LauncherUiActionsImpl
 
   override def addWidgets(widgets: Seq[AppWidget]): Ui[Any] = {
     val uiWidgets = widgets map { widget =>
-      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
-
       val widthContent = workspaces map (_.getWidth) getOrElse 0
       val heightContent = workspaces map (_.getHeight) getOrElse 0
 
-      val cell = appWidgetInfo.getCell(widthContent, heightContent)
+      widget.appWidgetId match {
+        case Some(appWidgetId) =>
+          val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+          val cell = appWidgetInfo.getCell(widthContent, heightContent)
 
-      Ui {
-        val hostView = appWidgetHost.createView(activityContextWrapper.application, widget.appWidgetId, appWidgetInfo)
-        hostView.setAppWidget(widget.appWidgetId, appWidgetInfo)
-        (workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+          Ui {
+            // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
+            val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+            hostView.setAppWidget(appWidgetId, appWidgetInfo)
+            (workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+          }
+        case _ =>
+          val (wCell, hCell) = sizeCell(widthContent, heightContent)
+          workspaces <~ lwsAddNoConfiguredWidget(wCell, hCell, widget)
       }
     }
     Ui.sequence(uiWidgets: _*)
+  }
+
+  override def replaceWidget(widget: AppWidget): Ui[Any] = widget.appWidgetId match {
+    case Some(appWidgetId) =>
+      val widthContent = workspaces map (_.getWidth) getOrElse 0
+      val heightContent = workspaces map (_.getHeight) getOrElse 0
+
+      val (wCell, hCell) = sizeCell(widthContent, heightContent)
+
+      Ui {
+        // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
+        val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+        val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+        hostView.setAppWidget(appWidgetId, appWidgetInfo)
+        (workspaces <~ lwsReplaceWidget(hostView, wCell, hCell, widget)).run
+      }
+    case _ => Ui.nop
   }
 
   override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()
@@ -305,11 +359,11 @@ trait LauncherUiActionsImpl
     }
   }
 
-  def unhostWidget(id: Int): Ui[Any] = workspaces <~ lwsUnhostWidget(id)
+  override def unhostWidget(id: Int): Ui[Any] = workspaces <~ lwsUnhostWidget(id)
 
-  override def hostWidget(widget: Widget): Ui[Any] = {
+  override def hostWidget(packageName: String, className: String): Ui[Any] = {
     val appWidgetId = appWidgetHost.allocateAppWidgetId()
-    val provider = new ComponentName(widget.packageName, widget.className)
+    val provider = new ComponentName(packageName, className)
     val success = appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, provider)
     if (success) {
       Ui(presenter.configureOrAddWidget(Some(appWidgetId)))
@@ -473,9 +527,9 @@ trait LauncherUiActionsImpl
   }
 
   def reloadPager(currentPage: Int) = Transformer {
-    case imageView: TintableImageView if imageView.isPosition(currentPage) =>
+    case imageView: ImageView if imageView.isPosition(currentPage) =>
       imageView <~ vActivated(true) <~~ pagerAppear
-    case imageView: TintableImageView =>
+    case imageView: ImageView =>
       imageView <~ vActivated(false)
   }
 

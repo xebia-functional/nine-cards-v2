@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDevi
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
@@ -127,6 +127,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         _ <- di.collectionProcess.cleanCollections()
         _ <- di.deviceProcess.deleteAllDockApps()
         _ <- di.momentProcess.deleteAllMoments()
+        _ <- di.widgetsProcess.deleteAllWidgets()
         _ <- di.userProcess.unregister
       } yield ()
 

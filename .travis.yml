@@ -27,19 +27,16 @@ before_install:
   - export GIT_PR=${TRAVIS_PULL_REQUEST}
   - export GIT_COMMIT=${TRAVIS_COMMIT}
   - pip install --user codecov && codecov -t ${CODECOV_TOKEN}
-before_script:
- - "echo $JAVA_OPTS"
- - "export JAVA_OPTS=-Xmx4096m"
 script:
-#  - sbt ++$TRAVIS_SCALA_VERSION "project commons" coverage test
-#  - sbt ++$TRAVIS_SCALA_VERSION "project api" coverage test
-#  - sbt ++$TRAVIS_SCALA_VERSION "project repository" coverage test
-#  - sbt ++$TRAVIS_SCALA_VERSION "project services" coverage test
-#  - sbt ++$TRAVIS_SCALA_VERSION "project process" coverage test
-#  - sbt ++$TRAVIS_SCALA_VERSION "project app" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project commons" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project api" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project repository" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project services" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project process" coverage test
+  - sbt ++$TRAVIS_SCALA_VERSION "project app" coverage test
 after_success:
-#  - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
-#  - codecov
+  - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
+  - codecov
   - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" android:packageRelease
-#  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-upload
-#  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-generateLink
+  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-upload
+  - test ${TRAVIS_BRANCH} == "master" && sbt ++$TRAVIS_SCALA_VERSION "project app" s3-generateLink

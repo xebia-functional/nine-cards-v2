@@ -5,9 +5,9 @@
     <PreferenceCategory android:title="@string/personalizationPreferences">
 
         <PreferenceScreen
-                android:title="@string/themesPrefTitle"
-                android:key="themesKey"
-                android:summary="@string/themesPrefSummary" />
+                android:title="@string/lookFeelPrefTitle"
+                android:key="lookFeelKey"
+                android:summary="@string/lookFeelPrefSummary" />
 
         <PreferenceScreen
                 android:title="@string/momentsPrefTitle"
@@ -20,19 +20,9 @@
                 android:summary="@string/appDrawerPrefSummary" />
 
         <PreferenceScreen
-                android:title="@string/sizesPrefTitle"
-                android:key="sizesKey"
-                android:summary="@string/sizesPrefSummary" />
-
-        <PreferenceScreen
                 android:title="@string/animationsPrefTitle"
                 android:key="animationsKey"
                 android:summary="@string/animationsPrefSummary" />
-
-        <PreferenceScreen
-                android:title="@string/newAppPrefTitle"
-                android:key="newAppKey"
-                android:summary="@string/newAppPrefSummary" />
 
     </PreferenceCategory>
 

@@ -53,6 +53,10 @@ trait CloudStorageProcessImplData {
 
   val deviceName = "device-name"
 
+  val packageName = "package-name"
+
+  val className = "class-name"
+
   val documentVersion = 1
 
   val numCollections = 1
@@ -65,7 +69,11 @@ trait CloudStorageProcessImplData {
 
   val numDockApps = 4
 
+  val numWidgets = 2
+
   val momentType = Option("HOME")
+
+  val widgetType = "APP"
 
   def generateCloudStorageDeviceData(deviceId: String = deviceId) =
     CloudStorageDeviceData(
@@ -111,8 +119,27 @@ trait CloudStorageProcessImplData {
       timeslot = generateTimeSlots(numItems),
       wifi = Seq(s"Wifi_Network $num", s"Mobile $num "),
       headphones = false,
-      momentType = momentType map (NineCardsMoment(_)))
+      momentType = momentType map (NineCardsMoment(_)),
+      widgets = Some(generateWidgets(numWidgets)))
   }
+
+  def generateWidgets(num: Int): Seq[CloudStorageWidget] = 1 to num map { i =>
+    CloudStorageWidget(
+      packageName = packageName,
+      className = className,
+      area = generateWidgetArea(i),
+      widgetType = WidgetType(widgetType),
+      label = None,
+      imagePath = None,
+      intent = None)
+  }
+
+  def generateWidgetArea(num: Int): CloudStorageWidgetArea =
+    CloudStorageWidgetArea(
+      startX = num,
+      startY = num,
+      spanX = 1,
+      spanY = 1)
 
   def generateTimeSlots(num: Int): Seq[CloudStorageMomentTimeSlot] = 1 to num map { i =>
     CloudStorageMomentTimeSlot(
@@ -173,7 +200,8 @@ trait CloudStorageProcessImplData {
        | "timeslot": [${generateTimeSlotJson(numItems).mkString(",")}],
        | "wifi": ["Wifi_Network $num", "Mobile $num "],
        | "headphones": false,
-       | "momentType": "HOME"
+       | "momentType": "HOME",
+       | "widgets": [${generateWidgetJson(numWidgets).mkString(",")}]
        |}
     """.stripMargin
   }
@@ -187,6 +215,27 @@ trait CloudStorageProcessImplData {
        |}
     """.stripMargin
   }
+
+  def generateWidgetJson(num: Int): Seq[String] = 1 to num map { i =>
+    s"""
+       |{
+       | "packageName": "package-name",
+       | "className": "class-name",
+       | "area": ${generateWidgetAreaJson(i)},
+       | "widgetType": "APP"
+       |}
+    """.stripMargin
+  }
+
+  def generateWidgetAreaJson(num: Int): String =
+    s"""
+       |{
+       | "startX": $num,
+       | "startY": $num,
+       | "spanX": 1,
+       | "spanY": 1
+       |}
+  """.stripMargin
 
   def generateDockAppsJson(num: Int): Seq[String] = 1 to num map { i =>
     s"""

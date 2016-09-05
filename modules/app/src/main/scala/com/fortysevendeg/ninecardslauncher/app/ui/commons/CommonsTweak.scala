@@ -7,21 +7,24 @@ import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable._
 import android.os.Vibrator
 import android.view.{View, ViewGroup}
-import ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
+import android.support.v7.widget.ListPopupWindow
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
-import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.adapters.ThemeArrayAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerBackgroundDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
@@ -93,11 +96,45 @@ object CommonsTweak {
     case v: View if v.hasLayerHardware => v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
   }
 
+
+  def vListThemedPopupWindowShow(
+    icons: Seq[Int] = Seq.empty,
+    values: Seq[String],
+    onItemClickListener: (Int) ⇒ Unit,
+    width: Option[Int] = None,
+    height: Option[Int] = None
+  )(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme) =
+    Tweak[View] { view =>
+      val listPopupWindow = new ListPopupWindow(contextWrapper.bestAvailable)
+      listPopupWindow.setAdapter(new ThemeArrayAdapter(icons, values))
+      listPopupWindow.setAnchorView(view)
+      width foreach listPopupWindow.setWidth
+      height foreach listPopupWindow.setHeight
+      listPopupWindow.setModal(true)
+      listPopupWindow.setOnItemClickListener(new OnItemClickListener {
+        override def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long): Unit = {
+          onItemClickListener(position)
+          listPopupWindow.dismiss()
+        }
+      })
+      listPopupWindow.show()
+    }
+
 }
 
 object ExtraTweaks {
 
   // TODO - Move to macroid extras
+
+  def vResize(size: Int): Tweak[View] = vResize(size, size)
+
+  def vResize(width: Int, height: Int): Tweak[View] = Tweak[View] {
+    view =>
+      val params = view.getLayoutParams
+      params.height = width
+      params.width = height
+      view.requestLayout()
+  }
 
   def vgAddViewByIndexParams[V <: View](view: V, index: Int, params: ViewGroup.LayoutParams): Tweak[ViewGroup] =
     Tweak[ViewGroup](_.addView(view, index, params))

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecolle
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
@@ -26,18 +26,18 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
       onPreTask = () => actions.showLoading(),
       onResult = (privateCollections: Seq[PrivateCollection]) => {
         if (privateCollections.isEmpty) {
-          actions.showEmptyMessage()
+          actions.showEmptyMessageInScreen()
         } else {
           actions.addPrivateCollections(privateCollections)
         }
       },
-      onException = (ex: Throwable) => actions.showContactUsError())
+      onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen())
   }
 
   def saveCollection(privateCollection: PrivateCollection): Unit = {
     Task.fork(di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection)).value).resolveAsyncUi(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
-      onException = (ex) => actions.showContactUsError())
+      onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }
 
   private[this] def getPrivateCollections:
@@ -70,9 +70,11 @@ trait PrivateCollectionsActions {
 
   def showLoading(): Ui[Any]
 
-  def showContactUsError(): Ui[Any]
+  def showErrorLoadingCollectionInScreen(): Ui[Any]
 
-  def showEmptyMessage(): Ui[Any]
+  def showErrorSavingCollectionInScreen(): Ui[Any]
+
+  def showEmptyMessageInScreen(): Ui[Any]
 
   def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any]
 

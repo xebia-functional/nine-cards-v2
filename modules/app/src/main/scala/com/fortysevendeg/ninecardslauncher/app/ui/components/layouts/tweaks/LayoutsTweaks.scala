@@ -8,7 +8,7 @@ import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
@@ -19,7 +19,8 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermC
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.WidgetsOps.Cell
+import android.appwidget.AppWidgetHostView
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
@@ -58,7 +59,14 @@ object LauncherWorkSpacesTweaks {
     view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
   }
 
-  def lwsAddWidget(widgetView: View, cell: Cell, widget: AppWidget) = Tweak[W] (_.addWidget(widgetView, cell, widget))
+  def lwsAddWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget) =
+    Tweak[W] (_.addWidget(widgetView, cell, widget))
+
+  def lwsAddNoConfiguredWidget(wCell: Int, hCell: Int, widget: AppWidget) =
+    Tweak[W] (_.addNoConfiguredWidget(wCell, hCell, widget))
+
+  def lwsReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: AppWidget) =
+    Tweak[W] (_.addReplaceWidget(widgetView, wCell, hCell, widget))
 
   def lwsShowRules() = Tweak[W] (_.showRulesInMoment())
 
@@ -69,8 +77,6 @@ object LauncherWorkSpacesTweaks {
   def lwsResizeCurrentWidget() = Tweak[W] (_.resizeCurrentWidget())
 
   def lwsMoveCurrentWidget() = Tweak[W] (_.moveCurrentWidget())
-
-  def lwsArrowWidget(arrow: Arrow) = Tweak[W] (_.arrowWidget(arrow))
 
   def lwsResizeWidgetById(id: Int, resize: ResizeWidgetRequest) = Tweak[W] (_.resizeWidgetById(id, resize))
 
@@ -396,8 +402,11 @@ object TopBarLayoutTweaks {
 
   type W = TopBarLayout
 
-  def tblInit(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
-    Tweak[W] (_.init.run)
+  def tblInit(workSpaceType: WorkSpaceType)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.init(workSpaceType).run)
+
+  def tblReload(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+    Tweak[W] (_.populate.run)
 
   def tblReloadMoment(moment: NineCardsMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.reloadMoment(moment).run)

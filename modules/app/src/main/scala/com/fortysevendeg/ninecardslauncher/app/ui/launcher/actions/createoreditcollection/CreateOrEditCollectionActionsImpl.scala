@@ -10,9 +10,9 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
@@ -59,7 +59,7 @@ trait CreateOrEditCollectionActionsImpl
     val textColor = theme.get(DrawerTextColor)
     (toolbar <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
-      (name <~ tvColor(textColor) <~ tvHintColor(textColor.alpha(0.8f))) ~
+      (name <~ tvColor(textColor) <~ tvHintColor(textColor.alpha(0.4f))) ~
       (colorText <~ tvColor(textColor)) ~
       (iconText <~ tvColor(textColor)) ~
       (colorContent <~ On.click(Ui(collectionPresenter.changeColor(getColor)))) ~
@@ -132,7 +132,7 @@ trait CreateOrEditCollectionActionsImpl
   private[this] def setIcon(iconName: String): Ui[Any] =
     iconImage <~
       vTag(iconName) <~
-      ivSrc(resGetDrawable(iconCollectionDetail(iconName)).colorize(theme.get(DrawerIconColor)))
+      ivSrc(resGetDrawable(iconName.getIconDetail).colorize(theme.get(DrawerIconColor)))
 
   private[this] def setIndexColor(index: Int): Ui[Any] = {
     val color = resGetColor(getIndexColor(index))

@@ -14,17 +14,27 @@ import scalaz.concurrent.Task
 
 trait MomentPersistenceServicesImpl extends PersistenceServices {
 
-  self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
+  self: Conversions
+    with PersistenceDependencies
+    with WidgetPersistenceServicesImpl
+    with ImplicitsPersistenceServiceExceptions =>
 
   def addMoment(request: AddMomentRequest) =
     (for {
       moment <- momentRepository.addMoment(toRepositoryMomentData(request))
+      _ <- addWidgets(request.widgets map (w => toAddWidgetRequest(moment.id, w)))
     } yield toMoment(moment)).resolve[PersistenceServiceException]
 
-  def addMoments(request: Seq[AddMomentRequest]) =
+  def addMoments(request: Seq[AddMomentRequest]) = {
+    val widgetsData = request map (_.widgets)
     (for {
-      moment <- momentRepository.addMoments(request map toRepositoryMomentData)
-    } yield moment map toMoment).resolve[PersistenceServiceException]
+      moments <- momentRepository.addMoments(request map toRepositoryMomentData)
+      widgets = moments.zip(widgetsData) flatMap {
+        case (moment, widgetRequest) => toAddWidgetRequestSeq(moment.id, widgetRequest)
+      }
+      _ <- addWidgets(widgets)
+    } yield moments map toMoment).resolve[PersistenceServiceException]
+  }
 
   def deleteAllMoments() =
     (for {

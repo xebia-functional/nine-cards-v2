@@ -13,7 +13,6 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, 
 import com.fortysevendeg.ninecardslauncher.process.moment.SaveMomentRequest
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
-import com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage
 
 import scala.util.Random
 
@@ -212,7 +211,8 @@ trait NineCardIntentConversions {
       timeslot = cloudStorageMoment.timeslot map toTimeSlot,
       wifi = cloudStorageMoment.wifi,
       headphone = cloudStorageMoment.headphones,
-      momentType = cloudStorageMoment.momentType)
+      momentType = cloudStorageMoment.momentType,
+      widgets = cloudStorageMoment.widgets map toFormedWidgetSeq)
 
   def toSaveMomentRequest(cloudStorageMoment: CloudStorageMoment): SaveMomentRequest =
     SaveMomentRequest(
@@ -220,7 +220,24 @@ trait NineCardIntentConversions {
       timeslot = cloudStorageMoment.timeslot map toTimeSlot,
       wifi = cloudStorageMoment.wifi,
       headphone = cloudStorageMoment.headphones,
-      momentType = cloudStorageMoment.momentType)
+      momentType = cloudStorageMoment.momentType,
+      widgets = cloudStorageMoment.widgets map toFormedWidgetSeq)
+
+  def toFormedWidgetSeq(widgets: Seq[CloudStorageWidget]) =
+    widgets map toFormedWidget
+
+  def toFormedWidget(widget: CloudStorageWidget): FormedWidget =
+    FormedWidget(
+      packageName = widget.packageName,
+      className = widget.className,
+      startX = widget.area.startX,
+      startY = widget.area.startY,
+      spanX = widget.area.spanX,
+      spanY = widget.area.spanY,
+      widgetType = widget.widgetType,
+      label = widget.label,
+      imagePath = widget.imagePath,
+      intent = widget.intent)
 
   def toTimeSlot(cloudStorageMomentTimeSlot: CloudStorageMomentTimeSlot): MomentTimeSlot =
     MomentTimeSlot(

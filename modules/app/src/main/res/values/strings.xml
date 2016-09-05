@@ -49,8 +49,6 @@
 
     <string name="messageAcceptTerms">You should accept terms and conditions</string>
 
-    <string name="messageEmpty">There isn\'t data in this moment</string>
-
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
 
@@ -185,7 +183,14 @@
     <string name="errorLoadingApps">Error loading apps</string>
     <string name="errorLoadingShortcuts">Error loading shortcuts</string>
     <string name="errorLoadingRecommendations">Error loading recommendations</string>
+
     <string name="errorLoadingPrivateCollections">Error loading private collections</string>
+    <string name="errorSavingPrivateCollections">Error saving private collections</string>
+    <string name="emptyPrivateCollections">9Cards creates collections from your installed applications and you have all categories between your collection. Maybe another day we have some collection</string>
+
+    <string name="errorLoadingPublicCollections">Error loading public collections</string>
+    <string name="errorSavingPublicCollections">Error saving public collections</string>
+    <string name="emptyPublicCollections">There aren\'t collections published in this category. Maybe you can share one of your collections :-)</string>
 
     <!-- Contacts Info -->
 
@@ -222,7 +227,7 @@
 
     <string name="apps_alphabetical">Alphabetical</string>
     <string name="apps_categories">By categories</string>
-    <string name="apps_date">By installation date</string>
+    <string name="apps_date">Recently installed</string>
     <string name="contacts_alphabetical">Alphabetical</string>
     <string name="contacts_favorites">Favorites</string>
     <string name="contacts_last">Last calls</string>
@@ -336,8 +341,8 @@
 
     <!-- Theme Preferences -->
 
-    <string name="themesPrefTitle">Themes</string>
-    <string name="themesPrefSummary">Themes Summary</string>
+    <string name="lookFeelPrefTitle">Look &amp; feel</string>
+    <string name="lookFeelPrefSummary">Change theme and others graphics styles</string>
 
     <string name="selectThemeTitle">Select Theme</string>
     <string name="selectThemeSummary">Select Theme Summary</string>
@@ -346,15 +351,36 @@
     <string name="themesLight">Light</string>
 
     <string name="googleLogoTitle">Google Logo</string>
-    <string name="googleLogoSummary">Google Logo Summary</string>
+    <string name="googleLogoSummary">Type of Google Logo on Search Bar</string>
 
     <string name="colouredGoogleLogo">Coloured</string>
     <string name="themeColourGoogleLogo">Theme\'s Colour</string>
 
+    <string name="fontsTitle">Fonts Size</string>
+    <string name="fontsSummary">General Fonts Size</string>
+
+    <string name="fontsSmall">Small</string>
+    <string name="fontsMedium">Medium</string>
+    <string name="fontsLarge">Large</string>
+
+    <string name="iconsTitle">Icons Size</string>
+    <string name="iconsSummary">General Icons Size</string>
+
+    <string name="iconsSmall">Small</string>
+    <string name="iconsMedium">Medium</string>
+    <string name="iconsLarge">Large</string>
+
+    <string name="cardPaddingTitle">Card Padding</string>
+    <string name="cardPaddingSummary">Padding between cards on Collections</string>
+
+    <string name="cardPaddingSmall">Small</string>
+    <string name="cardPaddingMedium">Medium</string>
+    <string name="cardPaddingLarge">Large</string>
+
     <!-- Moment Preferences -->
 
     <string name="momentsPrefTitle">Moments</string>
-    <string name="momentsPrefSummary">Moments Summary</string>
+    <string name="momentsPrefSummary">Configure options for your moments</string>
 
     <string name="showClockTitle">Show Clock</string>
     <string name="showClockSummary">Show Clock Summary</string>
@@ -362,111 +388,52 @@
     <!-- App Drawer Preferences -->
 
     <string name="appDrawerPrefTitle">App Drawer</string>
-    <string name="appDrawerPrefSummary">App Drawer Summary</string>
+    <string name="appDrawerPrefSummary">Configure Apps and Contacts Screen in your App Drawer</string>
 
-    <string name="defaultWindowTitle">Default Window Open</string>
-    <string name="defaultWindowSummary">Default Window Summary</string>
+    <string name="appDrawerLongPressTitle">Long Press Action</string>
+    <string name="appDrawerLongPressSummary">Current Action: %s</string>
 
-    <string name="defaultWindowApps">Apps</string>
-    <string name="defaultWindowContacts">Contacts</string>
+    <string name="appDrawerOpenKeyboard">Open keyboard</string>
+    <string name="appDrawerOpenContacts">Open Contacts</string>
 
-    <string name="letterAnimationTitle">Letter Animation</string>
-    <string name="letterAnimationSummary">Animations to show the selected letter</string>
+    <string name="appDrawerOpenAnimationTitle">Open Animation</string>
+    <string name="appDrawerOpenAnimationSummary">Current Animation: %s</string>
 
-    <string name="letterAnimations1">TBD 1</string>
-    <string name="letterAnimations2">TBD 2</string>
-    <string name="letterAnimations3">TBD 3</string>
+    <string name="appDrawerOpenAnimationReveal">Circle reveal</string>
+    <string name="appDrawerOpenAnimationFade">Fade</string>
 
-    <string name="windowIconTitle">Window Icon</string>
-    <string name="windowIconSummary">Icon to access to window</string>
-
-    <string name="windowIconsClassic">Classic</string>
-    <string name="windowIconsNineCards">9Cards</string>
-
-    <!-- Sizes Preferences -->
-
-    <string name="sizesPrefTitle">Sizes</string>
-    <string name="sizesPrefSummary">Sizes Summary</string>
-
-    <string name="fontsTitle">Fonts</string>
-    <string name="fontsSummary">Fonts Summary</string>
-
-    <string name="fontsSmall">Small</string>
-    <string name="fontsMedium">Medium</string>
-    <string name="fontsBigger">Bigger</string>
-
-    <string name="iconsTitle">Icons</string>
-    <string name="iconsSummary">Icons Summary</string>
-
-    <string name="iconsSmall">Small</string>
-    <string name="iconsMedium">Medium</string>
-    <string name="iconsBigger">Bigger</string>
-
-    <string name="cardPaddingsTitle">Card Paddings</string>
-    <string name="cardPaddingsSummary">Card Paddings Summary</string>
-
-    <string name="cardPaddingsSmall">Small</string>
-    <string name="cardPaddingsMedium">Medium</string>
-    <string name="cardPaddingsBigger">Bigger</string>
+    <string name="appDrawerFistTabContactTitle">Favorites Contacts First Tab</string>
+    <string name="appDrawerFistTabContactSummary">Favorites Contacts will appear in the first position</string>
 
     <!-- Animations Preferences -->
 
     <string name="animationsPrefTitle">Animations</string>
-    <string name="animationsPrefSummary">Animations Summary</string>
+    <string name="animationsPrefSummary">Select animations in 9Cards</string>
 
-    <string name="speedTitle">Speed</string>
-    <string name="speedSummary">Speed Summary</string>
+    <string name="speedTitle">Speed Animations</string>
+    <string name="speedSummary">Speed that you can use in all animations in 9Cards</string>
 
     <string name="speedsSlow">Slow</string>
     <string name="speedsNormal">Normal</string>
     <string name="speedsFast">Fast</string>
 
     <string name="collectionOpeningTitle">Opening Collection</string>
-    <string name="collectionOpeningSummary">Opening Collection Summary</string>
+    <string name="collectionOpeningSummary">Animation for opening collection from 9Cards</string>
 
-    <string name="collectionOpeningsMoveIcon">Move Icon</string>
     <string name="collectionOpeningsCircleReveal">Circle Reveal</string>
-    <string name="collectionOpeningsSimple">Simple</string>
     <string name="collectionOpeningsNoAnimation">No Animation</string>
 
-    <string name="appDrawerOpeningTitle">Opening AppDrawer</string>
-    <string name="appDrawerOpeningSummary">Opening AppDrawer Summary</string>
-
-    <string name="appDrawerOpeningsCircleReveal">Circle Reveal</string>
-    <string name="appDrawerOpeningsFade">Fade</string>
-    <string name="appDrawerOpeningsNoAnimation">No Animation</string>
-
     <string name="workspaceAnimationTitle">Workspace Animation</string>
-    <string name="workspaceAnimationSummary">Workspace Animation Summary</string>
+    <string name="workspaceAnimationSummary">Animation between workspaces in main screen</string>
 
     <string name="workspaceAnimationsHorizontalSlide">Horizontal Slide</string>
-    <string name="workspaceAnimationsTBD">TBD</string>
-
-    <string name="appDrawerAppsAnimationTitle">Apps Animation in AppDrawer</string>
-    <string name="appDrawerAppsAnimationSummary">Opening AppDrawer Summary</string>
-
-    <string name="appDrawerAppsAnimationsSlide">Slide from the bottom</string>
-    <string name="appDrawerAppsAnimationsTBD">TBD</string>
-    <string name="appDrawerAppsAnimationsNoAnimation">No Animation</string>
-
-    <string name="collectionDetailCardAnimationTitle">Cards Animation in Collection Detail</string>
-    <string name="collectionDetailCardAnimationSummary">Cards Animation in Collection Detail Summary</string>
-
-    <string name="collectionDetailCardAnimationsSlide">Slide from the bottom</string>
-    <string name="collectionDetailCardAnimationsTBD">TBD</string>
-    <string name="collectionDetailCardAnimationsNoAnimation">No Animation</string>
+    <string name="workspaceAnimationsAppearsBehind">Appears from behind</string>
 
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
             This collection doesn\'t have cards. You can add <b>apps, contacts, recommendations or shortcuts</b> from the + button
         ]]>
     </string>
-
-    <!-- New App Preferences -->
-
-    <string name="newAppPrefTitle">New App</string>
-    <string name="newAppPrefSummary">New App Summary</string>
-    <string name="installNewAppTBD">TBD</string>
 
     <!-- Preferences About -->
     <string name="others">Others</string>

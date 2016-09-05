@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.services.payloads.SharedCollectionPayload
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.messaging.{FirebaseMessagingService, RemoteMessage}

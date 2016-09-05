@@ -11,11 +11,12 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.{FontSize, IconsSize, SpeedAnimations}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ImageResourceNamed._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ViewOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{DragObject, PositionsUtils}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DropBackgroundDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
@@ -28,6 +29,7 @@ import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -178,7 +180,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
         dragEnded()
       case (ACTION_DROP | ACTION_DRAG_ENDED, true, true) =>
         // we are waiting that the animation is finished in order to reset views
-        delayedTask(dragEnded, resGetInteger(R.integer.anim_duration_normal))
+        delayedTask(dragEnded, SpeedAnimations.getDuration)
       case (ACTION_DRAG_EXITED, _, _) => clearMoveTask()
       case _ =>
     }
@@ -368,7 +370,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
     def populate(collection: Collection): Unit = {
       this.collection = Some(collection)
       positionInGrid = collection.position
-      val resIcon = iconCollectionWorkspace(collection.icon)
+      val resIcon = collection.getIconWorkspace
       ((layout <~
         FuncOn.click { view: View =>
           val (x, y) = PositionsUtils.calculateAnchorViewPosition(view)
@@ -379,11 +381,10 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
           presenter.startReorder(this.collection, positionInGrid)
           (this.collection map { _ =>
             (this <~ vInvisible) ~ convertToDraggingItem() ~ (layout <~ startDragStyle(collection.id.toString, collection.name))
-          } getOrElse Ui.nop).run
-          Ui(true)
+          } getOrElse Ui.nop) ~ Ui(true)
         }) ~
-        (icon <~ ivSrc(resIcon) <~ vBackgroundCollection(collection.themedColorIndex)) ~
-        (name <~ tvText(collection.name))).run
+        (icon <~ vResize(IconsSize.getIconCollection) <~ ivSrc(resIcon) <~ vBackgroundCollection(collection.themedColorIndex)) ~
+        (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(collection.name))).run
     }
 
     def convertToDraggingItem(): Ui[Any] = Ui(positionInGrid = positionDraggingItem)

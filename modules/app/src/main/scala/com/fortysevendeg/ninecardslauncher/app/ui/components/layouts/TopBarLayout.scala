@@ -9,14 +9,15 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.{NineCardsPreferencesValue, ShowClockMoment}
+import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.NineCardsMomentOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.NineCardsMomentOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -44,6 +45,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   lazy val momentContent = Option(findView(TR.launcher_moment_content))
 
+  lazy val momentIconContent = Option(findView(TR.launcher_moment_icon_content))
+
   lazy val momentIcon = Option(findView(TR.launcher_moment_icon))
 
   lazy val momentText = Option(findView(TR.launcher_moment_text))
@@ -64,25 +67,50 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val momentWorkspace = LayoutInflater.from(context).inflate(R.layout.moment_bar_view_panel, javaNull)
 
-  (this <~
-    vgAddViews(Seq(momentWorkspace, collectionWorkspace))).run
+  (this <~ vgAddViews(Seq(momentWorkspace, collectionWorkspace))).run
 
-  def init(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] =
-    (momentWorkspace <~ vInvisible) ~
+  def init(workSpaceType: WorkSpaceType)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
+    populate ~
+      (workSpaceType match {
+        case CollectionsWorkSpace => (momentWorkspace <~ vInvisible) ~ (collectionWorkspace <~ vVisible)
+        case MomentWorkSpace => (momentWorkspace <~ vVisible) ~ (collectionWorkspace <~ vInvisible)
+      })
+  }
+
+  def populate(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
+    val iconColor = theme.get(SearchIconsColor)
+    val pressedColor = theme.get(SearchPressedColor)
+    val iconBackground = new TopBarMomentBackgroundDrawable
+    val edgeBackground = new TopBarMomentEdgeBackgroundDrawable
+    val googleLogoTweaks = GoogleLogo.readValue(preferenceValues) match {
+      case GoogleLogoTheme =>
+        ivSrc(R.drawable.search_bar_logo_google_light) +
+          tivDefaultColor(theme.get(SearchGoogleColor)) +
+          tivPressedColor(pressedColor)
+      case GoogleLogoColoured =>
+        ivSrc(R.drawable.search_bar_logo_google_color) + tivClean
+    }
+    val sizeRes = FontSize.getTitleSizeResource
+    (momentWorkspace <~ vBackground(edgeBackground)) ~
+      (momentIconContent <~ vBackground(iconBackground)) ~
+      (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(pressedColor)) ~
+      (momentText <~ tvSizeResource(sizeRes)) ~
+      (momentDigitalClock <~ tvSizeResource(sizeRes)) ~
+      (momentClock <~ tvSizeResource(sizeRes)) ~
       (collectionsSearchPanel <~
         vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))) ~
       (collectionsBurgerIcon <~
-        tivDefaultColor(theme.get(SearchIconsColor)) <~
-        tivPressedColor(theme.get(SearchPressedColor)) <~
+        tivDefaultColor(iconColor) <~
+        tivPressedColor(pressedColor) <~
         On.click(Ui(presenter.launchMenu()))) ~
       (collectionsGoogleIcon <~
-        tivDefaultColor(theme.get(SearchGoogleColor)) <~
-        tivPressedColor(theme.get(SearchPressedColor)) <~
+        googleLogoTweaks <~
         On.click(Ui(presenter.launchSearch))) ~
       (collectionsMicIcon <~
-        tivDefaultColor(theme.get(SearchIconsColor)) <~
-        tivPressedColor(theme.get(SearchPressedColor)) <~
+        tivDefaultColor(iconColor) <~
+        tivPressedColor(pressedColor) <~
         On.click(Ui(presenter.launchVoiceSearch)))
+  }
 
   def movement(from: LauncherData, to: LauncherData, isFromLeft: Boolean, fraction: Float): Unit =
     if (from.workSpaceType != to.workSpaceType) {
