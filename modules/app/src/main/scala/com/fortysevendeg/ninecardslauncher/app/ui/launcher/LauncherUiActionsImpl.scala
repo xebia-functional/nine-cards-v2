@@ -307,9 +307,10 @@ trait LauncherUiActionsImpl
       val widthContent = workspaces map (_.getWidth) getOrElse 0
       val heightContent = workspaces map (_.getHeight) getOrElse 0
 
-      widget.appWidgetId match {
-        case Some(appWidgetId) =>
-          val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
+      val maybeAppWidgetInfo = widget.appWidgetId flatMap(widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
+
+      (maybeAppWidgetInfo, widget.appWidgetId) match {
+        case (Some(appWidgetInfo), Some(appWidgetId)) =>
           val cell = appWidgetInfo.getCell(widthContent, heightContent)
 
           Ui {
@@ -326,21 +327,24 @@ trait LauncherUiActionsImpl
     Ui.sequence(uiWidgets: _*)
   }
 
-  override def replaceWidget(widget: AppWidget): Ui[Any] = widget.appWidgetId match {
-    case Some(appWidgetId) =>
-      val widthContent = workspaces map (_.getWidth) getOrElse 0
-      val heightContent = workspaces map (_.getHeight) getOrElse 0
+  override def replaceWidget(widget: AppWidget): Ui[Any] = {
+    val maybeAppWidgetInfo = widget.appWidgetId flatMap(widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
 
-      val (wCell, hCell) = sizeCell(widthContent, heightContent)
+    (maybeAppWidgetInfo, widget.appWidgetId) match {
+      case (Some(appWidgetInfo), Some(appWidgetId)) =>
+        val widthContent = workspaces map (_.getWidth) getOrElse 0
+        val heightContent = workspaces map (_.getHeight) getOrElse 0
 
-      Ui {
-        // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
-        val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
-        val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
-        hostView.setAppWidget(appWidgetId, appWidgetInfo)
-        (workspaces <~ lwsReplaceWidget(hostView, wCell, hCell, widget)).run
-      }
-    case _ => Ui.nop
+        val (wCell, hCell) = sizeCell(widthContent, heightContent)
+
+        Ui {
+          // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
+          val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+          hostView.setAppWidget(appWidgetId, appWidgetInfo)
+          (workspaces <~ lwsReplaceWidget(hostView, wCell, hCell, widget)).run
+        }
+      case _ => Ui.nop
+    }
   }
 
   override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()
