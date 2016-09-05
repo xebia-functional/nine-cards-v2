@@ -49,9 +49,9 @@ class ApiUtilsSpec
 
         mockContextSupport.getActiveUserId returns Some(userId)
         mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
+
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beAnInstanceOf[Xor.Left[ApiServiceException]]
-
 
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
       }
@@ -61,6 +61,7 @@ class ApiUtilsSpec
 
         mockContextSupport.getActiveUserId returns Some(userId)
         mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user.copy(apiKey = None)))))
+
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beAnInstanceOf[Xor.Left[ApiServiceException]]
 
@@ -72,6 +73,7 @@ class ApiUtilsSpec
 
         mockContextSupport.getActiveUserId returns Some(userId)
         mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user.copy(sessionToken = None)))))
+
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beAnInstanceOf[Xor.Left[ApiServiceException]]
 

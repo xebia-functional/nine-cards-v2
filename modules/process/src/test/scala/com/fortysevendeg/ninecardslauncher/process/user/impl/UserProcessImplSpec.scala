@@ -49,10 +49,7 @@ class UserProcessImplSpec
         there was no(mockApiServices).login(any, any, any)
         there was no(mockPersistenceServices).findUserById(any)
         there was no(mockPersistenceServices).updateUser(any)
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[UserException]
-        }
+        result must beAnInstanceOf[Xor.Left[UserException]]
       }
 
     "returns a UserException if the user doesn't exists in the database" in
@@ -71,9 +68,7 @@ class UserProcessImplSpec
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
         there was no(mockPersistenceServices).updateUser(any)
 
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[UserException]
-        }
+        result must beAnInstanceOf[Xor.Left[UserException]]
       }
 
     "returns Unit when all services work fine" in
@@ -198,9 +193,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[UserException]
-        }
+        result must beAnInstanceOf[Xor.Left[UserException]]
       }
 
     "returns a UserException if the user doesn't exists in the database" in
@@ -217,9 +210,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[UserException]
-        }
+        result must beAnInstanceOf[Xor.Left[UserException]]
       }
 
     "update the user in the database but don't call to update installation if the user doesn't have a device token" in
@@ -326,9 +317,7 @@ class UserProcessImplSpec
         there was one(mockContextSupport).getActiveUserId
         there was no(mockPersistenceServices).findUserById(any)
 
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[UserException]
-        }
+        result must beAnInstanceOf[Xor.Left[UserException]]
       }
 
     "returns a UserException if the user doesn't exists in the database" in
@@ -342,9 +331,7 @@ class UserProcessImplSpec
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
 
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[UserException]
-        }
+        result must beAnInstanceOf[Xor.Left[UserException]]
       }
 
     "returns the user that exists in the database" in
@@ -358,9 +345,7 @@ class UserProcessImplSpec
         there was one(mockContextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
 
-        result must beLike {
-          case Xor.Right(user) => user shouldEqual processUser
-        }
+        result shouldEqual Xor.Right(processUser)
       }
   }
 
@@ -379,9 +364,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[UserException]
-        }
+        result must beAnInstanceOf[Xor.Left[UserException]]
       }
 
     "returns a UserException if the user doesn't exists in the database" in
@@ -398,9 +381,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[UserException]
-        }
+        result must beAnInstanceOf[Xor.Left[UserException]]
       }
 
     "updates the user in the database with the new data but doesn't call to update installation when the user has the same device token" in
@@ -552,9 +533,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[UserException]
-        }
+        result must beAnInstanceOf[Xor.Left[UserException]]
       }
 
     "returns a UserException if the user doesn't exists in the database" in
@@ -571,9 +550,7 @@ class UserProcessImplSpec
         there was no(mockPersistenceServices).getAndroidId(any)
         there was no(mockApiServices).updateInstallation(any)(any)
 
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[UserException]
-        }
+        result must beAnInstanceOf[Xor.Left[UserException]]
       }
 
     "updates the user in the database with the new data but doesn't call to update installation when the user has the same device token" in
