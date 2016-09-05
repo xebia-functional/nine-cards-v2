@@ -423,6 +423,18 @@
     <string name="devHeadphonesTitle">Auriculares</string>
     <string name="devWeatherTitle">Tiempo</string>
 
+    <string name="devLocalDatabaseCategory">Base de Datos Local</string>
+
+    <string name="devAppsCategorizedTitle">Aplicaciones Categorizadas</string>
+    <string name="devAppsCategorizedSummary">%1$s de %2$s apps están categorizadas</string>
+
+    <string name="devAndroidTokenTitle">Android Token</string>
+
+    <string name="devDeviceCloudIdTitle">Device Cloud Id</string>
+
+    <string name="devClickClipboard">Click para copiar en portapapeles</string>
+    <string name="devCopiedToClipboard">Copiado en portapapeles</string>
+
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
             Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +

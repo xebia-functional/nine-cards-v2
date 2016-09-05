@@ -441,14 +441,14 @@
     <string name="devLocalDatabaseCategory">Local Database</string>
 
     <string name="devAppsCategorizedTitle">Apps Categorized</string>
-    <string name="devAppsCategorizedSummary"><xliff:g id="apps_categorized" example="24">%1$s</xliff:g> of <xliff:g id="apps_total" example="24">%2$s</xliff:g> are categorized</string>
+    <string name="devAppsCategorizedSummary"><xliff:g id="apps_categorized" example="24">%1$s</xliff:g> of <xliff:g id="apps_total" example="24">%2$s</xliff:g> apps are categorized</string>
 
     <string name="devAndroidTokenTitle">Android Token</string>
 
     <string name="devDeviceCloudIdTitle">Device Cloud Id</string>
 
     <string name="devClickClipboard">Click for copy to clipboard</string>
-    <string name="devCopiedToClipboard">Click for copy to clipboard</string>
+    <string name="devCopiedToClipboard">Copier to clipboard</string>
 
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
