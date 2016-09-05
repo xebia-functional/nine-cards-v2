@@ -28,6 +28,8 @@ class NineCardsPreferencesActivity
 
   private[this] var changedPreferences: Set[String] = Set.empty
 
+  lazy val nineCardsPreferences = new NineCardsPreferencesValue
+
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     actionBar foreach { ab =>
@@ -67,7 +69,13 @@ class NineCardsPreferencesActivity
 
     override def onCreate(savedInstanceState: Bundle) = {
       super.onCreate(savedInstanceState)
-      addPreferencesFromResource(R.xml.preferences_headers)
+
+      if (IsDeveloper.readValue(nineCardsPreferences)) {
+        addPreferencesFromResource(R.xml.preferences_devs_headers)
+        findPreference(DeveloperPreferences.name).setOnPreferenceClickListener(preferenceClick(DeveloperPreferences.name, new DeveloperFragment()))
+      } else {
+        addPreferencesFromResource(R.xml.preferences_headers)
+      }
 
       findPreference(LookFeelPreferences.name).setOnPreferenceClickListener(preferenceClick(LookFeelPreferences.name, new LookFeelFragment()))
 
@@ -76,8 +84,6 @@ class NineCardsPreferencesActivity
       findPreference(AppDrawerPreferences.name).setOnPreferenceClickListener(preferenceClick(AppDrawerPreferences.name, new AppDrawerFragment()))
 
       findPreference(AnimationsPreferences.name).setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
-
-      findPreference(DeveloperPreferences.name).setOnPreferenceClickListener(preferenceClick(DeveloperPreferences.name, new DeveloperFragment()))
 
       findPreference(AppInfoPreferences.name).setOnPreferenceClickListener(preferenceActionClick(AboutPreferences.name, () => {
         launchSettings(getPackageName)

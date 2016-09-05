@@ -234,6 +234,16 @@ case object CardPadding
 
 // Developer Preferences
 
+case object IsDeveloper
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = isDeveloper
+  override val default: Boolean = false
+
+  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+
+  def convertToDeveloper(pref: NineCardsPreferencesValue): Unit = pref.setBoolean(name, value = true)
+}
+
 case object ProbablyActivity
   extends NineCardsPreferenceValue[String] {
   override val name: String = probablyActivity
@@ -268,9 +278,15 @@ class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
 
   def getInt(name: String, defaultValue: Int): Int = get(_.getInt(name, defaultValue))
 
+  def setInt(name: String, value: Int): Unit = get(_.edit().putInt(name, value).apply())
+
   def getString(name: String, defaultValue: String): String = get(_.getString(name, defaultValue))
 
+  def setString(name: String, value: String): Unit = get(_.edit().putString(name, value).apply())
+
   def getBoolean(name: String, defaultValue: Boolean): Boolean = get(_.getBoolean(name, defaultValue))
+
+  def setBoolean(name: String, value: Boolean): Unit = get(_.edit().putBoolean(name, value).apply())
 
 }
 
@@ -312,6 +328,7 @@ object PreferencesValuesKeys {
   val workspaceAnimation = "workspaceAnimation"
 
   // Developer Preferences
+  val isDeveloper = "isDeveloper"
   val probablyActivity = "probablyActivity"
   val headphones = "headphones"
   val weather = "weather"

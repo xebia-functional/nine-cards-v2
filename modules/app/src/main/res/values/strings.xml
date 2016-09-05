@@ -427,6 +427,8 @@
 
     <!-- Developer Preferences -->
 
+    <string name="developerOptionsActivated">Developer options activated</string>
+
     <string name="developerPrefTitle">Developer Option</string>
     <string name="developerPrefSummary">Only if you are a Android/Scala Dev :-)</string>
 

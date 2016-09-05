@@ -24,6 +24,11 @@
                 android:key="animationsKey"
                 android:summary="@string/animationsPrefSummary" />
 
+        <PreferenceScreen
+            android:title="@string/developerPrefTitle"
+            android:key="developerKey"
+            android:summary="@string/developerPrefSummary" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/others">
