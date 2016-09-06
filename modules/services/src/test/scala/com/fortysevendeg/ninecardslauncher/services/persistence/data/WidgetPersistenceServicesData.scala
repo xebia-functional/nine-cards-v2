@@ -45,6 +45,7 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
   val seqWidget: Seq[Widget] = createSeqWidget()
   val servicesWidget: Widget = seqWidget(0)
   val repoWidget: RepositoryWidget = seqRepoWidget(0)
+  val repoWidgetNone: RepositoryWidget = seqRepoWidgetNone(0)
 
   def createAddWidgetRequest(
     momentId: Int = momentId,

@@ -14,69 +14,15 @@ import scalaz.concurrent.Task
 
 trait AppPersistenceServicesSpecSpecification
   extends Specification
-    with DisjunctionMatchers {
+    with DisjunctionMatchers
+    with AppPersistenceServicesData
+    with RepositoryServicesScope {
 
-  trait ValidRepositoryServicesResponses extends RepositoryServicesScope with AppPersistenceServicesData {
-
-    mockAppRepository.fetchApps(any) returns TaskService(Task(Xor.right(seqRepoApp)))
-
-    mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
-
-    mockAppRepository.fetchAlphabeticalAppsCounter returns TaskService(Task(Xor.right(dataCounters)))
-
-    mockAppRepository.fetchCategorizedAppsCounter returns TaskService(Task(Xor.right(dataCounters)))
-
-    mockAppRepository.fetchInstallationDateAppsCounter returns TaskService(Task(Xor.right(dataCounters)))
-
-    mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(Task(Xor.right(seqRepoApp)))
-
-    mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
-
-    mockAppRepository.fetchAppByPackage(packageName) returns TaskService(Task(Xor.right(Option(repoApp))))
-
-    mockAppRepository.fetchAppByPackage(nonExistentPackageName) returns TaskService(Task(Xor.right(None)))
-
-    mockAppRepository.addApp(repoAppData) returns TaskService(Task(Xor.right(repoApp)))
-
-    mockAppRepository.addApps(Seq(repoAppData)) returns TaskService(Task(Xor.right(())))
-
-    mockAppRepository.deleteApps() returns TaskService(Task(Xor.right(items)))
-
-    mockAppRepository.deleteAppByPackage(packageName) returns TaskService(Task(Xor.right(item)))
-
-    mockAppRepository.updateApp(repoApp) returns TaskService(Task(Xor.right(item)))
-
-  }
-
-  trait ErrorRepositoryServicesResponses extends RepositoryServicesScope with AppPersistenceServicesData {
+  trait AppPersistenceServicesScope
+    extends RepositoryServicesScope
+      with AppPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
-
-    mockAppRepository.fetchApps(any) returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.fetchAlphabeticalAppsCounter returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.fetchCategorizedAppsCounter returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.fetchInstallationDateAppsCounter returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.fetchAppByPackage(packageName) returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.addApp(repoAppData) returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.addApps(Seq(repoAppData)) returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.deleteApps() returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.deleteAppByPackage(packageName) returns TaskService(Task(Xor.left(exception)))
-
-    mockAppRepository.updateApp(repoApp) returns TaskService(Task(Xor.left(exception)))
 
   }
 
@@ -86,58 +32,51 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
   "fetchApps" should {
 
-    "return a sequence of the apps when pass OrderByName" in new ValidRepositoryServicesResponses {
+    "return a sequence of the apps when pass OrderByName" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchApps(any) returns TaskService(Task(Xor.right(seqRepoApp)))
       val result = persistenceServices.fetchApps(OrderByName, ascending = true).value.run
-
-      result must beLike {
-        case Xor.Right(apps) => apps shouldEqual seqApp
-      }
-
+      result shouldEqual Xor.Right(seqApp)
       there was one(mockAppRepository).fetchApps(contain(AppEntity.name))
     }
 
-    "return a sequence of the apps when pass OrderByName and descending order" in new ValidRepositoryServicesResponses {
+    "return a sequence of the apps when pass OrderByName and descending order" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchApps(any) returns TaskService(Task(Xor.right(seqRepoApp)))
       val result = persistenceServices.fetchApps(OrderByName, ascending = false).value.run
-
-      result must beLike {
-        case Xor.Right(apps) => apps shouldEqual seqApp
-      }
-
+      result shouldEqual Xor.Right(seqApp)
       there was one(mockAppRepository).fetchApps(contain(AppEntity.name).and(contain("DESC")))
     }
 
-    "return a sequence of the apps when pass OrderByInstallDate" in new ValidRepositoryServicesResponses {
+    "return a sequence of the apps when pass OrderByInstallDate" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchApps(any) returns TaskService(Task(Xor.right(seqRepoApp)))
       val result = persistenceServices.fetchApps(OrderByInstallDate, ascending = true).value.run
-
-      result must beLike {
-        case Xor.Right(apps) => apps shouldEqual seqApp
-      }
-
+      result shouldEqual Xor.Right(seqApp)
       there was one(mockAppRepository).fetchApps(contain(AppEntity.dateInstalled))
     }
 
-    "return a sequence of the apps when pass OrderByCategory" in new ValidRepositoryServicesResponses {
+    "return a sequence of the apps when pass OrderByCategory" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchApps(any) returns TaskService(Task(Xor.right(seqRepoApp)))
       val result = persistenceServices.fetchApps(OrderByCategory, ascending = true).value.run
-
-      result must beLike {
-        case Xor.Right(apps) => apps shouldEqual seqApp
-      }
-
+      result shouldEqual Xor.Right(seqApp)
       there was one(mockAppRepository).fetchApps(contain(AppEntity.category))
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchApps(OrderByName).value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.fetchApps(any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.fetchApps(OrderByName).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "findAppByPackage" should {
 
-    "return an App when a valid packageName is provided" in new ValidRepositoryServicesResponses {
+    "return an App when a valid packageName is provided" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchAppByPackage(packageName) returns TaskService(Task(Xor.right(Option(repoApp))))
       val result = persistenceServices.findAppByPackage(packageName).value.run
 
       result must beLike {
@@ -149,26 +88,26 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       }
     }
 
-    "return None when an invalid packageName is provided" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.findAppByPackage(nonExistentPackageName).value.run
+    "return None when an invalid packageName is provided" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Right(maybeApp) => maybeApp must beNone
-      }
+      mockAppRepository.fetchAppByPackage(any) returns TaskService(Task(Xor.right(None)))
+      val result = persistenceServices.findAppByPackage(nonExistentPackageName).value.run
+      result shouldEqual Xor.Right(None)
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.findAppByPackage(packageName).value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.fetchAppByPackage(any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.findAppByPackage(packageName).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "addApp" should {
 
-    "return a App value for a valid request" in new ValidRepositoryServicesResponses {
+    "return a App value for a valid request" in new AppPersistenceServicesScope {
+
+      mockAppRepository.addApp(repoAppData) returns TaskService(Task(Xor.right(repoApp)))
       val result = persistenceServices.addApp(createAddAppRequest()).value.run
 
       result must beLike {
@@ -178,95 +117,88 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       }
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addApp(createAddAppRequest()).value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.addApp(any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.addApp(createAddAppRequest()).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "addApps" should {
 
-    "return Unit for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.addApps(Seq(createAddAppRequest())).value.run
+    "return Unit for a valid request" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Right(a) => a shouldEqual ((): Unit)
-      }
+      mockAppRepository.addApps(Seq(repoAppData)) returns TaskService(Task(Xor.right(())))
+      val result = persistenceServices.addApps(Seq(createAddAppRequest())).value.run
+      result shouldEqual Xor.Right((): Unit)
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.addApps(Seq(createAddAppRequest())).value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.addApps(any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.addApps(Seq(createAddAppRequest())).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "deleteAllApps" should {
 
-    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteAllApps().value.run
+    "return the number of elements deleted for a valid request" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Right(deleted) => deleted shouldEqual items
-      }
+      mockAppRepository.deleteApps() returns TaskService(Task(Xor.right(items)))
+      val result = persistenceServices.deleteAllApps().value.run
+      result shouldEqual Xor.Right(items)
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteAllApps().value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.deleteApps() returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.deleteAllApps().value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "deleteAppByPackage" should {
 
-    "return the number of elements deleted for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.deleteAppByPackage(packageName).value.run
+    "return the number of elements deleted for a valid request" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Right(deleted) => deleted shouldEqual 1
-      }
+      mockAppRepository.deleteAppByPackage(any) returns TaskService(Task(Xor.right(item)))
+      val result = persistenceServices.deleteAppByPackage(packageName).value.run
+      result shouldEqual Xor.Right(1)
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.deleteAppByPackage(packageName).value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.deleteAppByPackage(any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.deleteAppByPackage(packageName).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "updateApp" should {
 
-    "return the number of elements updated for a valid request" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.updateApp(createUpdateAppRequest()).value.run
+    "return the number of elements updated for a valid request" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Right(updated) => updated shouldEqual 1
-      }
+      mockAppRepository.updateApp(any) returns TaskService(Task(Xor.right(item)))
+      val result = persistenceServices.updateApp(createUpdateAppRequest()).value.run
+      result shouldEqual Xor.Right(1)
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.updateApp(createUpdateAppRequest()).value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.updateApp(any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.updateApp(createUpdateAppRequest()).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
 
   "fetchIterableApps" should {
 
-    "return a iterable of apps when pass OrderByName" in new ValidRepositoryServicesResponses {
+    "return a iterable of apps when pass OrderByName" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
       val result = persistenceServices.fetchIterableApps(OrderByName, ascending = true).value.run
 
       result must beLike {
@@ -274,7 +206,9 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       }
     }
 
-    "return a iterable of apps when pass OrderByInstallDate" in new ValidRepositoryServicesResponses {
+    "return a iterable of apps when pass OrderByInstallDate" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
       val result = persistenceServices.fetchIterableApps(OrderByInstallDate, ascending = true).value.run
 
       result must beLike {
@@ -282,7 +216,9 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       }
     }
 
-    "return a iterable of apps when pass OrderByCategory" in new ValidRepositoryServicesResponses {
+    "return a iterable of apps when pass OrderByCategory" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
       val result = persistenceServices.fetchIterableApps(OrderByCategory, ascending = true).value.run
 
       result must beLike {
@@ -290,18 +226,19 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       }
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchIterableApps(OrderByName).value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.fetchIterableApps(OrderByName).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "fetchIterableAppsByKeyword" should {
 
-    "return a iterable of apps when pass a keyword and OrderByName" in new ValidRepositoryServicesResponses {
+    "return a iterable of apps when pass a keyword and OrderByName" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
       val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName, ascending = true).value.run
 
       result must beLike {
@@ -309,15 +246,18 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       }
     }
 
-    "return a iterable of apps when pass a keyword and OrderByInstallDate" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = true).value.run
+    "return a iterable of apps when pass a keyword and OrderByInstallDate" in new AppPersistenceServicesScope {
 
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = true).value.run
       result must beLike {
         case Xor.Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
       }
     }
 
-    "return a iterable of apps when pass a keyword and OrderByCategory" in new ValidRepositoryServicesResponses {
+    "return a iterable of apps when pass a keyword and OrderByCategory" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
       val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByCategory, ascending = true).value.run
 
       result must beLike {
@@ -325,49 +265,45 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       }
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName).value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "fetchAppsByCategory" should {
 
-    "return a sequence of apps when pass a category and OrderByName" in new ValidRepositoryServicesResponses {
+    "return a sequence of apps when pass a category and OrderByName" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(Task(Xor.right(seqRepoApp)))
       val result = persistenceServices.fetchAppsByCategory(category, OrderByName, ascending = true).value.run
-
-      result must beLike {
-        case Xor.Right(apps) => apps shouldEqual seqApp
-      }
-
+      result shouldEqual Xor.Right(seqApp)
       there was one(mockAppRepository).fetchAppsByCategory(contain(category), contain(AppEntity.name))
     }
 
-    "return a sequence of apps when pass a category and OrderByInstallDate" in new ValidRepositoryServicesResponses {
+    "return a sequence of apps when pass a category and OrderByInstallDate" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(Task(Xor.right(seqRepoApp)))
       val result = persistenceServices.fetchAppsByCategory(category, OrderByInstallDate, ascending = true).value.run
-
-      result must beLike {
-        case Xor.Right(apps) => apps shouldEqual seqApp
-      }
-
+      result shouldEqual Xor.Right(seqApp)
       there was one(mockAppRepository).fetchAppsByCategory(contain(category), contain(AppEntity.dateInstalled))
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchAppsByCategory(category, OrderByName).value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.fetchAppsByCategory(category, OrderByName).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "fetchIterableAppsByCategory" should {
 
-    "return a iterable of apps when pass a category and OrderByName" in new ValidRepositoryServicesResponses {
+    "return a iterable of apps when pass a category and OrderByName" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
       val result = persistenceServices.fetchIterableAppsByCategory(category, OrderByName, ascending = true).value.run
 
       result must beLike {
@@ -375,7 +311,9 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       }
     }
 
-    "return a iterable of apps when pass a category and OrderByInstallDate" in new ValidRepositoryServicesResponses {
+    "return a iterable of apps when pass a category and OrderByInstallDate" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(Task(Xor.right(iterableCursorApp)))
       val result = persistenceServices.fetchIterableAppsByCategory(category, OrderByInstallDate, ascending = true).value.run
 
       result must beLike {
@@ -383,18 +321,19 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       }
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchIterableAppsByCategory(category, OrderByName).value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.fetchIterableAppsByCategory(category, OrderByName).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "fetchAlphabeticalAppsCounter" should {
 
-    "return a sequence of DataCounter sort alphabetically" in new ValidRepositoryServicesResponses {
+    "return a sequence of DataCounter sort alphabetically" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchAlphabeticalAppsCounter returns TaskService(Task(Xor.right(dataCounters)))
       val result = persistenceServices.fetchAlphabeticalAppsCounter.value.run
 
       result must beLike {
@@ -402,51 +341,49 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       }
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchAlphabeticalAppsCounter.value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.fetchAlphabeticalAppsCounter returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.fetchAlphabeticalAppsCounter.value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "fetchCategorizedAppsCounter" should {
 
-    "return a sequence of DataCounter by category sort alphabetically" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchCategorizedAppsCounter.value.run
+    "return a sequence of DataCounter by category sort alphabetically" in new AppPersistenceServicesScope {
 
+      mockAppRepository.fetchCategorizedAppsCounter returns TaskService(Task(Xor.right(dataCounters)))
+      val result = persistenceServices.fetchCategorizedAppsCounter.value.run
       result must beLike {
         case Xor.Right(counters) => counters map (_.term) shouldEqual (dataCounters map (_.term))
       }
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchCategorizedAppsCounter.value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.fetchCategorizedAppsCounter returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.fetchCategorizedAppsCounter.value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
 
   "fetchInstallationDateAppsCounter" should {
 
-    "return a sequence of DataCounter by installation date" in new ValidRepositoryServicesResponses {
-      val result = persistenceServices.fetchInstallationDateAppsCounter.value.run
+    "return a sequence of DataCounter by installation date" in new AppPersistenceServicesScope {
 
+      mockAppRepository.fetchInstallationDateAppsCounter returns TaskService(Task(Xor.right(dataCounters)))
+      val result = persistenceServices.fetchInstallationDateAppsCounter.value.run
       result must beLike {
         case Xor.Right(counters) => counters map (_.term) shouldEqual (dataCounters map (_.term))
       }
     }
 
-    "return a PersistenceServiceException if the service throws a exception" in new ErrorRepositoryServicesResponses {
-      val result = persistenceServices.fetchInstallationDateAppsCounter.value.run
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-      }
+      mockAppRepository.fetchInstallationDateAppsCounter returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.fetchInstallationDateAppsCounter.value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
-
 }
