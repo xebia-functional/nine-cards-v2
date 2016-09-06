@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.commons
+package com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons
 
-import PreferencesKeys._
-import PreferencesValuesKeys._
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.PreferencesKeys._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.PreferencesValuesKeys._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 
@@ -30,6 +30,10 @@ case object SizesPreferences extends NineCardsPreferences {
 
 case object AnimationsPreferences extends NineCardsPreferences {
   override val name: String = animationsKey
+}
+
+case object DeveloperPreferences extends NineCardsPreferences {
+  override val name: String = developerKey
 }
 
 case object AppInfoPreferences extends NineCardsPreferences {
@@ -228,6 +232,67 @@ case object CardPadding
   }
 }
 
+// Developer Preferences
+
+case object IsDeveloper
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = isDeveloper
+  override val default: Boolean = false
+
+  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+
+  def convertToDeveloper(pref: NineCardsPreferencesValue): Unit = pref.setBoolean(name, value = true)
+}
+
+case object AppsCategorized
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = appsCategorized
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+case object AndroidToken
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = androidToken
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+case object DeviceCloudId
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = deviceCloudId
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+case object ProbablyActivity
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = probablyActivity
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+case object Headphones
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = headphones
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+case object Weather
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = weather
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+
 // Commons
 
 class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
@@ -237,9 +302,15 @@ class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
 
   def getInt(name: String, defaultValue: Int): Int = get(_.getInt(name, defaultValue))
 
+  def setInt(name: String, value: Int): Unit = get(_.edit().putInt(name, value).apply())
+
   def getString(name: String, defaultValue: String): String = get(_.getString(name, defaultValue))
 
+  def setString(name: String, value: String): Unit = get(_.edit().putString(name, value).apply())
+
   def getBoolean(name: String, defaultValue: Boolean): Boolean = get(_.getBoolean(name, defaultValue))
+
+  def setBoolean(name: String, value: Boolean): Unit = get(_.edit().putBoolean(name, value).apply())
 
 }
 
@@ -251,6 +322,7 @@ object PreferencesKeys {
   val appDrawerKey = "appDrawerKey"
   val sizesKey = "sizesKey"
   val animationsKey = "animationsKey"
+  val developerKey = "developerKey"
   val aboutKey = "aboutKey"
   val helpKey = "helpKey"
   val appInfoKey = "appInfoKey"
@@ -278,6 +350,15 @@ object PreferencesValuesKeys {
   val speed = "speed"
   val collectionOpening = "collectionOpening"
   val workspaceAnimation = "workspaceAnimation"
+
+  // Developer Preferences
+  val isDeveloper = "isDeveloper"
+  val appsCategorized = "appsCategorized"
+  val androidToken = "androidToken"
+  val deviceCloudId = "deviceCloudId"
+  val probablyActivity = "probablyActivity"
+  val headphones = "headphones"
+  val weather = "weather"
 }
 
 

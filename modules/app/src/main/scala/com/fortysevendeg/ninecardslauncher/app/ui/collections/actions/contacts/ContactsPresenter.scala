@@ -1,17 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
-import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactException, ContactsFilter}
+import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter}
 import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
 class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Presenter {
+  extends Jobs {
 
   def initialize(): Unit = {
     actions.initialize().run

@@ -1,7 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments
+package com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons
 
 import android.preference.PreferenceFragment
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardsPreferenceValue
 
 trait FindPreferences {
 
