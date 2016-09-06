@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.widgets.impl
 import android.content.pm.PackageManager
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetServicesException
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
 import org.specs2.mock.Mockito
@@ -11,56 +12,44 @@ import org.specs2.specification.Scope
 
 trait WidgetsImplSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   trait WidgetsImplScope
     extends Scope
-    with WidgetsServicesImplData {
+      with WidgetsServicesImplData {
 
     val mockContextSupport = mock[ContextSupport]
     val mockPackageManager = mock[PackageManager]
-
-    mockContextSupport.getPackageManager returns mockPackageManager
-
     val mockAppWidgetManager = mock[AppWidgetManagerCompat with Conversions]
-    mockAppWidgetManager.getAllProviders returns seqWidget
 
     val widgetsServicesImpl = new WidgetsServicesImpl {
       override protected def getAppWidgetManager(implicit context: ContextSupport) = mockAppWidgetManager
     }
 
-  }
-
-  trait WidgetsErrorScope {
-    self : WidgetsImplScope =>
-
-    case class CustomException(message: String, cause: Option[Throwable] = None)
-      extends RuntimeException(message)
-
-    val exception = CustomException("")
-
-    mockAppWidgetManager.getAllProviders throws exception
+    val exception = WidgetServicesException("")
   }
 
 }
 
 class WidgetsServicesImplSpec
-  extends  WidgetsImplSpecification {
+  extends WidgetsImplSpecification {
 
   "returns the list of widgets" in
     new WidgetsImplScope {
+
+      mockContextSupport.getPackageManager returns mockPackageManager
+      mockAppWidgetManager.getAllProviders returns seqWidget
+
       val result = widgetsServicesImpl.getWidgets(mockContextSupport).value.run
-      result must beLike {
-        case Xor.Right(resultWidgetsList) => resultWidgetsList shouldEqual seqWidget
-      }
+      result shouldEqual Xor.Right(seqWidget)
     }
 
   "returns an WidgetException when no widgets exist" in
-    new WidgetsImplScope with WidgetsErrorScope {
+    new WidgetsImplScope {
+
+      mockAppWidgetManager.getAllProviders throws exception
       val result = widgetsServicesImpl.getWidgets(mockContextSupport).value.run
-      result must beLike {
-        case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-          }
+      result must beAnInstanceOf[Xor.Left[WidgetServicesException]]
     }
 
 }
