@@ -23,11 +23,7 @@ trait ImageServicesImplSpecification
 
   val bitmapException = BitmapTransformationException("")
 
-  val serviceBitmapException = TaskService(Task(Xor.Left(bitmapException)))
-
-  val fileException = FileException("")
-
-  val serviceFileException: TaskService[Unit] = TaskService(Task(Xor.Left(fileException)))
+  val serviceFileException: TaskService[Unit] = TaskService(Task(Xor.Left(FileException(""))))
 
   trait ImageServicesScope
     extends Scope
@@ -46,24 +42,6 @@ trait ImageServicesImplSpecification
 
     val saveBitmap = SaveBitmap(bitmap = mock[Bitmap], bitmapResize = None)
 
-    val fileExistsTask = TaskService(Task {
-      Xor.catchOnly[FileException] {
-        val file = mock[File]
-        file.exists() returns true
-        file.getAbsolutePath returns filePath
-        file
-      }
-    })
-
-    val fileNotExistsTask = TaskService(Task {
-      Xor.catchOnly[FileException] {
-        val file = mock[File]
-        file.exists() returns false
-        file.getAbsolutePath returns filePath
-        file
-      }
-    })
-
     val saveBitmapTask = TaskService(Task {
       Xor.catchOnly[FileException] {
         val file = mock[File]
@@ -73,35 +51,11 @@ trait ImageServicesImplSpecification
       }
     })
 
-    val defaultBitmapTask = TaskService(Task(Xor.catchOnly[BitmapTransformationException](mock[Bitmap])))
-
     val mockTasks = mock[ImageServicesTasks]
-
-    mockTasks.getBitmapFromURL(
-      appWebsite.url) returns
-      defaultBitmapTask
-
-    mockTasks.saveBitmap(any[File], any[Bitmap]) returns
-      TaskService(Task(Xor.catchOnly[FileException](())))
 
     val mockImageService = new ImageServicesImpl(imageServiceConfig, mockTasks)
 
   }
-
-  trait SaveBitmapImageServicesScope {
-
-    self: ImageServicesScope =>
-
-    mockTasks.getPathByName(any)(any) returns saveBitmapTask
-  }
-
-  trait SaveBitmapErrorImageServicesScope {
-
-    self: ImageServicesScope =>
-
-    mockTasks.saveBitmap(any[File], any[Bitmap]) returns serviceFileException
-  }
-
 }
 
 class ImageServicesImplSpec
@@ -110,7 +64,11 @@ class ImageServicesImplSpec
   "Image Services with Bitmaps" should {
 
     "returns filename when the file exists" in
-      new ImageServicesScope with SaveBitmapImageServicesScope {
+      new ImageServicesScope {
+
+        mockTasks.saveBitmap(any[File], any[Bitmap]) returns TaskService(Task(Xor.catchOnly[FileException](())))
+        mockTasks.getPathByName(any)(any) returns saveBitmapTask
+
         val result = mockImageService.saveBitmap(saveBitmap)(contextSupport).value.run
         result must beLike {
           case Xor.Right(resultSaveBitmapPath) =>
@@ -119,11 +77,13 @@ class ImageServicesImplSpec
       }
 
     "returns a FileException if the bitmaps can't be stored" in
-      new ImageServicesScope with SaveBitmapImageServicesScope with SaveBitmapErrorImageServicesScope {
+      new ImageServicesScope {
+
+        mockTasks.getPathByName(any)(any) returns saveBitmapTask
+        mockTasks.saveBitmap(any[File], any[Bitmap]) returns serviceFileException
+
         val result = mockImageService.saveBitmap(saveBitmap)(contextSupport).value.run
-        result must beLike {
-          case Xor.Left(e) => e shouldEqual fileException
-        }
+        result must beAnInstanceOf[Xor.Left[FileException]]
       }
   }
 

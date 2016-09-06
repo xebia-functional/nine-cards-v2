@@ -37,94 +37,6 @@ trait ImageServicesTasksSpecification
     contextSupport.getPackageManager returns packageManager
 
   }
-
-  trait FileNameImageServicesTasksScope
-    extends Scope
-      with ImageServicesImplData {
-
-    self: ImageServicesTasksScope =>
-
-    contextSupport.getResources returns mockResources
-
-    val mockResourceUtils = new ResourceUtils {
-      override def getPath(filename: String)(implicit context: ContextSupport): String = s"$fileFolder/$filename"
-    }
-
-    override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override val resourceUtils = mockResourceUtils
-    }
-
-  }
-
-  trait ErrorFileNameImageServicesTasksScope
-    extends Scope
-      with ImageServicesImplData {
-
-    self: ImageServicesTasksScope =>
-
-    val mockResourceUtils = new ResourceUtils {
-      override def getPath(filename: String)(implicit context: ContextSupport): String = ""
-    }
-
-  }
-
-  trait BitmapUrlImageServicesTasksScope
-    extends Scope
-      with ImageServicesImplData {
-
-    self: ImageServicesTasksScope =>
-
-    val mockInputStream = mock[InputStream]
-
-    override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override def createInputStream(uri: String) = mockInputStream
-
-      override def createBitmapByInputStream(is: InputStream) = mockBitmap
-    }
-
-  }
-
-  trait ErrorBitmapUrlImageServicesTasksScope
-    extends Scope
-      with ImageServicesImplData {
-
-    self: ImageServicesTasksScope =>
-
-    val density = DisplayMetrics.DENSITY_HIGH
-    val mockInputStream = mock[InputStream]
-
-    override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override def createInputStream(uri: String) = javaNull
-    }
-
-  }
-
-  trait SaveBitmapImageServicesTasksScope
-    extends Scope
-      with ImageServicesImplData {
-
-    self: ImageServicesTasksScope =>
-
-    val mockFileOutputStream = mock[FileOutputStream]
-
-    override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override def createFileOutputStream(file: File): FileOutputStream = mockFileOutputStream
-    }
-  }
-
-  trait ErrorSaveBitmapImageServicesTasksScope
-    extends Scope
-      with ImageServicesImplData {
-
-    self: ImageServicesTasksScope =>
-
-    val mockFileOutputStream = mock[FileOutputStream]
-
-    override val mockImageServicesTask = new ImageServicesTaskImpl {
-      override def createFileOutputStream(file: File): FileOutputStream = javaNull
-    }
-  }
-
 }
 
 
@@ -134,7 +46,18 @@ class ImageServicesTasksSpec
   "Image Services Tasks" should {
 
     "return a File when a valid packageName and a valid className is provided" in
-      new ImageServicesTasksScope with FileNameImageServicesTasksScope {
+      new ImageServicesTasksScope {
+
+        contextSupport.getResources returns mockResources
+
+        val mockResourceUtils = new ResourceUtils {
+          override def getPath(filename: String)(implicit context: ContextSupport): String = s"$fileFolder/$filename"
+        }
+
+        override val mockImageServicesTask = new ImageServicesTaskImpl {
+          override val resourceUtils = mockResourceUtils
+        }
+
         val result = mockImageServicesTask.getPathByName(packageName)(contextSupport).value.run
         result must beLike {
           case Xor.Right(resultFile) =>
@@ -144,42 +67,62 @@ class ImageServicesTasksSpec
       }
 
     "return a FileException when getPath in resourceUtils returns an empty string" in
-      new ImageServicesTasksScope with ErrorFileNameImageServicesTasksScope {
+      new ImageServicesTasksScope {
+
         val result = mockImageServicesTask.getPathByName(packageName)(contextSupport).value.run
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[FileException]
-        }
+        result must beAnInstanceOf[Xor.Left[FileException]]
+
       }
 
     "return a Bitmap when when a valid uri is provided" in
-      new ImageServicesTasksScope with BitmapUrlImageServicesTasksScope {
-        val result = mockImageServicesTask.getBitmapFromURL(uri).value.run
-        result must beLike { case Xor.Right(resultBitmap) => resultBitmap shouldEqual mockBitmap
+      new ImageServicesTasksScope {
+
+        val mockInputStream = mock[InputStream]
+
+        override val mockImageServicesTask = new ImageServicesTaskImpl {
+          override def createInputStream(uri: String) = mockInputStream
+
+          override def createBitmapByInputStream(is: InputStream) = mockBitmap
         }
+
+        val result = mockImageServicesTask.getBitmapFromURL(uri).value.run
+        result shouldEqual Xor.Right(mockBitmap)
       }
 
     "return a BitmapTransformationException with an invalid uri" in
-      new ImageServicesTasksScope with ErrorBitmapUrlImageServicesTasksScope {
-        val result = mockImageServicesTask.getBitmapFromURL(uri).value.run
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[BitmapTransformationException]
+      new ImageServicesTasksScope {
+
+        override val mockImageServicesTask = new ImageServicesTaskImpl {
+          override def createInputStream(uri: String) = javaNull
         }
+
+        val result = mockImageServicesTask.getBitmapFromURL(uri).value.run
+        result must beAnInstanceOf[Xor.Left[BitmapTransformationException]]
       }
 
 
     "successfuly saves the bitmap in the file" in
-      new ImageServicesTasksScope with SaveBitmapImageServicesTasksScope {
+      new ImageServicesTasksScope {
+
+        val mockFileOutputStream = mock[FileOutputStream]
+
+        override val mockImageServicesTask = new ImageServicesTaskImpl {
+          override def createFileOutputStream(file: File): FileOutputStream = mockFileOutputStream
+        }
+
         val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).value.run
-        result must beLike { case Xor.Right(response) => response shouldEqual ((): Unit) }
+        result shouldEqual Xor.Right((): Unit)
         there was one(mockBitmap).compress(Bitmap.CompressFormat.PNG, 90, mockFileOutputStream)
       }
 
     "return a FileException when the bitmap can not be saved" in
-      new ImageServicesTasksScope with ErrorSaveBitmapImageServicesTasksScope {
-        val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).value.run
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[FileException]
+      new ImageServicesTasksScope {
+
+        override val mockImageServicesTask = new ImageServicesTaskImpl {
+          override def createFileOutputStream(file: File): FileOutputStream = javaNull
         }
+        val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).value.run
+        result must beAnInstanceOf[Xor.Left[FileException]]
       }
   }
 }

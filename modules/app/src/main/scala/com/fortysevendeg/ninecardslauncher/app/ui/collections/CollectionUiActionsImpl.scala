@@ -12,7 +12,6 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.CardPadding
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -27,6 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Pull
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullingListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.CardPadding
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardBackgroundColor, DrawerTextColor, NineCardsTheme}

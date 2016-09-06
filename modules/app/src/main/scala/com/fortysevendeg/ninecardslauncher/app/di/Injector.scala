@@ -9,21 +9,23 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResol
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
 import com.fortysevendeg.ninecardslauncher.process.cloud.impl.CloudStorageProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcess, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
+import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcess, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.device.DeviceProcess
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.moment.{MomentProcess, MomentProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.moment.impl.MomentProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcess
-import com.fortysevendeg.ninecardslauncher.process.social.impl.SocialProfileProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.moment.{MomentProcess, MomentProcessConfig}
+import com.fortysevendeg.ninecardslauncher.process.recognition.RecognitionProcess
+import com.fortysevendeg.ninecardslauncher.process.recognition.impl.RecognitionProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendationsProcess
 import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsProcess
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl.SharedCollectionsProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcess
+import com.fortysevendeg.ninecardslauncher.process.social.impl.SocialProfileProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.theme.ThemeProcess
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.UserProcess
@@ -35,6 +37,7 @@ import com.fortysevendeg.ninecardslauncher.process.widget.impl.WidgetProcessImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.awareness.impl.AwarenessServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.calls.impl.CallsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.contacts.impl.ContactsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl
@@ -44,11 +47,11 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.impl.Persistence
 import com.fortysevendeg.ninecardslauncher.services.plus.impl.GooglePlusServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
 import com.fortysevendeg.ninecardslauncher.services.wifi.impl.WifiServicesImpl
-import com.fortysevendeg.ninecardslauncher2.{BuildConfig, R}
+import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.http.OkHttpClient
+import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.common.api.GoogleApiClient
 
 trait Injector {
@@ -72,6 +75,8 @@ trait Injector {
   def themeProcess: ThemeProcess
 
   def sharedCollectionsProcess: SharedCollectionsProcess
+
+  def recognitionProcess: RecognitionProcess
 
   def createCloudStorageProcess(client: GoogleApiClient): CloudStorageProcess
 
@@ -229,6 +234,14 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   override def createGooglePlusProcess(client: GoogleApiClient): SocialProfileProcess = {
     val services = new GooglePlusServicesImpl(client)
     new SocialProfileProcessImpl(services, persistenceServices)
+  }
+
+  override def recognitionProcess: RecognitionProcess = {
+    val client = new GoogleApiClient.Builder(contextSupport.context)
+      .addApi(Awareness.API)
+      .build()
+    client.connect()
+    new RecognitionProcessImpl(new AwarenessServicesImpl(client))
   }
 
   lazy val observerRegister = new ObserverRegister(uriCreator)

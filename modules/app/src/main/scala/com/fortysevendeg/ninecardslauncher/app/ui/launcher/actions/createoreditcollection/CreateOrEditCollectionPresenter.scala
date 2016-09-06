@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
 
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCollectionRequest, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -10,7 +10,7 @@ import macroid.{ActivityContextWrapper, Ui}
 import scalaz.concurrent.Task
 
 class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Presenter {
+  extends Jobs {
 
   def initialize(maybeCollectionId: Option[String]): Unit = {
     actions.initialize().run
