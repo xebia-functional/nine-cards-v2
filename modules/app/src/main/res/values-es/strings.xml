@@ -173,6 +173,7 @@
     <string name="errorLoadingApps">Error cargando aplicaciones</string>
     <string name="errorLoadingShortcuts">Error cargando accesos directos</string>
     <string name="errorLoadingRecommendations">Error cargando recomendaciones</string>
+    <string name="errorContactsPermission">Se requieren permisos de lectura sobre los contacts. ¿Quiere intentarlo de nuevo?</string>
 
     <string name="errorLoadingPrivateCollections">Error cargando colleciones privadas</string>
     <string name="errorSavingPrivateCollections">Error guardando colleción privada</string>

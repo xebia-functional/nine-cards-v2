@@ -148,7 +148,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
   def requestPermissionsResult(
     requestCode: Int,
     permissions: Array[String],
-    grantResults: Array[Int]): Unit = {
+    grantResults: Array[Int]): Unit =
     if (requestCode == requestPermissionCode) {
       val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
       if (result.exists(_.hasPermission(ReadContacts))) {
@@ -162,7 +162,6 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         generateCollections(clientStatuses.deviceKey)
       }
     }
-  }
 
   def stop(): Unit = {
     List(clientStatuses.driveApiClient, clientStatuses.plusApiClient).flatten foreach {
