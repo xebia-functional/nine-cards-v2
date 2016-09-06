@@ -34,9 +34,9 @@ trait ContextSupportProvider {
 }
 
 
-trait ActivityContextSupportProvider {
+trait ActivityContextSupportProvider extends ContextSupportProvider {
 
-  implicit def contextSupport(implicit ctx: ActivityContextWrapper): ActivityContextSupport =
+  implicit def activityContextSupport(implicit ctx: ActivityContextWrapper): ActivityContextSupport =
     new ContextSupportImpl with ActivityContextSupport with ContextSupportPreferences {
 
       override def context: Context = ctx.bestAvailable

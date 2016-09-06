@@ -14,11 +14,11 @@ import scala.collection.JavaConversions._
 
 trait AppsServicesImplSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   trait AppsServicesImplScope
     extends Scope
-    with AppsServicesImplData {
+      with AppsServicesImplData {
 
     val packageManager = mock[PackageManager]
     val contextSupport = mock[ContextSupport]
@@ -52,18 +52,14 @@ trait AppsServicesImplSpecification
     }
 
     val mockApps = List(createMockResolveInfo(sampleApp1), createMockResolveInfo(sampleApp2))
-    val mockPackageInfo = List(createMockPackageInfo(sampleApp1), createMockPackageInfo(sampleApp2))
 
     val packageInfo1 = createMockPackageInfo(sampleApp1)
     val packageInfo2 = createMockPackageInfo(sampleApp2)
 
-    packageManager.queryIntentActivities(mockIntent, 0) returns mockApps
     packageManager.getPackageInfo(sampleApp1.packageName, 0) returns packageInfo1
     packageManager.getPackageInfo(sampleApp2.packageName, 0) returns packageInfo2
     packageManager.getInstallerPackageName(sampleApp1.packageName) returns androidFeedback
     packageManager.getInstallerPackageName(sampleApp2.packageName) returns androidFeedback
-    packageManager.getLaunchIntentForPackage(sampleApp1.packageName) returns mockIntent
-    packageManager.resolveActivity(mockIntent, 0) returns mockApps.head
 
     val mockAppsServicesImpl = new AppsServicesImpl {
       override def mainIntentByCategory(category: String): Intent = mockIntent
@@ -72,52 +68,9 @@ trait AppsServicesImplSpecification
 
       override def cameraIntent(): Intent = mockIntent
     }
-  }
 
-  trait AppsServicesImplErrorScope {
-    self : AppsServicesImplScope =>
+    val exception = AppsInstalledException("")
 
-    case class CustomException(message: String, cause: Option[Throwable] = None)
-      extends RuntimeException(message)
-
-    val exception = CustomException("")
-
-    packageManager.queryIntentActivities(mockIntent, 0) throws exception
-
-  }
-
-  trait AppsServicesImplInvalidPackageNameErrorScope {
-    self : AppsServicesImplScope =>
-
-    case class CustomException(message: String, cause: Option[Throwable] = None)
-      extends RuntimeException(message)
-
-    val exception = CustomException("")
-
-    packageManager.getLaunchIntentForPackage(invalidPackageName) throws exception
-
-  }
-
-  trait AppsServicesImplResolveActivityErrorScope {
-    self : AppsServicesImplScope =>
-
-    case class CustomException(message: String, cause: Option[Throwable] = None)
-      extends RuntimeException(message)
-
-    val exception = CustomException("")
-
-    packageManager.resolveActivity(mockIntent, 0) throws exception
-  }
-
-  trait AppsServicesImplPackageInfoErrorScope {
-    self : AppsServicesImplScope =>
-
-    case class CustomException(message: String, cause: Option[Throwable] = None)
-      extends RuntimeException(message)
-
-    val exception = CustomException("")
-
-    packageManager.getPackageInfo(sampleApp1.packageName, 0) throws exception
   }
 
 }
@@ -131,18 +84,18 @@ class AppsServicesImplSpec
 
       "returns the list of installed apps when they exist" in
         new AppsServicesImplScope {
+
+          packageManager.queryIntentActivities(mockIntent, 0) returns mockApps
           val result = mockAppsServicesImpl.getInstalledApplications(contextSupport).value.run
-          result must beLike {
-            case Xor.Right(resultApplicationList) => resultApplicationList shouldEqual applicationList
-          }
+          result shouldEqual Xor.Right(applicationList)
         }
 
       "returns an AppsInstalledException when no apps exist" in
-        new AppsServicesImplScope with AppsServicesImplErrorScope {
+        new AppsServicesImplScope {
+
+          packageManager.queryIntentActivities(mockIntent, 0) throws exception
           val result = mockAppsServicesImpl.getInstalledApplications(contextSupport).value.run
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-          }
+          result must beAnInstanceOf[Xor.Left[AppsInstalledException]]
         }
     }
 
@@ -150,34 +103,36 @@ class AppsServicesImplSpec
 
       "returns the installed app when a valid packageName is provided" in
         new AppsServicesImplScope {
+
+          packageManager.resolveActivity(mockIntent, 0) returns mockApps.head
+          packageManager.getLaunchIntentForPackage(sampleApp1.packageName) returns mockIntent
+
           val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
-          result must beLike {
-            case Xor.Right(resultApplication) => resultApplication shouldEqual sampleApp1
-          }
+          result shouldEqual Xor.Right(sampleApp1)
         }
 
       "returns an AppsInstalledException when an invalid packageName is provided" in
-        new AppsServicesImplScope with AppsServicesImplInvalidPackageNameErrorScope {
+        new AppsServicesImplScope {
+
+          packageManager.getLaunchIntentForPackage(invalidPackageName) throws exception
           val result = mockAppsServicesImpl.getApplication(invalidPackageName)(contextSupport).value.run
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-          }
+          result must beAnInstanceOf[Xor.Left[AppsInstalledException]]
         }
 
       "returns an AppsInstalledException when the resolveActivity method fails" in
-        new AppsServicesImplScope with AppsServicesImplResolveActivityErrorScope {
+        new AppsServicesImplScope {
+
+          packageManager.resolveActivity(mockIntent, 0) throws exception
           val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-          }
+          result must beAnInstanceOf[Xor.Left[AppsInstalledException]]
         }
 
       "returns an AppsInstalledException when the getPackageInfo method fails" in
-        new AppsServicesImplScope with AppsServicesImplPackageInfoErrorScope {
+        new AppsServicesImplScope {
+
+          packageManager.getPackageInfo(sampleApp1.packageName, 0) throws exception
           val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-          }
+          result must beAnInstanceOf[Xor.Left[AppsInstalledException]]
         }
     }
 
@@ -185,18 +140,18 @@ class AppsServicesImplSpec
 
       "returns the list of installed default apps when they exist" in
         new AppsServicesImplScope {
+
+          packageManager.queryIntentActivities(mockIntent, 0) returns mockApps
           val result = mockAppsServicesImpl.getDefaultApps(contextSupport).value.run
-          result must beLike {
-            case Xor.Right(resultApplicationList) => resultApplicationList shouldEqual defaultApplicationList
-          }
+          result shouldEqual Xor.Right(defaultApplicationList)
         }
 
       "returns an AppsInstalledException when no default apps exist" in
-        new AppsServicesImplScope with AppsServicesImplErrorScope {
+        new AppsServicesImplScope {
+
+          packageManager.queryIntentActivities(mockIntent, 0) throws exception
           val result = mockAppsServicesImpl.getDefaultApps(contextSupport).value.run
-          result must beLike {
-            case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-          }
+          result must beAnInstanceOf[Xor.Left[AppsInstalledException]]
         }
     }
   }

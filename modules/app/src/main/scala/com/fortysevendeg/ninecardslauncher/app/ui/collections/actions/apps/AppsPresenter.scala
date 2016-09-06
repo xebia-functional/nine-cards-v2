@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
@@ -15,7 +15,7 @@ import scalaz.concurrent.Task
 case class AppsPresenter(
   category: NineCardCategory,
   actions: AppsIuActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Presenter
+  extends Jobs
   with NineCardIntentConversions {
 
   def initialize(): Unit = {

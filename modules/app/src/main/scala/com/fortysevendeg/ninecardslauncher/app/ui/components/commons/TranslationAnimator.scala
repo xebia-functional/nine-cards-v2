@@ -4,7 +4,7 @@ import android.animation.{Animator, AnimatorListenerAdapter, ObjectAnimator, Val
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.SpeedAnimations
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Snail, Ui}
 

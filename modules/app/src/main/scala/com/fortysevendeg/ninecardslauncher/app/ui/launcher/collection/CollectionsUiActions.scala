@@ -17,6 +17,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
@@ -42,6 +43,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollec
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.IsDeveloper
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -120,7 +122,14 @@ trait CollectionsUiActions
 
   lazy val menuLauncherSettings = Option(findView(TR.menu_launcher_settings))
 
-  def initCollectionsUi: Ui[Any] =
+  def initCollectionsUi: Ui[Any] = {
+
+    def goToSettings(): Ui[Any] = {
+      closeCollectionMenu() ~~ uiStartIntentForResult(
+        intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
+        requestCode = goToPreferences)
+    }
+
     (drawerLayout <~ dlStatusBarBackground(R.color.primary)) ~
       (navigationView <~
         navigationViewStyle <~
@@ -155,10 +164,14 @@ trait CollectionsUiActions
         closeCollectionMenu() ~~ Ui(presenter.goToWidgets())
       }) ~
       (menuLauncherSettings <~ On.click {
-        closeCollectionMenu() ~~ uiStartIntentForResult(
-          intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
-          requestCode = goToPreferences)
+        goToSettings()
+      } <~ On.longClick {
+        Ui(IsDeveloper.convertToDeveloper(preferenceValues)) ~
+          uiShortToast(R.string.developerOptionsActivated) ~
+          goToSettings() ~
+          Ui(true)
       })
+  }
 
   def showEditCollection(collection: Collection): Ui[Any] = {
     val view = collectionActionsPanel flatMap (_.leftActionView)

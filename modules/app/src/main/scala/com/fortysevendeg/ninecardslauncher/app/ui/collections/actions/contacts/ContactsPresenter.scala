@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.ReadContacts
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
@@ -13,7 +13,7 @@ import macroid.{ActivityContextWrapper, Ui}
 import scalaz.concurrent.Task
 
 class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Presenter {
+  extends Jobs {
 
   val requestPermissionCode = 2002
 

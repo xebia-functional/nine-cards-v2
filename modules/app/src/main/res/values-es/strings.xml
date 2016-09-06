@@ -417,6 +417,31 @@
     <string name="workspaceAnimationsHorizontalSlide">Deslizamiento Horizontal</string>
     <string name="workspaceAnimationsAppearsBehind">Aparece desde atrás</string>
 
+    <!-- Developer Preferences -->
+
+    <string name="developerOptionsActivated">Opciones para Desarrolladores activadas</string>
+
+    <string name="developerPrefTitle">Opciones para Desarrolladores</string>
+    <string name="developerPrefSummary">Sólo si eres un Android/Scala Developer :-)</string>
+
+    <string name="devAwarenessAPICategory">Awareness API</string>
+
+    <string name="devProbablyActivityTitle">Probable Actividad</string>
+    <string name="devHeadphonesTitle">Auriculares</string>
+    <string name="devWeatherTitle">Tiempo</string>
+
+    <string name="devLocalDatabaseCategory">Base de Datos Local</string>
+
+    <string name="devAppsCategorizedTitle">Aplicaciones Categorizadas</string>
+    <string name="devAppsCategorizedSummary">%1$s de %2$s apps están categorizadas</string>
+
+    <string name="devAndroidTokenTitle">Android Token</string>
+
+    <string name="devDeviceCloudIdTitle">Device Cloud Id</string>
+
+    <string name="devClickClipboard">Click para copiar en portapapeles</string>
+    <string name="devCopiedToClipboard">Copiado en portapapeles</string>
+
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
             Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +

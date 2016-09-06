@@ -9,23 +9,16 @@ import org.specs2.specification.Scope
 
 trait ResourceUtilsSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   trait ResourceUtilsScope
     extends Scope
-    with ResourceUtilsData {
+      with ResourceUtilsData {
 
     val mockContextSupport = mock[ContextSupport]
-
     val resourceUtils = new ResourceUtils
-
     val mockFile = mock[File]
-
-    mockContextSupport.getAppIconsDir returns mockFile
-    mockFile.getPath returns fileFolder
-
   }
-
 }
 
 class ResourceUtilsSpec
@@ -35,10 +28,12 @@ class ResourceUtilsSpec
 
     "return the file path when a valid file name is provided" in
       new ResourceUtilsScope {
+
+        mockContextSupport.getAppIconsDir returns mockFile
+        mockFile.getPath returns fileFolder
+
         val result = resourceUtils.getPath(fileName)(mockContextSupport)
         result shouldEqual resultFilePath
       }
-
   }
-
 }

@@ -4,7 +4,7 @@ import android.graphics.Rect
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.State
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.commons.CardPadding
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.CardPadding
 import macroid.ContextWrapper
 
 class CollectionItemDecoration (implicit contextWrapper: ContextWrapper)

@@ -7,9 +7,10 @@ import android.os.{Build, Bundle}
 import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.commons.ActivityContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider, GooglePlusApiClientProvider}
@@ -38,10 +39,11 @@ import scala.util.{Failure, Try}
 import scalaz.concurrent.Task
 
 class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Presenter
-    with GoogleDriveApiClientProvider
-    with GooglePlusApiClientProvider
-    with ImplicitsCloudStorageProcessExceptions {
+  extends Jobs
+  with ActivityContextSupportProvider
+  with GoogleDriveApiClientProvider
+  with GooglePlusApiClientProvider
+  with ImplicitsCloudStorageProcessExceptions {
 
   import Statuses._
   import PermissionChecker._
@@ -84,7 +86,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
   }
 
   def finishWizard(): Unit =
-    contextSupport.getActivity match {
+    activityContextSupport.getActivity match {
       case Some(activity) =>
         activity.setResult(Activity.RESULT_OK)
         activity.finish()

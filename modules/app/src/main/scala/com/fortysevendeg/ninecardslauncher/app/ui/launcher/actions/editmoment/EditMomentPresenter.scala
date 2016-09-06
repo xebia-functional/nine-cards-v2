@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadAction
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Presenter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentConstrainsChangedActionFilter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
@@ -13,7 +13,7 @@ import macroid._
 import scalaz.concurrent.Task
 
 class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Presenter {
+  extends Jobs {
 
   var statuses = EditMomentStatuses()
 

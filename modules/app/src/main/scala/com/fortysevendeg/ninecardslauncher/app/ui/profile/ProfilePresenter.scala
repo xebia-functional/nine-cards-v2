@@ -5,7 +5,7 @@ import java.util.Date
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Presenter, ResultCodes}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -23,7 +23,7 @@ import scala.util.{Failure, Try}
 import scalaz.concurrent.Task
 
 class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Presenter
+  extends Jobs
   with GoogleDriveApiClientProvider {
 
   import Statuses._
