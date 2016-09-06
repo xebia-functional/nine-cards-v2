@@ -1,193 +1,173 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import cats.data.Xor
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{ContactCounter, ContactInfo}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 
 import scalaz.concurrent.Task
 
 class ContactsServicesImpl(
   contentResolverWrapper: ContentResolverWrapper,
   uriCreator: UriCreator = new UriCreator)
-  extends ContactsServices
-  with ImplicitsContactsServiceExceptions {
+  extends ContactsServices {
 
   val abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
 
   val wildcard = "#"
 
   override def getContacts =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          contentResolverWrapper.fetchAll(
-            uri = Fields.CONTENT_URI,
-            projection = allFields,
-            where = Fields.ALL_CONTACTS_SELECTION,
-            orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
-        }
-      }
+    catchMapPermission {
+      contentResolverWrapper.fetchAll(
+        uri = Fields.CONTENT_URI,
+        projection = allFields,
+        where = Fields.ALL_CONTACTS_SELECTION,
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
     }
 
   override def getAlphabeticalCounterContacts =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          val iterator = getNamesAlphabetically
-          iterator.foldLeft(Seq.empty[ContactCounter]) { (acc, name) =>
-            val term = name.substring(0, 1).toUpperCase match {
-              case t if abc.contains(t) => t
-              case _ => wildcard
-            }
-            val lastWithSameTerm = acc.lastOption flatMap {
-              case last if last.term == term => Some(last)
-              case _ => None
-            }
-            lastWithSameTerm map { c =>
-              acc.dropRight(1) :+ c.copy(count = c.count + 1)
-            } getOrElse acc :+ ContactCounter(term, 1)
-          }
+    catchMapPermission {
+      val iterator = getNamesAlphabetically
+      iterator.foldLeft(Seq.empty[ContactCounter]) { (acc, name) =>
+        val term = name.substring(0, 1).toUpperCase match {
+          case t if abc.contains(t) => t
+          case _ => wildcard
         }
+        val lastWithSameTerm = acc.lastOption flatMap {
+          case last if last.term == term => Some(last)
+          case _ => None
+        }
+        lastWithSameTerm map { c =>
+          acc.dropRight(1) :+ c.copy(count = c.count + 1)
+        } getOrElse acc :+ ContactCounter(term, 1)
       }
     }
 
   override def getIterableContacts =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          contentResolverWrapper.getCursor(
-            uri = Fields.CONTENT_URI,
-            projection = allFields,
-            where = Fields.ALL_CONTACTS_SELECTION,
-            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
-        }
-      }
+    catchMapPermission {
+      contentResolverWrapper.getCursor(
+        uri = Fields.CONTENT_URI,
+        projection = allFields,
+        where = Fields.ALL_CONTACTS_SELECTION,
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
     }
 
   override def getIterableContactsByKeyword(keyword: String) =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          contentResolverWrapper.getCursor(
-            uri = Fields.CONTENT_URI,
-            projection = allFields,
-            where = Fields.CONTACTS_BY_KEYWORD_SELECTION,
-            whereParams = Seq(s"%$keyword%"),
-            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
-        }
-      }
+    catchMapPermission {
+      contentResolverWrapper.getCursor(
+        uri = Fields.CONTENT_URI,
+        projection = allFields,
+        where = Fields.CONTACTS_BY_KEYWORD_SELECTION,
+        whereParams = Seq(s"%$keyword%"),
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
     }
 
   override def fetchContactByEmail(email: String) =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          contentResolverWrapper.fetch(
-            uri = Fields.EMAIL_CONTENT_URI,
-            projection = allEmailContactFields,
-            where = Fields.EMAIL_SELECTION,
-            whereParams = Seq(email))(getEntityFromCursor(contactFromEmailCursor))
-        }
-      }
+    catchMapPermission {
+      contentResolverWrapper.fetch(
+        uri = Fields.EMAIL_CONTENT_URI,
+        projection = allEmailContactFields,
+        where = Fields.EMAIL_SELECTION,
+        whereParams = Seq(email))(getEntityFromCursor(contactFromEmailCursor))
     }
 
   override def fetchContactByPhoneNumber(phoneNumber: String) =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          contentResolverWrapper.fetch(
-            uri = uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, phoneNumber),
-            projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor))
-        }
-      }
+    catchMapPermission {
+      contentResolverWrapper.fetch(
+        uri = uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, phoneNumber),
+        projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor))
     }
 
-  override def findContactByLookupKey(lookupKey: String) =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          contentResolverWrapper.fetch(
-            uri = Fields.CONTENT_URI,
-            projection = allFields,
-            where = Fields.LOOKUP_SELECTION,
-            whereParams = Seq(lookupKey))(getEntityFromCursor(contactFromCursor)) match {
-            case Some(contact) =>
-              val emails = contentResolverWrapper.fetchAll(
-                uri = Fields.EMAIL_CONTENT_URI,
-                projection = allEmailFields,
-                where = Fields.EMAIL_CONTACT_SELECTION,
-                whereParams = Seq(lookupKey))(getListFromCursor(emailFromCursor))
-              val phones = contentResolverWrapper.fetchAll(
-                uri = Fields.PHONE_CONTENT_URI,
-                projection = allPhoneFields,
-                where = Fields.PHONE_CONTACT_SELECTION,
-                whereParams = Seq(lookupKey))(getListFromCursor(phoneFromCursor))
-              val contactInfo = (emails, phones) match {
-                case (Nil, Nil) => None
-                case _ => Some(ContactInfo(emails, phones))
-              }
-              contact.copy(info = contactInfo)
-            case _ => throw ContactNotFoundException(s"Contact with lookupKey=$lookupKey not found")
-          }
+  override def findContactByLookupKey(lookupKey: String) = {
+
+    val fetchContacts = () => contentResolverWrapper.fetchAll(
+      uri = Fields.CONTENT_URI,
+      projection = allFields,
+      where = Fields.LOOKUP_SELECTION,
+      whereParams = Seq(lookupKey))(getListFromCursor(contactFromCursor))
+
+    populateContacts(fetchContacts).resolveSides(
+      mapRight = (seq) => {
+        seq.headOption match {
+          case Some(v) => Xor.right(v)
+          case None => Xor.left(ContactNotFoundException(s"The lookupKey $lookupKey can't be found"))
+        }
+      })
+  }
+
+  override def populateContactInfo(contacts: Seq[Contact]) = populateContacts(() => contacts)
+
+  private[this] def populateContacts(fetchContacts: () => Seq[Contact]): TaskService[Seq[Contact]] = {
+
+    def mapValues[T](seq: Seq[(String, T)]): Map[String, Seq[T]] = seq.groupBy(_._1).mapValues(_.map(_._2))
+
+    def emailAndPhones(lookupKeys: Seq[String]): (Map[String, Seq[ContactEmail]], Map[String, Seq[ContactPhone]]) = {
+      (mapValues(contentResolverWrapper.fetchAll(
+        uri = Fields.EMAIL_CONTENT_URI,
+        projection = allEmailFields,
+        where = Fields.EMAIL_CONTACT_SELECTION,
+        whereParams = lookupKeys)(getListFromCursor(lookupKeyAndEmailFromCursor))),
+        mapValues(contentResolverWrapper.fetchAll(
+          uri = Fields.PHONE_CONTENT_URI,
+          projection = allPhoneFields,
+          where = Fields.PHONE_CONTACT_SELECTION,
+          whereParams = lookupKeys)(getListFromCursor(lookupKeyAndPhoneFromCursor))))
+    }
+
+    catchMapPermission {
+      val contacts = fetchContacts()
+      val (emails, phones) = emailAndPhones(contacts.map(_.lookupKey))
+      contacts map { contact =>
+        (emails.getOrElse(contact.lookupKey, Seq.empty), phones.getOrElse(contact.lookupKey, Seq.empty)) match {
+          case (contactEmails, contactPhones) if contactEmails.nonEmpty && contactPhones.nonEmpty =>
+            contact.copy(info = Some(ContactInfo(contactEmails, contactPhones)))
+          case _ =>
+            contact
         }
       }
     }
+  }
 
   override def getFavoriteContacts =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          contentResolverWrapper.fetchAll(
-            uri = Fields.CONTENT_URI,
-            projection = allFields,
-            where = Fields.STARRED_SELECTION,
-            orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
-        }
-      }
+    catchMapPermission {
+      contentResolverWrapper.fetchAll(
+        uri = Fields.CONTENT_URI,
+        projection = allFields,
+        where = Fields.STARRED_SELECTION,
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
     }
 
   override def getIterableFavoriteContacts =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          contentResolverWrapper.getCursor(
-            uri = Fields.CONTENT_URI,
-            projection = allFields,
-            where = Fields.STARRED_SELECTION,
-            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
-        }
-      }
+    catchMapPermission {
+      contentResolverWrapper.getCursor(
+        uri = Fields.CONTENT_URI,
+        projection = allFields,
+        where = Fields.STARRED_SELECTION,
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
     }
 
   override def getContactsWithPhone =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          contentResolverWrapper.fetchAll(
-            uri = Fields.CONTENT_URI,
-            projection = allFields,
-            where = Fields.HAS_PHONE_NUMBER_SELECTION,
-            orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
-        }
-      }
+    catchMapPermission {
+      contentResolverWrapper.fetchAll(
+        uri = Fields.CONTENT_URI,
+        projection = allFields,
+        where = Fields.HAS_PHONE_NUMBER_SELECTION,
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
     }
 
   override def getIterableContactsWithPhone =
-    TaskService {
-      Task {
-        XorCatchAll[ContactsServiceException] {
-          contentResolverWrapper.getCursor(
-            uri = Fields.CONTENT_URI,
-            projection = allFields,
-            where = Fields.HAS_PHONE_NUMBER_SELECTION,
-            orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
-        }
-      }
+    catchMapPermission {
+      contentResolverWrapper.getCursor(
+        uri = Fields.CONTENT_URI,
+        projection = allFields,
+        where = Fields.HAS_PHONE_NUMBER_SELECTION,
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
     }
 
   protected def getNamesAlphabetically: Seq[String] = {
@@ -197,5 +177,15 @@ class ContactsServicesImpl(
       where = Fields.ALL_CONTACTS_SELECTION,
       orderBy = Fields.CONTACTS_ORDER_BY_ASC))
   }
+
+  def catchMapPermission[V](f: => V) =
+    TaskService {
+      Task {
+        Xor.catchNonFatal(f) leftMap {
+          case e: SecurityException => ContactsServicePermissionException(e.getMessage, Some(e))
+          case e => ContactsServiceException(e.getMessage, Some(e))
+        }
+      }
+    }
 
 }

@@ -14,11 +14,16 @@ object NineCardExtensions {
     def resolve[E <: NineCardException](implicit converter: Throwable => E): XorT[Task, NineCardException, A] =
       r leftMap converter
 
-    def resolveTo(result: A): XorT[Task, NineCardException, A] = {
+    def resolveTo(result: A): XorT[Task, NineCardException, A] =
+      resolveSides((r) => Xor.right(r), (_) => Xor.right(result))
+
+    def resolveSides[B](
+      mapRight: (A) => Xor[NineCardException, B],
+      mapLeft: NineCardException => Xor[NineCardException, B] = (e: NineCardException) => Xor.left(e)): XorT[Task, NineCardException, B] = {
       val task: Task[Xor[NineCardException, A]] = r.value
-      val innerResult: Task[NineCardException Xor A] = task.map {
-        case r @ Xor.Right(_) => r
-        case Xor.Left(_) => Xor.right(result)
+      val innerResult: Task[NineCardException Xor B] = task.map {
+        case Xor.Right(v) => mapRight(v)
+        case Xor.Left(e) => mapLeft(e)
       }
       XorT(innerResult)
     }
@@ -33,18 +38,12 @@ object NineCardExtensions {
       cause map initCause
     }
 
-    def resolveOption() = {
-      val task: Task[NineCardException Xor Option[A]] = r.value
-
-      val innerResult: Task[NineCardException Xor A] = task.map {
-        case error @ Xor.Left(_) => error
-        case Xor.Right(result) => result match {
-          case Some(a) => Xor.Right(a)
-          case _ => Xor.left(EmptyException("Value not found"))
-        }
-      }
-      XorT(innerResult)
-    }
+    def resolveOption() =
+      r.resolveSides(
+        mapRight = {
+          case Some(v) => Xor.right(v)
+          case None => Xor.left(EmptyException("Value not found"))
+        })
 
   }
 
