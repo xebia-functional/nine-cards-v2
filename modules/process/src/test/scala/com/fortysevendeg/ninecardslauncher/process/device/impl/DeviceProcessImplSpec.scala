@@ -613,17 +613,13 @@ class DeviceProcessImplSpec
     "returns ContactException when ContactsServices fails getting the favorite contacts" in
       new DeviceProcessScope with FavoriteContactsErrorScope {
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[ContactException]
-        }
+        result must beAnInstanceOf[Xor.Left[ContactException]]
       }
 
     "returns ContactException when ContactsServices fails filling the contacts" in
       new DeviceProcessScope with FilledFavoriteContactsErrorScope {
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[ContactException]
-        }
+        result must beAnInstanceOf[Xor.Left[ContactException]]
       }
 
   }

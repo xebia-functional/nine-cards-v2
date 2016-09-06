@@ -174,19 +174,14 @@ class ContactsServicesImplSpec
         new ContactsServicesScope {
 
           contentResolverWrapper.fetchAll(any, any, any, any, any)(any) returns Seq.empty
-
           val result = contactsServices.findContactByLookupKey(nonExistentLookupKey).value.run
-
-          result must beLike {
-            case Xor.Left(e) => e must beAnInstanceOf[ContactNotFoundException]
-          }
+          result must beAnInstanceOf[Xor.Left[ContactNotFoundException]]
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ContactsServicesScope {
 
           contentResolverWrapper.fetchAll(any, any, any, any, any)(any) throws contentResolverException
-
           val result = contactsServices.findContactByLookupKey(firstLookupKey).value.run
           result must beAnInstanceOf[Xor.Left[ContactsServiceException]]
         }
