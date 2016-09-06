@@ -1,6 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments
+package com.fortysevendeg.ninecardslauncher.app.ui.preferences.lookandfeel
 
 import android.os.Bundle
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.PreferenceChangeListenerFragment
 import com.fortysevendeg.ninecardslauncher2.R
 
 class LookFeelFragment

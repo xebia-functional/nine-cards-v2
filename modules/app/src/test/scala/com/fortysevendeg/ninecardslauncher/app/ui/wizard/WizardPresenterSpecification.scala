@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.Statuses.WizardPresenterStatuses
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport}
+import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
 import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcess
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentProcess
@@ -99,7 +99,9 @@ trait WizardPresenterSpecification
 
     val presenter = new WizardPresenter(mockActions) {
 
-      override implicit def contextSupport(implicit ctx: ActivityContextWrapper): ActivityContextSupport = mockContextSupport
+      override implicit def contextSupport(implicit ctx: ContextWrapper): ContextSupport = mockContextSupport
+
+      override implicit def activityContextSupport(implicit ctx: ActivityContextWrapper): ActivityContextSupport = mockContextSupport
 
       override implicit lazy val di: Injector = mockInjector
 

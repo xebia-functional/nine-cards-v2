@@ -8,7 +8,14 @@ import android.preference.{Preference, PreferenceActivity, PreferenceFragment}
 import android.view.MenuItem
 import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, ResultCodes, ResultData}
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.about.AboutFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.animations.AnimationsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.appdrawer.AppDrawerFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers.DeveloperFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.help.HelpFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.lookandfeel.LookFeelFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.moments.MomentsFragment
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
 
@@ -20,6 +27,8 @@ class NineCardsPreferencesActivity
   lazy val actionBar = Option(getActionBar)
 
   private[this] var changedPreferences: Set[String] = Set.empty
+
+  lazy val nineCardsPreferences = new NineCardsPreferencesValue
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -60,7 +69,13 @@ class NineCardsPreferencesActivity
 
     override def onCreate(savedInstanceState: Bundle) = {
       super.onCreate(savedInstanceState)
-      addPreferencesFromResource(R.xml.preferences_headers)
+
+      if (IsDeveloper.readValue(nineCardsPreferences)) {
+        addPreferencesFromResource(R.xml.preferences_devs_headers)
+        findPreference(DeveloperPreferences.name).setOnPreferenceClickListener(preferenceClick(DeveloperPreferences.name, new DeveloperFragment()))
+      } else {
+        addPreferencesFromResource(R.xml.preferences_headers)
+      }
 
       findPreference(LookFeelPreferences.name).setOnPreferenceClickListener(preferenceClick(LookFeelPreferences.name, new LookFeelFragment()))
 

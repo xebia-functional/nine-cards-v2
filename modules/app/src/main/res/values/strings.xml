@@ -429,6 +429,31 @@
     <string name="workspaceAnimationsHorizontalSlide">Horizontal Slide</string>
     <string name="workspaceAnimationsAppearsBehind">Appears from behind</string>
 
+    <!-- Developer Preferences -->
+
+    <string name="developerOptionsActivated">Developer options activated</string>
+
+    <string name="developerPrefTitle">Developer Option</string>
+    <string name="developerPrefSummary">Only if you are a Android/Scala Dev :-)</string>
+
+    <string name="devAwarenessAPICategory">Awareness API</string>
+
+    <string name="devProbablyActivityTitle">Probably Activity</string>
+    <string name="devHeadphonesTitle">Headphones</string>
+    <string name="devWeatherTitle">Weather</string>
+
+    <string name="devLocalDatabaseCategory">Local Database</string>
+
+    <string name="devAppsCategorizedTitle">Apps Categorized</string>
+    <string name="devAppsCategorizedSummary"><xliff:g id="apps_categorized" example="24">%1$s</xliff:g> of <xliff:g id="apps_total" example="24">%2$s</xliff:g> apps are categorized</string>
+
+    <string name="devAndroidTokenTitle">Android Token</string>
+
+    <string name="devDeviceCloudIdTitle">Device Cloud Id</string>
+
+    <string name="devClickClipboard">Click for copy to clipboard</string>
+    <string name="devCopiedToClipboard">Copier to clipboard</string>
+
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
             This collection doesn\'t have cards. You can add <b>apps, contacts, recommendations or shortcuts</b> from the + button

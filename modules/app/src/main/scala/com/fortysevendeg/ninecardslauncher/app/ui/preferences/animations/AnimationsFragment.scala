@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments
+package com.fortysevendeg.ninecardslauncher.app.ui.preferences.animations
 
 import android.os.Bundle
 import android.preference.PreferenceFragment
@@ -11,6 +11,5 @@ class AnimationsFragment extends PreferenceFragment {
     Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.animationsPrefTitle)))
     addPreferencesFromResource(R.xml.preferences_animations)
   }
-
 
 }

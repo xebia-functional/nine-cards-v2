@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.fragments
+package com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons
 
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener

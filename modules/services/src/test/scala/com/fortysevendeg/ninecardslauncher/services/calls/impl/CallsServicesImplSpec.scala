@@ -21,7 +21,6 @@ trait CallsServicesSpecification
     lazy val callServices = new CallsServicesImpl(contentResolverWrapper)
 
   }
-
 }
 
 class CallsServicesImplSpec
@@ -59,5 +58,4 @@ class CallsServicesImplSpec
     }
 
   }
-
 }

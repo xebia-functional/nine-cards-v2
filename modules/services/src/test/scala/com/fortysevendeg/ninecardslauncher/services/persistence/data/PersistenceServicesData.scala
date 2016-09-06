@@ -68,7 +68,7 @@ trait PersistenceServicesData extends Conversions {
 
   val widgetId: Int = Random.nextInt(10)
   val widgetType: String = Random.nextString(5)
-  val appWidgetId: Int = Random.nextInt(10)
+  val appWidgetId: Int = Random.nextInt(10) + 1
   val startX: Int = Random.nextInt(8)
   val startY: Int = Random.nextInt(8)
   val spanX: Int = Random.nextInt(8)
@@ -426,6 +426,8 @@ trait PersistenceServicesData extends Conversions {
 
   val repoWidgetData: RepositoryWidgetData = createRepoWidgetData()
   val seqRepoWidget: Seq[RepositoryWidget] = createSeqRepoWidget(data = repoWidgetData)
+  val repoWidgetDataNone: RepositoryWidgetData = createRepoWidgetData(appWidgetId = 0)
+  val seqRepoWidgetNone: Seq[RepositoryWidget] = createSeqRepoWidget(data = repoWidgetDataNone)
   val saveWidgetRequest = createSaveWidgetRequest()
 
   def createAddMomentRequest(
