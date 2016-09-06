@@ -6,7 +6,13 @@ import scala.util.Random
 
 trait WifiServicesImplData {
 
-  val ssid: String = Random.nextString(10)
+  val ssidResult = "My Wifi"
+
+  val ssid: String = "\"" + ssidResult + "\""
+
+  val ssidWithQuotesResult = "My wifi with \"quotes\""
+
+  val ssidWithQuotes: String = "\"" + ssidWithQuotesResult + "\""
 
   val networksUnsorted = Seq("znf", "Abc", "47 deg", "trn", "bcb", "BB", "ant")
 

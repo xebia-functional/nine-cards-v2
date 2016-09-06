@@ -48,7 +48,21 @@ class WifiServicesImplSpec
         mockNetWorkInfo.getExtraInfo returns ssid
 
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result shouldEqual Xor.Right(Some(ssid))
+        result shouldEqual Xor.Right(Some(ssidResult))
+      }
+
+    "returns the current SSID with quotes" in
+      new WifiImplScope {
+
+        mockWifiManager.getConfiguredNetworks returns wifiConfigurations
+        mockNetWorkInfo.getType returns ConnectivityManager.TYPE_WIFI
+        mockContext.getSystemService(Context.CONNECTIVITY_SERVICE) returns mockConnectivityManager
+        mockConnectivityManager.getActiveNetworkInfo returns mockNetWorkInfo
+        mockNetWorkInfo.isConnected returns true
+        mockNetWorkInfo.getExtraInfo returns ssidWithQuotes
+
+        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
+        result shouldEqual Xor.Right(Some(ssidWithQuotesResult))
       }
 
     "returns None if there isn't active network" in
