@@ -180,7 +180,9 @@
     <string name="emails">Email</string>
 
     <string name="errorLoadingContacts">Error loading contacts</string>
+    <string name="errorLoadingCalls">Error loading last calls</string>
     <string name="errorContactsPermission">Contacts read permission needed. Do you want to try again?</string>
+    <string name="errorCallsPermission">Read call log permission needed. Do you want to try again?</string>
     <string name="errorLoadingApps">Error loading apps</string>
     <string name="errorLoadingShortcuts">Error loading shortcuts</string>
     <string name="errorLoadingRecommendations">Error loading recommendations</string>

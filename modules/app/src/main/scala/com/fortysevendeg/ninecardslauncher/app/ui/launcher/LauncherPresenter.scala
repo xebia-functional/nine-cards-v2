@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions, PreferencesValuesKeys}
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.{ReadCallLog, ReadContacts}
 import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
@@ -25,7 +27,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
@@ -55,6 +57,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   lazy val persistMoment = new PersistMoment
 
   var statuses = LauncherPresenterStatuses()
+
+  val requestContactsPermissionCode = 2003
+
+  val requestCallLogPermissionCode = 2004
+
+  val permissionChecker = new PermissionChecker
 
   override def getApplicationContext: Context = contextWrapper.application
 
@@ -561,16 +569,31 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
+
+    def getLoadContacts(order: ContactsFilter): TaskService[(IterableContacts, Seq[TermCounter])] =
+      for {
+        iterableContacts <- di.deviceProcess.getIterableContacts(order)
+        counters <- di.deviceProcess.getTermCountersForContacts(order)
+      } yield (iterableContacts, counters)
+
     contactsMenuOption match {
       case ContactsByLastCall =>
         Task.fork(di.deviceProcess.getLastCalls.value).resolveAsyncUi(
-          onResult = (contacts: Seq[LastCallsContact]) => actions.reloadLastCallContactsInDrawer(contacts))
+          onResult = (contacts: Seq[LastCallsContact]) => actions.reloadLastCallContactsInDrawer(contacts),
+          onException = (throwable: Throwable) => throwable match {
+            case e: CallPermissionException => Ui(requestReadCallLog())
+            case _ => Ui.nop
+          })
       case _ =>
         val getContactFilter = toGetContactFilter(contactsMenuOption)
         Task.fork(getLoadContacts(getContactFilter).value).resolveAsyncUi(
           onResult = {
             case (contacts: IterableContacts, counters: Seq[TermCounter]) =>
               actions.reloadContactsInDrawer(contacts = contacts, counters = counters)
+          },
+          onException = (throwable: Throwable) => throwable match {
+            case e: ContactPermissionException => Ui(requestReadContacts())
+            case _ => Ui.nop
           })
     }
   }
@@ -586,6 +609,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     Task.fork(di.deviceProcess.getIterableContactsByKeyWord(keyword).value).resolveAsyncUi(
       onResult = {
         case (contacts: IterableContacts) => actions.reloadContactsInDrawer(contacts = contacts)
+      },
+      onException = (throwable: Throwable) => throwable match {
+        case e: ContactPermissionException => Ui(requestReadContacts())
+        case _ => Ui.nop
       })
   }
 
@@ -694,7 +721,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
               actions.addWidgets(Seq(widget))
           }
         },
-        onException = (ex) => ex match {
+        onException = (ex: Throwable) => ex match {
           case ex: SpaceException => actions.showWidgetNoHaveSpaceMessage()
           case _ => actions.showContactUsError()
         })
@@ -786,17 +813,37 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       onException = (_) => Ui(reloadAppsMomentBar()))
   }
 
+  def requestPermissionsResult(
+    requestCode: Int,
+    permissions: Array[String],
+    grantResults: Array[Int]): Unit = {
+    val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
+    requestCode match {
+      case `requestContactsPermissionCode` if result.exists(_.hasPermission(ReadContacts)) =>
+        actions.reloadDrawerContacts().run
+      case `requestCallLogPermissionCode` if result.exists(_.hasPermission(ReadCallLog)) =>
+        actions.reloadDrawerContacts().run
+      case `requestContactsPermissionCode` =>
+        (actions.reloadDrawerApps() ~
+          actions.showBottomError(R.string.errorContactsPermission, requestReadContacts)).run
+      case `requestCallLogPermissionCode` =>
+        (actions.reloadDrawerApps() ~
+          actions.showBottomError(R.string.errorCallsPermission, requestReadCallLog)).run
+      case _ =>
+    }
+  }
+
+  private[this] def requestReadContacts() =
+    permissionChecker.requestPermission(requestContactsPermissionCode, ReadContacts)
+
+  private[this] def requestReadCallLog() =
+    permissionChecker.requestPermission(requestCallLogPermissionCode, ReadCallLog)
+
   protected def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
       iterableApps <- di.deviceProcess.getIterableApps(order)
       counters <- di.deviceProcess.getTermCountersForApps(order)
     } yield (iterableApps, counters)
-
-  protected def getLoadContacts(order: ContactsFilter): TaskService[(IterableContacts, Seq[TermCounter])] =
-    for {
-      iterableContacts <- di.deviceProcess.getIterableContacts(order)
-      counters <- di.deviceProcess.getTermCountersForContacts(order)
-    } yield (iterableContacts, counters)
 
   private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
     case AppsAlphabetical => GetByName
@@ -1049,6 +1096,12 @@ trait LauncherUiActions {
 
   def closeAppsMoment(): Ui[Any]
 
+  def reloadDrawerApps(): Ui[Any]
+
+  def reloadDrawerContacts(): Ui[Any]
+
+  def showBottomError(message: Int, action: () => Unit): Ui[Any]
+
   def isEmptyCollectionsInWorkspace: Boolean
 
   def canRemoveCollections: Boolean
@@ -1101,7 +1154,7 @@ object Statuses {
         currentDraggingPosition = 0,
         mode = NormalMode)
 
-    def isReordering(): Boolean = mode == ReorderMode
+    def isReordering: Boolean = mode == ReorderMode
 
   }
 

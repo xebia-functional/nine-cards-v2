@@ -13,6 +13,7 @@ class PermissionChecker {
     value match {
       case GetAccounts.value => Some(GetAccounts)
       case ReadContacts.value => Some(ReadContacts)
+      case ReadCallLog.value => Some(ReadCallLog)
       case _ => None
     }
 
@@ -61,6 +62,10 @@ object PermissionChecker {
 
   case object ReadContacts extends AppPermission {
     override val value: String = android.Manifest.permission.READ_CONTACTS
+  }
+
+  case object ReadCallLog extends AppPermission {
+    override val value: String = android.Manifest.permission.READ_CALL_LOG
   }
 
   case class PermissionResult(permission: AppPermission, result: Boolean) {
