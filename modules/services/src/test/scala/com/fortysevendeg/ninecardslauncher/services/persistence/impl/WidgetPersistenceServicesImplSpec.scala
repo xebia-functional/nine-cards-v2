@@ -18,7 +18,7 @@ trait WidgetPersistenceServicesSpecification
 
   trait WidgetPersistenceServicesScope
     extends RepositoryServicesScope
-      with WidgetPersistenceServicesData {
+    with WidgetPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 
@@ -39,6 +39,19 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
         case Xor.Right(widget) =>
           widget.id shouldEqual widgetId
           widget.packageName shouldEqual packageName
+      }
+    }
+
+    "return Unit for a valid request when AppWidgetId is None" in new WidgetPersistenceServicesScope {
+
+      mockWidgetRepository.addWidget(any) returns TaskService(Task(Xor.right(repoWidgetNone)))
+      val result = persistenceServices.addWidget(createAddWidgetRequest()).value.run
+
+      result must beLike {
+        case Xor.Right(widget) =>
+          widget.id shouldEqual widgetId
+          widget.packageName shouldEqual packageName
+          widget.appWidgetId shouldEqual None
       }
     }
 
