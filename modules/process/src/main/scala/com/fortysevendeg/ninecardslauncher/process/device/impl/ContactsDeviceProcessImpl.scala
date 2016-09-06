@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactCounter
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServicePermissionException, ImplicitsContactsServiceExceptions}
+import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServicePermissionException
 
 import scalaz.concurrent.Task
 
@@ -16,8 +16,7 @@ trait ContactsDeviceProcessImpl extends DeviceProcess {
 
   self: DeviceConversions
     with DeviceProcessDependencies
-    with ImplicitsDeviceException
-    with ImplicitsContactsServiceExceptions =>
+    with ImplicitsDeviceException =>
 
   val emptyContactCounterService: TaskService[Seq[ContactCounter]] =
     TaskService(Task(Xor.Right(Seq.empty)))

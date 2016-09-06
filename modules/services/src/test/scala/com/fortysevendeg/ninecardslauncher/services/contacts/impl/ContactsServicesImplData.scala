@@ -1,7 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
 import com.fortysevendeg.ninecardslauncher.services.commons._
+import com.fortysevendeg.ninecardslauncher.services.contacts.Fields
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
+import com.fortysevendeg.repository.{MockCursor, StringDataType}
 
 trait ContactsServicesImplData {
 
@@ -70,7 +72,17 @@ trait ContactsServicesImplData {
       ContactPhone(phoneMobile, PhoneMobile),
       ContactPhone(phoneOther, PhoneOther))
 
-  val contactsIterator: Seq[String] = Seq("!aaa", "2bbb", "?ccc", "1ddd", "#eeee", "Abc", "Acd", "Ade", "Bcd", "Bde", "Bef", "Cde")
+
+
+  trait ContactsMockCursor
+    extends MockCursor {
+
+    val contactsIterator: Seq[String] = Seq("!aaa", "2bbb", "?ccc", "1ddd", "#eeee", "Abc", "Acd", "Ade", "Bcd", "Bde", "Bef", "Cde")
+
+    val data = Seq((Fields.DISPLAY_NAME, 0, contactsIterator, StringDataType))
+
+    prepareCursor[String](contactsIterator.size, data)
+  }
 
   val contactCounters = Seq(
     ContactCounter("#", 5),

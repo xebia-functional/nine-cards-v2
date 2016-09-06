@@ -76,6 +76,7 @@ trait DeviceProcess {
    * Get the favorite contacts if they exist and fill all their data
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
    *         information about the contact including its ContactInfo (if it exists)
+   * @throws ContactPermissionException if the permission for read contacts hasn't be granted
    * @throws ContactException if exist some problem to get the favorite contacts
    */
   def getFavoriteContacts(implicit context: ContextSupport): TaskService[Seq[Contact]]
@@ -85,41 +86,46 @@ trait DeviceProcess {
    * and contacts with phone number
    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
    *         information about the contact
+   * @throws ContactPermissionException if the permission for read contacts hasn't be granted
    * @throws ContactException if exist some problem to get the contacts
    */
   def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): TaskService[Seq[Contact]]
 
   /**
-    * Returns the number of times the first letter of a contact is repeated alphabetically filtered by parameter
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter] contains
-    *         information about the times is repeated a contacts
-    * @throws ContactException if exist some problem to get the contacts
-    */
+   * Returns the number of times the first letter of a contact is repeated alphabetically filtered by parameter
+   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter] contains
+   *         information about the times is repeated a contacts
+   * @throws ContactPermissionException if the permission for read contacts hasn't be granted
+   * @throws ContactException if exist some problem to get the contacts
+   */
   def getTermCountersForContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): TaskService[Seq[TermCounter]]
 
   /**
-    * Get the iterable contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
-    * and contacts with phone number
-    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
-    *         information about the contact
-    * @throws ContactException if exist some problem to get the contacts
-    */
+   * Get the iterable contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
+   * and contacts with phone number
+   * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
+   *         information about the contact
+   * @throws ContactPermissionException if the permission for read contacts hasn't be granted
+   * @throws ContactException if exist some problem to get the contacts
+   */
   def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): TaskService[IterableContacts]
 
   /**
    * Get the contact and fill all their data
    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.Contact contains
    *         information about the contact
+   * @throws ContactPermissionException if the permission for read contacts hasn't be granted
    * @throws ContactException if exist some problem to get the contacts
    */
   def getContact(lookupKey: String)(implicit context: ContextSupport): TaskService[Contact]
 
   /**
-    * Get the iterable contacts by keyword.
-    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
-    *         information about the contact
-    * @throws ContactException if exist some problem to get the contacts
-    */
+   * Get the iterable contacts by keyword.
+   * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
+   *         information about the contact
+   * @throws ContactPermissionException if the permission for read contacts hasn't be granted
+   * @throws ContactException if exist some problem to get the contacts
+   */
   def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport): TaskService[IterableContacts]
 
   /**
@@ -159,6 +165,7 @@ trait DeviceProcess {
   /**
     * Get the last calls available on the phone
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Call]
+    * @throws CallPermissionException if the permission for read calls hasn't be granted
     * @throws CallException if exist some problem to get the last calls
     */
   def getLastCalls(implicit context: ContextSupport): TaskService[Seq[LastCallsContact]]

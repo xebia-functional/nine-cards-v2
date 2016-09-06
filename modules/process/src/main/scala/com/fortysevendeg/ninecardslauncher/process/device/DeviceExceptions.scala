@@ -50,6 +50,12 @@ case class CallException(message: String, cause: Option[Throwable] = None)
   cause map initCause
 }
 
+case class CallPermissionException(message: String, cause: Option[Throwable] = None)
+  extends RuntimeException(message)
+  with NineCardException {
+  cause map initCause
+}
+
 case class DeviceException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)
   with NineCardException{

@@ -19,9 +19,3 @@ case class ContactsServicePermissionException(message: String, cause: Option[Thr
   with NineCardException {
   cause map initCause
 }
-
-trait ImplicitsContactsServiceExceptions {
-
-  implicit def contactsServiceException = (t: Throwable) => ContactsServiceException(t.getMessage, Option(t))
-
-}

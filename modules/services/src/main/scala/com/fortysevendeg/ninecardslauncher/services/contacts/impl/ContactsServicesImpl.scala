@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, TaskService}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
@@ -16,8 +16,7 @@ import scalaz.concurrent.Task
 class ContactsServicesImpl(
   contentResolverWrapper: ContentResolverWrapper,
   uriCreator: UriCreator = new UriCreator)
-  extends ContactsServices
-  with ImplicitsContactsServiceExceptions {
+  extends ContactsServices {
 
   val abc = "ABCDEFGHIJKLMNÑOPQRSTUVWXYZ"
 
@@ -179,12 +178,12 @@ class ContactsServicesImpl(
       orderBy = Fields.CONTACTS_ORDER_BY_ASC))
   }
 
-  def catchMapPermission[V](f: => V)(implicit converter: Throwable => NineCardException) =
+  def catchMapPermission[V](f: => V) =
     TaskService {
       Task {
         Xor.catchNonFatal(f) leftMap {
           case e: SecurityException => ContactsServicePermissionException(e.getMessage, Some(e))
-          case e => converter(e)
+          case e => ContactsServiceException(e.getMessage, Some(e))
         }
       }
     }
