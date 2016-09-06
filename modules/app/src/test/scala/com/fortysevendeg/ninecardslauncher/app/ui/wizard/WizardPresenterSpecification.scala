@@ -70,26 +70,6 @@ trait WizardPresenterSpecification
 
     val mockIntent = mock[Intent]
 
-    mockContextWrapper.getOriginal returns mockContextActivity
-
-    mockContextWrapper.original returns new WeakReference[Activity](mockContextActivity)
-
-    mockContextWrapper.bestAvailable returns mockContextActivity
-
-    mockContextActivity.getSupportFragmentManager returns mockFragmentManager
-
-    mockFragmentManager.beginTransaction() returns mockFragmentTransaction
-
-    mockInjector.createCloudStorageProcess(any) returns mockCloudStorageProcess
-
-    mockInjector.collectionProcess returns mockCollectionProcess
-
-    mockInjector.momentProcess returns mockMomentProcess
-
-    mockInjector.userV1Process returns mockUserConfigProcess
-
-    mockContextActivity.getResources returns mockResources
-
     mockActions.initialize(any) returns Ui[Any](())
     mockActions.showLoading() returns Ui[Any](())
     mockActions.goToUser() returns Ui[Any](())
@@ -157,13 +137,14 @@ class WizardPresenterSpec
     "return a successful connecting account" in
       new WizardPresenterScope {
 
+        mockContextWrapper.getOriginal returns mockContextActivity
+        mockContextWrapper.bestAvailable returns mockContextActivity
+        mockContextActivity.getResources returns mockResources
+
         mockAccountManager.getAuthToken(any, any, any, any[Activity], any, any) returns mockAccountManagerFuture
-
         mockAccountManagerFuture.getResult returns mockBundle
-
         mockBundle.getString(AccountManager.KEY_AUTHTOKEN) returns token
-
-        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
+        mockResources.getString(anyInt) returns(androidMarketScopes, googleScopes)
 
         presenter.clientStatuses = WizardPresenterStatuses(androidMarketToken = Some(token))
 
@@ -178,13 +159,14 @@ class WizardPresenterSpec
     "return a successful connecting account with does not call to invalidate auth token if there is no token stored" in
       new WizardPresenterScope {
 
+        mockContextWrapper.getOriginal returns mockContextActivity
+        mockContextWrapper.bestAvailable returns mockContextActivity
+        mockContextActivity.getResources returns mockResources
+
         mockAccountManager.getAuthToken(any, any, any, any[Activity], any, any) returns mockAccountManagerFuture
-
         mockAccountManagerFuture.getResult returns mockBundle
-
         mockBundle.getString(AccountManager.KEY_AUTHTOKEN) returns token
-
-        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
+        mockResources.getString(anyInt) returns(androidMarketScopes, googleScopes)
 
         presenter.connectAccount(accountName, termsAccept = true)
 
@@ -209,16 +191,18 @@ class WizardPresenterSpec
     "call to show error Android Market not accepted in Actions when there is a Operation Cancelled error requesting Market token" in
       new WizardPresenterScope {
 
+        mockContextWrapper.getOriginal returns mockContextActivity
+        mockContextWrapper.original returns new WeakReference[Activity](mockContextActivity)
+        mockContextWrapper.bestAvailable returns mockContextActivity
+        mockContextActivity.getSupportFragmentManager returns mockFragmentManager
+        mockFragmentManager.beginTransaction() returns mockFragmentTransaction
+        mockContextActivity.getResources returns mockResources
+
         mockFragmentTransaction.add(any[Fragment], anyString) returns mockFragmentTransaction
-
         mockFragmentTransaction.addToBackStack(any) returns mockFragmentTransaction
-
         val exception = mock[OperationCanceledException]
-
-        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
-
+        mockResources.getString(anyInt) returns(androidMarketScopes, googleScopes)
         mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFuture
-
         mockAccountManagerFuture.getResult throws exception
 
         presenter.connectAccount(accountName, termsAccept = true)
@@ -231,25 +215,23 @@ class WizardPresenterSpec
     "show a dialog when there is a Operation Cancelled error requesting Drive token" in
       new WizardPresenterScope {
 
+        mockContextWrapper.getOriginal returns mockContextActivity
+        mockContextWrapper.original returns new WeakReference[Activity](mockContextActivity)
+        mockContextWrapper.bestAvailable returns mockContextActivity
+        mockContextActivity.getSupportFragmentManager returns mockFragmentManager
+        mockFragmentManager.beginTransaction() returns mockFragmentTransaction
+        mockContextActivity.getResources returns mockResources
+
         mockFragmentTransaction.add(any[Fragment], anyString) returns mockFragmentTransaction
-
         mockFragmentTransaction.addToBackStack(any) returns mockFragmentTransaction
-
         val exception = mock[OperationCanceledException]
-
         val mockAccountManagerFutureEx = mock[AccountManagerFuture[Bundle]]
-
         mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFuture
-
         mockAccountManager.getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFutureEx
-
         mockAccountManagerFuture.getResult returns mockBundle
-
         mockAccountManagerFutureEx.getResult throws exception
-
         mockBundle.getString(AccountManager.KEY_AUTHTOKEN) returns token
-
-        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
+        mockResources.getString(anyInt) returns(androidMarketScopes, googleScopes)
 
         presenter.connectAccount(accountName, termsAccept = true)
 
@@ -262,13 +244,14 @@ class WizardPresenterSpec
     "call to show error connecting Google in Actions when there an unexpected error requesting Market token" in
       new WizardPresenterScope {
 
+        mockContextWrapper.getOriginal returns mockContextActivity
+        mockContextWrapper.bestAvailable returns mockContextActivity
+        mockContextActivity.getResources returns mockResources
+
         val exception = mock[RuntimeException]
-
         mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFuture
-
         mockAccountManagerFuture.getResult throws exception
-
-        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
+        mockResources.getString(anyInt) returns(androidMarketScopes, googleScopes)
 
         presenter.connectAccount(accountName, termsAccept = true)
 
@@ -280,21 +263,18 @@ class WizardPresenterSpec
     "call to show error connecting Google in Actions when there an unexpected error requesting Drive token" in
       new WizardPresenterScope {
 
+        mockContextWrapper.getOriginal returns mockContextActivity
+        mockContextWrapper.bestAvailable returns mockContextActivity
+        mockContextActivity.getResources returns mockResources
+
         val exception = mock[RuntimeException]
-
         val mockAccountManagerFutureEx = mock[AccountManagerFuture[Bundle]]
-
         mockAccountManager.getAuthToken(account, androidMarketScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFuture
-
         mockAccountManager.getAuthToken(account, googleScopes, javaNull, mockContextActivity, javaNull, javaNull) returns mockAccountManagerFutureEx
-
         mockAccountManagerFuture.getResult returns mockBundle
-
         mockAccountManagerFutureEx.getResult throws exception
-
         mockBundle.getString(AccountManager.KEY_AUTHTOKEN) returns token
-
-        mockResources.getString(anyInt) returns (androidMarketScopes, googleScopes)
+        mockResources.getString(anyInt) returns(androidMarketScopes, googleScopes)
 
         presenter.connectAccount(accountName, termsAccept = true)
 
@@ -311,6 +291,7 @@ class WizardPresenterSpec
     "call to go to wizard in Actions and startService in the activity with a new configuration" in
       new WizardPresenterScope {
 
+        mockContextWrapper.original returns new WeakReference[Activity](mockContextActivity)
         mockContextActivity.startService(any) returns mock[ComponentName]
 
         presenter.generateCollections(None)
@@ -318,11 +299,12 @@ class WizardPresenterSpec
         there was after(1.seconds).one(mockActions).goToWizard()
         there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.cloudIdKey, CreateCollectionService.newConfiguration)
         there was after(1.seconds).one(mockContextActivity).startService(mockIntent)
-    }
+      }
 
     "call to go to wizard in Actions and startService in the activity with device id" in
       new WizardPresenterScope {
 
+        mockContextWrapper.original returns new WeakReference[Activity](mockContextActivity)
         mockContextActivity.startService(any) returns mock[ComponentName]
 
         presenter.generateCollections(Some(intentKey))
@@ -330,7 +312,7 @@ class WizardPresenterSpec
         there was after(1.seconds).one(mockActions).goToWizard()
         there was after(1.seconds).one(mockIntent).putExtra(CreateCollectionService.cloudIdKey, intentKey)
         there was after(1.seconds).one(mockContextActivity).startService(mockIntent)
-    }
+      }
   }
 
   "Finish Wizard" should {
@@ -338,11 +320,13 @@ class WizardPresenterSpec
     "set the result and call finish in the activity" in
       new WizardPresenterScope {
 
+        mockContextWrapper.original returns new WeakReference[Activity](mockContextActivity)
+
         presenter.finishWizard()
 
         there was after(1.seconds).one(mockContextActivity).setResult(Activity.RESULT_OK)
         there was after(1.seconds).one(mockContextActivity).finish()
-    }
+      }
 
   }
 
@@ -357,7 +341,7 @@ class WizardPresenterSpec
         result should beTrue
 
         there was after(1.seconds).one(mockGoogleApiClient).connect()
-    }
+      }
 
     "return true and call show error connecting google when pass `resolveGooglePlayConnection` and a value distinct to RESULT_OK" in
       new WizardPresenterScope {
@@ -366,14 +350,14 @@ class WizardPresenterSpec
         result should beTrue
 
         there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
-    }
+      }
 
     "return true and call show error connecting google when pass a different request code" in
       new WizardPresenterScope {
         val result = presenter.activityResult(RequestCodes.goToProfile, Activity.RESULT_OK, javaNull)
 
         result should beFalse
-    }
+      }
 
   }
 
@@ -386,7 +370,7 @@ class WizardPresenterSpec
         presenter.stop()
 
         there was after(1.seconds).one(mockGoogleApiClient).disconnect()
-    }
+      }
 
   }
 

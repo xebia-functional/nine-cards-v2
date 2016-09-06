@@ -41,22 +41,14 @@ trait LauncherPresenterSpecification
     val mockInjector = mock[Injector]
 
     val mockCollectionProcess = mock[CollectionProcess]
-    mockCollectionProcess.getCollections returns TaskService(Task(Xor.right(Seq(collection))))
 
     val mockDeviceProcess = mock[DeviceProcess]
-    mockDeviceProcess.getDockApps returns TaskService(Task(Xor.right(Seq(dockApp))))
 
     val mockMomentProcess = mock[MomentProcess]
-    mockMomentProcess.getBestAvailableMoment(any[ContextSupport]) returns TaskService(Task(Xor.right(Some(moment))))
-
-    mockInjector.collectionProcess returns mockCollectionProcess
-    mockInjector.deviceProcess returns mockDeviceProcess
-    mockInjector.momentProcess returns mockMomentProcess
 
     val mockStatuses = mock[LauncherPresenterStatuses]
 
     val mockPersistMoment = mock[PersistMoment]
-    mockPersistMoment.getPersistMoment returns None
 
     val presenter = new LauncherPresenter(mockActions) {
       override lazy val di: Injector = mockInjector
@@ -116,6 +108,15 @@ class LauncherPresenterSpec
 
     "returning a empty list the information is loaded" in
       new WizardPresenterScope {
+
+        mockCollectionProcess.getCollections returns TaskService(Task(Xor.right(Seq(collection))))
+        mockDeviceProcess.getDockApps returns TaskService(Task(Xor.right(Seq(dockApp))))
+        mockMomentProcess.getBestAvailableMoment(any[ContextSupport]) returns TaskService(Task(Xor.right(Some(moment))))
+
+        mockInjector.collectionProcess returns mockCollectionProcess
+        mockInjector.deviceProcess returns mockDeviceProcess
+        mockInjector.momentProcess returns mockMomentProcess
+
         presenter.loadLauncherInfo()
         there was after(1 seconds).one(mockActions).loadLauncherInfo(any, any)
       }

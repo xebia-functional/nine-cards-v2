@@ -28,15 +28,6 @@ trait ObserverRegisterSpecification
 
   }
 
-  trait MockBehaviours {
-
-    self: ObserverRegisterScope =>
-
-    uriCreator.parse(any) returns mockUri
-
-    contextSupport.getContentResolver returns contextResolver
-  }
-
 }
 
 
@@ -45,7 +36,10 @@ class ObserverRegisterSpec
 
   "ObserverRegister" should {
 
-    "call to register observer with the right params" in new ObserverRegisterScope with MockBehaviours {
+    "call to register observer with the right params" in new ObserverRegisterScope {
+
+      uriCreator.parse(any) returns mockUri
+      contextSupport.getContentResolver returns contextResolver
 
       observerRegister.registerObserver
 
@@ -53,7 +47,10 @@ class ObserverRegisterSpec
 
     }
 
-    "call to unregister observer with the right params" in new ObserverRegisterScope with MockBehaviours {
+    "call to unregister observer with the right params" in new ObserverRegisterScope {
+
+      uriCreator.parse(any) returns mockUri
+      contextSupport.getContentResolver returns contextResolver
 
       observerRegister.unregisterObserver
 
