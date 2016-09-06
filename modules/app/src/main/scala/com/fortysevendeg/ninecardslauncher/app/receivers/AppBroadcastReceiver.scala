@@ -5,7 +5,7 @@ import android.content._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportPreferences}
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.AppInstalledActionFilter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppUninstalledActionFilter, AppUpdatedActionFilter, AppsActionFilter}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 
 import scalaz.concurrent.Task
@@ -26,19 +26,23 @@ class AppBroadcastReceiver
 
       (action, replacing) match {
         case (ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).value).resolveAsync(
-          onResult = _ => {
-            // We can't use the BroadcastDispatcher trait because the Receivers aren't a ContextWrapper then
-            // we have to send the intent from the context parameter
-            val intent = new Intent(AppInstalledActionFilter.action)
-            intent.putExtra(BroadcastDispatcher.keyType, BroadcastDispatcher.commandType)
-            context.sendBroadcast(intent)
-          }
+          onResult = _ => sendBroadcast(AppInstalledActionFilter)
         )
-        case (ACTION_PACKAGE_REMOVED, false) => Task.fork(deleteApp(packageName).value).resolveAsync()
-        case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => Task.fork(updateApp(packageName).value).resolveAsync()
+        case (ACTION_PACKAGE_REMOVED, false) => Task.fork(deleteApp(packageName).value).resolveAsync(
+          onResult = _ => sendBroadcast(AppUninstalledActionFilter)
+        )
+        case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => Task.fork(updateApp(packageName).value).resolveAsync(
+          onResult = _ => sendBroadcast(AppUpdatedActionFilter)
+        )
         case (_, _) =>
       }
     }
+  }
+
+  private[this] def sendBroadcast(filter: AppsActionFilter)(implicit contextSupport: ContextSupport) = {
+    val intent = new Intent(filter.action)
+    intent.putExtra(BroadcastDispatcher.keyType, BroadcastDispatcher.commandType)
+    contextSupport.context.sendBroadcast(intent)
   }
 
   private[this] def getPackageName(intent: Intent): String = {

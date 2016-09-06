@@ -48,10 +48,14 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
           dom.weatherPreference.setSummary("")
           developerJobs.loadWeather.resolveAsync()
         }))
+      dom.clearCacheImagesPreference.
+        setOnPreferenceClickListener(clickPreference(() => {
+          developerJobs.clearCacheImages.resolveAsync()
+        }))
     }.toService
   }
 
-  def copyToClipboard(maybeText: Option[String]) = (uiShortToast(R.string.devCopiedToClipboard) ~ Ui {
+  def copyToClipboard(maybeText: Option[String]): TaskService[Unit] = (uiShortToast(R.string.devCopiedToClipboard) ~ Ui {
     (Option(contextWrapper.application.getSystemService(Context.CLIPBOARD_SERVICE)), maybeText) match {
       case (Some(manager: ClipboardManager), Some(text)) =>
         val clip = ClipData.newPlainText(text, text)
@@ -59,6 +63,8 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
       case _ =>
     }
   }).toService
+
+  def cacheCleared: TaskService[Unit] = uiShortToast(R.string.devCacheCleared).toService
 
   def setAppsCategorizedSummary(apps: Seq[App]): TaskService[Unit] = Ui {
     val categorizedCount = apps.count(_.category != Misc)

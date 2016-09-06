@@ -18,6 +18,7 @@ import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide._
 import com.bumptech.glide.load.resource.bitmap.{BitmapEncoder, StreamBitmapDecoder}
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder
+import com.bumptech.glide.signature.StringSignature
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder, IconFromPackageDecoder, IconFromPackageLoader}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
@@ -44,6 +45,7 @@ object AsyncImageTweaks {
     imageView => {
       (glide(), maybePackageName) match {
         case (Some(glide), Some(packageName)) =>
+          val time = contextWrapper.application.getPackageManager.getPackageInfo(packageName, 0).lastUpdateTime
           glide
             .using(new AppIconLoader, classOf[String])
             .from(classOf[String])
@@ -52,6 +54,7 @@ object AsyncImageTweaks {
             .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
             .encoder(new BitmapEncoder())
             .load(packageName)
+            .signature(new StringSignature(s"$packageName$time"))
             .into(imageView)
         case _ =>
           (imageView <~ ivSrc(CharDrawable(term.charAt(0).toString, circle = true))).run
