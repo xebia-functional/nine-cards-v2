@@ -18,7 +18,7 @@ object NineCardExtensions {
       resolveSides((r) => Xor.right(r), (_) => Xor.right(result))
 
     def resolveSides[B](
-      mapRight: (A) =>  Xor[NineCardException, B],
+      mapRight: (A) => Xor[NineCardException, B],
       mapLeft: NineCardException => Xor[NineCardException, B] = (e: NineCardException) => Xor.left(e)): XorT[Task, NineCardException, B] = {
       val task: Task[Xor[NineCardException, A]] = r.value
       val innerResult: Task[NineCardException Xor B] = task.map {
