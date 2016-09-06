@@ -9,7 +9,7 @@ trait CallsServices {
    *
    * @return the Seq[com.fortysevendeg.ninecardslauncher.services.calls.models.Call] contains
    *         information about the widget
-   * @throws CallsServicesPermissionException if the permission for read calls hasn't be granted
+   * @throws CallsServicesPermissionException if the permission for read calls hasn't been granted
    * @throws CallsServicesException if exist some problem to get the calls in the cell phone
    */
   def getLastCalls: TaskService[Seq[Call]]
