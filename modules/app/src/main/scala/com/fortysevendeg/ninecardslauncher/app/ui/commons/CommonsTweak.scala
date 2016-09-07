@@ -215,8 +215,6 @@ object ExtraTweaks {
 
   def tvHintColor(color: Int): Tweak[TextView] = Tweak[TextView](_.setHintTextColor(color))
 
-  def fblRemoveAllViews: Tweak[FlexboxLayout] = Tweak[FlexboxLayout](_.removeAllViews())
-
 }
 
 object CommonsResourcesExtras {
