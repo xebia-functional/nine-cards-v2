@@ -12,10 +12,16 @@ object NineCardExtensions {
   implicit class XorTExtensions[A](r: XorT[Task, NineCardException, A]) {
 
     def resolve[E <: NineCardException](implicit converter: Throwable => E): XorT[Task, NineCardException, A] =
-      r leftMap converter
+      resolveLeft(e => Xor.left(converter(e)))
 
-    def resolveTo(result: A): XorT[Task, NineCardException, A] =
-      resolveSides((r) => Xor.right(r), (_) => Xor.right(result))
+    def resolveLeftTo(result: A): XorT[Task, NineCardException, A] =
+      resolveLeft((_) => Xor.right(result))
+
+    def resolveLeft(mapLeft: NineCardException => Xor[NineCardException, A]): XorT[Task, NineCardException, A] =
+      resolveSides((r) => Xor.right(r), mapLeft)
+
+    def resolveRight[B](mapRight: (A) => Xor[NineCardException, B]): XorT[Task, NineCardException, B] =
+      resolveSides(mapRight, (e) => Xor.left(e))
 
     def resolveSides[B](
       mapRight: (A) => Xor[NineCardException, B],
@@ -39,11 +45,10 @@ object NineCardExtensions {
     }
 
     def resolveOption() =
-      r.resolveSides(
-        mapRight = {
-          case Some(v) => Xor.right(v)
-          case None => Xor.left(EmptyException("Value not found"))
-        })
+      r.resolveRight {
+        case Some(v) => Xor.right(v)
+        case None => Xor.left(EmptyException("Value not found"))
+      }
 
   }
 
