@@ -28,8 +28,7 @@ import macroid._
 case class ViewHolderSharedCollectionsLayoutAdapter(
   content: ViewGroup,
   onAddCollection: (SharedCollection) => Unit,
-  onShareCollection: (SharedCollection) => Unit,
-  mySharedCollectionIds: Seq[String] = Seq.empty)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], val theme: NineCardsTheme)
+  onShareCollection: (SharedCollection) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], val theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
     with TypedFindView
     with CollectionCardsStyles {
@@ -64,7 +63,7 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
     (addCollection <~ buttonStyle) ~
     (shareCollection <~ ivSrc(tintDrawable(R.drawable.icon_dialog_collection_share)))).run
 
-  def bind(collection: SharedCollection, position: Int): Ui[Any] = {
+  def bind(collection: SharedCollection, position: Int, mySharedCollectionIds: Seq[String] = Seq.empty): Ui[Any] = {
     val background = new ShapeDrawable(new OvalShape)
     background.getPaint.setColor(resGetColor(getRandomIndexColor))
     val apps = collection.resolvedPackages

@@ -84,7 +84,7 @@ trait ProfileUiActionsImpl
   override def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {
       case sharedCollectionsAdapter: SharedCollectionsAdapter =>
-        sharedCollectionsAdapter.copy(mySharedCollectionIds = sharedCollectionsAdapter.mySharedCollectionIds ++ Seq(mySharedCollectionId))
+        sharedCollectionsAdapter.copy(mySharedCollectionIds = sharedCollectionsAdapter.mySharedCollectionIds :+ mySharedCollectionId)
     }
     showMessage(R.string.collectionAdded) ~
       (recyclerView <~ rvSwapAdapter(adapter))
