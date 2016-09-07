@@ -487,7 +487,7 @@
         <item name="android:textColor">@color/text_default_subtitle</item>
         <item name="android:drawablePadding">@dimen/padding_small</item>
         <item name="android:paddingTop">@dimen/padding_small</item>
-        <item name="android:layout_gravity">top</item>
+        <item name="android:gravity">bottom</item>
     </style>
 
     <style name="PublicCollectionsItemIconsApps">
@@ -497,9 +497,7 @@
         <item name="android:layout_marginLeft">@dimen/padding_large</item>
         <item name="android:layout_marginRight">@dimen/padding_large</item>
         <item name="android:layout_marginBottom">@dimen/padding_large</item>
-        <!--<item name="app:flexWrap">wrap</item>-->
-        <!--<item name="app:alignItems">stretch</item>-->
-        <!--<item name="app:alignContent">stretch</item>-->
+        <item name="flexWrap">wrap</item>
     </style>
 
     <style name="PublicCollectionsItemHeaderSubscriptions">
