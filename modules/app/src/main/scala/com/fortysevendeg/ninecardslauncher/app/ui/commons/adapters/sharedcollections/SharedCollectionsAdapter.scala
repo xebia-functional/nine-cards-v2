@@ -12,13 +12,14 @@ import macroid.ActivityContextWrapper
 case class SharedCollectionsAdapter(
   sharedCollections: Seq[SharedCollection],
   onAddCollection: (SharedCollection) => Unit,
-  onShareCollection: (SharedCollection) => Unit)
+  onShareCollection: (SharedCollection) => Unit,
+  mySharedCollectionIds: Seq[String] = Seq.empty)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderSharedCollectionsLayoutAdapter] {
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderSharedCollectionsLayoutAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.public_collections_item, parent, false)
-    ViewHolderSharedCollectionsLayoutAdapter(view, onAddCollection, onShareCollection)
+    ViewHolderSharedCollectionsLayoutAdapter(view, onAddCollection, onShareCollection, mySharedCollectionIds)
   }
 
   override def getItemCount: Int = sharedCollections.size

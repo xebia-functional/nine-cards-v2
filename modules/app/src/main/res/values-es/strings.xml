@@ -300,6 +300,8 @@
 
     <string name="accountSynced">Cuenta sincronizada</string>
 
+    <string name="collectionAdded">Esta colección ha sido añadida a tus colecciones</string>
+
     <string name="errorSyncing">Error sincronizando cuenta. Inténtale de nuevo</string>
 
     <string name="errorLoadingUser">Error cargando usuario</string>

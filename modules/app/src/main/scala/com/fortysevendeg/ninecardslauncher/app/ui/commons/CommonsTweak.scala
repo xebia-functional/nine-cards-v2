@@ -26,6 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerBac
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
+import com.google.android.flexbox.FlexboxLayout
 import macroid._
 
 object CommonsTweak {
@@ -213,6 +214,8 @@ object ExtraTweaks {
   def sChangeDropdownColor(color: Int) = Tweak[Spinner](_.getBackground.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
 
   def tvHintColor(color: Int): Tweak[TextView] = Tweak[TextView](_.setHintTextColor(color))
+
+  def fblRemoveAllViews: Tweak[FlexboxLayout] = Tweak[FlexboxLayout](_.removeAllViews())
 
 }
 

@@ -497,6 +497,9 @@
         <item name="android:layout_marginLeft">@dimen/padding_large</item>
         <item name="android:layout_marginRight">@dimen/padding_large</item>
         <item name="android:layout_marginBottom">@dimen/padding_large</item>
+        <!--<item name="app:flexWrap">wrap</item>-->
+        <!--<item name="app:alignItems">stretch</item>-->
+        <!--<item name="app:alignContent">stretch</item>-->
     </style>
 
     <style name="PublicCollectionsItemHeaderSubscriptions">
@@ -506,6 +509,7 @@
         <item name="android:textColor">@color/text_default_subtitle</item>
         <item name="android:drawablePadding">@dimen/padding_small</item>
         <item name="android:paddingTop">@dimen/padding_small</item>
+        <item name="android:gravity">left|center_vertical</item>
         <item name="android:layout_marginLeft">@dimen/padding_large</item>
         <item name="android:layout_marginRight">@dimen/padding_large</item>
         <item name="android:layout_marginBottom">@dimen/padding_large</item>

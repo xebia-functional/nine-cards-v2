@@ -313,6 +313,8 @@
     <string name="menuAccountCopy">Copy</string>
     <string name="menuAccountDelete">Delete</string>
 
+    <string name="collectionAdded">This collection has been added to your collections</string>
+
     <string name="accountSynced">Account synced</string>
 
     <string name="errorSyncing">Error syncing account. Try again please</string>
