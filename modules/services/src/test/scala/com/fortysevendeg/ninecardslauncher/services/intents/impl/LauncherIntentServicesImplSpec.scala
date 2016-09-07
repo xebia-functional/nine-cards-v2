@@ -45,13 +45,13 @@ trait LauncherIntentServicesImplSpecification
 class LauncherIntentServicesImplSpec
   extends LauncherIntentServicesImplSpecification {
 
-  "launchIntent" should {
+  "launchIntentAction" should {
 
     "call to startActivity with the Intent created by IntentCreator for an AppAction" in
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createAppIntent(any, any) returns mockIntent
-        val result = services.launchIntent(appAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(appAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createAppIntent(packageName, className)
@@ -62,7 +62,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createAppGooglePlayIntent(any, any) returns mockIntent
-        val result = services.launchIntent(appGooglePlayAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(appGooglePlayAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createAppGooglePlayIntent(googlePlayUrl, packageName)
@@ -73,7 +73,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createAppLaunchIntent(any)(any) returns mockIntent
-        val result = services.launchIntent(appLauncherAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(appLauncherAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createAppLaunchIntent(packageName)(mockContextSupport)
@@ -84,7 +84,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createAppSettingsIntent(any) returns mockIntent
-        val result = services.launchIntent(appSettingsAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(appSettingsAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createAppSettingsIntent(packageName)
@@ -95,7 +95,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createAppUninstallIntent(any) returns mockIntent
-        val result = services.launchIntent(appUninstallAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(appUninstallAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createAppUninstallIntent(packageName)
@@ -106,7 +106,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createContactIntent(any) returns mockIntent
-        val result = services.launchIntent(contactAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(contactAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createContactIntent(lookupKey)
@@ -117,7 +117,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createEmailIntent(any, any) returns mockIntent
-        val result = services.launchIntent(emailAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(emailAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createEmailIntent(email, titleDialog)
@@ -128,7 +128,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createGlobalSettingsIntent() returns mockIntent
-        val result = services.launchIntent(globalSettingsAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(globalSettingsAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createGlobalSettingsIntent()
@@ -139,7 +139,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createGooglePlayStoreIntent()(any) returns mockIntent
-        val result = services.launchIntent(googlePlayStoreAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(googlePlayStoreAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createGooglePlayStoreIntent()(mockContextSupport)
@@ -150,7 +150,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createGoogleWeatherIntent() returns mockIntent
-        val result = services.launchIntent(googleWeatherAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(googleWeatherAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createGoogleWeatherIntent()
@@ -161,7 +161,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createPhoneCallIntent(any) returns mockIntent
-        val result = services.launchIntent(phoneCallAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(phoneCallAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createPhoneCallIntent(phoneNumber)
@@ -172,7 +172,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createPhoneDialIntent(any) returns mockIntent
-        val result = services.launchIntent(phoneDialAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(phoneDialAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createPhoneDialIntent(phoneDialAction.maybePhoneNumber)
@@ -183,7 +183,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createPhoneSmsIntent(any) returns mockIntent
-        val result = services.launchIntent(phoneSmsAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(phoneSmsAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createPhoneSmsIntent(phoneNumber)
@@ -194,7 +194,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createSearchGlobalIntent() returns mockIntent
-        val result = services.launchIntent(searchGlobalAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(searchGlobalAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createSearchGlobalIntent()
@@ -205,7 +205,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createSearchVoiceIntent() returns mockIntent
-        val result = services.launchIntent(searchVoiceAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(searchVoiceAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createSearchVoiceIntent()
@@ -216,7 +216,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createSearchWebIntent() returns mockIntent
-        val result = services.launchIntent(searchWebAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(searchWebAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createSearchWebIntent()
@@ -227,7 +227,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createShareIntent(any, any) returns mockIntent
-        val result = services.launchIntent(shareAction)(mockContextSupport).value.run
+        val result = services.launchIntentAction(shareAction)(mockContextSupport).value.run
         result shouldEqual Xor.right((): Unit)
 
         there was one(mockIntentCreator).createShareIntent(shareText, titleDialog)
@@ -261,13 +261,13 @@ class LauncherIntentServicesImplSpec
 
   }
 
-  "tryLaunchIntentService" should {
+  "launchIntent" should {
 
     "return a Xor.Left[IntentLauncherServicesException] if Activity.startActivity throws a RuntimeException" in
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockActivity.startActivity(any) throws runtimeException
-        val result = services.tryLaunchIntentService(mockIntent)(mockContextSupport).value.run
+        val result = services.launchIntent(mockIntent)(mockContextSupport).value.run
         result should beAnInstanceOf[Xor.Left[IntentLauncherServicesException]]
 
         there was one(mockContextSupport).getActivity
@@ -278,7 +278,7 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockActivity.startActivity(any) throws securityException
-        val result = services.tryLaunchIntentService(mockIntent)(mockContextSupport).value.run
+        val result = services.launchIntent(mockIntent)(mockContextSupport).value.run
         result should beAnInstanceOf[Xor.Left[IntentLauncherServicesPermissionException]]
 
         there was one(mockContextSupport).getActivity
