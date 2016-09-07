@@ -435,6 +435,12 @@
     <string name="devClickClipboard">Click para copiar en portapapeles</string>
     <string name="devCopiedToClipboard">Copiado en portapapeles</string>
 
+    <string name="devOthersTitle">Otros</string>
+
+    <string name="devClearCacheImagesTitle">Limpiar imágenes en caché</string>
+
+    <string name="devCacheCleared">Caché limpiada</string>
+
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
             Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +

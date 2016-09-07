@@ -18,6 +18,7 @@ import com.bumptech.glide.request.target.ViewTarget
 import com.bumptech.glide._
 import com.bumptech.glide.load.resource.bitmap.{BitmapEncoder, StreamBitmapDecoder}
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder
+import com.bumptech.glide.signature.StringSignature
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder, IconFromPackageDecoder, IconFromPackageLoader}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
@@ -26,7 +27,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object AsyncImageTweaks {
   type W = ImageView
@@ -52,12 +53,21 @@ object AsyncImageTweaks {
             .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
             .encoder(new BitmapEncoder())
             .load(packageName)
+            .signature(getSignature(packageName))
             .into(imageView)
         case _ =>
           (imageView <~ ivSrc(CharDrawable(term.charAt(0).toString, circle = true))).run
       }
     }
   )
+
+  private[this] def getSignature(packageName: String)(implicit contextWrapper: ContextWrapper): StringSignature =
+    Try {
+      contextWrapper.application.getPackageManager.getPackageInfo(packageName, 0).lastUpdateTime
+    } match {
+      case Success(time) => new StringSignature(s"$packageName$time")
+      case Failure(_) => new StringSignature(packageName)
+    }
 
   def ivSrcIconFromPackage(packageName: String, icon: Int, term: String)(implicit context: UiContext[_], contextWrapper: ContextWrapper): Tweak[W] = Tweak[W](
     imageView => {

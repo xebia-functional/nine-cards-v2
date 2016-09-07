@@ -1,13 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers
 
 import cats.implicits._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
+import com.bumptech.glide.Glide
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, Jobs, UiException}
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import macroid.ContextWrapper
 
+import scalaz.concurrent.Task
+
 class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrapper)
-  extends Jobs {
+  extends Jobs
+  with ImplicitsUiExceptions {
 
   def initialize() =
     (ui.initialize(this) |@|
@@ -16,32 +22,43 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
       loadHeadphone |@|
       loadWeather).tupled
 
-  def loadAppsCategorized = for {
+  def loadAppsCategorized: TaskService[Unit] = for {
     apps <- di.deviceProcess.getSavedApps(GetByName)
     _ <- ui.setAppsCategorizedSummary(apps)
   } yield ()
 
-  def copyAndroidToken = for {
+  def copyAndroidToken: TaskService[Unit] = for {
     user <- di.userProcess.getUser
     _ <- ui.copyToClipboard(user.deviceToken)
   } yield ()
 
-  def copyDeviceCloudId = for {
+  def copyDeviceCloudId: TaskService[Unit] = for {
     user <- di.userProcess.getUser
     _ <- ui.copyToClipboard(user.deviceCloudId)
   } yield ()
 
-  def loadMostProbableActivity = for {
+  def clearCacheImages: TaskService[Unit] = {
+    val clearCacheService = TaskService {
+      Task {
+        XorCatchAll[UiException] {
+          Glide.get(contextWrapper.bestAvailable).clearDiskCache()
+        }
+      }
+    }
+    clearCacheService *> ui.cacheCleared
+  }
+
+  def loadMostProbableActivity: TaskService[Unit] = for {
     probableActivity <- di.recognitionProcess.getMostProbableActivity
     _ <- ui.setProbablyActivitySummary(probableActivity.activity.toString)
   } yield ()
 
-  def loadHeadphone = for {
+  def loadHeadphone: TaskService[Unit] = for {
     headphone <- di.recognitionProcess.getHeadphone
     _ <- ui.setHeadphonesSummary(headphone.connected)
   } yield ()
 
-  def loadWeather = for {
+  def loadWeather: TaskService[Unit] = for {
     weather <- di.recognitionProcess.getWeather
     _ <- ui.setWeatherSummary(weather)
   } yield ()

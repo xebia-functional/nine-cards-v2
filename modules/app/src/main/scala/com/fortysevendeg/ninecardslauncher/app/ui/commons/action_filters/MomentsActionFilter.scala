@@ -23,7 +23,6 @@ object MomentsActionFilter {
 
   val cases = Seq(MomentReloadedActionFilter, MomentConstrainsChangedActionFilter, MomentForceBestAvailableActionFilter)
 
-  def apply(action: String): MomentsActionFilter = cases find (_.action == action) getOrElse
-    (throw new IllegalArgumentException(s"$action not found"))
+  def apply(action: String): Option[MomentsActionFilter] = cases find (_.action == action)
 
 }

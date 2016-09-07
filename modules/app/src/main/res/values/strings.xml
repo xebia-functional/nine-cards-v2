@@ -448,7 +448,13 @@
     <string name="devDeviceCloudIdTitle">Device Cloud Id</string>
 
     <string name="devClickClipboard">Click for copy to clipboard</string>
-    <string name="devCopiedToClipboard">Copier to clipboard</string>
+    <string name="devCopiedToClipboard">Copied to clipboard</string>
+
+    <string name="devOthersTitle">Others</string>
+
+    <string name="devClearCacheImagesTitle">Clear cache images</string>
+
+    <string name="devCacheCleared">Cache cleared</string>
 
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[

@@ -47,7 +47,7 @@ class CollectionsDetailsActivity
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (AppsActionFilter(action), data) match {
-    case (AppInstalledActionFilter, _) => collectionsPagerPresenter.reloadCards(true)
+    case (Some(AppInstalledActionFilter), _) => collectionsPagerPresenter.reloadCards(true)
     case _ =>
   }
 
