@@ -170,6 +170,9 @@
     <string name="emails">Email</string>
 
     <string name="errorLoadingContacts">Error cargando contactos</string>
+    <string name="errorLoadingCalls">Error cargando las últimas llamadas</string>
+    <string name="errorContactsPermission">Se requieren permisos de lectura sobre los contactos. ¿Quiere intentarlo de nuevo?</string>
+    <string name="errorCallsPermission">Se requieren permisos de lectura sobre el registro de llamada. ¿Quiere intentarlo de nuevo?</string>
     <string name="errorLoadingApps">Error cargando aplicaciones</string>
     <string name="errorLoadingShortcuts">Error cargando accesos directos</string>
     <string name="errorLoadingRecommendations">Error cargando recomendaciones</string>

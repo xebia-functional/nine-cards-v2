@@ -157,14 +157,12 @@ class ContactsServicesImplSpec
           contentResolverWrapper.fetchAll(
             uri = Fields.EMAIL_CONTENT_URI,
             projection = allEmailFields,
-            where = Fields.EMAIL_CONTACT_SELECTION,
-            whereParams = Seq(firstLookupKey))(getListFromCursor(lookupKeyAndEmailFromCursor)) returns contactLookupKeyAndEmails
+            where = s"${Fields.EMAIL_CONTACT_SELECTION} ('$firstLookupKey')")(getListFromCursor(lookupKeyAndEmailFromCursor)) returns contactLookupKeyAndEmails
 
           contentResolverWrapper.fetchAll(
             uri = Fields.PHONE_CONTENT_URI,
             projection = allPhoneFields,
-            where = Fields.PHONE_CONTACT_SELECTION,
-            whereParams = Seq(firstLookupKey))(getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
+            where = s"${Fields.PHONE_CONTACT_SELECTION} ('$firstLookupKey')")(getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
 
           val result = contactsServices.findContactByLookupKey(firstLookupKey).value.run
           result shouldEqual Xor.Right(contact)
@@ -196,14 +194,12 @@ class ContactsServicesImplSpec
           contentResolverWrapper.fetchAll(
             uri = Fields.EMAIL_CONTENT_URI,
             projection = allEmailFields,
-            where = Fields.EMAIL_CONTACT_SELECTION,
-            whereParams = Seq(firstLookupKey))(getListFromCursor(lookupKeyAndEmailFromCursor)) returns contactLookupKeyAndEmails
+            where = s"${Fields.EMAIL_CONTACT_SELECTION} ('$firstLookupKey')")(getListFromCursor(lookupKeyAndEmailFromCursor)) returns contactLookupKeyAndEmails
 
           contentResolverWrapper.fetchAll(
             uri = Fields.PHONE_CONTENT_URI,
             projection = allPhoneFields,
-            where = Fields.PHONE_CONTACT_SELECTION,
-            whereParams = Seq(firstLookupKey))(getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
+            where = s"${Fields.PHONE_CONTACT_SELECTION} ('$firstLookupKey')")(getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
 
           val result = contactsServices.populateContactInfo(Seq(contact.copy(info = None))).value.run
           result shouldEqual Xor.Right(Seq(contact))

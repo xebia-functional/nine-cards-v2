@@ -108,16 +108,17 @@ class ContactsServicesImpl(
     def mapValues[T](seq: Seq[(String, T)]): Map[String, Seq[T]] = seq.groupBy(_._1).mapValues(_.map(_._2))
 
     def emailAndPhones(lookupKeys: Seq[String]): (Map[String, Seq[ContactEmail]], Map[String, Seq[ContactPhone]]) = {
+
+      val inArgs = lookupKeys.map(key => s"'$key'").mkString(",")
+
       (mapValues(contentResolverWrapper.fetchAll(
         uri = Fields.EMAIL_CONTENT_URI,
         projection = allEmailFields,
-        where = Fields.EMAIL_CONTACT_SELECTION,
-        whereParams = lookupKeys)(getListFromCursor(lookupKeyAndEmailFromCursor))),
+        where = s"${Fields.EMAIL_CONTACT_SELECTION} ($inArgs)")(getListFromCursor(lookupKeyAndEmailFromCursor))),
         mapValues(contentResolverWrapper.fetchAll(
           uri = Fields.PHONE_CONTENT_URI,
           projection = allPhoneFields,
-          where = Fields.PHONE_CONTACT_SELECTION,
-          whereParams = lookupKeys)(getListFromCursor(lookupKeyAndPhoneFromCursor))))
+          where = s"${Fields.PHONE_CONTACT_SELECTION} ($inArgs)")(getListFromCursor(lookupKeyAndPhoneFromCursor))))
     }
 
     catchMapPermission {
@@ -125,7 +126,7 @@ class ContactsServicesImpl(
       val (emails, phones) = emailAndPhones(contacts.map(_.lookupKey))
       contacts map { contact =>
         (emails.getOrElse(contact.lookupKey, Seq.empty), phones.getOrElse(contact.lookupKey, Seq.empty)) match {
-          case (contactEmails, contactPhones) if contactEmails.nonEmpty && contactPhones.nonEmpty =>
+          case (contactEmails, contactPhones) if contactEmails.nonEmpty || contactPhones.nonEmpty =>
             contact.copy(info = Some(ContactInfo(contactEmails, contactPhones)))
           case _ =>
             contact
