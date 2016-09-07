@@ -114,6 +114,14 @@ trait ApiServices {
     limit: Int)(implicit requestConfig: RequestConfig): TaskService[SharedCollectionResponseList]
 
   /**
+    * Fetches the published collections
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SharedCollectionResponseList]] with the HTTP Code
+    *         of the response and the sequence of recommended collections
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def getPublishedCollections()(implicit requestConfig: RequestConfig): TaskService[SharedCollectionResponseList]
+
+  /**
     * Persists a new shared collection
     * @param name The name of the collection
     * @param description The user's description of the collection
