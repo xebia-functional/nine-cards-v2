@@ -117,6 +117,7 @@ trait ApiServicesImplData {
       publishedOn = "\"2016-08-19T09:39:00.359000\"",
       installations = Some(Random.nextInt(10)),
       views = Some(Random.nextInt(100)),
+      subscriptions = Some(Random.nextInt()),
       publicIdentifier = Random.nextString(10),
       appsInfo = collectionApps,
       packages = collectionApps map (_.packageName))
