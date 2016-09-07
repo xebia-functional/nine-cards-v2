@@ -16,7 +16,6 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
@@ -113,7 +112,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
     (iconContent <~ vBackground(d)) ~
       (icon <~ ivSrc(privateCollection.getIconCollectionDetail)) ~
       (appsRow <~
-        fblRemoveAllViews <~
+        vgRemoveAllViews <~
         automaticAlignment(appsRow, cardsRow)) ~
       (name <~ tvText(privateCollection.name)) ~
       (content <~ vTag(position)) ~
