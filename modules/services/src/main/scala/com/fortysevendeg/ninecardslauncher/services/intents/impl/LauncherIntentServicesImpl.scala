@@ -7,17 +7,16 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSuppo
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, TaskService}
 import com.fortysevendeg.ninecardslauncher.services.intents.models._
-import com.fortysevendeg.ninecardslauncher.services.intents.{ImplicitsIntentLauncherServicesExceptions, IntentLauncherServicesException, IntentLauncherServicesPermissionException, LauncherIntentServices}
+import com.fortysevendeg.ninecardslauncher.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException, LauncherIntentServices}
 
 import scalaz.concurrent.Task
 
 class LauncherIntentServicesImpl
-  extends LauncherIntentServices
-  with ImplicitsIntentLauncherServicesExceptions {
+  extends LauncherIntentServices {
 
   val intentCreator = new IntentCreator
 
-  override def launchIntent(intentAction: IntentAction)(implicit activityContext: ActivityContextSupport): TaskService[Unit] = {
+  override def launchIntentAction(intentAction: IntentAction)(implicit activityContext: ActivityContextSupport): TaskService[Unit] = {
 
     import intentCreator._
     val intent = intentAction match {
@@ -56,17 +55,10 @@ class LauncherIntentServicesImpl
       case ShareAction(text, titleDialog) =>
         createShareIntent(text, titleDialog)
     }
-    tryLaunchIntentService(intent)
+    launchIntent(intent)
   }
 
-  def withActivity(f: (Activity) => Xor[NineCardException, Unit])
-    (implicit activityContext: ActivityContextSupport): Xor[NineCardException, Unit] =
-    activityContext.getActivity match {
-      case Some(activity) => f(activity)
-      case None => Xor.left(IntentLauncherServicesException("Activity not available", None))
-    }
-
-  def tryLaunchIntentService(intent: Intent)(implicit activityContext: ActivityContextSupport): TaskService[Unit] =
+  override def launchIntent(intent: Intent)(implicit activityContext: ActivityContextSupport): TaskService[Unit] =
     TaskService {
       Task {
         withActivity { activity =>
@@ -78,5 +70,12 @@ class LauncherIntentServicesImpl
           }
         }
       }
+    }
+
+  def withActivity(f: (Activity) => Xor[NineCardException, Unit])
+    (implicit activityContext: ActivityContextSupport): Xor[NineCardException, Unit] =
+    activityContext.getActivity match {
+      case Some(activity) => f(activity)
+      case None => Xor.left(IntentLauncherServicesException("Activity not available", None))
     }
 }

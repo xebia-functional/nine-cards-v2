@@ -13,9 +13,3 @@ case class IntentLauncherServicesPermissionException(message: String, cause: Opt
     with NineCardException {
   cause map initCause
 }
-
-trait ImplicitsIntentLauncherServicesExceptions {
-
-  implicit def intentLauncherServicesException = (t: Throwable) => IntentLauncherServicesException(t.getMessage, Option(t))
-
-}
