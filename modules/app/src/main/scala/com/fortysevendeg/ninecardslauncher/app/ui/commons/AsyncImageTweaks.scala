@@ -27,7 +27,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 object AsyncImageTweaks {
   type W = ImageView
@@ -45,7 +45,6 @@ object AsyncImageTweaks {
     imageView => {
       (glide(), maybePackageName) match {
         case (Some(glide), Some(packageName)) =>
-          val time = contextWrapper.application.getPackageManager.getPackageInfo(packageName, 0).lastUpdateTime
           glide
             .using(new AppIconLoader, classOf[String])
             .from(classOf[String])
@@ -54,13 +53,21 @@ object AsyncImageTweaks {
             .cacheDecoder(new FileToStreamDecoder(new StreamBitmapDecoder(contextWrapper.application)))
             .encoder(new BitmapEncoder())
             .load(packageName)
-            .signature(new StringSignature(s"$packageName$time"))
+            .signature(getSignature(packageName))
             .into(imageView)
         case _ =>
           (imageView <~ ivSrc(CharDrawable(term.charAt(0).toString, circle = true))).run
       }
     }
   )
+
+  private[this] def getSignature(packageName: String)(implicit contextWrapper: ContextWrapper): StringSignature =
+    Try {
+      contextWrapper.application.getPackageManager.getPackageInfo(packageName, 0).lastUpdateTime
+    } match {
+      case Success(time) => new StringSignature(s"$packageName$time")
+      case Failure(_) => new StringSignature(packageName)
+    }
 
   def ivSrcIconFromPackage(packageName: String, icon: Int, term: String)(implicit context: UiContext[_], contextWrapper: ContextWrapper): Tweak[W] = Tweak[W](
     imageView => {

@@ -22,17 +22,12 @@ class WifiServicesImpl
 
         networkInfo match {
           case Some(n) if n.isConnected &&
-            n.getType == ConnectivityManager.TYPE_WIFI &&
-            n.getExtraInfo != "" &&
-            Option(n.getExtraInfo).nonEmpty =>
-            // Android sends SSIDs with quotes... I don't know why. We only remove them
-            // if the name starts or ends with quotes
-            val name = n.getExtraInfo
-            val startWithQuotes = name.startsWith("\"")
-            val endWithQuotes = name.endsWith("\"")
-            val start = if (startWithQuotes) 1 else 0
-            val end = if (endWithQuotes) name.length - 1 else name.length
-            Option(name.substring(start, end))
+            n.getType == ConnectivityManager.TYPE_WIFI =>
+            val regex = "\"?(.+?)\"?".r
+            Option(n.getExtraInfo) find(_.nonEmpty) flatMap {
+              case regex(name) => Some(name)
+              case _ => None
+            }
           case _ => None
         }
       }

@@ -37,13 +37,13 @@ class LauncherActivity
     (MomentsActionFilter.cases map (_.action)) ++ (AppsActionFilter.cases map (_.action))
 
   override def manageCommand(action: String, data: Option[String]): Unit =
-    (MomentsActionFilter(action), AppsActionFilter(action), data) match {
-      case (Some(MomentReloadedActionFilter), _, _) => presenter.reloadAppsMomentBar()
-      case (Some(MomentConstrainsChangedActionFilter), _, _) => presenter.reloadAppsMomentBar()
-      case (Some(MomentForceBestAvailableActionFilter), _, _) => presenter.changeMomentIfIsAvailable()
-      case (_, Some(AppInstalledActionFilter), _) => presenter.loadApps(AppsAlphabetical)
-      case (_, Some(AppUninstalledActionFilter), _) => presenter.loadApps(AppsAlphabetical)
-      case (_, Some(AppUpdatedActionFilter), _) => presenter.loadApps(AppsAlphabetical)
+    (MomentsActionFilter(action), AppsActionFilter(action)) match {
+      case (Some(MomentReloadedActionFilter), _) => presenter.reloadAppsMomentBar()
+      case (Some(MomentConstrainsChangedActionFilter), _) => presenter.reloadAppsMomentBar()
+      case (Some(MomentForceBestAvailableActionFilter), _) => presenter.changeMomentIfIsAvailable()
+      case (_, Some(AppInstalledActionFilter)) => presenter.loadApps(AppsAlphabetical)
+      case (_, Some(AppUninstalledActionFilter)) => presenter.loadApps(AppsAlphabetical)
+      case (_, Some(AppUpdatedActionFilter)) => presenter.loadApps(AppsAlphabetical)
       case _ =>
     }
 
