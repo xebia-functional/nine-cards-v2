@@ -23,11 +23,10 @@ trait LauncherExecutorProcess {
 
   /**
     * Launch a share intent with the title and text specified
-    * @param title the title
     * @param text the text
     * @return A TaskService[Unit] with an IntentLauncherServicesException if the internal API throws an Exception
     */
-  def launchShare(title: String, text: String)(implicit activityContext: ActivityContextSupport): TaskService[Unit]
+  def launchShare(text: String)(implicit activityContext: ActivityContextSupport): TaskService[Unit]
 
   /**
     * Launch the search intent
