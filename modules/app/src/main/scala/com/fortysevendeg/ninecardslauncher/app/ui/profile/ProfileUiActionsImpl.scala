@@ -13,7 +13,9 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TabLayoutTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.commons.BroadAction
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
@@ -57,7 +59,7 @@ trait ProfileUiActionsImpl
 
   lazy val tabs = Option(findView(TR.profile_tabs))
 
-  lazy val recyclerView = Option(findView(TR.profile_recycler))
+  lazy val recyclerView = findView(TR.profile_recycler)
 
   lazy val loadingView = Option(findView(TR.profile_loading))
 
@@ -78,6 +80,15 @@ trait ProfileUiActionsImpl
       Ui(presenter.loadPublications())
 
   override def showLoading(): Ui[_] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
+
+  override def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any] = {
+    val adapter = recyclerView.getAdapter match {
+      case sharedCollectionsAdapter: SharedCollectionsAdapter =>
+        sharedCollectionsAdapter.copy(mySharedCollectionIds = sharedCollectionsAdapter.mySharedCollectionIds ++ Seq(mySharedCollectionId))
+    }
+    showMessage(R.string.collectionAdded) ~
+      (recyclerView <~ rvSwapAdapter(adapter))
+  }
 
   override def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingPublishedCollections, clickAction)
 
@@ -139,13 +150,14 @@ trait ProfileUiActionsImpl
   override def loadPublications(
     sharedCollections: Seq[SharedCollection],
     onAddCollection: (SharedCollection) => Unit,
-    onShareCollection: (SharedCollection) => Unit): Ui[Any] = {
-    (recyclerView <~ vVisible <~ rvAdapter(SharedCollectionsAdapter(sharedCollections, onAddCollection, onShareCollection))) ~
+    onShareCollection: (SharedCollection) => Unit,
+    mySharedCollectionIds: Seq[String]): Ui[Any] = {
+    val adapter = SharedCollectionsAdapter(sharedCollections, onAddCollection, onShareCollection, mySharedCollectionIds)
+    (recyclerView <~
+      vVisible <~
+      rvLayoutManager(adapter.getLayoutManager) <~
+      rvAdapter(adapter)) ~
       (loadingView <~ vInvisible)
-  }
-
-  override def addCollection(collection: Collection): Ui[Any] = Ui {
-
   }
 
   private[this] def showDialog(dialog: DialogFragment): Unit = {

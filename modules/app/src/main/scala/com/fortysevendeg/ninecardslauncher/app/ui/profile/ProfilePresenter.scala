@@ -5,7 +5,9 @@ import java.util.Date
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
+import cats.data.XorT
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
@@ -103,7 +105,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
     Task.fork(addCollection(sharedCollection).value).resolveAsyncUi(
-      onResult = (c) => actions.addCollection(c),
+      onResult = (c) => actions.showAddCollectionMessage(sharedCollection.sharedCollectionId) ~ Ui(sendBroadCast(BroadAction(CollectionAddedActionFilter.action, Some(c.id.toString)))),
       onException = (ex) => actions.showErrorSavingCollectionInScreen(() => loadPublications()))
   }
 
@@ -111,13 +113,23 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     launchShareCollection(sharedCollection.id)
 
   def loadPublications(): Unit = {
-    Task.fork(di.sharedCollectionsProcess.getPublishedCollections().value).resolveAsyncUi(
+
+    def getSharedCollections: XorT[Task, NineCardException, (Seq[SharedCollection], Seq[String])] =
+     for {
+       sharedCollections <- di.sharedCollectionsProcess.getPublishedCollections()
+       collections <- di.collectionProcess.getCollections
+     } yield {
+       val mySharedCollectionIds = collections flatMap (_.sharedCollectionId)
+       (sharedCollections, mySharedCollectionIds)
+     }
+
+    Task.fork(getSharedCollections.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
-      onResult = (sharedCollections: Seq[SharedCollection]) => {
-        if (sharedCollections.isEmpty) {
+      onResult = (sharedCollectionsResult: (Seq[SharedCollection], Seq[String])) => {
+        if (sharedCollectionsResult._1.isEmpty) {
           actions.showEmptyMessageInScreen(() => loadPublications())
         } else {
-          actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
+          actions.loadPublications(sharedCollectionsResult._1, saveSharedCollection, shareCollection, sharedCollectionsResult._2)
         }
       },
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen(() => loadPublications()))
@@ -269,7 +281,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   TaskService[Collection] =
     for {
       appsInstalled <- di.deviceProcess.getSavedApps(GetByName)
-      collection <- di.collectionProcess.addCollection(toAddCollectionRequest(sharedCollection, getCards(appsInstalled, sharedCollection.resolvedPackages)))
+      collection <- di.collectionProcess.addCollection(toAddCollectionRequestFromSharedCollection(sharedCollection, getCards(appsInstalled, sharedCollection.resolvedPackages)))
     } yield collection
 
   private[this] def getCards(appsInstalled: Seq[App], packages: Seq[SharedCollectionPackage]) =
@@ -318,6 +330,8 @@ trait ProfileUiActions {
 
   def showLoading(): Ui[Any]
 
+  def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any]
+
   def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any]
 
   def showEmptyMessageInScreen(clickAction: () => Unit): Ui[Any]
@@ -343,11 +357,10 @@ trait ProfileUiActions {
   def loadPublications(
     sharedCollections: Seq[SharedCollection],
     onAddCollection: (SharedCollection) => Unit,
-    onShareCollection: (SharedCollection) => Unit): Ui[Any]
+    onShareCollection: (SharedCollection) => Unit,
+    mySharedCollectionIds: Seq[String]): Ui[Any]
 
-  def addCollection(collection: Collection): Ui[Any]
-
-  def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_]
+  def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
 
   def setAccountsAdapter(items: Seq[AccountSync]): Ui[Any]
 
