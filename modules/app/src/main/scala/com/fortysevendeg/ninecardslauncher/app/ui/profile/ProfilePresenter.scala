@@ -125,12 +125,11 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
     Task.fork(getSharedCollections.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
-      onResult = (sharedCollectionsResult: (Seq[SharedCollection], Seq[String])) => {
-        if (sharedCollectionsResult._1.isEmpty) {
+      onResult = {
+        case (sharedCollections, mySharedCollectionIds) if sharedCollections.isEmpty =>
           actions.showEmptyMessageInScreen(() => loadPublications())
-        } else {
-          actions.loadPublications(sharedCollectionsResult._1, saveSharedCollection, shareCollection, sharedCollectionsResult._2)
-        }
+        case (sharedCollections, mySharedCollectionIds) =>
+          actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection, mySharedCollectionIds)
       },
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen(() => loadPublications()))
   }
@@ -154,7 +153,6 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         true
       case _ => false
     }
-
 
   def quit(): Unit = {
 
