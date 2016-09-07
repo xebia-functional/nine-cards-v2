@@ -303,6 +303,7 @@
     <!-- Profile -->
     <string name="publications">Publications</string>
     <string name="subscriptions">Subscriptions</string>
+    <string name="subscriptions_number">%s subscriptions</string>
     <string name="accounts">Accounts</string>
 
     <string name="syncHeaderDevices">Other Devices</string>

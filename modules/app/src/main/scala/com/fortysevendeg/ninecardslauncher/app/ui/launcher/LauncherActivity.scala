@@ -45,7 +45,7 @@ class LauncherActivity
       case (_, Some(AppInstalledActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
       case (_, Some(AppUninstalledActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
       case (_, Some(AppUpdatedActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
-      case (_, _, Some(CollectionAddedActionFilter), Some(colId)) => presenter.reloadCollection(colId)
+      case (_, _, Some(CollectionAddedActionFilter), Some(collectionId)) => presenter.reloadCollection(collectionId.toInt)
       case _ =>
     }
   }

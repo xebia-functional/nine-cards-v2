@@ -301,11 +301,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
-  def reloadCollection(collectionId: String): Unit =  {
-    Task.fork(di.collectionProcess.getCollectionById(collectionId.toInt).value).resolveAsync(
+  def reloadCollection(collectionId: Int): Unit =  {
+    Task.fork(di.collectionProcess.getCollectionById(collectionId).value).resolveAsync(
       onResult = {
         case Some(collection) => addCollection(collection)
-        case _ => Ui.nop
+        case _ => actions.showContactUsError()
       },
       onException = (_) => actions.showContactUsError()
     )

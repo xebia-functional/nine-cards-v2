@@ -13,7 +13,6 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.SharedCollectionOps._
@@ -70,12 +69,12 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
     (iconContent <~ vBackground(background)) ~
       (icon <~ ivSrc(collection.getIconCollectionDetail)) ~
       (appsIcons <~
-        fblRemoveAllViews <~
+        vgRemoveAllViews <~
         automaticAlignment(apps)) ~
       (name <~ tvText(resGetString(collection.name) getOrElse collection.name)) ~
       (author <~ tvText(collection.author)) ~
       (subscriptions <~
-        (if (collection.subscriptions.isDefined) vVisible + tvText(s"${collection.subscriptions}" + " " + resGetString(R.string.subscriptions).toLowerCase) else vGone)) ~
+        (if (collection.views < 0) vGone else vVisible + tvText(resGetString(R.string.subscriptions_number, collection.views.toString)))) ~ //TODO Change collection.views for collection.subscriptions: Option[Int] and hide when it's a None
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
       (addCollection <~
