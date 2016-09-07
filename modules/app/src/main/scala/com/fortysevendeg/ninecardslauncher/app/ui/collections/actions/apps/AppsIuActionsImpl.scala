@@ -34,20 +34,20 @@ trait AppsIuActionsImpl
 
   val resistance = 2.4f
 
-  lazy val recycler = Option(findView(TR.actions_recycler))
+  lazy val recycler = findView(TR.actions_recycler)
 
-  lazy val scrollerLayout = Option(findView(TR.action_scroller_layout))
+  lazy val scrollerLayout = findView(TR.action_scroller_layout)
 
-  lazy val pullToTabsView = Option(findView(TR.actions_pull_to_tabs))
+  lazy val pullToTabsView = findView(TR.actions_pull_to_tabs)
 
-  lazy val tabs = Option(findView(TR.actions_tabs))
+  lazy val tabs = findView(TR.actions_tabs)
 
   override def initialize(onlyAllApps: Boolean, category: NineCardCategory): Ui[_] = {
     val pullToTabsTweaks = if (onlyAllApps) {
       pdvEnable(false)
     } else {
       ptvLinkTabs(
-        tabs = tabs,
+        tabs = Some(tabs),
         start = Ui.nop,
         end = Ui.nop) +
         ptvAddTabsAndActivate(generateTabs(category), 0, Some(colorPrimary)) +
@@ -109,7 +109,7 @@ trait AppsIuActionsImpl
     unreveal()
   }
 
-  override def isTabsOpened: Boolean = (tabs ~> isOpened).get getOrElse false
+  override def isTabsOpened: Boolean = (tabs ~> isOpened).get
 
   private[this] def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
 
@@ -134,9 +134,7 @@ trait AppsIuActionsImpl
         case AppsByCategory => resGetString(R.string.appsByCategory, categoryName)
         case _ => resGetString(R.string.allApps)
       })) ~
-      (recycler map { rv =>
-        scrollerLayout <~ fslLinkRecycler(rv) <~ fslCounters(counters)
-      } getOrElse showGeneralError)
+      (scrollerLayout <~ fslLinkRecycler(recycler) <~ fslCounters(counters))
   }
 
   private[this] def reloadAppsAdapter(
@@ -157,11 +155,9 @@ trait AppsIuActionsImpl
       } getOrElse showGeneralError)
   }
 
-  private[this] def getAdapter: Option[AppsAdapter] = recycler flatMap { rv =>
-    Option(rv.getAdapter) match {
-      case Some(a: AppsAdapter) => Some(a)
-      case _ => None
-    }
+  private[this] def getAdapter: Option[AppsAdapter] = Option(recycler.getAdapter) match {
+    case Some(a: AppsAdapter) => Some(a)
+    case _ => None
   }
 
   private[this] def generateTabs(category: NineCardCategory) = Seq(
