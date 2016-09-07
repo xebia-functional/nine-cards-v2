@@ -55,6 +55,13 @@ class WidgetProcessImpl(
       _ <- updateWidget(updatedWidget)
     } yield updatedWidget).resolve[AppWidgetException]
 
+  override def updateAppWidgetId(widgetId: Int, appWidgetId: Int) =
+    (for {
+      widget <- findWidgetById(widgetId).resolveOption()
+      updatedWidget = toUpdatedWidget(toWidget(widget), appWidgetId)
+      _ <- updateWidget(updatedWidget)
+    } yield updatedWidget).resolve[AppWidgetException]
+
   override def deleteAllWidgets() =
     (for {
       _ <- persistenceServices.deleteAllWidgets()

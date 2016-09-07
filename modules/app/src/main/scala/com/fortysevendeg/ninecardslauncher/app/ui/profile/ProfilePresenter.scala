@@ -8,7 +8,7 @@ import android.os.Bundle
 import cats.data.XorT
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter, ResultCodes}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Jobs, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -30,7 +30,7 @@ import scala.util.{Failure, Try}
 import scalaz.concurrent.Task
 
 class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Presenter
+  extends Jobs
   with LauncherExecutor
   with Conversions
   with GoogleDriveApiClientProvider {

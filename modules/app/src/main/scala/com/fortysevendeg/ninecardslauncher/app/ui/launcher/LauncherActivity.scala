@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, Con
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.AppsAlphabetical
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 
@@ -22,7 +23,8 @@ class LauncherActivity
   with ActionsScreenListener
   with LauncherUiActionsImpl
   with SystemBarsTint
-  with BroadcastDispatcher { self =>
+  with BroadcastDispatcher {
+  self =>
 
   lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
 
@@ -32,17 +34,18 @@ class LauncherActivity
 
   private[this] var hasFocus = false
 
-  override val actionsFilters: Seq[String] = (MomentsActionFilter.cases map (_.action)) ++ (CollectionsActionFilter.cases map (_.action))
+  override val actionsFilters: Seq[String] =
+    (MomentsActionFilter.cases map (_.action)) ++ (AppsActionFilter.cases map (_.action)) ++ (CollectionsActionFilter.cases map (_.action))
 
   override def manageCommand(action: String, data: Option[String]): Unit = {
-    (MomentsActionFilter(action), data) match {
-      case (Some(MomentReloadedActionFilter), _) => presenter.reloadAppsMomentBar()
-      case (Some(MomentConstrainsChangedActionFilter), _) => presenter.reloadAppsMomentBar()
-      case (Some(MomentForceBestAvailableActionFilter), _) => presenter.changeMomentIfIsAvailable()
-      case _ =>
-    }
-    (CollectionsActionFilter(action), data) match {
-      case (Some(CollectionAddedActionFilter), Some(colId)) => presenter.reloadCollection(colId)
+    (MomentsActionFilter(action), AppsActionFilter(action), CollectionsActionFilter(action), data) match {
+      case (Some(MomentReloadedActionFilter), _, _, _) => presenter.reloadAppsMomentBar()
+      case (Some(MomentConstrainsChangedActionFilter), _, _, _) => presenter.reloadAppsMomentBar()
+      case (Some(MomentForceBestAvailableActionFilter), _, _, _) => presenter.changeMomentIfIsAvailable()
+      case (_, Some(AppInstalledActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
+      case (_, Some(AppUninstalledActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
+      case (_, Some(AppUpdatedActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
+      case (_, _, Some(CollectionAddedActionFilter), Some(colId)) => presenter.reloadCollection(colId)
       case _ =>
     }
   }

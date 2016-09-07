@@ -39,7 +39,7 @@ class ScrollingLinearLayoutManager(columns: Int)(implicit contextWrapper: Contex
     speedFactor: Float)
     extends LinearSmoothScroller(recyclerView.getContext) {
 
-    def computeScrollVectorForPosition(targetPosition: Int): PointF = self.computeScrollVectorForPosition(targetPosition)
+    override def computeScrollVectorForPosition(targetPosition: Int): PointF = self.computeScrollVectorForPosition(targetPosition)
 
     protected override def getVerticalSnapPreference: Int = SNAP_TO_START
 

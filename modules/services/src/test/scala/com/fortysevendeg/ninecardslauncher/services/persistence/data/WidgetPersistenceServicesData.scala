@@ -32,7 +32,7 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
         momentId = momentId,
         packageName = packageName,
         className = className,
-        appWidgetId = appWidgetId,
+        appWidgetId = Option(appWidgetId),
         startX = startX,
         startY = startY,
         spanX = spanX,
@@ -45,6 +45,7 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
   val seqWidget: Seq[Widget] = createSeqWidget()
   val servicesWidget: Widget = seqWidget(0)
   val repoWidget: RepositoryWidget = seqRepoWidget(0)
+  val repoWidgetNone: RepositoryWidget = seqRepoWidgetNone(0)
 
   def createAddWidgetRequest(
     momentId: Int = momentId,
@@ -100,7 +101,7 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
       momentId = momentId,
       packageName = packageName,
       className = className,
-      appWidgetId = appWidgetId,
+      appWidgetId = Option(appWidgetId),
       startX = startX,
       startY = startY,
       spanX = spanX,

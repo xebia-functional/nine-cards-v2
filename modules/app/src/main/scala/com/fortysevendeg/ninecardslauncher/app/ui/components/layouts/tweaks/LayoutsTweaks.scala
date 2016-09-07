@@ -59,7 +59,14 @@ object LauncherWorkSpacesTweaks {
     view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
   }
 
-  def lwsAddWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget) = Tweak[W] (_.addWidget(widgetView, cell, widget))
+  def lwsAddWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget) =
+    Tweak[W] (_.addWidget(widgetView, cell, widget))
+
+  def lwsAddNoConfiguredWidget(wCell: Int, hCell: Int, widget: AppWidget) =
+    Tweak[W] (_.addNoConfiguredWidget(wCell, hCell, widget))
+
+  def lwsReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: AppWidget) =
+    Tweak[W] (_.addReplaceWidget(widgetView, wCell, hCell, widget))
 
   def lwsShowRules() = Tweak[W] (_.showRulesInMoment())
 

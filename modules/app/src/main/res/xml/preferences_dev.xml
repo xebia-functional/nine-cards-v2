@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="@string/devAppsCategorizedTitle">
+
+        <Preference
+            android:key="appsCategorized"
+            android:title="@string/devAppsCategorizedTitle"/>
+
+        <Preference
+            android:key="androidToken"
+            android:title="@string/devAndroidTokenTitle"
+            android:summary="@string/devClickClipboard"/>
+
+        <Preference
+            android:key="deviceCloudId"
+            android:title="@string/devDeviceCloudIdTitle"
+            android:summary="@string/devClickClipboard"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/devAwarenessAPICategory">
+
+        <Preference
+            android:key="probablyActivity"
+            android:title="@string/devProbablyActivityTitle"/>
+
+        <Preference
+            android:key="headphones"
+            android:title="@string/devHeadphonesTitle"/>
+
+        <Preference
+            android:key="weather"
+            android:title="@string/devWeatherTitle"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/devOthersTitle">
+
+        <Preference
+            android:key="clearCacheImages"
+            android:title="@string/devClearCacheImagesTitle"/>
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

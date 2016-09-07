@@ -13,10 +13,6 @@ trait ResourceUtilsData {
 
   val fileName = String.format("%s_%s", appPackage.packageName.toLowerCase.replace(".", "_"), appPackage.className.toLowerCase.replace(".", "_"))
 
-  val packageName = appPackage.packageName
-
-  val className = appPackage.className
-
   val resultFilePath = s"$fileFolder/$fileName"
 
 }

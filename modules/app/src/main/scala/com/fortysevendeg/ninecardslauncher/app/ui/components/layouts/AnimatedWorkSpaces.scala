@@ -15,9 +15,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.AnimatedWorkSpaces._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, NineCardsPreferencesValue, WorkspaceAnimations}
 import com.fortysevendeg.ninecardslauncher.commons._
-import AnimatedWorkSpaces._
-import com.fortysevendeg.ninecardslauncher.app.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, NineCardsPreferencesValue, WorkspaceAnimations}
 import macroid.FullDsl._
 import macroid._
 
@@ -57,7 +57,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   private[this] var views: Seq[Holder] = Seq.empty
 
-  var statuses = AnimatedWorkSpacesStatuses(infinite = false)
+  var statuses = AnimatedWorkSpacesStatuses()
 
   var onPageChangedObservers: Seq[PageChangedObserver] = Seq.empty
 
@@ -192,9 +192,9 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def isLast: Boolean = isPosition(data.length - 1)
 
-  def canGoToPrevious = !isFirst || (isFirst && statuses.infinite)
+  def canGoToPrevious = !isFirst
 
-  def canGoToNext = !isLast || (isLast && statuses.infinite)
+  def canGoToNext = !isLast
 
   private[this] def snap(velocity: Float): Ui[_] = {
     moveItemsAnimator.cancel()
@@ -359,7 +359,8 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
         requestDisallowInterceptTouchEvent(true)
         val deltaX = statuses.deltaX(x)
         statuses = statuses.copy(lastMotionX = x, lastMotionY = y)
-        if (overScroll()) {
+        if (overScroll(deltaX)) {
+          notifyMovementObservers(0f)
           resetView(FrontView).run
         } else {
           performScroll(deltaX).run
@@ -384,15 +385,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (action, x, y)
   }
 
-  private[this] def overScroll(deltaX: Option[Float] = None): Boolean = getFrontView exists { view =>
-    (statuses.infinite, view.getX, deltaX) match {
-      case (false, x, Some(dx)) if x >= 0 && dx < 0 && isFirst => true
-      case (false, x, Some(dx)) if x <= 0 && dx > 0 && isLast => true
-      case (false, x, None) if x > 0 && isFirst => true
-      case (false, x, None) if x < 0 && isLast => true
+  private[this] def overScroll(deltaX: Float): Boolean =
+    (statuses.displacement, deltaX) match {
+      case (x, dx) if isFirst && dx < 0 && x - dx >= 0 => true
+      case (x, dx) if isLast && dx > 0 && x - dx <= 0 => true
       case _ => false
     }
-  }
 
   def setStateIfNeeded(x: Float, y: Float) = {
     if (statuses.enabled) {
@@ -404,17 +402,15 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
       if (xMoved || yMoved) {
         val penultimate = data.length - 2
-        val isScrolling = (statuses.infinite, xDiff > yDiff, moveItemsAnimator.isRunning) match {
-          case (true, true, _) => true
-          case (true, false, _) => true
-          case (false, true, true) if x - statuses.lastMotionX > 0 && isPosition(1) => false
-          case (false, true, true) if x - statuses.lastMotionX < 0 && isPosition(penultimate) => false
-          case (false, false, true) if y - statuses.lastMotionY > 0 && isPosition(1) => false
-          case (false, false, true) if y - statuses.lastMotionY < 0 && isPosition(penultimate) => false
-          case (false, true, _) if x - statuses.lastMotionX > 0 && !isFirst => true
-          case (false, true, _) if x - statuses.lastMotionX < 0 && !isLast => true
-          case (false, false, _) if y - statuses.lastMotionY > 0 && !isFirst => true
-          case (false, false, _) if y - statuses.lastMotionY < 0 && !isLast => true
+        val isScrolling = (xDiff > yDiff, moveItemsAnimator.isRunning) match {
+          case (true, true) if x - statuses.lastMotionX > 0 && isPosition(1) => false
+          case (true, true) if x - statuses.lastMotionX < 0 && isPosition(penultimate) => false
+          case (false, true) if y - statuses.lastMotionY > 0 && isPosition(1) => false
+          case (false, true) if y - statuses.lastMotionY < 0 && isPosition(penultimate) => false
+          case (true, _) if x - statuses.lastMotionX > 0 && !isFirst => true
+          case (true, _) if x - statuses.lastMotionX < 0 && !isLast => true
+          case (false, _) if y - statuses.lastMotionY > 0 && !isFirst => true
+          case (false, _) if y - statuses.lastMotionY < 0 && !isLast => true
           case _ => false
         }
         if (isScrolling) {
@@ -435,9 +431,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     tracker =>
       tracker.computeCurrentVelocity(1000, maximumVelocity)
       val velocity = tracker.getXVelocity
-      if (statuses.isScrolling && !overScroll(Some(-velocity))) {
-        (if (math.abs(velocity) > minimumVelocity) snap(velocity) else snapDestination()).run
-      }
+      ((statuses.isScrolling, math.abs(velocity) > minimumVelocity) match {
+        case (true, true) => snap(velocity)
+        case _ => snapDestination()
+      }).run
       tracker.recycle()
       statuses = statuses.copy(velocityTracker = None)
   }
@@ -480,7 +477,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 }
 
 case class AnimatedWorkSpacesStatuses(
-  infinite: Boolean,
   dimen: Dimen = Dimen(),
   touchState: ViewState = Stopped,
   enabled: Boolean = false,

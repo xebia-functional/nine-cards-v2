@@ -22,95 +22,87 @@ trait WifiImplSpecification
 
     val mockContextSupport = mock[ContextSupport]
     val mockContext = mock[Context]
+    mockContextSupport.context returns mockContext
 
     val mockConnectivityManager = mock[ConnectivityManager]
     val mockNetWorkInfo = mock[NetworkInfo]
     val mockWifiManager = mock[WifiManager]
     val mockWifiInfo = mock[WifiInfo]
-
-    mockContext.getSystemService(Context.CONNECTIVITY_SERVICE) returns mockConnectivityManager
-    mockContext.getSystemService(Context.WIFI_SERVICE) returns mockWifiManager
-
-    mockContextSupport.context returns mockContext
-
     val wifiServicesImpl = new WifiServicesImpl
-
-    mockConnectivityManager.getActiveNetworkInfo returns mockNetWorkInfo
-    mockNetWorkInfo.isConnected returns true
-    mockNetWorkInfo.getExtraInfo returns ssid
-    mockNetWorkInfo.getType returns ConnectivityManager.TYPE_WIFI
-
-    mockWifiManager.getConfiguredNetworks returns wifiConfigurations
-
   }
 
 }
 
 class WifiServicesImplSpec
-  extends  WifiImplSpecification {
+  extends WifiImplSpecification {
 
   "getCurrentSSID" should {
     "returns the current SSID" in
       new WifiImplScope {
+
+        mockWifiManager.getConfiguredNetworks returns wifiConfigurations
+        mockNetWorkInfo.getType returns ConnectivityManager.TYPE_WIFI
+        mockContext.getSystemService(Context.CONNECTIVITY_SERVICE) returns mockConnectivityManager
+        mockConnectivityManager.getActiveNetworkInfo returns mockNetWorkInfo
+        mockNetWorkInfo.isConnected returns true
+        mockNetWorkInfo.getExtraInfo returns ssid
+
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Right(resultSSID) => resultSSID shouldEqual Some(ssid)
-        }
+        result shouldEqual Xor.Right(Some(ssidResult))
+      }
+
+    "returns the current SSID with quotes" in
+      new WifiImplScope {
+
+        mockWifiManager.getConfiguredNetworks returns wifiConfigurations
+        mockNetWorkInfo.getType returns ConnectivityManager.TYPE_WIFI
+        mockContext.getSystemService(Context.CONNECTIVITY_SERVICE) returns mockConnectivityManager
+        mockConnectivityManager.getActiveNetworkInfo returns mockNetWorkInfo
+        mockNetWorkInfo.isConnected returns true
+        mockNetWorkInfo.getExtraInfo returns ssidWithQuotes
+
+        val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
+        result shouldEqual Xor.Right(Some(ssidWithQuotesResult))
       }
 
     "returns None if there isn't active network" in
       new WifiImplScope {
 
         mockConnectivityManager.getActiveNetworkInfo returns javaNull
-
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Right(resultSSID) => resultSSID shouldEqual None
-        }
+        result shouldEqual Xor.Right(None)
       }
 
     "returns None if it is not connected" in
       new WifiImplScope {
 
         mockNetWorkInfo.isConnected returns false
-
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Right(resultSSID) => resultSSID shouldEqual None
-        }
+        result shouldEqual Xor.Right(None)
       }
 
     "returns None if type isn't WIFI" in
       new WifiImplScope {
 
         mockNetWorkInfo.getType returns ConnectivityManager.TYPE_MOBILE
-
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Right(resultSSID) => resultSSID shouldEqual None
-        }
+        result shouldEqual Xor.Right(None)
       }
 
     "returns None if SSID is empty" in
       new WifiImplScope {
 
         mockNetWorkInfo.getExtraInfo returns ""
-
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Right(resultSSID) => resultSSID shouldEqual None
-        }
+        result shouldEqual Xor.Right(None)
       }
 
     "returns None if SSID is null" in
       new WifiImplScope {
 
         mockNetWorkInfo.getExtraInfo returns javaNull
-
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Right(resultSSID) => resultSSID shouldEqual None
-        }
+        result shouldEqual Xor.Right(None)
       }
   }
 
@@ -118,30 +110,28 @@ class WifiServicesImplSpec
 
     "returns list of networks sorted" in
       new WifiImplScope {
+
+        mockContext.getSystemService(Context.WIFI_SERVICE) returns mockWifiManager
+        mockWifiManager.getConfiguredNetworks returns wifiConfigurations
+
         val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Right(networks) => networks shouldEqual networksSorted
-        }
+        result shouldEqual Xor.Right(networksSorted)
       }
 
     "returns empty list if android don't return data" in
       new WifiImplScope {
-        mockWifiManager.getConfiguredNetworks returns Seq.empty[WifiConfiguration]
 
+        mockWifiManager.getConfiguredNetworks returns Seq.empty[WifiConfiguration]
         val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Right(networks) => networks shouldEqual Seq.empty
-        }
+        result shouldEqual Xor.Right(Seq.empty)
       }
 
     "returns empty list if android returns null" in
       new WifiImplScope {
-        mockWifiManager.getConfiguredNetworks returns javaNull
 
+        mockWifiManager.getConfiguredNetworks returns javaNull
         val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Right(networks) => networks shouldEqual Seq.empty
-        }
+        result shouldEqual Xor.Right(Seq.empty)
       }
 
   }

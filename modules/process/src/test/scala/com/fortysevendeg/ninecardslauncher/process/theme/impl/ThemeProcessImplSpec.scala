@@ -16,12 +16,13 @@ import scala.util.Success
 
 trait ThemeProcessSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   val assetException = AssetException("")
 
   trait ThemeProcessScope
-    extends Scope {
+    extends Scope
+      with ThemeProcessData {
 
     val resources = mock[Resources]
     resources.getDisplayMetrics returns mock[DisplayMetrics]
@@ -33,47 +34,6 @@ trait ThemeProcessSpecification
       override val fileUtils = mockFileUtils
     }
   }
-
-  trait ValidFileUtilsResponses
-    extends ThemeProcessData {
-
-    self: ThemeProcessScope =>
-
-    mockFileUtils.readFile(any)(any) returns Success(validThemeJson)
-  }
-
-  trait WrongJsonFileUtilsResponses
-    extends ThemeProcessData {
-
-    self: ThemeProcessScope =>
-
-    mockFileUtils.readFile(any)(any) returns Success(wrongThemeJson)
-  }
-
-  trait WrongThemeStyleTypeFileUtilsResponses
-    extends ThemeProcessData {
-
-    self: ThemeProcessScope =>
-
-    mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleTypeJson)
-  }
-
-  trait WrongThemeStyleColorFileUtilsResponses
-    extends ThemeProcessData {
-
-    self: ThemeProcessScope =>
-
-    mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleColorJson)
-  }
-
-  trait ErrorFileUtilsResponses
-    extends ThemeProcessData {
-
-    self: ThemeProcessScope =>
-
-    mockFileUtils.readFile(any)(any) throws assetException
-  }
-
 }
 
 class ThemeProcessImplSpec
@@ -82,7 +42,9 @@ class ThemeProcessImplSpec
   "getTheme" should {
 
     "return a valid NineCardsTheme object for a valid request" in
-      new ThemeProcessScope with ValidFileUtilsResponses {
+      new ThemeProcessScope {
+
+        mockFileUtils.readFile(any)(any) returns Success(validThemeJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
 
         result must beLike {
@@ -94,35 +56,35 @@ class ThemeProcessImplSpec
       }
 
     "return a ThemeException if the JSON is not valid" in
-      new ThemeProcessScope with WrongJsonFileUtilsResponses {
+      new ThemeProcessScope {
+
+        mockFileUtils.readFile(any)(any) returns Success(wrongThemeJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[ThemeException]
-          }
+        result must beAnInstanceOf[Xor.Left[ThemeException]]
       }
 
     "return a ThemeException if a wrong theme style type is included in the JSON" in
-      new ThemeProcessScope with WrongThemeStyleTypeFileUtilsResponses {
+      new ThemeProcessScope  {
+
+        mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleTypeJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[ThemeException]
-          }
+        result must beAnInstanceOf[Xor.Left[ThemeException]]
       }
 
     "return a ThemeException if a wrong theme style color is included in the JSON" in
-      new ThemeProcessScope with WrongThemeStyleColorFileUtilsResponses {
+      new ThemeProcessScope{
+
+        mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleColorJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[ThemeException]
-          }
+        result must beAnInstanceOf[Xor.Left[ThemeException]]
       }
 
     "return a AssetException if getJsonFromFile throws a exception" in
-      new ThemeProcessScope with ErrorFileUtilsResponses {
+      new ThemeProcessScope {
+
+        mockFileUtils.readFile(any)(any) throws assetException
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[AssetException]
-          }
+        result must beAnInstanceOf[Xor.Left[AssetException]]
       }
   }
 

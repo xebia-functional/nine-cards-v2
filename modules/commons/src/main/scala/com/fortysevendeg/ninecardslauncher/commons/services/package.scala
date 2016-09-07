@@ -8,7 +8,7 @@ import scalaz.concurrent.Task
 
 package object services {
 
-    object TaskService {
+  object TaskService {
 
     implicit val taskFunctor = new Functor[Task] {
       override def map[A, B](fa: Task[A])(f: (A) => B): Task[B] = fa.map(f)

@@ -6,10 +6,11 @@ import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher._
 import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.ContextWrapper
 
-class Presenter(implicit contextWrapper: ContextWrapper)
+class Jobs(implicit contextWrapper: ContextWrapper)
   extends ContextSupportProvider {
 
   implicit lazy val di: Injector = new InjectorImpl

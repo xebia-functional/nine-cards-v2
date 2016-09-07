@@ -14,14 +14,14 @@ import scalaz.concurrent.Task
 
 trait ApiUtilsSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   val persistenceServicesException = PersistenceServiceException("")
   val androidIdNotFoundException = AndroidIdNotFoundException("")
 
   trait ApiUtilsScope
     extends Scope
-    with ApiUtilsData {
+      with ApiUtilsData {
 
     val mockContextSupport = mock[ContextSupport]
     val mockPersistenceServices = mock[PersistenceServices]
@@ -40,12 +40,8 @@ class ApiUtilsSpec
       new ApiUtilsScope {
 
         mockContextSupport.getActiveUserId returns None
-
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
-        }
+        result must beAnInstanceOf[Xor.Left[ApiServiceException]]
       }
 
     "returns an ApiServiceException when there is an active user but doesn't exists in the database" in
@@ -55,10 +51,7 @@ class ApiUtilsSpec
         mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
-        }
+        result must beAnInstanceOf[Xor.Left[ApiServiceException]]
 
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
       }
@@ -70,10 +63,7 @@ class ApiUtilsSpec
         mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user.copy(apiKey = None)))))
 
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
-        }
+        result must beAnInstanceOf[Xor.Left[ApiServiceException]]
 
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
       }
@@ -85,10 +75,7 @@ class ApiUtilsSpec
         mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user.copy(sessionToken = None)))))
 
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[ApiServiceException]
-        }
+        result must beAnInstanceOf[Xor.Left[ApiServiceException]]
 
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
       }

@@ -83,10 +83,26 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.addWidget(widgetView, cell, widget).run
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
+      momentWorkSpace.addWidget(widgetView, cell, widget).run
     case None =>
       // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
       uiHandlerDelayed(Ui(addWidget(widgetView, cell, widget)), 200).run
+    case _ =>
+  }
+
+  def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: AppWidget): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
+      momentWorkSpace.addNoConfiguredWidget(wCell, hCell, widget).run
+    case None =>
+      // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
+      uiHandlerDelayed(Ui(addNoConfiguredWidget(wCell, hCell, widget)), 200).run
+    case _ =>
+  }
+
+  def addReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: AppWidget): Unit = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
+      momentWorkSpace.addReplaceWidget(widgetView, wCell, hCell, widget).run
     case _ =>
   }
 

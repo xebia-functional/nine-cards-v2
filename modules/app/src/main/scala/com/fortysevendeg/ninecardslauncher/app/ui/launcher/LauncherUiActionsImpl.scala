@@ -14,7 +14,6 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, CollectionOpeningValue, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -24,10 +23,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
@@ -47,6 +46,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconSha
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NineCardsMoment}
@@ -304,20 +304,47 @@ trait LauncherUiActionsImpl
 
   override def addWidgets(widgets: Seq[AppWidget]): Ui[Any] = {
     val uiWidgets = widgets map { widget =>
-      val appWidgetInfo = appWidgetManager.getAppWidgetInfo(widget.appWidgetId)
-
       val widthContent = workspaces map (_.getWidth) getOrElse 0
       val heightContent = workspaces map (_.getHeight) getOrElse 0
 
-      val cell = appWidgetInfo.getCell(widthContent, heightContent)
+      val maybeAppWidgetInfo = widget.appWidgetId flatMap(widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
 
-      Ui {
-        val hostView = appWidgetHost.createView(activityContextWrapper.application, widget.appWidgetId, appWidgetInfo)
-        hostView.setAppWidget(widget.appWidgetId, appWidgetInfo)
-        (workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+      (maybeAppWidgetInfo, widget.appWidgetId) match {
+        case (Some(appWidgetInfo), Some(appWidgetId)) =>
+          val cell = appWidgetInfo.getCell(widthContent, heightContent)
+
+          Ui {
+            // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
+            val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+            hostView.setAppWidget(appWidgetId, appWidgetInfo)
+            (workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+          }
+        case _ =>
+          val (wCell, hCell) = sizeCell(widthContent, heightContent)
+          workspaces <~ lwsAddNoConfiguredWidget(wCell, hCell, widget)
       }
     }
     Ui.sequence(uiWidgets: _*)
+  }
+
+  override def replaceWidget(widget: AppWidget): Ui[Any] = {
+    val maybeAppWidgetInfo = widget.appWidgetId flatMap(widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
+
+    (maybeAppWidgetInfo, widget.appWidgetId) match {
+      case (Some(appWidgetInfo), Some(appWidgetId)) =>
+        val widthContent = workspaces map (_.getWidth) getOrElse 0
+        val heightContent = workspaces map (_.getHeight) getOrElse 0
+
+        val (wCell, hCell) = sizeCell(widthContent, heightContent)
+
+        Ui {
+          // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
+          val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+          hostView.setAppWidget(appWidgetId, appWidgetInfo)
+          (workspaces <~ lwsReplaceWidget(hostView, wCell, hCell, widget)).run
+        }
+      case _ => Ui.nop
+    }
   }
 
   override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()
@@ -336,11 +363,11 @@ trait LauncherUiActionsImpl
     }
   }
 
-  def unhostWidget(id: Int): Ui[Any] = workspaces <~ lwsUnhostWidget(id)
+  override def unhostWidget(id: Int): Ui[Any] = workspaces <~ lwsUnhostWidget(id)
 
-  override def hostWidget(widget: Widget): Ui[Any] = {
+  override def hostWidget(packageName: String, className: String): Ui[Any] = {
     val appWidgetId = appWidgetHost.allocateAppWidgetId()
-    val provider = new ComponentName(widget.packageName, widget.className)
+    val provider = new ComponentName(packageName, className)
     val success = appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, provider)
     if (success) {
       Ui(presenter.configureOrAddWidget(Some(appWidgetId)))

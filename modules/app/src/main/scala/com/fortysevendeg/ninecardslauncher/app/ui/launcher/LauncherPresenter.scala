@@ -5,20 +5,21 @@ import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions, PreferencesValuesKeys}
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Presenter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, LauncherExecutor}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.exceptions.SpaceException
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.PreferencesValuesKeys
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -42,7 +43,7 @@ import scala.util.Try
 import scalaz.concurrent.Task
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Presenter
+  extends Jobs
   with Conversions
   with NineCardIntentConversions
   with LauncherExecutor
@@ -679,14 +680,31 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       widget <- di.widgetsProcess.addWidget(appWidgetRequest)
     } yield widget
 
+    def replaceWidget(id: Int, appWidgetId: Int) = for {
+      widget <- di.widgetsProcess.updateAppWidgetId(id, appWidgetId)
+    } yield widget
+
     (for {
       appWidgetId <- maybeAppWidgetId
       data <- actions.getData.headOption
       moment <- data.moment
       nineCardMoment <- moment.momentType
     } yield {
-      Task.fork(createWidget(appWidgetId, nineCardMoment).value).resolveAsyncUi(
-        onResult = (widget: AppWidget) => actions.addWidgets(Seq(widget)),
+      val hostingWidgetId = statuses.hostingNoConfiguredWidget map (_.id)
+      val task = hostingWidgetId match {
+        case Some(id) => replaceWidget(id, appWidgetId).value
+        case _ => createWidget(appWidgetId, nineCardMoment).value
+      }
+      Task.fork(task).resolveAsyncUi(
+        onResult = (widget: AppWidget) => {
+          hostingWidgetId match {
+            case Some(_) =>
+              statuses = statuses.copy(hostingNoConfiguredWidget = None)
+              actions.replaceWidget(widget)
+            case _ =>
+              actions.addWidgets(Seq(widget))
+          }
+        },
         onException = (ex) => ex match {
           case ex: SpaceException => actions.showWidgetNoHaveSpaceMessage()
           case _ => actions.showContactUsError()
@@ -694,7 +712,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }) getOrElse actions.showContactUsError().run
   }
 
-  def hostWidget(widget: Widget): Unit = actions.hostWidget(widget).run
+  def hostNoConfiguredWidget(widget: AppWidget): Unit = {
+    statuses = statuses.copy(hostingNoConfiguredWidget = Option(widget))
+    actions.hostWidget(widget.packageName, widget.className).run
+  }
+
+  def hostWidget(widget: Widget): Unit = {
+    statuses = statuses.copy(hostingNoConfiguredWidget = None)
+    actions.hostWidget(widget.packageName, widget.className).run
+  }
 
   def configureOrAddWidget(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map actions.configureWidget getOrElse actions.showContactUsError()).run
@@ -1010,11 +1036,13 @@ trait LauncherUiActions {
 
   def addWidgets(widgets: Seq[AppWidget]): Ui[Any]
 
+  def replaceWidget(widget: AppWidget): Ui[Any]
+
   def deleteSelectedWidget(): Ui[Any]
 
   def unhostWidget(id: Int): Ui[Any]
 
-  def hostWidget(widget: Widget): Ui[Any]
+  def hostWidget(packageName: String, className: String): Ui[Any]
 
   def configureWidget(appWidgetId: Int): Ui[Any]
 
@@ -1054,6 +1082,7 @@ object Statuses {
 
   case class LauncherPresenterStatuses(
     touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
+    hostingNoConfiguredWidget: Option[AppWidget] = None,
     mode: LauncherMode = NormalMode,
     transformation: Option[EditWidgetTransformation] = None,
     idWidget: Option[Int] = None,

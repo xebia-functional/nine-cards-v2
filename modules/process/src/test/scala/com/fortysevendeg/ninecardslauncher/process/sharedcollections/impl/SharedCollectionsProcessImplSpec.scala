@@ -48,6 +48,7 @@ trait SharedCollectionsProcessImplSpecification
     }
 
   }
+
 }
 
 class SharedCollectionsProcessImplSpec
