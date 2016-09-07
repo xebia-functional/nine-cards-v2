@@ -38,4 +38,13 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="@string/devOthersTitle">
+
+        <Preference
+            android:key="clearCacheImages"
+            android:title="@string/devClearCacheImagesTitle"/>
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

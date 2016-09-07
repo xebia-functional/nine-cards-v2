@@ -71,10 +71,7 @@ class RecommendationsProcessSpec
           TaskService(Task(Xor.left(apiException)))
 
         val result = process.getRecommendedAppsByCategory(category)(contextSupport).value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[RecommendedAppsException]
-          }
+        result must beAnInstanceOf[Xor.Left[RecommendedAppsException]]
       }
 
   }
@@ -105,10 +102,7 @@ class RecommendationsProcessSpec
           TaskService(Task(Xor.left(apiException)))
 
         val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[RecommendedAppsException]
-          }
+        result must beAnInstanceOf[Xor.Left[RecommendedAppsException]]
       }
 
   }

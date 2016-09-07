@@ -292,6 +292,14 @@ case object Weather
   override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
 }
 
+case object ClearCacheImages
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = clearCacheImages
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
 
 // Commons
 
@@ -359,6 +367,7 @@ object PreferencesValuesKeys {
   val probablyActivity = "probablyActivity"
   val headphones = "headphones"
   val weather = "weather"
+  val clearCacheImages = "clearCacheImages"
 }
 
 

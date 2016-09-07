@@ -10,7 +10,8 @@ import android.view.KeyEvent
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentsActionFilter, MomentConstrainsChangedActionFilter, MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.AppsAlphabetical
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 
@@ -32,14 +33,19 @@ class LauncherActivity
 
   private[this] var hasFocus = false
 
-  override val actionsFilters: Seq[String] = MomentsActionFilter.cases map (_.action)
+  override val actionsFilters: Seq[String] =
+    (MomentsActionFilter.cases map (_.action)) ++ (AppsActionFilter.cases map (_.action))
 
-  override def manageCommand(action: String, data: Option[String]): Unit = (MomentsActionFilter(action), data) match {
-    case (MomentReloadedActionFilter, _) => presenter.reloadAppsMomentBar()
-    case (MomentConstrainsChangedActionFilter, _) => presenter.reloadAppsMomentBar()
-    case (MomentForceBestAvailableActionFilter, _) => presenter.changeMomentIfIsAvailable()
-    case _ =>
-  }
+  override def manageCommand(action: String, data: Option[String]): Unit =
+    (MomentsActionFilter(action), AppsActionFilter(action)) match {
+      case (Some(MomentReloadedActionFilter), _) => presenter.reloadAppsMomentBar()
+      case (Some(MomentConstrainsChangedActionFilter), _) => presenter.reloadAppsMomentBar()
+      case (Some(MomentForceBestAvailableActionFilter), _) => presenter.changeMomentIfIsAvailable()
+      case (_, Some(AppInstalledActionFilter)) => presenter.loadApps(AppsAlphabetical)
+      case (_, Some(AppUninstalledActionFilter)) => presenter.loadApps(AppsAlphabetical)
+      case (_, Some(AppUpdatedActionFilter)) => presenter.loadApps(AppsAlphabetical)
+      case _ =>
+    }
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)

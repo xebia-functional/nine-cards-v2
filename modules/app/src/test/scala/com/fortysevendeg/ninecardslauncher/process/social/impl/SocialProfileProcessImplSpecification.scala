@@ -41,111 +41,79 @@ class SocialProfileProcessImplSpec
       new CloudStorageProcessImplScope {
 
         googlePlusServices.loadUserProfile returns TaskService(Task(Xor.right(googlePlusProfile)))
-
         context.getActiveUserId returns Some(activeUserId)
-
         persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
-
         persistenceServices.updateUser(any) returns TaskService(Task(Xor.right(1)))
 
         val result = socialProfileProcess.updateUserProfile().value.run
-
         result should beAnInstanceOf[Xor.Right[Unit]]
 
         there was one(persistenceServices).findUserById(findUserByIdRequest)
 
         there was one(persistenceServices).updateUser(updateUserRequest)
 
-    }
+      }
 
     "return an Errata if the Persistence Service doesn't return an User" in
       new CloudStorageProcessImplScope {
 
         googlePlusServices.loadUserProfile returns TaskService(Task(Xor.right(googlePlusProfile)))
-
         context.getActiveUserId returns Some(activeUserId)
-
         persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
 
         val result = socialProfileProcess.updateUserProfile().value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[SocialProfileProcessException]
-        }
+        result must beAnInstanceOf[Xor.Left[SocialProfileProcessException]]
 
         there was one(persistenceServices).findUserById(findUserByIdRequest)
 
-    }
+      }
 
     "return an Errata with the SocialProfileProcessException if the Google Plus Services returns an Errata" in
       new CloudStorageProcessImplScope {
 
         googlePlusServices.loadUserProfile returns TaskService(Task(Xor.left(GooglePlusServicesException("Irrelevant message"))))
-
         val result = socialProfileProcess.updateUserProfile().value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[SocialProfileProcessException]
-          }
-
-    }
+        result must beAnInstanceOf[Xor.Left[SocialProfileProcessException]]
+      }
 
     "return an Errata with the SocialProfileProcessException if there is not an active user" in
       new CloudStorageProcessImplScope {
 
         googlePlusServices.loadUserProfile returns TaskService(Task(Xor.right(googlePlusProfile)))
-
         context.getActiveUserId returns None
 
         val result = socialProfileProcess.updateUserProfile().value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[SocialProfileProcessException]
-        }
-
-    }
+        result must beAnInstanceOf[Xor.Left[SocialProfileProcessException]]
+      }
 
     "return an Errata with the SocialProfileProcessException if the Persistence Service return an Errata in the findUserById method" in
       new CloudStorageProcessImplScope {
 
-      googlePlusServices.loadUserProfile returns TaskService(Task(Xor.right(googlePlusProfile)))
+        googlePlusServices.loadUserProfile returns TaskService(Task(Xor.right(googlePlusProfile)))
+        context.getActiveUserId returns Some(activeUserId)
+        persistenceServices.findUserById(any) returns TaskService(Task(Xor.left(PersistenceServiceException("Irrelevant message"))))
 
-      context.getActiveUserId returns Some(activeUserId)
+        val result = socialProfileProcess.updateUserProfile().value.run
+        result must beAnInstanceOf[Xor.Left[SocialProfileProcessException]]
 
-      persistenceServices.findUserById(any) returns TaskService(Task(Xor.left(PersistenceServiceException("Irrelevant message"))))
-
-      val result = socialProfileProcess.updateUserProfile().value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[SocialProfileProcessException]
-        }
-
-      there was one(persistenceServices).findUserById(findUserByIdRequest)
-
-    }
+        there was one(persistenceServices).findUserById(findUserByIdRequest)
+      }
 
     "return an Errata with the SocialProfileProcessException if the Persistence Service return an Errata in the updateUser method" in
       new CloudStorageProcessImplScope {
 
-      googlePlusServices.loadUserProfile returns TaskService(Task(Xor.right(googlePlusProfile)))
+        googlePlusServices.loadUserProfile returns TaskService(Task(Xor.right(googlePlusProfile)))
+        context.getActiveUserId returns Some(activeUserId)
+        persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        persistenceServices.updateUser(any) returns TaskService(Task(Xor.left(PersistenceServiceException("Irrelevant message"))))
 
-      context.getActiveUserId returns Some(activeUserId)
+        val result = socialProfileProcess.updateUserProfile().value.run
+        result must beAnInstanceOf[Xor.Left[SocialProfileProcessException]]
 
-      persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
+        there was one(persistenceServices).findUserById(findUserByIdRequest)
 
-      persistenceServices.updateUser(any) returns TaskService(Task(Xor.left(PersistenceServiceException("Irrelevant message"))))
-
-      val result = socialProfileProcess.updateUserProfile().value.run
-
-        result must beLike {
-          case Xor.Left(e) => e must beAnInstanceOf[SocialProfileProcessException]
-        }
-
-      there was one(persistenceServices).findUserById(findUserByIdRequest)
-
-      there was one(persistenceServices).updateUser(updateUserRequest)
-
-    }
+        there was one(persistenceServices).updateUser(updateUserRequest)
+      }
 
   }
 

@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
-import android.accounts.{AccountManager, AccountManagerFuture, OperationCanceledException}
+import android.accounts.{AccountManager, AccountManagerFuture}
 import android.app.Activity
 import android.content.res.Resources
 import android.content.{Intent, SharedPreferences}
 import android.os.Bundle
-import android.support.v4.app.{DialogFragment, Fragment, FragmentManager, FragmentTransaction}
+import android.support.v4.app.{FragmentManager, FragmentTransaction}
 import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
@@ -23,7 +23,6 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
 import scala.concurrent.duration._
-import scala.ref.WeakReference
 
 trait WizardPresenterSpecification
   extends Specification
@@ -68,24 +67,6 @@ trait WizardPresenterSpecification
     val mockActions = mock[WizardUiActions]
 
     val mockIntent = mock[Intent]
-
-    mockContextSupport.getActivity returns Some(mockContextActivity)
-
-    mockContextWrapper.original returns new WeakReference[Activity](mockContextActivity)
-
-    mockContextActivity.getSupportFragmentManager returns mockFragmentManager
-
-    mockFragmentManager.beginTransaction() returns mockFragmentTransaction
-
-    mockInjector.createCloudStorageProcess(any) returns mockCloudStorageProcess
-
-    mockInjector.collectionProcess returns mockCollectionProcess
-
-    mockInjector.momentProcess returns mockMomentProcess
-
-    mockInjector.userV1Process returns mockUserConfigProcess
-
-    mockContextActivity.getResources returns mockResources
 
     mockActions.initialize() returns Ui[Any](())
     mockActions.showLoading() returns Ui[Any](())
@@ -172,11 +153,13 @@ class WizardPresenterSpec
     "set the result and call finish in the activity" in
       new WizardPresenterScope {
 
+        mockContextSupport.getActivity returns Some(mockContextActivity)
+
         presenter.finishWizard()
 
         there was after(1.seconds).one(mockContextActivity).setResult(Activity.RESULT_OK)
         there was after(1.seconds).one(mockContextActivity).finish()
-    }
+      }
 
   }
 
@@ -191,7 +174,7 @@ class WizardPresenterSpec
         result should beTrue
 
         there was after(1.seconds).one(mockGoogleApiClient).connect()
-    }
+      }
 
     "return true and call show error connecting google when pass `resolveGooglePlayConnection` and a value distinct to RESULT_OK" in
       new WizardPresenterScope {
@@ -200,14 +183,14 @@ class WizardPresenterSpec
         result should beTrue
 
         there was after(1.seconds).one(mockActions).showErrorConnectingGoogle()
-    }
+      }
 
     "return true and call show error connecting google when pass a different request code" in
       new WizardPresenterScope {
         val result = presenter.activityResult(RequestCodes.goToProfile, Activity.RESULT_OK, javaNull)
 
         result should beFalse
-    }
+      }
 
   }
 
@@ -220,7 +203,7 @@ class WizardPresenterSpec
         presenter.stop()
 
         there was after(1.seconds).one(mockGoogleApiClient).disconnect()
-    }
+      }
 
   }
 

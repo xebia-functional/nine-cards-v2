@@ -22,10 +22,12 @@ class WifiServicesImpl
 
         networkInfo match {
           case Some(n) if n.isConnected &&
-            n.getType == ConnectivityManager.TYPE_WIFI &&
-            n.getExtraInfo != "" &&
-            Option(n.getExtraInfo).nonEmpty =>
-            Option(n.getExtraInfo.replace("\"", ""))
+            n.getType == ConnectivityManager.TYPE_WIFI =>
+            val regex = "\"?(.+?)\"?".r
+            Option(n.getExtraInfo) find(_.nonEmpty) flatMap {
+              case regex(name) => Some(name)
+              case _ => None
+            }
           case _ => None
         }
       }
