@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.ReadContacts
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
@@ -14,8 +15,6 @@ import scalaz.concurrent.Task
 
 class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs {
-
-  val requestPermissionCode = 2002
 
   val permissionChecker = new PermissionChecker
 
@@ -45,7 +44,7 @@ class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrap
       },
       onException = (throwable: Throwable) => {
         throwable match {
-          case e: ContactPermissionException => actions.askForContactsPermission(requestPermissionCode)
+          case e: ContactPermissionException => actions.askForContactsPermission(RequestCodes.contactsPermission)
           case _ => actions.showErrorLoadingContactsInScreen(filter)
         }
       }
@@ -64,7 +63,7 @@ class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrap
     requestCode: Int,
     permissions: Array[String],
     grantResults: Array[Int]): Unit =
-    if (requestCode == requestPermissionCode) {
+    if (requestCode == RequestCodes.contactsPermission) {
       val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
       if (result.exists(_.hasPermission(ReadContacts))) {
         loadContacts(AllContacts, reload = false)

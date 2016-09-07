@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{Moment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, LauncherExecutor}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, LauncherExecutor, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
@@ -58,10 +58,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   lazy val persistMoment = new PersistMoment
 
   var statuses = LauncherPresenterStatuses()
-
-  val requestContactsPermissionCode = 2003
-
-  val requestCallLogPermissionCode = 2004
 
   val permissionChecker = new PermissionChecker
 
@@ -820,14 +816,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     grantResults: Array[Int]): Unit = {
     val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
     requestCode match {
-      case `requestContactsPermissionCode` if result.exists(_.hasPermission(ReadContacts)) =>
+      case RequestCodes.contactsPermission if result.exists(_.hasPermission(ReadContacts)) =>
         actions.reloadDrawerContacts().run
-      case `requestCallLogPermissionCode` if result.exists(_.hasPermission(ReadCallLog)) =>
+      case RequestCodes.callLogPermission if result.exists(_.hasPermission(ReadCallLog)) =>
         actions.reloadDrawerContacts().run
-      case `requestContactsPermissionCode` =>
+      case RequestCodes.contactsPermission =>
         (actions.reloadDrawerApps() ~
           actions.showBottomError(R.string.errorContactsPermission, requestReadContacts)).run
-      case `requestCallLogPermissionCode` =>
+      case RequestCodes.callLogPermission =>
         (actions.reloadDrawerApps() ~
           actions.showBottomError(R.string.errorCallsPermission, requestReadCallLog)).run
       case _ =>
@@ -835,10 +831,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   private[this] def requestReadContacts() =
-    permissionChecker.requestPermission(requestContactsPermissionCode, ReadContacts)
+    permissionChecker.requestPermission(RequestCodes.contactsPermission, ReadContacts)
 
   private[this] def requestReadCallLog() =
-    permissionChecker.requestPermission(requestCallLogPermissionCode, ReadCallLog)
+    permissionChecker.requestPermission(RequestCodes.callLogPermission, ReadCallLog)
 
   protected def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
