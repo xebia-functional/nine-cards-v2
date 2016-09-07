@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPr
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.NineCardsCategoryOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
@@ -15,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Pull
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps, TermCounter}
@@ -42,7 +44,10 @@ trait AppsIuActionsImpl
 
   lazy val tabs = findView(TR.actions_tabs)
 
+  lazy val preferences = new NineCardsPreferencesValue
+
   override def initialize(onlyAllApps: Boolean, category: NineCardCategory): Ui[_] = {
+    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferences)
     val pullToTabsTweaks = if (onlyAllApps) {
       pdvEnable(false)
     } else {
@@ -77,7 +82,7 @@ trait AppsIuActionsImpl
         menuTweak <~
         dtbNavigationOnClickListener((_) => unreveal())) ~
       (pullToTabsView <~ pullToTabsTweaks) ~
-      (recycler <~ recyclerStyle) ~
+      (recycler <~ recyclerStyle <~ (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank)) ~
       (tabs <~ tvClose)
   }
 

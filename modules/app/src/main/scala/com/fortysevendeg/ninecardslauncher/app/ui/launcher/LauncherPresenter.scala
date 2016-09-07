@@ -720,8 +720,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def needToRecreate(array: Array[String]): Boolean =
       array.intersect(
         Seq(PreferencesValuesKeys.theme,
-        PreferencesValuesKeys.iconsSize,
-        PreferencesValuesKeys.fontsSize)).nonEmpty
+          PreferencesValuesKeys.iconsSize,
+          PreferencesValuesKeys.fontsSize,
+          PreferencesValuesKeys.appDrawerSelectItemsInScroller)).nonEmpty
 
     def uiAction(prefKey: String): Ui[_] = prefKey match {
       case PreferencesValuesKeys.showClockMoment => actions.reloadMomentTopBar()

@@ -401,6 +401,9 @@
     <string name="appDrawerFistTabContactTitle">Favorites Contacts First Tab</string>
     <string name="appDrawerFistTabContactSummary">Favorites Contacts will appear in the first position</string>
 
+    <string name="appDrawerSelectItemsInScrollerTitle">Select Item During Scrolling</string>
+    <string name="appDrawerSelectItemsInScrollerSummary">The items selected will be highlighted during scrolling on list of Apps and Contacts</string>
+
     <!-- Animations Preferences -->
 
     <string name="animationsPrefTitle">Animations</string>
