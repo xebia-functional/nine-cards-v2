@@ -28,7 +28,7 @@ trait CreateCollectionsTasks
       dockApps <- di.deviceProcess.generateDockApps(dockAppsSize)
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ = setProcess(LoadingConfigProcess)
-      contacts <- di.deviceProcess.getFavoriteContacts.resolveTo(Seq.empty)
+      contacts <- di.deviceProcess.getFavoriteContacts.resolveLeftTo(Seq.empty)
       _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
       momentCollections <- di.momentProcess.createMoments

@@ -92,13 +92,12 @@ class ContactsServicesImpl(
       where = Fields.LOOKUP_SELECTION,
       whereParams = Seq(lookupKey))(getListFromCursor(contactFromCursor))
 
-    populateContacts(fetchContacts).resolveSides(
-      mapRight = (seq) => {
-        seq.headOption match {
-          case Some(v) => Xor.right(v)
-          case None => Xor.left(ContactNotFoundException(s"The lookupKey $lookupKey can't be found"))
-        }
-      })
+    populateContacts(fetchContacts).resolveRight {
+      _.headOption match {
+        case Some(v) => Xor.right(v)
+        case None => Xor.left(ContactNotFoundException(s"The lookupKey $lookupKey can't be found"))
+      }
+    }
   }
 
   override def populateContactInfo(contacts: Seq[Contact]) = populateContacts(() => contacts)

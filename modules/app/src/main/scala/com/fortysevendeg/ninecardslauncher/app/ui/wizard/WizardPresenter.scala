@@ -326,7 +326,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     def loadDevicesFromV1(): TaskService[Seq[UserV1Device]] =
       di.userV1Process.getUserInfo(Build.MODEL, Seq(resGetString(R.string.android_market_oauth_scopes)))
         .map(_.devices)
-        .resolveTo(Seq.empty)
+        .resolveLeftTo(Seq.empty)
 
     def fakeUserConfigException: TaskService[Unit] = TaskService(Task(Xor.right(())))
 
@@ -369,7 +369,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
       for {
         _ <- di.userProcess.signIn(email, androidMarketToken, emailTokenId)
         cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
-        userCloudDevices <- verifyAndUpdate(cloudStorageProcess, email, cloudStorageResources).resolveTo(UserCloudDevices(email, None, Seq.empty))
+        userCloudDevices <- verifyAndUpdate(cloudStorageProcess, email, cloudStorageResources).resolveLeftTo(UserCloudDevices(email, None, Seq.empty))
       } yield userCloudDevices
 
     }
