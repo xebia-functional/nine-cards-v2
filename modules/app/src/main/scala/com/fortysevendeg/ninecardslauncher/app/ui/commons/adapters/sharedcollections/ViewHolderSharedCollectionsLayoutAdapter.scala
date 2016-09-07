@@ -75,7 +75,7 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
       (name <~ tvText(resGetString(collection.name) getOrElse collection.name)) ~
       (author <~ tvText(collection.author)) ~
       (subscriptions <~
-        (if (collection.views < 0) vGone else vVisible + tvText(s"${collection.views}" + " " + resGetString(R.string.subscriptions).toLowerCase))) ~ //TODO Change collection.views for collection.subscriptions: Option[Int] and hide when it's a None
+        (if (collection.subscriptions.isDefined) vVisible + tvText(s"${collection.subscriptions}" + " " + resGetString(R.string.subscriptions).toLowerCase) else vGone)) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
       (addCollection <~
