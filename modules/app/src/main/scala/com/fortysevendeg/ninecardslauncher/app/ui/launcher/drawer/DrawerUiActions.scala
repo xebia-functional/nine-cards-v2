@@ -88,6 +88,7 @@ trait DrawerUiActions
   def showGeneralError: Ui[_] = drawerContent <~ vSnackbarShort(R.string.contactUsError)
 
   def initDrawerUi: Ui[_] = {
+    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferenceValues)
     (searchBoxView <~
       sbvUpdateContentView(AppsView) <~
       sbvChangeListener(SearchBoxAnimatedListener(
@@ -119,7 +120,7 @@ trait DrawerUiActions
           end = endMovementAppsContacts,
           changeContentView = changeContentView
         )) <~
-        rvAddItemDecoration(new SelectedItemDecoration)) ~
+        (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank)) ~
       (scrollerLayout <~ scrollableStyle) ~
       (pullToTabsView <~
         pdvHorizontalEnable(true) <~

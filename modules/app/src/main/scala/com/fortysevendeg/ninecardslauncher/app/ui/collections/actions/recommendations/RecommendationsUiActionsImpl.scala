@@ -21,7 +21,7 @@ trait RecommendationsUiActionsImpl
 
   implicit val presenter: RecommendationsPresenter
 
-  lazy val recycler = Option(findView(TR.actions_recycler))
+  lazy val recycler = findView(TR.actions_recycler)
 
   def loadBackgroundColor = theme.get(CardLayoutBackgroundColor)
 
