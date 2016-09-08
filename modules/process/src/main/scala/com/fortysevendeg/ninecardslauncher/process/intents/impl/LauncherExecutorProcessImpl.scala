@@ -3,11 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.intents.impl
 import cats.data.{Xor, XorT}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-<<<<<<< HEAD
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-=======
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, TaskService}
->>>>>>> 4ab21ff77b645065b50c10c3202b08bda360751a
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig, LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
