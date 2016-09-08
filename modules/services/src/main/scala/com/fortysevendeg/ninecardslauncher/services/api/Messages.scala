@@ -58,8 +58,7 @@ case class RecommendationApp(
   stars: Double,
   free: Boolean,
   description: String,
-  screenshots: Seq[String]
-)
+  screenshots: Seq[String])
 
 case class SharedCollectionResponseList(
   statusCode: Int,
@@ -86,6 +85,17 @@ case class SharedCollectionPackageResponse(
   stars: Double,
   downloads: String,
   free: Boolean)
+
+case class SubscriptionResponseList(
+  statusCode: Int,
+  items: Seq[SubscriptionResponse])
+
+case class SubscriptionResponse(
+  originalSharedCollectionId: String)
+
+case class CreateSubscriptionResponse(statusCode: Int)
+
+case class DeleteSubscriptionResponse(statusCode: Int)
 
 case class CreateSharedCollectionResponse(
   statusCode: Int,

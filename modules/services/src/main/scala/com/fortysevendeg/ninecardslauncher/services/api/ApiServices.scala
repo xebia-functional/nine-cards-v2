@@ -149,4 +149,33 @@ trait ApiServices {
     name: Option[String],
     description: Option[String],
     packages: Seq[String])(implicit requestConfig: RequestConfig): TaskService[UpdateSharedCollectionResponse]
+
+  /**
+    * Fetches the subscriptions
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SubscriptionResponseList]] with the HTTP Code
+    *         of the response and the sequence subscriptions
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def getSubscriptions()(implicit requestConfig: RequestConfig): TaskService[SubscriptionResponseList]
+
+  /**
+    * Subscribes to a public collection
+    * @param originalSharedCollectionId the public id of the collection to subscribe on
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.CreateSubscriptionResponse]] with the HTTP Code
+    *         of the response
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def subscribe(
+    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[CreateSubscriptionResponse]
+
+  /**
+    * Unsubscribes from a public collection
+    * @param originalSharedCollectionId the public id of the collection to unsubscribe from
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.DeleteSubscriptionResponse]] with the HTTP Code
+    *         of the response
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def unsubscribe(
+    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[DeleteSubscriptionResponse]
+
 }

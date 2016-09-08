@@ -35,6 +35,8 @@ class ApiService(serviceClient: ServiceClient) {
 
   private[this] val collectionsPath = "/collections"
 
+  private[this] val subscriptionsPath = s"$collectionsPath/subscriptions"
+
   private[this] val latestCollectionsPath = s"$collectionsPath/latest"
 
   private[this] val topCollectionsPath = s"$collectionsPath/top"
@@ -173,6 +175,44 @@ class ApiService(serviceClient: ServiceClient) {
       headers = createHeaders(path, header),
       body = request,
       reads = Some(reads))
+  }
+
+  def getSubscriptions(
+    header: ServiceHeader)(
+    implicit reads: Reads[SubscriptionsResponse]): TaskService[ServiceClientResponse[SubscriptionsResponse]] = {
+
+    val path = s"$subscriptionsPath"
+
+    serviceClient.get[SubscriptionsResponse](
+      path = path,
+      headers = createHeaders(path, header),
+      reads = Some(reads))
+  }
+
+  def subscribe(
+    publicIdentifier: String,
+    header: ServiceHeader): TaskService[ServiceClientResponse[Unit]] = {
+
+    val path = s"$subscriptionsPath/$publicIdentifier"
+
+    serviceClient.emptyPut(
+      path = path,
+      headers = createHeaders(path, header),
+      reads = None,
+      emptyResponse = true)
+  }
+
+  def unsubscribe(
+    publicIdentifier: String,
+    header: ServiceHeader): TaskService[ServiceClientResponse[Unit]] = {
+
+    val path = s"$subscriptionsPath/$publicIdentifier"
+
+    serviceClient.delete(
+      path = path,
+      headers = createHeaders(path, header),
+      reads = None,
+      emptyResponse = true)
   }
 
   private[this] def createHeaders[T <: BaseServiceHeader](

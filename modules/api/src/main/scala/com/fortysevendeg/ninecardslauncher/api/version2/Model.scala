@@ -58,6 +58,8 @@ case class RecommendationsByAppsRequest(packages: Seq[String], filter: Option[St
 
 case class RecommendationsByAppsResponse(apps: Seq[RecommendationApp])
 
+case class SubscriptionsResponse(subscriptions: Seq[String])
+
 case class PackagesStats(added: Int, removed: Option[Int] = None)
 
 case class Collection(

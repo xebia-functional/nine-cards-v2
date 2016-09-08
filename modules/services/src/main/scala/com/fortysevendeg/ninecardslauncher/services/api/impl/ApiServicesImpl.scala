@@ -52,6 +52,8 @@ class ApiServicesImpl(
 
   val categoryNotFoundMessage = "Google Play Category not found"
 
+  val subscriptionsNotFoundMessage = "Subscriptions not found"
+
   val errorCreatingCollectionMessage = "Unknown error creating collection"
 
   val shareCollectionNotFoundMessage = "Shared Collections not found"
@@ -177,6 +179,24 @@ class ApiServicesImpl(
       createdCollection <- readOption(response.data, errorCreatingCollectionMessage)
     } yield UpdateSharedCollectionResponse(response.statusCode, createdCollection.publicIdentifier)).resolve[ApiServiceException]
   }
+
+  override def getSubscriptions()(implicit requestConfig: RequestConfig) =
+    (for {
+      response <- apiService.getSubscriptions(requestConfig.toServiceHeader)
+      subscriptionsResponse <- readOption(response.data, subscriptionsNotFoundMessage)
+    } yield SubscriptionResponseList(response.statusCode, toSubscriptionResponseSeq(subscriptionsResponse.subscriptions))).resolve[ApiServiceException]
+
+  override def subscribe(
+    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig) =
+    (for {
+      response <- apiService.subscribe(originalSharedCollectionId, requestConfig.toServiceHeader)
+    } yield CreateSubscriptionResponse(response.statusCode)).resolve[ApiServiceException]
+
+  override def unsubscribe(
+    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig) =
+    (for {
+      response <- apiService.unsubscribe(originalSharedCollectionId, requestConfig.toServiceHeader)
+    } yield DeleteSubscriptionResponse(response.statusCode)).resolve[ApiServiceException]
 
   implicit class RequestHeaderHeader(request: RequestConfigV1) {
     def toHeader: Seq[(String, String)] =
