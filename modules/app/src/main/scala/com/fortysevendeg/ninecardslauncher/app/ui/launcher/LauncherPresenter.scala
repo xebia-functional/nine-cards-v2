@@ -697,6 +697,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def hostWidget(widget: Widget): Unit = {
     statuses = statuses.copy(hostingNoConfiguredWidget = None)
+    val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
+    currentMomentType foreach { moment =>
+      Task.fork(
+        di.trackEventProcess.addWidgetToMoment(
+          widget.packageName,
+          widget.className,
+          MomentCategory(moment)).value).resolveAsync()
+    }
     actions.hostWidget(widget.packageName, widget.className).run
   }
 

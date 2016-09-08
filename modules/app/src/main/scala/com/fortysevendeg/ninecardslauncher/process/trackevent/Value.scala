@@ -57,3 +57,9 @@ case object RemovedInCollectionValue extends Value {
 case object OpenMomentFromWorkspaceValue extends Value {
   override def value: Long = 3
 }
+
+// Values related to widget
+
+case object AddedWidgetToMomentValue extends Value {
+  override def value: Long = 10
+}

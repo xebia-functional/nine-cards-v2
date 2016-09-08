@@ -45,7 +45,7 @@ class TrackEventProcessImpl(analyticsServices: AnalyticsServices)
     analyticsServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  def addToCollection(packageName: String, category: Category) = {
+  override def addAppToCollection(packageName: String, category: Category) = {
     val event = AnalyticEvent(
       screen = CollectionDetailScreen.name,
       category = category.name,
@@ -55,13 +55,25 @@ class TrackEventProcessImpl(analyticsServices: AnalyticsServices)
     analyticsServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  def removedInCollection(packageName: String, category: Category) = {
+  override def removedInCollection(packageName: String, category: Category) = {
     val event = AnalyticEvent(
       screen = CollectionDetailScreen.name,
       category = category.name,
       action = RemovedInCollectionAction.name,
       label = Option(packageName),
       value = Option(RemovedInCollectionValue.value))
+    analyticsServices.trackEvent(event).resolve[TrackEventException]
+  }
+
+  def addWidgetToMoment(packageName: String, className: String, moment: MomentCategory) = {
+    val widgetLabel = s"$packageName:$className"
+    val widgetCategory = s"WIDGET_${moment.name}"
+    val event = AnalyticEvent(
+      screen = WidgetScreen.name,
+      category = widgetCategory,
+      action = AddedWidgetToMomentAction.name,
+      label = Option(widgetLabel),
+      value = Option(AddedWidgetToMomentValue.value))
     analyticsServices.trackEvent(event).resolve[TrackEventException]
   }
 

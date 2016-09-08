@@ -88,7 +88,7 @@ case class CollectionPresenter(
           case OpenCardAction =>
             Task.fork(di.trackEventProcess.openAppFromCollection(packageName, category).value).resolveAsync()
           case AddedToCollectionAction =>
-            Task.fork(di.trackEventProcess.addToCollection(packageName, category).value).resolveAsync()
+            Task.fork(di.trackEventProcess.addAppToCollection(packageName, category).value).resolveAsync()
           case RemovedInCollectionAction =>
             Task.fork(di.trackEventProcess.removedInCollection(packageName, category).value).resolveAsync()
           case _ =>
