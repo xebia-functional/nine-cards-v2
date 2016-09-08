@@ -107,6 +107,8 @@ trait PublishCollectionActionsImpl
 
   override def showMessagePublishingError: Ui[Any] = showMessage(R.string.publishingError)
 
+  override def showContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
+
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
 
   private[this] def createPagers() = {

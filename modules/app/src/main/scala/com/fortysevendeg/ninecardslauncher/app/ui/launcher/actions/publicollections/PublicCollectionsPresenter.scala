@@ -63,7 +63,7 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
   def launchShareCollection(sharedCollectionId: String): Unit =
     di.launcherExecutorProcess
       .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
-      .resolveAsync()
+      .resolveAsync(onException = _ => actions.showContactUsError.run)
 
   private[this] def getSharedCollections(
     category: NineCardCategory,
@@ -97,6 +97,8 @@ trait PublicCollectionsUiActions {
   def showErrorSavingCollectionInScreen(): Ui[Any]
 
   def showEmptyMessageInScreen(): Ui[Any]
+
+  def showContactUsError: Ui[Any]
 
   def addCollection(collection: Collection): Ui[Any]
 

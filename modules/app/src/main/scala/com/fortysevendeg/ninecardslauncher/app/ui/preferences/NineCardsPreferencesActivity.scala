@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.preference.Preference.OnPreferenceClickListener
 import android.preference.{Preference, PreferenceActivity, PreferenceFragment}
 import android.view.MenuItem
+import android.widget.Toast
 import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ResultCodes, ResultData}
@@ -90,7 +91,8 @@ class NineCardsPreferencesActivity
       findPreference(AnimationsPreferences.name).setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
 
       findPreference(AppInfoPreferences.name).setOnPreferenceClickListener(preferenceActionClick(AboutPreferences.name, () => {
-        di.launcherExecutorProcess.launchSettings(getPackageName).resolveAsync()
+        di.launcherExecutorProcess.launchSettings(getPackageName).resolveAsync(
+          onException = _ => Toast.makeText(contextSupport.context, R.string.contactUsError, Toast.LENGTH_SHORT))
       }))
 
       findPreference(AboutPreferences.name).setOnPreferenceClickListener(preferenceClick(AboutPreferences.name, new AboutFragment()))

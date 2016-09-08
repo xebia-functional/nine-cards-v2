@@ -25,7 +25,9 @@ class RecommendationsPresenter(
   }
 
   def installNow(app: RecommendedApp): Unit = {
-    di.launcherExecutorProcess.launchGooglePlay(app.packageName).resolveAsync()
+    di.launcherExecutorProcess.launchGooglePlay(app.packageName).resolveAsync(
+      onException = _ => actions.showContactUsError.run
+    )
     val card = AddCardRequest(
       term = app.title,
       packageName = Option(app.packageName),
@@ -60,5 +62,7 @@ trait RecommendationsUiActions {
   def loadRecommendations(recommendations: Seq[RecommendedApp]): Ui[Any]
 
   def recommendationAdded(card: AddCardRequest): Ui[Any]
+
+  def showContactUsError(): Ui[Any]
 
 }

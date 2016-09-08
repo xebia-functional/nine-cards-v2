@@ -53,7 +53,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit co
   def launchShareCollection(sharedCollectionId: String): Unit =
     di.launcherExecutorProcess
       .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
-      .resolveAsync()
+      .resolveAsync(onException = _ => actions.showContactUsError.run)
 
   private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): TaskService[String] =
     for {
@@ -97,5 +97,7 @@ trait PublishCollectionActions {
   def showMessageFormFieldError: Ui[Any]
 
   def showMessagePublishingError: Ui[Any]
+
+  def showContactUsError: Ui[Any]
 
 }

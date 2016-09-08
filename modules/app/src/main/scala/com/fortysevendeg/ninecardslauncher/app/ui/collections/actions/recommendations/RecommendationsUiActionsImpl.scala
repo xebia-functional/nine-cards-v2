@@ -1,13 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations
 
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, DrawerBackgroundColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -50,5 +51,8 @@ trait RecommendationsUiActionsImpl
     collectionsPresenter.addCards(Seq(card))
     unreveal()
   }
+
+  override def showContactUsError(): Ui[Any] =
+    uiShortToast(R.string.contactUsError)
 
 }
