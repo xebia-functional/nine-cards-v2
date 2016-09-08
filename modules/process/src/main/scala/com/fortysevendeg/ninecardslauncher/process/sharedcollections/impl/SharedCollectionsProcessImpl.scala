@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 
 class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
   extends SharedCollectionsProcess
@@ -45,4 +46,36 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       result <- apiServices.updateSharedCollection(sharedCollectionId, Option(name), description, packages)(userConfig)
     } yield result.sharedCollectionId).resolve[SharedCollectionsExceptions]
   }
+
+  override def getSubscriptions()(implicit context: ContextSupport) =
+    (for {
+      userConfig <- apiUtils.getRequestConfig
+      subscriptions <- apiServices.getSubscriptions()(userConfig)
+      collections <- persistenceServices.fetchCollections
+    } yield {
+
+      val subscriptionsIds = subscriptions.items map (_.originalSharedCollectionId)
+
+      val collectionsWithOriginalSharedCollectionId: Seq[(String, Collection)] =
+        collections.flatMap(collection => collection.originalSharedCollectionId.map((_, collection)))
+
+      (collectionsWithOriginalSharedCollectionId map {
+        case (originalSharedCollectionId: String, collection: Collection) =>
+          (originalSharedCollectionId, collection, subscriptionsIds.contains(originalSharedCollectionId))
+      }) map toSubscription
+
+    }).resolve[SharedCollectionsExceptions]
+
+  override def subscribe(originalSharedCollectionId: String)(implicit context: ContextSupport) =
+    (for {
+      userConfig <- apiUtils.getRequestConfig
+      _ <- apiServices.subscribe(originalSharedCollectionId)(userConfig)
+    } yield ()).resolve[SharedCollectionsExceptions]
+
+  override def unsubscribe(originalSharedCollectionId: String)(implicit context: ContextSupport) =
+    (for {
+      userConfig <- apiUtils.getRequestConfig
+      _ <- apiServices.unsubscribe(originalSharedCollectionId)(userConfig)
+    } yield ()).resolve[SharedCollectionsExceptions]
+
 }
