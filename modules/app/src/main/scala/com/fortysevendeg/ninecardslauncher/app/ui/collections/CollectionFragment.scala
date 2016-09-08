@@ -58,6 +58,9 @@ class CollectionFragment
     super.onViewCreated(view, savedInstanceState)
   }
 
+  override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
+    presenter.requestPermissionsResult(requestCode, permissions, grantResults)
+
 }
 
 object CollectionFragment {

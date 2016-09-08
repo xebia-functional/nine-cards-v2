@@ -8,7 +8,6 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.LauncherExecutor
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.Styles
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -19,7 +18,6 @@ import macroid._
 
 trait PublishCollectionActionsImpl
   extends PublishCollectionActions
-  with LauncherExecutor
   with Styles
   with PublishCollectionStyles {
 
@@ -101,7 +99,7 @@ trait PublishCollectionActionsImpl
       (informationLayout <~ vInvisible) ~
       (publishingLayout <~ applyFadeOut()) ~
       (endLayout <~ applyFadeIn()) ~
-      (endButton <~ On.click(Ui(launchShareCollection(sharedCollectionId)) ~ Ui(dismiss())))
+      (endButton <~ On.click(Ui(publishCollectionPresenter.launchShareCollection(sharedCollectionId)) ~ Ui(dismiss())))
 
   override def showMessageCollectionError: Ui[Any] = showMessage(R.string.collectionError)
 

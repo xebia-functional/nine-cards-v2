@@ -22,6 +22,8 @@ import com.fortysevendeg.ninecardslauncher.process.recognition.RecognitionProces
 import com.fortysevendeg.ninecardslauncher.process.recognition.impl.RecognitionProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.accounts.UserAccountsProcess
 import com.fortysevendeg.ninecardslauncher.process.accounts.impl.UserAccountsProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.intents.impl.LauncherExecutorProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendationsProcess
 import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsProcess
@@ -46,6 +48,7 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.impl.ContactsServic
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.intents.impl.LauncherIntentServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.plus.impl.GooglePlusServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
@@ -88,6 +91,8 @@ trait Injector {
   def observerRegister: ObserverRegister
 
   def userAccountsProcess: UserAccountsProcess
+
+  def launcherExecutorProcess: LauncherExecutorProcess
 
 }
 
@@ -254,5 +259,14 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   lazy val userAccountsProcess: UserAccountsProcess = {
     val services = new AccountsServicesImpl
     new UserAccountsProcessImpl(services)
+  }
+
+  lazy val launcherExecutorProcess: LauncherExecutorProcess = {
+    val config = LauncherExecutorProcessConfig(
+      resources.getString(R.string.google_play_url),
+      resources.getString(R.string.sendEmailDialogChooserTitle),
+      resources.getString(R.string.sendTo))
+    val services = new LauncherIntentServicesImpl
+    new LauncherExecutorProcessImpl(config, services)
   }
 }

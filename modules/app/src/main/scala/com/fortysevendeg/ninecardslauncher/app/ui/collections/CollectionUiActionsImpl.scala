@@ -12,6 +12,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.{CallPhone, ReadContacts}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -31,7 +32,6 @@ import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardBackgroundColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid.FullDsl._
 import macroid._
 
 import scala.language.postfixOps
@@ -39,7 +39,7 @@ import scala.language.postfixOps
 trait CollectionUiActionsImpl
   extends CollectionUiActions {
 
-  self: TypedFindView with Contexts[Fragment] =>
+  self: TypedFindView with Fragment with Contexts[Fragment] =>
 
   implicit val presenter: CollectionPresenter
 
@@ -84,12 +84,12 @@ trait CollectionUiActionsImpl
       accentColor = resGetColor(getIndexColor(collection.themedColorIndex)),
       onChanged = {
         case (ActionStateReordering, _, position) =>
-          if (!isPulling()) {
+          if (!isPulling) {
             statuses = statuses.copy(startPositionReorder = position)
             openReorderMode.run
           }
         case (ActionStateIdle, action, position) =>
-          if (!isPulling()) {
+          if (!isPulling) {
             action match {
               case ActionRemove =>
                 for {
@@ -163,6 +163,8 @@ trait CollectionUiActionsImpl
 
   override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
 
+  override def showNoPhoneCallPermissionError: Ui[Any] = showMessage(R.string.noPhoneCallPermissionMessage)
+
   override def showEmptyCollection(): Ui[Any] =
     (emptyCollectionMessage <~
       tvText(messageText) <~
@@ -217,9 +219,13 @@ trait CollectionUiActionsImpl
   override def showData(emptyCollection: Boolean): Ui[_] =
     if (emptyCollection) showEmptyCollection() else showCollection()
 
-  override def isPulling(): Boolean = (pullToCloseView ~> pdvIsPulling()).get getOrElse false
+  override def askForPhoneCallPermission(requestCode: Int): Ui[Any] = Ui {
+    requestPermissions(Array(CallPhone.value), requestCode)
+  }
 
-  override def getCurrentCollection(): Option[Collection] = getAdapter map (_.collection)
+  override def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get getOrElse false
+
+  override def getCurrentCollection: Option[Collection] = getAdapter map (_.collection)
 
   private[this] def showDialog(dialog: DialogFragment): Unit = {
     fragmentContextWrapper.original.get match {
@@ -314,7 +320,7 @@ trait CollectionUiActionsImpl
     nrvCollectionScrollListener(
       scrolled = (scrollY: Int, dx: Int, dy: Int) => {
         val sy = scrollY + dy
-        if (statuses.activeFragment && statuses.canScroll && !isPulling()) {
+        if (statuses.activeFragment && statuses.canScroll && !isPulling) {
           collectionsPresenter.scrollY(sy, dy)
         }
         sy
@@ -324,7 +330,7 @@ trait CollectionUiActionsImpl
         if (statuses.activeFragment &&
           newState == RecyclerView.SCROLL_STATE_IDLE &&
           statuses.canScroll &&
-          !isPulling()) {
+          !isPulling) {
           val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollDown) else (spaceMove, ScrollUp)
           if (scrollY < spaceMove && moveTo != scrollY) recyclerView.smoothScrollBy(0, moveTo - scrollY)
           collectionsPresenter.scrollType(sType)

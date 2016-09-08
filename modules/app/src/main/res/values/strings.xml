@@ -132,6 +132,7 @@
     <string name="emptyMoment">You don\'t have moments defined</string>
 
     <string name="momentNotFoundMessage">Moment don\'t found. You should create new moments from My Collections section</string>
+    <string name="noPhoneCallPermissionMessage">The permission is needed to call the contact</string>
 
     <!-- Collections Detail -->
 
@@ -194,6 +195,8 @@
     <string name="errorLoadingPublicCollections">Error loading public collections</string>
     <string name="errorSavingPublicCollections">Error saving public collections</string>
     <string name="emptyPublicCollections">There aren\'t collections published in this category. Maybe you can share one of your collections :-)</string>
+
+    <string name="sendEmailDialogChooserTitle">Send email</string>
 
     <!-- Contacts Info -->
 

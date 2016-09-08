@@ -5,16 +5,17 @@ import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
+import com.fortysevendeg.ninecardslauncher.app.commons.{ActivityContextSupportProvider, BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.{ReadCallLog, ReadContacts}
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.{CallPhone, ReadCallLog, ReadContacts}
 import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, LauncherExecutor, RequestCodes}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
@@ -29,10 +30,11 @@ import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment}
+import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
+import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
@@ -48,8 +50,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   extends Jobs
   with Conversions
   with NineCardIntentConversions
-  with LauncherExecutor
-  with AnalyticDispatcher { self =>
+  with AnalyticDispatcher
+  with ActivityContextSupportProvider { self =>
 
   val tagDialog = "dialog"
 
@@ -158,7 +160,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def uninstallInAddItem(): Unit = {
     statuses.cardAddItemMode match {
       case Some(card: AddCardRequest) if card.cardType == AppCardType =>
-        card.packageName foreach launchUninstall
+        card.packageName foreach { packageName =>
+          launcherService(di.launcherExecutorProcess.launchUninstall(packageName))
+        }
       case _ =>
     }
     statuses = statuses.reset()
@@ -168,7 +172,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def settingsInAddItem(): Unit = {
     statuses.cardAddItemMode match {
       case Some(card: AddCardRequest) if card.cardType == AppCardType =>
-        card.packageName foreach launchSettings
+        card.packageName foreach { packageName =>
+          launcherService(di.launcherExecutorProcess.launchSettings(packageName))
+        }
       case _ =>
     }
     statuses = statuses.reset()
@@ -252,7 +258,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         label = card.packageName map ProvideLabel,
         value = Some(OpenMomentFromWorkspaceValue))
     actions.closeAppsMoment().run
-    execute(card.intent)
+    di.launcherExecutorProcess.execute(card.intent).resolveAsync(
+      onException = (throwable: Throwable) => throwable match {
+        case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
+          statuses = statuses.copy(lastPhone = card.intent.extractPhone())
+          permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
+        case _ => actions.showContactUsError().run
+      }
+    )
   }
 
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
@@ -265,20 +278,47 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         action = OpenAction,
         label = Some(ProvideLabel(app.packageName)),
         value = Some(OpenAppFromAppDrawerValue))
-    execute(toNineCardIntent(app))
+    launcherService(di.launcherExecutorProcess.execute(toNineCardIntent(app)))
   }
 
   def openContact(contact: Contact) = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
-    executeContact(contact.lookupKey)
+    launcherService(di.launcherExecutorProcess.executeContact(contact.lookupKey))
   }
 
-  def openLastCall(contact: LastCallsContact) = if (actions.isTabsOpened) {
+  def openLastCall(number: String) = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
-    execute(phoneToNineCardIntent(contact.number))
+    di.launcherExecutorProcess.execute(phoneToNineCardIntent(number)).resolveAsync(
+      onException = (throwable: Throwable) => throwable match {
+        case e: LauncherExecutorProcessPermissionException =>
+          statuses = statuses.copy(lastPhone = Some(number))
+          permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
+        case _ => actions.showContactUsError().run
+      }
+    )
   }
+
+  def execute(intent: NineCardIntent): Unit =
+    di.launcherExecutorProcess.execute(intent).resolveAsync(
+      onException = (throwable: Throwable) => throwable match {
+        case e: LauncherExecutorProcessPermissionException if intent.getAction == NineCardsIntentExtras.openPhone =>
+          statuses = statuses.copy(lastPhone = intent.extractPhone())
+          permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
+        case _ => actions.showContactUsError().run
+      }
+    )
+
+  def launchSearch(): Unit = launcherService(di.launcherExecutorProcess.launchSearch)
+
+  def launchVoiceSearch(): Unit = launcherService(di.launcherExecutorProcess.launchVoiceSearch)
+
+  def launchGoogleWeather(): Unit = launcherService(di.launcherExecutorProcess.launchGoogleWeather)
+
+  def launchPlayStore(): Unit = launcherService(di.launcherExecutorProcess.launchPlayStore)
+
+  def launchDial(): Unit = launcherService(di.launcherExecutorProcess.launchDial(phoneNumber = None))
 
   def addCollection(collection: Collection): Unit = {
     addCollectionToCurrentData(collection) match {
@@ -820,15 +860,29 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         actions.reloadDrawerContacts().run
       case RequestCodes.callLogPermission if result.exists(_.hasPermission(ReadCallLog)) =>
         actions.reloadDrawerContacts().run
+      case RequestCodes.phoneCallPermission if result.exists(_.hasPermission(CallPhone)) =>
+        statuses.lastPhone foreach { phone =>
+          statuses = statuses.copy(lastPhone = None)
+          launcherService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)))
+        }
       case RequestCodes.contactsPermission =>
         (actions.reloadDrawerApps() ~
           actions.showBottomError(R.string.errorContactsPermission, requestReadContacts)).run
       case RequestCodes.callLogPermission =>
         (actions.reloadDrawerApps() ~
           actions.showBottomError(R.string.errorCallsPermission, requestReadCallLog)).run
+      case RequestCodes.phoneCallPermission =>
+        statuses.lastPhone foreach { phone =>
+          statuses = statuses.copy(lastPhone = None)
+          launcherService(di.launcherExecutorProcess.launchDial(Some(phone)))
+        }
+        actions.showNoPhoneCallPermissionError().run
       case _ =>
     }
   }
+
+  private[this] def launcherService(service: TaskService[Unit]) =
+    service.resolveAsync(onException = _ => actions.showContactUsError().run)
 
   private[this] def requestReadContacts() =
     permissionChecker.requestPermission(RequestCodes.contactsPermission, ReadContacts)
@@ -1028,6 +1082,8 @@ trait LauncherUiActions {
 
   def showNoImplementedYetMessage(): Ui[Any]
 
+  def showNoPhoneCallPermissionError(): Ui[Any]
+
   def showLoading(): Ui[Any]
 
   def goToPreviousScreen(): Ui[Any]
@@ -1128,7 +1184,8 @@ object Statuses {
     cardAddItemMode: Option[AddCardRequest] = None,
     collectionReorderMode: Option[Collection] = None,
     startPositionReorderMode: Int = 0,
-    currentDraggingPosition: Int = 0) {
+    currentDraggingPosition: Int = 0,
+    lastPhone: Option[String] = None) {
 
     def startAddItem(card: AddCardRequest): LauncherPresenterStatuses =
       copy(mode = AddItemMode, cardAddItemMode = Some(card))

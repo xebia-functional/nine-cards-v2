@@ -7,7 +7,9 @@ import android.preference.Preference.OnPreferenceClickListener
 import android.preference.{Preference, PreferenceActivity, PreferenceFragment}
 import android.view.MenuItem
 import com.fortysevendeg.ninecardslauncher.app.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, ResultCodes, ResultData}
+import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ResultCodes, ResultData}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.about.AboutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.animations.AnimationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.appdrawer.AppDrawerFragment
@@ -22,13 +24,15 @@ import macroid.Contexts
 class NineCardsPreferencesActivity
   extends PreferenceActivity
   with Contexts[Activity]
-  with LauncherExecutor {
+  with ActivityContextSupportProvider {
 
   lazy val actionBar = Option(getActionBar)
 
   private[this] var changedPreferences: Set[String] = Set.empty
 
   lazy val nineCardsPreferences = new NineCardsPreferencesValue
+
+  lazy val di: Injector = new InjectorImpl
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -86,7 +90,7 @@ class NineCardsPreferencesActivity
       findPreference(AnimationsPreferences.name).setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
 
       findPreference(AppInfoPreferences.name).setOnPreferenceClickListener(preferenceActionClick(AboutPreferences.name, () => {
-        launchSettings(getPackageName)
+        di.launcherExecutorProcess.launchSettings(getPackageName).resolveAsync()
       }))
 
       findPreference(AboutPreferences.name).setOnPreferenceClickListener(preferenceClick(AboutPreferences.name, new AboutFragment()))

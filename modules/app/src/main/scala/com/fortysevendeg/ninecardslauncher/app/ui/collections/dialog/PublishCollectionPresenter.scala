@@ -2,8 +2,10 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
 import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.commons.ActivityContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -15,8 +17,9 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fragmentContextWrapper: ActivityContextWrapper)
-  extends Jobs {
+class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
+  extends Jobs
+  with ActivityContextSupportProvider {
 
   var statuses = PublishCollectionStatuses()
 
@@ -46,6 +49,11 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
             actions.goBackToPublishCollectionInformation(name, description, category)
         })
     }) getOrElse actions.showMessageFormFieldError.run
+
+  def launchShareCollection(sharedCollectionId: String): Unit =
+    di.launcherExecutorProcess
+      .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
+      .resolveAsync()
 
   private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): TaskService[String] =
     for {
