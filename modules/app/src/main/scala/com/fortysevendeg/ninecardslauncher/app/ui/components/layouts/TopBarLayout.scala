@@ -83,7 +83,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     val pressedColor = theme.get(SearchPressedColor)
     val iconBackground = new TopBarMomentBackgroundDrawable
     val edgeBackground = new TopBarMomentEdgeBackgroundDrawable
-    val googleLogoTweaks = GoogleLogo.readValue(preferenceValues) match {
+    val googleLogoPref = GoogleLogo.readValue(preferenceValues)
+    val googleLogoTweaks = googleLogoPref match {
       case GoogleLogoTheme =>
         ivSrc(R.drawable.search_bar_logo_google_light) +
           tivDefaultColor(theme.get(SearchGoogleColor)) +
@@ -91,10 +92,18 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       case GoogleLogoColoured =>
         ivSrc(R.drawable.search_bar_logo_google_color) + tivClean
     }
+    val micLogoTweaks = googleLogoPref match {
+      case GoogleLogoTheme =>
+        ivSrc(R.drawable.search_bar_mic_light) +
+          tivDefaultColor(theme.get(SearchGoogleColor)) +
+          tivPressedColor(pressedColor)
+      case GoogleLogoColoured =>
+        ivSrc(R.drawable.search_bar_mic_color) + tivClean
+    }
     val sizeRes = FontSize.getTitleSizeResource
     (momentWorkspace <~ vBackground(edgeBackground)) ~
       (momentIconContent <~ vBackground(iconBackground)) ~
-      (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(pressedColor)) ~
+      (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(iconColor)) ~
       (momentText <~ tvSizeResource(sizeRes)) ~
       (momentDigitalClock <~ tvSizeResource(sizeRes)) ~
       (momentClock <~ tvSizeResource(sizeRes)) ~
@@ -108,8 +117,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         googleLogoTweaks <~
         On.click(Ui(presenter.launchSearch))) ~
       (collectionsMicIcon <~
-        tivDefaultColor(iconColor) <~
-        tivPressedColor(pressedColor) <~
+        micLogoTweaks <~
         On.click(Ui(presenter.launchVoiceSearch)))
   }
 
