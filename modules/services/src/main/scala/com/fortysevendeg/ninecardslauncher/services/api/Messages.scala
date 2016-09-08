@@ -93,9 +93,9 @@ case class SubscriptionResponseList(
 case class SubscriptionResponse(
   originalSharedCollectionId: String)
 
-case class CreateSubscriptionResponse(statusCode: Int)
+case class SubscribeResponse(statusCode: Int)
 
-case class DeleteSubscriptionResponse(statusCode: Int)
+case class UnsubscribeResponse(statusCode: Int)
 
 case class CreateSharedCollectionResponse(
   statusCode: Int,

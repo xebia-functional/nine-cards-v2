@@ -7,6 +7,7 @@ trait ApiServices {
 
   /**
    * Tries to login with the email and the device against backend V1
+ *
    * @param email user email
    * @param device user device
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponseV1]]
@@ -18,6 +19,7 @@ trait ApiServices {
 
   /**
     * Tries to login with the email, the androidId and the tokenId
+ *
     * @param email user email
     * @param androidId device identifier
     * @param tokenId token id obtained in the email authentication
@@ -31,6 +33,7 @@ trait ApiServices {
 
   /**
    * Updates an existing user installation
+ *
    * @param deviceToken the token used for push notification
    * @param requestConfig necessary info for the headers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UpdateInstallationResponse]] with the HTTP Code
@@ -41,6 +44,7 @@ trait ApiServices {
 
   /**
    * Fetches the package info from Google Play given a package name
+ *
    * @param packageName the package identifier. For example `com.fortysevendeg.ninecardslauncher`
    * @param requestConfig necessary info for the headers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackageResponse]] with the HTTP Code
@@ -52,6 +56,7 @@ trait ApiServices {
   /**
    * Fetches a list of packages information from Google Play given a list of package names. The response is similar to
    * {@link #googlePlayPackage(String)(RequestConfig) googlePlayPackage} but allow to fetch a list of packages with one operation.
+ *
    * @param packageNames a sequence of package identifiers
    * @param requestConfig necessary info for the headers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesResponse]] with the HTTP Code
@@ -71,6 +76,7 @@ trait ApiServices {
 
   /**
    * Fetches the recommended applications based on a category
+ *
    * @param category the category
    * @param excludePackages sequence of exclude packages
    * @param limit the maximum number of apps returned
@@ -85,6 +91,7 @@ trait ApiServices {
 
   /**
    * Fetches the recommended applications based on other packages
+ *
    * @param packages the liked packages
    * @param excludePackages sequence of exclude packages
    * @param limit the maximum number of apps returned
@@ -99,6 +106,7 @@ trait ApiServices {
 
   /**
     * Fetches the public collections based on some request params
+ *
     * @param category category of collections
     * @param collectionType type [top or latest]
     * @param offset offset of list
@@ -115,6 +123,7 @@ trait ApiServices {
 
   /**
     * Persists a new shared collection
+ *
     * @param name The name of the collection
     * @param description The user's description of the collection
     * @param author The original author of the collection
@@ -136,6 +145,7 @@ trait ApiServices {
 
   /**
     * Updates an existing  shared collection
+ *
     * @param sharedCollectionId The collection identifier
     * @param name The name of the collection
     * @param description The user's description of the collection
@@ -152,6 +162,7 @@ trait ApiServices {
 
   /**
     * Fetches the subscriptions
+ *
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SubscriptionResponseList]] with the HTTP Code
     *         of the response and the sequence subscriptions
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
@@ -160,22 +171,24 @@ trait ApiServices {
 
   /**
     * Subscribes to a public collection
+    *
     * @param originalSharedCollectionId the public id of the collection to subscribe on
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.CreateSubscriptionResponse]] with the HTTP Code
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SubscribeResponse]] with the HTTP Code
     *         of the response
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def subscribe(
-    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[CreateSubscriptionResponse]
+    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[SubscribeResponse]
 
   /**
     * Unsubscribes from a public collection
+ *
     * @param originalSharedCollectionId the public id of the collection to unsubscribe from
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.DeleteSubscriptionResponse]] with the HTTP Code
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UnsubscribeResponse]] with the HTTP Code
     *         of the response
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def unsubscribe(
-    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[DeleteSubscriptionResponse]
+    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[UnsubscribeResponse]
 
 }
