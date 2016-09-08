@@ -35,7 +35,7 @@ class ApiService(serviceClient: ServiceClient) {
 
   private[this] val collectionsPath = "/collections"
 
-  private[this] val subscriptionsPath = "/collections/subscriptions"
+  private[this] val subscriptionsPath = s"$collectionsPath/subscriptions"
 
   private[this] val latestCollectionsPath = s"$collectionsPath/latest"
 
