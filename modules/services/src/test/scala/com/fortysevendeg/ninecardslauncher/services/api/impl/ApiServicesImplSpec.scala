@@ -103,6 +103,21 @@ trait ApiServicesSpecification
       TaskService {
         Task(Xor.right(ServiceClientResponse[version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
       }
+
+    apiService.getSubscriptions(any)(any) returns
+      TaskService {
+        Task(Xor.right(ServiceClientResponse[version2.SubscriptionsResponse](statusCode, Some(version2.SubscriptionsResponse(Seq(originalSharedCollectionId))))))
+      }
+
+    apiService.subscribe(any, any) returns
+      TaskService {
+        Task(Xor.right(ServiceClientResponse(statusCode, None)))
+      }
+
+    apiService.unsubscribe(any, any) returns
+      TaskService {
+        Task(Xor.right(ServiceClientResponse(statusCode, None)))
+      }
   }
 
   trait ErrorApiServicesImplResponses
@@ -130,6 +145,12 @@ trait ApiServicesSpecification
     apiService.recommendations(any, any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
 
     apiService.recommendationsByApps(any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
+
+    apiService.getSubscriptions(any)(any) returns TaskService(Task(Xor.left(exception)))
+
+    apiService.subscribe(any, any) returns TaskService(Task(Xor.left(exception)))
+
+    apiService.unsubscribe(any, any) returns TaskService(Task(Xor.left(exception)))
 
     apiServiceV1.login(any, any)(any, any) returns TaskService {
       Task(Xor.left(exception))
@@ -373,6 +394,70 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the calue the exception returned by the service" in
       new ApiServicesScope with ErrorApiServicesImplResponses {
         val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
+        result must beLike {
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
+        }
+      }
+
+  }
+
+  "getSubscriptions" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope with ValidApiServicesImplResponses {
+        val result = apiServices.getSubscriptions().value.run
+        result must beLike {
+          case Xor.Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.items.map(_.originalSharedCollectionId) shouldEqual subscriptions.subscriptions
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope with ErrorApiServicesImplResponses {
+        val result = apiServices.getSubscriptions().value.run
+        result must beLike {
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
+        }
+      }
+
+  }
+
+  "subscribe" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope with ValidApiServicesImplResponses {
+        val result = apiServices.subscribe(originalSharedCollectionId).value.run
+        result must beLike {
+          case Xor.Right(response) =>
+            response.statusCode shouldEqual statusCode
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope with ErrorApiServicesImplResponses {
+        val result = apiServices.subscribe(originalSharedCollectionId).value.run
+        result must beLike {
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
+        }
+      }
+
+  }
+
+  "unsubscribe" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope with ValidApiServicesImplResponses {
+        val result = apiServices.unsubscribe(originalSharedCollectionId).value.run
+        result must beLike {
+          case Xor.Right(response) =>
+            response.statusCode shouldEqual statusCode
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope with ErrorApiServicesImplResponses {
+        val result = apiServices.unsubscribe(originalSharedCollectionId).value.run
         result must beLike {
           case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
