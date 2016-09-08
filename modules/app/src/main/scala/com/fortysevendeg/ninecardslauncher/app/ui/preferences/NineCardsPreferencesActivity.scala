@@ -50,9 +50,8 @@ class NineCardsPreferencesActivity
     jobs.initializeActionBarTitle().resolveAsync()
   }
 
-  def preferenceChanged(prefName: String): Unit = {
+  def preferenceChanged(prefName: String): Unit =
     jobs.preferenceChanged(prefName).resolveAsync()
-  }
 
   class NineCardsPreferenceFragment
     extends PreferenceFragment {
