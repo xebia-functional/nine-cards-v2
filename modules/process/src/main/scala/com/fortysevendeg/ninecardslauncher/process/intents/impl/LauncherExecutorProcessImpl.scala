@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSuppo
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig, LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.intents.models._
 import com.fortysevendeg.ninecardslauncher.services.intents.{IntentLauncherServicesPermissionException, LauncherIntentServices}

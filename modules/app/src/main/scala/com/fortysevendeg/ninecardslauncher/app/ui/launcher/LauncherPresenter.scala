@@ -303,7 +303,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def execute(intent: NineCardIntent): Unit =
     di.launcherExecutorProcess.execute(intent).resolveAsync(
       onException = (throwable: Throwable) => throwable match {
-        case e: LauncherExecutorProcessPermissionException if intent.getAction == NineCardsIntentExtras.openPhone =>
+        case e: LauncherExecutorProcessPermissionException if intent.getAction == NineCardIntentExtras.openPhone =>
           statuses = statuses.copy(lastPhone = intent.extractPhone())
           permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
         case _ => actions.showContactUsError().run
