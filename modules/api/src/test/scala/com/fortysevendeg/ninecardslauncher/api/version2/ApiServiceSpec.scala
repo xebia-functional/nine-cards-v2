@@ -348,7 +348,7 @@ class ApiServiceSpec
 
         there was one(mockedServiceClient).get(
           path = "/collections/subscriptions",
-          headers = createHeaders(collectionsIdAuthToken),
+          headers = createHeaders(subscriptionsAuthToken),
           reads = Some(subscriptionsResponseReads))
 
       }
@@ -371,8 +371,8 @@ class ApiServiceSpec
         }
 
         there was one(mockedServiceClient).emptyPut(
-          path = "/collections/subscriptions",
-          headers = createHeaders(collectionsIdAuthToken),
+          path = s"/collections/subscriptions/$publicIdentifier",
+          headers = createHeaders(subscriptionsAuthToken),
           reads = None,
           emptyResponse = true)
 
@@ -396,8 +396,8 @@ class ApiServiceSpec
         }
 
         there was one(mockedServiceClient).delete(
-          path = "/collections/subscriptions",
-          headers = createHeaders(collectionsIdAuthToken),
+          path = s"/collections/subscriptions/$publicIdentifier",
+          headers = createHeaders(subscriptionsAuthToken),
           reads = None,
           emptyResponse = true)
 
