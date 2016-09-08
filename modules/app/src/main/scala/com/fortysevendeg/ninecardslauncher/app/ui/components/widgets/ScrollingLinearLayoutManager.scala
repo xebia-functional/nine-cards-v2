@@ -8,7 +8,7 @@ import android.support.v7.widget.{GridLayoutManager, LinearLayoutManager, Linear
 import android.util.DisplayMetrics
 import macroid.ContextWrapper
 
-class  ScrollingLinearLayoutManager(columns: Int)(implicit contextWrapper: ContextWrapper)
+class ScrollingLinearLayoutManager(columns: Int)(implicit contextWrapper: ContextWrapper)
   extends GridLayoutManager(contextWrapper.application, columns) { self =>
 
   var blockScroll = false
