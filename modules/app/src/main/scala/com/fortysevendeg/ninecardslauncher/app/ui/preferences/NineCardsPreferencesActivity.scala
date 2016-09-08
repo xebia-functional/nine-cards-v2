@@ -1,15 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.preferences
 
-import android.app.Activity
-import android.content.Intent
+import android.app.{ActionBar, Activity}
 import android.os.Bundle
 import android.preference.Preference.OnPreferenceClickListener
 import android.preference.{Preference, PreferenceActivity, PreferenceFragment}
 import android.view.MenuItem
-import android.widget.Toast
 import com.fortysevendeg.ninecardslauncher.app.commons._
-import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ResultCodes, ResultData}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.about.AboutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.animations.AnimationsFragment
@@ -24,32 +20,26 @@ import macroid.Contexts
 
 class NineCardsPreferencesActivity
   extends PreferenceActivity
+  with PreferencesDOM
   with Contexts[Activity]
   with ActivityContextSupportProvider {
 
-  lazy val actionBar = Option(getActionBar)
+  override lazy val actionBar: Option[ActionBar] = Option(getActionBar)
 
-  private[this] var changedPreferences: Set[String] = Set.empty
+  lazy val jobs = new PreferencesJobs(new PreferencesUiActions(this))
 
   lazy val nineCardsPreferences = new NineCardsPreferencesValue
 
-  lazy val di: Injector = new InjectorImpl
-
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
-    actionBar foreach { ab =>
-      ab.setDisplayHomeAsUpEnabled(true)
-      ab.setDisplayShowHomeEnabled(false)
-      ab.setDisplayShowTitleEnabled(true)
-      ab.setDisplayUseLogoEnabled(false)
-    }
+    jobs.initialize().resolveAsync()
     getFragmentManager.beginTransaction().replace(android.R.id.content, new NineCardsPreferenceFragment()).commit()
   }
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case android.R.id.home =>
       super.onBackPressed()
-      actionBar foreach(_.setTitle(R.string.nineCardsSettingsTitle))
+      jobs.initializeActionBarTitle().resolveAsync()
       true
     case _ =>
       super.onOptionsItemSelected(item)
@@ -57,16 +47,11 @@ class NineCardsPreferencesActivity
 
   override def onBackPressed() = {
     super.onBackPressed()
-    actionBar foreach(_.setTitle(R.string.nineCardsSettingsTitle))
+    jobs.initializeActionBarTitle().resolveAsync()
   }
 
   def preferenceChanged(prefName: String): Unit = {
-    changedPreferences = changedPreferences + prefName
-    if (changedPreferences.nonEmpty) {
-      val data = new Intent()
-      data.putExtra(ResultData.preferencesResultData, changedPreferences.toArray)
-      setResult(ResultCodes.preferencesChanged, data)
-    }
+    jobs.preferenceChanged(prefName).resolveAsync()
   }
 
   class NineCardsPreferenceFragment
@@ -82,22 +67,26 @@ class NineCardsPreferencesActivity
         addPreferencesFromResource(R.xml.preferences_headers)
       }
 
-      findPreference(LookFeelPreferences.name).setOnPreferenceClickListener(preferenceClick(LookFeelPreferences.name, new LookFeelFragment()))
+      findPreference(LookFeelPreferences.name)
+        .setOnPreferenceClickListener(preferenceClick(LookFeelPreferences.name, new LookFeelFragment()))
 
-      findPreference(MomentsPreferences.name).setOnPreferenceClickListener(preferenceClick(MomentsPreferences.name, new MomentsFragment()))
+      findPreference(MomentsPreferences.name)
+        .setOnPreferenceClickListener(preferenceClick(MomentsPreferences.name, new MomentsFragment()))
 
-      findPreference(AppDrawerPreferences.name).setOnPreferenceClickListener(preferenceClick(AppDrawerPreferences.name, new AppDrawerFragment()))
+      findPreference(AppDrawerPreferences.name)
+        .setOnPreferenceClickListener(preferenceClick(AppDrawerPreferences.name, new AppDrawerFragment()))
 
-      findPreference(AnimationsPreferences.name).setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
+      findPreference(AnimationsPreferences.name)
+        .setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
 
-      findPreference(AppInfoPreferences.name).setOnPreferenceClickListener(preferenceActionClick(AboutPreferences.name, () => {
-        di.launcherExecutorProcess.launchSettings(getPackageName).resolveAsync(
-          onException = _ => Toast.makeText(contextSupport.context, R.string.contactUsError, Toast.LENGTH_SHORT))
-      }))
+      findPreference(AppInfoPreferences.name)
+        .setOnPreferenceClickListener(preferenceActionClick(AboutPreferences.name, () => jobs.launchSettings().resolveAsync()))
 
-      findPreference(AboutPreferences.name).setOnPreferenceClickListener(preferenceClick(AboutPreferences.name, new AboutFragment()))
+      findPreference(AboutPreferences.name)
+        .setOnPreferenceClickListener(preferenceClick(AboutPreferences.name, new AboutFragment()))
 
-      findPreference(HelpPreferences.name).setOnPreferenceClickListener(preferenceClick(HelpPreferences.name, new HelpFragment()))
+      findPreference(HelpPreferences.name)
+        .setOnPreferenceClickListener(preferenceClick(HelpPreferences.name, new HelpFragment()))
     }
 
     private[this] def preferenceClick(key: String, fragment: PreferenceFragment) = new OnPreferenceClickListener {
@@ -115,5 +104,11 @@ class NineCardsPreferencesActivity
     }
 
   }
+
+}
+
+trait PreferencesDOM {
+
+  def actionBar: Option[ActionBar]
 
 }

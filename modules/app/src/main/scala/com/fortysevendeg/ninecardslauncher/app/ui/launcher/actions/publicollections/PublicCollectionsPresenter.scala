@@ -17,10 +17,10 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
+class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with Conversions
-  with ActivityContextSupportProvider {
+    with Conversions
+    with ActivityContextSupportProvider {
 
   protected var statuses = PublicCollectionStatuses(Communication, TopSharedCollection)
 
@@ -61,9 +61,9 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
   }
 
   def launchShareCollection(sharedCollectionId: String): Unit =
-    di.launcherExecutorProcess
-      .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
-      .resolveAsync(onException = _ => actions.showContactUsError.run)
+    Task.fork(
+      di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId)).value)
+      .resolveAsyncUi(onException = _ => actions.showContactUsError)
 
   private[this] def getSharedCollections(
     category: NineCardCategory,

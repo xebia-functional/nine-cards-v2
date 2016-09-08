@@ -12,7 +12,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
@@ -258,14 +257,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         label = card.packageName map ProvideLabel,
         value = Some(OpenMomentFromWorkspaceValue))
     actions.closeAppsMoment().run
-    di.launcherExecutorProcess.execute(card.intent).resolveAsync(
-      onException = (throwable: Throwable) => throwable match {
-        case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
-          statuses = statuses.copy(lastPhone = card.intent.extractPhone())
-          permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
-        case _ => actions.showContactUsError().run
-      }
-    )
+    launcherCallService(di.launcherExecutorProcess.execute(card.intent), card.intent.extractPhone())
   }
 
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
@@ -290,25 +282,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def openLastCall(number: String) = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
-    di.launcherExecutorProcess.execute(phoneToNineCardIntent(number)).resolveAsync(
-      onException = (throwable: Throwable) => throwable match {
-        case e: LauncherExecutorProcessPermissionException =>
-          statuses = statuses.copy(lastPhone = Some(number))
-          permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
-        case _ => actions.showContactUsError().run
-      }
-    )
+    launcherCallService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(number)), Some(number))
   }
 
   def execute(intent: NineCardIntent): Unit =
-    di.launcherExecutorProcess.execute(intent).resolveAsync(
-      onException = (throwable: Throwable) => throwable match {
-        case e: LauncherExecutorProcessPermissionException if intent.getAction == NineCardIntentExtras.openPhone =>
-          statuses = statuses.copy(lastPhone = intent.extractPhone())
-          permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
-        case _ => actions.showContactUsError().run
-      }
-    )
+    launcherCallService(di.launcherExecutorProcess.execute(intent), intent.extractPhone())
 
   def launchSearch(): Unit = launcherService(di.launcherExecutorProcess.launchSearch)
 
@@ -882,7 +860,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   private[this] def launcherService(service: TaskService[Unit]) =
-    service.resolveAsync(onException = _ => actions.showContactUsError().run)
+    Task.fork(service.value).resolveAsyncUi(onException = _ => actions.showContactUsError())
+
+  private[this] def launcherCallService(service: TaskService[Unit], maybePhone: Option[String]) =
+    Task.fork(service.value).resolveAsyncUi(
+      onException = (throwable: Throwable) => throwable match {
+        case e: LauncherExecutorProcessPermissionException =>
+          statuses = statuses.copy(lastPhone = maybePhone)
+          Ui(permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone))
+        case _ => actions.showContactUsError()
+      })
 
   private[this] def requestReadContacts() =
     permissionChecker.requestPermission(RequestCodes.contactsPermission, ReadContacts)

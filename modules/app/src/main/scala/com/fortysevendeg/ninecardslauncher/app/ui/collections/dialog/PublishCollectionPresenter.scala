@@ -5,7 +5,6 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ActivityContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -51,9 +50,9 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit co
     }) getOrElse actions.showMessageFormFieldError.run
 
   def launchShareCollection(sharedCollectionId: String): Unit =
-    di.launcherExecutorProcess
-      .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
-      .resolveAsync(onException = _ => actions.showContactUsError.run)
+    Task.fork(di.launcherExecutorProcess
+      .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId)).value)
+      .resolveAsyncUi(onException = _ => actions.showContactUsError)
 
   private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): TaskService[String] =
     for {

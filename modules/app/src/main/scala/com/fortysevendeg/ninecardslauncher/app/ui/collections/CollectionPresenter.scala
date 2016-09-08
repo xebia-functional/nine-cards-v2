@@ -9,7 +9,6 @@ import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.Cal
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, PhoneCardType}
 import macroid.{ActivityContextWrapper, Ui}
@@ -90,12 +89,12 @@ case class CollectionPresenter(
 
   def showData(): Unit = maybeCollection foreach (c => actions.showData(c.cards.isEmpty).run)
 
-  def launchCard(card : Card): Unit = di.launcherExecutorProcess.execute(card.intent).resolveAsync(
+  def launchCard(card : Card): Unit = Task.fork(di.launcherExecutorProcess.execute(card.intent).value).resolveAsyncUi(
     onException = (throwable: Throwable) => throwable match {
       case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
         statuses = statuses.copy(lastPhone = card.intent.extractPhone())
-        actions.askForPhoneCallPermission(RequestCodes.phoneCallPermission).run
-      case _ => actions.showContactUsError().run
+        actions.askForPhoneCallPermission(RequestCodes.phoneCallPermission)
+      case _ => actions.showContactUsError()
     }
   )
 
@@ -108,14 +107,14 @@ case class CollectionPresenter(
       if (result.exists(_.hasPermission(CallPhone))) {
         statuses.lastPhone foreach { phone =>
           statuses = statuses.copy(lastPhone = None)
-          di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)).resolveAsync(
-            onException = _ => actions.showContactUsError().run)
+          Task.fork(di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)).value).resolveAsyncUi(
+            onException = _ => actions.showContactUsError())
         }
       } else {
         statuses.lastPhone foreach { phone =>
           statuses = statuses.copy(lastPhone = None)
-          di.launcherExecutorProcess.launchDial(Some(phone)).resolveAsync(
-            onException = _ => actions.showContactUsError().run)
+          Task.fork(di.launcherExecutorProcess.launchDial(Some(phone)).value).resolveAsyncUi(
+            onException = _ => actions.showContactUsError())
         }
         actions.showNoPhoneCallPermissionError().run
       }

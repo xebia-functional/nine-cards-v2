@@ -12,7 +12,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.{CallPhone, ReadContacts}
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -163,7 +163,7 @@ trait CollectionUiActionsImpl
 
   override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
 
-  override def showNoPhoneCallPermissionError: Ui[Any] = showMessage(R.string.noPhoneCallPermissionMessage)
+  override def showNoPhoneCallPermissionError(): Ui[Any] = showMessage(R.string.noPhoneCallPermissionMessage)
 
   override def showEmptyCollection(): Ui[Any] =
     (emptyCollectionMessage <~

@@ -7,7 +7,6 @@ import com.fortysevendeg.ninecardslauncher.app.commons.{ActivityContextSupportPr
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -86,7 +85,10 @@ class CollectionsPagerPresenter(
     Task.fork(di.collectionProcess.getCollectionById(collection.id).value).resolveAsync(
       onResult = (c) => c foreach { col =>
         if (col.sharedCollectionId.isDefined) {
-          col.getUrlSharedCollection foreach (text => di.launcherExecutorProcess.launchShare(text).resolveAsync())
+          col.getUrlSharedCollection foreach { text =>
+            Task.fork(di.launcherExecutorProcess.launchShare(text).value).resolveAsyncUi(
+              onException = _ => actions.showContactUsError)
+          }
         } else {
           actions.showMessageNotPublishedCollectionError.run
         }
