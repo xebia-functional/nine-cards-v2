@@ -11,6 +11,7 @@ import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -104,6 +105,8 @@ trait PublicCollectionsActionsImpl
 
   override def showEmptyMessageInScreen(): Ui[Any] =
     showMessageInScreen(R.string.emptyPublicCollections, error = false, collectionPresenter.loadPublicCollections())
+
+  override def showContactUsError: Ui[Any] = uiShortToast(R.string.contactUsError)
 
   override def loadPublicCollections(
     sharedCollections: Seq[SharedCollection]): Ui[Any] = {

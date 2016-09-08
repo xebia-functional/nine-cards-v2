@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations
 
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.app.commons.{ActivityContextSupportProvider, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Jobs}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
@@ -16,7 +16,7 @@ class RecommendationsPresenter(
   actions: RecommendationsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
   with NineCardIntentConversions
-  with LauncherExecutor {
+  with ActivityContextSupportProvider {
 
   def initialize(): Unit = {
     actions.initialize().run
@@ -24,7 +24,8 @@ class RecommendationsPresenter(
   }
 
   def installNow(app: RecommendedApp): Unit = {
-    launchGooglePlay(app.packageName)
+    Task.fork(di.launcherExecutorProcess.launchGooglePlay(app.packageName).value).resolveAsyncUi(
+      onException = _ => actions.showContactUsError())
     val card = AddCardRequest(
       term = app.title,
       packageName = Option(app.packageName),
@@ -59,5 +60,7 @@ trait RecommendationsUiActions {
   def loadRecommendations(recommendations: Seq[RecommendedApp]): Ui[Any]
 
   def recommendationAdded(card: AddCardRequest): Ui[Any]
+
+  def showContactUsError(): Ui[Any]
 
 }

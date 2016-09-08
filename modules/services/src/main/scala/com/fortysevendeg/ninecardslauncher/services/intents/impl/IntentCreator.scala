@@ -68,7 +68,7 @@ class IntentCreator {
     createCallIntent(maybePhoneNumber, Intent.ACTION_DIAL)
 
   private[this] def createCallIntent(maybePhoneNumber: Option[String], action: String): Intent = {
-    val intent = new Intent(Intent.ACTION_CALL)
+    val intent = new Intent(action)
     maybePhoneNumber foreach (phoneNumber => intent.setData(Uri.parse(s"tel:$phoneNumber")))
     intent
   }

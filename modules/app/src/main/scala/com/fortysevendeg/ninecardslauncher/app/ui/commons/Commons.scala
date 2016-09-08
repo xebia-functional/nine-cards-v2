@@ -58,6 +58,8 @@ object RequestCodes {
 
   val callLogPermission = 14
 
+  val phoneCallPermission = 15
+
 }
 
 object ResultCodes {

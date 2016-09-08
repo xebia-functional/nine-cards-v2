@@ -125,6 +125,7 @@
     <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
 
     <string name="momentNotFoundMessage">Momento no encontrado. Tu deberías crear colecciones desde la sección Mis Collections</string>
+    <string name="noPhoneCallPermissionMessage">Se necesita el permiso para poder llamar al contacto</string>
 
     <!-- Collections Detail -->
 
@@ -184,6 +185,8 @@
     <string name="errorLoadingPublicCollections">Error cargando colleciones públicas</string>
     <string name="errorSavingPublicCollections">Error guardando colleción pública</string>
     <string name="emptyPublicCollections">No hay colecciones publicadas en esta categoría. Quizás podrías crear tu una :-)</string>
+
+    <string name="sendEmailDialogChooserTitle">Enviar correo electrónico</string>
 
     <!-- Contacts Info -->
 

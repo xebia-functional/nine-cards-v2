@@ -175,6 +175,8 @@ trait LauncherUiActionsImpl
 
   override def showNoImplementedYetMessage(): Ui[Any] = showMessage(R.string.todo)
 
+  override def showNoPhoneCallPermissionError: Ui[Any] = showMessage(R.string.noPhoneCallPermissionMessage)
+
   override def showLoading(): Ui[Any] = showCollectionsLoading
 
   override def goToPreviousScreen(): Ui[Any] = {
@@ -294,7 +296,7 @@ trait LauncherUiActionsImpl
       counters = counters)
 
   override def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any] =
-    addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact))
+    addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact.number))
 
   override def resetFromCollection(): Ui[Any] = foreground <~ vBlankBackground <~ vGone
 

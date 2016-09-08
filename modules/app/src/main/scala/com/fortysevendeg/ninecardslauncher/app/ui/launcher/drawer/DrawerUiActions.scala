@@ -96,7 +96,7 @@ trait DrawerUiActions
             case (true, false) => openTabs
           }).run
         },
-        onAppStoreIconClick = () => presenter.launchPlayStore,
+        onAppStoreIconClick = () => presenter.launchPlayStore(),
         onContactsIconClick = () => presenter.launchDial()
       )) <~
       sbvOnChangeText((text: String) => {
