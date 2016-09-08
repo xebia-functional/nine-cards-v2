@@ -251,7 +251,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   }
 
   override def trackEventProcess: TrackEventProcess = {
-    lazy val tracker = {
+    val tracker = {
       val track = GoogleAnalytics
         .getInstance(contextSupport.context)
         .newTracker(contextSupport.context.getString(R.string.ga_trackingId))
