@@ -36,11 +36,7 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       statuses = statuses.copy(disableClickItems = true)
       blockScroll(true)
     },
-    end = (swiping: Swiping, displacement: Int) => {
-      statuses = statuses.copy(disableClickItems = false)
-      snap(swiping).run
-      blockScroll(false)
-    },
+    end = (swiping: Swiping, displacement: Int) => snap(swiping).run,
     scroll = (deltaX: Int) => {
       if (!overScroll(deltaX)) {
         statuses = statuses.move(deltaX)
@@ -55,7 +51,11 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
       statuses = statuses.copy(displacement = statuses.displacement.toInt - offset)
       offsetLeftAndRight(offset)
       invalidate()
-    } ~ drawerRecyclerListener.move(statuses.displacement))
+    } ~ drawerRecyclerListener.move(statuses.displacement),
+    end = () => Ui {
+      statuses = statuses.copy(disableClickItems = false)
+      blockScroll(false)
+    })
 
   addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
     override def onTouchEvent(recyclerView: RecyclerView, event: MotionEvent): Unit = {}

@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.snails
 
 import android.animation.{Animator, AnimatorListenerAdapter}
-import android.graphics.Point
 import android.view.View
 import android.view.animation.{AccelerateDecelerateInterpolator, DecelerateInterpolator}
 import android.widget.ImageView
@@ -42,23 +41,10 @@ object CollectionsSnails {
       animPromise.future
   }
 
-  def enterToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] = {
-    val display = activityContextWrapper.getOriginal.getWindowManager.getDefaultDisplay
-    val size = new Point()
-    display.getSize(size)
-    val height = size.y
-    val times = height.toFloat / resGetDimension(R.dimen.height_toolbar_collection_details)
-    vScaleY(times) ++ applyAnimation(scaleY = Some(1))
-  }
+  def enterToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] =
+    vAlpha(0) ++ applyAnimation(alpha = Some(1))
 
-  def exitToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] = {
-    val display = activityContextWrapper.getOriginal.getWindowManager.getDefaultDisplay
-    val size = new Point()
-    display.getSize(size)
-    val height = size.y
-    val times = (height.toFloat / resGetDimension(R.dimen.height_toolbar_collection_details)) * 2
-    applyAnimation(scaleY = Some(times))
-  }
+  def exitToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] = applyAnimation(alpha = Some(0))
 
   def enterViews(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>

@@ -1,15 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView.ViewHolder
-import com.fortysevendeg.ninecardslauncher.app.analytics.{NoValue, RemovedInCollectionAction, RemovedInCollectionValue, _}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import com.fortysevendeg.ninecardslauncher.process.trackevent._
 import macroid.{ActivityContextWrapper, Ui}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 
 import scalaz.concurrent.Task
 
@@ -17,10 +16,7 @@ case class CollectionPresenter(
   animateCards: Boolean,
   maybeCollection: Option[Collection],
   actions: CollectionUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Jobs
-  with AnalyticDispatcher { self =>
-
-  override def getApplicationContext: Context = contextWrapper.application
+  extends Jobs { self =>
 
   def initialize(sType: ScrollType): Unit = {
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
@@ -88,18 +84,15 @@ case class CollectionPresenter(
           collection.moment flatMap (_.momentType) map MomentCategory
         }
       } yield {
-        self !>>
-          TrackEvent(
-            screen = CollectionDetailScreen,
-            category = category,
-            action = action,
-            label = Some(ProvideLabel(packageName)),
-            value = Some(action match {
-              case OpenCardAction => OpenAppFromCollectionValue
-              case AddedToCollectionAction => AddedToCollectionValue
-              case RemovedInCollectionAction => RemovedInCollectionValue
-              case _ => NoValue
-            }))
+        action match {
+          case OpenCardAction =>
+            Task.fork(di.trackEventProcess.openAppFromCollection(packageName, category).value).resolveAsync()
+          case AddedToCollectionAction =>
+            Task.fork(di.trackEventProcess.addAppToCollection(packageName, category).value).resolveAsync()
+          case RemovedInCollectionAction =>
+            Task.fork(di.trackEventProcess.removedInCollection(packageName, category).value).resolveAsync()
+          case _ =>
+        }
       }
     case _ =>
   }

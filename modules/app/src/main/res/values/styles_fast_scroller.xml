@@ -36,7 +36,6 @@
     <style name="FastScrollerBarContent">
         <item name="android:layout_width">@dimen/fastscroller_bar_width</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:background">@color/fastscroller_bar_background</item>
         <item name="android:layout_marginLeft">@dimen/padding_large</item>
         <item name="android:layout_gravity">right</item>
     </style>

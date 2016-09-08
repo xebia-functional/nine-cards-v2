@@ -6,6 +6,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPr
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
@@ -16,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
@@ -34,20 +36,22 @@ trait ContactsUiActionsImpl
 
   val resistance = 2.4f
 
-  lazy val recycler = Option(findView(TR.actions_recycler))
+  lazy val recycler = findView(TR.actions_recycler)
 
-  lazy val scrollerLayout = Option(findView(TR.action_scroller_layout))
+  lazy val scrollerLayout = findView(TR.action_scroller_layout)
 
-  lazy val pullToTabsView = Option(findView(TR.actions_pull_to_tabs))
+  lazy val pullToTabsView = findView(TR.actions_pull_to_tabs)
 
-  lazy val tabs = Option(findView(TR.actions_tabs))
+  lazy val tabs = findView(TR.actions_tabs)
 
   lazy val contactsTabs = Seq(
     TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.contacts_alphabetical)),
-    TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites))
-  )
+    TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites)))
 
-  override def initialize(): Ui[Any] =
+  lazy val preferences = new NineCardsPreferencesValue
+
+  override def initialize(): Ui[Any] = {
+    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferences)
     (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
         dtbInit(colorPrimary) <~
@@ -62,7 +66,7 @@ trait ContactsUiActionsImpl
         dtbNavigationOnClickListener((_) => unreveal())) ~
       (pullToTabsView <~
         ptvLinkTabs(
-          tabs = tabs,
+          tabs = Some(tabs),
           start = Ui.nop,
           end = Ui.nop) <~
         ptvAddTabsAndActivate(contactsTabs, 0, Some(colorPrimary)) <~
@@ -72,8 +76,9 @@ trait ContactsUiActionsImpl
             contactsPresenter.loadContacts(if (pos == 0) AllContacts else FavoriteContacts)
           }
         ))) ~
-      (recycler <~ recyclerStyle) ~
+      (recycler <~ recyclerStyle <~ (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank)) ~
       (tabs <~ tvClose)
+  }
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ hideError
 
@@ -114,7 +119,7 @@ trait ContactsUiActionsImpl
     unreveal()
   }
 
-  override def isTabsOpened: Boolean = (tabs ~> isOpened).get getOrElse false
+  override def isTabsOpened: Boolean = (tabs ~> isOpened).get
 
   private[this] def showData: Ui[Any] = (loading <~ vGone) ~ (recycler <~ vVisible)
 
@@ -126,9 +131,7 @@ trait ContactsUiActionsImpl
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter)) ~
       (loading <~ vGone) ~
-      (recycler map { rv =>
-        scrollerLayout <~ fslLinkRecycler(rv) <~ fslCounters(counters)
-      } getOrElse showGeneralError)
+      (scrollerLayout <~ fslLinkRecycler(recycler) <~ fslCounters(counters))
   }
 
   private[this] def reloadContactsAdapter(contacts: IterableContacts, counters: Seq[TermCounter], filter: ContactsFilter)
@@ -145,11 +148,9 @@ trait ContactsUiActionsImpl
       } getOrElse showGeneralError)
   }
 
-  private[this] def getAdapter: Option[ContactsAdapter] = recycler flatMap { rv =>
-    Option(rv.getAdapter) match {
-      case Some(a: ContactsAdapter) => Some(a)
-      case _ => None
-    }
+  private[this] def getAdapter: Option[ContactsAdapter] = Option(recycler.getAdapter) match {
+    case Some(a: ContactsAdapter) => Some(a)
+    case _ => None
   }
 
   protected def openTabs(): Ui[Any] = (tabs <~ tvOpen <~ showTabs) ~ (recycler <~ hideList)
