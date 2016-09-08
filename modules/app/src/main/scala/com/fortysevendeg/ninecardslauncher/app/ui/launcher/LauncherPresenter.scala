@@ -1,17 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
-import android.content.{ComponentName, Context, Intent}
+import android.content.{ComponentName, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.app.analytics._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, LauncherExecutor}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
@@ -26,12 +25,13 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
+import com.fortysevendeg.ninecardslauncher.process.trackevent._
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.R
@@ -46,8 +46,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   extends Jobs
   with Conversions
   with NineCardIntentConversions
-  with LauncherExecutor
-  with AnalyticDispatcher { self =>
+  with LauncherExecutor { self =>
 
   val tagDialog = "dialog"
 
@@ -56,8 +55,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   lazy val persistMoment = new PersistMoment
 
   var statuses = LauncherPresenterStatuses()
-
-  override def getApplicationContext: Context = contextWrapper.application
 
   def initialize(): Unit = {
     Try(FirebaseAnalytics.getInstance(contextWrapper.bestAvailable))
@@ -240,13 +237,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
-    self !>>
-      TrackEvent(
-        screen = LauncherScreen,
-        category = moment map MomentCategory getOrElse FreeCategory,
-        action = OpenAction,
-        label = card.packageName map ProvideLabel,
-        value = Some(OpenMomentFromWorkspaceValue))
+    card.packageName foreach { packageName =>
+      val category = moment map MomentCategory getOrElse FreeCategory
+      Task.fork(di.trackEventProcess.openAppFromAppDrawer(packageName, category).value).resolveAsync()
+    }
     actions.closeAppsMoment().run
     execute(card.intent)
   }
@@ -254,13 +248,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
-    self !>>
-      TrackEvent(
-        screen = LauncherScreen,
-        category = AppCategory(app.category),
-        action = OpenAction,
-        label = Some(ProvideLabel(app.packageName)),
-        value = Some(OpenAppFromAppDrawerValue))
+    Task.fork(di.trackEventProcess.openAppFromAppDrawer(app.packageName, AppCategory(app.category)).value).resolveAsync()
     execute(toNineCardIntent(app))
   }
 

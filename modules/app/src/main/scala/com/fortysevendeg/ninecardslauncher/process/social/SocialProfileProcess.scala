@@ -7,7 +7,7 @@ trait SocialProfileProcess {
 
   /**
     * Load the user information for Google Plus and updates the values on the database
- *
+    *
     * @return the profile name
     */
   def updateUserProfile()(implicit context: ContextSupport): TaskService[Option[String]]

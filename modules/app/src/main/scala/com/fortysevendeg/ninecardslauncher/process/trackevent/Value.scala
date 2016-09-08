@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.analytics
+package com.fortysevendeg.ninecardslauncher.process.trackevent
 
 sealed trait Value {
   def value: Long
