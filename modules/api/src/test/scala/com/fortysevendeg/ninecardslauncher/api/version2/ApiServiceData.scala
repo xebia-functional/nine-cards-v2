@@ -133,4 +133,5 @@ trait ApiServiceData {
 
   val recommendationsByAppsResponse = RecommendationsByAppsResponse(apps = Seq(recommendationApp))
 
+  val subscriptions = Seq(publicIdentifier)
 }
