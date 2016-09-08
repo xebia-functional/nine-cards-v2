@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.intents.impl
 import cats.data.{Xor, XorT}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, TaskService}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig, LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
@@ -97,7 +97,7 @@ class LauncherExecutorProcessImpl(
     toProcessServiceAction(AppLauncherAction(packageName))
 
   override def launchGooglePlay(packageName: String)(implicit activityContext: ActivityContextSupport) =
-    toProcessServiceAction(GooglePlayStoreAction)
+    toProcessServiceAction(AppGooglePlayAction(config.googlePlayUrl, packageName))
 
   private[this] def mapServicesException[E >: NineCardException]: (NineCardException => E) = {
     case e: IntentLauncherServicesPermissionException =>
@@ -106,10 +106,12 @@ class LauncherExecutorProcessImpl(
       LauncherExecutorProcessException(e.message, Some(e))
   }
 
-  private[this] def toProcessServiceAction(action: IntentAction): TaskService[Unit] =
+  private[this] def toProcessServiceAction(
+    action: IntentAction)(implicit activityContext: ActivityContextSupport): TaskService[Unit] =
     launcherIntentServices.launchIntentAction(action).leftMap(mapServicesException)
 
-  private[this] def tryLaunchIntentService(maybeAction: Option[IntentAction]): TaskService[Unit] =
+  private[this] def tryLaunchIntentService(
+    maybeAction: Option[IntentAction])(implicit activityContext: ActivityContextSupport): TaskService[Unit] =
     maybeAction match {
       case Some(action) => toProcessServiceAction(action)
       case None => TaskService {
@@ -117,7 +119,8 @@ class LauncherExecutorProcessImpl(
       }
     }
 
-  private[this] def verifyPermissionExceptionOrTry[A](f: => Option[IntentAction]): PartialFunction[NineCardException, XorT[Task, NineCardException, Unit]] = {
+  private[this] def verifyPermissionExceptionOrTry[A](f: => Option[IntentAction])
+    (implicit activityContext: ActivityContextSupport): PartialFunction[NineCardException, XorT[Task, NineCardException, Unit]] = {
     case e: LauncherExecutorProcessPermissionException => TaskService(Task(Xor.left(e)))
     case _ => tryLaunchIntentService(f)
   }

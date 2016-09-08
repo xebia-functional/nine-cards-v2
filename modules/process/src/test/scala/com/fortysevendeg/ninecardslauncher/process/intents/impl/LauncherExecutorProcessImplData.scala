@@ -1,5 +1,44 @@
 package com.fortysevendeg.ninecardslauncher.process.intents.impl
 
+import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessConfig
+import com.fortysevendeg.ninecardslauncher.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException}
+import com.fortysevendeg.ninecardslauncher.services.intents.models._
+
 trait LauncherExecutorProcessImplData {
+
+  val intentLauncherServicesException = IntentLauncherServicesException("Irrelevant Message")
+  val intentLauncherServicesPermissionExcetpion = IntentLauncherServicesPermissionException("Irrelevant Message")
+
+  val packageName = "package.name"
+  val className = "class.Name"
+  val googlePlayUrl = "http://mockUrl"
+  val lookupKey = "lookupKey"
+  val email = "email@google.com"
+  val phoneNumber = "666 66 66 66"
+  val shareText = "Share text"
+  val emailTitleDialog = "Email Title Dialog"
+  val shareTitleDialog = "Share Title Dialog"
+
+  val unknownAction = "Unknown action"
+
+  val appAction = AppAction(packageName, className)
+  val appGooglePlayAction = AppGooglePlayAction(googlePlayUrl, packageName)
+  val appLauncherAction = AppLauncherAction(packageName)
+  val appSettingsAction = AppSettingsAction(packageName)
+  val appUninstallAction = AppUninstallAction(packageName)
+  val contactAction = ContactAction(lookupKey)
+  val emailAction = EmailAction(email, emailTitleDialog)
+  val globalSettingsAction = GlobalSettingsAction
+  val googlePlayStoreAction = GooglePlayStoreAction
+  val googleWeatherAction = GoogleWeatherAction
+  val phoneSmsAction = PhoneSmsAction(phoneNumber)
+  val phoneCallAction = PhoneCallAction(phoneNumber)
+  val phoneDialAction = PhoneDialAction(Some(phoneNumber))
+  val searchGlobalAction = SearchGlobalAction
+  val searchVoiceAction = SearchVoiceAction
+  val searchWebAction = SearchWebAction
+  val shareAction = ShareAction(shareText, shareTitleDialog)
+
+  val config = LauncherExecutorProcessConfig(googlePlayUrl, emailTitleDialog, shareTitleDialog)
 
 }
