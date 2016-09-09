@@ -235,7 +235,7 @@ object ExtraTweaks {
     }).show()).run
   }
 
-  def switchSetChecked(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setChecked(status))
+  def sChecked(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setChecked(status))
 
 }
 
