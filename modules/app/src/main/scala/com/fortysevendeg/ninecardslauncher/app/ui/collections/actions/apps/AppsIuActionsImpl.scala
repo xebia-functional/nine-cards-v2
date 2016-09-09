@@ -8,6 +8,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPr
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.NineCardsCategoryOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
@@ -15,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Pull
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps, TermCounter}
@@ -34,20 +36,23 @@ trait AppsIuActionsImpl
 
   val resistance = 2.4f
 
-  lazy val recycler = Option(findView(TR.actions_recycler))
+  lazy val recycler = findView(TR.actions_recycler)
 
-  lazy val scrollerLayout = Option(findView(TR.action_scroller_layout))
+  lazy val scrollerLayout = findView(TR.action_scroller_layout)
 
-  lazy val pullToTabsView = Option(findView(TR.actions_pull_to_tabs))
+  lazy val pullToTabsView = findView(TR.actions_pull_to_tabs)
 
-  lazy val tabs = Option(findView(TR.actions_tabs))
+  lazy val tabs = findView(TR.actions_tabs)
+
+  lazy val preferences = new NineCardsPreferencesValue
 
   override def initialize(onlyAllApps: Boolean, category: NineCardCategory): Ui[_] = {
+    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferences)
     val pullToTabsTweaks = if (onlyAllApps) {
       pdvEnable(false)
     } else {
       ptvLinkTabs(
-        tabs = tabs,
+        tabs = Some(tabs),
         start = Ui.nop,
         end = Ui.nop) +
         ptvAddTabsAndActivate(generateTabs(category), 0, Some(colorPrimary)) +
@@ -77,7 +82,7 @@ trait AppsIuActionsImpl
         menuTweak <~
         dtbNavigationOnClickListener((_) => unreveal())) ~
       (pullToTabsView <~ pullToTabsTweaks) ~
-      (recycler <~ recyclerStyle) ~
+      (recycler <~ recyclerStyle <~ (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank)) ~
       (tabs <~ tvClose)
   }
 
@@ -109,7 +114,7 @@ trait AppsIuActionsImpl
     unreveal()
   }
 
-  override def isTabsOpened: Boolean = (tabs ~> isOpened).get getOrElse false
+  override def isTabsOpened: Boolean = (tabs ~> isOpened).get
 
   private[this] def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
 
@@ -134,9 +139,7 @@ trait AppsIuActionsImpl
         case AppsByCategory => resGetString(R.string.appsByCategory, categoryName)
         case _ => resGetString(R.string.allApps)
       })) ~
-      (recycler map { rv =>
-        scrollerLayout <~ fslLinkRecycler(rv) <~ fslCounters(counters)
-      } getOrElse showGeneralError)
+      (scrollerLayout <~ fslLinkRecycler(recycler) <~ fslCounters(counters))
   }
 
   private[this] def reloadAppsAdapter(
@@ -157,11 +160,9 @@ trait AppsIuActionsImpl
       } getOrElse showGeneralError)
   }
 
-  private[this] def getAdapter: Option[AppsAdapter] = recycler flatMap { rv =>
-    Option(rv.getAdapter) match {
-      case Some(a: AppsAdapter) => Some(a)
-      case _ => None
-    }
+  private[this] def getAdapter: Option[AppsAdapter] = Option(recycler.getAdapter) match {
+    case Some(a: AppsAdapter) => Some(a)
+    case _ => None
   }
 
   private[this] def generateTabs(category: NineCardCategory) = Seq(

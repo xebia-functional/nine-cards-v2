@@ -17,7 +17,6 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
@@ -127,7 +126,7 @@ trait CollectionsUiActions
     def goToSettings(): Ui[Any] = {
       closeCollectionMenu() ~~ uiStartIntentForResult(
         intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
-        result = goToPreferences)
+        requestCode = goToPreferences)
     }
 
     (drawerLayout <~ dlStatusBarBackground(R.color.primary)) ~
@@ -167,7 +166,7 @@ trait CollectionsUiActions
         goToSettings()
       } <~ On.longClick {
         Ui(IsDeveloper.convertToDeveloper(preferenceValues)) ~
-          uiShortToast(R.string.developerOptionsActivated) ~
+          uiShortToast2(R.string.developerOptionsActivated) ~
           goToSettings() ~
           Ui(true)
       })

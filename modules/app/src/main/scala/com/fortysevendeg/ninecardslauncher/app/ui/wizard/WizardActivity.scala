@@ -59,4 +59,10 @@ class WizardActivity
     if (!presenter.activityResult(requestCode, resultCode, data)) {
       super.onActivityResult(requestCode, resultCode, data)
     }
+
+  override def onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array[String],
+    grantResults: Array[Int]): Unit =
+    presenter.requestPermissionsResult(requestCode, permissions, grantResults)
 }

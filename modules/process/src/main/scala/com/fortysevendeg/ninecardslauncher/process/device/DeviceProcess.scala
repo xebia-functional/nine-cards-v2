@@ -16,11 +16,11 @@ trait DeviceProcess {
   def resetSavedItems(): TaskService[Unit]
 
   /**
-   * Get the saved apps from the database
-   * @param orderBy indicates the order to fetch the apps
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.App]
-   * @throws AppException if exist some problem to get the apps
-   */
+    * Get the saved apps from the database
+    * @param orderBy indicates the order to fetch the apps
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.App]
+    * @throws AppException if exist some problem getting the apps
+    */
   def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[Seq[App]]
 
   /**
@@ -28,7 +28,7 @@ trait DeviceProcess {
     * @param orderBy indicates the order to fetch the apps
     * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
     *         information about the app
-    * @throws AppException if exist some problem to get the apps
+    * @throws AppException if exist some problem getting the apps
     */
   def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[IterableApps]
 
@@ -37,129 +37,147 @@ trait DeviceProcess {
     * @param category indicates the category
     * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
     *         information about the app
-    * @throws AppException if exist some problem to get the apps
+    * @throws AppException if exist some problem getting the apps
     */
   def getIterableAppsByCategory(category: String)(implicit context: ContextSupport): TaskService[IterableApps]
 
   /**
-    * Returns the number of times the first letter of an app is repeated alphabetically filtered by parameter
+    * Returns a sequence that contains all the distinct apps' first letter and the number of apps whose name 
+    * starts with this letter
+    * @param orderBy indicates the order to fetch the apps
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter] contains
     *         information about the times is repeated an apps
-    * @throws AppException if exist some problem to get the contacts
+    * @throws AppException if exist some problem getting the contacts
     */
   def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[Seq[TermCounter]]
 
   /**
     * Get the iterable apps by keyword.
+    * @param keyword the filter for the query
+    * @param orderBy indicates the order to fetch the apps
     * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
     *         information about the app
-    * @throws AppException if exist some problem to get the contacts
+    * @throws AppException if exist some problem getting the contacts
     */
   def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[IterableApps]
 
   /**
-   * Get the available applications that contain shortcuts creating Intents and Drawables necessaries for UI actions
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut] contains
-   *         information about shortcut with the Intents and Drawables for UI actions
-   * @throws ShortcutException if exist some problem to get the shortcuts in the cell phone
-   */
+    * Get the available applications that contain shortcuts creating Intents and Drawables necessaries for UI actions
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut] contains
+    *         information about shortcut with the Intents and Drawables for UI actions
+    * @throws ShortcutException if exist some problem getting the shortcuts in the cell phone
+    */
   def getAvailableShortcuts(implicit context: ContextSupport): TaskService[Seq[Shortcut]]
 
   /**
-   * Save shortcut icon from bitmap
-   * @return the String contains the path where the icon was stored
-   * @throws ShortcutException if exist some problem storing icon
-   */
+    * Save shortcut icon from bitmap
+    * @param bitmap the image
+    * @param iconResize optional parameter that indicates some resizing arguments
+    * @return the String contains the path where the icon was stored
+    * @throws ShortcutException if exist some problem storing icon
+    */
   def saveShortcutIcon(bitmap: Bitmap, iconResize: Option[IconResize] = None)(implicit context: ContextSupport): TaskService[String]
 
   /**
-   * Get the favorite contacts if they exist and fill all their data
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
-   *         information about the contact including its ContactInfo (if it exists)
-   * @throws ContactException if exist some problem to get the favorite contacts
-   */
+    * Get the favorite contacts if they exist and fill all their data
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
+    *         information about the contact including its ContactInfo (if it exists)
+    * @throws ContactPermissionException if the permission to read contacts hasn't been granted
+    * @throws ContactException if exist some problem getting the favorite contacts
+    */
   def getFavoriteContacts(implicit context: ContextSupport): TaskService[Seq[Contact]]
 
   /**
-   * Get the contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
-   * and contacts with phone number
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
-   *         information about the contact
-   * @throws ContactException if exist some problem to get the contacts
-   */
+    * Get the contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
+    * and contacts with phone number
+    * @param filter specify the filter in the query
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
+    *         information about the contact
+    * @throws ContactPermissionException if the permission to read contacts hasn't been granted
+    * @throws ContactException if exist some problem getting the contacts
+    */
   def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): TaskService[Seq[Contact]]
 
   /**
-    * Returns the number of times the first letter of a contact is repeated alphabetically filtered by parameter
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter] contains
-    *         information about the times is repeated a contacts
-    * @throws ContactException if exist some problem to get the contacts
+    * Returns a sequence that contains all the distinct contacts' first letter and the number of contacts whose name 
+    * starts with this letter
+    * @param filter specify the filter in the query
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter]
+    * @throws ContactPermissionException if the permission to read contacts hasn't been granted
+    * @throws ContactException if exist some problem getting the contacts
     */
   def getTermCountersForContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): TaskService[Seq[TermCounter]]
 
   /**
     * Get the iterable contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
     * and contacts with phone number
+    * @param filter specify the filter in the query
     * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
     *         information about the contact
-    * @throws ContactException if exist some problem to get the contacts
+    * @throws ContactPermissionException if the permission to read contacts hasn't been granted
+    * @throws ContactException if exist some problem getting the contacts
     */
   def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport): TaskService[IterableContacts]
 
   /**
-   * Get the contact and fill all their data
-   * @return the com.fortysevendeg.ninecardslauncher.process.device.models.Contact contains
-   *         information about the contact
-   * @throws ContactException if exist some problem to get the contacts
-   */
+    * Get the contact and fill all their data
+    * @param lookupKey the contact lookup key
+    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.Contact contains
+    *         information about the contact
+    * @throws ContactPermissionException if the permission to read contacts hasn't been granted
+    * @throws ContactException if exist some problem getting the contacts
+    */
   def getContact(lookupKey: String)(implicit context: ContextSupport): TaskService[Contact]
 
   /**
     * Get the iterable contacts by keyword.
+    * @param keyword the filter for the query
     * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
     *         information about the contact
-    * @throws ContactException if exist some problem to get the contacts
+    * @throws ContactPermissionException if the permission to read contacts hasn't been granted
+    * @throws ContactException if exist some problem getting the contacts
     */
   def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport): TaskService[IterableContacts]
 
   /**
-   * Get the installed apps and store them in the repository
-   * @throws AppException if exist some problem to get the apps or storing them
-   */
+    * Get the installed apps and store them in the repository
+    * @throws AppException if exist some problem getting the apps or storing them
+    */
   def saveInstalledApps(implicit context: ContextSupport): TaskService[Unit]
 
   /**
-   * Get an installed app and store it in the repository
-   * @param packageName the packageName of the app to save
-   * @throws AppException if exist some problem to get the app or storing it
-   */
+    * Get an installed app and store it in the repository
+    * @param packageName the packageName of the app to save
+    * @throws AppException if exist some problem getting the app or storing it
+    */
   def saveApp(packageName: String)(implicit context: ContextSupport): TaskService[Unit]
 
   /**
-   * Delete an app from the repository
-   * @param packageName the packageName of the app to delete
-   * @throws AppException if exist some problem deleting the app
-   */
+    * Delete an app from the repository
+    * @param packageName the packageName of the app to delete
+    * @throws AppException if exist some problem deleting the app
+    */
   def deleteApp(packageName: String)(implicit context: ContextSupport): TaskService[Unit]
 
   /**
-   * Get the contact and fill all their data
-   * @param packageName the packageName of the app to update
-   * @throws AppException if exist some problem to get the app or updating it
-   */
+    * Get the contact and fill all their data
+    * @param packageName the packageName of the app to update
+    * @throws AppException if exist some problem getting the app or updating it
+    */
   def updateApp(packageName: String)(implicit context: ContextSupport): TaskService[Unit]
 
   /**
-   * Get the widgets available on the phone
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.AppsWithWidgets]
-   * @throws WidgetException if exist some problem to get the widgets
-   */
+    * Get the widgets available on the phone
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.AppsWithWidgets]
+    * @throws WidgetException if exist some problem getting the widgets
+    */
   def getWidgets(implicit context: ContextSupport): TaskService[Seq[AppsWithWidgets]]
 
   /**
     * Get the last calls available on the phone
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Call]
-    * @throws CallException if exist some problem to get the last calls
+    * @throws CallPermissionException if the permission to read calls hasn't been granted
+    * @throws CallException if exist some problem getting the last calls
     */
   def getLastCalls(implicit context: ContextSupport): TaskService[Seq[LastCallsContact]]
 
@@ -167,7 +185,7 @@ trait DeviceProcess {
     * Generate the docks apps available for user
     * @param size of the dock apps needed
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.DockApp]
-    * @throws DockAppException if exist some problem to get the app or storing it
+    * @throws DockAppException if exist some problem getting the app or storing it
     */
   def generateDockApps(size: Int)(implicit context: ContextSupport): TaskService[Seq[DockApp]]
 
@@ -178,7 +196,7 @@ trait DeviceProcess {
     * @param intent action
     * @param imagePath image
     * @param position new position
-    * @throws DockAppException if exist some problem to get the app or storing it
+    * @throws DockAppException if exist some problem getting the app or storing it
     */
   def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): TaskService[Unit]
 
@@ -195,14 +213,14 @@ trait DeviceProcess {
     * Get the docks apps available for user
     *
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.DockApp]
-    * @throws DockAppException if exist some problem to get the app or storing it
+    * @throws DockAppException if exist some problem getting the app or storing it
     */
   def getDockApps: TaskService[Seq[DockApp]]
 
   /**
     * Delete all dock apps in database
     *
-    * @throws DockAppException if exist some problem to get the app or storing it
+    * @throws DockAppException if exist some problem getting the app or storing it
     */
   def deleteAllDockApps(): TaskService[Unit]
 
@@ -210,7 +228,7 @@ trait DeviceProcess {
     * Get all configured networks sorted by name
     *
     * @return Seq[String] that contains all SSIDs
-    * @throws WidgetException if exist some problem to get the widgets
+    * @throws WidgetException if exist some problem getting the widgets
     */
   def getConfiguredNetworks(implicit context: ContextSupport): TaskService[Seq[String]]
 

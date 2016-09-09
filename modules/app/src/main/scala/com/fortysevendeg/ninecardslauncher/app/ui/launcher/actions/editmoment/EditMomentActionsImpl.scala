@@ -5,7 +5,7 @@ import android.view.Gravity
 import android.widget.TextView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
@@ -96,7 +96,7 @@ trait EditMomentActionsImpl
 
   override def success(): Ui[Any] = unreveal()
 
-  override def showSavingMomentErrorMessage(): Ui[Any] = uiShortToast(R.string.contactUsError)
+  override def showSavingMomentErrorMessage(): Ui[Any] = uiShortToast2(R.string.contactUsError)
 
   override def reloadDays(position: Int, timeslot: MomentTimeSlot): Ui[Any] = hourContent <~ Transformer {
     case view: EditHourMomentLayout if view.getPosition.contains(position) => view <~ ehmPopulate(timeslot, position)
@@ -129,9 +129,9 @@ trait EditMomentActionsImpl
     wifiContent <~ vgRemoveAllViews <~ vgAddViews(views)
   }
 
-  override def showFieldErrorMessage(): Ui[Any] = uiShortToast(R.string.contactUsError)
+  override def showFieldErrorMessage(): Ui[Any] = uiShortToast2(R.string.contactUsError)
 
-  def showItemDuplicatedMessage(): Ui[Any] = uiShortToast(R.string.addDuplicateItemError)
+  def showItemDuplicatedMessage(): Ui[Any] = uiShortToast2(R.string.addDuplicateItemError)
 
   private[this] def showLinkCollectionMessage() = Ui {
     val dialog = new AlertDialogFragment(

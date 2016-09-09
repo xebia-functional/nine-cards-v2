@@ -130,6 +130,14 @@ case object AppDrawerFavoriteContactsFirst
   override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
 }
 
+case object AppDrawerSelectItemsInScroller
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = appDrawerSelectItemsInScroller
+  override val default: Boolean = true
+
+  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+}
+
 // Look & Feel Preferences
 
 case object Theme
@@ -353,6 +361,7 @@ object PreferencesValuesKeys {
   val appDrawerLongPressAction = "appDrawerLongPressAction"
   val appDrawerAnimation = "appDrawerAnimation"
   val appDrawerFavoriteContacts = "appDrawerFavoriteContacts"
+  val appDrawerSelectItemsInScroller = "appDrawerSelectItemsInScroller"
 
   // Speed
   val speed = "speed"

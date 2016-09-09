@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
-case class UiException(  message: String,  cause: Option[Throwable] = None,  recoverable: Boolean = false)
+case class UiException(message: String, cause: Option[Throwable] = None, recoverable: Boolean = false)
   extends RuntimeException(message)
   with NineCardException{
 

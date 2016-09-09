@@ -6,6 +6,7 @@ import android.graphics.{Paint, PorterDuff}
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable._
 import android.os.Vibrator
+import android.support.design.widget.Snackbar
 import android.view.{View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import android.support.v4.view.GravityCompat
@@ -13,6 +14,7 @@ import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.ListPopupWindow
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
+import android.view.View.OnClickListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}
@@ -26,6 +28,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerBac
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
+import com.google.android.flexbox.FlexboxLayout
 import macroid._
 
 object CommonsTweak {
@@ -126,6 +129,18 @@ object ExtraTweaks {
 
   // TODO - Move to macroid extras
 
+  def uiShortToast2(msg: Int)(implicit c: ContextWrapper): Ui[Unit] =
+    Ui(Toast.makeText(c.application, msg, Toast.LENGTH_SHORT).show())
+
+  def uiLongToast2(msg: Int)(implicit c: ContextWrapper): Ui[Unit] =
+    Ui(Toast.makeText(c.application, msg, Toast.LENGTH_LONG).show())
+
+  def uiShortToast2(msg: String)(implicit c: ContextWrapper): Ui[Unit] =
+    Ui(Toast.makeText(c.application, msg, Toast.LENGTH_SHORT).show())
+
+  def uiLongToast2(msg: String)(implicit c: ContextWrapper): Ui[Unit] =
+    Ui(Toast.makeText(c.application, msg, Toast.LENGTH_LONG).show())
+
   def vResize(size: Int): Tweak[View] = vResize(size, size)
 
   def vResize(width: Int, height: Int): Tweak[View] = Tweak[View] {
@@ -213,6 +228,12 @@ object ExtraTweaks {
   def sChangeDropdownColor(color: Int) = Tweak[Spinner](_.getBackground.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
 
   def tvHintColor(color: Int): Tweak[TextView] = Tweak[TextView](_.setHintTextColor(color))
+
+  def vSnackbarLongAction(res: Int, buttonText: Int, f: () ⇒ Unit) = Tweak[W] { view ⇒
+    Ui(Snackbar.make(view, res, Snackbar.LENGTH_LONG).setAction(buttonText, new OnClickListener {
+      override def onClick(v: View): Unit = f()
+    }).show()).run
+  }
 
 }
 

@@ -29,6 +29,14 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       response <- apiServices.getSharedCollectionsByCategory(category.name, typeShareCollection.name, offset, limit)(userConfig)
     } yield response.items map toSharedCollection).resolve[SharedCollectionsExceptions]
 
+  override def getPublishedCollections()
+    (implicit context: ContextSupport) = {
+    (for {
+      userConfig <- apiUtils.getRequestConfig
+      response <- apiServices.getPublishedCollections()(userConfig)
+    } yield response.items map toSharedCollection).resolve[SharedCollectionsExceptions]
+  }
+
   override def createSharedCollection(
     sharedCollection: CreateSharedCollection)
     (implicit context: ContextSupport) = {

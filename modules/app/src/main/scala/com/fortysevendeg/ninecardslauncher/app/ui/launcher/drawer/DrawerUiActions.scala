@@ -15,7 +15,6 @@ import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SystemBarsTint
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
@@ -31,7 +30,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Swip
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherUiActions, LauncherUiActionsImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
 import com.fortysevendeg.ninecardslauncher.process.device._
@@ -45,7 +44,8 @@ import scala.concurrent.Future
 import scala.util.{Failure, Try}
 
 trait DrawerUiActions
-  extends DrawerStyles
+  extends LauncherUiActions
+  with DrawerStyles
   with ContextSupportProvider
   with PullToTabsViewStyles {
 
@@ -55,23 +55,23 @@ trait DrawerUiActions
 
   val resistance = 2.4f
 
-  lazy val appDrawerMain = Option(findView(TR.launcher_app_drawer))
+  lazy val appDrawerMain = findView(TR.launcher_app_drawer)
 
-  lazy val drawerContent = Option(findView(TR.launcher_drawer_content))
+  lazy val drawerContent = findView(TR.launcher_drawer_content)
 
   lazy val scrollerLayout = findView(TR.launcher_drawer_scroller_layout)
 
-  lazy val paginationDrawerPanel = Option(findView(TR.launcher_drawer_pagination_panel))
+  lazy val paginationDrawerPanel = findView(TR.launcher_drawer_pagination_panel)
 
-  lazy val recycler = Option(findView(TR.launcher_drawer_recycler))
+  lazy val recycler = findView(TR.launcher_drawer_recycler)
 
-  lazy val tabs = Option(findView(TR.launcher_drawer_tabs))
+  lazy val tabs = findView(TR.launcher_drawer_tabs)
 
-  lazy val pullToTabsView = Option(findView(TR.launcher_drawer_pull_to_tabs))
+  lazy val pullToTabsView = findView(TR.launcher_drawer_pull_to_tabs)
 
-  lazy val screenAnimation = Option(findView(TR.launcher_drawer_swipe_animated))
+  lazy val screenAnimation = findView(TR.launcher_drawer_swipe_animated)
 
-  lazy val searchBoxView = Option(findView(TR.launcher_search_box_content))
+  lazy val searchBoxView = findView(TR.launcher_search_box_content)
 
   lazy val appTabs = AppsMenuOption.list map {
     case AppsAlphabetical => TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.apps_alphabetical))
@@ -85,14 +85,19 @@ trait DrawerUiActions
     case ContactsByLastCall => TabInfo(R.drawable.app_drawer_filter_last_call, resGetString(R.string.contacts_last))
   }
 
-  def showGeneralError: Ui[_] = drawerContent <~ vSnackbarShort(R.string.contactUsError)
-
-  def initDrawerUi: Ui[_] = {
+  protected def initDrawerUi: Ui[_] = {
+    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferenceValues)
     (searchBoxView <~
       sbvUpdateContentView(AppsView) <~
       sbvChangeListener(SearchBoxAnimatedListener(
-        onHeaderIconClick = () => (if (isDrawerTabsOpened) closeDrawerTabs else openTabs).run,
-        onAppStoreIconClick = () => presenter.launchPlayStore,
+        onHeaderIconClick = () => {
+          (((pullToTabsView ~> pdvIsEnabled()).get, isDrawerTabsOpened) match {
+            case (false, _) => Ui.nop
+            case (true, true) => closeDrawerTabs
+            case (true, false) => openTabs
+          }).run
+        },
+        onAppStoreIconClick = () => presenter.launchPlayStore(),
         onContactsIconClick = () => presenter.launchDial()
       )) <~
       sbvOnChangeText((text: String) => {
@@ -119,13 +124,13 @@ trait DrawerUiActions
           end = endMovementAppsContacts,
           changeContentView = changeContentView
         )) <~
-        rvAddItemDecoration(new SelectedItemDecoration)) ~
+        (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank)) ~
       (scrollerLayout <~ scrollableStyle) ~
       (pullToTabsView <~
         pdvHorizontalEnable(true) <~
-        (recycler map (rv => pdvHorizontalListener(rv.horizontalMovementListener)) getOrElse Tweak.blank) <~
+        pdvHorizontalListener(recycler.horizontalMovementListener) <~
         ptvLinkTabs(
-          tabs = tabs,
+          tabs = Some(tabs),
           start = Ui.nop,
           end = Ui.nop) <~
         ptvAddTabsAndActivate(appTabs, 0, None) <~
@@ -147,9 +152,25 @@ trait DrawerUiActions
   }
 
   private[this] def openDrawer(longClick: Boolean) = {
+
+    def revealInDrawer(longClick: Boolean): Ui[Future[_]] = {
+      val showKeyboard = AppDrawerLongPressAction.readValue(preferenceValues) == AppDrawerLongPressActionOpenKeyboard && longClick
+      (drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
+        (paginationDrawerPanel <~ reloadPager(0)) ~
+        ((drawerContent <~~
+          openAppDrawer(AppDrawerAnimation.readValue(preferenceValues), appDrawerMain)) ~~
+          (searchBoxView <~
+            sbvEnableSearch <~
+            (if (showKeyboard) sbvShowKeyboard else Tweak.blank)))
+    }
+
     val loadContacts = AppDrawerLongPressAction.readValue(preferenceValues) == AppDrawerLongPressActionOpenContacts && longClick
     (if (loadContacts) {
-      loadContactsAlphabetical
+      Ui(
+        recycler.getAdapter match {
+          case a: AppsAdapter => a.clear()
+          case _ =>
+        }) ~ loadContactsAlphabetical
     } else if (getItemsCount == 0) {
       loadAppsAlphabetical
     } else {
@@ -172,11 +193,12 @@ trait DrawerUiActions
       case _ =>
     }
 
-    Ui(
-      recycler foreach { _.getAdapter match {
+    Ui {
+      recycler.getAdapter match {
         case a: Closeable => safeClose(a)
         case _ =>
-      }})
+      }
+    }
   }
 
   private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] = {
@@ -186,6 +208,14 @@ trait DrawerUiActions
       (recycler <~ drvSetType(option))
   }
 
+  protected def reloadContacts: Ui[_] = {
+    val option = getStatus match {
+      case Some(status) => ContactsMenuOption(status)
+      case _ => None
+    }
+    loadContactsAndSaveStatus(option getOrElse ContactsAlphabetical)
+  }
+
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] = {
     val maybeDrawable = contactsTabs.lift(ContactsMenuOption(option)) map (_.drawable)
     presenter.loadContacts(option)
@@ -193,7 +223,7 @@ trait DrawerUiActions
       (recycler <~ drvSetType(option))
   }
 
-  private[this] def loadAppsAlphabetical: Ui[_] = {
+  protected def loadAppsAlphabetical: Ui[_] = {
     val maybeDrawable = contactsTabs.lift(ContactsMenuOption(ContactsAlphabetical)) map (_.drawable)
     loadAppsAndSaveStatus(AppsAlphabetical) ~
       (paginationDrawerPanel <~ reloadPager(0)) ~
@@ -235,33 +265,30 @@ trait DrawerUiActions
         case ContactView => loadContactsAlphabetical
       })
 
-  private[this] def getDrawerWidth: Int = drawerContent map (dc => dc.getWidth) getOrElse 0
+  private[this] def getDrawerWidth: Int = drawerContent.getWidth
 
-  def isDrawerVisible = drawerContent exists (_.getVisibility == View.VISIBLE)
+  protected def isDrawerVisible = drawerContent.getVisibility == View.VISIBLE
 
-  def revealInDrawer(longClick: Boolean): Ui[Future[_]] = {
-    val showKeyboard = AppDrawerLongPressAction.readValue(preferenceValues) == AppDrawerLongPressActionOpenKeyboard && longClick
-    (drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
-      (paginationDrawerPanel <~ reloadPager(0)) ~
-      (appDrawerMain mapUiF { source =>
-        (drawerContent <~~
-          openAppDrawer(AppDrawerAnimation.readValue(preferenceValues), source)) ~~
-          (searchBoxView <~
-            sbvEnableSearch <~
-            (if (showKeyboard) sbvShowKeyboard else Tweak.blank))
-      })
-  }
+  protected def revealOutDrawer: Ui[_] = {
 
-  def revealOutDrawer: Ui[_] = {
+    def isShowingAppsAlphabetical = recycler.isType(AppsAlphabetical.name)
+
+    def resetData(searchIsEmpty: Boolean) =
+      if (searchIsEmpty && isShowingAppsAlphabetical) {
+        (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
+      } else {
+        closeCursorAdapter ~ loadAppsAlphabetical ~ (searchBoxView <~ sbvUpdateContentView(AppsView))
+      }
+
     val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
-    val searchIsEmpty = searchBoxView exists (_.isEmpty)
+    val searchIsEmpty = searchBoxView.isEmpty
     (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank)) ~
       (topBarPanel <~ vVisible) ~
       (searchBoxView <~ sbvClean <~ sbvDisableSearch) ~
-      (appDrawerMain mapUiF (source => (drawerContent <~~ closeAppDrawer(AppDrawerAnimation.readValue(preferenceValues), source)) ~~ resetData(searchIsEmpty)))
+      ((drawerContent <~~ closeAppDrawer(AppDrawerAnimation.readValue(preferenceValues), appDrawerMain)) ~~ resetData(searchIsEmpty))
   }
 
-  def addApps(
+  protected def addApps(
     apps: IterableApps,
     clickListener: (App) => Unit,
     longClickListener: (View, App) => Unit,
@@ -282,35 +309,25 @@ trait DrawerUiActions
       })
   }
 
-  protected def isDrawerTabsOpened: Boolean = (tabs ~> isOpened).get getOrElse false
+  protected def isDrawerTabsOpened: Boolean = (tabs ~> isOpened).get
 
-  private[this] def getStatus: Option[String] = recycler flatMap (rv => rv.getType)
+  private[this] def getStatus: Option[String] = recycler.getType
 
-  private[this] def getTypeView: Option[ContentView] = recycler map (_.statuses.contentView)
+  private[this] def getTypeView: Option[ContentView] = Option(recycler.statuses.contentView)
 
-  private[this] def getItemsCount: Int = (for {
-    rv <- recycler
-    adapter <- Option(rv.getAdapter)
-  } yield adapter.getItemCount) getOrElse 0
-
-  def paginationDrawer(position: Int) =
-    (w[ImageView] <~ paginationDrawerItemStyle <~ vSetPosition(position)).get
+  private[this] def getItemsCount: Int =
+    Option(recycler.getAdapter) map (_.getItemCount) getOrElse 0
 
   private[this] def createDrawerPagers = {
+
+    def paginationDrawer(position: Int) =
+      (w[ImageView] <~ paginationDrawerItemStyle <~ vSetPosition(position)).get
+
     val pagerViews = 0 until pages map paginationDrawer
     paginationDrawerPanel <~ vgAddViews(pagerViews)
   }
 
-  private[this] def resetData(searchIsEmpty: Boolean) =
-    if (searchIsEmpty && isShowingAppsAlphabetical) {
-      (recycler <~ rvScrollToTop) ~ (scrollerLayout <~ fslReset)
-    } else {
-      closeCursorAdapter ~ loadAppsAlphabetical ~ (searchBoxView <~ sbvUpdateContentView(AppsView))
-    }
-
-  private[this] def isShowingAppsAlphabetical = recycler exists (_.isType(AppsAlphabetical.name))
-
-  def addContacts(
+  protected def addContacts(
     contacts: IterableContacts,
     clickListener: (Contact) => Unit,
     longClickListener: (View, Contact) => Unit,
@@ -325,7 +342,7 @@ trait DrawerUiActions
       counters)
   }
 
-  def addLastCallContacts(contacts: Seq[LastCallsContact], clickListener: (LastCallsContact) => Unit): Ui[_] = {
+  protected def addLastCallContacts(contacts: Seq[LastCallsContact], clickListener: (LastCallsContact) => Unit): Ui[_] = {
     val contactAdapter = LastCallsAdapter(
       contacts = contacts,
       clickListener = clickListener)
@@ -340,14 +357,16 @@ trait DrawerUiActions
     layoutManager: LayoutManager,
     counters: Seq[TermCounter],
     signalType: FastScrollerSignalType = FastScrollerText) = {
-    val searchIsEmpty = searchBoxView exists (_.isEmpty)
-    val lastTimeContentViewWasChanged = recycler exists (_.statuses.lastTimeContentViewWasChanged)
+    val searchIsEmpty = searchBoxView.isEmpty
+    val lastTimeContentViewWasChanged = recycler.statuses.lastTimeContentViewWasChanged
     val addFieldTweaks = getTypeView map {
       case AppsView => vAddField(SelectedItemDecoration.showLine, true)
       case ContactView => vAddField(SelectedItemDecoration.showLine, false)
     } getOrElse Tweak.blank
     closeCursorAdapter ~
+      (pullToTabsView <~ pdvEnable(true)) ~
       (recycler <~
+        vVisible <~
         rvLayoutManager(layoutManager) <~
         (if (searchIsEmpty && !lastTimeContentViewWasChanged) rvLayoutAnimation(R.anim.list_slide_in_bottom_animation) else Tweak.blank) <~
         addFieldTweaks <~
@@ -356,9 +375,15 @@ trait DrawerUiActions
       scrollerLayoutUi(counters, signalType)
   }
 
+  protected def showBottomDrawerError(message: Int, action: () => Unit): Ui[Any] =
+    drawerContent <~ vSnackbarLongAction(message, R.string.buttonTryAgain, action)
+
   private[this] def scrollerLayoutUi(counters: Seq[TermCounter], signalType: FastScrollerSignalType): Ui[_] =
-    recycler map { rv =>
-      scrollerLayout <~ fslEnabledScroller(true) <~ fslLinkRecycler(rv) <~ fslReset <~ fslCounters(counters) <~ fslSignalType(signalType)
-    } getOrElse showGeneralError
+    scrollerLayout <~
+      fslEnabledScroller(true) <~
+      fslLinkRecycler(recycler) <~
+      fslReset <~
+      fslCounters(counters) <~
+      fslSignalType(signalType)
 
 }

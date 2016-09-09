@@ -2,9 +2,9 @@ package com.fortysevendeg.ninecardslauncher.process.commons
 
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{UnformedApp, UnformedContact}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardIntent, NineCardIntentExtras}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, ContactCardType, EmailCardType, PhoneCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactCardType, EmailCardType, PhoneCardType}
 import com.fortysevendeg.ninecardslauncher.process.moment.models.{App => MomentApp}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
@@ -72,7 +72,7 @@ trait NineCardIntentConversions {
   def packageToNineCardIntent(packageName: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(packageName)))
-    intent.setAction(models.NineCardsIntentExtras.openNoInstalledApp)
+    intent.setAction(openNoInstalledApp)
     intent
   }
 
