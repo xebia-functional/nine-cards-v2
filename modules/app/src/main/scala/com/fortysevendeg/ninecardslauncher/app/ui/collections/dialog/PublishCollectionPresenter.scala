@@ -15,7 +15,7 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fragmentContextWrapper: ActivityContextWrapper)
+class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
 
   var statuses = PublishCollectionStatuses()
@@ -46,6 +46,11 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
             actions.goBackToPublishCollectionInformation(name, description, category)
         })
     }) getOrElse actions.showMessageFormFieldError.run
+
+  def launchShareCollection(sharedCollectionId: String): Unit =
+    Task.fork(di.launcherExecutorProcess
+      .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId)).value)
+      .resolveAsyncUi(onException = _ => actions.showContactUsError)
 
   private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): TaskService[String] =
     for {
@@ -89,5 +94,7 @@ trait PublishCollectionActions {
   def showMessageFormFieldError: Ui[Any]
 
   def showMessagePublishingError: Ui[Any]
+
+  def showContactUsError: Ui[Any]
 
 }

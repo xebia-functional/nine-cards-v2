@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.app.analytics
+package com.fortysevendeg.ninecardslauncher.process.trackevent
 
-import Screen._
+import com.fortysevendeg.ninecardslauncher.process.trackevent.Screen._
 
 sealed trait Screen {
   def name: String
@@ -17,9 +17,13 @@ case object LauncherScreen extends Screen {
 case object CollectionDetailScreen extends Screen {
   override def name: String = collectionDetailName
 }
+case object WidgetScreen extends Screen {
+  override def name: String = widgetName
+}
 
 object Screen {
   val wizardName = "Wizard"
+  val widgetName = "Wizard"
   val launcherName = "Launcher"
   val collectionDetailName = "CollectionDetail"
 }

@@ -50,7 +50,6 @@ trait ApiServicesSpecification
       apiServiceV1)
 
     val exception = HttpClientException("")
-
   }
 }
 

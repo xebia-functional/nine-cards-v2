@@ -6,32 +6,31 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import cats.data.XorT
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Jobs, ResultCodes}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
 import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, ResultCodes}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{Subscription, SharedCollectionPackage, SharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{Subscription, SharedCollection, SharedCollectionPackage}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 
 import scala.util.{Failure, Try}
 import scalaz.concurrent.Task
 
 class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with LauncherExecutor
   with Conversions
   with GoogleDriveApiClientProvider {
 
@@ -110,7 +109,9 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   }
 
   def shareCollection(sharedCollection: SharedCollection): Unit =
-    launchShareCollection(sharedCollection.id)
+    Task.fork(di.launcherExecutorProcess
+      .launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id)).value)
+      .resolveAsyncUi(onException = _ => actions.showContactUsError())
 
   def loadPublications(): Unit = {
 
@@ -374,6 +375,8 @@ trait ProfileUiActions {
   def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
 
   def showContactUsError(clickAction: () => Unit): Ui[Any]
+
+  def showContactUsError(): Ui[Any]
 
   def showConnectingGoogleError(clickAction: () => Unit): Ui[Any]
 

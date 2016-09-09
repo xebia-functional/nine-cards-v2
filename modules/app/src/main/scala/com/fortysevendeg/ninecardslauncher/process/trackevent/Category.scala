@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.app.analytics
+package com.fortysevendeg.ninecardslauncher.process.trackevent
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
-import Category._
+import com.fortysevendeg.ninecardslauncher.process.trackevent.Category._
 
 sealed trait Category {
   def name: String

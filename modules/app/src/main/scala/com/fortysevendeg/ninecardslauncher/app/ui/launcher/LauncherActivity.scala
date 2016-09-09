@@ -121,4 +121,6 @@ class LauncherActivity
     }
   }
 
+  override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
+    presenter.requestPermissionsResult(requestCode, permissions, grantResults)
 }

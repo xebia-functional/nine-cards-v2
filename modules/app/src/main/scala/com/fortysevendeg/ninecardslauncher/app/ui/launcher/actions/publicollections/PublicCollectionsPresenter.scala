@@ -1,8 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections
 
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Jobs}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
@@ -10,13 +11,13 @@ import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TopSharedCollection, TypeSharedCollection}
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
+class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with LauncherExecutor
   with Conversions {
 
   protected var statuses = PublicCollectionStatuses(Communication, TopSharedCollection)
@@ -60,6 +61,11 @@ class PublicCollectionsPresenter (actions: PublicCollectionsUiActions)(implicit 
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen())
   }
 
+  def launchShareCollection(sharedCollectionId: String): Unit =
+    Task.fork(
+      di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId)).value)
+      .resolveAsyncUi(onException = _ => actions.showContactUsError)
+
   private[this] def getSharedCollections(
     category: NineCardCategory,
     typeSharedCollection: TypeSharedCollection): TaskService[Seq[SharedCollection]] =
@@ -92,6 +98,8 @@ trait PublicCollectionsUiActions {
   def showErrorSavingCollectionInScreen(): Ui[Any]
 
   def showEmptyMessageInScreen(): Ui[Any]
+
+  def showContactUsError: Ui[Any]
 
   def addCollection(collection: Collection): Ui[Any]
 

@@ -9,7 +9,6 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
@@ -83,7 +82,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     val pressedColor = theme.get(SearchPressedColor)
     val iconBackground = new TopBarMomentBackgroundDrawable
     val edgeBackground = new TopBarMomentEdgeBackgroundDrawable
-    val googleLogoTweaks = GoogleLogo.readValue(preferenceValues) match {
+    val googleLogoPref = GoogleLogo.readValue(preferenceValues)
+    val googleLogoTweaks = googleLogoPref match {
       case GoogleLogoTheme =>
         ivSrc(R.drawable.search_bar_logo_google_light) +
           tivDefaultColor(theme.get(SearchGoogleColor)) +
@@ -91,10 +91,18 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       case GoogleLogoColoured =>
         ivSrc(R.drawable.search_bar_logo_google_color) + tivClean
     }
+    val micLogoTweaks = googleLogoPref match {
+      case GoogleLogoTheme =>
+        ivSrc(R.drawable.search_bar_mic_light) +
+          tivDefaultColor(theme.get(SearchGoogleColor)) +
+          tivPressedColor(pressedColor)
+      case GoogleLogoColoured =>
+        ivSrc(R.drawable.search_bar_mic_color) + tivClean
+    }
     val sizeRes = FontSize.getTitleSizeResource
     (momentWorkspace <~ vBackground(edgeBackground)) ~
       (momentIconContent <~ vBackground(iconBackground)) ~
-      (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(pressedColor)) ~
+      (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(iconColor)) ~
       (momentText <~ tvSizeResource(sizeRes)) ~
       (momentDigitalClock <~ tvSizeResource(sizeRes)) ~
       (momentClock <~ tvSizeResource(sizeRes)) ~
@@ -106,11 +114,10 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         On.click(Ui(presenter.launchMenu()))) ~
       (collectionsGoogleIcon <~
         googleLogoTweaks <~
-        On.click(Ui(presenter.launchSearch))) ~
+        On.click(Ui(presenter.launchSearch()))) ~
       (collectionsMicIcon <~
-        tivDefaultColor(iconColor) <~
-        tivPressedColor(pressedColor) <~
-        On.click(Ui(presenter.launchVoiceSearch)))
+        micLogoTweaks <~
+        On.click(Ui(presenter.launchVoiceSearch())))
   }
 
   def movement(from: LauncherData, to: LauncherData, isFromLeft: Boolean, fraction: Float): Unit =
@@ -140,11 +147,11 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (momentText <~
         tvText(text)) ~
       (momentWeather <~
-        On.click(Ui(presenter.launchGoogleWeather))) ~
+        On.click(Ui(presenter.launchGoogleWeather()))) ~
       (momentGoogleIcon <~
-        On.click(Ui(presenter.launchSearch))) ~
+        On.click(Ui(presenter.launchSearch()))) ~
       (momentMicIcon <~
-        On.click(Ui(presenter.launchVoiceSearch)))
+        On.click(Ui(presenter.launchVoiceSearch())))
   }
 
   def reloadByType(workSpaceType: WorkSpaceType): Ui[Any] = workSpaceType match {

@@ -5,6 +5,7 @@ import android.widget.{LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
@@ -92,6 +93,8 @@ trait PublicCollectionsActionsImpl
 
   override def showEmptyMessageInScreen(): Ui[Any] =
     showMessageInScreen(R.string.emptyPublicCollections, error = false, collectionPresenter.loadPublicCollections())
+
+  override def showContactUsError: Ui[Any] = uiShortToast2(R.string.contactUsError)
 
   override def loadPublicCollections(
     sharedCollections: Seq[SharedCollection],
