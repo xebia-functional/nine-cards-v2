@@ -24,6 +24,14 @@ trait SharedCollectionsProcess {
     limit: Int = 50)(implicit context: ContextSupport): TaskService[Seq[SharedCollection]]
 
   /**
+    * Get published collections
+    *
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]
+    * @throws SharedCollectionsExceptions if there was an error fetching the published collections
+    */
+  def getPublishedCollections()(implicit context: ContextSupport): TaskService[Seq[SharedCollection]]
+
+  /**
     * Persist a [[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]]
     * @param sharedCollection the defined collection to create
     * @return shared collection identifier

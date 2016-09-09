@@ -77,6 +77,7 @@ trait ApiServiceData {
     publishedOn = "2016-08-16T14:55:30.574000",
     installations = Some(10),
     views = Some(100),
+    subscriptions = Some(100),
     publicIdentifier = publicIdentifier,
     appsInfo = Seq(collectionApp),
     packages = Seq(collectionApp.packageName))

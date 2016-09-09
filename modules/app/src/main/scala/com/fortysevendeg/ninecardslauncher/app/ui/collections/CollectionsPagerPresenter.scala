@@ -4,10 +4,10 @@ import android.content.Intent
 import android.graphics.Bitmap
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, Jobs}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
@@ -20,7 +20,6 @@ import scalaz.concurrent.Task
 class CollectionsPagerPresenter(
   actions: CollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
-  with LauncherExecutor
   with Conversions
   with NineCardIntentConversions { self =>
 
@@ -83,9 +82,12 @@ class CollectionsPagerPresenter(
 
   def shareCollection(): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.getCollectionById(collection.id).value).resolveAsync(
-      onResult = (c) => c map { col =>
+      onResult = (c) => c foreach { col =>
         if (col.sharedCollectionId.isDefined) {
-          col.getUrlSharedCollection map launchShare
+          col.getUrlSharedCollection foreach { text =>
+            Task.fork(di.launcherExecutorProcess.launchShare(text).value).resolveAsyncUi(
+              onException = _ => actions.showContactUsError)
+          }
         } else {
           actions.showMessageNotPublishedCollectionError.run
         }

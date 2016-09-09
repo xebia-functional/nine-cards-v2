@@ -18,6 +18,7 @@ trait Conversions {
       packages = item.packages,
       resolvedPackages = item.resolvedPackages map toSharedCollectionPackage,
       views = item.views,
+      subscriptions = item.subscriptions,
       category = NineCardCategory(item.category),
       icon = item.icon,
       community = item.community)

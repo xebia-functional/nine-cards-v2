@@ -11,6 +11,7 @@ trait ContactsServices {
     *
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
     *         information about contacts
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def getContacts: TaskService[Seq[Contact]]
@@ -20,6 +21,7 @@ trait ContactsServices {
     *
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactCounter] contains
     *         information about the times is repeated a contacts
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def getAlphabeticalCounterContacts: TaskService[Seq[ContactCounter]]
@@ -29,6 +31,7 @@ trait ContactsServices {
     *
     * @return the IterableCursorSeq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
     *         information about contacts
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def getIterableContacts: TaskService[IterableCursor[Contact]]
@@ -38,6 +41,7 @@ trait ContactsServices {
     *
     * @return the IterableCursorSeq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
     *         information about contacts
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def getIterableContactsByKeyword(keyword: String): TaskService[IterableCursor[Contact]]
@@ -47,6 +51,7 @@ trait ContactsServices {
     *
     * @return the Option[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
     *         information about contact
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def fetchContactByEmail(email: String): TaskService[Option[Contact]]
@@ -56,6 +61,7 @@ trait ContactsServices {
     *
     * @return the Option[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
     *         information about contact
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def fetchContactByPhoneNumber(phoneNumber: String): TaskService[Option[Contact]]
@@ -65,15 +71,28 @@ trait ContactsServices {
     *
     * @return the com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact contains
     *         information about contacts
-    * @throws ContactsServiceException if exist some problem accessing to contact provider or lookup key don't exits
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
+    * @throws ContactsServiceException if exist some problem accessing to contact provider
+    * @throws ContactNotFoundException if the lookup key doesn't exits
     */
   def findContactByLookupKey(lookupKey: String): TaskService[Contact]
+
+  /**
+    * Populate the info field in every contact
+    *
+    * @return sequence of the com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
+    * @throws ContactsServiceException if exist some problem accessing to contact provider
+    * @throws ContactNotFoundException if any contact doesn't exits
+    */
+  def populateContactInfo(contacts: Seq[Contact]): TaskService[Seq[Contact]]
 
   /**
     * Return favorite contacts. The info field is not filled
     *
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
     *         information about contacts
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def getFavoriteContacts: TaskService[Seq[Contact]]
@@ -83,6 +102,7 @@ trait ContactsServices {
     *
     * @return the IterableCursor[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
     *         information about contacts
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def getIterableFavoriteContacts: TaskService[IterableCursor[Contact]]
@@ -92,6 +112,7 @@ trait ContactsServices {
     *
     * @return the Seq[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
     *         information about contacts
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def getContactsWithPhone: TaskService[Seq[Contact]]
@@ -101,6 +122,7 @@ trait ContactsServices {
     *
     * @return the IterableCursor[com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact] contains
     *         information about contacts
+    * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
   def getIterableContactsWithPhone: TaskService[IterableCursor[Contact]]

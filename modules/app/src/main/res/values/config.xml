@@ -12,7 +12,7 @@
     <string name="android_market_oauth_scopes">androidmarket</string>
 
     <!-- Google Play -->
-    <string name="google_play_url">http://play.google.com/store/apps/details?id=%1$s</string>
+    <string name="google_play_url">http://play.google.com/store/apps/details</string>
 
     <!-- Google Analytics -->
     <string name="ga_trackingId">${google_analytics_id}</string>

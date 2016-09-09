@@ -41,6 +41,7 @@
     <!-- Wizard -->
     <string name="buttonContinue">Continue</string>
     <string name="buttonLetStart">Let\'s start</string>
+    <string name="buttonTryAgain">Try again</string>
     <string name="termsAndConditions">Accept terms and conditions</string>
     <string name="welcome">A launcher craft if for\nAndroid Power Users</string>
 
@@ -50,6 +51,9 @@
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
+
+    <string name="errorAccountsMessage">You need a Google account for using 9Cards. We only access to the account name and all next permissions will we prompted</string>
+    <string name="errorReadContactsMessage">With read contacts access we will be able to improve your contact base collections and you will have access to the contacts from the drawer.</string>
 
     <string name="deviceDetectedNoProUser">We have detected a saved configuration for your <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g>. If you are PRO User you can load your previous collections and themes. Would you like to upgrade now?</string>
 
@@ -128,6 +132,7 @@
     <string name="emptyMoment">You don\'t have moments defined</string>
 
     <string name="momentNotFoundMessage">Moment don\'t found. You should create new moments from My Collections section</string>
+    <string name="noPhoneCallPermissionMessage">The permission is needed to call the contact</string>
 
     <!-- Collections Detail -->
 
@@ -176,6 +181,9 @@
     <string name="emails">Email</string>
 
     <string name="errorLoadingContacts">Error loading contacts</string>
+    <string name="errorLoadingCalls">Error loading last calls</string>
+    <string name="errorContactsPermission">Contacts read permission needed. Do you want to try again?</string>
+    <string name="errorCallsPermission">Read call log permission needed. Do you want to try again?</string>
     <string name="errorLoadingApps">Error loading apps</string>
     <string name="errorLoadingShortcuts">Error loading shortcuts</string>
     <string name="errorLoadingRecommendations">Error loading recommendations</string>
@@ -187,6 +195,8 @@
     <string name="errorLoadingPublicCollections">Error loading public collections</string>
     <string name="errorSavingPublicCollections">Error saving public collections</string>
     <string name="emptyPublicCollections">There aren\'t collections published in this category. Maybe you can share one of your collections :-)</string>
+
+    <string name="sendEmailDialogChooserTitle">Send email</string>
 
     <!-- Contacts Info -->
 
@@ -300,6 +310,7 @@
     <!-- Profile -->
     <string name="publications">Publications</string>
     <string name="subscriptions">Subscriptions</string>
+    <string name="subscriptions_number">%s subscriptions</string>
     <string name="accounts">Accounts</string>
 
     <string name="syncHeaderDevices">Other Devices</string>
@@ -309,6 +320,8 @@
     <string name="menuAccountSync">Synchronize</string>
     <string name="menuAccountCopy">Copy</string>
     <string name="menuAccountDelete">Delete</string>
+
+    <string name="collectionAdded">This collection has been added to your collections</string>
 
     <string name="accountSynced">Account synced</string>
 
@@ -325,6 +338,14 @@
     <string name="hintNewConfigurationName">Name</string>
     <string name="removeAccountSyncMessage">Are you sure that you want remove this device?</string>
 
+    <string name="errorLoadingPublishedCollections">Error loading published collections</string>
+    <string name="emptyPublishedCollections">There aren\'t collections published. Maybe you can share one of your collections :-)</string>
+
+    <string name="errorLoadingSubscriptions">Error loading subscriptions</string>
+    <string name="errorSubscribing">Error subscribing to the collection</string>
+    <string name="emptySubscriptions">You are not subscribed to any collection in this moment</string>
+
+    <string name="installed_apps_number">%s installed apps</string>
 
     <!-- Preferences -->
 
@@ -400,6 +421,9 @@
 
     <string name="appDrawerFistTabContactTitle">Favorites Contacts First Tab</string>
     <string name="appDrawerFistTabContactSummary">Favorites Contacts will appear in the first position</string>
+
+    <string name="appDrawerSelectItemsInScrollerTitle">Select Item During Scrolling</string>
+    <string name="appDrawerSelectItemsInScrollerSummary">The items selected will be highlighted during scrolling on list of Apps and Contacts</string>
 
     <!-- Animations Preferences -->
 

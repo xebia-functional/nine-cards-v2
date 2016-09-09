@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
 import cats.data.{Xor, XorT}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, _}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 
 import scala.language.implicitConversions
 import scalaz.concurrent.Task
@@ -12,13 +12,24 @@ object NineCardExtensions {
   implicit class XorTExtensions[A](r: XorT[Task, NineCardException, A]) {
 
     def resolve[E <: NineCardException](implicit converter: Throwable => E): XorT[Task, NineCardException, A] =
-      r leftMap converter
+      resolveLeft(e => Xor.left(converter(e)))
 
-    def resolveTo(result: A): XorT[Task, NineCardException, A] = {
+    def resolveLeftTo(result: A): XorT[Task, NineCardException, A] =
+      resolveLeft((_) => Xor.right(result))
+
+    def resolveLeft(mapLeft: NineCardException => Xor[NineCardException, A]): XorT[Task, NineCardException, A] =
+      resolveSides((r) => Xor.right(r), mapLeft)
+
+    def resolveRight[B](mapRight: (A) => Xor[NineCardException, B]): XorT[Task, NineCardException, B] =
+      resolveSides(mapRight, (e) => Xor.left(e))
+
+    def resolveSides[B](
+      mapRight: (A) => Xor[NineCardException, B],
+      mapLeft: NineCardException => Xor[NineCardException, B] = (e: NineCardException) => Xor.left(e)): XorT[Task, NineCardException, B] = {
       val task: Task[Xor[NineCardException, A]] = r.value
-      val innerResult: Task[NineCardException Xor A] = task.map {
-        case r @ Xor.Right(_) => r
-        case Xor.Left(_) => Xor.right(result)
+      val innerResult: Task[NineCardException Xor B] = task.map {
+        case Xor.Right(v) => mapRight(v)
+        case Xor.Left(e) => mapLeft(e)
       }
       XorT(innerResult)
     }
@@ -33,18 +44,11 @@ object NineCardExtensions {
       cause map initCause
     }
 
-    def resolveOption() = {
-      val task: Task[NineCardException Xor Option[A]] = r.value
-
-      val innerResult: Task[NineCardException Xor A] = task.map {
-        case error @ Xor.Left(_) => error
-        case Xor.Right(result) => result match {
-          case Some(a) => Xor.Right(a)
-          case _ => Xor.left(EmptyException("Value not found"))
-        }
+    def resolveOption() =
+      r.resolveRight {
+        case Some(v) => Xor.right(v)
+        case None => Xor.left(EmptyException("Value not found"))
       }
-      XorT(innerResult)
-    }
 
   }
 

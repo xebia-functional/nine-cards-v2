@@ -54,6 +54,12 @@ object RequestCodes {
 
   val selectInfoWifi = 12
 
+  val contactsPermission = 13
+
+  val callLogPermission = 14
+
+  val phoneCallPermission = 15
+
 }
 
 object ResultCodes {

@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.commons.models
 import android.content.Intent
 import android.content.Intent._
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardsIntentExtras._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentExtras._
 import play.api.libs.json._
 
 import scala.collection.JavaConversions._
@@ -54,7 +54,7 @@ case class NineCardIntentExtras(
   package_name: Option[String] = None,
   class_name: Option[String] = None)
 
-object NineCardsIntentExtras {
+object NineCardIntentExtras {
   val nineCardExtraLookup: String = "contact_lookup_key"
   val nineCardExtraPhone: String = "tel"
   val nineCardExtraEmail: String = "email"

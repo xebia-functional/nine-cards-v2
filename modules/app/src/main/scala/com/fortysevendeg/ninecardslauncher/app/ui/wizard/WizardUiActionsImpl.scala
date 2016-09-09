@@ -1,14 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
-import android.accounts._
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -32,33 +29,31 @@ trait WizardUiActionsImpl
 
   val newConfigurationKey = "new_configuration"
 
-  lazy val rootLayout = Option(findView(TR.wizard_root))
+  lazy val rootLayout = findView(TR.wizard_root)
 
-  lazy val loadingRootLayout = Option(findView(TR.wizard_loading_content))
+  lazy val loadingRootLayout = findView(TR.wizard_loading_content)
 
-  lazy val userRootLayout = Option(findView(TR.wizard_user_content))
+  lazy val userRootLayout = findView(TR.wizard_user_content)
 
-  lazy val usersSpinner = Option(findView(TR.wizard_user_group))
+  lazy val usersTerms = findView(TR.wizard_user_terms)
 
-  lazy val usersTerms = Option(findView(TR.wizard_user_terms))
+  lazy val userAction = findView(TR.wizard_user_action)
 
-  lazy val userAction = Option(findView(TR.wizard_user_action))
+  lazy val titleDevice = findView(TR.wizard_device_title)
 
-  lazy val titleDevice = Option(findView(TR.wizard_device_title))
+  lazy val deviceRootLayout = findView(TR.wizard_device_content)
 
-  lazy val deviceRootLayout = Option(findView(TR.wizard_device_content))
+  lazy val devicesGroup = findView(TR.wizard_device_group)
 
-  lazy val devicesGroup = Option(findView(TR.wizard_device_group))
+  lazy val deviceAction = findView(TR.wizard_device_action)
 
-  lazy val deviceAction = Option(findView(TR.wizard_device_action))
+  lazy val stepsAction = findView(TR.wizard_steps_action)
 
-  lazy val stepsAction = Option(findView(TR.wizard_steps_action))
+  lazy val wizardRootLayout = findView(TR.wizard_steps_content)
 
-  lazy val wizardRootLayout = Option(findView(TR.wizard_steps_content))
+  lazy val paginationPanel = findView(TR.wizard_steps_pagination_panel)
 
-  lazy val paginationPanel = Option(findView(TR.wizard_steps_pagination_panel))
-
-  lazy val workspaces = Option(findView(TR.wizard_steps_workspace))
+  lazy val workspaces = findView(TR.wizard_steps_workspace)
 
   lazy val steps = Seq(
     StepData(R.drawable.wizard_01, resGetString(R.string.wizard_step_1)),
@@ -67,15 +62,13 @@ trait WizardUiActionsImpl
     StepData(R.drawable.wizard_04, resGetString(R.string.wizard_step_4)),
     StepData(R.drawable.wizard_05, resGetString(R.string.wizard_step_5)))
 
-  override def initialize(accounts: Seq[Account]): Ui[Any] = {
-    addUsersToRadioGroup(accounts) ~
+  override def initialize(): Ui[Any] = {
       (userAction <~
         defaultActionStyle <~
         On.click {
           Ui {
-            val termsAccept = usersTerms exists (_.isChecked)
-            val username = usersSpinner map (_.getSelectedItem.toString) getOrElse ""
-            presenter.connectAccount(username, termsAccept)
+            val termsAccept = usersTerms.isChecked
+            presenter.connectAccount(termsAccept)
           }
         }) ~
       (deviceAction <~
@@ -86,8 +79,8 @@ trait WizardUiActionsImpl
               Ui {
                 val tag = Option(i.getTag) map (_.toString)
                 tag match {
-                  case Some(`newConfigurationKey`) => presenter.generateCollections(None)
-                  case cloudId => presenter.generateCollections(cloudId)
+                  case Some(`newConfigurationKey`) => presenter.deviceSelected(None)
+                  case cloudId => presenter.deviceSelected(cloudId)
                 }
               }
           }
@@ -152,13 +145,7 @@ trait WizardUiActionsImpl
       (deviceRootLayout <~ vVisible)
 
   private[this] def backToUser(errorMessage: Int): Ui[Any] =
-    uiShortToast(errorMessage) ~ goToUser()
-
-  private[this] def addUsersToRadioGroup(accounts: Seq[Account]): Ui[Any] = {
-    val accountsName = (accounts map (_.name)).toArray
-    val sa = new ArrayAdapter[String](activityContextWrapper.getOriginal, android.R.layout.simple_spinner_dropdown_item, accountsName)
-    usersSpinner <~ sAdapter(sa)
-  }
+    uiShortToast2(errorMessage) ~ goToUser()
 
   private[this] def addDevicesToRadioGroup(userDevice: Option[UserCloudDevice], devices: Seq[UserCloudDevice]): Ui[Any] = {
 

@@ -146,7 +146,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
   }
 
   def dragReorderCollectionController(action: Int, x: Float, y: Float): Unit = {
-    (action, presenter.statuses.isReordering(), isRunningReorderAnimation) match {
+    (action, presenter.statuses.isReordering, isRunningReorderAnimation) match {
       case (ACTION_DRAG_LOCATION, true, false) =>
         val lastCurrentPosition = presenter.statuses.currentDraggingPosition
         val (canMoveToLeft, canMoveToRight) = canMove

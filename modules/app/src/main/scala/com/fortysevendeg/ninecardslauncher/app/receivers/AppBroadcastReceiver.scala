@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.receivers
 
 import android.content.Intent._
 import android.content._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportPreferences}
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportImpl, ContextSupportPreferences}
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppUninstalledActionFilter, AppUpdatedActionFilter, AppsActionFilter}
@@ -51,19 +51,8 @@ class AppBroadcastReceiver
 }
 
 class ContextSupportReceiverImpl(ctx: Context)
-  extends ContextSupport
+  extends ContextSupportImpl
   with ContextSupportPreferences {
-  override def getPackageManager = context.getPackageManager
-
-  override def getResources = context.getResources
-
-  override def getContentResolver = context.getContentResolver
-
-  override def getFilesDir = context.getFilesDir
-
-  override def getAssets = context.getAssets
-
-  override def getPackageName = context.getPackageName
 
   override def context: Context = ctx
 }

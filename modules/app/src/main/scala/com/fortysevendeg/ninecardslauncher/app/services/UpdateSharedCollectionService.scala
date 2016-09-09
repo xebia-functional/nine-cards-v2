@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.services
 
 import android.app.{IntentService, NotificationManager, Service}
 import android.content.{Context, Intent}
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
@@ -40,11 +40,11 @@ class UpdateSharedCollectionService
     (collectionId, action) match {
       case (Some(id), Some(`actionUnsubscribe`)) =>
         Task.fork(di.collectionProcess.unsubscribeSharedCollection(id).value).resolveAsync(
-          onResult = (_) => uiShortToast(R.string.sharedCollectionUnsubscribed),
+          onResult = (_) => uiShortToast2(R.string.sharedCollectionUnsubscribed),
           onException = e => printErrorMessage(e))
       case (Some(id), Some(`actionSync`)) =>
         Task.fork(di.collectionProcess.addPackages(id, packages.toSeq).value).resolveAsync(
-          onResult = (_) => uiShortToast(R.string.sharedCollectionUpdated),
+          onResult = (_) => uiShortToast2(R.string.sharedCollectionUpdated),
           onException = e => printErrorMessage(e))
       case _ =>
     }

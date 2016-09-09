@@ -90,7 +90,7 @@ class EditWidgetsBottomPanelLayout(context: Context, attrs: AttributeSet, defSty
   def animateCursors(implicit launcherPresenter: LauncherPresenter): Ui[Any] = {
     val color = launcherPresenter.statuses.transformation match {
       case Some(ResizeTransformation) => resizeColor
-      case Some(MoveTransformation) => moveColor
+      case _ => moveColor
     }
     (arrowUp <~ vBackgroundCircle(color) <~ On.click(Ui(launcherPresenter.arrowWidget(ArrowUp)))) ~
       (arrowDown <~ vBackgroundCircle(color) <~ On.click(Ui(launcherPresenter.arrowWidget(ArrowDown)))) ~

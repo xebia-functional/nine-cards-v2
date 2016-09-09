@@ -22,4 +22,10 @@
             android:title="@string/appDrawerFistTabContactTitle"
             android:summary="@string/appDrawerFistTabContactSummary"/>
 
+    <CheckBoxPreference
+        android:key="appDrawerSelectItemsInScroller"
+        android:defaultValue="true"
+        android:title="@string/appDrawerSelectItemsInScrollerTitle"
+        android:summary="@string/appDrawerSelectItemsInScrollerSummary"/>
+
 </PreferenceScreen>
