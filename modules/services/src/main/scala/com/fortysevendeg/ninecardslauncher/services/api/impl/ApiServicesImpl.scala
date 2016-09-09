@@ -198,13 +198,13 @@ class ApiServicesImpl(
     originalSharedCollectionId: String)(implicit requestConfig: RequestConfig) =
     (for {
       response <- apiService.subscribe(originalSharedCollectionId, requestConfig.toServiceHeader)
-    } yield CreateSubscriptionResponse(response.statusCode)).resolve[ApiServiceException]
+    } yield SubscribeResponse(response.statusCode)).resolve[ApiServiceException]
 
   override def unsubscribe(
     originalSharedCollectionId: String)(implicit requestConfig: RequestConfig) =
     (for {
       response <- apiService.unsubscribe(originalSharedCollectionId, requestConfig.toServiceHeader)
-    } yield DeleteSubscriptionResponse(response.statusCode)).resolve[ApiServiceException]
+    } yield UnsubscribeResponse(response.statusCode)).resolve[ApiServiceException]
 
   implicit class RequestHeaderHeader(request: RequestConfigV1) {
     def toHeader: Seq[(String, String)] =

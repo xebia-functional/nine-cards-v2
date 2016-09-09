@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, CreatedCollection, SharedCollection, UpdateSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
 
 trait SharedCollectionsProcess {
 
@@ -50,4 +50,25 @@ trait SharedCollectionsProcess {
   def updateSharedCollection(
     sharedCollection: UpdateSharedCollection
   )(implicit context: ContextSupport): TaskService[String]
+
+  /**
+    * Gets all the subscriptions of the current user
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.Subscription]
+    * @throws SharedCollectionsExceptions if the service cannot get the subscriptions or the collections
+    */
+  def getSubscriptions()(implicit context: ContextSupport): TaskService[Seq[Subscription]]
+
+  /**
+    * Subscribes to a public collection
+    * @param originalSharedCollectionId the public id of the collection to subscribe on
+    * @throws SharedCollectionsExceptions if the service cannot subscribe to the collection
+    */
+  def subscribe(originalSharedCollectionId: String)(implicit context: ContextSupport): TaskService[Unit]
+
+  /**
+    * Unsubscribes from a public collection
+    * @param originalSharedCollectionId the public id of the collection to unsubscribe from
+    * @throws SharedCollectionsExceptions if the service cannot unsubscribe from the collection
+    */
+  def unsubscribe(originalSharedCollectionId: String)(implicit context: ContextSupport): TaskService[Unit]
 }

@@ -8,7 +8,6 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsExceptions
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreatedCollection
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices}
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
 import org.specs2.mock.Mockito
@@ -140,6 +139,91 @@ class SharedCollectionsProcessImplSpec
         val result = sharedCollectionsProcess.createSharedCollection(
           createSharedCollection
         )(contextSupport).value.run
+        result must beAnInstanceOf[Xor.Left[SharedCollectionsExceptions]]
+      }
+  }
+
+  "getSubscriptions" should {
+
+    "returns a sequence of the subscriptions for a valid request" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.getSubscriptions()(any) returns
+          TaskService(Task(Xor.right(subscriptionList)))
+
+        mockPersistenceServices.fetchCollections returns
+          TaskService(Task(Xor.right(collectionList)))
+
+        val result = sharedCollectionsProcess.getSubscriptions()(contextSupport).value.run
+
+        result must beLike {
+          case Xor.Right(subscriptions) =>
+            subscriptions.size shouldEqual publicCollectionList.size
+            subscriptions map (s => Option(s.originalSharedCollectionId)) shouldEqual publicCollectionList.map(_.originalSharedCollectionId)
+        }
+      }
+
+    "returns a SharedCollectionsExceptions if the service throws a exception getting the subscriptions" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.getSubscriptions()(any) returns
+          TaskService(Task(Xor.left(apiException)))
+
+        val result = sharedCollectionsProcess.getSubscriptions()(contextSupport).value.run
+        result must beAnInstanceOf[Xor.Left[SharedCollectionsExceptions]]
+      }
+
+    "returns a SharedCollectionsExceptions if the service throws a exception getting the collections" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.getSubscriptions()(any) returns
+          TaskService(Task(Xor.right(subscriptionList)))
+
+        mockPersistenceServices.fetchCollections returns
+          TaskService(Task(Xor.left(apiException)))
+
+        val result = sharedCollectionsProcess.getSubscriptions()(contextSupport).value.run
+        result must beAnInstanceOf[Xor.Left[SharedCollectionsExceptions]]
+      }
+  }
+
+  "subscribe" should {
+
+    "returns a sequence of the subscriptions for a valid request" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.subscribe(any)(any) returns
+          TaskService(Task(Xor.right(subscribeResponse)))
+
+        val result = sharedCollectionsProcess.subscribe(originalSharedCollectionId)(contextSupport).value.run
+
+        result mustEqual Xor.Right(())
+      }
+
+    "returns a SharedCollectionsExceptions if the service throws a exception" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.subscribe(any)(any) returns
+          TaskService(Task(Xor.left(apiException)))
+
+        val result = sharedCollectionsProcess.subscribe(originalSharedCollectionId)(contextSupport).value.run
+        result must beAnInstanceOf[Xor.Left[SharedCollectionsExceptions]]
+      }
+  }
+
+  "unsubscribe" should {
+
+    "returns a sequence of the subscriptions for a valid request" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.unsubscribe(any)(any) returns
+          TaskService(Task(Xor.right(unsubscribeResponse)))
+
+        val result = sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)(contextSupport).value.run
+
+        result mustEqual Xor.Right(())
+      }
+
+    "returns a SharedCollectionsExceptions if the service throws a exception" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.unsubscribe(any)(any) returns
+          TaskService(Task(Xor.left(apiException)))
+
+        val result = sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)(contextSupport).value.run
         result must beAnInstanceOf[Xor.Left[SharedCollectionsExceptions]]
       }
   }

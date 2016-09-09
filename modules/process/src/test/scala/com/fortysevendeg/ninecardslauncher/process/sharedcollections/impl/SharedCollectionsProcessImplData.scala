@@ -3,7 +3,8 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreateSharedCollection
-import com.fortysevendeg.ninecardslauncher.services.api.{CreateSharedCollectionResponse, RequestConfig, SharedCollectionResponse, SharedCollectionResponseList}
+import com.fortysevendeg.ninecardslauncher.services.api._
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 
 import scala.util.Random
 
@@ -60,4 +61,49 @@ trait SharedCollectionsProcessImplData {
     CreateSharedCollectionResponse(
       statusCode = statusCodeOk,
       sharedCollectionId = sharedCollectionId)
+
+  val originalSharedCollectionId = Random.nextString(30)
+
+  def generateSubscriptionResponse() = 1 to 10 map { i =>
+    SubscriptionResponse(
+      originalSharedCollectionId = originalSharedCollectionId + Random.nextInt(10))
+  }
+
+  val subscriptionList = SubscriptionResponseList(
+    statusCode = statusCodeOk,
+    items = generateSubscriptionResponse())
+
+  def generateOptionOriginalSharedCollectionId() =
+    Random.nextInt(10) match {
+      case 0 => None
+      case n => Some(originalSharedCollectionId + n)
+    }
+
+  def generateCollection() = 1 to 10 map { i =>
+    Collection(
+      id = i,
+      position = Random.nextInt(10),
+      name = Random.nextString(10),
+      collectionType = Random.nextString(10),
+      icon = Random.nextString(10),
+      themedColorIndex = Random.nextInt(10),
+      appsCategory = None,
+      originalSharedCollectionId = generateOptionOriginalSharedCollectionId(),
+      sharedCollectionId = None,
+      sharedCollectionSubscribed = false,
+      cards = Seq.empty,
+      moment = None)
+  }
+
+  val collectionList = generateCollection()
+
+  val publicCollectionList = collectionList.filter(_.originalSharedCollectionId.isDefined)
+
+  val subscribeResponse =
+    SubscribeResponse(
+      statusCode = statusCodeOk)
+
+  val unsubscribeResponse =
+    UnsubscribeResponse(
+      statusCode = statusCodeOk)
 }
