@@ -132,7 +132,6 @@
 
     <!-- Fast Scroller -->
     <color name="fastscroller_text">#ffffff</color>
-    <color name="fastscroller_bar_background">#D8D8D8</color>
 
     <!-- PullToTabsView -->
     <color name="pulltotabs_line">#24000000</color>

@@ -2,14 +2,14 @@ package com.fortysevendeg.ninecardslauncher.app.ui.preferences.appdrawer
 
 import android.app.Fragment
 import android.os.Bundle
-import android.preference.{ListPreference, PreferenceFragment}
+import android.preference.ListPreference
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import macroid.Contexts
 
 class AppDrawerFragment
-  extends PreferenceFragment
+  extends PreferenceChangeListenerFragment
   with Contexts[Fragment]
   with FindPreferences {
 

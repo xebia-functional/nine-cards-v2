@@ -74,6 +74,7 @@ case class SharedCollectionResponse(
   packages: Seq[String],
   resolvedPackages: Seq[SharedCollectionPackageResponse],
   views: Int,
+  subscriptions: Option[Int],
   category: String,
   icon: String,
   community: Boolean)

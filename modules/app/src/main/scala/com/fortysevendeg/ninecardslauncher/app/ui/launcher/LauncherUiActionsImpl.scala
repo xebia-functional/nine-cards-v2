@@ -175,6 +175,8 @@ trait LauncherUiActionsImpl
 
   override def showNoImplementedYetMessage(): Ui[Any] = showMessage(R.string.todo)
 
+  override def showNoPhoneCallPermissionError: Ui[Any] = showMessage(R.string.noPhoneCallPermissionMessage)
+
   override def showLoading(): Ui[Any] = showCollectionsLoading
 
   override def goToPreviousScreen(): Ui[Any] = {
@@ -294,7 +296,7 @@ trait LauncherUiActionsImpl
       counters = counters)
 
   override def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any] =
-    addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact))
+    addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact.number))
 
   override def resetFromCollection(): Ui[Any] = foreground <~ vBlankBackground <~ vGone
 
@@ -524,11 +526,17 @@ trait LauncherUiActionsImpl
 
   override def isEmptyCollectionsInWorkspace: Boolean = isEmptyCollections
 
-  def turnOffFragmentContent: Ui[Any] = {
+  override def turnOffFragmentContent: Ui[Any] = {
     val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
     (fragmentContent <~ vClickable(false)) ~
       (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))
   }
+
+  override def reloadDrawerApps(): Ui[Any] = loadAppsAlphabetical
+
+  override def reloadDrawerContacts(): Ui[Any] = reloadContacts
+
+  override def showBottomError(message: Int, action: () => Unit): Ui[Any] = showBottomDrawerError(message, action)
 
   def reloadPager(currentPage: Int) = Transformer {
     case imageView: ImageView if imageView.isPosition(currentPage) =>

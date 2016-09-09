@@ -58,8 +58,13 @@ object Libraries {
   }
 
   object test {
-    lazy val specs2 = "org.specs2" %% "specs2-core" % specs2V % "test"
-    lazy val mockito = "org.specs2" % "specs2-mock_2.11" % mockitoV % "test"
+
+    lazy val specs2Lib = "org.specs2" %% "specs2-core" % specs2V
+    lazy val specs2 = specs2Lib % "test"
+
+    lazy val mockitoLib = "org.specs2" % "specs2-mock_2.11" % mockitoV
+    lazy val mockito = mockitoLib % "test"
+
     lazy val androidTest = "com.google.android" % "android" % "4.1.1.4" % "test"
   }
 

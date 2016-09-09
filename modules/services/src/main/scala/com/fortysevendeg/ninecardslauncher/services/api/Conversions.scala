@@ -164,6 +164,7 @@ trait Conversions {
       packages = collection.packages,
       resolvedPackages = toSharedCollectionPackageResponseSeq(collection.appsInfo),
       views = collection.views getOrElse 0,
+      subscriptions = collection.subscriptions,
       category = collection.category,
       icon = collection.icon,
       community = collection.community)

@@ -52,6 +52,9 @@ class ContactsFragment(implicit collectionsPagerPresenter: CollectionsPagerPrese
     }
   }
 
+  override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
+    contactsPresenter.requestPermissionsResult(requestCode, permissions, grantResults)
+
   override def onDestroy(): Unit = {
     contactsPresenter.destroy()
     super.onDestroy()

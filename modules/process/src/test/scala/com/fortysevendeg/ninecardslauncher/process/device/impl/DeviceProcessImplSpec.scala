@@ -205,15 +205,10 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockContactsServices.getFavoriteContacts returns TaskService(Task(Xor.right(contacts)))
-        mockContactsServices.findContactByLookupKey("lookupKey 1") returns TaskService(Task(Xor.right(contacts.head)))
-        mockContactsServices.findContactByLookupKey("lookupKey 2") returns TaskService(Task(Xor.right(contacts(1))))
-        mockContactsServices.findContactByLookupKey("lookupKey 3") returns TaskService(Task(Xor.right(contacts(2))))
+        mockContactsServices.populateContactInfo(any) returns TaskService(Task(Xor.right(contacts)))
 
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
-        result must beLike {
-          // TODO - This is a workaround and need to be fixed in ticket 9C-284
-          case Xor.Right(r) => r.map(_.name).sorted shouldEqual contacts.map(_.name).sorted
-        }
+        result shouldEqual Xor.right(deviceProcess.toContactSeq(contacts))
       }
 
     "returns ContactException when ContactsServices fails getting the favorite contacts" in
@@ -224,14 +219,13 @@ class DeviceProcessImplSpec
         result must beAnInstanceOf[Xor.Left[ContactException]]
       }
 
-    "returns an empty list if ContactsServices fails filling the contacts" in
+    "returns ContactException when ContactsServices fails filling the contacts" in
       new DeviceProcessScope {
 
         mockContactsServices.getFavoriteContacts returns TaskService(Task(Xor.right(contacts)))
-        mockContactsServices.findContactByLookupKey(any) returns TaskService(Task(Xor.left(contactsServicesException)))
-
+        mockContactsServices.populateContactInfo(any) returns TaskService(Task(Xor.left(contactsServicesException)))
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
-        result shouldEqual Xor.Right(Seq())
+        result must beAnInstanceOf[Xor.Left[ContactException]]
       }
 
   }

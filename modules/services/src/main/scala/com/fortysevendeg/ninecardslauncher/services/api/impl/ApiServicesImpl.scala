@@ -60,6 +60,8 @@ class ApiServicesImpl(
 
   val createSharedCollectionNotFoundMessage = "Shared Collection not found"
 
+  val publishedCollectionsNotFoundMessage = "Published Collections not found"
+
   override def loginV1(
     email: String,
     device: LoginV1Device) =
@@ -142,6 +144,12 @@ class ApiServicesImpl(
       sharedCollections <- readOption(response.data, shareCollectionNotFoundMessage)
     } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(sharedCollections.collections))
   }
+
+  override def getPublishedCollections()(implicit requestConfig: RequestConfig) =
+    (for {
+      response <- apiService.getCollections(header = requestConfig.toGooglePlayHeader)
+      publishedCollections <- readOption(response.data, publishedCollectionsNotFoundMessage)
+    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(publishedCollections.collections))).resolve[ApiServiceException]
 
   override def createSharedCollection(
     name: String,

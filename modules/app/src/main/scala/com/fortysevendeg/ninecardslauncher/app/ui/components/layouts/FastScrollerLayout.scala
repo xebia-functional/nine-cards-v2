@@ -34,14 +34,12 @@ class FastScrollerLayout(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
-  lazy val fastScroller = Option(new FastScrollerView(context))
+  lazy val fastScroller = new FastScrollerView(context)
 
   override def onFinishInflate(): Unit = {
-    fastScroller map { fs =>
-      val ll = new LayoutParams(WRAP_CONTENT, MATCH_PARENT)
-      ll.gravity = Gravity.RIGHT
-      (this <~ vgAddView(fs, ll)).run
-    }
+    val ll = new LayoutParams(WRAP_CONTENT, MATCH_PARENT)
+    ll.gravity = Gravity.RIGHT
+    (this <~ vgAddView(fastScroller, ll)).run
     super.onFinishInflate()
   }
 
@@ -120,23 +118,23 @@ class FastScrollerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   LayoutInflater.from(context).inflate(R.layout.fastscroller, this)
 
-  lazy val barContent = Option(findView(TR.fastscroller_bar_content))
+  lazy val barContent = findView(TR.fastscroller_bar_content)
 
-  val bar = Option(findView(TR.fastscroller_bar))
+  val bar = findView(TR.fastscroller_bar)
 
-  val signal = Option(findView(TR.fastscroller_signal))
+  val signal = findView(TR.fastscroller_signal)
 
-  val text = Option(findView(TR.fastscroller_signal_text))
+  val text = findView(TR.fastscroller_signal_text)
 
-  val icon = Option(findView(TR.fastscroller_signal_icon))
+  val icon = findView(TR.fastscroller_signal_icon)
 
   val barSize = context.getResources.getDimensionPixelOffset(R.dimen.fastscroller_bar_height)
 
   override def onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int): Unit = {
     super.onSizeChanged(w, h, oldw, oldh)
     if (statuses.heightScroller != h) {
-      getParent match {
-        case parent: View =>
+      Option(getParent) match {
+        case Some(parent: View) =>
           // Try to expand the touch event in the right side to improve the feedback to user
           val delegateArea = new Rect()
           getHitRect(delegateArea)
