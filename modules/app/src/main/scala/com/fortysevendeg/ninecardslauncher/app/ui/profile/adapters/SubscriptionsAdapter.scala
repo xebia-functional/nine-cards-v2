@@ -65,7 +65,7 @@ case class ViewHolderSubscriptionsAdapter(
       (icon <~ ivSrc(subscription.getIconSubscriptionDetail)) ~
       (name <~ tvText(resGetString(subscription.name) getOrElse subscription.name)) ~
       (apps <~ tvText(resGetString(R.string.installed_apps_number, subscription.apps.toString))) ~
-      (subscribed <~ switchSetChecked(subscription.subscribed) +
+      (subscribed <~ sChecked(subscription.subscribed) +
         On.click(Ui(onSubscribe(subscription.originalSharedCollectionId, !subscription.subscribed))))
   }
 
