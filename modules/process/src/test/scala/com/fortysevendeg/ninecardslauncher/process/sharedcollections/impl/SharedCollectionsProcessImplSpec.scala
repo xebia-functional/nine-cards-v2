@@ -130,8 +130,8 @@ class SharedCollectionsProcessImplSpec
 
         result must beLike {
           case Xor.Right(subscriptions) =>
-            subscriptions.size shouldEqual collectionList.size
-            subscriptions map (s => Option(s.originalSharedCollectionId)) shouldEqual collectionList.map(_.originalSharedCollectionId)
+            subscriptions.size shouldEqual publicCollectionList.size
+            subscriptions map (s => Option(s.originalSharedCollectionId)) shouldEqual publicCollectionList.map(_.originalSharedCollectionId)
         }
       }
 
