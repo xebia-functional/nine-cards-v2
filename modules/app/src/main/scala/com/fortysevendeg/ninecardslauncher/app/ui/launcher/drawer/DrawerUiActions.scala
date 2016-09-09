@@ -167,10 +167,10 @@ trait DrawerUiActions
     val loadContacts = AppDrawerLongPressAction.readValue(preferenceValues) == AppDrawerLongPressActionOpenContacts && longClick
     (if (loadContacts) {
       Ui(
-        recycler foreach { _.getAdapter match {
+        recycler.getAdapter match {
           case a: AppsAdapter => a.clear()
           case _ =>
-        }}) ~ loadContactsAlphabetical
+        }) ~ loadContactsAlphabetical
     } else if (getItemsCount == 0) {
       loadAppsAlphabetical
     } else {
