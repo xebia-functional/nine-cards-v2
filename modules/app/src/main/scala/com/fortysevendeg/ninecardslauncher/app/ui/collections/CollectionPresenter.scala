@@ -1,19 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.content.Context
 import android.support.v7.widget.RecyclerView.ViewHolder
-import com.fortysevendeg.ninecardslauncher.app.analytics.{NoValue, RemovedInCollectionAction, RemovedInCollectionValue, _}
-import com.fortysevendeg.ninecardslauncher.app.commons.{ActivityContextSupportProvider, Conversions}
+import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, PhoneCardType}
-import macroid.{ActivityContextWrapper, Ui}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
+import com.fortysevendeg.ninecardslauncher.process.trackevent._
+import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
@@ -22,15 +21,11 @@ case class CollectionPresenter(
   maybeCollection: Option[Collection],
   actions: CollectionUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with Conversions
-  with AnalyticDispatcher
-  with ActivityContextSupportProvider { self =>
+  with Conversions { self =>
 
   val permissionChecker = new PermissionChecker
 
   var statuses = CollectionPresenterStatuses()
-
-  override def getApplicationContext: Context = contextWrapper.application
 
   def initialize(sType: ScrollType): Unit = {
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
@@ -129,18 +124,15 @@ case class CollectionPresenter(
           collection.moment flatMap (_.momentType) map MomentCategory
         }
       } yield {
-        self !>>
-          TrackEvent(
-            screen = CollectionDetailScreen,
-            category = category,
-            action = action,
-            label = Some(ProvideLabel(packageName)),
-            value = Some(action match {
-              case OpenCardAction => OpenAppFromCollectionValue
-              case AddedToCollectionAction => AddedToCollectionValue
-              case RemovedInCollectionAction => RemovedInCollectionValue
-              case _ => NoValue
-            }))
+        action match {
+          case OpenCardAction =>
+            Task.fork(di.trackEventProcess.openAppFromCollection(packageName, category).value).resolveAsync()
+          case AddedToCollectionAction =>
+            Task.fork(di.trackEventProcess.addAppToCollection(packageName, category).value).resolveAsync()
+          case RemovedInCollectionAction =>
+            Task.fork(di.trackEventProcess.removedInCollection(packageName, category).value).resolveAsync()
+          case _ =>
+        }
       }
     case _ =>
   }

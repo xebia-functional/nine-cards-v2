@@ -4,7 +4,6 @@ import android.widget.{ArrayAdapter, ImageView}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -109,7 +108,7 @@ trait PublishCollectionActionsImpl
 
   override def showContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
 
-  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
+  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
 
   private[this] def createPagers() = {
     val pagerViews = (0 until steps) map { position =>

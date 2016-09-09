@@ -238,7 +238,7 @@ trait CollectionUiActionsImpl
     }
   }
 
-  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
+  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
 
   private[this] def showCollection(): Ui[_] =
     (recyclerView <~ vVisible) ~

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.share
 
 import android.app.Activity
 import android.support.v7.app.AppCompatActivity
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.CollectionDialog
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -27,13 +27,13 @@ trait SharedContentUiActionsImpl
     case _ => Ui.nop
   }
 
-  override def showSuccess(): Ui[Any] = uiShortToast(R.string.sharedCardAdded) ~ finishUi()
+  override def showSuccess(): Ui[Any] = uiShortToast2(R.string.sharedCardAdded) ~ finishUi()
 
-  override def showErrorEmptyContent(): Ui[Any] = uiShortToast(R.string.sharedContentErrorEmpty) ~ finishUi()
+  override def showErrorEmptyContent(): Ui[Any] = uiShortToast2(R.string.sharedContentErrorEmpty) ~ finishUi()
 
-  override def showErrorContentNotSupported(): Ui[Any] = uiLongToast(R.string.sharedContentErrorNotSupported) ~ finishUi()
+  override def showErrorContentNotSupported(): Ui[Any] = uiLongToast2(R.string.sharedContentErrorNotSupported) ~ finishUi()
 
-  override def showUnexpectedError(): Ui[Any] = uiShortToast(R.string.sharedContentErrorUnexpected) ~ finishUi()
+  override def showUnexpectedError(): Ui[Any] = uiShortToast2(R.string.sharedContentErrorUnexpected) ~ finishUi()
 
   override def finishUi(): Ui[Any] = Ui(uiContext.value.finish())
 }

@@ -1,11 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
-import android.content.{ComponentName, Context, Intent}
+import android.content.{ComponentName, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
-import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.commons.{ActivityContextSupportProvider, BroadAction, Conversions, NineCardIntentConversions}
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.{CallPhone, ReadCallLog, ReadContacts}
 import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
@@ -29,12 +28,13 @@ import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, _}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
+import com.fortysevendeg.ninecardslauncher.process.trackevent._
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.R
@@ -48,9 +48,7 @@ import scalaz.concurrent.Task
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
-  with NineCardIntentConversions
-  with AnalyticDispatcher
-  with ActivityContextSupportProvider { self =>
+  with NineCardIntentConversions { self =>
 
   val tagDialog = "dialog"
 
@@ -61,8 +59,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   var statuses = LauncherPresenterStatuses()
 
   val permissionChecker = new PermissionChecker
-
-  override def getApplicationContext: Context = contextWrapper.application
 
   def initialize(): Unit = {
     Try(FirebaseAnalytics.getInstance(contextWrapper.bestAvailable))
@@ -249,13 +245,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
-    self !>>
-      TrackEvent(
-        screen = LauncherScreen,
-        category = moment map MomentCategory getOrElse FreeCategory,
-        action = OpenAction,
-        label = card.packageName map ProvideLabel,
-        value = Some(OpenMomentFromWorkspaceValue))
+    card.packageName foreach { packageName =>
+      val category = moment map MomentCategory getOrElse FreeCategory
+      Task.fork(di.trackEventProcess.openAppFromAppDrawer(packageName, category).value).resolveAsync()
+    }
     actions.closeAppsMoment().run
     launcherCallService(di.launcherExecutorProcess.execute(card.intent), card.intent.extractPhone())
   }
@@ -263,13 +256,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
-    self !>>
-      TrackEvent(
-        screen = LauncherScreen,
-        category = AppCategory(app.category),
-        action = OpenAction,
-        label = Some(ProvideLabel(app.packageName)),
-        value = Some(OpenAppFromAppDrawerValue))
+    Task.fork(di.trackEventProcess.openAppFromAppDrawer(app.packageName, AppCategory(app.category)).value).resolveAsync()
     launcherService(di.launcherExecutorProcess.execute(toNineCardIntent(app)))
   }
 
@@ -760,6 +747,14 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def hostWidget(widget: Widget): Unit = {
     statuses = statuses.copy(hostingNoConfiguredWidget = None)
+    val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
+    currentMomentType foreach { moment =>
+      Task.fork(
+        di.trackEventProcess.addWidgetToMoment(
+          widget.packageName,
+          widget.className,
+          MomentCategory(moment)).value).resolveAsync()
+    }
     actions.hostWidget(widget.packageName, widget.className).run
   }
 
@@ -771,8 +766,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def needToRecreate(array: Array[String]): Boolean =
       array.intersect(
         Seq(PreferencesValuesKeys.theme,
-        PreferencesValuesKeys.iconsSize,
-        PreferencesValuesKeys.fontsSize)).nonEmpty
+          PreferencesValuesKeys.iconsSize,
+          PreferencesValuesKeys.fontsSize,
+          PreferencesValuesKeys.appDrawerSelectItemsInScroller)).nonEmpty
 
     def uiAction(prefKey: String): Ui[_] = prefKey match {
       case PreferencesValuesKeys.showClockMoment => actions.reloadMomentTopBar()

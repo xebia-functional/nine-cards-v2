@@ -402,6 +402,9 @@
     <string name="appDrawerFistTabContactTitle">Contactos Favoritos al entrar</string>
     <string name="appDrawerFistTabContactSummary">Los Contacts Favorites aparecerán al entrar en el área de contactos</string>
 
+    <string name="appDrawerSelectItemsInScrollerTitle">Resaltar elementos durante scroll</string>
+    <string name="appDrawerSelectItemsInScrollerSummary">Los elementos seleccionados durante el scroll en la lista de aplicaciones y contactos</string>
+
     <!-- Animations Preferences -->
 
     <string name="animationsPrefTitle">Animaciones</string>

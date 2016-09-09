@@ -7,7 +7,6 @@ import android.os.{Build, Bundle}
 import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.ActivityContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
@@ -40,13 +39,12 @@ import scalaz.concurrent.Task
 
 class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with ActivityContextSupportProvider
   with GoogleDriveApiClientProvider
   with GooglePlusApiClientProvider
   with ImplicitsCloudStorageProcessExceptions {
 
-  import Statuses._
   import PermissionChecker._
+  import Statuses._
 
   val accountType = "com.google"
 

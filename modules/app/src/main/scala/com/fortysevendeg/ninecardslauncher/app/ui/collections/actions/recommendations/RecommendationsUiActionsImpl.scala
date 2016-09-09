@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations
 
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
@@ -22,7 +22,7 @@ trait RecommendationsUiActionsImpl
 
   implicit val presenter: RecommendationsPresenter
 
-  lazy val recycler = Option(findView(TR.actions_recycler))
+  lazy val recycler = findView(TR.actions_recycler)
 
   def loadBackgroundColor = theme.get(CardLayoutBackgroundColor)
 
@@ -53,6 +53,6 @@ trait RecommendationsUiActionsImpl
   }
 
   override def showContactUsError(): Ui[Any] =
-    uiShortToast(R.string.contactUsError)
+    uiShortToast2(R.string.contactUsError)
 
 }

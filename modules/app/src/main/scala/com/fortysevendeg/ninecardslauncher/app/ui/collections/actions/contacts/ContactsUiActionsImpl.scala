@@ -7,6 +7,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPr
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
@@ -17,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
@@ -45,10 +47,12 @@ trait ContactsUiActionsImpl
 
   lazy val contactsTabs = Seq(
     TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.contacts_alphabetical)),
-    TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites))
-  )
+    TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites)))
 
-  override def initialize(): Ui[Any] =
+  lazy val preferences = new NineCardsPreferencesValue
+
+  override def initialize(): Ui[Any] = {
+    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferences)
     (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
         dtbInit(colorPrimary) <~
@@ -73,8 +77,9 @@ trait ContactsUiActionsImpl
             contactsPresenter.loadContacts(if (pos == 0) AllContacts else FavoriteContacts)
           }
         ))) ~
-      (recycler <~ recyclerStyle) ~
+      (recycler <~ recyclerStyle <~ (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank)) ~
       (tabs <~ tvClose)
+  }
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ (pullToTabsView <~ pdvEnable(false)) ~ hideError
 

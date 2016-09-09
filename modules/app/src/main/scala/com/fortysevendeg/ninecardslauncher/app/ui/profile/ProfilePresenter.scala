@@ -6,16 +6,17 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import cats.data.XorT
-import com.fortysevendeg.ninecardslauncher.app.commons.{ActivityContextSupportProvider, BroadAction, Conversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, ResultCodes}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
 import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, ResultCodes}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
@@ -24,7 +25,6 @@ import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 
 import scala.util.{Failure, Try}
 import scalaz.concurrent.Task
@@ -32,7 +32,6 @@ import scalaz.concurrent.Task
 class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
-  with ActivityContextSupportProvider
   with GoogleDriveApiClientProvider {
 
   import Statuses._

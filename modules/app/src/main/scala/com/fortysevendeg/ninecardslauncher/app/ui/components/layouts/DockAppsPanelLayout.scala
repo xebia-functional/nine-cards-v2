@@ -85,7 +85,10 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           (this <~ (draggingTo map select getOrElse select(unselectedPosition))).run
         }
       case ACTION_DROP =>
-        draggingTo foreach presenter.endAddItemToDockApp
+        draggingTo match {
+          case Some(position) => presenter.endAddItemToDockApp(position)
+          case _ => presenter.endAddItem()
+        }
         draggingTo = None
         (this <~ select(unselectedPosition)).run
       case ACTION_DRAG_EXITED =>

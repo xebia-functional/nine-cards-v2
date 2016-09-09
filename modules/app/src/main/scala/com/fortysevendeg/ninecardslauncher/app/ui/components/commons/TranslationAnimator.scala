@@ -12,7 +12,8 @@ import scala.concurrent.Promise
 
 class TranslationAnimator(
   translation: Translation = NoTranslation,
-  update: (Float) => Ui[_])(implicit context: ContextWrapper) {
+  update: (Float) => Ui[_],
+  end: () => Ui[_] = () => Ui.nop)(implicit context: ContextWrapper) {
 
   val duration = SpeedAnimations.getDuration
 
@@ -39,6 +40,7 @@ class TranslationAnimator(
       override def onAnimationEnd(animation: Animator) = {
         super.onAnimationEnd(animation)
         promise.trySuccess(())
+        end().run
       }
     })
     if (attachTarget) animator.setTarget(view)

@@ -5,13 +5,12 @@ import android.os.Bundle
 import android.preference.Preference.OnPreferenceClickListener
 import android.preference.{Preference, PreferenceActivity, PreferenceFragment}
 import android.view.MenuItem
-import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.about.AboutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.animations.AnimationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.appdrawer.AppDrawerFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers.DeveloperFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers.DeveloperFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.help.HelpFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.lookandfeel.LookFeelFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.moments.MomentsFragment
@@ -21,8 +20,7 @@ import macroid.Contexts
 class NineCardsPreferencesActivity
   extends PreferenceActivity
   with PreferencesDOM
-  with Contexts[Activity]
-  with ActivityContextSupportProvider {
+  with Contexts[Activity] {
 
   override lazy val actionBar: Option[ActionBar] = Option(getActionBar)
 
