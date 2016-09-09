@@ -8,7 +8,6 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsExceptions
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreatedCollection
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices}
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
 import org.specs2.mock.Mockito
