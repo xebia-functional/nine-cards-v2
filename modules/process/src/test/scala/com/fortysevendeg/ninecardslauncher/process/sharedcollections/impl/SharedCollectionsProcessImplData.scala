@@ -63,9 +63,12 @@ trait SharedCollectionsProcessImplData {
 
   val originalSharedCollectionId = Random.nextString(30)
 
+  def generateOriginalSharedCollectionId() =
+    originalSharedCollectionId + Random.nextInt(10)
+
   def generateSubscriptionResponse() = 1 to 10 map { i =>
     SubscriptionResponse(
-      originalSharedCollectionId = originalSharedCollectionId + Random.nextInt(10))
+      originalSharedCollectionId = generateOriginalSharedCollectionId())
   }
 
   val subscriptionList = SubscriptionResponseList(
@@ -73,9 +76,9 @@ trait SharedCollectionsProcessImplData {
     items = generateSubscriptionResponse())
 
   def generateOptionOriginalSharedCollectionId() =
-    Random.nextInt(10) match {
-      case 0 => None
-      case n => Some(originalSharedCollectionId + n)
+    Random.nextBoolean() match {
+      case true => None
+      case false => Some(generateOriginalSharedCollectionId())
     }
 
   def generateCollection() = 1 to 10 map { i =>
