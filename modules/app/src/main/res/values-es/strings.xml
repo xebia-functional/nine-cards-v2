@@ -178,9 +178,6 @@
     <string name="errorSavingPublicCollections">Error guardando colleción pública</string>
     <string name="emptyPublicCollections">No hay colecciones publicadas en esta categoría. Quizás podrías crear tu una :-)</string>
 
-    <string name="errorLoadingPublishedCollections">Error cargando colleciones publicadas</string>
-    <string name="emptyPublishedCollections">No hay colecciones publicadas. Quizás podrías publicar una de tus colecciones :-)</string>
-
     <!-- Contacts Info -->
 
     <string name="generalInfo">Información General</string>
@@ -315,6 +312,12 @@
     <string name="copyAccountSyncDialogTitle">Nueva configuración</string>
     <string name="hintNewConfigurationName">Nombre</string>
     <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
+
+    <string name="errorLoadingPublishedCollections">Error cargando colleciones publicadas</string>
+    <string name="emptyPublishedCollections">No hay colecciones publicadas. Quizás podrías publicar una de tus colecciones :-)</string>
+
+    <string name="errorLoadingSubscriptions">Error cargando subscripciones</string>
+    <string name="emptySubscriptions">No estás suscrito a ninguna colección en este momento</string>
 
     <!-- Preferences -->
 

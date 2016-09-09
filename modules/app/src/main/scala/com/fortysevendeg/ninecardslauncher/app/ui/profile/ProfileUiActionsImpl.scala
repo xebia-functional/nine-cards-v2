@@ -24,7 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{CopyAccountDev
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{Subscription, SharedCollection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -92,7 +92,11 @@ trait ProfileUiActionsImpl
 
   override def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingPublishedCollections, clickAction)
 
-  override def showEmptyMessageInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.emptyPublishedCollections, clickAction)
+  override def showEmptyPublicationsMessageInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.emptyPublishedCollections, clickAction)
+
+  override def showErrorLoadingSubscriptionsInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingSubscriptions, clickAction)
+
+  override def showEmptySubscriptionsMessageInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.emptySubscriptions, clickAction)
 
   override def showContactUsError(clickAction: () => Unit): Ui[Any] = showError(R.string.contactUsError, clickAction)
 
@@ -126,8 +130,8 @@ trait ProfileUiActionsImpl
     (recyclerView <~ vVisible <~ rvAdapter(AccountsAdapter(items, accountClickListener))) ~
       (loadingView <~ vInvisible)
 
-  override def setSubscriptionsAdapter(items: Seq[String]): Ui[Any] =
-    (recyclerView <~ vVisible <~ rvAdapter(SubscriptionsAdapter(items))) ~
+  override def setSubscriptionsAdapter(items: Seq[Subscription]): Ui[Any] =
+    (recyclerView <~ vVisible <~ rvAdapter(SubscriptionsAdapter(items map (_.name)))) ~
       (loadingView <~ vInvisible)
 
   override def handleToolbarVisibility(percentage: Float): Ui[Any] = toolbar match {
