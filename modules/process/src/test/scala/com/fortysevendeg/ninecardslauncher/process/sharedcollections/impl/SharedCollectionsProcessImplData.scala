@@ -33,6 +33,7 @@ trait SharedCollectionsProcessImplData {
       packages = Seq.empty,
       resolvedPackages = Seq.empty,
       views = Random.nextInt(),
+      subscriptions = Some(Random.nextInt()),
       category = Communication.name,
       community = Random.nextBoolean())
   }

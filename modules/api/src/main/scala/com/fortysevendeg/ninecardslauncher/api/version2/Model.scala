@@ -70,6 +70,7 @@ case class Collection(
   publishedOn: String,
   installations: Option[Int],
   views: Option[Int],
+  subscriptions: Option[Int],
   publicIdentifier: String,
   appsInfo: Seq[CollectionApp],
   packages: Seq[String])

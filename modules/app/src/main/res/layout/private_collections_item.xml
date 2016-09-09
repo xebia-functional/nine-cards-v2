@@ -27,13 +27,9 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/private_collections_item_row1"
-            style="@style/PrivateCollectionsItemIconsRow"/>
-
-        <LinearLayout
-            android:id="@+id/private_collections_item_row2"
-            style="@style/PrivateCollectionsItemIconsRow"/>
+        <com.google.android.flexbox.FlexboxLayout
+                android:id="@+id/private_collections_item_row"
+                style="@style/PublicCollectionsItemIconsApps"/>
 
         <ImageView
             style="@style/PrivateCollectionsItemLine"/>

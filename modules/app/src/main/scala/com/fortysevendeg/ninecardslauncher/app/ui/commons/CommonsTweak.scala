@@ -26,6 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerBac
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
+import com.google.android.flexbox.FlexboxLayout
 import macroid._
 
 object CommonsTweak {

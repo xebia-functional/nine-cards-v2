@@ -188,6 +188,9 @@
     <string name="errorSavingPublicCollections">Error saving public collections</string>
     <string name="emptyPublicCollections">There aren\'t collections published in this category. Maybe you can share one of your collections :-)</string>
 
+    <string name="errorLoadingPublishedCollections">Error loading published collections</string>
+    <string name="emptyPublishedCollections">There aren\'t collections published. Maybe you can share one of your collections :-)</string>
+
     <!-- Contacts Info -->
 
     <string name="generalInfo">General Info</string>
@@ -300,6 +303,7 @@
     <!-- Profile -->
     <string name="publications">Publications</string>
     <string name="subscriptions">Subscriptions</string>
+    <string name="subscriptions_number">%s subscriptions</string>
     <string name="accounts">Accounts</string>
 
     <string name="syncHeaderDevices">Other Devices</string>
@@ -309,6 +313,8 @@
     <string name="menuAccountSync">Synchronize</string>
     <string name="menuAccountCopy">Copy</string>
     <string name="menuAccountDelete">Delete</string>
+
+    <string name="collectionAdded">This collection has been added to your collections</string>
 
     <string name="accountSynced">Account synced</string>
 
