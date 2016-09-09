@@ -332,7 +332,10 @@
     <string name="emptyPublishedCollections">There aren\'t collections published. Maybe you can share one of your collections :-)</string>
 
     <string name="errorLoadingSubscriptions">Error loading subscriptions</string>
+    <string name="errorSubscribing">Error subscribing to the collection</string>
     <string name="emptySubscriptions">You are not subscribed to any collection in this moment</string>
+
+    <string name="installed_apps_number">%s installed apps</string>
 
     <!-- Preferences -->
 

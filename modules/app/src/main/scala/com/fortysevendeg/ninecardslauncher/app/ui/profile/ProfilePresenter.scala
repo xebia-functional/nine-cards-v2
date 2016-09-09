@@ -145,11 +145,29 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       onPreTask = () => actions.showLoading(),
       onResult = {
         case subscriptions if subscriptions.isEmpty =>
-          actions.showEmptySubscriptionsMessageInScreen(() => loadSubscriptions())
+          actions.showEmptySubscriptionsMessageInScreen() ~
+            actions.hideLoading()
         case subscriptions =>
-          actions.setSubscriptionsAdapter(subscriptions)
+          actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
       },
-      onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen(() => loadSubscriptions()))
+      onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen())
+  }
+
+  def onSubscribe(originalSharedCollectionId: String, subscribeStatus: Boolean): Unit = {
+
+    def subscribe(originalSharedCollectionId: String): XorT[Task, NineCardException, Unit] =
+      for {
+        _ <- di.sharedCollectionsProcess.subscribe(originalSharedCollectionId)
+      } yield ()
+
+    def unsubscribe(originalSharedCollectionId: String): XorT[Task, NineCardException, Unit] =
+      for {
+        _ <- di.sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)
+      } yield ()
+
+    Task.fork(
+      (if (subscribeStatus) subscribe(originalSharedCollectionId) else unsubscribe(originalSharedCollectionId)).value).resolveAsyncUi(
+      onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
   }
 
   private[this] def sampleItems(tab: String) = 1 to 20 map (i => s"$tab Item $i")
@@ -341,15 +359,19 @@ trait ProfileUiActions {
 
   def showLoading(): Ui[Any]
 
+  def hideLoading(): Ui[Any]
+
   def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any]
 
   def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any]
 
   def showEmptyPublicationsMessageInScreen(clickAction: () => Unit): Ui[Any]
 
-  def showErrorLoadingSubscriptionsInScreen(clickAction: () => Unit): Ui[Any]
+  def showErrorLoadingSubscriptionsInScreen(): Ui[Any]
 
-  def showEmptySubscriptionsMessageInScreen(clickAction: () => Unit): Ui[Any]
+  def showEmptySubscriptionsMessageInScreen(): Ui[Any]
+
+  def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
 
   def showContactUsError(clickAction: () => Unit): Ui[Any]
 
@@ -379,7 +401,9 @@ trait ProfileUiActions {
 
   def setAccountsAdapter(items: Seq[AccountSync]): Ui[Any]
 
-  def setSubscriptionsAdapter(items: Seq[Subscription]): Ui[Any]
+  def setSubscriptionsAdapter(
+    items: Seq[Subscription],
+    onSubscribe: (String, Boolean) => Unit): Ui[Any]
 
   def handleToolbarVisibility(percentage: Float): Ui[Any]
 

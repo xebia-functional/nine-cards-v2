@@ -215,6 +215,8 @@ object ExtraTweaks {
 
   def tvHintColor(color: Int): Tweak[TextView] = Tweak[TextView](_.setHintTextColor(color))
 
+  def switchSetChecked(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setChecked(status))
+
 }
 
 object CommonsResourcesExtras {
