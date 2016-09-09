@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder}
+import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -279,6 +279,8 @@ object PullToDownViewTweaks {
     Tweak[PullToDownView] { view =>
       view.pullToDownStatuses = view.pullToDownStatuses.copy(enabled = enabled)
     }
+
+  def pdvIsEnabled() = Excerpt[PullToDownView, Boolean](_.pullToDownStatuses.enabled)
 
   def pdvHorizontalEnable(enabled: Boolean) =
     Tweak[PullToDownView] { view =>

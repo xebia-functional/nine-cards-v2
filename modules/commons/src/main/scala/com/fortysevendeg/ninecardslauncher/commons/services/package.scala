@@ -26,7 +26,7 @@ package object services {
 
     type TaskService[A] = XorT[Task, NineCardException, A]
 
-    def apply[A](f: Task[NineCardException Xor A]) : TaskService[A] = {
+    def apply[A](f: Task[NineCardException Xor A]): TaskService[A] = {
       XorT[Task, NineCardException, A](f)
     }
 

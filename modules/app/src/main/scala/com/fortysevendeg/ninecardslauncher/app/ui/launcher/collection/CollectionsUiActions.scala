@@ -127,7 +127,7 @@ trait CollectionsUiActions
     def goToSettings(): Ui[Any] = {
       closeCollectionMenu() ~~ uiStartIntentForResult(
         intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
-        result = goToPreferences)
+        requestCode = goToPreferences)
     }
 
     (drawerLayout <~ dlStatusBarBackground(R.color.primary)) ~

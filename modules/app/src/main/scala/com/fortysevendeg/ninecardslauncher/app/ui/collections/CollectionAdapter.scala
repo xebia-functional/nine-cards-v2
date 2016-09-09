@@ -7,7 +7,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.CollectionAdapterStyles
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{LauncherExecutor, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchListener
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize, IconsSize}
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
@@ -22,8 +22,7 @@ import macroid.{ActivityContextWrapper, Ui, _}
 case class CollectionAdapter(var collection: Collection, heightCard: Int)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme, collectionPresenter: CollectionPresenter)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
-  with ReorderItemTouchListener
-  with LauncherExecutor { self =>
+  with ReorderItemTouchListener { self =>
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.card_item, parent, false)
@@ -31,7 +30,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
       content = view,
       heightCard = heightCard,
       onClick = (position: Int) => Ui {
-        collection.cards.lift(position) foreach (card => execute(card.intent))
+        collection.cards.lift(position) foreach collectionPresenter.launchCard
       })
   }
 

@@ -5,14 +5,16 @@ import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.analytics._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
+import com.fortysevendeg.ninecardslauncher.app.commons.{ActivityContextSupportProvider, BroadAction, Conversions, NineCardIntentConversions}
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.{CallPhone, ReadCallLog, ReadContacts}
 import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, LauncherExecutor}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
@@ -26,11 +28,12 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CollectionException}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment}
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
+import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
@@ -46,8 +49,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   extends Jobs
   with Conversions
   with NineCardIntentConversions
-  with LauncherExecutor
-  with AnalyticDispatcher { self =>
+  with AnalyticDispatcher
+  with ActivityContextSupportProvider { self =>
 
   val tagDialog = "dialog"
 
@@ -56,6 +59,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   lazy val persistMoment = new PersistMoment
 
   var statuses = LauncherPresenterStatuses()
+
+  val permissionChecker = new PermissionChecker
 
   override def getApplicationContext: Context = contextWrapper.application
 
@@ -154,7 +159,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def uninstallInAddItem(): Unit = {
     statuses.cardAddItemMode match {
       case Some(card: AddCardRequest) if card.cardType == AppCardType =>
-        card.packageName foreach launchUninstall
+        card.packageName foreach { packageName =>
+          launcherService(di.launcherExecutorProcess.launchUninstall(packageName))
+        }
       case _ =>
     }
     statuses = statuses.reset()
@@ -164,7 +171,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def settingsInAddItem(): Unit = {
     statuses.cardAddItemMode match {
       case Some(card: AddCardRequest) if card.cardType == AppCardType =>
-        card.packageName foreach launchSettings
+        card.packageName foreach { packageName =>
+          launcherService(di.launcherExecutorProcess.launchSettings(packageName))
+        }
       case _ =>
     }
     statuses = statuses.reset()
@@ -248,7 +257,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         label = card.packageName map ProvideLabel,
         value = Some(OpenMomentFromWorkspaceValue))
     actions.closeAppsMoment().run
-    execute(card.intent)
+    launcherCallService(di.launcherExecutorProcess.execute(card.intent), card.intent.extractPhone())
   }
 
   def openApp(app: App): Unit = if (actions.isTabsOpened) {
@@ -261,20 +270,33 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         action = OpenAction,
         label = Some(ProvideLabel(app.packageName)),
         value = Some(OpenAppFromAppDrawerValue))
-    execute(toNineCardIntent(app))
+    launcherService(di.launcherExecutorProcess.execute(toNineCardIntent(app)))
   }
 
   def openContact(contact: Contact) = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
-    executeContact(contact.lookupKey)
+    launcherService(di.launcherExecutorProcess.executeContact(contact.lookupKey))
   }
 
-  def openLastCall(contact: LastCallsContact) = if (actions.isTabsOpened) {
+  def openLastCall(number: String) = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
-    execute(phoneToNineCardIntent(contact.number))
+    launcherCallService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(number)), Some(number))
   }
+
+  def execute(intent: NineCardIntent): Unit =
+    launcherCallService(di.launcherExecutorProcess.execute(intent), intent.extractPhone())
+
+  def launchSearch(): Unit = launcherService(di.launcherExecutorProcess.launchSearch)
+
+  def launchVoiceSearch(): Unit = launcherService(di.launcherExecutorProcess.launchVoiceSearch)
+
+  def launchGoogleWeather(): Unit = launcherService(di.launcherExecutorProcess.launchGoogleWeather)
+
+  def launchPlayStore(): Unit = launcherService(di.launcherExecutorProcess.launchPlayStore)
+
+  def launchDial(): Unit = launcherService(di.launcherExecutorProcess.launchDial(phoneNumber = None))
 
   def addCollection(collection: Collection): Unit = {
     addCollectionToCurrentData(collection) match {
@@ -572,16 +594,31 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def loadContacts(contactsMenuOption: ContactsMenuOption): Unit = {
+
+    def getLoadContacts(order: ContactsFilter): TaskService[(IterableContacts, Seq[TermCounter])] =
+      for {
+        iterableContacts <- di.deviceProcess.getIterableContacts(order)
+        counters <- di.deviceProcess.getTermCountersForContacts(order)
+      } yield (iterableContacts, counters)
+
     contactsMenuOption match {
       case ContactsByLastCall =>
         Task.fork(di.deviceProcess.getLastCalls.value).resolveAsyncUi(
-          onResult = (contacts: Seq[LastCallsContact]) => actions.reloadLastCallContactsInDrawer(contacts))
+          onResult = (contacts: Seq[LastCallsContact]) => actions.reloadLastCallContactsInDrawer(contacts),
+          onException = (throwable: Throwable) => throwable match {
+            case e: CallPermissionException => Ui(requestReadCallLog())
+            case _ => Ui.nop
+          })
       case _ =>
         val getContactFilter = toGetContactFilter(contactsMenuOption)
         Task.fork(getLoadContacts(getContactFilter).value).resolveAsyncUi(
           onResult = {
             case (contacts: IterableContacts, counters: Seq[TermCounter]) =>
               actions.reloadContactsInDrawer(contacts = contacts, counters = counters)
+          },
+          onException = (throwable: Throwable) => throwable match {
+            case e: ContactPermissionException => Ui(requestReadContacts())
+            case _ => Ui.nop
           })
     }
   }
@@ -597,6 +634,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     Task.fork(di.deviceProcess.getIterableContactsByKeyWord(keyword).value).resolveAsyncUi(
       onResult = {
         case (contacts: IterableContacts) => actions.reloadContactsInDrawer(contacts = contacts)
+      },
+      onException = (throwable: Throwable) => throwable match {
+        case e: ContactPermissionException => Ui(requestReadContacts())
+        case _ => Ui.nop
       })
   }
 
@@ -705,7 +746,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
               actions.addWidgets(Seq(widget))
           }
         },
-        onException = (ex) => ex match {
+        onException = (ex: Throwable) => ex match {
           case ex: SpaceException => actions.showWidgetNoHaveSpaceMessage()
           case _ => actions.showContactUsError()
         })
@@ -797,17 +838,60 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       onException = (_) => Ui(reloadAppsMomentBar()))
   }
 
+  def requestPermissionsResult(
+    requestCode: Int,
+    permissions: Array[String],
+    grantResults: Array[Int]): Unit = {
+    val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
+    requestCode match {
+      case RequestCodes.contactsPermission if result.exists(_.hasPermission(ReadContacts)) =>
+        actions.reloadDrawerContacts().run
+      case RequestCodes.callLogPermission if result.exists(_.hasPermission(ReadCallLog)) =>
+        actions.reloadDrawerContacts().run
+      case RequestCodes.phoneCallPermission if result.exists(_.hasPermission(CallPhone)) =>
+        statuses.lastPhone foreach { phone =>
+          statuses = statuses.copy(lastPhone = None)
+          launcherService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)))
+        }
+      case RequestCodes.contactsPermission =>
+        (actions.reloadDrawerApps() ~
+          actions.showBottomError(R.string.errorContactsPermission, requestReadContacts)).run
+      case RequestCodes.callLogPermission =>
+        (actions.reloadDrawerApps() ~
+          actions.showBottomError(R.string.errorCallsPermission, requestReadCallLog)).run
+      case RequestCodes.phoneCallPermission =>
+        statuses.lastPhone foreach { phone =>
+          statuses = statuses.copy(lastPhone = None)
+          launcherService(di.launcherExecutorProcess.launchDial(Some(phone)))
+        }
+        actions.showNoPhoneCallPermissionError().run
+      case _ =>
+    }
+  }
+
+  private[this] def launcherService(service: TaskService[Unit]) =
+    Task.fork(service.value).resolveAsyncUi(onException = _ => actions.showContactUsError())
+
+  private[this] def launcherCallService(service: TaskService[Unit], maybePhone: Option[String]) =
+    Task.fork(service.value).resolveAsyncUi(
+      onException = (throwable: Throwable) => throwable match {
+        case e: LauncherExecutorProcessPermissionException =>
+          statuses = statuses.copy(lastPhone = maybePhone)
+          Ui(permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone))
+        case _ => actions.showContactUsError()
+      })
+
+  private[this] def requestReadContacts() =
+    permissionChecker.requestPermission(RequestCodes.contactsPermission, ReadContacts)
+
+  private[this] def requestReadCallLog() =
+    permissionChecker.requestPermission(RequestCodes.callLogPermission, ReadCallLog)
+
   protected def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
       iterableApps <- di.deviceProcess.getIterableApps(order)
       counters <- di.deviceProcess.getTermCountersForApps(order)
     } yield (iterableApps, counters)
-
-  protected def getLoadContacts(order: ContactsFilter): TaskService[(IterableContacts, Seq[TermCounter])] =
-    for {
-      iterableContacts <- di.deviceProcess.getIterableContacts(order)
-      counters <- di.deviceProcess.getTermCountersForContacts(order)
-    } yield (iterableContacts, counters)
 
   private[this] def toGetAppOrder(appsMenuOption: AppsMenuOption): GetAppOrder = appsMenuOption match {
     case AppsAlphabetical => GetByName
@@ -995,6 +1079,8 @@ trait LauncherUiActions {
 
   def showNoImplementedYetMessage(): Ui[Any]
 
+  def showNoPhoneCallPermissionError(): Ui[Any]
+
   def showLoading(): Ui[Any]
 
   def goToPreviousScreen(): Ui[Any]
@@ -1060,6 +1146,12 @@ trait LauncherUiActions {
 
   def closeAppsMoment(): Ui[Any]
 
+  def reloadDrawerApps(): Ui[Any]
+
+  def reloadDrawerContacts(): Ui[Any]
+
+  def showBottomError(message: Int, action: () => Unit): Ui[Any]
+
   def isEmptyCollectionsInWorkspace: Boolean
 
   def canRemoveCollections: Boolean
@@ -1089,7 +1181,8 @@ object Statuses {
     cardAddItemMode: Option[AddCardRequest] = None,
     collectionReorderMode: Option[Collection] = None,
     startPositionReorderMode: Int = 0,
-    currentDraggingPosition: Int = 0) {
+    currentDraggingPosition: Int = 0,
+    lastPhone: Option[String] = None) {
 
     def startAddItem(card: AddCardRequest): LauncherPresenterStatuses =
       copy(mode = AddItemMode, cardAddItemMode = Some(card))
@@ -1112,7 +1205,7 @@ object Statuses {
         currentDraggingPosition = 0,
         mode = NormalMode)
 
-    def isReordering(): Boolean = mode == ReorderMode
+    def isReordering: Boolean = mode == ReorderMode
 
   }
 

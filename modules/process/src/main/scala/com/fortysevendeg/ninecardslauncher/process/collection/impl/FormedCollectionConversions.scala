@@ -10,8 +10,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollect
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory, _}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServices, ImplicitsContactsServiceExceptions}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{MomentTimeSlot => ServicesMomentTimeSlot}
+import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
 
 import scala.annotation.tailrec
@@ -24,8 +23,7 @@ trait FormedCollectionDependencies {
 
 trait FormedCollectionConversions
   extends Conversions
-  with ImplicitsCollectionException
-  with ImplicitsContactsServiceExceptions {
+  with ImplicitsCollectionException {
 
   self: FormedCollectionDependencies =>
 

@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
 import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.commons.ActivityContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
@@ -15,8 +16,9 @@ import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
 
-class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fragmentContextWrapper: ActivityContextWrapper)
-  extends Jobs {
+class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
+  extends Jobs
+  with ActivityContextSupportProvider {
 
   var statuses = PublishCollectionStatuses()
 
@@ -46,6 +48,11 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit fr
             actions.goBackToPublishCollectionInformation(name, description, category)
         })
     }) getOrElse actions.showMessageFormFieldError.run
+
+  def launchShareCollection(sharedCollectionId: String): Unit =
+    Task.fork(di.launcherExecutorProcess
+      .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId)).value)
+      .resolveAsyncUi(onException = _ => actions.showContactUsError)
 
   private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): TaskService[String] =
     for {
@@ -89,5 +96,7 @@ trait PublishCollectionActions {
   def showMessageFormFieldError: Ui[Any]
 
   def showMessagePublishingError: Ui[Any]
+
+  def showContactUsError: Ui[Any]
 
 }

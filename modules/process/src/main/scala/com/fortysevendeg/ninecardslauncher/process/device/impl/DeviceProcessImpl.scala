@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
 import com.fortysevendeg.ninecardslauncher.services.calls.CallsServices
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServices, ImplicitsContactsServiceExceptions}
+import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
@@ -35,7 +35,6 @@ class DeviceProcessImpl(
   with ImplicitsDeviceException
   with ImplicitsImageExceptions
   with ImplicitsPersistenceServiceExceptions
-  with ImplicitsContactsServiceExceptions
   with DeviceConversions {
 
   def getConfiguredNetworks(implicit context: ContextSupport) =

@@ -36,6 +36,7 @@
     <!-- Wizard -->
     <string name="buttonContinue">Continuar</string>
     <string name="buttonLetStart">Empezar</string>
+    <string name="buttonTryAgain">Intentarlo de nuevo</string>
     <string name="termsAndConditions">Aceptar terminos y condiciones</string>
     <string name="welcome">Un Launcher creado para\nAndroid Power Users</string>
 
@@ -45,6 +46,9 @@
 
     <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
+
+    <string name="errorAccountsMessage">Necesitas una cuenta de Google para utilizar 9Cards. Sólo tendremos acceso al nombre de la cuenta y se le pedirá para futuros accesos</string>
+    <string name="errorReadContactsMessage">Con el acceso a los contactos podremos mejorar tus colecciones basadas en contactos y podrás acceder a los contactos desde el drawer.</string>
 
     <string name="deviceDetectedNoProUser">Hemos detectado una configuración guardada para tu %1$s. Si eres usuario Pro puedes cargar previas configuraciones (colecciones y temas). ¿Quieres convertirte en Pro ahora?</string>
 
@@ -121,6 +125,7 @@
     <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
 
     <string name="momentNotFoundMessage">Momento no encontrado. Tu deberías crear colecciones desde la sección Mis Collections</string>
+    <string name="noPhoneCallPermissionMessage">Se necesita el permiso para poder llamar al contacto</string>
 
     <!-- Collections Detail -->
 
@@ -166,6 +171,9 @@
     <string name="emails">Email</string>
 
     <string name="errorLoadingContacts">Error cargando contactos</string>
+    <string name="errorLoadingCalls">Error cargando las últimas llamadas</string>
+    <string name="errorContactsPermission">Se requieren permisos de lectura sobre los contactos. ¿Quiere intentarlo de nuevo?</string>
+    <string name="errorCallsPermission">Se requieren permisos de lectura sobre el registro de llamada. ¿Quiere intentarlo de nuevo?</string>
     <string name="errorLoadingApps">Error cargando aplicaciones</string>
     <string name="errorLoadingShortcuts">Error cargando accesos directos</string>
     <string name="errorLoadingRecommendations">Error cargando recomendaciones</string>
@@ -177,6 +185,8 @@
     <string name="errorLoadingPublicCollections">Error cargando colleciones públicas</string>
     <string name="errorSavingPublicCollections">Error guardando colleción pública</string>
     <string name="emptyPublicCollections">No hay colecciones publicadas en esta categoría. Quizás podrías crear tu una :-)</string>
+
+    <string name="sendEmailDialogChooserTitle">Enviar correo electrónico</string>
 
     <string name="errorLoadingPublishedCollections">Error cargando colleciones publicadas</string>
     <string name="emptyPublishedCollections">No hay colecciones publicadas. Quizás podrías publicar una de tus colecciones :-)</string>
