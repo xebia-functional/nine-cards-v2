@@ -5,7 +5,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest}
-import com.fortysevendeg.ninecardslauncher.process.commons.models
 import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest
@@ -111,6 +110,17 @@ trait Conversions
       moment = None,
       originalSharedCollectionId = Option(collection.sharedCollectionId))
 
+  def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
+    AddCollectionRequest(
+      name = collection.name,
+      collectionType = AppsCollectionType,
+      icon = collection.icon,
+      themedColorIndex = Random.nextInt(numSpaces),
+      appsCategory = Option(collection.category),
+      cards = cards,
+      moment = None,
+      sharedCollectionId = Option(collection.sharedCollectionId))
+
   def toAddCardRequest(app: SharedCollectionPackage): AddCardRequest =
     AddCardRequest(
       term = app.title,
@@ -143,7 +153,7 @@ trait NineCardIntentConversions {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(app.packageName),
       class_name = Option(app.className)))
-    intent.setAction(models.NineCardsIntentExtras.openApp)
+    intent.setAction(NineCardIntentExtras.openApp)
     intent.setClassName(app.packageName, app.className)
     intent
   }
@@ -151,42 +161,42 @@ trait NineCardIntentConversions {
   def toNineCardIntent(app: SharedCollectionPackage): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(app.packageName)))
-    intent.setAction(models.NineCardsIntentExtras.openNoInstalledApp)
+    intent.setAction(NineCardIntentExtras.openNoInstalledApp)
     intent
   }
 
   def toNineCardIntent(app: RecommendedApp): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(app.packageName)))
-    intent.setAction(models.NineCardsIntentExtras.openNoInstalledApp)
+    intent.setAction(NineCardIntentExtras.openNoInstalledApp)
     intent
   }
 
   def phoneToNineCardIntent(tel: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
       tel = Option(tel)))
-    intent.setAction(models.NineCardsIntentExtras.openPhone)
+    intent.setAction(NineCardIntentExtras.openPhone)
     intent
   }
 
   def smsToNineCardIntent(tel: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
       tel = Option(tel)))
-    intent.setAction(models.NineCardsIntentExtras.openSms)
+    intent.setAction(NineCardIntentExtras.openSms)
     intent
   }
 
   def emailToNineCardIntent(email: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
       email = Option(email)))
-    intent.setAction(models.NineCardsIntentExtras.openEmail)
+    intent.setAction(NineCardIntentExtras.openEmail)
     intent
   }
 
   def contactToNineCardIntent(lookupKey: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
       contact_lookup_key = Option(lookupKey)))
-    intent.setAction(models.NineCardsIntentExtras.openContact)
+    intent.setAction(NineCardIntentExtras.openContact)
     intent
   }
 
@@ -200,7 +210,7 @@ trait NineCardIntentConversions {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(packageName),
       class_name = Option(className)))
-    intent.setAction(models.NineCardsIntentExtras.openApp)
+    intent.setAction(NineCardIntentExtras.openApp)
     intent.setClassName(packageName, className)
     intent
   }

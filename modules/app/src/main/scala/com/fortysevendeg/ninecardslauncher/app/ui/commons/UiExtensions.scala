@@ -48,8 +48,8 @@ object SafeUi {
   def uiStartIntentWithOptions(intent: Intent, options: ActivityOptionsCompat)(implicit c: ActivityContextWrapper): Ui[Unit] =
     startIntent(_.startActivity(intent, options.toBundle))
 
-  def uiStartIntentForResult(intent: Intent, result: Int)(implicit c: ActivityContextWrapper): Ui[Unit] =
-    startIntent(_.startActivityForResult(intent, result))
+  def uiStartIntentForResult(intent: Intent, requestCode: Int)(implicit c: ActivityContextWrapper): Ui[Unit] =
+    startIntent(_.startActivityForResult(intent, requestCode))
 
   private[this] def startIntent(f: (Activity) => Unit)(implicit c: ActivityContextWrapper): Ui[Unit] =
     Ui {

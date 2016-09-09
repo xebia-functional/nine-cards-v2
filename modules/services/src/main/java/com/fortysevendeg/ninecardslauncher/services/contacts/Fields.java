@@ -46,7 +46,7 @@ public interface Fields {
     int EMAIL_TYPE_HOME = ContactsContract.CommonDataKinds.Email.TYPE_HOME;
     int EMAIL_TYPE_WORK = ContactsContract.CommonDataKinds.Email.TYPE_WORK;
 
-    String EMAIL_CONTACT_SELECTION = ContactsContract.CommonDataKinds.Email.LOOKUP_KEY + " = ? ";
+    String EMAIL_CONTACT_SELECTION = ContactsContract.CommonDataKinds.Email.LOOKUP_KEY + " IN ";
     String EMAIL_SELECTION = ContactsContract.CommonDataKinds.Email.DATA + " = ? ";
 
     // -- Phone -- //
@@ -69,7 +69,7 @@ public interface Fields {
     int PHONE_TYPE_FAX_HOME = ContactsContract.CommonDataKinds.Phone.TYPE_FAX_HOME;
     int PHONE_TYPE_PAGER = ContactsContract.CommonDataKinds.Phone.TYPE_PAGER;
 
-    String PHONE_CONTACT_SELECTION = ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + " = ? ";
+    String PHONE_CONTACT_SELECTION = ContactsContract.CommonDataKinds.Phone.LOOKUP_KEY + " IN ";
 
     // -- Calls -- //
     Uri CALL_CONTENT_URI = CallLog.Calls.CONTENT_URI;

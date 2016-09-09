@@ -115,10 +115,10 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         On.click(Ui(presenter.launchMenu()))) ~
       (collectionsGoogleIcon <~
         googleLogoTweaks <~
-        On.click(Ui(presenter.launchSearch))) ~
+        On.click(Ui(presenter.launchSearch()))) ~
       (collectionsMicIcon <~
         micLogoTweaks <~
-        On.click(Ui(presenter.launchVoiceSearch)))
+        On.click(Ui(presenter.launchVoiceSearch())))
   }
 
   def movement(from: LauncherData, to: LauncherData, isFromLeft: Boolean, fraction: Float): Unit =
@@ -148,11 +148,11 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (momentText <~
         tvText(text)) ~
       (momentWeather <~
-        On.click(Ui(presenter.launchGoogleWeather))) ~
+        On.click(Ui(presenter.launchGoogleWeather()))) ~
       (momentGoogleIcon <~
-        On.click(Ui(presenter.launchSearch))) ~
+        On.click(Ui(presenter.launchSearch()))) ~
       (momentMicIcon <~
-        On.click(Ui(presenter.launchVoiceSearch)))
+        On.click(Ui(presenter.launchVoiceSearch())))
   }
 
   def reloadByType(workSpaceType: WorkSpaceType): Ui[Any] = workSpaceType match {

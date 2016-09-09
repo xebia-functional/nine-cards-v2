@@ -59,7 +59,7 @@ trait AppsDeviceProcessImpl
       requestConfig <- apiUtils.getRequestConfig
       installedApps <- appsServices.getInstalledApplications
       googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
-        .resolveTo(GooglePlayPackagesResponse(200, Seq.empty))
+        .resolveLeftTo(GooglePlayPackagesResponse(200, Seq.empty))
       apps = installedApps map { app =>
         val knownCategory = findCategory(app.packageName)
         val category = knownCategory getOrElse {
