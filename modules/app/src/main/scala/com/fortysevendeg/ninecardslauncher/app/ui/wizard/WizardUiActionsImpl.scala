@@ -6,7 +6,6 @@ import android.view.View
 import android.widget._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -146,7 +145,7 @@ trait WizardUiActionsImpl
       (deviceRootLayout <~ vVisible)
 
   private[this] def backToUser(errorMessage: Int): Ui[Any] =
-    uiShortToast(errorMessage) ~ goToUser()
+    uiShortToast2(errorMessage) ~ goToUser()
 
   private[this] def addDevicesToRadioGroup(userDevice: Option[UserCloudDevice], devices: Seq[UserCloudDevice]): Ui[Any] = {
 

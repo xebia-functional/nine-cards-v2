@@ -129,6 +129,18 @@ object ExtraTweaks {
 
   // TODO - Move to macroid extras
 
+  def uiShortToast2(msg: Int)(implicit c: ContextWrapper): Ui[Unit] =
+    Ui(Toast.makeText(c.application, msg, Toast.LENGTH_SHORT).show())
+
+  def uiLongToast2(msg: Int)(implicit c: ContextWrapper): Ui[Unit] =
+    Ui(Toast.makeText(c.application, msg, Toast.LENGTH_LONG).show())
+
+  def uiShortToast2(msg: String)(implicit c: ContextWrapper): Ui[Unit] =
+    Ui(Toast.makeText(c.application, msg, Toast.LENGTH_SHORT).show())
+
+  def uiLongToast2(msg: String)(implicit c: ContextWrapper): Ui[Unit] =
+    Ui(Toast.makeText(c.application, msg, Toast.LENGTH_LONG).show())
+
   def vResize(size: Int): Tweak[View] = vResize(size, size)
 
   def vResize(width: Int, height: Int): Tweak[View] = Tweak[View] {
