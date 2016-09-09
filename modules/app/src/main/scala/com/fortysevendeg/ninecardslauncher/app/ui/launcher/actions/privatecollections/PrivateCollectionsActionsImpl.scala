@@ -4,10 +4,10 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
+import android.view.ViewGroup.LayoutParams._
 import android.view.{View, ViewGroup}
-import android.widget.{ImageView, LinearLayout}
+import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -25,6 +25,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCard, PrivateCollection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
 import macroid._
 
@@ -96,9 +97,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
 
   lazy val name = findView(TR.private_collections_item_name)
 
-  lazy val appsRow1 = findView(TR.private_collections_item_row1)
-
-  lazy val appsRow2 = findView(TR.private_collections_item_row2)
+  lazy val appsRow = findView(TR.private_collections_item_row)
 
   lazy val addCollection = findView(TR.private_collections_item_add_collection)
 
@@ -109,16 +108,12 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
   def bind(privateCollection: PrivateCollection, position: Int): Ui[_] = {
     val d = new ShapeDrawable(new OvalShape)
     d.getPaint.setColor(resGetColor(getIndexColor(privateCollection.themedColorIndex)))
-    val cardsRow1 = privateCollection.cards slice(0, appsByRow)
-    val cardsRow2 = privateCollection.cards slice(appsByRow, appsByRow * 2)
+    val cardsRow = privateCollection.cards
     (iconContent <~ vBackground(d)) ~
       (icon <~ ivSrc(privateCollection.getIconCollectionDetail)) ~
-      (appsRow1 <~
+      (appsRow <~
         vgRemoveAllViews <~
-        automaticAlignment(appsRow1, cardsRow1)) ~
-      (appsRow2 <~
-        vgRemoveAllViews <~
-        automaticAlignment(appsRow2, cardsRow2)) ~
+        automaticAlignment(appsRow, cardsRow)) ~
       (name <~ tvText(privateCollection.name)) ~
       (content <~ vTag(position)) ~
       (addCollection <~ On.click(Ui(presenter.saveCollection(privateCollection))))
@@ -126,27 +121,26 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
-  private[this] def automaticAlignment(view: LinearLayout, cards: Seq[PrivateCard]): Tweak[LinearLayout] = {
+  private[this] def automaticAlignment(view: FlexboxLayout, cards: Seq[PrivateCard]): Tweak[FlexboxLayout] = {
     val width = view.getWidth
     if (width > 0) {
-      val uisRow1 = getViewsByCards(cards, width)
-      vgAddViews(uisRow1)
+      vgAddViews(getViewsByCards(cards, width))
     } else {
       vGlobalLayoutListener { v => {
-        val uisRow1 = getViewsByCards(cards, v.getWidth)
-        appsRow1 <~ vgAddViews(uisRow1)
+        appsRow <~ vgAddViews(getViewsByCards(cards, v.getWidth))
       }}
     }
   }
 
   private[this] def getViewsByCards(cards: Seq[PrivateCard], width: Int) = {
-    val size = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
-    val padding = (width - (size * appsByRow)) / (appsByRow - 1)
-    cards.zipWithIndex map {
+    val sizeIcon = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
+    val sizeView = width / appsByRow
+    val padding = (sizeView - sizeIcon) / 2
+    cards.zipWithIndex  map {
       case (card, index) =>
         (w[ImageView] <~
-          lp[ViewGroup](size, size) <~
-          (if (index < appsByRow - 1) llLayoutMargin(0, 0, padding, 0) else Tweak.blank) <~
+          lp[FlexboxLayout](sizeView, WRAP_CONTENT) <~
+          vPadding(padding, 0, padding, 0) <~
           ivSrcByPackageName(card.packageName, card.term)).get
     }
   }

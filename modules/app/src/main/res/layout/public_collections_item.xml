@@ -40,13 +40,13 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/public_collections_item_apps"
             style="@style/PublicCollectionsItemIconsApps"/>
 
         <TextView
-            android:id="@+id/public_collections_item_description"
-            style="@style/PublicCollectionsItemHeaderDescription"/>
+            android:id="@+id/public_collections_item_subscriptions"
+            style="@style/PublicCollectionsItemHeaderSubscriptions"/>
 
         <ImageView
             style="@style/PublicCollectionsItemLine"/>

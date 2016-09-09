@@ -12,6 +12,7 @@ case class SharedCollection(
   packages: Seq[String],
   resolvedPackages: Seq[SharedCollectionPackage],
   views: Int,
+  subscriptions: Option[Int],
   category: NineCardCategory,
   icon: String,
   community: Boolean)
