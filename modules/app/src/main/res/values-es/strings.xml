@@ -188,6 +188,9 @@
 
     <string name="sendEmailDialogChooserTitle">Enviar correo electrónico</string>
 
+    <string name="errorLoadingPublishedCollections">Error cargando colleciones publicadas</string>
+    <string name="emptyPublishedCollections">No hay colecciones publicadas. Quizás podrías publicar una de tus colecciones :-)</string>
+
     <!-- Contacts Info -->
 
     <string name="generalInfo">Información General</string>
@@ -295,6 +298,7 @@
     <!-- Profile -->
     <string name="publications">Publicaciones</string>
     <string name="subscriptions">Subscripciones</string>
+    <string name="subscriptions_number">%s subscripciones</string>
     <string name="accounts">Cuentas</string>
 
     <string name="syncHeaderDevices">Otros Dispositivos</string>
@@ -306,6 +310,8 @@
     <string name="menuAccountDelete">Eliminar</string>
 
     <string name="accountSynced">Cuenta sincronizada</string>
+
+    <string name="collectionAdded">Esta colección ha sido añadida a tus colecciones</string>
 
     <string name="errorSyncing">Error sincronizando cuenta. Inténtale de nuevo</string>
 

@@ -323,6 +323,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
+  def reloadCollection(collectionId: Int): Unit =  {
+    Task.fork(di.collectionProcess.getCollectionById(collectionId).value).resolveAsync(
+      onResult = {
+        case Some(collection) => addCollection(collection)
+        case _ => actions.showContactUsError()
+      },
+      onException = (_) => actions.showContactUsError()
+    )
+  }
+
   def openModeEditWidgets(id: Int): Unit = if (!actions.isWorkspaceScrolling) {
     statuses = statuses.copy(mode = EditWidgetsMode, transformation = None, idWidget = Some(id))
     actions.openModeEditWidgets().run
