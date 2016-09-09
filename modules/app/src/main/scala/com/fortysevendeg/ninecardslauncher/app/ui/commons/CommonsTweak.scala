@@ -235,6 +235,8 @@ object ExtraTweaks {
     }).show()).run
   }
 
+  def sChecked(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setChecked(status))
+
 }
 
 object CommonsResourcesExtras {

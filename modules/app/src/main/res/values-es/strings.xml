@@ -188,9 +188,6 @@
 
     <string name="sendEmailDialogChooserTitle">Enviar correo electrónico</string>
 
-    <string name="errorLoadingPublishedCollections">Error cargando colleciones publicadas</string>
-    <string name="emptyPublishedCollections">No hay colecciones publicadas. Quizás podrías publicar una de tus colecciones :-)</string>
-
     <!-- Contacts Info -->
 
     <string name="generalInfo">Información General</string>
@@ -325,6 +322,15 @@
     <string name="copyAccountSyncDialogTitle">Nueva configuración</string>
     <string name="hintNewConfigurationName">Nombre</string>
     <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
+
+    <string name="errorLoadingPublishedCollections">Error cargando colleciones publicadas</string>
+    <string name="emptyPublishedCollections">No hay colecciones publicadas. Quizás podrías publicar una de tus colecciones :-)</string>
+
+    <string name="errorLoadingSubscriptions">Error cargando suscripciones</string>
+    <string name="errorSubscribing">Error suscribiendote a la colección</string>
+    <string name="emptySubscriptions">No estás suscrito a ninguna colección en este momento</string>
+
+    <string name="installed_apps_number">%s aplicaciones instaladas</string>
 
     <!-- Preferences -->
 

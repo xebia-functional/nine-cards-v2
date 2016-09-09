@@ -51,7 +51,6 @@ trait ApiServicesSpecification
 
     val exception = HttpClientException("")
   }
-
 }
 
 class ApiServicesImplSpec
