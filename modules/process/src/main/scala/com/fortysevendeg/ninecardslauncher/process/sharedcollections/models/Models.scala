@@ -50,3 +50,12 @@ case class CreatedCollection(
   icon: String,
   community: Boolean
 )
+
+case class Subscription(
+  id: Int,
+  originalSharedCollectionId: String,
+  name: String,
+  apps: Int,
+  icon: String,
+  themedColorIndex: Int,
+  subscribed: Boolean)

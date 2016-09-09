@@ -564,6 +564,67 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <!-- Subscriptions Items -->
+
+    <style name="SubscriptionsItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="SubscriptionsItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_margin">@dimen/padding_large</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="SubscriptionsItemIconContent">
+        <item name="android:layout_width">@dimen/size_icon_item_collections_content</item>
+        <item name="android:layout_height">@dimen/size_icon_item_collections_content</item>
+        <item name="android:layout_marginRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="SubscriptionsItemIcon">
+        <item name="android:layout_width">@dimen/size_icon_item_collections</item>
+        <item name="android:layout_height">@dimen/size_icon_item_collections</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="SubscriptionsItemNames">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginLeft">@dimen/padding_default</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
+
+    <style name="SubscriptionsItemName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/text_default_title</item>
+    </style>
+
+    <style name="SubscriptionsItemApps">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:textColor">@color/text_default_subtitle</item>
+    </style>
+
+    <style name="SubscriptionsItemSubscribed">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <!-- Widget Items -->
 
     <style name="WidgetItemRoot">

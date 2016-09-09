@@ -62,7 +62,6 @@ trait ApiServices {
 
   /**
    * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfigV1]]
-    *
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GetUserV1Response]] with the HTTP Code
    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserV1]]
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
@@ -169,21 +168,21 @@ trait ApiServices {
   /**
     * Subscribes to a public collection
     * @param originalSharedCollectionId the public id of the collection to subscribe on
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.CreateSubscriptionResponse]] with the HTTP Code
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SubscribeResponse]] with the HTTP Code
     *         of the response
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def subscribe(
-    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[CreateSubscriptionResponse]
+    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[SubscribeResponse]
 
   /**
     * Unsubscribes from a public collection
     * @param originalSharedCollectionId the public id of the collection to unsubscribe from
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.DeleteSubscriptionResponse]] with the HTTP Code
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UnsubscribeResponse]] with the HTTP Code
     *         of the response
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def unsubscribe(
-    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[DeleteSubscriptionResponse]
+    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[UnsubscribeResponse]
 
 }
