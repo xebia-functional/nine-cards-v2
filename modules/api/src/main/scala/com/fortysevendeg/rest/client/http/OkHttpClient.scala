@@ -1,6 +1,6 @@
 package com.fortysevendeg.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.rest.client.http.Methods._
@@ -67,7 +67,7 @@ class OkHttpClient(okHttpClient: okhttp3.OkHttpClient = new okhttp3.OkHttpClient
     body: Option[String] = None,
     responseHandler: okhttp3.Response => T = defaultResponseHandler _): TaskService[T] = TaskService {
     Task {
-      XorCatchAll[HttpClientException] {
+      CatchAll[HttpClientException] {
         val builder = createBuilderRequest(url, httpHeaders)
         val request = (method match {
           case GET => builder.get()

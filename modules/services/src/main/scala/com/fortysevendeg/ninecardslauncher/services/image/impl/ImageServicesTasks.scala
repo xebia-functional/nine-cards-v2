@@ -4,7 +4,7 @@ import java.io.{File, FileOutputStream, InputStream}
 import java.net.URL
 
 import android.graphics._
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
@@ -22,7 +22,7 @@ trait ImageServicesTasks
 
   def getPathByName(name: String)(implicit context: ContextSupport): TaskService[File] = TaskService {
     Task {
-      XorCatchAll[FileException] {
+      CatchAll[FileException] {
         new File(resourceUtils.getPath(name))
       }
     }
@@ -30,7 +30,7 @@ trait ImageServicesTasks
 
   def getBitmapFromURL(uri: String): TaskService[Bitmap] = TaskService {
     Task {
-      XorCatchAll[BitmapTransformationException] {
+      CatchAll[BitmapTransformationException] {
         createInputStream(uri) match {
           case is: InputStream => createBitmapByInputStream(is)
           case _ => throw BitmapTransformationException(s"Unexpected error while fetching content from uri: $uri")
@@ -41,7 +41,7 @@ trait ImageServicesTasks
 
   def saveBitmap(file: File, bitmap: Bitmap): TaskService[Unit] = TaskService {
     Task {
-      XorCatchAll[FileException] {
+      CatchAll[FileException] {
         val out = createFileOutputStream(file)
         bitmap.compress(Bitmap.CompressFormat.PNG, 90, out)
         out.flush()

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, Moment => RepositoryMoment}
@@ -122,7 +122,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
 
     TaskService(
       Task.gatherUnordered(result) map (list =>
-          XorCatchAll[PersistenceServiceException](list.collect { case Xor.Right(collection) => collection })))
+          CatchAll[PersistenceServiceException](list.collect { case Xor.Right(collection) => collection })))
   }
 
   private[this] def unlinkCollectionInMoment(maybeMoment: Option[Moment]): TaskService[Unit] = {
@@ -164,7 +164,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     val s = requests map (r => createOrUpdateMoment(r).value)
 
     TaskService(Task.gatherUnordered(s) map (list =>
-      XorCatchAll[PersistenceServiceException](list.collect { case Xor.Right(value) => value })))
+      CatchAll[PersistenceServiceException](list.collect { case Xor.Right(value) => value })))
 
   }
 

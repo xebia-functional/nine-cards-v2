@@ -1,10 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
-import cats.data.{Xor, XorT}
+import cats.data.EitherT
 import cats.{Functor, Monad}
+import monix.eval.Task
 
 import scala.language.{higherKinds, implicitConversions}
-import scalaz.concurrent.Task
 
 package object services {
 
@@ -17,6 +17,7 @@ package object services {
     implicit val taskMonad = new Monad[Task] {
       override def flatMap[A, B](fa: Task[A])(f: (A) => Task[B]): Task[B] = fa.flatMap(f)
       override def pure[A](x: A): Task[A] = Task(x)
+      override def tailRecM[A, B](a: A)(f: (A) => Task[Either[A, B]]): Task[B] = defaultTailRecM(a)(f)
     }
 
     trait NineCardException extends RuntimeException {
@@ -24,10 +25,10 @@ package object services {
       def cause: Option[Throwable]
     }
 
-    type TaskService[A] = XorT[Task, NineCardException, A]
+    type TaskService[A] = EitherT[Task, NineCardException, A]
 
-    def apply[A](f: Task[NineCardException Xor A]): TaskService[A] = {
-      XorT[Task, NineCardException, A](f)
+    def apply[A](f: Task[NineCardException Either A]): TaskService[A] = {
+      EitherT[Task, NineCardException, A](f)
     }
 
   }

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
@@ -45,7 +45,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = TaskService {
     Task {
-      XorCatchAll[CollectionException] {
+      CatchAll[CollectionException] {
         createPrivateCollections(apps, appsCategories, minAppsGenerateCollections)
       }
     }

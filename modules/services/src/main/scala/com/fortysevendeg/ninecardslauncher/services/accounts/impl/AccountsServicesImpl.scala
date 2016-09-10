@@ -54,7 +54,7 @@ class AccountsServicesImpl
   override def invalidateToken(accountType: String, token: String)(implicit contextSupport: ContextSupport): TaskService[Unit] =
     TaskService {
       Task {
-        XorCatchAll[AccountsServicesExceptionImpl](contextSupport.getAccountManager.invalidateAuthToken(accountType, token))
+        CatchAll[AccountsServicesExceptionImpl](contextSupport.getAccountManager.invalidateAuthToken(accountType, token))
       }
     }
 }

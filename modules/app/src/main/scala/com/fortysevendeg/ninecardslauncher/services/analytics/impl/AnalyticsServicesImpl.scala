@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.analytics.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.analytics.{AnalyticEvent, AnalyticsException, AnalyticsServices, ImplicitsAnalyticsException}
 import com.google.android.gms.analytics.{HitBuilders, Tracker}
@@ -13,7 +13,7 @@ class AnalyticsServicesImpl(tracker: Tracker)
 
   override def trackEvent(event: AnalyticEvent) = TaskService {
     Task {
-      XorCatchAll[AnalyticsException] {
+      CatchAll[AnalyticsException] {
         tracker.setScreenName(event.screen)
         val eventBuilder = new HitBuilders.EventBuilder()
         eventBuilder.setCategory(event.category)
