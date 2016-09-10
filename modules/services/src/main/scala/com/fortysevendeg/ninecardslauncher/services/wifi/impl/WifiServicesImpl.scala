@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.wifi.impl
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.wifi.{ImplicitsWifiExceptions, WifiServices, WifiServicesException}
@@ -16,7 +16,7 @@ class WifiServicesImpl
 
   override def getCurrentSSID(implicit contextSupport: ContextSupport) = TaskService {
     Task {
-      XorCatchAll[WifiServicesException] {
+      CatchAll[WifiServicesException] {
         val connManager = getConnectivityManager
         val networkInfo = connManager flatMap (manager => Option(manager.getActiveNetworkInfo))
 
@@ -36,7 +36,7 @@ class WifiServicesImpl
 
   override def getConfiguredNetworks(implicit contextSupport: ContextSupport) = TaskService {
     Task {
-      XorCatchAll[WifiServicesException] {
+      CatchAll[WifiServicesException] {
         import scala.collection.JavaConversions._
         val wifiManager = getWifiManager
         val networks = wifiManager flatMap (manager => Option(manager.getConfiguredNetworks)) map (_.toList) getOrElse List.empty

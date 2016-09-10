@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntity, NineC
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import org.joda.time.DateTime
 
-import scalaz.concurrent.Task
+import monix.eval.Task
 
 class AppRepository(
   contentResolverWrapper: ContentResolverWrapper,
@@ -35,7 +35,7 @@ class AppRepository(
   def addApp(data: AppData): TaskService[App] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
@@ -53,7 +53,7 @@ class AppRepository(
   def addApps(datas: Seq[AppData]): TaskService[Unit] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val values = datas map createMapValues
 
           contentResolverWrapper.inserts(
@@ -68,7 +68,7 @@ class AppRepository(
   def deleteApps(where: String = ""): TaskService[Int] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = appUri,
             where = where,
@@ -80,7 +80,7 @@ class AppRepository(
   def deleteApp(app: App): TaskService[Int] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = appUri,
             id = app.id,
@@ -92,7 +92,7 @@ class AppRepository(
   def deleteAppByPackage(packageName: String): TaskService[Int] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = appUri,
             where = s"${AppEntity.packageName} = ?",
@@ -105,7 +105,7 @@ class AppRepository(
   def fetchApps(orderBy: String = ""): TaskService[Seq[App]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = appUri,
             projection = allFields,
@@ -120,7 +120,7 @@ class AppRepository(
     orderBy: String = ""): TaskService[IterableCursor[App]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
             uri = appUri,
             projection = allFields,
@@ -153,7 +153,7 @@ class AppRepository(
   def findAppById(id: Int): TaskService[Option[App]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.findById(
             uri = appUri,
             id = id,
@@ -165,7 +165,7 @@ class AppRepository(
   def fetchAppByPackage(packageName: String): TaskService[Option[App]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.fetch(
             uri = appUri,
             projection = allFields,
@@ -178,7 +178,7 @@ class AppRepository(
   def fetchAppByPackages(packageName: Seq[String]): TaskService[Seq[App]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = appUri,
             projection = allFields,
@@ -190,7 +190,7 @@ class AppRepository(
   def fetchAppsByCategory(category: String, orderBy: String = ""): TaskService[Seq[App]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val (where, param) = whereCategory(category)
           contentResolverWrapper.fetchAll(
             uri = appUri,
@@ -205,7 +205,7 @@ class AppRepository(
   def fetchIterableAppsByCategory(category: String, orderBy: String = ""): TaskService[IterableCursor[App]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val (where, param) = whereCategory(category)
           contentResolverWrapper.getCursor(
             uri = appUri,
@@ -220,7 +220,7 @@ class AppRepository(
   def updateApp(app: App): TaskService[Int] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val values = createMapValues(app.data)
 
           contentResolverWrapper.updateById(
@@ -263,7 +263,7 @@ class AppRepository(
     normalize: (String) => String = (term) => term): TaskService[Seq[DataCounter]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val data = fetchData
           data.foldLeft(Seq.empty[DataCounter]) { (acc, name) =>
             val term = normalize(name)
@@ -283,7 +283,7 @@ class AppRepository(
    fetchData: => Seq[Long]): TaskService[Seq[DataCounter]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val now = new DateTime()
           val moreOfTwoMoths = "moreOfTwoMoths"
           val dates = Seq(

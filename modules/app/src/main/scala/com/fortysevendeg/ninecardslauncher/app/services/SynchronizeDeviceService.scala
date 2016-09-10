@@ -128,7 +128,7 @@ class SynchronizeDeviceService
 
     services.TaskService {
       Task.gatherUnordered(updateServices, exceptionCancels = false) map { results =>
-        XorCatchAll[SharedCollectionsExceptions](results.collect { case Xor.Right(r) => r })
+        CatchAll[SharedCollectionsExceptions](results.collect { case Xor.Right(r) => r })
       }
     }
   }

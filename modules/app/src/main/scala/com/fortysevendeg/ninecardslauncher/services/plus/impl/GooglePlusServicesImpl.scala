@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.plus.impl
 
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
@@ -60,7 +60,7 @@ class GooglePlusServicesImpl(googleApiClient: GoogleApiClient)
 
   private[this] def fetchPerson(loadPeopleResult: LoadPeopleResult): TaskService[Person] = TaskService {
     Task {
-      XorCatchAll[GooglePlusServicesException] {
+      CatchAll[GooglePlusServicesException] {
         val people = notNullOrThrow(loadPeopleResult, "LoadPeopleResult is null")
         val personBuffer = notNullOrThrow(people.getPersonBuffer, "PersonBuffer on LoadPeopleResult is null")
         if (personBuffer.getCount > 0) {

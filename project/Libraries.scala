@@ -18,6 +18,11 @@ object Libraries {
     lazy val cats = "org.typelevel" %% "cats" % Versions.catsV
   }
 
+  object monix {
+    lazy val monixTypes = "io.monix" %% "monix-types" % Versions.monixV
+    lazy val monixEval = "io.monix" %% "monix-eval" % Versions.monixV
+  }
+
   object android {
 
     def androidDep(module: String) = "com.android.support" % module % androidV

@@ -317,7 +317,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
     def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = TaskService {
       val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).value)
-      Task.gatherUnordered(tasks) map (c => XorCatchAll[CloudStorageProcessException](c.collect { case Xor.Right(r) => r }))
+      Task.gatherUnordered(tasks) map (c => CatchAll[CloudStorageProcessException](c.collect { case Xor.Right(r) => r }))
     }
 
     // If we found some error when connecting to Backend V1 we just return an empty collection of devices

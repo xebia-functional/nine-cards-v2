@@ -1,7 +1,6 @@
 package com.fortysevendeg.repository.collection
 
 import android.net.Uri
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
@@ -14,6 +13,8 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
 trait CollectionRepositorySpecification
   extends Specification
@@ -94,7 +95,7 @@ class CollectionRepositorySpec
           val result = collectionRepository.addCollection(data = createCollectionData).value.run
 
           result must beLike {
-            case Xor.Right(collection) =>
+            case Right(collection) =>
               collection.id shouldEqual testCollectionId
               collection.data.name shouldEqual testName
           }
@@ -105,7 +106,7 @@ class CollectionRepositorySpec
 
           contentResolverWrapper.insert(any, any, any) throws contentResolverException
           val result = collectionRepository.addCollection(data = createCollectionData).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -116,7 +117,7 @@ class CollectionRepositorySpec
 
           contentResolverWrapper.delete(any, any, any, any) returns 1
           val result = collectionRepository.deleteCollections().value.run
-          result shouldEqual Xor.Right(1)
+          result shouldEqual Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -124,7 +125,7 @@ class CollectionRepositorySpec
 
           contentResolverWrapper.delete(any, any, any, any) throws contentResolverException
           val result = collectionRepository.deleteCollections().value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -135,7 +136,7 @@ class CollectionRepositorySpec
 
           contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
           val result = collectionRepository.deleteCollection(collection).value.run
-          result shouldEqual Xor.Right(1)
+          result shouldEqual Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -143,7 +144,7 @@ class CollectionRepositorySpec
 
           contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
           val result = collectionRepository.deleteCollection(collection).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -156,7 +157,7 @@ class CollectionRepositorySpec
           val result = collectionRepository.findCollectionById(id = testCollectionId).value.run
 
           result must beLike {
-            case Xor.Right(maybeCollection) =>
+            case Right(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
                 collection.data.name shouldEqual testName
@@ -169,7 +170,7 @@ class CollectionRepositorySpec
 
           contentResolverWrapper.findById(any, any, any, any, any, any)(any) returns None
           val result = collectionRepository.findCollectionById(id = testNonExistingCollectionId).value.run
-          result shouldEqual Xor.Right(None)
+          result shouldEqual Right(None)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -177,7 +178,7 @@ class CollectionRepositorySpec
 
           contentResolverWrapper.findById(any, any, any, any, any, any)(any) throws contentResolverException
           val result = collectionRepository.findCollectionById(id = testCollectionId).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -197,7 +198,7 @@ class CollectionRepositorySpec
           val result = collectionRepository.fetchCollectionBySharedCollectionId(id = testSharedCollectionId).value.run
 
           result must beLike {
-            case Xor.Right(maybeCollection) =>
+            case Right(maybeCollection) =>
               maybeCollection must beSome[Collection].which { collection =>
                 collection.id shouldEqual testCollectionId
                 collection.data.name shouldEqual testName
@@ -217,7 +218,7 @@ class CollectionRepositorySpec
             f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
           val result = collectionRepository.fetchCollectionBySharedCollectionId(id = testNonExistingSharedCollectionId).value.run
-          result shouldEqual Xor.Right(None)
+          result shouldEqual Right(None)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -232,7 +233,7 @@ class CollectionRepositorySpec
             f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
           val result = collectionRepository.fetchCollectionBySharedCollectionId(id = testSharedCollectionId).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
 
 
@@ -251,7 +252,7 @@ class CollectionRepositorySpec
             val result = collectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId = testSharedCollectionId).value.run
 
             result must beLike {
-              case Xor.Right(maybeCollection) =>
+              case Right(maybeCollection) =>
                 maybeCollection must beSome[Collection].which { collection =>
                   collection.id shouldEqual testCollectionId
                   collection.data.name shouldEqual testName
@@ -271,7 +272,7 @@ class CollectionRepositorySpec
               f = getEntityFromCursor(collectionEntityFromCursor)) returns None
 
             val result = collectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId = testNonExistingSharedCollectionId).value.run
-            result shouldEqual Xor.Right(None)
+            result shouldEqual Right(None)
           }
 
         "return a RepositoryException when a exception is thrown" in
@@ -286,7 +287,7 @@ class CollectionRepositorySpec
               f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
             val result = collectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId = testSharedCollectionId).value.run
-            result must beAnInstanceOf[Xor.Left[RepositoryException]]
+            result must beAnInstanceOf[Left[RepositoryException, _]]
           }
 
       }
@@ -306,7 +307,7 @@ class CollectionRepositorySpec
             val result = collectionRepository.fetchCollectionByPosition(position = testPosition).value.run
 
             result must beLike {
-              case Xor.Right(maybeCollection) =>
+              case Right(maybeCollection) =>
                 maybeCollection must beSome[Collection].which { collection =>
                   collection.id shouldEqual testCollectionId
                   collection.data.position shouldEqual testPosition
@@ -325,7 +326,7 @@ class CollectionRepositorySpec
               orderBy = "")(
               f = getEntityFromCursor(collectionEntityFromCursor)) returns None
             val result = collectionRepository.fetchCollectionByPosition(position = testNonExistingPosition).value.run
-            result shouldEqual Xor.Right(None)
+            result shouldEqual Right(None)
           }
 
         "return a RepositoryException when a exception is thrown" in
@@ -340,7 +341,7 @@ class CollectionRepositorySpec
               f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
             val result = collectionRepository.fetchCollectionByPosition(position = testPosition).value.run
-            result must beAnInstanceOf[Xor.Left[RepositoryException]]
+            result must beAnInstanceOf[Left[RepositoryException, _]]
           }
       }
 
@@ -358,7 +359,7 @@ class CollectionRepositorySpec
               f = getListFromCursor(collectionEntityFromCursor)) returns collectionEntitySeq
 
             val result = collectionRepository.fetchSortedCollections.value.run
-            result shouldEqual Xor.Right(collectionSeq)
+            result shouldEqual Right(collectionSeq)
           }
 
         "return a RepositoryException when a exception is thrown" in
@@ -373,7 +374,7 @@ class CollectionRepositorySpec
               f = getListFromCursor(collectionEntityFromCursor)) throws contentResolverException
 
             val result = collectionRepository.fetchSortedCollections.value.run
-            result must beAnInstanceOf[Xor.Left[RepositoryException]]
+            result must beAnInstanceOf[Left[RepositoryException, _]]
           }
       }
 
@@ -384,7 +385,7 @@ class CollectionRepositorySpec
 
             contentResolverWrapper.updateById(any, any, any, any) returns 1
             val result = collectionRepository.updateCollection(collection = collection).value.run
-            result shouldEqual Xor.Right(1)
+            result shouldEqual Right(1)
           }
 
         "return a RepositoryException when a exception is thrown" in
@@ -392,7 +393,7 @@ class CollectionRepositorySpec
 
             contentResolverWrapper.updateById(any, any, any, any) throws contentResolverException
             val result = collectionRepository.updateCollection(collection = collection).value.run
-            result must beAnInstanceOf[Xor.Left[RepositoryException]]
+            result must beAnInstanceOf[Left[RepositoryException, _]]
           }
       }
 

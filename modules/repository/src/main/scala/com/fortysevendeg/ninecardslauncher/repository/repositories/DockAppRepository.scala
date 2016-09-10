@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.DockAppEntity._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import IterableCursor._
 
-import scalaz.concurrent.Task
+import monix.eval.Task
 
 class DockAppRepository(
   contentResolverWrapper: ContentResolverWrapper,
@@ -28,7 +28,7 @@ class DockAppRepository(
   def addDockApp(data: DockAppData): TaskService[DockApp] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
@@ -44,7 +44,7 @@ class DockAppRepository(
   def addDockApps(datas: Seq[DockAppData]): TaskService[Seq[DockApp]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
 
           val values = datas map createMapValues
 
@@ -64,7 +64,7 @@ class DockAppRepository(
   def deleteDockApps(where: String = ""): TaskService[Int] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = dockAppUri,
             where = where,
@@ -76,7 +76,7 @@ class DockAppRepository(
   def deleteDockApp(dockApp: DockApp): TaskService[Int] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = dockAppUri,
             id = dockApp.id,
@@ -88,7 +88,7 @@ class DockAppRepository(
   def findDockAppById(id: Int): TaskService[Option[DockApp]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.findById(
             uri = dockAppUri,
             id = id,
@@ -103,7 +103,7 @@ class DockAppRepository(
     orderBy: String = s"${DockAppEntity.position} asc"): TaskService[Seq[DockApp]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = dockAppUri,
             projection = allFields,
@@ -120,7 +120,7 @@ class DockAppRepository(
     orderBy: String = s"${DockAppEntity.position} asc"): TaskService[IterableCursor[DockApp]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
             uri = dockAppUri,
             projection = allFields,
@@ -134,7 +134,7 @@ class DockAppRepository(
   def updateDockApp(item: DockApp): TaskService[Int] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val values = createMapValues(item.data)
 
           contentResolverWrapper.updateById(
@@ -149,7 +149,7 @@ class DockAppRepository(
   def updateDockApps(items: Seq[DockApp]): TaskService[Seq[Int]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val values = items map { item =>
             (item.id, createMapValues(item.data))
           }

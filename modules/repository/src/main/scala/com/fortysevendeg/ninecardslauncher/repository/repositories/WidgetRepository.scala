@@ -1,8 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
@@ -17,7 +16,7 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.{NineCardsUri, Wi
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scala.language.postfixOps
-import scalaz.concurrent.Task
+import monix.eval.Task
 
 class WidgetRepository(
   contentResolverWrapper: ContentResolverWrapper,
@@ -31,7 +30,7 @@ class WidgetRepository(
   def addWidget(data: WidgetData): TaskService[Widget] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val values = createMapValues(data)
 
           val id = contentResolverWrapper.insert(
@@ -47,7 +46,7 @@ class WidgetRepository(
   def addWidgets(datas: Seq[WidgetData]): TaskService[Seq[Widget]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
 
           val values = datas map createMapValues
 
@@ -67,7 +66,7 @@ class WidgetRepository(
   def deleteWidgets(where: String = ""): TaskService[Int] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.delete(
             uri = widgetUri,
             where = where,
@@ -79,7 +78,7 @@ class WidgetRepository(
   def deleteWidget(widget: Widget): TaskService[Int] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = widgetUri,
             id = widget.id,
@@ -91,7 +90,7 @@ class WidgetRepository(
   def findWidgetById(id: Int): TaskService[Option[Widget]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.findById(
             uri = widgetUri,
             id = id,
@@ -103,7 +102,7 @@ class WidgetRepository(
   def fetchWidgetByAppWidgetId(appWidgetId: Int): TaskService[Option[Widget]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           fetchWidget(selection = s"${WidgetEntity.appWidgetId} = ?", selectionArgs = Seq(appWidgetId.toString))
         }
       }
@@ -112,7 +111,7 @@ class WidgetRepository(
   def fetchWidgetsByMoment(momentId: Int): TaskService[Seq[Widget]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = widgetUri,
             projection = allFields,
@@ -129,7 +128,7 @@ class WidgetRepository(
     orderBy: String = ""): TaskService[Seq[Widget]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.fetchAll(
             uri = widgetUri,
             projection = allFields,
@@ -146,7 +145,7 @@ class WidgetRepository(
     orderBy: String = ""): TaskService[IterableCursor[Widget]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           contentResolverWrapper.getCursor(
             uri = widgetUri,
             projection = allFields,
@@ -160,7 +159,7 @@ class WidgetRepository(
   def updateWidget(widget: Widget): TaskService[Int] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val values = createMapValues(widget.data)
 
           contentResolverWrapper.updateById(
@@ -175,7 +174,7 @@ class WidgetRepository(
   def updateWidgets(widgets: Seq[Widget]): TaskService[Seq[Int]] =
     TaskService {
       Task {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           val values = widgets map { widget =>
             (widget.id, createMapValues(widget.data))
           }

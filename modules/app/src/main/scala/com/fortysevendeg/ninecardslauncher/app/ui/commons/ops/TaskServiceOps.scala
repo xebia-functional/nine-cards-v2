@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, TaskService}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
-import scalaz.{-\/, \/-}
-import scalaz.concurrent.Task
+import monix.eval.Task
+
+import scala.util.{Either, Failure, Success}
 
 object TaskServiceOps {
 
@@ -15,51 +15,55 @@ object TaskServiceOps {
       onResult: A => Unit = a => (),
       onException: E => Unit = (e: Throwable) => ()
     ): Unit = {
-      Task.fork(t.value).runAsync {
-        case -\/(ex) =>
-          printErrorTaskMessage("=> EXCEPTION Disjunction <=", ex)
-          onException(ex)
-        case \/-(Xor.Right(response)) => onResult(response)
-        case \/-(Xor.Left(ex)) =>
-          printErrorTaskMessage(s"=> EXCEPTION Xor Left) <=", ex)
-          onException(ex)
+      Task.fork(t.value).runAsync { result =>
+        result match {
+          case Failure(ex) =>
+            printErrorTaskMessage("=> EXCEPTION Disjunction <=", ex)
+            onException(ex)
+          case Success(Right(value)) => onResult(value)
+          case Success(Left(ex)) =>
+            printErrorTaskMessage(s"=> EXCEPTION Xor Left) <=", ex)
+            onException(ex)
+        }
       }
     }
 
     def resolveAsyncService[E >: Throwable](
-      onResult: (A) => TaskService[A] = a => TaskService(Task(Xor.Right(a))),
-      onException: (E) => TaskService[A] = (e: NineCardException) => TaskService(Task(Xor.Left(e)))): Unit = {
-      Task.fork(t.value).runAsync {
-        case -\/(ex) =>
-          printErrorTaskMessage("=> EXCEPTION Disjunction <=", ex)
-          onException(ex).value.run
-        case \/-(Xor.Right(response)) => onResult(response).value.run
-        case \/-(Xor.Left(ex)) =>
-          printErrorTaskMessage(s"=> EXCEPTION Xor Left) <=", ex)
-          onException(ex).value.run
+      onResult: (A) => TaskService[A] = a => TaskService(Task(Either.right(a))),
+      onException: (E) => TaskService[A] = (e: NineCardException) => TaskService(Task(Either.left(e)))): Unit = {
+      Task.fork(t.value).runAsync { result =>
+        result match {
+          case Failure(ex) =>
+            printErrorTaskMessage("=> EXCEPTION Disjunction <=", ex)
+            onException(ex).value.runAsync
+          case Success(Right(response)) => onResult(response).value.coeval
+          case Success(Left(ex)) =>
+            printErrorTaskMessage(s"=> EXCEPTION Xor Left) <=", ex)
+            onException(ex).value.runAsync
+        }
       }
     }
 
     def resolve[E >: Throwable](
       onResult: A => Unit = a => (),
       onException: E => Unit = (e: Throwable) => ()): Unit = {
-      Task.fork(t.value).map {
-        case Xor.Right(response) => onResult(response)
-        case Xor.Left(ex) =>
+      t.value.map {
+        case Right(response) => onResult(response)
+        case Left(ex) =>
           printErrorTaskMessage("=> EXCEPTION Xor Left <=", ex)
           onException(ex)
-      }.attemptRun
+      }.coeval.runAttempt
     }
 
     def resolveService[E >: Throwable](
-      onResult: (A) => TaskService[A] = a => TaskService(Task(Xor.Right(a))),
-      onException: (E) => TaskService[A] = (e: NineCardException) => TaskService(Task(Xor.Left(e)))): Unit = {
+      onResult: (A) => TaskService[A] = a => TaskService(Task(Either.right(a))),
+      onException: (E) => TaskService[A] = (e: NineCardException) => TaskService(Task(Either.left(e)))): Unit = {
       Task.fork(t.value).map {
-        case Xor.Right(response) => onResult(response).value.run
-        case Xor.Left(ex) =>
+        case Right(response) => onResult(response).value.coeval.runAttempt
+        case Left(ex) =>
           printErrorTaskMessage("=> EXCEPTION Xor Left <=", ex)
-          onException(ex).value.run
-      }.attemptRun
+          onException(ex).value.coeval.runAttempt
+      }.coeval.runAttempt
     }
 
     def resolveServiceOr[E >: Throwable](exception: (E) => TaskService[A]) = resolveService(onException = exception)

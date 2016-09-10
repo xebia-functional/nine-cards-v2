@@ -1,7 +1,6 @@
 package com.fortysevendeg.repository.card
 
 import android.net.Uri
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
@@ -19,6 +18,7 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import scala.language.postfixOps
 import scalaz.Maybe.Empty
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
 trait CardRepositorySpecification
   extends Specification
@@ -102,7 +102,7 @@ class CardRepositorySpec
           val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).value.run
 
           result must beLike {
-            case Xor.Right(cardResult) =>
+            case Right(cardResult) =>
               cardResult.id shouldEqual testCardId
               cardResult.data.intent shouldEqual testIntent
           }
@@ -113,7 +113,7 @@ class CardRepositorySpec
 
           contentResolverWrapper.insert(any, any, any) throws contentResolverException
           val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -126,7 +126,7 @@ class CardRepositorySpec
 
           contentResolverWrapper.delete(any, any, any, any) returns 1
           val result = cardRepository.deleteCards().value.run
-          result shouldEqual Xor.Right(1)
+          result shouldEqual Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -134,7 +134,7 @@ class CardRepositorySpec
 
           contentResolverWrapper.delete(any, any, any, any) throws contentResolverException
           val result = cardRepository.deleteCards().value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -145,7 +145,7 @@ class CardRepositorySpec
 
           contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
           val result = cardRepository.deleteCard(testCollectionId, card = card).value.run
-          result shouldEqual Xor.Right(1)
+          result shouldEqual Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -153,7 +153,7 @@ class CardRepositorySpec
 
           contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
           val result = cardRepository.deleteCard(testCollectionId, card = card).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -166,7 +166,7 @@ class CardRepositorySpec
           val result = cardRepository.findCardById(id = testCardId).value.run
 
           result must beLike {
-            case Xor.Right(maybeCard) =>
+            case Right(maybeCard) =>
               maybeCard must beSome[Card].which { card =>
                 card.id shouldEqual testCardId
                 card.data.intent shouldEqual testIntent
@@ -179,7 +179,7 @@ class CardRepositorySpec
 
           contentResolverWrapper.findById(any, any, any, any, any, any)(any) returns None
           val result = cardRepository.findCardById(id = testNonExistingCardId).value.run
-          result shouldEqual Xor.Right(None)
+          result shouldEqual Right(None)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -187,7 +187,7 @@ class CardRepositorySpec
 
           contentResolverWrapper.findById(any, any, any, any, any, any)(any) throws contentResolverException
           val result = cardRepository.findCardById(id = testCardId).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -205,7 +205,7 @@ class CardRepositorySpec
             f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
 
           val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).value.run
-          result shouldEqual Xor.Right(cardSeq)
+          result shouldEqual Right(cardSeq)
 
         }
 
@@ -221,7 +221,7 @@ class CardRepositorySpec
             f = getListFromCursor(cardEntityFromCursor)) returns Seq.empty
 
           val result = cardRepository.fetchCardsByCollection(collectionId = testNonExistingCollectionId).value.run
-          result shouldEqual Xor.Right(Seq.empty)
+          result shouldEqual Right(Seq.empty)
 
         }
 
@@ -237,7 +237,7 @@ class CardRepositorySpec
             f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
 
           val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -251,7 +251,7 @@ class CardRepositorySpec
             f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
 
           val result = cardRepository.fetchCards.value.run
-          result shouldEqual Xor.Right(cardSeq)
+          result shouldEqual Right(cardSeq)
 
         }
 
@@ -264,7 +264,7 @@ class CardRepositorySpec
             f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
 
           val result = cardRepository.fetchCards.value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -280,7 +280,7 @@ class CardRepositorySpec
             notificationUris = Seq(mockUri)) returns 1
 
           val result = cardRepository.updateCard(card = card).value.run
-          result shouldEqual Xor.Right(1)
+          result shouldEqual Right(1)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -293,7 +293,7 @@ class CardRepositorySpec
             notificationUris = Seq(mockUri)) throws contentResolverException
 
           val result = cardRepository.updateCard(card = card).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 

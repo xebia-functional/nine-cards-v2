@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets.impl
 
 import android.os.Build
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
@@ -17,7 +17,7 @@ class WidgetsServicesImpl
 
   override def getWidgets(implicit context: ContextSupport) = TaskService {
     Task {
-      XorCatchAll[WidgetServicesException] {
+      CatchAll[WidgetServicesException] {
         val appWidgetManager = getAppWidgetManager
         appWidgetManager.getAllProviders
       }

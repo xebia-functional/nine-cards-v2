@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers
 import cats.implicits._
 import com.bumptech.glide.Glide
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, Jobs, UiException}
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
@@ -40,7 +40,7 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
   def clearCacheImages: TaskService[Unit] = {
     val clearCacheService = TaskService {
       Task {
-        XorCatchAll[UiException] {
+        CatchAll[UiException] {
           Glide.get(contextWrapper.bestAvailable).clearDiskCache()
         }
       }

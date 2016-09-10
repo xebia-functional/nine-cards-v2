@@ -5,7 +5,7 @@ import android.content.pm.{PackageManager, ResolveInfo}
 import android.provider.MediaStore
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.{XorCatchAll, javaNull}
+import com.fortysevendeg.ninecardslauncher.commons.{CatchAll, javaNull}
 import com.fortysevendeg.ninecardslauncher.services.apps._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 
@@ -21,7 +21,7 @@ class AppsServicesImpl
 
   override def getInstalledApplications(implicit context: ContextSupport) = TaskService {
     Task {
-      XorCatchAll[AppsInstalledException] {
+      CatchAll[AppsInstalledException] {
         getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_LAUNCHER))
       }
     }
@@ -29,7 +29,7 @@ class AppsServicesImpl
 
   override def getApplication(packageName: String)(implicit context: ContextSupport) = TaskService {
     Task {
-      XorCatchAll[AppsInstalledException] {
+      CatchAll[AppsInstalledException] {
         val packageManager = context.getPackageManager
         val intent = packageManager.getLaunchIntentForPackage(packageName)
         getApplicationByResolveInfo(packageManager.resolveActivity(intent, 0))
@@ -39,7 +39,7 @@ class AppsServicesImpl
 
   def getDefaultApps(implicit context: ContextSupport) = TaskService {
     Task {
-      XorCatchAll[AppsInstalledException] {
+      CatchAll[AppsInstalledException] {
 
         val phoneApp: Option[Application] = getAppsByIntent(phoneIntent()).headOption
 

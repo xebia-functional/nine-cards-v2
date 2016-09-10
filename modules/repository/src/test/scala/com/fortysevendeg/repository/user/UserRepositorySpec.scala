@@ -1,7 +1,6 @@
 package com.fortysevendeg.repository.user
 
 import android.net.Uri
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
@@ -14,6 +13,7 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
 import scala.language.postfixOps
 
@@ -96,7 +96,7 @@ class UserRepositorySpec
           val result = userRepository.addUser(data = createUserData).value.run
 
           result must beLike {
-            case Xor.Right(userResponse) =>
+            case Right(userResponse) =>
               userResponse.id shouldEqual testId
               userResponse.data.email should beSome(testEmail)
           }
@@ -110,7 +110,7 @@ class UserRepositorySpec
           contentResolverWrapper.insert(any, any, any) throws contentResolverException
 
           val result = userRepository.addUser(data = createUserData).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
 
           there was one(contentResolverWrapper).insert(mockUri, createUserValues, Seq(mockUri))
         }
@@ -124,7 +124,7 @@ class UserRepositorySpec
           contentResolverWrapper.delete(any, any, any, any) returns 1
 
           val result = userRepository.deleteUsers().value.run
-          result shouldEqual Xor.Right(1)
+          result shouldEqual Right(1)
 
           there was one(contentResolverWrapper).delete(
             uri = mockUri,
@@ -138,7 +138,7 @@ class UserRepositorySpec
           contentResolverWrapper.delete(any, any, any, any) throws contentResolverException thenReturn 1
 
           val result = userRepository.deleteUsers().value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
 
           there was one(contentResolverWrapper).delete(
             uri = mockUri,
@@ -155,7 +155,7 @@ class UserRepositorySpec
           contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
 
           val result = userRepository.deleteUser(user).value.run
-          result shouldEqual Xor.Right(1)
+          result shouldEqual Right(1)
 
           there was one(contentResolverWrapper).deleteById(
             uri = mockUri,
@@ -169,7 +169,7 @@ class UserRepositorySpec
           contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException thenReturn 1
 
           val result = userRepository.deleteUser(user).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
 
           there were one(contentResolverWrapper).deleteById(
             uri = mockUri,
@@ -188,7 +188,7 @@ class UserRepositorySpec
           val result = userRepository.findUserById(id = testId).value.run
 
           result must beLike {
-            case Xor.Right(maybeUser) =>
+            case Right(maybeUser) =>
               maybeUser must beSome[User].which { user =>
                 user.id shouldEqual testId
                 user.data.email should beSome(testEmail)
@@ -208,7 +208,7 @@ class UserRepositorySpec
           contentResolverWrapper.findById(any, any, any, any, any, any)(any) returns None
 
           val result = userRepository.findUserById(id = testNonExistingId).value.run
-          result shouldEqual Xor.Right(None)
+          result shouldEqual Right(None)
 
           there was one(contentResolverWrapper).findById(
             uri = mockUri,
@@ -223,7 +223,7 @@ class UserRepositorySpec
           contentResolverWrapper.findById(any, any, any, any, any, any)(any) throws contentResolverException thenReturn None
 
           val result = userRepository.findUserById(id = testId).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
 
           there was one(contentResolverWrapper).findById(
             uri = mockUri,
@@ -241,7 +241,7 @@ class UserRepositorySpec
           contentResolverWrapper.updateById(any, any, any, any) returns 1
 
           val result = userRepository.updateUser(item = user).value.run
-          result shouldEqual Xor.Right(1)
+          result shouldEqual Right(1)
 
           there was one(contentResolverWrapper).updateById(
             uri = mockUri,
@@ -256,7 +256,7 @@ class UserRepositorySpec
           contentResolverWrapper.updateById(any, any, any, any) throws contentResolverException thenReturn 1
 
           val result = userRepository.updateUser(item = user).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
 
           there was one(contentResolverWrapper).updateById(
             uri = mockUri,
