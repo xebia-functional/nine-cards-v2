@@ -544,4 +544,7 @@
     <!-- Edit Moment -->
     <string name="addDuplicateItemError">Item is duplicated</string>
 
+    <!-- App Links -->
+    <string name="linkNotSupportedError">Link not supported</string>
+
 </resources>

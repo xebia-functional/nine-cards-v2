@@ -80,6 +80,20 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:launchMode="singleTask"
+            android:name="com.fortysevendeg.ninecardslauncher.app.ui.applinks.AppLinksReceiverActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:host="www.9cards.io" />
+            </intent-filter>
+        </activity>
+
         <service
             android:name="com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService"/>
 

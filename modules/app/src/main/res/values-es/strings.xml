@@ -529,4 +529,7 @@
     <!-- Edit Moment -->
     <string name="addDuplicateItemError">Elemento duplicado</string>
 
+    <!-- App Links -->
+    <string name="linkNotSupportedError">Enlace no soportado</string>
+
 </resources>
