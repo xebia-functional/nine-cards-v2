@@ -16,7 +16,6 @@ import com.fortysevendeg.ninecardslauncher.repository.repositories.RepositoryUti
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scala.language.postfixOps
-import monix.eval.Task
 
 class CardRepository(
   contentResolverWrapper: ContentResolverWrapper,
@@ -30,106 +29,92 @@ class CardRepository(
 
   def addCard(collectionId: Int, data: CardData): TaskService[Card] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          val values = createMapValues(data) + (CardEntity.collectionId -> collectionId)
+      CatchAll[RepositoryException] {
+        val values = createMapValues(data) + (CardEntity.collectionId -> collectionId)
 
-          val id = contentResolverWrapper.insert(
-            uri = cardUri,
-            values = values,
-            notificationUris = Seq(cardNotificationUri, uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
+        val id = contentResolverWrapper.insert(
+          uri = cardUri,
+          values = values,
+          notificationUris = Seq(cardNotificationUri, uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
 
-          Card(id = id, data = data)
-        }
+        Card(id = id, data = data)
       }
     }
 
   def addCards(datas: Seq[CardsWithCollectionId]): TaskService[Seq[Card]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          val values = datas flatMap { dataWithCollectionId =>
-            dataWithCollectionId.data map { data =>
-              createMapValues(data) +
-                (CardEntity.collectionId -> dataWithCollectionId.collectionId)
-            }
+      CatchAll[RepositoryException] {
+        val values = datas flatMap { dataWithCollectionId =>
+          dataWithCollectionId.data map { data =>
+            createMapValues(data) +
+              (CardEntity.collectionId -> dataWithCollectionId.collectionId)
           }
+        }
 
-          val collectionNotificationUris = datas.map(_.collectionId).distinct.map { id =>
-            uriCreator.withAppendedPath(collectionNotificationUri, id.toString)
-          }
+        val collectionNotificationUris = datas.map(_.collectionId).distinct.map { id =>
+          uriCreator.withAppendedPath(collectionNotificationUri, id.toString)
+        }
 
-          val ids = contentResolverWrapper.inserts(
-            authority = NineCardsUri.authorityPart,
-            uri = cardUri,
-            allValues = values,
-            notificationUris = collectionNotificationUris :+ cardNotificationUri)
+        val ids = contentResolverWrapper.inserts(
+          authority = NineCardsUri.authorityPart,
+          uri = cardUri,
+          allValues = values,
+          notificationUris = collectionNotificationUris :+ cardNotificationUri)
 
-          (datas flatMap (_.data)) zip ids map {
-            case (data, id) => Card(id = id, data = data)
-          }
+        (datas flatMap (_.data)) zip ids map {
+          case (data, id) => Card(id = id, data = data)
         }
       }
     }
 
   def deleteCards(where: String = ""): TaskService[Int] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          contentResolverWrapper.delete(
-            uri = cardUri,
-            where = where,
-            notificationUris = Seq(cardNotificationUri))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.delete(
+          uri = cardUri,
+          where = where,
+          notificationUris = Seq(cardNotificationUri))
       }
     }
 
   def deleteCard(collectionId: Int, card: Card): TaskService[Int] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          contentResolverWrapper.deleteById(
-            uri = cardUri,
-            id = card.id,
-            notificationUris = Seq(cardNotificationUri, uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.deleteById(
+          uri = cardUri,
+          id = card.id,
+          notificationUris = Seq(cardNotificationUri, uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
       }
     }
 
   def findCardById(id: Int): TaskService[Option[Card]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          contentResolverWrapper.findById(
-            uri = cardUri,
-            id = id,
-            projection = allFields)(getEntityFromCursor(cardEntityFromCursor)) map toCard
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.findById(
+          uri = cardUri,
+          id = id,
+          projection = allFields)(getEntityFromCursor(cardEntityFromCursor)) map toCard
       }
     }
 
   def fetchCardsByCollection(collectionId: Int): TaskService[Seq[Card]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          contentResolverWrapper.fetchAll(
-            uri = cardUri,
-            projection = allFields,
-            where = s"${CardEntity.collectionId} = ?",
-            whereParams = Seq(collectionId.toString),
-            orderBy = s"${CardEntity.position} asc")(getListFromCursor(cardEntityFromCursor)) map toCard
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.fetchAll(
+          uri = cardUri,
+          projection = allFields,
+          where = s"${CardEntity.collectionId} = ?",
+          whereParams = Seq(collectionId.toString),
+          orderBy = s"${CardEntity.position} asc")(getListFromCursor(cardEntityFromCursor)) map toCard
       }
     }
 
   def fetchCards: TaskService[Seq[Card]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          contentResolverWrapper.fetchAll(
-            uri = cardUri,
-            projection = allFields)(getListFromCursor(cardEntityFromCursor)) map toCard
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.fetchAll(
+          uri = cardUri,
+          projection = allFields)(getListFromCursor(cardEntityFromCursor)) map toCard
       }
     }
 
@@ -138,47 +123,41 @@ class CardRepository(
     whereParams: Seq[String] = Seq.empty,
     orderBy: String = ""): TaskService[IterableCursor[Card]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          contentResolverWrapper.getCursor(
-            uri = cardUri,
-            projection = allFields,
-            where = where,
-            whereParams = whereParams,
-            orderBy = orderBy).toIterator(cardFromCursor)
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.getCursor(
+          uri = cardUri,
+          projection = allFields,
+          where = where,
+          whereParams = whereParams,
+          orderBy = orderBy).toIterator(cardFromCursor)
       }
     }
 
   def updateCard(card: Card): TaskService[Int] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          val values = createMapValues(card.data)
+      CatchAll[RepositoryException] {
+        val values = createMapValues(card.data)
 
-          contentResolverWrapper.updateById(
-            uri = cardUri,
-            id = card.id,
-            values = values,
-            notificationUris = Seq(cardNotificationUri))
-        }
+        contentResolverWrapper.updateById(
+          uri = cardUri,
+          id = card.id,
+          values = values,
+          notificationUris = Seq(cardNotificationUri))
       }
     }
 
   def updateCards(cards: Seq[Card]): TaskService[Seq[Int]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          val values = cards map { card =>
-            (card.id, createMapValues(card.data))
-          }
-
-          contentResolverWrapper.updateByIds(
-            authority = NineCardsUri.authorityPart,
-            uri = cardUri,
-            idAndValues = values,
-            notificationUris = Seq(cardNotificationUri))
+      CatchAll[RepositoryException] {
+        val values = cards map { card =>
+          (card.id, createMapValues(card.data))
         }
+
+        contentResolverWrapper.updateByIds(
+          authority = NineCardsUri.authorityPart,
+          uri = cardUri,
+          idAndValues = values,
+          notificationUris = Seq(cardNotificationUri))
       }
     }
 

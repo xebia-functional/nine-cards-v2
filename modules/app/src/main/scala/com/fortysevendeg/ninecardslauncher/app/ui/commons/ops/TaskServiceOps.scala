@@ -4,6 +4,8 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, TaskService}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import monix.eval.Task
+import cats.syntax.either._
+import monix.execution.Scheduler.Implicits.global
 
 import scala.util.{Either, Failure, Success}
 
@@ -22,7 +24,7 @@ object TaskServiceOps {
             onException(ex)
           case Success(Right(value)) => onResult(value)
           case Success(Left(ex)) =>
-            printErrorTaskMessage(s"=> EXCEPTION Xor Left) <=", ex)
+            printErrorTaskMessage(s"=> EXCEPTION Left) <=", ex)
             onException(ex)
         }
       }
@@ -38,7 +40,7 @@ object TaskServiceOps {
             onException(ex).value.runAsync
           case Success(Right(response)) => onResult(response).value.coeval
           case Success(Left(ex)) =>
-            printErrorTaskMessage(s"=> EXCEPTION Xor Left) <=", ex)
+            printErrorTaskMessage(s"=> EXCEPTION Left) <=", ex)
             onException(ex).value.runAsync
         }
       }
@@ -50,7 +52,7 @@ object TaskServiceOps {
       t.value.map {
         case Right(response) => onResult(response)
         case Left(ex) =>
-          printErrorTaskMessage("=> EXCEPTION Xor Left <=", ex)
+          printErrorTaskMessage("=> EXCEPTION Left <=", ex)
           onException(ex)
       }.coeval.runAttempt
     }
@@ -61,7 +63,7 @@ object TaskServiceOps {
       Task.fork(t.value).map {
         case Right(response) => onResult(response).value.coeval.runAttempt
         case Left(ex) =>
-          printErrorTaskMessage("=> EXCEPTION Xor Left <=", ex)
+          printErrorTaskMessage("=> EXCEPTION Left <=", ex)
           onException(ex).value.coeval.runAttempt
       }.coeval.runAttempt
     }

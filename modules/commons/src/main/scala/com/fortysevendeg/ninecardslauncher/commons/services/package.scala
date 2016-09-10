@@ -27,7 +27,7 @@ package object services {
 
     type TaskService[A] = EitherT[Task, NineCardException, A]
 
-    def apply[A](f: Task[NineCardException Either A]) : TaskService[A] = {
+    def apply[A](f: Task[NineCardException Either A]): TaskService[A] = {
       EitherT[Task, NineCardException, A](f)
     }
 

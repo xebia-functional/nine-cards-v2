@@ -10,14 +10,13 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCollection
 import com.fortysevendeg.ninecardslauncher.repository.model.{Collection, CollectionData}
-import com.fortysevendeg.ninecardslauncher.repository.provider.{CollectionEntity, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity.{allFields, position, _}
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CollectionEntity, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.repository.repositories.RepositoryUtils._
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scala.language.postfixOps
-import monix.eval.Task
 
 class CollectionRepository(
   contentResolverWrapper: ContentResolverWrapper,
@@ -30,104 +29,88 @@ class CollectionRepository(
 
   def addCollection(data: CollectionData): TaskService[Collection] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          val values = createMapValues(data)
+      CatchAll[RepositoryException] {
+        val values = createMapValues(data)
 
-          val id = contentResolverWrapper.insert(
-            uri = collectionUri,
-            values = values,
-            notificationUris = Seq(collectionNotificationUri))
+        val id = contentResolverWrapper.insert(
+          uri = collectionUri,
+          values = values,
+          notificationUris = Seq(collectionNotificationUri))
 
-          Collection(id = id, data = data)
-        }
+        Collection(id = id, data = data)
       }
     }
 
   def addCollections(datas: Seq[CollectionData]): TaskService[Seq[Collection]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
+      CatchAll[RepositoryException] {
 
-          val values = datas map createMapValues
+        val values = datas map createMapValues
 
-          val ids = contentResolverWrapper.inserts(
-            authority = NineCardsUri.authorityPart,
-            uri = collectionUri,
-            allValues = values,
-            notificationUris = Seq(collectionNotificationUri))
+        val ids = contentResolverWrapper.inserts(
+          authority = NineCardsUri.authorityPart,
+          uri = collectionUri,
+          allValues = values,
+          notificationUris = Seq(collectionNotificationUri))
 
-          datas zip ids map {
-            case (data, id) => Collection(id = id, data = data)
-          }
+        datas zip ids map {
+          case (data, id) => Collection(id = id, data = data)
         }
       }
     }
 
   def deleteCollections(where: String = ""): TaskService[Int] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          contentResolverWrapper.delete(
-            uri = collectionUri,
-            where = where,
-            notificationUris = Seq(collectionNotificationUri))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.delete(
+          uri = collectionUri,
+          where = where,
+          notificationUris = Seq(collectionNotificationUri))
       }
     }
 
   def deleteCollection(collection: Collection): TaskService[Int] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          contentResolverWrapper.deleteById(
-            uri = collectionUri,
-            id = collection.id,
-            notificationUris = Seq(collectionNotificationUri))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.deleteById(
+          uri = collectionUri,
+          id = collection.id,
+          notificationUris = Seq(collectionNotificationUri))
       }
     }
 
   def findCollectionById(id: Int): TaskService[Option[Collection]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          contentResolverWrapper.findById(
-            uri = collectionUri,
-            id = id,
-            projection = allFields)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.findById(
+          uri = collectionUri,
+          id = id,
+          projection = allFields)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
       }
     }
 
   def fetchCollectionBySharedCollectionId(id: String): TaskService[Option[Collection]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          fetchCollection(
-            selection = s"$sharedCollectionId = ?",
-            selectionArgs = Seq(id.toString))
-        }
+      CatchAll[RepositoryException] {
+        fetchCollection(
+          selection = s"$sharedCollectionId = ?",
+          selectionArgs = Seq(id.toString))
       }
     }
 
   def fetchCollectionByOriginalSharedCollectionId(sharedCollectionId: String): TaskService[Option[Collection]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          fetchCollection(
-            selection = s"$originalSharedCollectionId = ?",
-            selectionArgs = Seq(sharedCollectionId.toString))
-        }
+      CatchAll[RepositoryException] {
+        fetchCollection(
+          selection = s"$originalSharedCollectionId = ?",
+          selectionArgs = Seq(sharedCollectionId.toString))
       }
     }
 
   def fetchCollectionByPosition(position: Int): TaskService[Option[Collection]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          fetchCollection(selection = s"${CollectionEntity.position} = ?", selectionArgs = Seq(position.toString))
-        }
+      CatchAll[RepositoryException] {
+        fetchCollection(selection = s"${CollectionEntity.position} = ?", selectionArgs = Seq(position.toString))
       }
     }
 
@@ -136,56 +119,48 @@ class CollectionRepository(
     whereParams: Seq[String] = Seq.empty,
     orderBy: String = ""): TaskService[IterableCursor[Collection]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          contentResolverWrapper.getCursor(
-            uri = collectionUri,
-            projection = allFields,
-            where = where,
-            whereParams = whereParams,
-            orderBy = orderBy).toIterator(collectionFromCursor)
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.getCursor(
+          uri = collectionUri,
+          projection = allFields,
+          where = where,
+          whereParams = whereParams,
+          orderBy = orderBy).toIterator(collectionFromCursor)
       }
     }
 
   def fetchSortedCollections: TaskService[Seq[Collection]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          fetchCollections(sortOrder = s"${CollectionEntity.position} asc")
-        }
+      CatchAll[RepositoryException] {
+        fetchCollections(sortOrder = s"${CollectionEntity.position} asc")
       }
     }
 
   def updateCollection(collection: Collection): TaskService[Int] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          val values = createMapValues(collection.data)
+      CatchAll[RepositoryException] {
+        val values = createMapValues(collection.data)
 
-          contentResolverWrapper.updateById(
-            uri = collectionUri,
-            id = collection.id,
-            values = values,
-            notificationUris = Seq(collectionNotificationUri))
-        }
+        contentResolverWrapper.updateById(
+          uri = collectionUri,
+          id = collection.id,
+          values = values,
+          notificationUris = Seq(collectionNotificationUri))
       }
     }
 
   def updateCollections(collections: Seq[Collection]): TaskService[Seq[Int]] =
     TaskService {
-      Task {
-        CatchAll[RepositoryException] {
-          val values = collections map { collection =>
-            (collection.id, createMapValues(collection.data))
-          }
-
-          contentResolverWrapper.updateByIds(
-            authority = NineCardsUri.authorityPart,
-            uri = collectionUri,
-            idAndValues = values,
-            notificationUris = Seq(collectionNotificationUri))
+      CatchAll[RepositoryException] {
+        val values = collections map { collection =>
+          (collection.id, createMapValues(collection.data))
         }
+
+        contentResolverWrapper.updateByIds(
+          authority = NineCardsUri.authorityPart,
+          uri = collectionUri,
+          idAndValues = values,
+          notificationUris = Seq(collectionNotificationUri))
       }
     }
 
