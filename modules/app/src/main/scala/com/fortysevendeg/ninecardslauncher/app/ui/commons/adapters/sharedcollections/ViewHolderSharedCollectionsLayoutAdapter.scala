@@ -16,8 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.SharedCollectionOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{NotSubscribed, SharedCollection, SharedCollectionPackage}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
@@ -62,7 +61,7 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
     (addCollection <~ buttonStyle) ~
     (shareCollection <~ ivSrc(tintDrawable(R.drawable.icon_dialog_collection_share)))).run
 
-  def bind(collection: SharedCollection, position: Int, mySharedCollectionIds: Seq[String] = Seq.empty): Ui[Any] = {
+  def bind(collection: SharedCollection, position: Int): Ui[Any] = {
     val background = new ShapeDrawable(new OvalShape)
     background.getPaint.setColor(resGetColor(getRandomIndexColor))
     val apps = collection.resolvedPackages
@@ -78,7 +77,7 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
       (addCollection <~
-        (if(mySharedCollectionIds.contains(collection.sharedCollectionId)) vInvisible else vVisible + On.click(Ui(onAddCollection(collection))))) ~
+        (if(collection.subscriptionType == NotSubscribed) vVisible + On.click(Ui(onAddCollection(collection))) else vInvisible)) ~
       (shareCollection <~ On.click(Ui(onShareCollection(collection))))
   }
 
@@ -108,11 +107,4 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
     appsViews
   }
 
-  private[this] def getCounter(plus: Int, width: Int) = {
-    val size = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
-    val color = resGetColor(R.color.background_count_public_collection_dialog)
-    (w[ImageView] <~
-      lp[ViewGroup](size, size) <~
-      ivSrc(CharDrawable(s"+$plus", circle = true, Some(color)))).get
-  }
 }

@@ -14,7 +14,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FetchCollectionBySharedCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection => CollectionService}
 
 import scalaz.concurrent.Task
 
@@ -58,10 +59,17 @@ trait CollectionsProcessImpl extends CollectionProcess {
       collection <- persistenceServices.findCollectionById(FindCollectionByIdRequest(id))
     } yield collection map toCollection).resolve[CollectionException]
 
-  def getCollectionBySharedCollectionId(sharedCollectionId: String, original: Boolean) =
+  def getCollectionBySharedCollectionId(sharedCollectionId: String, original: Boolean) = {
+
+    def verifyOriginal(maybeCollection: Option[CollectionService]) = (original, maybeCollection) match {
+      case (true, Some(c)) if c.originalSharedCollectionId.contains(sharedCollectionId) => Some(c)
+      case (false, _) => maybeCollection
+    }
+
     (for {
-      collection <- persistenceServices.fetchCollectionBySharedCollection(FetchCollectionBySharedCollectionRequest(sharedCollectionId, original))
-    } yield collection map toCollection).resolve[CollectionException]
+      collection <- persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId)
+    } yield verifyOriginal(collection) map toCollection).resolve[CollectionException]
+  }
 
   def addCollection(addCollectionRequest: AddCollectionRequest) =
     (for {

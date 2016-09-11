@@ -5,7 +5,6 @@ import java.util.Date
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import cats.data.XorT
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
 import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
@@ -113,27 +112,17 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       .launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id)).value)
       .resolveAsyncUi(onException = _ => actions.showContactUsError())
 
-  def loadPublications(): Unit = {
-
-    def getSharedCollections: XorT[Task, NineCardException, (Seq[SharedCollection], Seq[String])] =
-     for {
-       sharedCollections <- di.sharedCollectionsProcess.getPublishedCollections()
-       collections <- di.collectionProcess.getCollections
-     } yield {
-       val mySharedCollectionIds = collections flatMap (_.sharedCollectionId)
-       (sharedCollections, mySharedCollectionIds)
-     }
-
-    Task.fork(getSharedCollections.value).resolveAsyncUi(
+  def loadPublications(): Unit =
+    Task.fork(di.sharedCollectionsProcess.getPublishedCollections().value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
-      onResult = {
-        case (sharedCollections, mySharedCollectionIds) if sharedCollections.isEmpty =>
+      onResult = (sharedCollections) => {
+        if (sharedCollections.isEmpty) {
           actions.showEmptyMessageInScreen(() => loadPublications())
-        case (sharedCollections, mySharedCollectionIds) =>
-          actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection, mySharedCollectionIds)
+        } else {
+          actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
+        }
       },
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen(() => loadPublications()))
-  }
 
   def loadSubscriptions(): Unit = {
     // TODO - Load publications and set adapter
@@ -276,8 +265,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     )
   }
 
-  private[this] def addCollection(sharedCollection: SharedCollection):
-  TaskService[Collection] =
+  private[this] def addCollection(sharedCollection: SharedCollection): TaskService[Collection] =
     for {
       appsInstalled <- di.deviceProcess.getSavedApps(GetByName)
       collection <- di.collectionProcess.addCollection(toAddCollectionRequestFromSharedCollection(sharedCollection, getCards(appsInstalled, sharedCollection.resolvedPackages)))
@@ -358,8 +346,7 @@ trait ProfileUiActions {
   def loadPublications(
     sharedCollections: Seq[SharedCollection],
     onAddCollection: (SharedCollection) => Unit,
-    onShareCollection: (SharedCollection) => Unit,
-    mySharedCollectionIds: Seq[String]): Ui[Any]
+    onShareCollection: (SharedCollection) => Unit): Ui[Any]
 
   def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
 

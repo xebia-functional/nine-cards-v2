@@ -12,8 +12,7 @@ import macroid.ActivityContextWrapper
 case class SharedCollectionsAdapter(
   sharedCollections: Seq[SharedCollection],
   onAddCollection: (SharedCollection) => Unit,
-  onShareCollection: (SharedCollection) => Unit,
-  mySharedCollectionIds: Seq[String] = Seq.empty)
+  onShareCollection: (SharedCollection) => Unit)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderSharedCollectionsLayoutAdapter] {
 
@@ -26,7 +25,7 @@ case class SharedCollectionsAdapter(
 
   override def onBindViewHolder(viewHolder: ViewHolderSharedCollectionsLayoutAdapter, position: Int): Unit = {
     val publicCollection = sharedCollections(position)
-    viewHolder.bind(publicCollection, position, mySharedCollectionIds).run
+    viewHolder.bind(publicCollection, position).run
   }
 
   def getLayoutManager = new LinearLayoutManager(activityContext.application)
