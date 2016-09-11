@@ -58,14 +58,17 @@ case class RecommendationApp(
   stars: Double,
   free: Boolean,
   description: String,
-  screenshots: Seq[String]
-)
+  screenshots: Seq[String])
 
 case class SharedCollectionResponseList(
   statusCode: Int,
-  items: Seq[SharedCollectionResponse])
+  items: Seq[SharedCollection])
 
 case class SharedCollectionResponse(
+  statusCode: Int,
+  sharedCollection: SharedCollection)
+
+case class SharedCollection(
   id: String,
   sharedCollectionId: String,
   publishedOn: Long,
