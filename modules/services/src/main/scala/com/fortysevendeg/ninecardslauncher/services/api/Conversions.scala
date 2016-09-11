@@ -135,8 +135,8 @@ trait Conversions {
       description = app.description,
       screenshots = app.screenshots)
 
-  def toSharedCollectionResponseSeq(collections: Seq[version2.Collection]): Seq[SharedCollection] =
-    collections map toSharedCollection
+  def toSharedCollectionResponseSeq(collections: Seq[version2.Collection]): Seq[SharedCollectionResponse] =
+    collections map toSharedCollectionResponse
 
   def formatPublishedDate(date: String): Long = {
 
@@ -153,8 +153,8 @@ trait Conversions {
     }
   }
 
-  def toSharedCollection(collection: version2.Collection) =
-    SharedCollection(
+  def toSharedCollectionResponse(collection: version2.Collection) =
+    SharedCollectionResponse(
       id = collection.publicIdentifier,
       sharedCollectionId = collection.publicIdentifier,
       publishedOn = formatPublishedDate(collection.publishedOn),

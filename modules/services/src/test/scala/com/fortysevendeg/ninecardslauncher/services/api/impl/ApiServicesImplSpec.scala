@@ -284,35 +284,6 @@ class ApiServicesImplSpec
 
   }
 
-  "getSharedCollection" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope {
-
-        apiService.getCollection(any, any)(any) returns
-          TaskService {
-            Task(Xor.right(ServiceClientResponse[version2.Collection](statusCode, Some(sharedCollection))))
-          }
-
-        val result = apiServices.getSharedCollection(sharedCollectionId).value.run
-        result must beLike {
-          case Xor.Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.sharedCollection shouldEqual toSharedCollection(sharedCollection)
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope {
-
-        apiService.getCollection(any, any)(any) returns TaskService(Task(Xor.left(exception)))
-
-        val result = apiServices.getSharedCollection(sharedCollectionId).value.run
-        result must beAnInstanceOf[Xor.Left[HttpClientException]]
-      }
-
-  }
-
   "getSharedCollectionsByCategory" should {
 
     "return a valid response if the services returns a valid response for TOP apps" in
