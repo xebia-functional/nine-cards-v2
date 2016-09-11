@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreateSharedCollection
-import com.fortysevendeg.ninecardslauncher.services.api.{CreateSharedCollectionResponse, RequestConfig, SharedCollection, SharedCollectionResponseList}
+import com.fortysevendeg.ninecardslauncher.services.api.{CreateSharedCollectionResponse, RequestConfig, SharedCollectionResponse, SharedCollectionResponseList}
 
 import scala.util.Random
 
@@ -21,8 +21,8 @@ trait SharedCollectionsProcessImplData {
 
   val statusCodeOk = 200
 
-  def generateSharedCollection() = 1 to 10 map { i =>
-    SharedCollection(
+  def generateSharedCollectionResponse() = 1 to 10 map { i =>
+    SharedCollectionResponse(
       id = Random.nextString(10),
       sharedCollectionId = Random.nextString(10),
       publishedOn = Random.nextLong(),
@@ -40,7 +40,7 @@ trait SharedCollectionsProcessImplData {
 
   val shareCollectionList = SharedCollectionResponseList(
     statusCode = statusCodeOk,
-    items = generateSharedCollection())
+    items = generateSharedCollectionResponse())
 
   val sharedCollectionId = Random.nextString(10)
 
