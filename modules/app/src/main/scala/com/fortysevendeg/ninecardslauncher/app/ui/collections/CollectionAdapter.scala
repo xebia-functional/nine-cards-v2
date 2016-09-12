@@ -20,7 +20,11 @@ import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui, _}
 
 case class CollectionAdapter(var collection: Collection, heightCard: Int)
-  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme, collectionPresenter: CollectionPresenter)
+  (implicit activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme,
+    collectionPresenter: CollectionPresenter,
+    collectionsPagerPresenter: CollectionsPagerPresenter)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with ReorderItemTouchListener { self =>
 
@@ -28,10 +32,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.card_item, parent, false)
     ViewHolderCollectionAdapter(
       content = view,
-      heightCard = heightCard,
-      onClick = (position: Int) => Ui {
-        collection.cards.lift(position) foreach collectionPresenter.launchCard
-      })
+      heightCard = heightCard)
   }
 
   override def getItemCount: Int = collection.cards.size
@@ -70,8 +71,11 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
 
 case class ViewHolderCollectionAdapter(
   content: CardView,
-  heightCard: Int,
-  onClick: (Int) => Ui[_])(implicit context: ActivityContextWrapper, theme: NineCardsTheme, collectionPresenter: CollectionPresenter)
+  heightCard: Int)
+  (implicit context: ActivityContextWrapper,
+    theme: NineCardsTheme,
+    collectionPresenter: CollectionPresenter,
+    collectionsPagerPresenter: CollectionsPagerPresenter)
   extends RecyclerView.ViewHolder(content)
   with CollectionAdapterStyles
   with TypedFindView {
@@ -84,9 +88,7 @@ case class ViewHolderCollectionAdapter(
 
   lazy val badge = Option(findView(TR.card_badge))
 
-  ((content <~ rootStyle(heightCard) <~ On.click {
-    onClick(getAdapterPosition)
-  } <~ On.longClick {
+  ((content <~ rootStyle(heightCard) <~ On.longClick {
     Ui {
       collectionPresenter.startReorderCards(this)
       true
@@ -94,7 +96,10 @@ case class ViewHolderCollectionAdapter(
   }) ~ (iconContent <~ iconContentStyle(heightCard))).run
 
   def bind(card: Card)(implicit uiContext: UiContext[_]): Ui[_] =
-    (icon <~ vResize(IconsSize.getIconApp) <~ iconCardTransform(card)) ~
+    (content<~ On.click {
+      Ui(collectionsPagerPresenter.launchCard(card))
+    }) ~
+      (icon <~ vResize(IconsSize.getIconApp) <~ iconCardTransform(card)) ~
       (name <~ tvText(card.term) <~ tvSizeResource(FontSize.getSizeResource) <~ nameStyle(card.cardType)) ~
       (badge <~ (getBadge(card.cardType) map {
         ivSrc(_) + vVisible

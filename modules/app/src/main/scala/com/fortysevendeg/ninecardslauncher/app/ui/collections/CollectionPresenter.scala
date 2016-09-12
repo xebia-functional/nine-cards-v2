@@ -2,15 +2,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v7.widget.RecyclerView.ViewHolder
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, PhoneCardType}
-import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
+import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.trackevent._
 import macroid.{ActivityContextWrapper, Ui}
 
@@ -22,10 +19,6 @@ case class CollectionPresenter(
   actions: CollectionUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions { self =>
-
-  val permissionChecker = new PermissionChecker
-
-  var statuses = CollectionPresenterStatuses()
 
   def initialize(sType: ScrollType): Unit = {
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
@@ -84,37 +77,6 @@ case class CollectionPresenter(
 
   def showData(): Unit = maybeCollection foreach (c => actions.showData(c.cards.isEmpty).run)
 
-  def launchCard(card : Card): Unit = Task.fork(di.launcherExecutorProcess.execute(card.intent).value).resolveAsyncUi(
-    onException = (throwable: Throwable) => throwable match {
-      case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
-        statuses = statuses.copy(lastPhone = card.intent.extractPhone())
-        actions.askForPhoneCallPermission(RequestCodes.phoneCallPermission)
-      case _ => actions.showContactUsError()
-    }
-  )
-
-  def requestPermissionsResult(
-    requestCode: Int,
-    permissions: Array[String],
-    grantResults: Array[Int]): Unit =
-    if (requestCode == RequestCodes.phoneCallPermission) {
-      val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
-      if (result.exists(_.hasPermission(CallPhone))) {
-        statuses.lastPhone foreach { phone =>
-          statuses = statuses.copy(lastPhone = None)
-          Task.fork(di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)).value).resolveAsyncUi(
-            onException = _ => actions.showContactUsError())
-        }
-      } else {
-        statuses.lastPhone foreach { phone =>
-          statuses = statuses.copy(lastPhone = None)
-          Task.fork(di.launcherExecutorProcess.launchDial(Some(phone)).value).resolveAsyncUi(
-            onException = _ => actions.showContactUsError())
-        }
-        actions.showNoPhoneCallPermissionError().run
-      }
-    }
-
   private[this] def trackCard(card: Card, action: Action): Unit = card.cardType match {
     case AppCardType =>
       for {
@@ -139,9 +101,6 @@ case class CollectionPresenter(
 
 }
 
-case class CollectionPresenterStatuses(
-  lastPhone: Option[String] = None)
-
 trait CollectionUiActions {
 
   def initialize(animateCards: Boolean, collection: Collection): Ui[Any]
@@ -160,8 +119,6 @@ trait CollectionUiActions {
 
   def showMessageFormFieldError: Ui[Any]
 
-  def showNoPhoneCallPermissionError(): Ui[Any]
-
   def showEmptyCollection(): Ui[Any]
 
   def moveToCollection(collections: Seq[Collection], card: Card): Ui[Any]
@@ -177,8 +134,6 @@ trait CollectionUiActions {
   def reloadCards(cards: Seq[Card]): Ui[Any]
 
   def showData(emptyCollection: Boolean): Ui[Any]
-
-  def askForPhoneCallPermission(requestCode: Int): Ui[Any]
 
   def isPulling: Boolean
 

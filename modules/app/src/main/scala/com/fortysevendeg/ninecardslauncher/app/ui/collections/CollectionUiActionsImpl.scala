@@ -12,13 +12,12 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.CollectionDialog
@@ -38,7 +37,7 @@ import scala.language.postfixOps
 trait CollectionUiActionsImpl
   extends CollectionUiActions {
 
-  self: TypedFindView with Fragment with Contexts[Fragment] =>
+  self: TypedFindView with Contexts[Fragment] =>
 
   implicit val presenter: CollectionPresenter
 
@@ -46,7 +45,7 @@ trait CollectionUiActionsImpl
 
   implicit val uiContext: UiContext[_]
 
-  val collectionsPresenter: CollectionsPagerPresenter
+  implicit val collectionsPresenter: CollectionsPagerPresenter
 
   val tagDialog = "dialog"
 
@@ -82,7 +81,6 @@ trait CollectionUiActionsImpl
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
       onChanged = {
         case (ActionStateReordering, position) =>
-          statuses = statuses.copy(startPositionReorder = position)
           openReorderMode.run
         case (ActionStateIdle, position) =>
           for {
@@ -123,8 +121,6 @@ trait CollectionUiActionsImpl
   override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
 
   override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
-
-  override def showNoPhoneCallPermissionError(): Ui[Any] = showMessage(R.string.noPhoneCallPermissionMessage)
 
   override def showEmptyCollection(): Ui[Any] =
     (emptyCollectionMessage <~
@@ -179,10 +175,6 @@ trait CollectionUiActionsImpl
 
   override def showData(emptyCollection: Boolean): Ui[_] =
     if (emptyCollection) showEmptyCollection() else showCollection()
-
-  override def askForPhoneCallPermission(requestCode: Int): Ui[Any] = Ui {
-    requestPermissions(Array(CallPhone.value), requestCode)
-  }
 
   override def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get
 
@@ -340,8 +332,7 @@ case class CollectionStatuses(
   touchHelper: Option[ItemTouchHelper] = None,
   scrollType: ScrollType = ScrollNo,
   canScroll: Boolean = false,
-  activeFragment: Boolean = false,
-  startPositionReorder: Int = 0) {
+  activeFragment: Boolean = false) {
 
   def updateScroll(length: Int) = copy(canScroll = length > numSpaces)
 

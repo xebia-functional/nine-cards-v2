@@ -148,6 +148,11 @@ class CollectionsDetailsActivity
     case _ => super.onOptionsItemSelected(item)
   }
 
+  override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit = {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    collectionsPagerPresenter.requestPermissionsResult(requestCode, permissions, grantResults)
+  }
+
   override def onBackPressed(): Unit = collectionsPagerPresenter.back()
 
   override def onStartFinishAction(): Unit = collectionsPagerPresenter.resetAction()

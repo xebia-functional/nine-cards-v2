@@ -4,7 +4,9 @@ import android.content.Intent
 import android.graphics.Bitmap
 import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
@@ -12,7 +14,8 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, MomentCollectionType, ShortcutCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, MomentCollectionType, PhoneCardType, ShortcutCardType}
+import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import macroid.{ActivityContextWrapper, Ui}
 
 import scalaz.concurrent.Task
@@ -25,7 +28,11 @@ class CollectionsPagerPresenter(
 
   val delay = 200
 
+  val permissionChecker = new PermissionChecker
+
   var collections: Seq[Collection] = Seq.empty
+
+  var statuses = CollectionsPagerStatuses()
 
   def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): Unit = {
     actions.initialize(indexColor, icon, isStateChanged).run
@@ -94,6 +101,38 @@ class CollectionsPagerPresenter(
       })
   }
 
+
+  def launchCard(card : Card): Unit = Task.fork(di.launcherExecutorProcess.execute(card.intent).value).resolveAsyncUi(
+    onException = (throwable: Throwable) => throwable match {
+      case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
+        statuses = statuses.copy(lastPhone = card.intent.extractPhone())
+        Ui(permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone))
+      case _ => actions.showContactUsError
+    }
+  )
+
+  def requestPermissionsResult(
+    requestCode: Int,
+    permissions: Array[String],
+    grantResults: Array[Int]): Unit =
+    if (requestCode == RequestCodes.phoneCallPermission) {
+      val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
+      if (result.exists(_.hasPermission(CallPhone))) {
+        statuses.lastPhone foreach { phone =>
+          statuses = statuses.copy(lastPhone = None)
+          Task.fork(di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)).value).resolveAsyncUi(
+            onException = _ => actions.showContactUsError)
+        }
+      } else {
+        statuses.lastPhone foreach { phone =>
+          statuses = statuses.copy(lastPhone = None)
+          Task.fork(di.launcherExecutorProcess.launchDial(Some(phone)).value).resolveAsyncUi(
+            onException = _ => actions.showContactUsError)
+        }
+        actions.showNoPhoneCallPermissionError().run
+      }
+    }
+
   def addCards(cardsRequest: Seq[AddCardRequest]): Unit = actions.getCurrentCollection foreach { collection =>
     Task.fork(di.collectionProcess.addCards(collection.id, cardsRequest).value).resolveAsyncUi(
       onResult = (cards) => {
@@ -123,7 +162,15 @@ class CollectionsPagerPresenter(
 
   def scrollY(scroll: Int, dy: Int): Unit = actions.translationScrollY(scroll).run
 
-  def openReorderMode(current: ScrollType, canScroll: Boolean): Unit = actions.openReorderModeUi(current, canScroll).run
+  def openReorderMode(current: ScrollType, canScroll: Boolean): Unit = {
+    statuses = statuses.copy(collectionMode = EditingCollectionMode)
+    actions.openReorderModeUi(current, canScroll).run
+  }
+
+  def closeEditingMode(): Unit = {
+    statuses = statuses.copy(collectionMode = NormalCollectionMode)
+    actions.closeReorderModeUi().run
+  }
 
   def scrollType(sType: ScrollType): Unit = actions.notifyScroll(sType).run
 
@@ -189,6 +236,8 @@ trait CollectionsUiActions {
 
   def showMessageNotImplemented: Ui[Any]
 
+  def showNoPhoneCallPermissionError(): Ui[Any]
+
   def showCollections(collections: Seq[Collection], position: Int): Ui[Any]
 
   def reloadCards(cards: Seq[Card], reloadFragments: Boolean): Ui[Any]
@@ -207,6 +256,8 @@ trait CollectionsUiActions {
 
   def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any]
 
+  def closeReorderModeUi(): Ui[Any]
+
   def notifyScroll(sType: ScrollType): Ui[Any]
 
   def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[Any]
@@ -217,3 +268,13 @@ trait CollectionsUiActions {
 
   def hideMenuButton: Ui[Any]
 }
+
+case class CollectionsPagerStatuses(
+  collectionMode: CollectionMode = NormalCollectionMode,
+  lastPhone: Option[String] = None)
+
+sealed trait CollectionMode
+
+case object NormalCollectionMode extends CollectionMode
+
+case object EditingCollectionMode extends CollectionMode

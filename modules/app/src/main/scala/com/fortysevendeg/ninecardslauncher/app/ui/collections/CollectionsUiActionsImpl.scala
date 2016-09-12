@@ -24,6 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.PublishColl
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
@@ -114,6 +115,8 @@ trait CollectionsUiActionsImpl
     swapFabMenu()
   } else if (isActionShowed) {
     unrevealActionFragment
+  } else if (collectionsPagerPresenter.statuses.collectionMode == EditingCollectionMode) {
+    Ui(collectionsPagerPresenter.closeEditingMode())
   } else {
     exitTransition
   }
@@ -192,6 +195,8 @@ trait CollectionsUiActionsImpl
 
   override def showMessageNotImplemented: Ui[Any] = showError(R.string.todo)
 
+  override def showNoPhoneCallPermissionError(): Ui[Any] = showMessage(R.string.noPhoneCallPermissionMessage)
+
   override def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
     adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
   }
@@ -228,7 +233,13 @@ trait CollectionsUiActionsImpl
   }
 
   override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] =
-    hideFabButton ~
+    Ui {
+      activityContextWrapper.original.get match {
+        case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
+        case _ =>
+      }
+    } ~
+      hideFabButton ~
       ((toolbar <~~
         applyAnimation(onUpdate = (ratio) => current match {
           case ScrollDown =>
@@ -238,6 +249,13 @@ trait CollectionsUiActionsImpl
         })) ~
         elevationsUp ~
         (iconContent <~ vAlpha(0))).ifUi(canScroll)
+
+  override def closeReorderModeUi(): Ui[Any] = Ui {
+    activityContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
+      case _ =>
+    }
+  }
 
   override def notifyScroll(sType: ScrollType): Ui[Any] = (for {
     adapter <- getAdapter
@@ -284,6 +302,8 @@ trait CollectionsUiActionsImpl
   override def showMessageNotPublishedCollectionError: Ui[Any] = showError(R.string.notPublishedCollectionError)
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = root <~ vSnackbarShort(error)
+
+  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
 
   private[this] def elevationsDefault: Ui[Any] = Lollipop.ifSupportedThen {
     (viewPager <~ vElevation(elevation)) ~
