@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.recognition
 
+import java.util.Locale
+
 import com.google.android.gms.awareness.state.Weather._
 import com.google.android.gms.location.DetectedActivity._
 
@@ -14,6 +16,24 @@ case class Weather(
   dewPointFahrenheit: Float,
   temperatureCelsius: Float,
   temperatureFahrenheit: Float)
+
+case class Location(
+  latitude: Double,
+  longitude: Double,
+  countryCode: Option[String],
+  countryName: Option[String],
+  locale: Option[Locale],
+  postalCode: Option[String],
+  locality: Option[String],
+  subLocality: Option[String],
+  adminArea: Option[String],
+  subAdminArea: Option[String],
+  thoroughfare: Option[String],
+  subThoroughfare: Option[String],
+  addressLines: Seq[String],
+  phone: Option[String],
+  premises: Option[String],
+  url: Option[String])
 
 sealed trait KindActivity
 

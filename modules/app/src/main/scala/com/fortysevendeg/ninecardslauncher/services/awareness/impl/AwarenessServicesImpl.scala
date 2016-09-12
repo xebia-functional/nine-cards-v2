@@ -4,7 +4,7 @@ import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.awareness._
 import com.google.android.gms.awareness.Awareness
-import com.google.android.gms.awareness.snapshot.{DetectedActivityResult, HeadphoneStateResult, WeatherResult}
+import com.google.android.gms.awareness.snapshot.{DetectedActivityResult, HeadphoneStateResult, LocationResult, WeatherResult}
 import com.google.android.gms.awareness.state.{HeadphoneState, Weather}
 import com.google.android.gms.common.api.{GoogleApiClient, ResultCallback}
 
@@ -55,6 +55,40 @@ class AwarenessServicesImpl(client: GoogleApiClient)
                   handler(\/.right(Xor.left(AwarenessException("Headphone result not found"))))
               }
             }
+          })
+
+      }
+    }
+
+  override def getLocation =
+    TaskService {
+      Task.async[AwarenessException Xor LocationState] { handler =>
+
+        Awareness.SnapshotApi.getLocation(client)
+          .setResultCallback(new ResultCallback[LocationResult]() {
+            override def onResult(locationResult: LocationResult): Unit = {
+              Option(locationResult) match {
+                case Some(result) if result.getStatus.isSuccess =>
+                  Option(locationResult.getLocation) match {
+                    case Some(location) =>
+                      val locationState = LocationState(
+                        accuracy = location.getAccuracy,
+                        altitude = location.getAltitude,
+                        bearing = location.getBearing,
+                        latitude = location.getLatitude,
+                        longitude = location.getLongitude,
+                        speed = location.getSpeed,
+                        elapsedTime = location.getElapsedRealtimeNanos,
+                        time = location.getTime)
+                      handler(\/.right(Xor.right(locationState)))
+                    case _ =>
+                      handler(\/.right(Xor.left(AwarenessException("Location not found"))))
+                  }
+                case _ =>
+                  handler(\/.right(Xor.left(AwarenessException("Location result not found"))))
+              }
+            }
+
           })
 
       }

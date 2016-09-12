@@ -292,6 +292,14 @@ case object Headphones
   override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
 }
 
+case object Location
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = location
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
 case object Weather
   extends NineCardsPreferenceValue[String] {
   override val name: String = weather
@@ -375,6 +383,7 @@ object PreferencesValuesKeys {
   val deviceCloudId = "deviceCloudId"
   val probablyActivity = "probablyActivity"
   val headphones = "headphones"
+  val location = "location"
   val weather = "weather"
   val clearCacheImages = "clearCacheImages"
 }

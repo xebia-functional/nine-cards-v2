@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.recognition
 
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 
 trait RecognitionProcess {
@@ -17,6 +18,13 @@ trait RecognitionProcess {
     * @return Headphones
     */
   def getHeadphone: TaskService[Headphones]
+
+  /**
+    * Get the current location
+    *
+    * @return Location
+    */
+  def getLocation(implicit contextSupport: ContextSupport): TaskService[Location]
 
   /**
     * Get the current weather
