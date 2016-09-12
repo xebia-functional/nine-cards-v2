@@ -1,13 +1,16 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.applinks
 
-import android.app.Activity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import com.fortysevendeg.ninecardslauncher2.R
 
 class AppLinksReceiverActivity
-  extends Activity {
+  extends AppCompatActivity {
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
+
+    setContentView(R.layout.app_link_dialog_activity)
 
     val intent = getIntent
     val data = intent.getData
@@ -15,6 +18,6 @@ class AppLinksReceiverActivity
 
     println(s"-----> $data")
     println(s"-----> $path")
-    finish()
+//    finish()
   }
 }

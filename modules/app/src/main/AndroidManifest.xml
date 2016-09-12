@@ -81,7 +81,7 @@
         </activity>
 
         <activity
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:theme="@style/AppCompatDialog"
             android:launchMode="singleTask"
             android:name="com.fortysevendeg.ninecardslauncher.app.ui.applinks.AppLinksReceiverActivity">
             <intent-filter>
