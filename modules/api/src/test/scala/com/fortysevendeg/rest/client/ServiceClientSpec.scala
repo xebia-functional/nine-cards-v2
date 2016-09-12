@@ -1,6 +1,5 @@
 package com.fortysevendeg.rest.client
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientException, HttpClientResponse}
 import org.hamcrest.core.IsEqual
@@ -8,12 +7,13 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import play.api.libs.json.Json
-
-import scalaz.concurrent.Task
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import monix.eval.Task	 
+import cats.syntax.either._
 
 trait ServiceClientSpecification
   extends Specification
-    with Mockito {
+  with Mockito {
 
   trait ServiceClientScope
     extends Scope {
@@ -45,28 +45,26 @@ trait ServiceClientSpecification
 
     mockResponse.body returns Some(json)
 
-    httpClient.doGet(any, any) returns TaskService {
-      Task(Xor.right(mockResponse))
-    }
+    httpClient.doGet(any, any) returns TaskService(Task(Either.right(mockResponse)))
 
     httpClient.doDelete(any, any) returns TaskService {
-      Task(Xor.right(mockResponse))
+      Task(Either.right(mockResponse))
     }
 
     httpClient.doPost(any, any) returns TaskService {
-      Task(Xor.right(mockResponse))
+      Task(Either.right(mockResponse))
     }
 
     httpClient.doPost[SampleRequest](any, any, any)(any) returns TaskService {
-      Task(Xor.right(mockResponse))
+      Task(Either.right(mockResponse))
     }
 
     httpClient.doPut(any, any) returns TaskService {
-      Task(Xor.right(mockResponse))
+      Task(Either.right(mockResponse))
     }
 
     httpClient.doPut[SampleRequest](any, any, any)(any) returns TaskService {
-      Task(Xor.right(mockResponse))
+      Task(Either.right(mockResponse))
     }
   }
 
@@ -77,27 +75,27 @@ trait ServiceClientSpecification
     val exception = HttpClientException("")
 
     httpClient.doGet(any, any) returns TaskService {
-      Task(Xor.left(exception))
+      Task(Either.left(exception))
     }
 
     httpClient.doDelete(any, any) returns TaskService {
-      Task(Xor.left(exception))
+      Task(Either.left(exception))
     }
 
     httpClient.doPost(any, any) returns TaskService {
-      Task(Xor.left(exception))
+      Task(Either.left(exception))
     }
 
     httpClient.doPost[SampleRequest](any, any, any)(any) returns TaskService {
-      Task(Xor.left(exception))
+      Task(Either.left(exception))
     }
 
     httpClient.doPut(any, any) returns TaskService {
-      Task(Xor.left(exception))
+      Task(Either.left(exception))
     }
 
     httpClient.doPut[SampleRequest](any, any, any)(any) returns TaskService {
-      Task(Xor.left(exception))
+      Task(Either.left(exception))
     }
   }
 
@@ -116,7 +114,7 @@ class ServiceClientSpec
         there was one(httpClient).doGet(any, any)
         there was noMoreCallsTo(httpClient)
         response must beLike {
-          case Xor.Right(r) => r.data shouldEqual sampleResponse
+          case Right(r) => r.data shouldEqual sampleResponse
         }
       }
 
@@ -126,7 +124,7 @@ class ServiceClientSpec
         there was one(httpClient).doGet(any, any)
         there was noMoreCallsTo(httpClient)
         response must beLike {
-          case Xor.Right(r) => r.data must beNone
+          case Right(r) => r.data must beNone
         }
       }
 
@@ -136,7 +134,7 @@ class ServiceClientSpec
         there was one(httpClient).doDelete(any, any)
         there was noMoreCallsTo(httpClient)
         response must beLike {
-          case Xor.Right(r) => r.data shouldEqual sampleResponse
+          case Right(r) => r.data shouldEqual sampleResponse
         }
       }
 
@@ -146,7 +144,7 @@ class ServiceClientSpec
         there was one(httpClient).doPost(any, any)
         there was noMoreCallsTo(httpClient)
         response must beLike {
-          case Xor.Right(r) => r.data shouldEqual sampleResponse
+          case Right(r) => r.data shouldEqual sampleResponse
         }
       }
 
@@ -157,7 +155,7 @@ class ServiceClientSpec
         there was one(httpClient).doPost[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any)
         there was noMoreCallsTo(httpClient)
         response must beLike {
-          case Xor.Right(r) => r.data shouldEqual sampleResponse
+          case Right(r) => r.data shouldEqual sampleResponse
         }
       }
 
@@ -167,7 +165,7 @@ class ServiceClientSpec
         there was one(httpClient).doPut(any, any)
         there was noMoreCallsTo(httpClient)
         response must beLike {
-          case Xor.Right(r) => r.data shouldEqual sampleResponse
+          case Right(r) => r.data shouldEqual sampleResponse
         }
       }
 
@@ -178,39 +176,39 @@ class ServiceClientSpec
         there was one(httpClient).doPut[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any)
         there was noMoreCallsTo(httpClient)
         response must beLike {
-          case Xor.Right(r) => r.data shouldEqual sampleResponse
+          case Right(r) => r.data shouldEqual sampleResponse
         }
       }
 
     "throws a ServiceClientException when no Reads found for the response type" in
       new ServiceClientScope with WithSuccessfullyHttpClientMock {
         val response = serviceClient.get[Test](baseUrl, Seq.empty).value.run
-        response must beAnInstanceOf[Xor.Left[HttpClientException]]
+        response must beAnInstanceOf[Left[HttpClientException, _]]
       }
 
     "return a HttpClientException response when the call to get method throw an exception" in
       new ServiceClientScope with WithFailedHttpClientMock {
         val response = serviceClient.get[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
-        response must beAnInstanceOf[Xor.Left[HttpClientException]]
+        response must beAnInstanceOf[Left[HttpClientException, _]]
       }
 
     "return a HttpClientException when the call to delete method throw an exception" in
       new ServiceClientScope with WithFailedHttpClientMock {
         val response = serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
-        response must beAnInstanceOf[Xor.Left[HttpClientException]]
+        response must beAnInstanceOf[Left[HttpClientException, _]]
       }
 
     "return a HttpClientException when the call to post method throw an exception" in
       new ServiceClientScope with WithFailedHttpClientMock {
         val response = serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
-        response must beAnInstanceOf[Xor.Left[HttpClientException]]
+        response must beAnInstanceOf[Left[HttpClientException, _]]
       }
 
     "return a HttpClientException when the call to put method throw an exception" in
       new ServiceClientScope with WithFailedHttpClientMock {
 
         val response = serviceClient.emptyPut[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)).value.run
-        response must beAnInstanceOf[Xor.Left[HttpClientException]]
+        response must beAnInstanceOf[Left[HttpClientException, _]]
       }
 
   }

@@ -1,14 +1,12 @@
 package com.fortysevendeg.rest.client
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientResponse}
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
+import monix.eval.Task
 import play.api.libs.json.{Json, Reads, Writes}
-
 import scala.util.{Failure, Success, Try}
-import scalaz.concurrent.Task
 
 class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
 
@@ -96,13 +94,13 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
       Task {
         if (isError) {
           val errorMessage = clientResponse.body getOrElse "No content"
-          Xor.Left(ServiceClientException(s"Status code ${clientResponse.statusCode}. $errorMessage"))
+          Left(ServiceClientException(s"Status code ${clientResponse.statusCode}. $errorMessage"))
         } else {
           (clientResponse.body, emptyResponse, maybeReads) match {
             case (Some(d), false, Some(r)) => transformResponse[T](d, r)
-            case (None, false, _) => Xor.Left(ServiceClientException("No content"))
-            case (Some(d), false, None) => Xor.Left(ServiceClientException("No transformer found for type"))
-            case _ => Xor.Right(None)
+            case (None, false, _) => Left(ServiceClientException("No content"))
+            case (Some(d), false, None) => Left(ServiceClientException("No transformer found for type"))
+            case _ => Right(None)
           }
         }
       }
@@ -112,10 +110,10 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
   private def transformResponse[T](
     content: String,
     reads: Reads[T]
-    ): Xor[ServiceClientException, Some[T]] =
+    ): Either[ServiceClientException, Some[T]] =
     Try(Json.parse(content).as[T](reads)) match {
-      case Success(s) => Xor.Right(Some(s))
-      case Failure(e) => Xor.Left(ServiceClientException(message = e.getMessage, cause = Some(e)))
+      case Success(s) => Right(Some(s))
+      case Failure(e) => Left(ServiceClientException(message = e.getMessage, cause = Some(e)))
     }
 
 }
