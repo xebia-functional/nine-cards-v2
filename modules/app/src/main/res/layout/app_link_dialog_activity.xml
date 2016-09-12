@@ -1,10 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_link_root"
     style="@style/AppLinkDialogRoot">
 
     <ProgressBar
-        style="@style/AppLinkLoading"
-        android:id="@+id/app_link_loading"/>
+        android:id="@+id/app_link_loading"
+        style="@style/AppLinkLoading"/>
+
+    <FrameLayout
+        android:id="@+id/app_link_collection"
+        style="@style/AppLinkCollectionLayout">
+
+        <include
+            layout="@layout/public_collections_item"/>
+
+    </FrameLayout>
 
 </FrameLayout>
