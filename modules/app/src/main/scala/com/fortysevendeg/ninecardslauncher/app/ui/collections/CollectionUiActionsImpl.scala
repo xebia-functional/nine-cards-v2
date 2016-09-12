@@ -15,7 +15,6 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -53,13 +52,13 @@ trait CollectionUiActionsImpl
 
   var statuses = CollectionStatuses()
 
-  lazy val emptyCollectionView = Option(findView(TR.collection_detail_empty))
+  lazy val emptyCollectionView = findView(TR.collection_detail_empty)
 
-  lazy val emptyCollectionMessage = Option(findView(TR.collection_empty_message))
+  lazy val emptyCollectionMessage = findView(TR.collection_empty_message)
 
-  lazy val recyclerView = Option(findView(TR.collection_detail_recycler))
+  lazy val recyclerView = findView(TR.collection_detail_recycler)
 
-  lazy val pullToCloseView = Option(findView(TR.collection_detail_pull_to_close))
+  lazy val pullToCloseView = findView(TR.collection_detail_pull_to_close)
 
   lazy val paddingSmall = resGetDimensionPixelSize(R.dimen.padding_small)
 
@@ -81,58 +80,20 @@ trait CollectionUiActionsImpl
     animateCards: Boolean,
     collection: Collection): Ui[_] = {
     val itemTouchCallback = new ReorderItemTouchHelperCallback(
-      accentColor = resGetColor(getIndexColor(collection.themedColorIndex)),
       onChanged = {
-        case (ActionStateReordering, _, position) =>
-          if (!isPulling) {
-            statuses = statuses.copy(startPositionReorder = position)
-            openReorderMode.run
-          }
-        case (ActionStateIdle, action, position) =>
-          if (!isPulling) {
-            action match {
-              case ActionRemove =>
-                for {
-                  adapter <- getAdapter
-                  card <- adapter.collection.cards.lift(position)
-                } yield {
-                  // If we are removing card, first we move the card to the place where we begin the movement
-                  adapter.onItemMove(position, statuses.startPositionReorder)
-                  collectionsPresenter.removeCard(card)
-                }
-                // Update the scroll removing one element
-                updateScroll(-1)
-              case ActionEdit =>
-                for {
-                  adapter <- getAdapter
-                  collection = adapter.collection
-                  card <- collection.cards.lift(position)
-                } yield {
-                  presenter.reorderCard(collection.id, card.id, position)
-                  presenter.editCard(collection.id, card.id, card.term)
-                }
-              case ActionMove =>
-                for {
-                  adapter <- getAdapter
-                  collection = adapter.collection
-                  card <- collection.cards.lift(position)
-                } yield {
-                  presenter.reorderCard(collection.id, card.id, position)
-                  presenter.moveToCollection(card)
-                }
-                updateScroll(-1)
-              case NoAction =>
-                for {
-                  adapter <- getAdapter
-                  collection = adapter.collection
-                  card <- collection.cards.lift(position)
-                } yield presenter.reorderCard(collection.id, card.id, position)
-            }
-            closeReorderMode.run
-          }
+        case (ActionStateReordering, position) =>
+          statuses = statuses.copy(startPositionReorder = position)
+          openReorderMode.run
+        case (ActionStateIdle, position) =>
+          for {
+            adapter <- getAdapter
+            collection = adapter.collection
+            card <- collection.cards.lift(position)
+          } yield presenter.reorderCard(collection.id, card.id, position)
+          closeReorderMode.run
       })
     val itemTouchHelper = new ItemTouchHelper(itemTouchCallback)
-    recyclerView foreach itemTouchHelper.attachToRecyclerView
+    itemTouchHelper.attachToRecyclerView(recyclerView)
 
     statuses = statuses.copy(touchHelper= Some(itemTouchHelper))
 
@@ -223,7 +184,7 @@ trait CollectionUiActionsImpl
     requestPermissions(Array(CallPhone.value), requestCode)
   }
 
-  override def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get getOrElse false
+  override def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get
 
   override def getCurrentCollection: Option[Collection] = getAdapter map (_.collection)
 
@@ -287,11 +248,9 @@ trait CollectionUiActionsImpl
     }
   }
 
-  def getAdapter: Option[CollectionAdapter] = recyclerView flatMap { rv =>
-    Option(rv.getAdapter) match {
-      case Some(a: CollectionAdapter) => Some(a)
-      case _ => None
-    }
+  def getAdapter: Option[CollectionAdapter] = recyclerView.getAdapter match {
+    case a: CollectionAdapter => Some(a)
+    case _ => None
   }
 
   def updateScroll(offset: Int = 0): Unit = getAdapter foreach { adapter =>
@@ -352,10 +311,10 @@ trait CollectionUiActionsImpl
     }
 
   private[this] def createAdapter(collection: Collection) = {
-    val heightCard = recyclerView map { view =>
+    val heightCard = {
       val allPadding = (CardPadding.getPadding * 2) * 3
-      (view.getHeight - allPadding - (view.getPaddingBottom + view.getPaddingTop)) / numInLine
-    } getOrElse 0
+      (recyclerView.getHeight - allPadding - (recyclerView.getPaddingBottom + recyclerView.getPaddingTop)) / numInLine
+    }
     CollectionAdapter(collection, heightCard)
   }
 

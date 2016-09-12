@@ -72,17 +72,17 @@ trait CollectionsUiActionsImpl
 
   lazy val maxHeightToolbar = resGetDimensionPixelSize(R.dimen.height_toolbar_collection_details)
 
-  lazy val toolbar = Option(findView(TR.collections_toolbar))
+  lazy val toolbar = findView(TR.collections_toolbar)
 
-  lazy val root = Option(findView(TR.collections_root))
+  lazy val root = findView(TR.collections_root)
 
-  lazy val viewPager = Option(findView(TR.collections_view_pager))
+  lazy val viewPager = findView(TR.collections_view_pager)
 
-  lazy val tabs = Option(findView(TR.collections_tabs))
+  lazy val tabs = findView(TR.collections_tabs)
 
-  lazy val iconContent = Option(findView(TR.collections_icon_content))
+  lazy val iconContent = findView(TR.collections_icon_content)
 
-  lazy val icon = Option(findView(TR.collections_icon))
+  lazy val icon = findView(TR.collections_icon)
 
   val tagDialog = "dialog"
 
@@ -92,7 +92,16 @@ trait CollectionsUiActionsImpl
     getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
   override def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): Ui[Any] =
-    (root <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
+    Ui {
+      activityContextWrapper.original.get match {
+        case Some(activity: AppCompatActivity) =>
+          activity.setSupportActionBar(toolbar)
+          activity.getSupportActionBar.setDisplayHomeAsUpEnabled(true)
+          activity.getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
+        case _ =>
+      }
+    } ~
+      (root <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
       (tabs <~ tabsStyle) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
@@ -231,11 +240,10 @@ trait CollectionsUiActionsImpl
         (iconContent <~ vAlpha(0))).ifUi(canScroll)
 
   override def notifyScroll(sType: ScrollType): Ui[Any] = (for {
-    vp <- viewPager
     adapter <- getAdapter
   } yield {
       adapter.setScrollType(sType)
-      adapter.notifyChanged(vp.getCurrentItem)
+      adapter.notifyChanged(viewPager.getCurrentItem)
     }) getOrElse Ui.nop
 
   override def exitTransition: Ui[Any] = {
@@ -328,7 +336,7 @@ trait CollectionsUiActionsImpl
     view.requestLayout()
   }
 
-  private[this] def getAdapter: Option[CollectionsPagerAdapter] = viewPager flatMap (ad => Option(ad.getAdapter)) flatMap {
+  private[this] def getAdapter: Option[CollectionsPagerAdapter] = viewPager.getAdapter match {
     case adapter: CollectionsPagerAdapter => Some(adapter)
     case _ => None
   }
