@@ -13,10 +13,11 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.SharedCollectionOps._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{NotSubscribed, SharedCollection, SharedCollectionPackage}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
@@ -62,6 +63,19 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
     (shareCollection <~ ivSrc(tintDrawable(R.drawable.icon_dialog_collection_share)))).run
 
   def bind(collection: SharedCollection, position: Int): Ui[Any] = {
+
+    def addCollectionTweak() = collection.subscriptionType match {
+      case NotSubscribed =>
+        tvText(R.string.addMyCollection) +
+          tvAllCaps2(true) + tvNormalMedium + On.click(Ui(onAddCollection(collection))) + vEnabled(true)
+      case Subscribed =>
+        tvText(R.string.alreadySubscribedCollection) +
+          tvAllCaps2(false) + tvItalicLight + vEnabled(false)
+      case Owned =>
+        tvText(R.string.ownedCollection) +
+          tvAllCaps2(false) + tvItalicLight + vEnabled(false)
+    }
+
     val background = new ShapeDrawable(new OvalShape)
     background.getPaint.setColor(resGetColor(getRandomIndexColor))
     val apps = collection.resolvedPackages
@@ -76,8 +90,7 @@ case class ViewHolderSharedCollectionsLayoutAdapter(
         (if (collection.subscriptions.isDefined) vVisible + tvText(resGetString(R.string.subscriptions_number, collection.views.toString)) else vGone )) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (content <~ vTag(position)) ~
-      (addCollection <~
-        (if(collection.subscriptionType == NotSubscribed) vVisible + On.click(Ui(onAddCollection(collection))) else vInvisible)) ~
+      (addCollection <~ addCollectionTweak()) ~
       (shareCollection <~ On.click(Ui(onShareCollection(collection))))
   }
 

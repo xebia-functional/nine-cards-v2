@@ -115,7 +115,7 @@ class CollectionRepository(
     TaskService {
       Task {
         XorCatchAll[RepositoryException] {
-          fetchCollections(selection = s"$sharedCollectionId IN (${ids.mkString("'", ",", "'")})")
+          fetchCollections(selection = s"$sharedCollectionId IN (${ids.map(id => s"'$id'").mkString(",")})")
         }
       }
     }
