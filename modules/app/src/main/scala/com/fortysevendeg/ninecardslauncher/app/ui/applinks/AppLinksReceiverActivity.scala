@@ -39,6 +39,8 @@ case class AppLinksReceiverDOM(finder: TypedFindView) {
 
   lazy val loadingView = finder.findView(TR.app_link_loading)
 
+  lazy val loadingText = finder.findView(TR.app_link_loading_text)
+
   lazy val collectionView = finder.findView(TR.app_link_collection)
 
 }

@@ -547,6 +547,7 @@
     <string name="addDuplicateItemError">Item is duplicated</string>
 
     <!-- App Links -->
+    <string name="loadingCollection">Retrieving collection details…</string>
     <string name="linkNotSupportedError">Link not supported</string>
 
 </resources>

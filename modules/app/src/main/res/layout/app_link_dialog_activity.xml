@@ -4,9 +4,19 @@
     android:id="@+id/app_link_root"
     style="@style/AppLinkDialogRoot">
 
-    <ProgressBar
+    <LinearLayout
         android:id="@+id/app_link_loading"
-        style="@style/AppLinkLoading"/>
+        style="@style/AppLinkLoadingLayout">
+
+        <ProgressBar
+            android:id="@+id/app_link_loading"
+            style="@style/AppLinkLoading"/>
+
+        <TextView
+            android:id="@+id/app_link_loading_text"
+            style="@style/AppLinkLoadingText"/>
+
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/app_link_collection"
