@@ -235,6 +235,8 @@ object ExtraTweaks {
     }).show()).run
   }
 
+  def tvAllCaps2(allCaps: Boolean = true): Tweak[TextView] = Tweak[TextView](_.setAllCaps(allCaps))
+
 }
 
 object CommonsResourcesExtras {
