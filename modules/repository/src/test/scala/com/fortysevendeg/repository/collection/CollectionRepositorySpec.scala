@@ -51,9 +51,9 @@ trait CollectionMockCursor
     (collectionType, 3, collectionSeq map (_.data.collectionType), StringDataType),
     (icon, 4, collectionSeq map (_.data.icon), StringDataType),
     (themedColorIndex, 5, collectionSeq map (_.data.themedColorIndex), IntDataType),
-    (appsCategory, 6, collectionSeq map (_.data.appsCategory orNull), StringDataType),
-    (originalSharedCollectionId, 8, collectionSeq map (_.data.originalSharedCollectionId orNull), StringDataType),
-    (sharedCollectionId, 9, collectionSeq map (_.data.sharedCollectionId orNull), StringDataType),
+    (appsCategory, 6, collectionSeq map (_.data.appsCategory.orNull), StringDataType),
+    (originalSharedCollectionId, 8, collectionSeq map (_.data.originalSharedCollectionId.orNull), StringDataType),
+    (sharedCollectionId, 9, collectionSeq map (_.data.sharedCollectionId.orNull), StringDataType),
     (sharedCollectionSubscribed, 10, collectionSeq map (item => if (item.data.sharedCollectionSubscribed getOrElse false) 1 else 0), IntDataType)
   )
 
@@ -94,9 +94,9 @@ class CollectionRepositorySpec
           val result = collectionRepository.addCollection(data = createCollectionData).value.run
 
           result must beLike {
-            case Xor.Right(collection) =>
-              collection.id shouldEqual testCollectionId
-              collection.data.name shouldEqual testName
+            case Xor.Right(c) =>
+              c.id shouldEqual testCollectionId
+              c.data.name shouldEqual testName
           }
         }
 
@@ -236,56 +236,38 @@ class CollectionRepositorySpec
         }
 
 
-      "fetchCollectionByOriginalSharedCollectionId" should {
+      "fetchCollectionsBySharedCollectionIds" should {
 
-        "return a Collection object when a existing shared collection id is given" in
+        "return the Collections when some existing shared collection ids are given" in
           new CollectionRepositoryScope {
 
-            contentResolverWrapper.fetch(
-              uri = mockUri,
-              projection = allFields,
-              where = s"$originalSharedCollectionId = ?",
-              whereParams = Seq(testSharedCollectionId),
-              orderBy = "")(
-              f = getEntityFromCursor(collectionEntityFromCursor)) returns Some(collectionEntity)
-            val result = collectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId = testSharedCollectionId).value.run
+            contentResolverWrapper.fetchAll[CollectionEntity](any, any, any, any, any)(any) returns Seq(collectionEntity)
+            val result = collectionRepository.fetchCollectionsBySharedCollectionIds(Seq(testSharedCollectionId)).value.run
 
             result must beLike {
-              case Xor.Right(maybeCollection) =>
-                maybeCollection must beSome[Collection].which { collection =>
+              case Xor.Right(collections) =>
+                collections.headOption must beSome[Collection].which { collection =>
                   collection.id shouldEqual testCollectionId
                   collection.data.name shouldEqual testName
                 }
             }
           }
 
-        "return None when a non-existing shared collection id is given" in
+        "return a empty sequence when a non-existing shared collection id is given" in
           new CollectionRepositoryScope {
 
-            contentResolverWrapper.fetch(
-              uri = mockUri,
-              projection = allFields,
-              where = s"$originalSharedCollectionId = ?",
-              whereParams = Seq(testNonExistingSharedCollectionId),
-              orderBy = "")(
-              f = getEntityFromCursor(collectionEntityFromCursor)) returns None
+            contentResolverWrapper.fetchAll[CollectionEntity](any, any, any, any, any)(any) returns Seq.empty[CollectionEntity]
 
-            val result = collectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId = testNonExistingSharedCollectionId).value.run
-            result shouldEqual Xor.Right(None)
+            val result = collectionRepository.fetchCollectionsBySharedCollectionIds(Seq(testNonExistingSharedCollectionId)).value.run
+            result shouldEqual Xor.Right(Seq.empty)
           }
 
         "return a RepositoryException when a exception is thrown" in
           new CollectionRepositoryScope {
 
-            contentResolverWrapper.fetch(
-              uri = mockUri,
-              projection = allFields,
-              where = s"$originalSharedCollectionId = ?",
-              whereParams = Seq(testSharedCollectionId),
-              orderBy = "")(
-              f = getEntityFromCursor(collectionEntityFromCursor)) throws contentResolverException
+            contentResolverWrapper.fetchAll[CollectionEntity](any, any, any, any, any)(any) throws contentResolverException
 
-            val result = collectionRepository.fetchCollectionByOriginalSharedCollectionId(sharedCollectionId = testSharedCollectionId).value.run
+            val result = collectionRepository.fetchCollectionsBySharedCollectionIds(Seq(testSharedCollectionId)).value.run
             result must beAnInstanceOf[Xor.Left[RepositoryException]]
           }
 

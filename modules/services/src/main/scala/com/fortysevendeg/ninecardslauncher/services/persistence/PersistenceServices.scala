@@ -248,11 +248,21 @@ trait PersistenceServices {
 
   /**
     * Obtains the collection from the repository by the sharedCollection id
-    * @param request includes the id of the sharedCollection
+    * @param sharedCollectionId the shared collection public identifier
     * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
     */
-  def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest): TaskService[Option[Collection]]
+  def fetchCollectionBySharedCollectionId(sharedCollectionId: String): TaskService[Option[Collection]]
+
+  /**
+    * Obtains some collections based on a sequence of shared collection ids
+    * @param sharedCollectionIds the shared collection ids sequence
+    * @return a Seq[com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection] that could have less
+    *         size than the sharedCollectionIds.
+    *         IMPORTANT: The collections doesn't have populated the cards and moments fields
+    * @throws PersistenceServiceException if exist some problem obtaining the sequence of collections
+    */
+  def fetchCollectionsBySharedCollectionIds(sharedCollectionIds: Seq[String]): TaskService[Seq[Collection]]
 
   /**
     * Obtains the collection from the repository by the position
