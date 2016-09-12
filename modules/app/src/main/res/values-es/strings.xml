@@ -531,4 +531,8 @@
     <!-- Edit Moment -->
     <string name="addDuplicateItemError">Elemento duplicado</string>
 
+    <!-- App Links -->
+    <string name="loadingCollection">Recuperando información de la colección…</string>
+    <string name="linkNotSupportedError">Enlace no soportado</string>
+
 </resources>
