@@ -17,26 +17,22 @@ import macroid.{ContextWrapper, Tweak}
 
 trait CollectionCardsStyles {
 
-  implicit val theme: NineCardsTheme
-
-  val themeTextColor = theme.get(CardTextColor)
-
-  def cardRootStyle(implicit context: ContextWrapper): Tweak[CardView] =
+  def cardRootStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     cvCardBackgroundColor(theme.get(CardBackgroundColor))
 
-  def textStyle(implicit context: ContextWrapper): Tweak[TextView] =
-    tvColor(themeTextColor)
+  def textStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
+    tvColor(theme.get(CardTextColor))
 
-  def buttonStyle(implicit context: ContextWrapper): Tweak[Button] =
-    tvColor(themeTextColor) + vBackground(createBackground)
+  def buttonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[Button] =
+    tvColor(theme.get(CardTextColor)) + vBackground(createBackground)
 
-  def leftDrawableTextStyle(resourceId: Int)(implicit context: ContextWrapper): Tweak[TextView] =
-    tvColor(themeTextColor) + tvCompoundDrawablesWithIntrinsicBounds(left = Some(tintDrawable(resourceId)))
+  def leftDrawableTextStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
+    tvColor(theme.get(CardTextColor)) + tvCompoundDrawablesWithIntrinsicBounds(left = Some(tintDrawable(resourceId)))
 
-  def tintDrawable(resourceId: Int)(implicit context: ContextWrapper): Drawable =
+  def tintDrawable(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable =
     resGetDrawable(resourceId).colorize(theme.get(DrawerIconColor))
 
-  private[this] def createBackground(implicit context: ContextWrapper): Drawable = {
+  private[this] def createBackground(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable = {
     val alphaDefault = .1f
     val color = theme.get(CardBackgroundPressedColor)
     Lollipop ifSupportedThen {

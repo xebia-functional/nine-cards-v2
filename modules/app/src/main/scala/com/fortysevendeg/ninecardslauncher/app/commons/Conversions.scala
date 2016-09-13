@@ -108,6 +108,7 @@ trait Conversions
       appsCategory = Option(collection.category),
       cards = cards,
       moment = None,
+      sharedCollectionId = Option(collection.sharedCollectionId),
       originalSharedCollectionId = Option(collection.sharedCollectionId))
 
   def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =

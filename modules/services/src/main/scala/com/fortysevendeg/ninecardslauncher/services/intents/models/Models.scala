@@ -35,3 +35,5 @@ case object SearchVoiceAction extends IntentAction
 case object SearchWebAction extends IntentAction
 
 case class ShareAction(text: String, titleDialog: String) extends IntentAction
+
+case class UrlAction(url: String) extends IntentAction

@@ -234,6 +234,17 @@ class LauncherIntentServicesImplSpec
         there was one(mockActivity).startActivity(mockIntent)
       }
 
+    "call to startActivity with the Intent created by IntentCreator for a UrlAction" in
+      new LauncherIntentServicesImplScope with WithActivity {
+
+        mockIntentCreator.createUrlViewIntent(any) returns mockIntent
+        val result = services.launchIntentAction(urlAction)(mockContextSupport).value.run
+        result shouldEqual Xor.right((): Unit)
+
+        there was one(mockIntentCreator).createUrlViewIntent(url)
+        there was one(mockActivity).startActivity(mockIntent)
+      }
+
   }
 
   "withActivity" should {

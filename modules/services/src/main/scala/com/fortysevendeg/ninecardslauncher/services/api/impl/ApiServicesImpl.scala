@@ -123,6 +123,14 @@ class ApiServicesImpl(
       recommendation <- readOption(response.data, categoryNotFoundMessage)
     } yield RecommendationResponse(response.statusCode, toRecommendationAppSeq(recommendation.apps))).resolve[ApiServiceException]
 
+  override def getSharedCollection(
+    sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
+    for {
+      response <- apiService
+        .getCollection(sharedCollectionId, requestConfig.toGooglePlayHeader).resolve[ApiServiceException]
+      collection <- readOption(response.data, publishedCollectionsNotFoundMessage)
+    } yield SharedCollectionResponse(response.statusCode, toSharedCollection(collection))
+
   override def getSharedCollectionsByCategory(
     category: String,
     collectionType: String,

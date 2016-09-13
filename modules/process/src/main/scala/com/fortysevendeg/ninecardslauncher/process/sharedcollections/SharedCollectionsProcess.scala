@@ -8,6 +8,16 @@ import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
 trait SharedCollectionsProcess {
 
   /**
+    * Get a shared collection
+    *
+    * @param sharedCollectionId the shared collection identifier
+    * @return the SharedCollection
+    * @throws SharedCollectionsExceptions if there was an error fetching the collection or it doesn't exists
+    */
+  def getSharedCollection(
+    sharedCollectionId: String)(implicit context: ContextSupport): TaskService[SharedCollection]
+
+  /**
     * Get shared collections based on a category
     *
     * @param category a valid category identification
@@ -15,7 +25,7 @@ trait SharedCollectionsProcess {
     * @param offset offset of query
     * @param limit limit of query
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]
-    * @throws SharedCollectionsExceptions if there was an error fetching the recommended apps
+    * @throws SharedCollectionsExceptions if there was an error fetching the collections
     */
   def getSharedCollectionsByCategory(
     category: NineCardCategory,
@@ -32,7 +42,7 @@ trait SharedCollectionsProcess {
   def getPublishedCollections()(implicit context: ContextSupport): TaskService[Seq[SharedCollection]]
 
   /**
-    * Persist a [[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]]
+    * Persist a SharedCollection
     * @param sharedCollection the defined collection to create
     * @return shared collection identifier
     * @throws SharedCollectionsExceptions if the service cannot create the collection for some reason
@@ -42,7 +52,7 @@ trait SharedCollectionsProcess {
   )(implicit context: ContextSupport): TaskService[String]
 
   /**
-    * Updates a [[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]]
+    * Updates a SharedCollection
     * @param sharedCollection the defined collection to update
     * @return shared collection identifier
     * @throws SharedCollectionsExceptions if the service cannot create the collection for some reason
