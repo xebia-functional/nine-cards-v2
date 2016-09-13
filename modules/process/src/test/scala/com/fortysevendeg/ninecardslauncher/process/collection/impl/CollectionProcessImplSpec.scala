@@ -9,11 +9,13 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NoInstalledAppCardType
+import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
+import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindCollectionByIdRequest, PersistenceServiceException, PersistenceServices}
+import com.fortysevendeg.ninecardslauncher.services.persistence._
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -53,12 +55,22 @@ trait CollectionProcessImplSpecification
 
     val mockApiServices = mock[ApiServices]
 
+    val mockApiUtils = mock[ApiUtils]
+
+    val mockRequestConfig = mock[RequestConfig]
+
+    mockApiUtils.getRequestConfig(any) returns TaskService(Task(Xor.right(mockRequestConfig)))
+
     val collectionProcess = new CollectionProcessImpl(
       collectionProcessConfig = collectionProcessConfig,
       persistenceServices = mockPersistenceServices,
       contactsServices = mockContactsServices,
       appsServices = mockAppsServices,
-      apiServices = mockApiServices)
+      apiServices = mockApiServices) {
+
+      override val apiUtils: ApiUtils = mockApiUtils
+
+    }
 
   }
 
@@ -103,9 +115,6 @@ class CollectionProcessImplSpec
         mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId1)) returns
           TaskService(Task(Xor.right(Some(collection1))))
 
-        mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId2)) returns
-          TaskService(Task(Xor.right(None)))
-
         val result = collectionProcess.getCollectionById(collectionId1).value.run
         result must beLike {
           case Xor.Right(resultCollection) => resultCollection must beSome.which { collection =>
@@ -118,12 +127,9 @@ class CollectionProcessImplSpec
       new CollectionProcessScope {
 
         mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId1)) returns
-          TaskService(Task(Xor.right(Some(collection1))))
-
-        mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId2)) returns
           TaskService(Task(Xor.right(None)))
 
-        val result = collectionProcess.getCollectionById(collectionId2).value.run
+        val result = collectionProcess.getCollectionById(collectionId1).value.run
         result shouldEqual Xor.Right(None)
       }
 
@@ -132,6 +138,43 @@ class CollectionProcessImplSpec
 
         mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId1)) returns TaskService(Task(Xor.left(persistenceServiceException)))
         val result = collectionProcess.getCollectionById(collectionId1).value.run
+        result must beAnInstanceOf[Xor.Left[CollectionException]]
+      }
+  }
+
+  "getCollectionBySharedCollectionId" should {
+
+    "returns a collection for a valid request" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId) returns
+          TaskService(Task(Xor.right(Some(collection1))))
+
+        val result = collectionProcess.getCollectionBySharedCollectionId(sharedCollectionId).value.run
+        result must beLike {
+          case Xor.Right(resultCollection) => resultCollection must beSome.which { collection =>
+            collection.name shouldEqual collection1.name
+          }
+        }
+      }
+
+    "returns None for a valid request if the collection id don't exists" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId) returns
+          TaskService(Task(Xor.right(None)))
+
+        val result = collectionProcess.getCollectionBySharedCollectionId(sharedCollectionId).value.run
+        result shouldEqual Xor.Right(None)
+      }
+
+    "returns a CollectionException if the service throws a exception" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId) returns
+          TaskService(Task(Xor.left(persistenceServiceException)))
+
+        val result = collectionProcess.getCollectionBySharedCollectionId(sharedCollectionId).value.run
         result must beAnInstanceOf[Xor.Left[CollectionException]]
       }
   }
@@ -453,6 +496,84 @@ class CollectionProcessImplSpec
       }
   }
 
+  "addPackages" should {
+
+    "returns a CollectionException when passing a collectionId that doesn't exists" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(None)))
+
+        val result = collectionProcess.addPackages(collectionId, Seq.empty)(contextSupport).value.run
+        result must beAnInstanceOf[Xor.Left[CollectionException]]
+
+        there was one(mockPersistenceServices).findCollectionById(FindCollectionByIdRequest(collectionId))
+      }
+
+    "returns a Xor.Right[Unit] but doesn't call to persistence and api services when all applications are " +
+      "already included on the collection" in new CollectionProcessScope {
+
+      mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(Some(collection1))))
+      mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
+
+      val result = collectionProcess.addPackages(collectionId, seqServicesCard.flatMap(_.packageName))(contextSupport).value.run
+      result shouldEqual Xor.right((): Unit)
+
+      there was one(mockPersistenceServices).findCollectionById(FindCollectionByIdRequest(collectionId))
+      there was one(mockPersistenceServices).fetchCardsByCollection(FetchCardsByCollectionRequest(collectionId))
+      there was no(mockPersistenceServices).fetchAppByPackages(any)
+      there was no(mockApiServices).googlePlayPackagesDetail(any)(any)
+      there was no(mockPersistenceServices).addCards(any)
+    }
+
+    "returns a Xor.Right[Unit] but doesn't call to api services when all applications are included on the collection " +
+      "or installed in the device" in new CollectionProcessScope {
+
+      mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(Some(collection1))))
+      val (firstHalf, secondHalf) = seqServicesCard.splitAt(seqServicesCard.size / 2)
+      mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(firstHalf)))
+      val secondHalfApps = seqServicesApp.filter(app => secondHalf.exists(_.packageName.contains(app.packageName)))
+      mockPersistenceServices.fetchAppByPackages(any) returns TaskService(Task(Xor.right(secondHalfApps)))
+      mockPersistenceServices.addCards(any) returns TaskService(Task(Xor.right(secondHalf)))
+
+      val result = collectionProcess.addPackages(collectionId, seqServicesCard.flatMap(_.packageName))(contextSupport).value.run
+      result shouldEqual Xor.right((): Unit)
+
+      there was one(mockPersistenceServices).findCollectionById(FindCollectionByIdRequest(collectionId))
+      there was one(mockPersistenceServices).fetchCardsByCollection(FetchCardsByCollectionRequest(collectionId))
+      there was one(mockPersistenceServices).fetchAppByPackages(secondHalf.flatMap(_.packageName))
+      there was no(mockApiServices).googlePlayPackagesDetail(any)(any)
+      val addCardRequestSeq = secondHalfApps.zipWithIndex.map {
+        case (app, index) => collectionProcess.toAddCardRequest(collectionId, app, firstHalf.size + index)
+      }
+      there was one(mockPersistenceServices).addCards(Seq(AddCardWithCollectionIdRequest(collectionId, addCardRequestSeq)))
+    }
+
+    "returns a Xor.Right[Unit] and call to api services with the applications not installed on the device" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.findCollectionById(any) returns TaskService(Task(Xor.right(Some(collection1))))
+        val (firstHalf, secondHalf) = seqServicesCard.splitAt(seqServicesCard.size / 2)
+        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(firstHalf)))
+        mockPersistenceServices.fetchAppByPackages(any) returns TaskService(Task(Xor.right(Seq.empty)))
+        val secondHalfPackages = categorizedDetailPackages.filter(p => secondHalf.exists(_.packageName.contains(p.packageName)))
+        mockApiServices.googlePlayPackagesDetail(any)(any) returns TaskService(Task(Xor.right(GooglePlayPackagesDetailResponse(200, secondHalfPackages))))
+        mockPersistenceServices.addCards(any) returns TaskService(Task(Xor.right(secondHalf)))
+
+        val result = collectionProcess.addPackages(collectionId, seqServicesCard.flatMap(_.packageName))(contextSupport).value.run
+        result shouldEqual Xor.right((): Unit)
+
+        there was one(mockPersistenceServices).findCollectionById(FindCollectionByIdRequest(collectionId))
+        there was one(mockPersistenceServices).fetchCardsByCollection(FetchCardsByCollectionRequest(collectionId))
+        there was one(mockPersistenceServices).fetchAppByPackages(secondHalf.flatMap(_.packageName))
+        there was one(mockApiServices).googlePlayPackagesDetail(secondHalf.flatMap(_.packageName))(mockRequestConfig)
+        val addCardRequestSeq = secondHalfPackages.zipWithIndex.map {
+          case (app, index) => collectionProcess.toAddCardRequest(collectionId, app, NoInstalledAppCardType, firstHalf.size + index)
+        }
+        there was one(mockPersistenceServices).addCards(Seq(AddCardWithCollectionIdRequest(collectionId, addCardRequestSeq)))
+      }
+
+  }
+
   "addCard" should {
 
     "returns a sequence of cards for a valid request" in
@@ -607,7 +728,7 @@ class CollectionProcessImplSpec
         mockPersistenceServices.updateCard(any) returns TaskService(Task(Xor.right(cardId)))
 
         val result = collectionProcess.editCard(collectionId, cardId, name).value.run
-        result shouldEqual Xor.Right(updatedCard)
+        result shouldEqual Xor.Right(updatedCard.copy(term = name))
       }
 
     "returns a CardException if the service throws a exception finding the collection by Id" in

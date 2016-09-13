@@ -104,10 +104,10 @@ trait Conversions extends CommonConversions {
     intent = nineCardIntentToJson(toNineCardIntent(app)),
     imagePath = app.imagePath)
 
-  def toAddCardRequest(collectionId: Int, categorizedPackage: CategorizedDetailPackage, position: Int, cardType: CardType): ServicesAddCardRequest = ServicesAddCardRequest (
+  def toAddCardRequest(collectionId: Int, categorizedPackage: CategorizedDetailPackage, cardType: CardType, position: Int): ServicesAddCardRequest = ServicesAddCardRequest (
     collectionId = Option(collectionId),
     position = position,
-    term = categorizedPackage.packageName, // TODO - Fix as part of https://github.com/47deg/nine-cards-v2/issues/653
+    term = categorizedPackage.title,
     packageName = Option(categorizedPackage.packageName),
     cardType = cardType.name,
     intent = nineCardIntentToJson(packageToNineCardIntent(categorizedPackage.packageName)),

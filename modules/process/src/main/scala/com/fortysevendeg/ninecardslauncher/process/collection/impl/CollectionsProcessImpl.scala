@@ -14,8 +14,9 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NoInstalledAppCardType
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.{CategorizedDetailPackage, CategorizedPackage}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FetchCollectionBySharedCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
 
 import scalaz.concurrent.Task
 
@@ -116,31 +117,60 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def addPackages(collectionId: Int, packages: Seq[String])(implicit context: ContextSupport) = {
 
-    def fetchPackages(packages: Seq[String]): TaskService[Seq[CategorizedDetailPackage]] =
+    def fetchPackagesNotAddedToCollection(): TaskService[(Int, Seq[String])] =
+      for {
+        cards <- persistenceServices.fetchCardsByCollection(FetchCardsByCollectionRequest(collectionId))
+        actualCollectionSize = cards.size
+        notAdded = packages.filterNot(packageName => cards.exists(_.packageName.contains(packageName)))
+      } yield (cards.size, notAdded)
+
+    def fetchInstalledPackages(packages: Seq[String]): TaskService[Seq[App]] =
       if (packages.isEmpty) {
+        TaskService(Task(Xor.right(Seq.empty)))
+      } else {
+        persistenceServices.fetchAppByPackages(packages)
+      }
+
+    def categorizeNotInstalledPackages(installedApps: Seq[App], notAdded: Seq[String]): TaskService[Seq[CategorizedDetailPackage]] = {
+      val notInstalledApps = notAdded.filterNot(packageName => installedApps.exists(_.packageName == packageName))
+      if (notInstalledApps.isEmpty) {
         TaskService(Task(Xor.right(Seq.empty)))
       } else {
         for {
           requestConfig <- apiUtils.getRequestConfig
-          response <- apiServices.googlePlayPackagesDetail(packages)(requestConfig)
+          response <- apiServices.googlePlayPackagesDetail(notInstalledApps)(requestConfig)
         } yield response.packages
       }
+    }
+
+    def addCards(
+      actualCollectionSize: Int,
+      installedApps: Seq[App],
+      categorizedPackages: Seq[CategorizedDetailPackage]): TaskService[Unit] = {
+
+      if (installedApps.isEmpty && categorizedPackages.isEmpty) {
+        TaskService(Task(Xor.right((): Unit)))
+      } else {
+        val installedRequests = installedApps map (app => toAddCardRequest(collectionId, app, 0))
+        val notInstalledRequests = categorizedPackages map { detailPackage =>
+          toAddCardRequest(collectionId, detailPackage, NoInstalledAppCardType, 0)
+        }
+        val addCardsRequests = (installedRequests ++ notInstalledRequests).zipWithIndex.map {
+          case (request, index) => request.copy(position = actualCollectionSize + index)
+        }
+
+        persistenceServices.addCards(Seq(AddCardWithCollectionIdRequest(collectionId, addCardsRequests))).map(_ => ())
+      }
+    }
+
 
     (for {
-      cards <- persistenceServices.fetchCardsByCollection(FetchCardsByCollectionRequest(collectionId))
-      actualCollectionSize = cards.size
-      notAdded = packages.filterNot(packageName => cards.exists(_.packageName.contains(packageName)))
-      installedApps <- persistenceServices.fetchAppByPackages(notAdded)
-      installedAppsCards = installedApps.zipWithIndex.map {
-        case (app, index) => toAddCardRequest(collectionId, app, index + actualCollectionSize)
-      }
-      tempCollectionSize = actualCollectionSize + installedAppsCards.size
-      notInstalledApps = notAdded.filterNot(packageName => installedApps.exists(_.packageName == packageName))
-      fetchedPackages <- fetchPackages(notInstalledApps)
-      notInstalledAppsCards = fetchedPackages.zipWithIndex.map {
-        case (categorizedPackage, index) => toAddCardRequest(collectionId, categorizedPackage, index + tempCollectionSize, NoInstalledAppCardType)
-      }
-      _ <- persistenceServices.addCards(Seq(AddCardWithCollectionIdRequest(collectionId, installedAppsCards ++ notInstalledAppsCards)))
+      _ <- persistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId)).resolveOption()
+      tuple <- fetchPackagesNotAddedToCollection()
+      (actualCollectionSize, notAdded) = tuple
+      installedApps <- fetchInstalledPackages(notAdded)
+      fetchedPackages <- categorizeNotInstalledPackages(installedApps, notAdded)
+      _ <- addCards(actualCollectionSize, installedApps, fetchedPackages)
     } yield ()).resolve[CollectionException]
   }
 
