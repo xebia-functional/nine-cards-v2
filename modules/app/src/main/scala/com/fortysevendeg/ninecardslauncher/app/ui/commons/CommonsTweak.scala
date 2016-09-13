@@ -237,6 +237,8 @@ object ExtraTweaks {
 
   def sChecked(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setChecked(status))
 
+  def sEnabled(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setEnabled(status))
+
 }
 
 object CommonsResourcesExtras {
