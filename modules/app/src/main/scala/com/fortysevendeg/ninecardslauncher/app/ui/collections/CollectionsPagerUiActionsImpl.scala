@@ -14,6 +14,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
@@ -45,8 +46,8 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait CollectionsUiActionsImpl
-  extends CollectionsUiActions
+trait CollectionsPagerUiActionsImpl
+  extends CollectionsPagerUiActions
   with Styles
   with ActionsBehaviours
   with FabButtonBehaviour {
@@ -74,6 +75,8 @@ trait CollectionsUiActionsImpl
   lazy val maxHeightToolbar = resGetDimensionPixelSize(R.dimen.height_toolbar_collection_details)
 
   lazy val toolbar = findView(TR.collections_toolbar)
+
+  lazy val toolbarTitle = findView(TR.collections_toolbar_title)
 
   lazy val root = findView(TR.collections_root)
 
@@ -245,11 +248,21 @@ trait CollectionsUiActionsImpl
         elevationsUp ~
         (iconContent <~ vAlpha(0))).ifUi(canScroll)
 
+  override def startEditing(): Ui[Any] = {
+    val items = collectionsPagerPresenter.statuses.positionsEditing.toSeq.length
+    (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
+      notifyDataSetChangedCollectionAdapter
+  }
 
-  override def reloadItemCollection(position: Int): Ui[Any] = notifyItemChangedCollectionAdapter(position)
+  override def reloadItemCollection(position: Int): Ui[Any] = {
+    val items = collectionsPagerPresenter.statuses.positionsEditing.toSeq.length
+    (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
+      notifyItemChangedCollectionAdapter(position)
+  }
 
   override def closeEditingModeUi(): Ui[Any] =
-    notifyDataSetChangedCollectionAdapter ~ invalidateOptionMenu()
+    (toolbarTitle <~ tvText("")) ~
+      notifyDataSetChangedCollectionAdapter ~ invalidateOptionMenu()
 
   override def notifyScroll(sType: ScrollType): Ui[Any] = (for {
     adapter <- getAdapter

@@ -9,7 +9,7 @@ import macroid.ContextWrapper
 
 class BackgroundSelectedDrawable(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme) extends Drawable {
 
-  val stroke = resGetDimensionPixelSize(R.dimen.stroke_default).toFloat
+  val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin).toFloat
 
   val paintStroke: Paint = {
     val paint = new Paint

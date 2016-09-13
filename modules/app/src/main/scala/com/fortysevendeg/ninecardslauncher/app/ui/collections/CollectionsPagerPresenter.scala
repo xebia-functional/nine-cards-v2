@@ -21,7 +21,7 @@ import macroid.{ActivityContextWrapper, Ui}
 import scalaz.concurrent.Task
 
 class CollectionsPagerPresenter(
-  actions: CollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  actions: CollectionsPagerUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
   with NineCardIntentConversions { self =>
@@ -76,7 +76,7 @@ class CollectionsPagerPresenter(
   }
 
   def showMessageNotImplemented(): Unit = actions.showMessageNotImplemented.run
-  
+
   def showPublishCollectionWizard(): Unit = {
     actions.getCurrentCollection map { collection =>
       if (collection.cards.exists(_.cardType == AppCardType)) {
@@ -105,8 +105,17 @@ class CollectionsPagerPresenter(
   def performCard(card : Card, position: Int): Unit = {
     statuses.collectionMode match {
       case EditingCollectionMode =>
-        statuses = statuses.copy(positionsEditing = statuses.positionsEditing :+ position)
-        actions.reloadItemCollection(position).run
+        val positions = if (statuses.positionsEditing.contains(position)) {
+          statuses.positionsEditing - position
+        } else {
+          statuses.positionsEditing + position
+        }
+        statuses = statuses.copy(positionsEditing = positions)
+        if (statuses.positionsEditing.isEmpty) {
+          closeEditingMode()
+        } else {
+          actions.reloadItemCollection(position).run
+        }
       case NormalCollectionMode =>
         Task.fork(di.launcherExecutorProcess.execute(card.intent).value).resolveAsyncUi(
           onException = (throwable: Throwable) => throwable match {
@@ -175,12 +184,12 @@ class CollectionsPagerPresenter(
   }
 
   def closeReorderMode(position: Int): Unit = {
-    statuses = statuses.copy(positionsEditing = Seq(position))
-    actions.reloadItemCollection(position).run
+    statuses = statuses.copy(positionsEditing = Set(position))
+    actions.startEditing().run
   }
 
   def closeEditingMode(): Unit = {
-    statuses = statuses.copy(collectionMode = NormalCollectionMode, positionsEditing = Seq.empty)
+    statuses = statuses.copy(collectionMode = NormalCollectionMode, positionsEditing = Set.empty)
     actions.closeEditingModeUi().run
   }
 
@@ -226,7 +235,7 @@ class CollectionsPagerPresenter(
 
 }
 
-trait CollectionsUiActions {
+trait CollectionsPagerUiActions {
 
   def initialize(indexColor: Int, icon: String, isStateChanged: Boolean): Ui[Any]
 
@@ -268,6 +277,8 @@ trait CollectionsUiActions {
 
   def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any]
 
+  def startEditing(): Ui[Any]
+
   def reloadItemCollection(position: Int): Ui[Any]
 
   def closeEditingModeUi(): Ui[Any]
@@ -285,7 +296,7 @@ trait CollectionsUiActions {
 
 case class CollectionsPagerStatuses(
   collectionMode: CollectionMode = NormalCollectionMode,
-  positionsEditing: Seq[Int] = Seq.empty,
+  positionsEditing: Set[Int] = Set.empty,
   lastPhone: Option[String] = None)
 
 sealed trait CollectionMode
