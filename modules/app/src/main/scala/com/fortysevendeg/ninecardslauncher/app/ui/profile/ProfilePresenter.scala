@@ -5,6 +5,7 @@ import java.util.Date
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import cats.data.XorT
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
 import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
@@ -17,7 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
@@ -115,7 +116,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       onPreTask = () => actions.showLoading(),
       onResult = (sharedCollections) => {
         if (sharedCollections.isEmpty) {
-          actions.showEmptyMessageInScreen(() => loadPublications())
+          actions.showEmptyPublicationsMessageInScreen(() => loadPublications())
         } else {
           actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
         }
@@ -123,11 +124,40 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen(() => loadPublications()))
 
   def loadSubscriptions(): Unit = {
-    // TODO - Load publications and set adapter
-    actions.setSubscriptionsAdapter(sampleItems("Subscription")).run
+
+    def getSubscriptions: XorT[Task, NineCardException, (Seq[Subscription])] =
+      for {
+        subscriptions <- di.sharedCollectionsProcess.getSubscriptions()
+      } yield subscriptions
+
+    Task.fork(getSubscriptions.value).resolveAsyncUi(
+      onPreTask = () => actions.showLoading(),
+      onResult = {
+        case subscriptions if subscriptions.isEmpty =>
+          actions.showEmptySubscriptionsMessageInScreen() ~
+            actions.hideLoading()
+        case subscriptions =>
+          actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
+      },
+      onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen())
   }
 
-  private[this] def sampleItems(tab: String) = 1 to 20 map (i => s"$tab Item $i")
+  def onSubscribe(originalSharedCollectionId: String, subscribeStatus: Boolean): Unit = {
+
+    def subscribe(originalSharedCollectionId: String): XorT[Task, NineCardException, Unit] =
+      for {
+        _ <- di.sharedCollectionsProcess.subscribe(originalSharedCollectionId)
+      } yield ()
+
+    def unsubscribe(originalSharedCollectionId: String): XorT[Task, NineCardException, Unit] =
+      for {
+        _ <- di.sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)
+      } yield ()
+
+    Task.fork(
+      (if (subscribeStatus) subscribe(originalSharedCollectionId) else unsubscribe(originalSharedCollectionId)).value).resolveAsyncUi(
+      onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
+  }
 
   def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
 
@@ -302,11 +332,19 @@ trait ProfileUiActions {
 
   def showLoading(): Ui[Any]
 
+  def hideLoading(): Ui[Any]
+
   def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any]
 
   def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any]
 
-  def showEmptyMessageInScreen(clickAction: () => Unit): Ui[Any]
+  def showEmptyPublicationsMessageInScreen(clickAction: () => Unit): Ui[Any]
+
+  def showErrorLoadingSubscriptionsInScreen(): Ui[Any]
+
+  def showEmptySubscriptionsMessageInScreen(): Ui[Any]
+
+  def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
 
   def showContactUsError(clickAction: () => Unit): Ui[Any]
 
@@ -337,7 +375,9 @@ trait ProfileUiActions {
 
   def setAccountsAdapter(items: Seq[AccountSync]): Ui[Any]
 
-  def setSubscriptionsAdapter(items: Seq[String]): Ui[Any]
+  def setSubscriptionsAdapter(
+    items: Seq[Subscription],
+    onSubscribe: (String, Boolean) => Unit): Ui[Any]
 
   def handleToolbarVisibility(percentage: Float): Ui[Any]
 

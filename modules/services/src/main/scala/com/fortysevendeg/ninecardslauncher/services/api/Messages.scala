@@ -91,6 +91,17 @@ case class SharedCollectionPackageResponse(
   downloads: String,
   free: Boolean)
 
+case class SubscriptionResponseList(
+  statusCode: Int,
+  items: Seq[SubscriptionResponse])
+
+case class SubscriptionResponse(
+  originalSharedCollectionId: String)
+
+case class SubscribeResponse(statusCode: Int)
+
+case class UnsubscribeResponse(statusCode: Int)
+
 case class CreateSharedCollectionResponse(
   statusCode: Int,
   sharedCollectionId: String)

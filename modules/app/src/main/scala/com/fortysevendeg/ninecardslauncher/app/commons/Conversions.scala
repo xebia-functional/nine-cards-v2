@@ -51,7 +51,7 @@ trait Conversions
 
   def toFormedCollection(userCollection: CloudStorageCollection): FormedCollection = FormedCollection(
     name = userCollection.name,
-    originalSharedCollectionId = userCollection.sharedCollectionId,
+    originalSharedCollectionId = userCollection.originalSharedCollectionId,
     sharedCollectionId = userCollection.sharedCollectionId,
     sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed,
     items = userCollection.items map toFormedItem,

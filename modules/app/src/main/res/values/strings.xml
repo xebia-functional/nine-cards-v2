@@ -200,9 +200,6 @@
 
     <string name="sendEmailDialogChooserTitle">Send email</string>
 
-    <string name="errorLoadingPublishedCollections">Error loading published collections</string>
-    <string name="emptyPublishedCollections">There aren\'t collections published. Maybe you can share one of your collections :-)</string>
-
     <!-- Contacts Info -->
 
     <string name="generalInfo">General Info</string>
@@ -343,6 +340,14 @@
     <string name="hintNewConfigurationName">Name</string>
     <string name="removeAccountSyncMessage">Are you sure that you want remove this device?</string>
 
+    <string name="errorLoadingPublishedCollections">Error loading published collections</string>
+    <string name="emptyPublishedCollections">There aren\'t collections published. Maybe you can share one of your collections :-)</string>
+
+    <string name="errorLoadingSubscriptions">Error loading subscriptions</string>
+    <string name="errorSubscribing">Error subscribing to the collection</string>
+    <string name="emptySubscriptions">You are not subscribed to any collection in this moment</string>
+
+    <string name="installed_apps_number">%s installed apps</string>
 
     <!-- Preferences -->
 
