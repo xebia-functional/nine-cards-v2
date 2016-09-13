@@ -399,21 +399,28 @@ trait CollectionsPagerUiActionsImpl
       colorContentDialog(paint = false) <~
       vClickable(false)) ~ updateBarsInFabMenuHide
 
-  private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] = getAdapter map {
-    adapter =>
-      val resIcon = collection.getIconDetail
-      (pageMovement match {
-        case Start | Idle => icon <~ ivSrc(resIcon)
-        case Left => icon <~ changeIcon(resIcon, fromLeft = true)
-        case Right | Jump => icon <~ changeIcon(resIcon, fromLeft = false)
-        case _ => Ui.nop
-      }) ~ adapter.notifyChanged(position) ~ (if (collection.cards.isEmpty) {
-        val color = getIndexColor(collection.themedColorIndex)
-        showFabButton(color = color, autoHide = false)
-      } else {
-        hideFabButton
-      })
-  } getOrElse Ui.nop
+  private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] =
+    Ui {
+      collectionsPagerPresenter.statuses.collectionMode match {
+        case EditingCollectionMode => collectionsPagerPresenter.closeEditingMode()
+        case _ =>
+      }
+    } ~
+      (getAdapter map {
+        adapter =>
+          val resIcon = collection.getIconDetail
+          (pageMovement match {
+            case Start | Idle => icon <~ ivSrc(resIcon)
+            case Left => icon <~ changeIcon(resIcon, fromLeft = true)
+            case Right | Jump => icon <~ changeIcon(resIcon, fromLeft = false)
+            case _ => Ui.nop
+          }) ~ adapter.notifyChanged(position) ~ (if (collection.cards.isEmpty) {
+            val color = getIndexColor(collection.themedColorIndex)
+            showFabButton(color = color, autoHide = false)
+          } else {
+            hideFabButton
+          })
+      } getOrElse Ui.nop)
 
   private[this] def updateToolbarColor(color: Int): Ui[Any] =
     (toolbar <~ vBackgroundColor(color)) ~
