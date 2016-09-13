@@ -25,7 +25,7 @@ case class SharedCollectionsAdapter(
 
   override def onBindViewHolder(viewHolder: ViewHolderSharedCollectionsLayoutAdapter, position: Int): Unit = {
     val publicCollection = sharedCollections(position)
-    viewHolder.bind(publicCollection, onAddCollection, onShareCollection).run
+    viewHolder.bind(publicCollection, onAddCollection(publicCollection), onShareCollection(publicCollection)).run
   }
 
   def getLayoutManager = new LinearLayoutManager(activityContext.application)

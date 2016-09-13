@@ -28,10 +28,18 @@ class AppLinksReceiverUiActions(
       (dom.loadingView <~ vVisible) ~
       (dom.collectionView <~ vGone)).toService
 
-  def showCollection(jobs: AppLinksReceiverJobs, collection: SharedCollection)(implicit theme: NineCardsTheme): TaskService[Unit] =
+  def showCollection(jobs: AppLinksReceiverJobs, collection: SharedCollection)(implicit theme: NineCardsTheme): TaskService[Unit] = {
+
+    def onAddCollection(): Unit =
+      jobs.addCollection(collection).resolveAsyncServiceOr(_ => jobs.showError())
+
+    def onShareCollection(): Unit =
+      jobs.shareCollection(collection).resolveAsyncServiceOr(_ => jobs.showError())
+
     ((dom.loadingView <~ vGone) ~
       (dom.collectionView <~ vVisible) ~
-      bind(collection, onAddCollection(jobs), onShareCollection(jobs))).toService
+      bind(collection, onAddCollection(), onShareCollection())).toService
+  }
 
   def showLinkNotSupportedMessage(): TaskService[Unit] =
     uiShortToast2(R.string.linkNotSupportedError).toService
@@ -42,15 +50,5 @@ class AppLinksReceiverUiActions(
   def exit(): TaskService[Unit] =
     Ui(context.original.get foreach (_.finish())).toService
 
-  def onAddCollection(jobs: AppLinksReceiverJobs)(col: SharedCollection): Unit =
-    (for {
-      _ <- jobs.addCollection(col)
-      _ <- exit()
-    } yield ()).resolveAsync()
 
-  def onShareCollection(jobs: AppLinksReceiverJobs)(col: SharedCollection): Unit =
-    (for {
-      _ <- jobs.shareCollection(col)
-      _ <- exit()
-    } yield ()).resolveAsync()
 }

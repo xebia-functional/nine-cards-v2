@@ -2,9 +2,11 @@ package com.fortysevendeg.ninecardslauncher.app.ui.applinks
 
 import android.net.Uri
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
+import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJobs
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, Jobs}
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -47,15 +49,22 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
   }
 
   def addCollection(sharedCollection: SharedCollection): TaskService[Unit] =
-    addSharedCollection(sharedCollection).map(_ => ()).recoverWith {
-      case e => actions.showUnexpectedErrorMessage()
-    }
+    for {
+      col <- addSharedCollection(sharedCollection)
+      _ <- sendBroadCastTask(BroadAction(CollectionAddedActionFilter.action, Some(col.id.toString))).resolveLeftTo((): Unit)
+      _ <- actions.exit()
+    } yield ()
+
+  def showError(): TaskService[Unit] =
+    for {
+      _ <- actions.showUnexpectedErrorMessage()
+      _ <- actions.exit()
+    } yield ()
 
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
-    di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
-      .map(_ => ())
-      .recoverWith {
-        case e => actions.showUnexpectedErrorMessage()
-      }
+    for {
+      _ <- di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+      _ <- actions.exit()
+    } yield ()
 
 }

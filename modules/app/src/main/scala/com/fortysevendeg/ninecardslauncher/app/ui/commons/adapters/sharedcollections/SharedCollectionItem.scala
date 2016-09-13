@@ -67,13 +67,13 @@ trait SharedCollectionItem
 
   def bind(
     collection: SharedCollection,
-    onAddCollection: (SharedCollection) => Unit,
-    onShareCollection: (SharedCollection) => Unit)(implicit theme: NineCardsTheme): Ui[Any] = {
+    onAddCollection: => Unit,
+    onShareCollection: => Unit)(implicit theme: NineCardsTheme): Ui[Any] = {
 
     def addCollectionTweak() = collection.subscriptionType match {
       case NotSubscribed =>
         tvText(R.string.addMyCollection) +
-          tvAllCaps2(true) + tvNormalMedium + On.click(Ui(onAddCollection(collection))) + vEnabled(true)
+          tvAllCaps2(true) + tvNormalMedium + On.click(Ui(onAddCollection)) + vEnabled(true)
       case Subscribed =>
         tvText(R.string.alreadySubscribedCollection) +
           tvAllCaps2(false) + tvItalicLight + vEnabled(false)
@@ -96,7 +96,7 @@ trait SharedCollectionItem
         (if (collection.subscriptions.isDefined) vVisible + tvText(resGetString(R.string.subscriptions_number, collection.views.toString)) else vGone )) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (addCollection <~ addCollectionTweak()) ~
-      (shareCollection <~ On.click(Ui(onShareCollection(collection))))
+      (shareCollection <~ On.click(Ui(onShareCollection)))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)
