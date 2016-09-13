@@ -64,21 +64,17 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       collectionWithCards <- fetchCards(collectionsWithoutCards)
     } yield collectionWithCards.sortWith(_.position < _.position)).resolve[PersistenceServiceException]
 
-  def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest) = {
-
-    def fetchCollection(): TaskService[Option[RepositoryCollection]] =
-      if(request.original) {
-        collectionRepository.fetchCollectionByOriginalSharedCollectionId(request.sharedCollectionId)
-      } else {
-        collectionRepository.fetchCollectionBySharedCollectionId(request.sharedCollectionId)
-      }
-
+  def fetchCollectionBySharedCollectionId(sharedCollectionId: String) =
     (for {
-      collection <- fetchCollection()
+      collection <- collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId)
       cards <- fetchCards(collection)
       moments <- getMomentsByCollection(collection)
     } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
-  }
+
+  def fetchCollectionsBySharedCollectionIds(sharedCollectionIds: Seq[String]) =
+    (for {
+      collections <- collectionRepository.fetchCollectionsBySharedCollectionIds(sharedCollectionIds)
+    } yield collections map (toCollection(_, cards = Seq.empty, moment = None))).resolve[PersistenceServiceException]
 
   def fetchCollectionByPosition(request: FetchCollectionByPositionRequest) =
     (for {

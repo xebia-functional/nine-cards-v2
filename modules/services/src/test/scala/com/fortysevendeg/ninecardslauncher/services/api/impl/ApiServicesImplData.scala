@@ -172,6 +172,8 @@ trait ApiServicesImplData {
     generateCollection(collectionApps2),
     generateCollection(collectionApps3))
 
+  val sharedCollection = generateCollection(collectionApps1)
+
   val userConfig = generateUserConfig
 
   val apiKey = Random.nextString(10)
@@ -189,4 +191,8 @@ trait ApiServicesImplData {
   val sharedCollectionId = Random.nextString(30)
 
   val packageStats = version2.PackagesStats(1, None)
+
+  val originalSharedCollectionId = Random.nextString(30)
+
+  val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(originalSharedCollectionId))
 }

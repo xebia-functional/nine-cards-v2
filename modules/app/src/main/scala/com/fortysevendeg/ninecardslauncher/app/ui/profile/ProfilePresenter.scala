@@ -9,6 +9,7 @@ import cats.data.XorT
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
 import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
@@ -17,10 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.GetByName
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
@@ -32,6 +30,7 @@ import scalaz.concurrent.Task
 class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
+  with CollectionJobs
   with GoogleDriveApiClientProvider {
 
   import Statuses._
@@ -103,44 +102,62 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   def loadUserAccounts(): Unit = withConnectedClient(loadUserAccounts(_))
 
   def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
-    Task.fork(addCollection(sharedCollection).value).resolveAsyncUi(
+    Task.fork(addSharedCollection(sharedCollection).value).resolveAsyncUi(
       onResult = (c) => actions.showAddCollectionMessage(sharedCollection.sharedCollectionId) ~ Ui(sendBroadCast(BroadAction(CollectionAddedActionFilter.action, Some(c.id.toString)))),
       onException = (ex) => actions.showErrorSavingCollectionInScreen(() => loadPublications()))
   }
 
   def shareCollection(sharedCollection: SharedCollection): Unit =
-    Task.fork(di.launcherExecutorProcess
-      .launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id)).value)
+    Task.fork(di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id)).value)
       .resolveAsyncUi(onException = _ => actions.showContactUsError())
 
-  def loadPublications(): Unit = {
-
-    def getSharedCollections: XorT[Task, NineCardException, (Seq[SharedCollection], Seq[String])] =
-     for {
-       sharedCollections <- di.sharedCollectionsProcess.getPublishedCollections()
-       collections <- di.collectionProcess.getCollections
-     } yield {
-       val mySharedCollectionIds = collections flatMap (_.sharedCollectionId)
-       (sharedCollections, mySharedCollectionIds)
-     }
-
-    Task.fork(getSharedCollections.value).resolveAsyncUi(
+  def loadPublications(): Unit =
+    Task.fork(di.sharedCollectionsProcess.getPublishedCollections().value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
-      onResult = {
-        case (sharedCollections, mySharedCollectionIds) if sharedCollections.isEmpty =>
-          actions.showEmptyMessageInScreen(() => loadPublications())
-        case (sharedCollections, mySharedCollectionIds) =>
-          actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection, mySharedCollectionIds)
+      onResult = (sharedCollections) => {
+        if (sharedCollections.isEmpty) {
+          actions.showEmptyPublicationsMessageInScreen(() => loadPublications())
+        } else {
+          actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
+        }
       },
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen(() => loadPublications()))
-  }
 
   def loadSubscriptions(): Unit = {
-    // TODO - Load publications and set adapter
-    actions.setSubscriptionsAdapter(sampleItems("Subscription")).run
+
+    def getSubscriptions: XorT[Task, NineCardException, (Seq[Subscription])] =
+      for {
+        subscriptions <- di.sharedCollectionsProcess.getSubscriptions()
+      } yield subscriptions
+
+    Task.fork(getSubscriptions.value).resolveAsyncUi(
+      onPreTask = () => actions.showLoading(),
+      onResult = {
+        case subscriptions if subscriptions.isEmpty =>
+          actions.showEmptySubscriptionsMessageInScreen() ~
+            actions.hideLoading()
+        case subscriptions =>
+          actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
+      },
+      onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen())
   }
 
-  private[this] def sampleItems(tab: String) = 1 to 20 map (i => s"$tab Item $i")
+  def onSubscribe(originalSharedCollectionId: String, subscribeStatus: Boolean): Unit = {
+
+    def subscribe(originalSharedCollectionId: String): XorT[Task, NineCardException, Unit] =
+      for {
+        _ <- di.sharedCollectionsProcess.subscribe(originalSharedCollectionId)
+      } yield ()
+
+    def unsubscribe(originalSharedCollectionId: String): XorT[Task, NineCardException, Unit] =
+      for {
+        _ <- di.sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)
+      } yield ()
+
+    Task.fork(
+      (if (subscribeStatus) subscribe(originalSharedCollectionId) else unsubscribe(originalSharedCollectionId)).value).resolveAsyncUi(
+      onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
+  }
 
   def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
 
@@ -276,20 +293,6 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     )
   }
 
-  private[this] def addCollection(sharedCollection: SharedCollection):
-  TaskService[Collection] =
-    for {
-      appsInstalled <- di.deviceProcess.getSavedApps(GetByName)
-      collection <- di.collectionProcess.addCollection(toAddCollectionRequestFromSharedCollection(sharedCollection, getCards(appsInstalled, sharedCollection.resolvedPackages)))
-    } yield collection
-
-  private[this] def getCards(appsInstalled: Seq[App], packages: Seq[SharedCollectionPackage]) =
-    packages map { pck =>
-      appsInstalled find (_.packageName == pck.packageName) map { app =>
-        toAddCardRequest(app)
-      } getOrElse toAddCardRequest(pck)
-    }
-
   private[this] def withConnectedClient[R](f: (GoogleApiClient) => R) = {
 
     def loadUserEmail() = di.userProcess.getUser.map(_.email)
@@ -329,11 +332,19 @@ trait ProfileUiActions {
 
   def showLoading(): Ui[Any]
 
+  def hideLoading(): Ui[Any]
+
   def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any]
 
   def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any]
 
-  def showEmptyMessageInScreen(clickAction: () => Unit): Ui[Any]
+  def showEmptyPublicationsMessageInScreen(clickAction: () => Unit): Ui[Any]
+
+  def showErrorLoadingSubscriptionsInScreen(): Ui[Any]
+
+  def showEmptySubscriptionsMessageInScreen(): Ui[Any]
+
+  def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
 
   def showContactUsError(clickAction: () => Unit): Ui[Any]
 
@@ -358,14 +369,15 @@ trait ProfileUiActions {
   def loadPublications(
     sharedCollections: Seq[SharedCollection],
     onAddCollection: (SharedCollection) => Unit,
-    onShareCollection: (SharedCollection) => Unit,
-    mySharedCollectionIds: Seq[String]): Ui[Any]
+    onShareCollection: (SharedCollection) => Unit): Ui[Any]
 
   def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
 
   def setAccountsAdapter(items: Seq[AccountSync]): Ui[Any]
 
-  def setSubscriptionsAdapter(items: Seq[String]): Ui[Any]
+  def setSubscriptionsAdapter(
+    items: Seq[Subscription],
+    onSubscribe: (String, Boolean) => Unit): Ui[Any]
 
   def handleToolbarVisibility(percentage: Float): Ui[Any]
 
