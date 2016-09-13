@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets.impl
 
 import android.content.pm.PackageManager
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetServicesException
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
@@ -9,14 +8,16 @@ import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManag
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+
 
 trait WidgetsImplSpecification
   extends Specification
-    with Mockito {
+  with Mockito {
 
   trait WidgetsImplScope
     extends Scope
-      with WidgetsServicesImplData {
+    with WidgetsServicesImplData {
 
     val mockContextSupport = mock[ContextSupport]
     val mockPackageManager = mock[PackageManager]
@@ -41,7 +42,7 @@ class WidgetsServicesImplSpec
       mockAppWidgetManager.getAllProviders returns seqWidget
 
       val result = widgetsServicesImpl.getWidgets(mockContextSupport).value.run
-      result shouldEqual Xor.Right(seqWidget)
+      result shouldEqual Right(seqWidget)
     }
 
   "returns an WidgetException when no widgets exist" in
@@ -49,7 +50,7 @@ class WidgetsServicesImplSpec
 
       mockAppWidgetManager.getAllProviders throws exception
       val result = widgetsServicesImpl.getWidgets(mockContextSupport).value.run
-      result must beAnInstanceOf[Xor.Left[WidgetServicesException]]
+      result must beAnInstanceOf[Left[WidgetServicesException, _]]
     }
 
 }

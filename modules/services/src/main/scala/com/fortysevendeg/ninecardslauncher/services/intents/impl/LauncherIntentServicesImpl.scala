@@ -2,14 +2,13 @@ package com.fortysevendeg.ninecardslauncher.services.intents.impl
 
 import android.app.Activity
 import android.content.Intent
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, TaskService}
 import com.fortysevendeg.ninecardslauncher.services.intents.models._
 import com.fortysevendeg.ninecardslauncher.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException, LauncherIntentServices}
-
-import scalaz.concurrent.Task
+import cats.syntax.either._
+import monix.eval.Task
 
 class LauncherIntentServicesImpl
   extends LauncherIntentServices {
@@ -62,7 +61,7 @@ class LauncherIntentServicesImpl
     TaskService {
       Task {
         withActivity { activity =>
-          Xor.catchNonFatal {
+          Either.catchNonFatal {
             activity.startActivity(intent)
           } leftMap {
             case e: SecurityException => IntentLauncherServicesPermissionException(e.getMessage, Some(e))
@@ -72,10 +71,10 @@ class LauncherIntentServicesImpl
       }
     }
 
-  def withActivity(f: (Activity) => Xor[NineCardException, Unit])
-    (implicit activityContext: ActivityContextSupport): Xor[NineCardException, Unit] =
+  def withActivity(f: (Activity) => Either[NineCardException, Unit])
+    (implicit activityContext: ActivityContextSupport): Either[NineCardException, Unit] =
     activityContext.getActivity match {
       case Some(activity) => f(activity)
-      case None => Xor.left(IntentLauncherServicesException("Activity not available", None))
+      case None => Left(IntentLauncherServicesException("Activity not available", None))
     }
 }

@@ -1,18 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.UserPersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
+import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cats.syntax.either._
 
-import scalaz.concurrent.Task
 
 trait UserPersistenceServicesDataSpecification
   extends Specification
-    with DisjunctionMatchers {
+  with DisjunctionMatchers {
 
 
   trait UserPersistenceServicesScope
@@ -31,19 +32,19 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
 
     "return a User value for a valid request" in new UserPersistenceServicesScope {
 
-      mockUserRepository.addUser(any) returns TaskService(Task(Xor.right(repoUser)))
+      mockUserRepository.addUser(any) returns TaskService(Task(Either.right(repoUser)))
       val result = persistenceServices.addUser(createAddUserRequest()).value.run
 
       result must beLike {
-        case Xor.Right(user) => user.id shouldEqual uId
+        case Right(user) => user.id shouldEqual uId
       }
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
-      mockUserRepository.addUser(any) returns TaskService(Task(Xor.left(exception)))
+      mockUserRepository.addUser(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.addUser(createAddUserRequest()).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -51,32 +52,32 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
 
     "return the number of elements deleted for a valid request" in new UserPersistenceServicesScope {
 
-      mockUserRepository.deleteUsers() returns TaskService(Task(Xor.right(items)))
+      mockUserRepository.deleteUsers() returns TaskService(Task(Either.right(items)))
       val result = persistenceServices.deleteAllUsers().value.run
-      result shouldEqual Xor.Right(items)
+      result shouldEqual Right(items)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
-      mockUserRepository.deleteUsers() returns TaskService(Task(Xor.left(exception)))
+      mockUserRepository.deleteUsers() returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.deleteAllUsers().value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
   "deleteUser" should {
 
     "return the number of elements deleted for a valid request" in new UserPersistenceServicesScope {
-      mockUserRepository.deleteUser(any) returns TaskService(Task(Xor.right(item)))
+      mockUserRepository.deleteUser(any) returns TaskService(Task(Either.right(item)))
       val result = persistenceServices.deleteUser(createDeleteUserRequest(user = user)).value.run
-      result shouldEqual Xor.Right(item)
+      result shouldEqual Right(item)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
-      mockUserRepository.deleteUser(any) returns TaskService(Task(Xor.left(exception)))
+      mockUserRepository.deleteUser(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.deleteUser(createDeleteUserRequest(user = user)).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -84,19 +85,19 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
 
     "return a list of User elements for a valid request" in new UserPersistenceServicesScope {
 
-      mockUserRepository.fetchUsers returns TaskService(Task(Xor.right(seqRepoUser)))
+      mockUserRepository.fetchUsers returns TaskService(Task(Either.right(seqRepoUser)))
       val result = persistenceServices.fetchUsers.value.run
 
       result must beLike {
-        case Xor.Right(userItems) => userItems.size shouldEqual seqUser.size
+        case Right(userItems) => userItems.size shouldEqual seqUser.size
       }
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
-      mockUserRepository.fetchUsers returns TaskService(Task(Xor.left(exception)))
+      mockUserRepository.fetchUsers returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.fetchUsers.value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -104,11 +105,11 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
 
     "return a User for a valid request" in new UserPersistenceServicesScope {
 
-      mockUserRepository.findUserById(any) returns TaskService(Task(Xor.right(Option(repoUser))))
+      mockUserRepository.findUserById(any) returns TaskService(Task(Either.right(Option(repoUser))))
       val result = persistenceServices.findUserById(createFindUserByIdRequest(id = uId)).value.run
 
       result must beLike {
-        case Xor.Right(maybeUser) =>
+        case Right(maybeUser) =>
           maybeUser must beSome[User].which { user =>
             user.id shouldEqual uId
           }
@@ -117,16 +118,16 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
 
     "return None when a non-existent id is given" in new UserPersistenceServicesScope {
 
-      mockUserRepository.findUserById(any) returns TaskService(Task(Xor.right(None)))
+      mockUserRepository.findUserById(any) returns TaskService(Task(Either.right(None)))
       val result = persistenceServices.findUserById(createFindUserByIdRequest(id = nonExistentUserId)).value.run
-      result shouldEqual Xor.Right(None)
+      result shouldEqual Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
-      mockUserRepository.findUserById(any) returns TaskService(Task(Xor.left(exception)))
+      mockUserRepository.findUserById(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.findUserById(createFindUserByIdRequest(id = uId)).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -134,16 +135,16 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
 
     "return the number of elements updated for a valid request" in new UserPersistenceServicesScope {
 
-      mockUserRepository.updateUser(any) returns TaskService(Task(Xor.right(item)))
+      mockUserRepository.updateUser(any) returns TaskService(Task(Either.right(item)))
       val result = persistenceServices.updateUser(createUpdateUserRequest()).value.run
-      result shouldEqual Xor.Right(item)
+      result shouldEqual Right(item)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
-      mockUserRepository.updateUser(any) returns TaskService(Task(Xor.left(exception)))
+      mockUserRepository.updateUser(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.updateUser(createUpdateUserRequest()).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 

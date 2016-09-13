@@ -1,8 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, Moment => RepositoryMoment}
@@ -10,8 +8,8 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, Mome
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection, Moment}
+import monix.eval.Task
 
-import scalaz.concurrent.Task
 
 trait CollectionPersistenceServicesImpl extends PersistenceServices {
 
@@ -67,7 +65,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
   def fetchCollectionBySharedCollection(request: FetchCollectionBySharedCollectionRequest) = {
 
     def fetchCollection(): TaskService[Option[RepositoryCollection]] =
-      if(request.original) {
+      if (request.original) {
         collectionRepository.fetchCollectionByOriginalSharedCollectionId(request.sharedCollectionId)
       } else {
         collectionRepository.fetchCollectionBySharedCollectionId(request.sharedCollectionId)
@@ -107,39 +105,40 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
   private[this] def fetchCards(maybeCollection: Option[RepositoryCollection]): TaskService[Seq[RepositoryCard]] = {
     maybeCollection match {
       case Some(collection) => cardRepository.fetchCardsByCollection(collection.id)
-      case None => TaskService(Task(Xor.Right(Seq.empty)))
+      case None => TaskService(Task(Right(Seq.empty)))
     }
   }
 
   private[this] def fetchCards(collections: Seq[RepositoryCollection]): TaskService[Seq[Collection]] = {
-    val result = collections map {
+    val tasks = collections map {
       collection =>
         (for {
           cards <- cardRepository.fetchCardsByCollection(collection.id)
           moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
         } yield toCollection(collection, cards, moments.headOption)).value
     }
-
-    TaskService(
-      Task.gatherUnordered(result) map (list =>
-          CatchAll[PersistenceServiceException](list.collect { case Xor.Right(collection) => collection })))
+    TaskService(Task.gatherUnordered(tasks) map { list =>
+      Right(list.collect {
+        case Right(collection) => collection
+      })
+    })
   }
 
   private[this] def unlinkCollectionInMoment(maybeMoment: Option[Moment]): TaskService[Unit] = {
     maybeMoment match {
       case Some(moment) => momentRepository.updateMoment(toRepositoryMomentWithoutCollection(moment)) map (_ => ())
-      case None => TaskService(Task(Xor.right((): Unit)))
+      case None => TaskService(Task(Right((): Unit)))
     }
   }
 
   private[this] def getMomentsByCollection(maybeCollection: Option[RepositoryCollection]): TaskService[Seq[RepositoryMoment]] = {
     maybeCollection match {
       case Some(collection) => momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
-      case None => TaskService(Task(Xor.Right(Seq.empty)))
+      case None => TaskService(Task(Right(Seq.empty)))
     }
   }
 
-  private[this] def createOrUpdateMoments(requests: Seq[AddMomentRequest]) = {
+  private[this] def createOrUpdateMoments(requests: Seq[AddMomentRequest]): TaskService[Unit] = {
 
     def createOrUpdateMoment(request: AddMomentRequest) = {
 
@@ -161,10 +160,9 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       } yield ()
     }
 
-    val s = requests map (r => createOrUpdateMoment(r).value)
+    val tasks = requests map (r => createOrUpdateMoment(r).value)
 
-    TaskService(Task.gatherUnordered(s) map (list =>
-      CatchAll[PersistenceServiceException](list.collect { case Xor.Right(value) => value })))
+    TaskService(Task.gatherUnordered(tasks) map (_ => Right((): Unit)))
 
   }
 
