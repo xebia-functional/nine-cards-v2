@@ -462,6 +462,7 @@
 
     <string name="devProbablyActivityTitle">Probably Activity</string>
     <string name="devHeadphonesTitle">Headphones</string>
+    <string name="devLocationTitle">Location</string>
     <string name="devWeatherTitle">Weather</string>
 
     <string name="devLocalDatabaseCategory">Local Database</string>
