@@ -22,7 +22,7 @@ class CollectionsDetailsActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
-  with CollectionsUiActionsImpl
+  with CollectionsPagerUiActionsImpl
   with TypedFindView
   with UiExtensions
   with ActionsScreenListener

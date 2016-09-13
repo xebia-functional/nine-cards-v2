@@ -14,6 +14,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
@@ -45,8 +46,8 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-trait CollectionsUiActionsImpl
-  extends CollectionsUiActions
+trait CollectionsPagerUiActionsImpl
+  extends CollectionsPagerUiActions
   with Styles
   with ActionsBehaviours
   with FabButtonBehaviour {
@@ -74,6 +75,8 @@ trait CollectionsUiActionsImpl
   lazy val maxHeightToolbar = resGetDimensionPixelSize(R.dimen.height_toolbar_collection_details)
 
   lazy val toolbar = findView(TR.collections_toolbar)
+
+  lazy val toolbarTitle = findView(TR.collections_toolbar_title)
 
   lazy val root = findView(TR.collections_root)
 
@@ -233,12 +236,7 @@ trait CollectionsUiActionsImpl
   }
 
   override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] =
-    Ui {
-      activityContextWrapper.original.get match {
-        case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
-        case _ =>
-      }
-    } ~
+    invalidateOptionMenu() ~
       hideFabButton ~
       ((toolbar <~~
         applyAnimation(onUpdate = (ratio) => current match {
@@ -250,12 +248,21 @@ trait CollectionsUiActionsImpl
         elevationsUp ~
         (iconContent <~ vAlpha(0))).ifUi(canScroll)
 
-  override def closeReorderModeUi(): Ui[Any] = Ui {
-    activityContextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
-      case _ =>
-    }
+  override def startEditing(): Ui[Any] = {
+    val items = collectionsPagerPresenter.statuses.positionsEditing.toSeq.length
+    (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
+      notifyDataSetChangedCollectionAdapter
   }
+
+  override def reloadItemCollection(position: Int): Ui[Any] = {
+    val items = collectionsPagerPresenter.statuses.positionsEditing.toSeq.length
+    (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
+      notifyItemChangedCollectionAdapter(position)
+  }
+
+  override def closeEditingModeUi(): Ui[Any] =
+    (toolbarTitle <~ tvText("")) ~
+      notifyDataSetChangedCollectionAdapter ~ invalidateOptionMenu()
 
   override def notifyScroll(sType: ScrollType): Ui[Any] = (for {
     adapter <- getAdapter
@@ -300,6 +307,13 @@ trait CollectionsUiActionsImpl
   override def showMessagePublishContactsCollectionError: Ui[Any] = showError(R.string.publishCollectionError)
 
   override def showMessageNotPublishedCollectionError: Ui[Any] = showError(R.string.notPublishedCollectionError)
+
+  private[this] def invalidateOptionMenu(): Ui[Any] = Ui {
+    activityContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
+      case _ =>
+    }
+  }
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = root <~ vSnackbarShort(error)
 
@@ -356,6 +370,12 @@ trait CollectionsUiActionsImpl
     view.requestLayout()
   }
 
+  private[this] def notifyItemChangedCollectionAdapter(position: Int): Ui[Any] =
+    Ui(getActiveCollectionAdapter foreach(_.notifyItemChanged(position)))
+
+  private[this] def notifyDataSetChangedCollectionAdapter: Ui[Any] =
+    Ui(getActiveCollectionAdapter foreach(_.notifyDataSetChanged()))
+
   private[this] def getAdapter: Option[CollectionsPagerAdapter] = viewPager.getAdapter match {
     case adapter: CollectionsPagerAdapter => Some(adapter)
     case _ => None
@@ -368,26 +388,39 @@ trait CollectionsUiActionsImpl
     fragment <- adapter.getActiveFragment
   } yield fragment.presenter
 
+  private[this] def getActiveCollectionAdapter: Option[CollectionAdapter] = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+    collectionAdapter <- fragment.getAdapter
+  } yield collectionAdapter
+
   override def turnOffFragmentContent: Ui[Any] =
     (fragmentContent <~
       colorContentDialog(paint = false) <~
       vClickable(false)) ~ updateBarsInFabMenuHide
 
-  private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] = getAdapter map {
-    adapter =>
-      val resIcon = collection.getIconDetail
-      (pageMovement match {
-        case Start | Idle => icon <~ ivSrc(resIcon)
-        case Left => icon <~ changeIcon(resIcon, fromLeft = true)
-        case Right | Jump => icon <~ changeIcon(resIcon, fromLeft = false)
-        case _ => Ui.nop
-      }) ~ adapter.notifyChanged(position) ~ (if (collection.cards.isEmpty) {
-        val color = getIndexColor(collection.themedColorIndex)
-        showFabButton(color = color, autoHide = false)
-      } else {
-        hideFabButton
-      })
-  } getOrElse Ui.nop
+  private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] =
+    Ui {
+      collectionsPagerPresenter.statuses.collectionMode match {
+        case EditingCollectionMode => collectionsPagerPresenter.closeEditingMode()
+        case _ =>
+      }
+    } ~
+      (getAdapter map {
+        adapter =>
+          val resIcon = collection.getIconDetail
+          (pageMovement match {
+            case Start | Idle => icon <~ ivSrc(resIcon)
+            case Left => icon <~ changeIcon(resIcon, fromLeft = true)
+            case Right | Jump => icon <~ changeIcon(resIcon, fromLeft = false)
+            case _ => Ui.nop
+          }) ~ adapter.notifyChanged(position) ~ (if (collection.cards.isEmpty) {
+            val color = getIndexColor(collection.themedColorIndex)
+            showFabButton(color = color, autoHide = false)
+          } else {
+            hideFabButton
+          })
+      } getOrElse Ui.nop)
 
   private[this] def updateToolbarColor(color: Int): Ui[Any] =
     (toolbar <~ vBackgroundColor(color)) ~

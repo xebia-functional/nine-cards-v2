@@ -134,6 +134,8 @@
     <string name="contacts">Contactos</string>
     <string name="shortcuts">Accesos directos</string>
 
+    <string name="itemsSelected">%s seleccionados</string>
+
     <string name="unnamed">Sin nombre</string>
 
     <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta?</string>
