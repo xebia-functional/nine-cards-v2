@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.intents.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
@@ -8,11 +7,12 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardInten
 import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.intents.LauncherIntentServices
 import com.fortysevendeg.ninecardslauncher.services.intents.models._
+import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-
-import scalaz.concurrent.Task
+import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
 trait LauncherExecutorProcessImplSpecification
   extends Specification
@@ -20,11 +20,11 @@ trait LauncherExecutorProcessImplSpecification
   with LauncherExecutorProcessImplData {
 
   val serviceRight: TaskService[Unit] =
-    TaskService(Task(Xor.right((): Unit)))
+    TaskService(Task(Either.right((): Unit)))
   val serviceException: TaskService[Unit] =
-    TaskService(Task(Xor.left(intentLauncherServicesException)))
+    TaskService(Task(Either.left(intentLauncherServicesException)))
   val servicePermissionException: TaskService[Unit] =
-    TaskService(Task(Xor.left(intentLauncherServicesPermissionExcetpion)))
+    TaskService(Task(Either.left(intentLauncherServicesPermissionExcetpion)))
 
   trait LauncherExecutorProcessImplScope
     extends Scope {
@@ -41,7 +41,7 @@ trait LauncherExecutorProcessImplSpecification
       mockServices.launchIntentAction(any)(any) returns serviceRight
 
       val result = processService(mockActivityContext).value.run
-      result shouldEqual Xor.right((): Unit)
+      result shouldEqual Right((): Unit)
 
       there was one(mockServices).launchIntentAction(action)(mockActivityContext)
     }
@@ -50,7 +50,7 @@ trait LauncherExecutorProcessImplSpecification
       mockServices.launchIntentAction(any)(any) returns servicePermissionException
 
       val result = processService(mockActivityContext).value.run
-      result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessPermissionException]]
+      result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
       there was one(mockServices).launchIntentAction(action)(mockActivityContext)
     }
@@ -59,7 +59,7 @@ trait LauncherExecutorProcessImplSpecification
       mockServices.launchIntentAction(any)(any) returns serviceException
 
       val result = processService(mockActivityContext).value.run
-      result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+      result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
       there was one(mockServices).launchIntentAction(action)(mockActivityContext)
     }
@@ -88,7 +88,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(any)(any) returns serviceRight
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result shouldEqual Xor.right((): Unit)
+        result shouldEqual Right((): Unit)
 
         there was one(mockServices).launchIntentAction(appAction)(mockActivityContext)
         there was no(mockServices).launchIntentAction(appLauncherAction)(mockActivityContext)
@@ -102,7 +102,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(===(appLauncherAction))(any) returns serviceRight
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result shouldEqual Xor.right((): Unit)
+        result shouldEqual Right((): Unit)
 
         there was one(mockServices).launchIntentAction(appAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(appLauncherAction)(mockActivityContext)
@@ -117,7 +117,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(===(appGooglePlayAction))(any) returns serviceRight
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result shouldEqual Xor.right((): Unit)
+        result shouldEqual Right((): Unit)
 
         there was one(mockServices).launchIntentAction(appAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(appLauncherAction)(mockActivityContext)
@@ -133,7 +133,7 @@ class LauncherExecutorProcessImplSpec
         mockIntent.extractClassName() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result shouldEqual Xor.right((): Unit)
+        result shouldEqual Right((): Unit)
 
         there was no(mockServices).launchIntentAction(appAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(appLauncherAction)(mockActivityContext)
@@ -146,7 +146,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(===(appAction))(any) returns servicePermissionException
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessPermissionException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
         there was one(mockServices).launchIntentAction(appAction)(mockActivityContext)
         there was no(mockServices).launchIntentAction(appLauncherAction)(mockActivityContext)
@@ -160,7 +160,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(===(appLauncherAction))(any) returns servicePermissionException
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessPermissionException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
         there was one(mockServices).launchIntentAction(appAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(appLauncherAction)(mockActivityContext)
@@ -176,7 +176,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(===(appGooglePlayAction))(any) returns servicePermissionException
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessPermissionException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
         there was one(mockServices).launchIntentAction(appAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(appLauncherAction)(mockActivityContext)
@@ -188,7 +188,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(any)(any) returns serviceException
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was one(mockServices).launchIntentAction(appAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(appLauncherAction)(mockActivityContext)
@@ -203,7 +203,7 @@ class LauncherExecutorProcessImplSpec
         mockIntent.extractClassName() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was no(mockServices).launchIntentAction(appAction)(mockActivityContext)
         there was no(mockServices).launchIntentAction(appLauncherAction)(mockActivityContext)
@@ -244,7 +244,7 @@ class LauncherExecutorProcessImplSpec
         mockIntent.extractPackageName() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was no(mockServices).launchIntentAction(appGooglePlayAction)(mockActivityContext)
       }
@@ -283,7 +283,7 @@ class LauncherExecutorProcessImplSpec
         mockIntent.extractPhone() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was no(mockServices).launchIntentAction(phoneSmsAction)(mockActivityContext)
       }
@@ -322,7 +322,7 @@ class LauncherExecutorProcessImplSpec
         mockIntent.extractPhone() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was no(mockServices).launchIntentAction(phoneCallAction)(mockActivityContext)
       }
@@ -361,7 +361,7 @@ class LauncherExecutorProcessImplSpec
         mockIntent.extractEmail() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was no(mockServices).launchIntentAction(emailAction)(mockActivityContext)
       }
@@ -400,7 +400,7 @@ class LauncherExecutorProcessImplSpec
         mockIntent.extraLookup() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was no(mockServices).launchIntentAction(contactAction)(mockActivityContext)
       }
@@ -415,7 +415,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntent(any)(any) returns serviceRight
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result shouldEqual Xor.right((): Unit)
+        result shouldEqual Right((): Unit)
 
         there was one(mockServices).launchIntent(mockIntent)(mockActivityContext)
 
@@ -427,7 +427,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntent(any)(any) returns servicePermissionException
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessPermissionException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
         there was one(mockServices).launchIntent(mockIntent)(mockActivityContext)
       }
@@ -438,7 +438,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntent(any)(any) returns serviceException
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was one(mockServices).launchIntent(mockIntent)(mockActivityContext)
       }
@@ -497,7 +497,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(anyOf(SearchWebAction))(any) returns serviceRight
 
         val result = process.launchSearch(mockActivityContext).value.run
-        result shouldEqual Xor.right((): Unit)
+        result shouldEqual Right((): Unit)
 
         there was one(mockServices).launchIntentAction(searchGlobalAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(searchWebAction)(mockActivityContext)
@@ -509,7 +509,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(anyOf(SearchGlobalAction))(any) returns servicePermissionException
 
         val result = process.launchSearch(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessPermissionException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
         there was one(mockServices).launchIntentAction(searchGlobalAction)(mockActivityContext)
         there was no(mockServices).launchIntentAction(searchWebAction)(mockActivityContext)
@@ -522,7 +522,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(anyOf(SearchWebAction))(any) returns servicePermissionException
 
         val result = process.launchSearch(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessPermissionException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
         there was one(mockServices).launchIntentAction(searchGlobalAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(searchWebAction)(mockActivityContext)
@@ -535,7 +535,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(anyOf(SearchWebAction))(any) returns serviceException
 
         val result = process.launchSearch(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was one(mockServices).launchIntentAction(searchGlobalAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(searchWebAction)(mockActivityContext)
@@ -595,7 +595,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(anyOf(GlobalSettingsAction))(any) returns serviceRight
 
         val result = process.launchSettings(packageName)(mockActivityContext).value.run
-        result shouldEqual Xor.right((): Unit)
+        result shouldEqual Right((): Unit)
 
         there was one(mockServices).launchIntentAction(appSettingsAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(globalSettingsAction)(mockActivityContext)
@@ -607,7 +607,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(any[AppSettingsAction])(any) returns servicePermissionException
 
         val result = process.launchSettings(packageName)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessPermissionException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
         there was one(mockServices).launchIntentAction(appSettingsAction)(mockActivityContext)
         there was no(mockServices).launchIntentAction(globalSettingsAction)(mockActivityContext)
@@ -620,7 +620,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(anyOf(GlobalSettingsAction))(any) returns servicePermissionException
 
         val result = process.launchSettings(packageName)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessPermissionException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
         there was one(mockServices).launchIntentAction(appSettingsAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(globalSettingsAction)(mockActivityContext)
@@ -633,7 +633,7 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(anyOf(GlobalSettingsAction))(any) returns serviceException
 
         val result = process.launchSettings(packageName)(mockActivityContext).value.run
-        result must beAnInstanceOf[Xor.Left[LauncherExecutorProcessException]]
+        result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was one(mockServices).launchIntentAction(appSettingsAction)(mockActivityContext)
         there was one(mockServices).launchIntentAction(globalSettingsAction)(mockActivityContext)

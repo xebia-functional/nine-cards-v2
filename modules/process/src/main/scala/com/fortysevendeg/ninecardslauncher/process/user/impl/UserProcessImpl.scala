@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.user.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -9,8 +8,9 @@ import com.fortysevendeg.ninecardslauncher.process.user._
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
+import monix.eval.Task
+import cats.syntax.either._
 
-import scalaz.concurrent.Task
 
 class UserProcessImpl(
   apiServices: ApiServices,
@@ -44,7 +44,7 @@ class UserProcessImpl(
     def checkOrAddUser(id: Int)(implicit context: ContextSupport): TaskService[ServicesUser] =
       (for {
         maybeUser <- persistenceServices.findUserById(FindUserByIdRequest(id))
-        user <- maybeUser map (user => TaskService(Task(Xor.right(user)))) getOrElse {
+        user <- maybeUser map (user => TaskService(Task(Either.right(user)))) getOrElse {
           persistenceServices.addUser(emptyUserRequest)
         }
       } yield user).resolve[UserException]
@@ -52,7 +52,7 @@ class UserProcessImpl(
     def getFirstOrAddUser(implicit context: ContextSupport): TaskService[ServicesUser] =
       (for {
         maybeUsers <- persistenceServices.fetchUsers
-        user <- maybeUsers.headOption map (user => TaskService(Task(Xor.right(user)))) getOrElse {
+        user <- maybeUsers.headOption map (user => TaskService(Task(Either.right(user)))) getOrElse {
           persistenceServices.addUser(emptyUserRequest)
         }
       } yield user).resolve[UserException]
@@ -115,7 +115,7 @@ class UserProcessImpl(
 
   private[this] def withActiveUser[T](f: Int => TaskService[T])(implicit context: ContextSupport) =
     context.getActiveUserId map f getOrElse {
-      TaskService(Task(Xor.left(UserException(noActiveUserErrorMessage))))
+      TaskService(Task(Either.left(UserException(noActiveUserErrorMessage))))
     }
 
   private[this] def syncInstallation(
@@ -127,7 +127,7 @@ class UserProcessImpl(
           androidId <- persistenceServices.getAndroidId
           response <- apiServices.updateInstallation(deviceToken)(RequestConfig(apiKey, sessionToken, androidId))
         } yield response.statusCode).resolve[UserException]
-      case _ => TaskService(Task(Xor.right(0)))
+      case _ => TaskService(Task(Either.right(0)))
     }
 
 }

@@ -19,7 +19,6 @@ import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
 
 import scala.annotation.tailrec
-import scalaz.concurrent.Task
 
 class MomentProcessImpl(
   val momentProcessConfig: MomentProcessConfig,
@@ -67,10 +66,8 @@ class MomentProcessImpl(
     } yield moments map toMoment).resolve[MomentException]
 
   override def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport) = TaskService {
-    Task {
       CatchAll[MomentException] {
         generatePrivateMomentsCollections(apps, moments, Seq.empty, position)
-      }
     }
   }
 
