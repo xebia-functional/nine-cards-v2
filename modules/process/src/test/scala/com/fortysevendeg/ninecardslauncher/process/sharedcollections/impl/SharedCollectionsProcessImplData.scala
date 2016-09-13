@@ -83,7 +83,7 @@ trait SharedCollectionsProcessImplData {
     }
 
   def generateCollection() = 1 to 10 map { i =>
-    Collection(
+    CollectionPersistence(
       id = i,
       position = Random.nextInt(10),
       name = Random.nextString(10),
