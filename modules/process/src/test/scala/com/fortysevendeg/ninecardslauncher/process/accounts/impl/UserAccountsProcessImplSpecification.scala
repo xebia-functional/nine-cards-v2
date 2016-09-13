@@ -1,17 +1,18 @@
 package com.fortysevendeg.ninecardslauncher.process.accounts.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.accounts.{AccountsProcessException, AccountsProcessOperationCancelledException, AccountsProcessPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.accounts.{AccountsServices, AccountsServicesOperationCancelledException, AccountsServicesPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.accounts.models.GoogleAccount
+import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cats.syntax.either._
 
-import scalaz.concurrent.Task
 
 trait UserAccountsProcessImplSpecification
   extends Specification
@@ -38,10 +39,10 @@ class UserAccountsProcessImplSpec
 
     "call getAccounts with the right parameters" in new UserAccountsProcessImplScope {
 
-      accountsServices.getAccounts(any)(any) returns TaskService(Task(Xor.right(accounts)))
+      accountsServices.getAccounts(any)(any) returns TaskService(Task(Either.right(accounts)))
 
       val result = userAccountProcess.getGoogleAccounts.value.run
-      result shouldEqual Xor.Right(accounts.map(_.accountName))
+      result shouldEqual Right(accounts.map(_.accountName))
 
       there was one(accountsServices).getAccounts(Some(GoogleAccount))(activityContextSupport)
     }
@@ -52,10 +53,10 @@ class UserAccountsProcessImplSpec
 
     "call getAuthToken with the right parameters" in new UserAccountsProcessImplScope {
 
-      accountsServices.getAuthToken(any, any)(any) returns TaskService(Task(Xor.right(authToken)))
+      accountsServices.getAuthToken(any, any)(any) returns TaskService(Task(Either.right(authToken)))
 
       val result = userAccountProcess.getAuthToken(account1.accountName, scope).value.run
-      result shouldEqual Xor.Right(authToken)
+      result shouldEqual Right(authToken)
 
       there was one(accountsServices).getAuthToken(account1, scope)(activityContextSupport)
     }
@@ -66,10 +67,10 @@ class UserAccountsProcessImplSpec
 
     "call invalidateToken with the right parameters" in new UserAccountsProcessImplScope {
 
-      accountsServices.invalidateToken(any, any)(any) returns TaskService(Task(Xor.right(())))
+      accountsServices.invalidateToken(any, any)(any) returns TaskService(Task(Either.right(())))
 
       val result = userAccountProcess.invalidateToken(authToken).value.run
-      result shouldEqual Xor.Right(())
+      result shouldEqual Right(())
 
       there was one(accountsServices).invalidateToken(account1.accountType, authToken)(activityContextSupport)
     }

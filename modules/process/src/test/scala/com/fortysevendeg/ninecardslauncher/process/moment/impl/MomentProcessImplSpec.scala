@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.process.moment.impl
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
@@ -11,12 +10,13 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcessConfig}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByName, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.wifi.{WifiServices, WifiServicesException}
+import monix.eval.Task
 import org.joda.time.DateTime
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-
-import scalaz.concurrent.Task
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cats.syntax.either._
 
 trait MomentProcessImplSpecification
   extends Specification
@@ -57,10 +57,10 @@ trait MomentProcessImplSpecification
     val wifi: Option[String]
     val time: DateTime
 
-    mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollectionForMoments)))
-    mockPersistenceServices.fetchMoments returns TaskService(Task(Xor.right(servicesMomentSeq)))
+    mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollectionForMoments)))
+    mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(servicesMomentSeq)))
 
-    mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Xor.right(wifi)))
+    mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Either.right(wifi)))
 
     override val momentProcess = new MomentProcessImpl(
       momentProcessConfig = momentProcessConfig,
@@ -82,14 +82,14 @@ class MomentProcessImplSpec
     "return the MomentCollectionType of the three collections associated with the moments created" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
-        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Xor.right(seqServicesApps)))
-        mockPersistenceServices.addCollections(any) returns TaskService(Task(Xor.right(moments map (_ => servicesCollection))))
-        mockPersistenceServices.addMoment(any) returns TaskService(Task(Xor.right(servicesMoment)))
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
+        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Either.right(seqServicesApps)))
+        mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.right(moments map (_ => servicesCollection))))
+        mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right(servicesMoment)))
 
         val result = momentProcess.createMoments(contextSupport).value.run
         result must beLike {
-          case Xor.Right(resultSeqMoment) =>
+          case Right(resultSeqMoment) =>
             resultSeqMoment.size shouldEqual moments.size
             resultSeqMoment map (_.name) shouldEqual seqCollection.map(_.name)
         }
@@ -98,30 +98,30 @@ class MomentProcessImplSpec
     "returns a MomentException if the service throws a exception fetching the existing collections" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.left(persistenceServiceException)))
         val result = momentProcess.createMoments(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[MomentException]]
+        result must beAnInstanceOf[Left[MomentException, _]]
       }
 
     "returns a MomentException if the service throws a exception fetching the apps" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
-        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
+        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = momentProcess.createMoments(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[MomentException]]
+        result must beAnInstanceOf[Left[MomentException, _]]
       }
 
     "returns MomentException if the service throws a exception adding the collection" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollection)))
-        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Xor.right(seqServicesApps)))
-        mockPersistenceServices.addCollections(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
+        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Either.right(seqServicesApps)))
+        mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = momentProcess.createMoments(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[MomentException]]
+        result must beAnInstanceOf[Left[MomentException, _]]
       }
   }
 
@@ -130,10 +130,10 @@ class MomentProcessImplSpec
     "return the three moments saved" in
       new MomentProcessScope {
 
-        mockPersistenceServices.addMoments(any) returns TaskService(Task(Xor.right(moments map (_ => servicesMoment))))
+        mockPersistenceServices.addMoments(any) returns TaskService(Task(Either.right(moments map (_ => servicesMoment))))
         val result = momentProcess.saveMoments(seqMoments)(contextSupport).value.run
         result must beLike {
-          case Xor.Right(resultSeqMoment) =>
+          case Right(resultSeqMoment) =>
             resultSeqMoment.size shouldEqual seqMoments.size
         }
       }
@@ -141,9 +141,9 @@ class MomentProcessImplSpec
     "returns MomentException when persistence services fails" in
       new MomentProcessScope {
 
-        mockPersistenceServices.addMoments(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.addMoments(any) returns TaskService(Task(Either.left(persistenceServiceException)))
         val result = momentProcess.saveMoments(seqMoments)(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[MomentException]]
+        result must beAnInstanceOf[Left[MomentException, _]]
       }
 
   }
@@ -154,7 +154,7 @@ class MomentProcessImplSpec
       new MomentProcessScope {
         val result = momentProcess.generatePrivateMoments(seqApps, position)(contextSupport).value.run
         result must beLike {
-          case Xor.Right(resultSeqMoment) =>
+          case Right(resultSeqMoment) =>
             resultSeqMoment.size shouldEqual moments.size
             resultSeqMoment map (_.collectionType) shouldEqual seqMomentCollections.map(_.collectionType)
         }
@@ -166,17 +166,17 @@ class MomentProcessImplSpec
     "returns a successful answer for a valid request" in
       new MomentProcessScope {
 
-        mockPersistenceServices.deleteAllMoments() returns TaskService(Task(Xor.right(momentId)))
+        mockPersistenceServices.deleteAllMoments() returns TaskService(Task(Either.right(momentId)))
         val result = momentProcess.deleteAllMoments().value.run
-        result shouldEqual Xor.Right(():Unit)
+        result shouldEqual Right(():Unit)
       }
 
     "returns a MomentException if the service throws a exception deleting the moments" in
       new MomentProcessScope  {
 
-        mockPersistenceServices.deleteAllMoments() returns TaskService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.deleteAllMoments() returns TaskService(Task(Either.left(persistenceServiceException)))
         val result = momentProcess.deleteAllMoments().value.run
-        result must beAnInstanceOf[Xor.Left[MomentException]]
+        result must beAnInstanceOf[Left[MomentException, _]]
       }
   }
 
@@ -189,7 +189,7 @@ class MomentProcessImplSpec
         override val time = nowMorning
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result shouldEqual Xor.Right(Some(homeMorningMoment))
+        result shouldEqual Right(Some(homeMorningMoment))
       }
 
     "returns the best available moment in the afternoon with the home's wifi available" in
@@ -199,7 +199,7 @@ class MomentProcessImplSpec
         override val time = nowAfternoon
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result shouldEqual Xor.Right(Some(homeMorningMoment))
+        result shouldEqual Right(Some(homeMorningMoment))
       }
 
     "returns the best available moment in the night with the home's wifi available" in
@@ -209,7 +209,7 @@ class MomentProcessImplSpec
         override val time = nowNight
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result shouldEqual Xor.Right(Some(homeNightMoment))
+        result shouldEqual Right(Some(homeNightMoment))
       }
 
     "returns the best available moment in the late night with the home's wifi available" in
@@ -219,7 +219,7 @@ class MomentProcessImplSpec
         override val time = nowLateNight
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result shouldEqual Xor.Right(Some(homeNightMoment))
+        result shouldEqual Right(Some(homeNightMoment))
       }
 
     "returns the best available moment in the morning with the work's wifi available" in
@@ -229,7 +229,7 @@ class MomentProcessImplSpec
         override val time = nowMorning
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result shouldEqual Xor.Right(Some(workMoment))
+        result shouldEqual Right(Some(workMoment))
 
       }
 
@@ -240,7 +240,7 @@ class MomentProcessImplSpec
         override val time = nowAfternoon
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result shouldEqual Xor.Right(Some(transitMoment))
+        result shouldEqual Right(Some(transitMoment))
       }
 
     "returns the best available moment in the morning with no wifi available" in
@@ -250,7 +250,7 @@ class MomentProcessImplSpec
         override val time = nowMorning
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result shouldEqual Xor.Right(Some(transitMoment))
+        result shouldEqual Right(Some(transitMoment))
       }
 
     "returns the best available moment in the afternoon with no wifi available" in
@@ -260,7 +260,7 @@ class MomentProcessImplSpec
         override val time = nowAfternoon
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result shouldEqual Xor.Right(Some(transitMoment))
+        result shouldEqual Right(Some(transitMoment))
       }
 
     "returns the best available moment in the night with no wifi available" in
@@ -270,7 +270,7 @@ class MomentProcessImplSpec
         override val time = nowLateNight
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result shouldEqual Xor.Right(Some(transitMoment))
+        result shouldEqual Right(Some(transitMoment))
       }
 
     "returns the best available moment in the morning on a weekend with the work's wifi available" in
@@ -280,28 +280,28 @@ class MomentProcessImplSpec
         override val time = nowMorningWeekend
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result shouldEqual Xor.Right(Some(transitMoment))
+        result shouldEqual Right(Some(transitMoment))
       }
 
     "returns a MomentException if the service throws a exception getting the moments" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollectionForMoments)))
-        mockPersistenceServices.fetchMoments returns TaskService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollectionForMoments)))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[MomentException]]
+        result must beAnInstanceOf[Left[MomentException, _]]
       }
 
     "returns a MomentException if the service throws a exception getting the current SSID" in
       new MomentProcessScope  {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollectionForMoments)))
-        mockPersistenceServices.fetchMoments returns TaskService(Task(Xor.right(servicesMomentSeq)))
-        mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Xor.left(wifiServiceException)))
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollectionForMoments)))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(servicesMomentSeq)))
+        mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Either.left(wifiServiceException)))
 
         val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[MomentException]]
+        result must beAnInstanceOf[Left[MomentException, _]]
       }
   }
 
@@ -310,12 +310,12 @@ class MomentProcessImplSpec
     "returns the available moments with collection" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollectionForMoments)))
-        mockPersistenceServices.fetchMoments returns TaskService(Task(Xor.right(servicesMomentSeq)))
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollectionForMoments)))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(servicesMomentSeq)))
 
         val result = momentProcess.getAvailableMoments(contextSupport).value.run
         result must beLike {
-          case Xor.Right(resultMoment) =>
+          case Right(resultMoment) =>
             resultMoment flatMap (_.momentType map (_.name)) shouldEqual (servicesAvailableMomentsSeq flatMap (_.momentType))
         }
       }
@@ -323,11 +323,11 @@ class MomentProcessImplSpec
     "returns a MomentException if the service throws a exception" in
       new MomentProcessScope  {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Xor.right(seqServicesCollectionForMoments)))
-        mockPersistenceServices.fetchMoments returns TaskService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollectionForMoments)))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = momentProcess.getAvailableMoments(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[MomentException]]
+        result must beAnInstanceOf[Left[MomentException, _]]
       }
 
   }

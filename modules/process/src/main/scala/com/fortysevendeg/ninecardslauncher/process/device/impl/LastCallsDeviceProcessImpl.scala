@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -8,20 +7,19 @@ import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastC
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.services.calls.CallsServicesPermissionException
 import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
-
-import scalaz.concurrent.Task
+import monix.eval.Task
+import cats.syntax.either._
 
 trait LastCallsDeviceProcessImpl extends DeviceProcess {
-
   self: DeviceConversions
-    with DeviceProcessDependencies
-    with ImplicitsDeviceException =>
+  with DeviceProcessDependencies
+  with ImplicitsDeviceException =>
 
   def getLastCalls(implicit context: ContextSupport) = {
 
     def simpleGroupCalls(lastCalls: Seq[Call]): TaskService[Seq[LastCallsContact]] = TaskService {
       Task {
-        Xor.right {
+        Either.right {
           (lastCalls groupBy (_.number) map { case (k, v) => toSimpleLastCallsContact(k, v) }).toSeq
         }
       }
@@ -33,10 +31,10 @@ trait LastCallsDeviceProcessImpl extends DeviceProcess {
       } yield (lastCallsContact, contact map toContact)
 
     def getCombinedContacts(items: Seq[LastCallsContact]):
-      TaskService[Seq[(LastCallsContact, Option[Contact])]] = TaskService {
+    TaskService[Seq[(LastCallsContact, Option[Contact])]] = TaskService {
       val tasks = items map (item => combineContact(item).value)
       Task.gatherUnordered(tasks) map { list =>
-        Xor.right(list.collect { case Xor.Right(combinedContact) => combinedContact })
+        Either.right(list.collect { case Right(combinedContact) => combinedContact })
       }
     }
 
