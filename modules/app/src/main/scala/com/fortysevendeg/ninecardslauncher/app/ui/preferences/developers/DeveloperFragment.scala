@@ -35,6 +35,7 @@ case class DeveloperDOM(dom: FindPreferences) {
   def deviceCloudIdPreferences = dom.find[Preference](DeviceCloudId)
   def probablyActivityPreference = dom.find[Preference](ProbablyActivity)
   def headphonesPreference = dom.find[Preference](Headphones)
+  def locationPreference = dom.find[Preference](Location)
   def weatherPreference = dom.find[Preference](Weather)
   def clearCacheImagesPreference = dom.find[Preference](ClearCacheImages)
 

@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, SharedCollection, UpdateSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
@@ -18,6 +18,13 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
 
   val apiUtils = new ApiUtils(persistenceServices)
 
+  override def getSharedCollection(sharedCollectionId: String)(implicit context: ContextSupport) =
+    (for {
+      userConfig <- apiUtils.getRequestConfig
+      response <- apiServices.getSharedCollection(sharedCollectionId)(userConfig)
+      maybeCollection <- persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId)
+    } yield toSharedCollection(response.sharedCollection, maybeCollection)).resolve[SharedCollectionsExceptions]
+
   override def getSharedCollectionsByCategory(
     category: NineCardCategory,
     typeShareCollection: TypeSharedCollection,
@@ -27,15 +34,22 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     (for {
       userConfig <- apiUtils.getRequestConfig
       response <- apiServices.getSharedCollectionsByCategory(category.name, typeShareCollection.name, offset, limit)(userConfig)
-    } yield response.items map toSharedCollection).resolve[SharedCollectionsExceptions]
+      localCollectionMap <- fetchSharedCollectionMap(response.items.map(_.sharedCollectionId))
+    } yield toSharedCollections(response.items, localCollectionMap)).resolve[SharedCollectionsExceptions]
 
   override def getPublishedCollections()
     (implicit context: ContextSupport) = {
     (for {
       userConfig <- apiUtils.getRequestConfig
       response <- apiServices.getPublishedCollections()(userConfig)
-    } yield response.items map toSharedCollection).resolve[SharedCollectionsExceptions]
+      localCollectionMap <- fetchSharedCollectionMap(response.items.map(_.sharedCollectionId))
+    } yield toSharedCollections(response.items, localCollectionMap)).resolve[SharedCollectionsExceptions]
   }
+
+  private[this] def fetchSharedCollectionMap(sharedCollectionsIds: Seq[String]): TaskService[Map[String, Collection]] =
+    for {
+      localCollections <- persistenceServices.fetchCollectionsBySharedCollectionIds(sharedCollectionsIds)
+    } yield localCollections.flatMap(c => c.sharedCollectionId.map(id => id -> c)).toMap
 
   override def createSharedCollection(
     sharedCollection: CreateSharedCollection)

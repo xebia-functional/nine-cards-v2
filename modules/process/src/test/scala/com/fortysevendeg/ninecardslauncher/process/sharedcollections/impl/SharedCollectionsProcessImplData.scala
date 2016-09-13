@@ -1,10 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppsCollectionType, Communication}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreateSharedCollection
 import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection => CollectionPersistence}
 
 import scala.util.Random
 
@@ -22,8 +22,8 @@ trait SharedCollectionsProcessImplData {
 
   val statusCodeOk = 200
 
-  def generateSharedCollectionResponse() = 1 to 10 map { i =>
-    SharedCollectionResponse(
+  def generateSharedCollectionSeq() = 1 to 10 map { i =>
+    SharedCollection(
       id = Random.nextString(10),
       sharedCollectionId = Random.nextString(10),
       publishedOn = Random.nextLong(),
@@ -41,7 +41,7 @@ trait SharedCollectionsProcessImplData {
 
   val shareCollectionList = SharedCollectionResponseList(
     statusCode = statusCodeOk,
-    items = generateSharedCollectionResponse())
+    items = generateSharedCollectionSeq())
 
   val sharedCollectionId = "shared-collection-id"
 
@@ -80,7 +80,7 @@ trait SharedCollectionsProcessImplData {
     }
 
   def generateCollection() = 1 to 10 map { i =>
-    Collection(
+    CollectionPersistence(
       id = i,
       position = Random.nextInt(10),
       name = Random.nextString(10),
@@ -106,4 +106,36 @@ trait SharedCollectionsProcessImplData {
   val unsubscribeResponse =
     UnsubscribeResponse(
       statusCode = statusCodeOk)
+
+  def collectionPersistenceOwnedSeq = shareCollectionList.items.map { col =>
+    CollectionPersistence(
+      id = Random.nextInt(),
+      position = Random.nextInt(10),
+      name = col.name,
+      collectionType = AppsCollectionType.name,
+      icon = col.icon,
+      themedColorIndex = 0,
+      appsCategory = Some(col.category),
+      originalSharedCollectionId = None,
+      sharedCollectionId = Some(col.sharedCollectionId),
+      sharedCollectionSubscribed = false,
+      cards = Seq.empty,
+      moment = None)
+  }
+
+  def collectionPersistenceSubscribedSeq = shareCollectionList.items.map { col =>
+    CollectionPersistence(
+      id = Random.nextInt(),
+      position = Random.nextInt(10),
+      name = col.name,
+      collectionType = AppsCollectionType.name,
+      icon = col.icon,
+      themedColorIndex = 0,
+      appsCategory = Some(col.category),
+      originalSharedCollectionId = Some(col.sharedCollectionId),
+      sharedCollectionId = Some(col.sharedCollectionId),
+      sharedCollectionSubscribed = false,
+      cards = Seq.empty,
+      moment = None)
+  }
 }

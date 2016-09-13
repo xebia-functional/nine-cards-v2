@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/app_link_root"
+    style="@style/AppLinkDialogRoot">
+
+    <LinearLayout
+        android:id="@+id/app_link_loading"
+        style="@style/AppLinkLoadingLayout">
+
+        <ProgressBar
+            android:id="@+id/app_link_loading"
+            style="@style/AppLinkLoading"/>
+
+        <TextView
+            android:id="@+id/app_link_loading_text"
+            style="@style/AppLinkLoadingText"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/app_link_collection"
+        style="@style/AppLinkCollectionLayout">
+
+        <include
+            layout="@layout/public_collections_item"/>
+
+    </FrameLayout>
+
+</FrameLayout>

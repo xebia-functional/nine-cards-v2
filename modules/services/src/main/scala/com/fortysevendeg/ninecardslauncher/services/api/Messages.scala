@@ -75,9 +75,13 @@ case class RecommendationApp(
 
 case class SharedCollectionResponseList(
   statusCode: Int,
-  items: Seq[SharedCollectionResponse])
+  items: Seq[SharedCollection])
 
 case class SharedCollectionResponse(
+  statusCode: Int,
+  sharedCollection: SharedCollection)
+
+case class SharedCollection(
   id: String,
   sharedCollectionId: String,
   publishedOn: Long,

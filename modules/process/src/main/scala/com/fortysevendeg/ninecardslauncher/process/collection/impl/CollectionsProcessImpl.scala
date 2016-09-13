@@ -55,14 +55,14 @@ trait CollectionsProcessImpl extends CollectionProcess {
   def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
 
   def getCollectionById(id: Int) =
-    (for {
-      collection <- persistenceServices.findCollectionById(FindCollectionByIdRequest(id))
-    } yield collection map toCollection).resolve[CollectionException]
+    persistenceServices.findCollectionById(FindCollectionByIdRequest(id))
+      .map(_.map(toCollection))
+      .resolve[CollectionException]
 
-  def getCollectionBySharedCollectionId(sharedCollectionId: String, original: Boolean) =
-    (for {
-      collection <- persistenceServices.fetchCollectionBySharedCollection(FetchCollectionBySharedCollectionRequest(sharedCollectionId, original))
-    } yield collection map toCollection).resolve[CollectionException]
+  def getCollectionBySharedCollectionId(sharedCollectionId: String) =
+    persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId)
+      .map(_.map(toCollection))
+      .resolve[CollectionException]
 
   def addCollection(addCollectionRequest: AddCollectionRequest) =
     (for {
@@ -152,13 +152,9 @@ trait CollectionsProcessImpl extends CollectionProcess {
     } yield updatedCollection).resolve[CollectionException]
 
   private[this] def findCollectionById(id: Int) =
-    (for {
-      collection <- persistenceServices.findCollectionById(toFindCollectionByIdRequest(id))
-    } yield collection).resolve[CollectionException]
+    persistenceServices.findCollectionById(toFindCollectionByIdRequest(id))
 
   private[this] def updateCollectionList(collectionList: Seq[Collection]) =
-    (for {
-      _ <- persistenceServices.updateCollections(toServicesUpdateCollectionsRequest(collectionList))
-    } yield ()).resolve[CollectionException]
+    persistenceServices.updateCollections(toServicesUpdateCollectionsRequest(collectionList))
 
 }

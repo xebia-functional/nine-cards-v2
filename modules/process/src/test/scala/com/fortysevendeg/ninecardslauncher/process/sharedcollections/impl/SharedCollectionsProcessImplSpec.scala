@@ -7,6 +7,7 @@ import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsExceptions
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{NotSubscribed, Owned, Subscribed, SubscriptionType}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices}
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
@@ -60,6 +61,8 @@ class SharedCollectionsProcessImplSpec
 
         mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
           TaskService(Task(Xor.right(shareCollectionList)))
+        mockPersistenceServices.fetchCollectionsBySharedCollectionIds(any) returns
+          TaskService(Task(Xor.right(Seq.empty)))
 
         val result = sharedCollectionsProcess.getSharedCollectionsByCategory(
           category,
@@ -70,6 +73,49 @@ class SharedCollectionsProcessImplSpec
           case Xor.Right(shareCollections) =>
             shareCollections.size shouldEqual shareCollectionList.items.size
             shareCollections map (_.name) shouldEqual shareCollectionList.items.map(_.name)
+            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual NotSubscribed)
+        }
+      }
+
+    "returns a sequence of shared collections for a valid request where the first one is marked as Owned" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
+          TaskService(Task(Xor.right(shareCollectionList)))
+        mockPersistenceServices.fetchCollectionsBySharedCollectionIds(any) returns
+          TaskService(Task(Xor.right(collectionPersistenceOwnedSeq)))
+
+        val result = sharedCollectionsProcess.getSharedCollectionsByCategory(
+          category,
+          typeShareCollection,
+          offset,
+          limit)(contextSupport).value.run
+        result must beLike {
+          case Xor.Right(shareCollections) =>
+            shareCollections.size shouldEqual shareCollectionList.items.size
+            shareCollections map (_.name) shouldEqual shareCollectionList.items.map(_.name)
+            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual Owned)
+        }
+      }
+
+    "returns a sequence of shared collections for a valid request where the first one is marked as Owned" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
+          TaskService(Task(Xor.right(shareCollectionList)))
+        mockPersistenceServices.fetchCollectionsBySharedCollectionIds(any) returns
+          TaskService(Task(Xor.right(collectionPersistenceSubscribedSeq)))
+
+        val result = sharedCollectionsProcess.getSharedCollectionsByCategory(
+          category,
+          typeShareCollection,
+          offset,
+          limit)(contextSupport).value.run
+        result must beLike {
+          case Xor.Right(shareCollections) =>
+            shareCollections.size shouldEqual shareCollectionList.items.size
+            shareCollections map (_.name) shouldEqual shareCollectionList.items.map(_.name)
+            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual Subscribed)
         }
       }
 
@@ -95,12 +141,49 @@ class SharedCollectionsProcessImplSpec
 
         mockApiServices.getPublishedCollections()(any) returns
           TaskService(Task(Xor.right(shareCollectionList)))
+        mockPersistenceServices.fetchCollectionsBySharedCollectionIds(any) returns
+          TaskService(Task(Xor.right(Seq.empty)))
 
         val result = sharedCollectionsProcess.getPublishedCollections()(contextSupport).value.run
         result must beLike {
           case Xor.Right(shareCollections) =>
             shareCollections.size shouldEqual shareCollectionList.items.size
             shareCollections map (_.name) shouldEqual shareCollectionList.items.map(_.name)
+            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual NotSubscribed)
+        }
+      }
+
+    "returns a sequence of shared collections for a valid request where the first one is marked as Owned" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.getPublishedCollections()(any) returns
+          TaskService(Task(Xor.right(shareCollectionList)))
+        mockPersistenceServices.fetchCollectionsBySharedCollectionIds(any) returns
+          TaskService(Task(Xor.right(collectionPersistenceOwnedSeq)))
+
+        val result = sharedCollectionsProcess.getPublishedCollections()(contextSupport).value.run
+        result must beLike {
+          case Xor.Right(shareCollections) =>
+            shareCollections.size shouldEqual shareCollectionList.items.size
+            shareCollections map (_.name) shouldEqual shareCollectionList.items.map(_.name)
+            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual Owned)
+        }
+      }
+
+    "returns a sequence of shared collections for a valid request where the first one is marked as Owned" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.getPublishedCollections()(any) returns
+          TaskService(Task(Xor.right(shareCollectionList)))
+        mockPersistenceServices.fetchCollectionsBySharedCollectionIds(any) returns
+          TaskService(Task(Xor.right(collectionPersistenceSubscribedSeq)))
+
+        val result = sharedCollectionsProcess.getPublishedCollections()(contextSupport).value.run
+        result must beLike {
+          case Xor.Right(shareCollections) =>
+            shareCollections.size shouldEqual shareCollectionList.items.size
+            shareCollections map (_.name) shouldEqual shareCollectionList.items.map(_.name)
+            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual Subscribed)
         }
       }
 

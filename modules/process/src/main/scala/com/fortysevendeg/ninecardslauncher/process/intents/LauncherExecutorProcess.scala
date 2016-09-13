@@ -87,4 +87,11 @@ trait LauncherExecutorProcess {
     */
   def launchGooglePlay(packageName: String)(implicit activityContext: ActivityContextSupport): TaskService[Unit]
 
+  /**
+    * Launch the intent for an url
+    * @param url the web url
+    * @return A TaskService[Unit] with an IntentLauncherServicesException if the internal API throws an Exception
+    */
+  def launchUrl(url: String)(implicit activityContext: ActivityContextSupport): TaskService[Unit]
+
 }

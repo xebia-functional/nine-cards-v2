@@ -541,4 +541,38 @@
         <item name="android:hint">@string/editCardDialogName</item>
     </style>
 
+    <!-- App Links Activity -->
+    <style name="AppLinkDialogRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="AppLinkLoadingLayout">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="AppLinkLoading">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="AppLinkLoadingText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:text">@string/loadingCollection</item>
+    </style>
+
+    <style name="AppLinkCollectionLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
 </resources>

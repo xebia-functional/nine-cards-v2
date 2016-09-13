@@ -52,7 +52,7 @@ class NineCardsFirebaseMessagingService
   }
 
   def sharedCollectionNotification(payload: SharedCollectionPayload): Unit = {
-    Task.fork(di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier, original = true).value).resolveAsync(
+    Task.fork(di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier).value).resolveAsync(
       onResult = {
         case None =>
           Task.fork(di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).value).resolveAsync()
