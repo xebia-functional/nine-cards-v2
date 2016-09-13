@@ -10,7 +10,6 @@ import com.fortysevendeg.ninecardslauncher.services.apps._
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 
 import scala.collection.JavaConversions._
-import scalaz.concurrent.Task
 
 class AppsServicesImpl
   extends AppsServices
@@ -20,49 +19,43 @@ class AppsServicesImpl
   val androidVending = "com.android.vending"
 
   override def getInstalledApplications(implicit context: ContextSupport) = TaskService {
-    Task {
-      CatchAll[AppsInstalledException] {
-        getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_LAUNCHER))
-      }
+    CatchAll[AppsInstalledException] {
+      getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_LAUNCHER))
     }
   }
 
   override def getApplication(packageName: String)(implicit context: ContextSupport) = TaskService {
-    Task {
-      CatchAll[AppsInstalledException] {
-        val packageManager = context.getPackageManager
-        val intent = packageManager.getLaunchIntentForPackage(packageName)
-        getApplicationByResolveInfo(packageManager.resolveActivity(intent, 0))
-      }
+    CatchAll[AppsInstalledException] {
+      val packageManager = context.getPackageManager
+      val intent = packageManager.getLaunchIntentForPackage(packageName)
+      getApplicationByResolveInfo(packageManager.resolveActivity(intent, 0))
     }
   }
 
   def getDefaultApps(implicit context: ContextSupport) = TaskService {
-    Task {
-      CatchAll[AppsInstalledException] {
+    CatchAll[AppsInstalledException] {
 
-        val phoneApp: Option[Application] = getAppsByIntent(phoneIntent()).headOption
+      val phoneApp: Option[Application] = getAppsByIntent(phoneIntent()).headOption
 
-        val messageApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_MESSAGING)).headOption
+      val messageApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_MESSAGING)).headOption
 
-        val browserApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_BROWSER)).headOption
+      val browserApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_BROWSER)).headOption
 
-        val cameraApp: Option[Application] = getAppsByIntent(cameraIntent()).headOption
+      val cameraApp: Option[Application] = getAppsByIntent(cameraIntent()).headOption
 
-        val emailApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_EMAIL)).headOption
+      val emailApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_EMAIL)).headOption
 
-        val mapsApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_MAPS)).headOption
+      val mapsApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_MAPS)).headOption
 
-        val musicApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_MUSIC)).headOption
+      val musicApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_MUSIC)).headOption
 
-        val galleryApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_GALLERY)).headOption
+      val galleryApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_GALLERY)).headOption
 
-        val calendarApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_CALENDAR)).headOption
+      val calendarApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_CALENDAR)).headOption
 
-        val marketApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_MARKET)).headOption
+      val marketApp: Option[Application] = getAppsByIntent(mainIntentByCategory(Intent.CATEGORY_APP_MARKET)).headOption
 
-        Seq(phoneApp, messageApp, browserApp, cameraApp, emailApp, mapsApp, musicApp, galleryApp, calendarApp, marketApp).flatten
-      }
+      Seq(phoneApp, messageApp, browserApp, cameraApp, emailApp, mapsApp, musicApp, galleryApp, calendarApp, marketApp).flatten
     }
   }
 
@@ -93,7 +86,7 @@ class AppsServicesImpl
     packageManager.getInstallerPackageName(packageName) match {
       case `androidFeedback` => true
       case `androidVending` => true
-      case _  => false
+      case _ => false
     }
   }
 

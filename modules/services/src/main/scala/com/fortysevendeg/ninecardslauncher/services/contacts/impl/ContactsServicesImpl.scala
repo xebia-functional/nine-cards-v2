@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
@@ -10,8 +9,8 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskServ
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
-
-import scalaz.concurrent.Task
+import cats.syntax.either._
+import monix.eval.Task
 
 class ContactsServicesImpl(
   contentResolverWrapper: ContentResolverWrapper,
@@ -94,8 +93,8 @@ class ContactsServicesImpl(
 
     populateContacts(fetchContacts).resolveRight {
       _.headOption match {
-        case Some(v) => Xor.right(v)
-        case None => Xor.left(ContactNotFoundException(s"The lookupKey $lookupKey can't be found"))
+        case Some(v) => Right(v)
+        case None => Left(ContactNotFoundException(s"The lookupKey $lookupKey can't be found"))
       }
     }
   }
@@ -181,7 +180,7 @@ class ContactsServicesImpl(
   def catchMapPermission[V](f: => V) =
     TaskService {
       Task {
-        Xor.catchNonFatal(f) leftMap {
+        Either.catchNonFatal(f) leftMap {
           case e: SecurityException => ContactsServicePermissionException(e.getMessage, Some(e))
           case e => ContactsServiceException(e.getMessage, Some(e))
         }

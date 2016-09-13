@@ -11,7 +11,6 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskServ
 import com.fortysevendeg.ninecardslauncher.services.image._
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 
-import scalaz.concurrent.Task
 
 trait ImageServicesTasks
   extends ImplicitsImageExceptions {
@@ -21,32 +20,26 @@ trait ImageServicesTasks
   val resourceUtils = new ResourceUtils
 
   def getPathByName(name: String)(implicit context: ContextSupport): TaskService[File] = TaskService {
-    Task {
-      CatchAll[FileException] {
-        new File(resourceUtils.getPath(name))
-      }
+    CatchAll[FileException] {
+      new File(resourceUtils.getPath(name))
     }
   }
 
   def getBitmapFromURL(uri: String): TaskService[Bitmap] = TaskService {
-    Task {
-      CatchAll[BitmapTransformationException] {
-        createInputStream(uri) match {
-          case is: InputStream => createBitmapByInputStream(is)
-          case _ => throw BitmapTransformationException(s"Unexpected error while fetching content from uri: $uri")
-        }
+    CatchAll[BitmapTransformationException] {
+      createInputStream(uri) match {
+        case is: InputStream => createBitmapByInputStream(is)
+        case _ => throw BitmapTransformationException(s"Unexpected error while fetching content from uri: $uri")
       }
     }
   }
 
   def saveBitmap(file: File, bitmap: Bitmap): TaskService[Unit] = TaskService {
-    Task {
-      CatchAll[FileException] {
-        val out = createFileOutputStream(file)
-        bitmap.compress(Bitmap.CompressFormat.PNG, 90, out)
-        out.flush()
-        out.close()
-      }
+    CatchAll[FileException] {
+      val out = createFileOutputStream(file)
+      bitmap.compress(Bitmap.CompressFormat.PNG, 90, out)
+      out.flush()
+      out.close()
     }
   }
 
