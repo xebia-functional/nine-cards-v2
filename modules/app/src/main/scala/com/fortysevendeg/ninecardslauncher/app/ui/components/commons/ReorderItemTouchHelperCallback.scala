@@ -13,10 +13,13 @@ class ReorderItemTouchHelperCallback(onChanged: (ActionStateReorder, Int) => Uni
 
   override def onSelectedChanged(viewHolder: ViewHolder, actionState: Int): Unit = {
     val action = ActionStateReorder(actionState)
-    onChanged(action, action match {
-      case ActionStateReordering => viewHolder.getAdapterPosition
-      case ActionStateIdle => statuses.to
-    })
+    action match {
+      case ActionStateReordering =>
+        statuses = statuses.copy(from = viewHolder.getAdapterPosition, to = viewHolder.getAdapterPosition)
+        onChanged(action, viewHolder.getAdapterPosition)
+      case ActionStateIdle =>
+        onChanged(action, statuses.to)
+    }
     super.onSelectedChanged(viewHolder, actionState)
   }
 
@@ -30,6 +33,7 @@ class ReorderItemTouchHelperCallback(onChanged: (ActionStateReorder, Int) => Uni
     Option(recyclerView.getAdapter) match {
       case Some(listener: ReorderItemTouchListener) =>
         listener.onItemMove(statuses.from, statuses.to)
+      case _ =>
     }
     true
   }

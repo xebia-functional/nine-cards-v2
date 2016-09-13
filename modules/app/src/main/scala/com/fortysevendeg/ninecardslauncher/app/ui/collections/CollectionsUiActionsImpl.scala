@@ -233,12 +233,7 @@ trait CollectionsUiActionsImpl
   }
 
   override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] =
-    Ui {
-      activityContextWrapper.original.get match {
-        case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
-        case _ =>
-      }
-    } ~
+    invalidateOptionMenu() ~
       hideFabButton ~
       ((toolbar <~~
         applyAnimation(onUpdate = (ratio) => current match {
@@ -250,12 +245,11 @@ trait CollectionsUiActionsImpl
         elevationsUp ~
         (iconContent <~ vAlpha(0))).ifUi(canScroll)
 
-  override def closeReorderModeUi(): Ui[Any] = Ui {
-    activityContextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
-      case _ =>
-    }
-  }
+
+  override def reloadItemCollection(position: Int): Ui[Any] = notifyItemChangedCollectionAdapter(position)
+
+  override def closeEditingModeUi(): Ui[Any] =
+    notifyDataSetChangedCollectionAdapter ~ invalidateOptionMenu()
 
   override def notifyScroll(sType: ScrollType): Ui[Any] = (for {
     adapter <- getAdapter
@@ -300,6 +294,13 @@ trait CollectionsUiActionsImpl
   override def showMessagePublishContactsCollectionError: Ui[Any] = showError(R.string.publishCollectionError)
 
   override def showMessageNotPublishedCollectionError: Ui[Any] = showError(R.string.notPublishedCollectionError)
+
+  private[this] def invalidateOptionMenu(): Ui[Any] = Ui {
+    activityContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
+      case _ =>
+    }
+  }
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = root <~ vSnackbarShort(error)
 
@@ -356,6 +357,12 @@ trait CollectionsUiActionsImpl
     view.requestLayout()
   }
 
+  private[this] def notifyItemChangedCollectionAdapter(position: Int): Ui[Any] =
+    Ui(getActiveCollectionAdapter foreach(_.notifyItemChanged(position)))
+
+  private[this] def notifyDataSetChangedCollectionAdapter: Ui[Any] =
+    Ui(getActiveCollectionAdapter foreach(_.notifyDataSetChanged()))
+
   private[this] def getAdapter: Option[CollectionsPagerAdapter] = viewPager.getAdapter match {
     case adapter: CollectionsPagerAdapter => Some(adapter)
     case _ => None
@@ -367,6 +374,12 @@ trait CollectionsUiActionsImpl
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
   } yield fragment.presenter
+
+  private[this] def getActiveCollectionAdapter: Option[CollectionAdapter] = for {
+    adapter <- getAdapter
+    fragment <- adapter.getActiveFragment
+    collectionAdapter <- fragment.getAdapter
+  } yield collectionAdapter
 
   override def turnOffFragmentContent: Ui[Any] =
     (fragmentContent <~

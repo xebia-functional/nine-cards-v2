@@ -160,6 +160,8 @@
     <dimen name="padding_empty_collection_message">30dp</dimen>
     <dimen name="padding_empty_collection_image">40dp</dimen>
 
+    <dimen name="size_selected_icon">20dp</dimen>
+
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>
     <dimen name="margin_app_drawer_fab_button">16dp</dimen>

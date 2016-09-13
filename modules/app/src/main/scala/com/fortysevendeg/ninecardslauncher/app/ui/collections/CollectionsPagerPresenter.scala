@@ -102,14 +102,21 @@ class CollectionsPagerPresenter(
   }
 
 
-  def launchCard(card : Card): Unit = Task.fork(di.launcherExecutorProcess.execute(card.intent).value).resolveAsyncUi(
-    onException = (throwable: Throwable) => throwable match {
-      case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
-        statuses = statuses.copy(lastPhone = card.intent.extractPhone())
-        Ui(permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone))
-      case _ => actions.showContactUsError
+  def performCard(card : Card, position: Int): Unit = {
+    statuses.collectionMode match {
+      case EditingCollectionMode =>
+        statuses = statuses.copy(positionsEditing = statuses.positionsEditing :+ position)
+        actions.reloadItemCollection(position).run
+      case NormalCollectionMode =>
+        Task.fork(di.launcherExecutorProcess.execute(card.intent).value).resolveAsyncUi(
+          onException = (throwable: Throwable) => throwable match {
+            case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
+              statuses = statuses.copy(lastPhone = card.intent.extractPhone())
+              Ui(permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone))
+            case _ => actions.showContactUsError
+          })
     }
-  )
+  }
 
   def requestPermissionsResult(
     requestCode: Int,
@@ -167,9 +174,14 @@ class CollectionsPagerPresenter(
     actions.openReorderModeUi(current, canScroll).run
   }
 
+  def closeReorderMode(position: Int): Unit = {
+    statuses = statuses.copy(positionsEditing = Seq(position))
+    actions.reloadItemCollection(position).run
+  }
+
   def closeEditingMode(): Unit = {
-    statuses = statuses.copy(collectionMode = NormalCollectionMode)
-    actions.closeReorderModeUi().run
+    statuses = statuses.copy(collectionMode = NormalCollectionMode, positionsEditing = Seq.empty)
+    actions.closeEditingModeUi().run
   }
 
   def scrollType(sType: ScrollType): Unit = actions.notifyScroll(sType).run
@@ -256,7 +268,9 @@ trait CollectionsUiActions {
 
   def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any]
 
-  def closeReorderModeUi(): Ui[Any]
+  def reloadItemCollection(position: Int): Ui[Any]
+
+  def closeEditingModeUi(): Ui[Any]
 
   def notifyScroll(sType: ScrollType): Ui[Any]
 
@@ -271,6 +285,7 @@ trait CollectionsUiActions {
 
 case class CollectionsPagerStatuses(
   collectionMode: CollectionMode = NormalCollectionMode,
+  positionsEditing: Seq[Int] = Seq.empty,
   lastPhone: Option[String] = None)
 
 sealed trait CollectionMode

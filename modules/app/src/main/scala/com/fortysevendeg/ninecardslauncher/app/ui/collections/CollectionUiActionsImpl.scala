@@ -88,7 +88,7 @@ trait CollectionUiActionsImpl
             collection = adapter.collection
             card <- collection.cards.lift(position)
           } yield presenter.reorderCard(collection.id, card.id, position)
-          closeReorderMode.run
+          closeReorderMode(position).run
       })
     val itemTouchHelper = new ItemTouchHelper(itemTouchCallback)
     itemTouchHelper.attachToRecyclerView(recyclerView)
@@ -206,13 +206,15 @@ trait CollectionUiActionsImpl
         vPadding(paddingSmall, paddingSmall, paddingSmall, paddingSmall))).ifUi(statuses.canScroll)
   }
 
-  private[this] def closeReorderMode: Ui[_] =
+  private[this] def closeReorderMode(position: Int): Ui[_] = {
+    collectionsPresenter.closeReorderMode(position)
     (pullToCloseView <~ pdvEnable(true)) ~
       (recyclerView <~
         vPadding(paddingSmall, spaceMove, paddingSmall, paddingSmall) <~
         vScrollBy(0, -Int.MaxValue) <~
         vScrollBy(0, spaceMove)).ifUi(statuses.canScroll) ~
       (recyclerView <~ nrvRegisterScroll(true) <~ nrvResetScroll(spaceMove))
+  }
 
   def resetScroll: Ui[_] =
     recyclerView <~
