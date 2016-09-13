@@ -4,8 +4,8 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, NineCardIntent, PrivateCard}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
-import com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NoInstalledAppCardType}
+import com.fortysevendeg.ninecardslauncher.services.api.{CategorizedDetailPackage, CategorizedPackage}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, UpdateCollectionsRequest => ServicesUpdateCollectionsRequest, _}
@@ -146,12 +146,12 @@ trait Conversions extends CommonConversions {
     intent = nineCardIntentToJson(toNineCardIntent(app)),
     imagePath = app.imagePath)
 
-  def toAddCardRequest(collectionId: Int, categorizedPackage: CategorizedPackage, position: Int): ServicesAddCardRequest = ServicesAddCardRequest (
+  def toAddCardRequest(collectionId: Int, categorizedPackage: CategorizedDetailPackage, position: Int, cardType: CardType): ServicesAddCardRequest = ServicesAddCardRequest (
     collectionId = Option(collectionId),
     position = position,
     term = categorizedPackage.packageName, // TODO - Fix as part of https://github.com/47deg/nine-cards-v2/issues/653
     packageName = Option(categorizedPackage.packageName),
-    cardType = AppCardType.name,
+    cardType = cardType.name,
     intent = nineCardIntentToJson(packageToNineCardIntent(categorizedPackage.packageName)),
     imagePath = "")
 

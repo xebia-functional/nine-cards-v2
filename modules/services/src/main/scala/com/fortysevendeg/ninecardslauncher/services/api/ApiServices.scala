@@ -61,6 +61,17 @@ trait ApiServices {
   def googlePlayPackages(packageNames: Seq[String])(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackagesResponse]
 
   /**
+   * Fetches a list of packages information from Google Play given a list of package names.
+   * Differs from googlePlayPackages by providing more information
+   * @param packageNames a sequence of package identifiers
+   * @param requestConfig necessary info for the headers
+   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesDetailResponse]] with the HTTP Code
+   *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
+   * @throws ApiServiceException if there was an error in the request
+   */
+  def googlePlayPackagesDetail(packageNames: Seq[String])(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackagesDetailResponse]
+
+  /**
    * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfigV1]]
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GetUserV1Response]] with the HTTP Code
    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserV1]]

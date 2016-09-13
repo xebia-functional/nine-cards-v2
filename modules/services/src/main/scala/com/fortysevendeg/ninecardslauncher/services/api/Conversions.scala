@@ -60,6 +60,18 @@ trait Conversions {
   def toCategorizedPackages(categorizeResponse: version2.CategorizeResponse): Seq[CategorizedPackage] =
     categorizeResponse.items.map(app => CategorizedPackage(app.packageName, Some(app.category)))
 
+  def toCategorizedDetailPackages(categorizeResponse: version2.CategorizeDetailResponse): Seq[CategorizedDetailPackage] =
+    categorizeResponse.items.map { app =>
+      CategorizedDetailPackage(
+        packageName = app.packageName,
+        title = app.title,
+        category = app.category.headOption,
+        icon = app.icon,
+        free = app.free,
+        downloads = app.downloads,
+        stars = app.stars)
+    }
+
   def toUserConfig(apiUserConfig: version1.UserConfig): UserV1 =
     UserV1(
       _id = apiUserConfig._id,

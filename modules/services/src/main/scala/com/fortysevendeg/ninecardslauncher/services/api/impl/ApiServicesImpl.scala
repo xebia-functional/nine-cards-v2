@@ -99,6 +99,13 @@ class ApiServicesImpl(
         statusCode = response.statusCode,
         packages = response.data map toCategorizedPackages getOrElse Seq.empty)).resolve[ApiServiceException]
 
+  override def googlePlayPackagesDetail(packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
+    (for {
+      response <- apiService.categorizeDetail(version2.CategorizeRequest(packageNames), requestConfig.toGooglePlayHeader)
+    } yield GooglePlayPackagesDetailResponse(
+        statusCode = response.statusCode,
+        packages = response.data map toCategorizedDetailPackages getOrElse Seq.empty)).resolve[ApiServiceException]
+
   override def getUserConfigV1()(implicit requestConfig: RequestConfigV1) =
     (for {
       response <- apiServiceV1.getUserConfig(requestConfig.toHeader)
