@@ -168,7 +168,8 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
     Task.fork(
       (if (subscribeStatus) subscribe(originalSharedCollectionId) else unsubscribe(originalSharedCollectionId)).value).resolveAsyncUi(
-      onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
+        onResult = (_) => actions.showUpdatedSubscription(originalSharedCollectionId, subscribeStatus),
+        onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
   }
 
   private[this] def sampleItems(tab: String) = 1 to 20 map (i => s"$tab Item $i")
@@ -371,6 +372,8 @@ trait ProfileUiActions {
   def showErrorLoadingSubscriptionsInScreen(): Ui[Any]
 
   def showEmptySubscriptionsMessageInScreen(): Ui[Any]
+
+  def showUpdatedSubscription(originalSharedCollectionId: String, subscribed: Boolean): Ui[Any]
 
   def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
 

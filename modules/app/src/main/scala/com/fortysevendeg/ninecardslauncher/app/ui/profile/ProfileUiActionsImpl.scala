@@ -98,6 +98,18 @@ trait ProfileUiActionsImpl
 
   override def showEmptySubscriptionsMessageInScreen(): Ui[Any] = showMessage(R.string.emptySubscriptions)
 
+  override def showUpdatedSubscription(originalSharedCollectionId: String, subscribed: Boolean): Ui[Any] = {
+    val adapter = recyclerView.getAdapter match {
+      case subscriptionsAdapter: SubscriptionsAdapter =>
+        val subscriptions = subscriptionsAdapter.subscriptions map { subscription =>
+          if (subscription.originalSharedCollectionId == originalSharedCollectionId) subscription.copy(subscribed = subscribed)
+          else subscription
+        }
+        SubscriptionsAdapter(subscriptions, subscriptionsAdapter.onSubscribe)
+    }
+    recyclerView <~ rvSwapAdapter(adapter)
+  }
+
   override def showErrorSubscribing(clickAction: () => Unit): Ui[Any] = showError(R.string.errorSubscribing, clickAction)
 
   override def showContactUsError(clickAction: () => Unit): Ui[Any] = showError(R.string.contactUsError, clickAction)
