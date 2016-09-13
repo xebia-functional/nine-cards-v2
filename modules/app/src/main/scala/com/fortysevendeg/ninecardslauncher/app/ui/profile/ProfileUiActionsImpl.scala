@@ -105,11 +105,11 @@ trait ProfileUiActionsImpl
   override def showUpdatedSubscriptions(originalSharedCollectionId: String, subscribed: Boolean): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {
       case subscriptionsAdapter: SubscriptionsAdapter =>
-        val subscriptions = subscriptionsAdapter.subscriptions map { subscription =>
-          if (subscription.originalSharedCollectionId == originalSharedCollectionId) subscription.copy(subscribed = subscribed)
-          else subscription
+        val subscriptions = subscriptionsAdapter.subscriptions map {
+          case subscription if subscription.originalSharedCollectionId == originalSharedCollectionId => subscription.copy(subscribed = subscribed)
+          case subscription => subscription
         }
-        SubscriptionsAdapter(subscriptions, subscriptionsAdapter.onSubscribe)
+        subscriptionsAdapter.copy(subscriptions = subscriptions)
     }
     recyclerView <~ rvSwapAdapter(adapter)
   }
