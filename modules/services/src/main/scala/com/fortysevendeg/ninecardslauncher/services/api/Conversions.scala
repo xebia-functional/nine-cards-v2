@@ -198,6 +198,6 @@ trait Conversions {
 
   def toSubscriptionResponse(subscription: String) =
     SubscriptionResponse(
-      originalSharedCollectionId = subscription)
+      sharedCollectionId = subscription)
 
 }

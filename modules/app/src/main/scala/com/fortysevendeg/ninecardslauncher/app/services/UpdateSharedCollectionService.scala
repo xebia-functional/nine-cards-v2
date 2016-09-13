@@ -27,22 +27,29 @@ class UpdateSharedCollectionService
     def readIntValue(i: Intent, key: String): Option[Int] =
       if (i.hasExtra(key)) Option(i.getIntExtra(key, 0)) else None
 
+    def readStringValue(i: Intent, key: String): Option[Int] =
+      if (i.hasExtra(key)) Option(i.getIntExtra(key, 0)) else None
+
     def readArrayValue(i: Intent, key: String): Array[String] =
       if (i.hasExtra(key)) Option(i.getStringArrayExtra(key)).getOrElse(Array.empty) else Array.empty
 
-    val (collectionId, action, packages) = Option(intent) match {
-      case Some(i) => (readIntValue(i, intentExtraCollectionId), Option(i.getAction), readArrayValue(i, intentExtraPackages))
-      case _ => (None, None, Array.empty[String])
+    val (collectionId, sharedCollectionId, action, packages) = Option(intent) match {
+      case Some(i) => (
+        readIntValue(i, intentExtraCollectionId),
+        readStringValue(i, intentExtraSharedCollectionId),
+        Option(i.getAction),
+        readArrayValue(i, intentExtraPackages))
+      case _ => (None, None, None, Array.empty[String])
     }
 
     notifyManager.cancel(notificationId)
 
-    (collectionId, action) match {
-      case (Some(id), Some(`actionUnsubscribe`)) =>
-        Task.fork(di.collectionProcess.unsubscribeSharedCollection(id).value).resolveAsync(
+    (collectionId, sharedCollectionId, action) match {
+      case (_, Some(shareCollectionId), Some(`actionUnsubscribe`)) =>
+        Task.fork(di.sharedCollectionsProcess.unsubscribe(shareCollectionId).value).resolveAsync(
           onResult = (_) => uiShortToast2(R.string.sharedCollectionUnsubscribed),
           onException = e => printErrorMessage(e))
-      case (Some(id), Some(`actionSync`)) =>
+      case (Some(id), _, Some(`actionSync`)) =>
         Task.fork(di.collectionProcess.addPackages(id, packages.toSeq).value).resolveAsync(
           onResult = (_) => uiShortToast2(R.string.sharedCollectionUpdated),
           onException = e => printErrorMessage(e))
@@ -55,6 +62,8 @@ class UpdateSharedCollectionService
 object UpdateSharedCollectionService {
 
   val intentExtraCollectionId = "_collectionId_"
+
+  val intentExtraSharedCollectionId = "_sharedCollectionId_"
 
   val intentExtraPackages = "_addedPackages_"
 

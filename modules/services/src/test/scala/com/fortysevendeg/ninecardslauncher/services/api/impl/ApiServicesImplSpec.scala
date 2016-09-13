@@ -194,6 +194,38 @@ class ApiServicesImplSpec
 
   }
 
+  "googlePlayPackagesDetail" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.categorizeDetail(any, any)(any, any) returns
+          TaskService {
+            Task(Xor.right(ServiceClientResponse[version2.CategorizeDetailResponse](
+              statusCode, Some(version2.CategorizeDetailResponse(Seq.empty, categorizeAppsDetail)))))
+          }
+
+
+
+        val result = apiServices.googlePlayPackagesDetail(Seq.empty).value.run
+        result must beLike {
+          case Xor.Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.packages shouldEqual categorizedDetailPackages
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope {
+
+        apiService.categorizeDetail(any, any)(any, any) returns TaskService(Task(Xor.left(exception)))
+
+        val result = apiServices.googlePlayPackagesDetail(Seq.empty).value.run
+        result must beAnInstanceOf[Xor.Left[HttpClientException]]
+      }
+
+  }
+
   "getUserConfigV1" should {
 
     "return a valid response if the services returns a valid response" in
@@ -409,7 +441,7 @@ class ApiServicesImplSpec
         result must beLike {
           case Xor.Right(response) =>
             response.statusCode shouldEqual statusCode
-            response.items.map(_.originalSharedCollectionId) shouldEqual subscriptions.subscriptions
+            response.items.map(_.sharedCollectionId) shouldEqual subscriptions.subscriptions
         }
       }
 

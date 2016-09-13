@@ -31,7 +31,7 @@ case class SubscriptionsAdapter(
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): ViewHolderSubscriptionsAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(R.layout.profile_subscription_item, parent, false)
-    new ViewHolderSubscriptionsAdapter(view, onSubscribe)
+    ViewHolderSubscriptionsAdapter(view, onSubscribe)
   }
 }
 
@@ -66,7 +66,7 @@ case class ViewHolderSubscriptionsAdapter(
       (name <~ tvText(resGetString(subscription.name) getOrElse subscription.name)) ~
       (apps <~ tvText(resGetString(R.string.installed_apps_number, subscription.apps.toString))) ~
       (subscribed <~ sChecked(subscription.subscribed) +
-        On.click(Ui(onSubscribe(subscription.originalSharedCollectionId, !subscription.subscribed))))
+        On.click(Ui(onSubscribe(subscription.sharedCollectionId, !subscription.subscribed))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

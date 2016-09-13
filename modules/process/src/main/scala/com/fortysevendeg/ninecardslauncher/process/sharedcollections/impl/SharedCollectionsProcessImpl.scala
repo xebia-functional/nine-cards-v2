@@ -62,28 +62,28 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       collections <- persistenceServices.fetchCollections
     } yield {
 
-      val subscriptionsIds = subscriptions.items map (_.originalSharedCollectionId)
+      val subscriptionsIds = subscriptions.items map (_.sharedCollectionId)
 
-      val collectionsWithOriginalSharedCollectionId: Seq[(String, Collection)] =
-        collections.flatMap(collection => collection.originalSharedCollectionId.map((_, collection)))
+      val collectionsWithSharedCollectionId: Seq[(String, Collection)] =
+        collections.flatMap(collection => collection.sharedCollectionId.map((_, collection)))
 
-      (collectionsWithOriginalSharedCollectionId map {
-        case (originalSharedCollectionId: String, collection: Collection) =>
-          (originalSharedCollectionId, collection, subscriptionsIds.contains(originalSharedCollectionId))
+      (collectionsWithSharedCollectionId map {
+        case (sharedCollectionId: String, collection: Collection) =>
+          (sharedCollectionId, collection, subscriptionsIds.contains(sharedCollectionId))
       }) map toSubscription
 
     }).resolve[SharedCollectionsExceptions]
 
-  override def subscribe(originalSharedCollectionId: String)(implicit context: ContextSupport) =
+  override def subscribe(sharedCollectionId: String)(implicit context: ContextSupport) =
     (for {
       userConfig <- apiUtils.getRequestConfig
-      _ <- apiServices.subscribe(originalSharedCollectionId)(userConfig)
+      _ <- apiServices.subscribe(sharedCollectionId)(userConfig)
     } yield ()).resolve[SharedCollectionsExceptions]
 
-  override def unsubscribe(originalSharedCollectionId: String)(implicit context: ContextSupport) =
+  override def unsubscribe(sharedCollectionId: String)(implicit context: ContextSupport) =
     (for {
       userConfig <- apiUtils.getRequestConfig
-      _ <- apiServices.unsubscribe(originalSharedCollectionId)(userConfig)
+      _ <- apiServices.unsubscribe(sharedCollectionId)(userConfig)
     } yield ()).resolve[SharedCollectionsExceptions]
 
 }

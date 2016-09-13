@@ -105,7 +105,7 @@ case class SubscriptionResponseList(
   items: Seq[SubscriptionResponse])
 
 case class SubscriptionResponse(
-  originalSharedCollectionId: String)
+  sharedCollectionId: String)
 
 case class SubscribeResponse(statusCode: Int)
 

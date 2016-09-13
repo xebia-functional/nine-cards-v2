@@ -70,7 +70,13 @@ trait CollectionsProcessImpl extends CollectionProcess {
       collection <- persistenceServices.addCollection(toAddCollectionRequest(addCollectionRequest, collectionList.size))
     } yield toCollection(collection)).resolve[CollectionException]
 
-  def deleteCollection(collectionId: Int) =
+  def deleteCollection(collectionId: Int) = {
+
+    def moveCollectionList(collectionList: Seq[Collection], position: Int) =
+      collectionList map { collection =>
+        if (collection.position > position) collection.copy(position = collection.position - 1) else collection
+      }
+
     (for {
       collection <- findCollectionById(collectionId).resolveOption()
       _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
@@ -78,6 +84,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
       collectionList <- getCollections
       _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
     } yield ()).resolve[CollectionException]
+  }
 
   def cleanCollections() =
     (for {
@@ -96,25 +103,16 @@ trait CollectionsProcessImpl extends CollectionProcess {
     } yield ()).resolve[CollectionException]
 
   def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest) =
-    (for {
-      collection <- findCollectionById(collectionId).resolveOption()
-      updatedCollection = toUpdatedCollection(toCollection(collection), editCollectionRequest)
-      _ <- updateCollection(updatedCollection)
-    } yield updatedCollection).resolve[CollectionException]
+    editCollectionWith(collectionId) { collection =>
+      collection.copy(
+        name = editCollectionRequest.name,
+        icon = editCollectionRequest.icon,
+        themedColorIndex = editCollectionRequest.themedColorIndex,
+        appsCategory = editCollectionRequest.appsCategory)
+    }
 
   def updateSharedCollection(collectionId: Int, sharedCollectionId: String) =
-    (for {
-      collection <- findCollectionById(collectionId).resolveOption()
-      updatedCollection = toUpdatedSharedCollection(toCollection(collection), sharedCollectionId)
-      _ <- updateCollection(updatedCollection)
-    } yield updatedCollection).resolve[CollectionException]
-
-  def unsubscribeSharedCollection(collectionId: Int) =
-    (for {
-      collection <- findCollectionById(collectionId).resolveOption()
-      updatedCollection = toUpdatedSharedCollection(toCollection(collection), originalSharedCollectionId = None)
-      _ <- updateCollection(updatedCollection)
-    } yield updatedCollection).resolve[CollectionException]
+    editCollectionWith(collectionId)(_.copy(sharedCollectionId = Some(sharedCollectionId)))
 
   def addPackages(collectionId: Int, packages: Seq[String])(implicit context: ContextSupport) = {
 
@@ -146,20 +144,17 @@ trait CollectionsProcessImpl extends CollectionProcess {
     } yield ()).resolve[CollectionException]
   }
 
-  private[this] def moveCollectionList(collectionList: Seq[Collection], position: Int) =
-    collectionList map { collection =>
-      if (collection.position > position) collection.copy(position = collection.position - 1) else collection
-    }
+  private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =
+    (for {
+      collection <- findCollectionById(collectionId).resolveOption()
+      updatedCollection = f(toCollection(collection))
+      _ <- persistenceServices.updateCollection(toServicesUpdateCollectionRequest(updatedCollection))
+    } yield updatedCollection).resolve[CollectionException]
 
   private[this] def findCollectionById(id: Int) =
     (for {
       collection <- persistenceServices.findCollectionById(toFindCollectionByIdRequest(id))
     } yield collection).resolve[CollectionException]
-
-  private[this] def updateCollection(collection: Collection) =
-    (for {
-      _ <- persistenceServices.updateCollection(toServicesUpdateCollectionRequest(collection))
-    } yield ()).resolve[CollectionException]
 
   private[this] def updateCollectionList(collectionList: Seq[Collection]) =
     (for {

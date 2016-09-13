@@ -4,8 +4,8 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, NineCardIntent, PrivateCard}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NoInstalledAppCardType}
-import com.fortysevendeg.ninecardslauncher.services.api.{CategorizedDetailPackage, CategorizedPackage}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType}
+import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, UpdateCollectionsRequest => ServicesUpdateCollectionsRequest, _}
@@ -47,48 +47,6 @@ trait Conversions extends CommonConversions {
 
   def toServicesUpdateCollectionsRequest(collections: Seq[Collection]): ServicesUpdateCollectionsRequest =
     ServicesUpdateCollectionsRequest(collections map toServicesUpdateCollectionRequest)
-
-  def toUpdatedCollection(collection: Collection, editCollectionRequest: EditCollectionRequest): Collection =  Collection(
-    id = collection.id,
-    position = collection.position,
-    name = editCollectionRequest.name,
-    collectionType = collection.collectionType,
-    icon = editCollectionRequest.icon,
-    themedColorIndex = editCollectionRequest.themedColorIndex,
-    appsCategory = editCollectionRequest.appsCategory,
-    originalSharedCollectionId = collection.originalSharedCollectionId,
-    sharedCollectionId = collection.sharedCollectionId,
-    sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
-    cards = collection.cards,
-    moment = collection.moment)
-
-  def toUpdatedSharedCollection(collection: Collection, sharedCollectionId: String): Collection =  Collection(
-    id = collection.id,
-    position = collection.position,
-    name = collection.name,
-    collectionType = collection.collectionType,
-    icon = collection.icon,
-    themedColorIndex = collection.themedColorIndex,
-    appsCategory = collection.appsCategory,
-    originalSharedCollectionId = collection.originalSharedCollectionId,
-    sharedCollectionId = Some(sharedCollectionId),
-    sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
-    cards = collection.cards,
-    moment = collection.moment)
-
-  def toUpdatedSharedCollection(collection: Collection, originalSharedCollectionId: Option[String]): Collection =  Collection(
-    id = collection.id,
-    position = collection.position,
-    name = collection.name,
-    collectionType = collection.collectionType,
-    icon = collection.icon,
-    themedColorIndex = collection.themedColorIndex,
-    appsCategory = collection.appsCategory,
-    originalSharedCollectionId = originalSharedCollectionId,
-    sharedCollectionId = collection.sharedCollectionId,
-    sharedCollectionSubscribed = collection.sharedCollectionSubscribed,
-    cards = collection.cards,
-    moment = collection.moment)
 
   def toFetchCollectionByPositionRequest(pos: Int): FetchCollectionByPositionRequest = FetchCollectionByPositionRequest(
     position = pos)
