@@ -189,4 +189,8 @@ trait ApiServicesImplData {
   val sharedCollectionId = Random.nextString(30)
 
   val packageStats = version2.PackagesStats(1, None)
+
+  val originalSharedCollectionId = Random.nextString(30)
+
+  val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(originalSharedCollectionId))
 }

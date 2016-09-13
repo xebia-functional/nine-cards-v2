@@ -180,4 +180,12 @@ trait Conversions {
       stars = item.stars,
       downloads = item.downloads,
       free = item.free)
+
+  def toSubscriptionResponseSeq(subscriptions: Seq[String]): Seq[SubscriptionResponse] =
+    subscriptions map toSubscriptionResponse
+
+  def toSubscriptionResponse(subscription: String) =
+    SubscriptionResponse(
+      originalSharedCollectionId = subscription)
+
 }

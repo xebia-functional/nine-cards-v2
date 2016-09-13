@@ -22,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdap
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{CopyAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -65,9 +65,9 @@ trait ProfileUiActionsImpl
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
-  def showMessage(res: Int): Ui[_] = rootLayout <~ vSnackbarShort(res)
+  def showMessage(res: Int): Ui[Any] = rootLayout <~ vSnackbarShort(res)
 
-  override def initialize(): Ui[_] =
+  override def initialize(): Ui[Any] =
       (tabs <~ tlAddTabs(
         (resGetString(R.string.publications), PublicationsTab),
         (resGetString(R.string.subscriptions), SubscriptionsTab),
@@ -77,7 +77,9 @@ trait ProfileUiActionsImpl
         rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
       Ui(presenter.loadPublications())
 
-  override def showLoading(): Ui[_] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
+  override def showLoading(): Ui[Any] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
+
+  override def hideLoading(): Ui[Any] = loadingView <~ vInvisible
 
   override def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {
@@ -90,7 +92,13 @@ trait ProfileUiActionsImpl
 
   override def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingPublishedCollections, clickAction)
 
-  override def showEmptyMessageInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.emptyPublishedCollections, clickAction)
+  override def showEmptyPublicationsMessageInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.emptyPublishedCollections, clickAction)
+
+  override def showErrorLoadingSubscriptionsInScreen(): Ui[Any] = showMessage(R.string.errorLoadingSubscriptions)
+
+  override def showEmptySubscriptionsMessageInScreen(): Ui[Any] = showMessage(R.string.emptySubscriptions)
+
+  override def showErrorSubscribing(clickAction: () => Unit): Ui[Any] = showError(R.string.errorSubscribing, clickAction)
 
   override def showContactUsError(clickAction: () => Unit): Ui[Any] = showError(R.string.contactUsError, clickAction)
 
@@ -112,7 +120,7 @@ trait ProfileUiActionsImpl
 
   override def showMessageAccountSynced(): Ui[Any] = showMessage(R.string.accountSynced) ~ (loadingView <~ vInvisible)
 
-  override def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[_] =
+  override def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any] =
     (userName <~ tvText(name)) ~
     (userEmail <~ tvText(email)) ~
       (userAvatar <~
@@ -126,8 +134,10 @@ trait ProfileUiActionsImpl
     (recyclerView <~ vVisible <~ rvAdapter(AccountsAdapter(items, accountClickListener))) ~
       (loadingView <~ vInvisible)
 
-  override def setSubscriptionsAdapter(items: Seq[String]): Ui[Any] =
-    (recyclerView <~ vVisible <~ rvAdapter(SubscriptionsAdapter(items))) ~
+  override def setSubscriptionsAdapter(
+    items: Seq[Subscription],
+    onSubscribe: (String, Boolean) => Unit): Ui[Any] =
+    (recyclerView <~ vVisible <~ rvAdapter(SubscriptionsAdapter(items, onSubscribe))) ~
       (loadingView <~ vInvisible)
 
   override def handleToolbarVisibility(percentage: Float): Ui[Any] = toolbar match {
@@ -171,7 +181,7 @@ trait ProfileUiActionsImpl
     }
   }
 
-  private[this] def showError(message: Int, clickAction: () => Unit): Ui[_] =
+  private[this] def showError(message: Int, clickAction: () => Unit): Ui[Any] =
     (rootLayout <~ vSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)) ~
       (loadingView <~ vInvisible)
 
