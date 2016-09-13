@@ -448,6 +448,7 @@
 
     <string name="devProbablyActivityTitle">Probable Actividad</string>
     <string name="devHeadphonesTitle">Auriculares</string>
+    <string name="devLocationTitle">Localización</string>
     <string name="devWeatherTitle">Tiempo</string>
 
     <string name="devLocalDatabaseCategory">Base de Datos Local</string>
