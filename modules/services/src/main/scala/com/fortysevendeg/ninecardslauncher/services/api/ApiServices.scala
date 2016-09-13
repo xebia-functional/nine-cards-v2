@@ -97,6 +97,15 @@ trait ApiServices {
     limit: Int)(implicit requestConfig: RequestConfig): TaskService[RecommendationResponse]
 
   /**
+    * Fetches the public collection
+    * @param sharedCollectionId the public collection id
+    * @return the TaskService containing a SharedCollectionResponse with the HTTP Code of the response and the
+    *         collection or ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def getSharedCollection(
+    sharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[SharedCollectionResponse]
+
+  /**
     * Fetches the public collections based on some request params
     * @param category category of collections
     * @param collectionType type [top or latest]

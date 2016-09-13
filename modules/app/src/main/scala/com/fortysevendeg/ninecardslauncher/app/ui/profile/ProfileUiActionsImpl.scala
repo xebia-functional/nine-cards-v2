@@ -22,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdap
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{CopyAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscribed, Subscription}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -84,7 +84,11 @@ trait ProfileUiActionsImpl
   override def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {
       case sharedCollectionsAdapter: SharedCollectionsAdapter =>
-        sharedCollectionsAdapter.copy(mySharedCollectionIds = sharedCollectionsAdapter.mySharedCollectionIds :+ mySharedCollectionId)
+        val newCollections = sharedCollectionsAdapter.sharedCollections map {
+          case col if col.sharedCollectionId == mySharedCollectionId => col.copy(subscriptionType = Subscribed)
+          case col => col
+        }
+        sharedCollectionsAdapter.copy(sharedCollections = newCollections)
     }
     showMessage(R.string.collectionAdded) ~
       (recyclerView <~ rvSwapAdapter(adapter))
@@ -172,9 +176,8 @@ trait ProfileUiActionsImpl
   override def loadPublications(
     sharedCollections: Seq[SharedCollection],
     onAddCollection: (SharedCollection) => Unit,
-    onShareCollection: (SharedCollection) => Unit,
-    mySharedCollectionIds: Seq[String]): Ui[Any] = {
-    val adapter = SharedCollectionsAdapter(sharedCollections, onAddCollection, onShareCollection, mySharedCollectionIds)
+    onShareCollection: (SharedCollection) => Unit): Ui[Any] = {
+    val adapter = SharedCollectionsAdapter(sharedCollections, onAddCollection, onShareCollection)
     (recyclerView <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~

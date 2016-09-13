@@ -119,6 +119,8 @@
     <string name="selectColor">Seleccionar color</string>
 
     <string name="addMyCollection">Añadir a mis collecciones</string>
+    <string name="alreadySubscribedCollection">Ya estás subscrito</string>
+    <string name="ownedCollection">Esta colección es tuya</string>
 
     <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta colección?</string>
 
@@ -534,5 +536,9 @@
 
     <!-- Edit Moment -->
     <string name="addDuplicateItemError">Elemento duplicado</string>
+
+    <!-- App Links -->
+    <string name="loadingCollection">Recuperando información de la colección…</string>
+    <string name="linkNotSupportedError">Enlace no soportado</string>
 
 </resources>

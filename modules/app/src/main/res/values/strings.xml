@@ -123,7 +123,9 @@
     <string name="selectIcon">Select icon</string>
     <string name="selectColor">Select color</string>
 
-    <string name="addMyCollection">Add My Collections</string>
+    <string name="addMyCollection">Add to my collections</string>
+    <string name="alreadySubscribedCollection">Already subscribed</string>
+    <string name="ownedCollection">This collection is yours</string>
 
     <string name="removeCollectionMessage">Are you sure that you want remove this collection?</string>
 
@@ -548,5 +550,9 @@
 
     <!-- Edit Moment -->
     <string name="addDuplicateItemError">Item is duplicated</string>
+
+    <!-- App Links -->
+    <string name="loadingCollection">Retrieving collection details…</string>
+    <string name="linkNotSupportedError">Link not supported</string>
 
 </resources>
