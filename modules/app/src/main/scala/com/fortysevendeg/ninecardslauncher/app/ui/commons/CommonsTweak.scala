@@ -237,8 +237,6 @@ object ExtraTweaks {
 
   def sChecked(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setChecked(status))
 
-  def sEnabled(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setEnabled(status))
-
   def tvAllCaps2(allCaps: Boolean = true): Tweak[TextView] = Tweak[TextView](_.setAllCaps(allCaps))
 
 }

@@ -65,11 +65,10 @@ case class ViewHolderSubscriptionsAdapter(
       (icon <~ ivSrc(subscription.getIconSubscriptionDetail)) ~
       (name <~ tvText(resGetString(subscription.name) getOrElse subscription.name)) ~
       (apps <~ tvText(resGetString(R.string.installed_apps_number, subscription.apps.toString))) ~
-      (subscribed <~ sEnabled(true) + sChecked(subscription.subscribed) +
-        On.click(Ui{
-          subscribed.setEnabled(false)
-          onSubscribe(subscription.originalSharedCollectionId, !subscription.subscribed)
-        }))
+      (subscribed <~ vEnabled(true) + sChecked(subscription.subscribed) +
+        On.click(
+          (subscribed <~ vEnabled(false)) ~
+            Ui(onSubscribe(subscription.originalSharedCollectionId, !subscription.subscribed))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)
