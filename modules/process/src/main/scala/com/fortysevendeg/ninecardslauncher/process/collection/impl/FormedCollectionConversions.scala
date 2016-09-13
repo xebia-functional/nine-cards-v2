@@ -37,7 +37,7 @@ trait FormedCollectionConversions
     icon = formedCollection.icon,
     themedColorIndex = position % numSpaces,
     appsCategory = formedCollection.category map(_.name),
-    originalSharedCollectionId = formedCollection.sharedCollectionId,
+    originalSharedCollectionId = formedCollection.originalSharedCollectionId,
     sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
     sharedCollectionId = formedCollection.sharedCollectionId,
     cards = toAddCardRequest(formedCollection.items),

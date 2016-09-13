@@ -123,7 +123,9 @@
     <string name="selectIcon">Select icon</string>
     <string name="selectColor">Select color</string>
 
-    <string name="addMyCollection">Add My Collections</string>
+    <string name="addMyCollection">Add to my collections</string>
+    <string name="alreadySubscribedCollection">Already subscribed</string>
+    <string name="ownedCollection">This collection is yours</string>
 
     <string name="removeCollectionMessage">Are you sure that you want remove this collection?</string>
 
@@ -199,9 +201,6 @@
     <string name="emptyPublicCollections">There aren\'t collections published in this category. Maybe you can share one of your collections :-)</string>
 
     <string name="sendEmailDialogChooserTitle">Send email</string>
-
-    <string name="errorLoadingPublishedCollections">Error loading published collections</string>
-    <string name="emptyPublishedCollections">There aren\'t collections published. Maybe you can share one of your collections :-)</string>
 
     <!-- Contacts Info -->
 
@@ -343,6 +342,14 @@
     <string name="hintNewConfigurationName">Name</string>
     <string name="removeAccountSyncMessage">Are you sure that you want remove this device?</string>
 
+    <string name="errorLoadingPublishedCollections">Error loading published collections</string>
+    <string name="emptyPublishedCollections">There aren\'t collections published. Maybe you can share one of your collections :-)</string>
+
+    <string name="errorLoadingSubscriptions">Error loading subscriptions</string>
+    <string name="errorSubscribing">Error subscribing to the collection</string>
+    <string name="emptySubscriptions">You are not subscribed to any collection in this moment</string>
+
+    <string name="installed_apps_number">%s installed apps</string>
 
     <!-- Preferences -->
 
@@ -457,6 +464,7 @@
 
     <string name="devProbablyActivityTitle">Probably Activity</string>
     <string name="devHeadphonesTitle">Headphones</string>
+    <string name="devLocationTitle">Location</string>
     <string name="devWeatherTitle">Weather</string>
 
     <string name="devLocalDatabaseCategory">Local Database</string>
@@ -545,5 +553,9 @@
 
     <!-- Edit Moment -->
     <string name="addDuplicateItemError">Item is duplicated</string>
+
+    <!-- App Links -->
+    <string name="loadingCollection">Retrieving collection details…</string>
+    <string name="linkNotSupportedError">Link not supported</string>
 
 </resources>

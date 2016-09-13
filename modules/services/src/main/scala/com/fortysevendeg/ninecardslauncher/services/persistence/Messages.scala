@@ -97,8 +97,6 @@ case class DeleteCollectionRequest(collection: Collection)
 
 case class FetchCollectionByPositionRequest(position: Int)
 
-case class FetchCollectionBySharedCollectionRequest(sharedCollectionId: String, original: Boolean)
-
 case class FindCollectionByIdRequest(id: Int)
 
 case class UpdateCollectionRequest(

@@ -19,6 +19,13 @@ trait AwarenessServices {
   def getHeadphonesState: TaskService[HeadphonesState]
 
   /**
+    * Return information about current location
+    * @return current location
+    * @throws AwarenessException if there was an error with the request GoogleDrive api
+    */
+  def getLocation: TaskService[LocationState]
+
+  /**
     * Return information about current weather
     * @return current weather
     * @throws AwarenessException if there was an error with the request GoogleDrive api

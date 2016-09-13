@@ -51,7 +51,6 @@ trait ApiServicesSpecification
 
     val exception = HttpClientException("")
   }
-
 }
 
 class ApiServicesImplSpec
@@ -284,6 +283,35 @@ class ApiServicesImplSpec
 
   }
 
+  "getSharedCollection" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.getCollection(any, any)(any) returns
+          TaskService {
+            Task(Xor.right(ServiceClientResponse[version2.Collection](statusCode, Some(sharedCollection))))
+          }
+
+        val result = apiServices.getSharedCollection(sharedCollectionId).value.run
+        result must beLike {
+          case Xor.Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.sharedCollection shouldEqual toSharedCollection(sharedCollection)
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope {
+
+        apiService.getCollection(any, any)(any) returns TaskService(Task(Xor.left(exception)))
+
+        val result = apiServices.getSharedCollection(sharedCollectionId).value.run
+        result must beAnInstanceOf[Xor.Left[HttpClientException]]
+      }
+
+  }
+
   "getSharedCollectionsByCategory" should {
 
     "return a valid response if the services returns a valid response for TOP apps" in
@@ -392,6 +420,97 @@ class ApiServicesImplSpec
 
         val result = apiServices.getPublishedCollections().value.run
         result must beAnInstanceOf[Xor.Left[HttpClientException]]
+      }
+
+  }
+
+  "getSubscriptions" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.getSubscriptions(any)(any) returns
+          TaskService {
+            Task(Xor.right(ServiceClientResponse[version2.SubscriptionsResponse](statusCode, Some(version2.SubscriptionsResponse(Seq(originalSharedCollectionId))))))
+          }
+
+        val result = apiServices.getSubscriptions().value.run
+        result must beLike {
+          case Xor.Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.items.map(_.originalSharedCollectionId) shouldEqual subscriptions.subscriptions
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope {
+
+        apiService.getSubscriptions(any)(any) returns TaskService(Task(Xor.left(exception)))
+
+        val result = apiServices.getSubscriptions().value.run
+        result must beLike {
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
+        }
+      }
+
+  }
+
+  "subscribe" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.subscribe(any, any) returns
+          TaskService {
+            Task(Xor.right(ServiceClientResponse(statusCode, None)))
+          }
+
+        val result = apiServices.subscribe(originalSharedCollectionId).value.run
+        result must beLike {
+          case Xor.Right(response) =>
+            response.statusCode shouldEqual statusCode
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope {
+
+        apiService.subscribe(any, any) returns TaskService(Task(Xor.left(exception)))
+
+        val result = apiServices.subscribe(originalSharedCollectionId).value.run
+        result must beLike {
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
+        }
+      }
+
+  }
+
+  "unsubscribe" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.unsubscribe(any, any) returns
+          TaskService {
+            Task(Xor.right(ServiceClientResponse(statusCode, None)))
+          }
+
+        val result = apiServices.unsubscribe(originalSharedCollectionId).value.run
+        result must beLike {
+          case Xor.Right(response) =>
+            response.statusCode shouldEqual statusCode
+        }
+      }
+
+    "return an ApiServiceException with the cause the exception returned by the service" in
+      new ApiServicesScope {
+
+        apiService.unsubscribe(any, any) returns TaskService(Task(Xor.left(exception)))
+
+        val result = apiServices.unsubscribe(originalSharedCollectionId).value.run
+        result must beLike {
+          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
+        }
       }
 
   }

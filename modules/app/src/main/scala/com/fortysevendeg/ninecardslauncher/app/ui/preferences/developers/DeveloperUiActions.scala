@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Misc
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
-import com.fortysevendeg.ninecardslauncher.process.recognition.Weather
+import com.fortysevendeg.ninecardslauncher.process.recognition.{Location, Weather}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Ui}
 
@@ -42,6 +42,11 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
         setOnPreferenceClickListener(clickPreference(() => {
           dom.headphonesPreference.setSummary("")
           developerJobs.loadHeadphone.resolveAsync()
+        }))
+      dom.locationPreference.
+        setOnPreferenceClickListener(clickPreference(() => {
+          dom.locationPreference.setSummary("")
+          developerJobs.loadLocation.resolveAsync()
         }))
       dom.weatherPreference.
         setOnPreferenceClickListener(clickPreference(() => {
@@ -80,6 +85,14 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
   def setHeadphonesSummary(connected: Boolean): TaskService[Unit] = Ui {
     val summary = s"Headphones ${if (connected) "connected" else "disconnected"}"
     dom.headphonesPreference.setSummary(summary)
+  }.toService
+
+  def setLocationSummary(location: Location): TaskService[Unit] = Ui {
+    val summary =
+      s"""${location.addressLines.mkString(", ")}
+         |(${location.latitude}, ${location.longitude})
+         |${location.countryName.getOrElse("<No country>")} (${location.countryCode.getOrElse("-")})""".stripMargin
+    dom.locationPreference.setSummary(summary)
   }.toService
 
   def setWeatherSummary(weather: Weather): TaskService[Unit] = Ui {

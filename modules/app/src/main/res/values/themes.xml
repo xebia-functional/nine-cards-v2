@@ -54,4 +54,8 @@
 
     <style name="AppThemeSharedContent" parent="AppThemeSharedContentBase"/>
 
+    <style name="AppCompatDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

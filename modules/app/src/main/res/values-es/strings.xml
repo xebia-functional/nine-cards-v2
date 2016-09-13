@@ -119,6 +119,8 @@
     <string name="selectColor">Seleccionar color</string>
 
     <string name="addMyCollection">Añadir a mis collecciones</string>
+    <string name="alreadySubscribedCollection">Ya estás subscrito</string>
+    <string name="ownedCollection">Esta colección es tuya</string>
 
     <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta colección?</string>
 
@@ -189,9 +191,6 @@
     <string name="emptyPublicCollections">No hay colecciones publicadas en esta categoría. Quizás podrías crear tu una :-)</string>
 
     <string name="sendEmailDialogChooserTitle">Enviar correo electrónico</string>
-
-    <string name="errorLoadingPublishedCollections">Error cargando colleciones publicadas</string>
-    <string name="emptyPublishedCollections">No hay colecciones publicadas. Quizás podrías publicar una de tus colecciones :-)</string>
 
     <!-- Contacts Info -->
 
@@ -328,6 +327,15 @@
     <string name="hintNewConfigurationName">Nombre</string>
     <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
 
+    <string name="errorLoadingPublishedCollections">Error cargando colleciones publicadas</string>
+    <string name="emptyPublishedCollections">No hay colecciones publicadas. Quizás podrías publicar una de tus colecciones :-)</string>
+
+    <string name="errorLoadingSubscriptions">Error cargando suscripciones</string>
+    <string name="errorSubscribing">Error suscribiendote a la colección</string>
+    <string name="emptySubscriptions">No estás suscrito a ninguna colección en este momento</string>
+
+    <string name="installed_apps_number">%s aplicaciones instaladas</string>
+
     <!-- Preferences -->
 
     <!-- Preferences Default Launcher -->
@@ -442,6 +450,7 @@
 
     <string name="devProbablyActivityTitle">Probable Actividad</string>
     <string name="devHeadphonesTitle">Auriculares</string>
+    <string name="devLocationTitle">Localización</string>
     <string name="devWeatherTitle">Tiempo</string>
 
     <string name="devLocalDatabaseCategory">Base de Datos Local</string>
@@ -530,5 +539,9 @@
 
     <!-- Edit Moment -->
     <string name="addDuplicateItemError">Elemento duplicado</string>
+
+    <!-- App Links -->
+    <string name="loadingCollection">Recuperando información de la colección…</string>
+    <string name="linkNotSupportedError">Enlace no soportado</string>
 
 </resources>

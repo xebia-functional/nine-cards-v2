@@ -55,11 +55,10 @@ trait CollectionProcess {
     * Get collection by his shared collection id if exists
     *
     * @param sharedCollectionId the shared collection id
-    * @param original flag indicating if the search should be made by the original shared collection or not
     * @return the Option[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
     * @throws CollectionException if there was an error getting the existing collections
     */
-  def getCollectionBySharedCollectionId(sharedCollectionId: String, original: Boolean): TaskService[Option[Collection]]
+  def getCollectionBySharedCollectionId(sharedCollectionId: String): TaskService[Option[Collection]]
 
   /**
    * Adds a new Collection after the last existing one

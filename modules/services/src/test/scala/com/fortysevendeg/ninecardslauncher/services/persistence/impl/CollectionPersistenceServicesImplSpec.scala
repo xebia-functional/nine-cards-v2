@@ -4,7 +4,6 @@ import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity
-import com.fortysevendeg.ninecardslauncher.services.persistence.FetchCollectionBySharedCollectionRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.PersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 import org.specs2.matcher.DisjunctionMatchers
@@ -135,29 +134,9 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     }
   }
 
-  "fetchCollectionBySharedCollection" should {
+  "fetchCollectionBySharedCollectionId" should {
 
-    "return a Collection for a valid request and original to true" in new CollectionServicesResponses {
-
-      mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(any) returns TaskService(Task(Xor.right(Option(repoCollection))))
-      List.tabulate(5) { index =>
-        mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Xor.right(seqRepoCard)))
-      }
-      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Xor.right(seqRepoMoment)))
-
-      val result = persistenceServices.fetchCollectionBySharedCollection(
-        FetchCollectionBySharedCollectionRequest(sharedCollectionId, original = true)).value.run
-
-      result must beLike {
-        case Xor.Right(maybeCollection) =>
-          maybeCollection must beSome[Collection].which { collection =>
-            collection.id shouldEqual collectionId
-            collection.sharedCollectionId shouldEqual Option(sharedCollectionId)
-          }
-      }
-    }
-
-    "return a Collection for a valid request and original to false" in new CollectionServicesResponses {
+    "return a Collection for a valid request" in new CollectionServicesResponses {
 
       mockCollectionRepository.fetchCollectionBySharedCollectionId(any) returns TaskService(Task(Xor.right(Option(repoCollection))))
       List.tabulate(5) { index =>
@@ -165,8 +144,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       }
       mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Xor.right(seqRepoMoment)))
 
-      val result = persistenceServices.fetchCollectionBySharedCollection(
-        FetchCollectionBySharedCollectionRequest(sharedCollectionId, original = false)).value.run
+      val result = persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId).value.run
 
       result must beLike {
         case Xor.Right(maybeCollection) =>
@@ -177,27 +155,49 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       }
     }
 
-    "return None when a non-existent id and original to true is given" in new CollectionServicesResponses {
-
-      mockCollectionRepository.fetchCollectionByOriginalSharedCollectionId(any) returns TaskService(Task(Xor.right(None)))
-      val result = persistenceServices.fetchCollectionBySharedCollection(
-        FetchCollectionBySharedCollectionRequest(nonExistentSharedCollectionId, original = true)).value.run
-      result shouldEqual Xor.Right(None)
-    }
-
-    "return None when a non-existent id and original to false is given" in new CollectionServicesResponses {
+    "return None when a non-existent id is given" in new CollectionServicesResponses {
 
       mockCollectionRepository.fetchCollectionBySharedCollectionId(any) returns TaskService(Task(Xor.right(None)))
-      val result = persistenceServices.fetchCollectionBySharedCollection(
-        FetchCollectionBySharedCollectionRequest(nonExistentSharedCollectionId, original = false)).value.run
+      val result = persistenceServices.fetchCollectionBySharedCollectionId(nonExistentSharedCollectionId).value.run
       result shouldEqual Xor.Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.fetchCollectionBySharedCollectionId(any) returns TaskService(Task(Xor.left(exception)))
-      val result = persistenceServices.fetchCollectionBySharedCollection(
-        FetchCollectionBySharedCollectionRequest(sharedCollectionId, original = false)).value.run
+      val result = persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId).value.run
+      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+    }
+  }
+
+  "fetchCollectionsBySharedCollectionIds" should {
+
+    "return a sequence of collections for a valid request" in new CollectionServicesResponses {
+
+      mockCollectionRepository.fetchCollectionsBySharedCollectionIds(any) returns TaskService(Task(Xor.right(Seq(repoCollection))))
+
+      val result = persistenceServices.fetchCollectionsBySharedCollectionIds(Seq(sharedCollectionId)).value.run
+
+      result must beLike {
+        case Xor.Right(collections) =>
+          collections.headOption must beSome[Collection].which { collection =>
+            collection.id shouldEqual collectionId
+            collection.sharedCollectionId shouldEqual Option(sharedCollectionId)
+          }
+      }
+    }
+
+    "return None when a non-existent id is given" in new CollectionServicesResponses {
+
+      mockCollectionRepository.fetchCollectionsBySharedCollectionIds(any) returns TaskService(Task(Xor.right(Seq.empty)))
+      val result = persistenceServices.fetchCollectionsBySharedCollectionIds(Seq(nonExistentSharedCollectionId)).value.run
+      result shouldEqual Xor.Right(Seq.empty)
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
+
+      mockCollectionRepository.fetchCollectionsBySharedCollectionIds(any) returns TaskService(Task(Xor.left(exception)))
+      val result = persistenceServices.fetchCollectionsBySharedCollectionIds(Seq(sharedCollectionId)).value.run
       result must beAnInstanceOf[Xor.Left[RepositoryException]]
     }
   }
