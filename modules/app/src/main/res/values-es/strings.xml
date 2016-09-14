@@ -324,13 +324,26 @@
     <string name="copyAccountSyncDialogTitle">Nueva configuración</string>
     <string name="hintNewConfigurationName">Nombre</string>
     <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
+    <string name="emptyAccountsMessage">
+        <![CDATA[
+            No hay ninguna <b>cuenta configurada</b> en este momento. La sincronización está desactivada
+        ]]>
+    </string>
 
-    <string name="errorLoadingPublishedCollections">Error cargando colleciones publicadas</string>
-    <string name="emptyPublishedCollections">No hay colecciones publicadas. Quizás podrías publicar una de tus colecciones :-)</string>
+    <string name="errorLoadingPublishedCollections">Error cargando colecciones publicadas</string>
+    <string name="emptyPublishedCollectionsMessage">
+        <![CDATA[
+            No hay colecciones <b>publicadas</b>. Quizás podrías publicar una de <b>tus colecciones</b> :-)
+        ]]>
+    </string>
 
     <string name="errorLoadingSubscriptions">Error cargando suscripciones</string>
     <string name="errorSubscribing">Error suscribiendote a la colección</string>
-    <string name="emptySubscriptions">No estás suscrito a ninguna colección en este momento</string>
+    <string name="emptySubscriptionsMessage">
+        <![CDATA[
+            No estás <b>suscrito</b> a ninguna <b>colección pública</b> en este momento
+        ]]>
+    </string>
 
     <string name="installed_apps_number">%s aplicaciones instaladas</string>
 

@@ -45,13 +45,13 @@ class ProfileActivity
     setContentView(R.layout.profile_activity)
     presenter.initialize()
 
-    toolbar foreach setSupportActionBar
+    setSupportActionBar(toolbar)
     Option(getSupportActionBar) foreach { actionBar =>
       actionBar.setDisplayHomeAsUpEnabled(true)
       actionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
     }
 
-    barLayout foreach (_.addOnOffsetChangedListener(this))
+    barLayout.addOnOffsetChangedListener(this)
   }
 
   override def onResume(): Unit = {
