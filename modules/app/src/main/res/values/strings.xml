@@ -483,6 +483,8 @@
 
     <string name="devClearCacheImagesTitle">Clear cache images</string>
 
+    <string name="devShowPositionInCardsTitle">Show positions in cards</string>
+
     <string name="devCacheCleared">Cache cleared</string>
 
     <string name="collectionDetailAddCardsMessage">
