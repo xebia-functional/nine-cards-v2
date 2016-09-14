@@ -159,11 +159,17 @@ trait ProfileUiActionsImpl
   override def showDialogForDeleteDevice(cloudId: String): Unit =
     showDialog(new RemoveAccountDeviceDialogFragment(cloudId))
 
-  override def showDialogForCopyDevice(cloudId: String): Unit =
-    showDialog(new EditAccountDeviceDialogFragment(R.string.copyAccountSyncDialogTitle, presenter.copyDevice(_, cloudId)))
+  override def showDialogForCopyDevice(cloudId: String, actualName: String): Unit =
+    showDialog(new EditAccountDeviceDialogFragment(
+      title = R.string.copyAccountSyncDialogTitle,
+      maybeText = None,
+      action = presenter.copyDevice(_, cloudId, actualName)))
 
-  override def showDialogForRenameDevice(cloudId: String): Unit =
-    showDialog(new EditAccountDeviceDialogFragment(R.string.renameAccountSyncDialogTitle, presenter.renameDevice(_, cloudId)))
+  override def showDialogForRenameDevice(cloudId: String, actualName: String): Unit =
+    showDialog(new EditAccountDeviceDialogFragment(
+      title = R.string.renameAccountSyncDialogTitle,
+      maybeText = Some(actualName),
+      action = presenter.renameDevice(_, cloudId, actualName)))
 
   override def loadPublications(
     sharedCollections: Seq[SharedCollection],
@@ -196,8 +202,8 @@ trait ProfileUiActionsImpl
     (accountOption, accountSync.cloudId) match {
       case (SyncOption, _) => presenter.launchService()
       case (DeleteOption, Some(cloudId)) => showDialogForDeleteDevice(cloudId)
-      case (CopyOption, Some(cloudId)) => showDialogForCopyDevice(cloudId)
-      case (ChangeNameOption, Some(cloudId)) => showDialogForRenameDevice(cloudId)
+      case (CopyOption, Some(cloudId)) => showDialogForCopyDevice(cloudId, accountSync.title)
+      case (ChangeNameOption, Some(cloudId)) => showDialogForRenameDevice(cloudId, accountSync.title)
       case (PrintInfoOption, Some(cloudId)) => presenter.printDeviceInfo(cloudId)
       case _ =>
     }

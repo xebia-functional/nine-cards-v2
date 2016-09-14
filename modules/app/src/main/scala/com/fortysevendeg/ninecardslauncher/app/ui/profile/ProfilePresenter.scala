@@ -215,11 +215,11 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
   }
 
-  def copyDevice(maybeName: Option[String], cloudId: String): Unit =
-    copyOrRenameDevice(maybeName, cloudId, copy = true)
+  def copyDevice(maybeName: Option[String], cloudId: String, actualName: String): Unit =
+    copyOrRenameDevice(maybeName, cloudId, actualName, copy = true)
 
-  def renameDevice(maybeName: Option[String], cloudId: String): Unit =
-    copyOrRenameDevice(maybeName, cloudId, copy = false)
+  def renameDevice(maybeName: Option[String], cloudId: String, actualName: String): Unit =
+    copyOrRenameDevice(maybeName, cloudId, actualName, copy = false)
 
   def printDeviceInfo(cloudId: String): Unit = {
 
@@ -255,7 +255,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   }
 
-  private[this] def copyOrRenameDevice(maybeName: Option[String], cloudId: String, copy: Boolean): Unit = {
+  private[this] def copyOrRenameDevice(maybeName: Option[String], cloudId: String, actualName: String, copy: Boolean): Unit = {
 
     def createOrUpdate(name: String, client: GoogleApiClient, cloudId: String) = {
       val cloudStorageProcess = di.createCloudStorageProcess(client)
@@ -271,11 +271,15 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         withConnectedClient { client =>
           Task.fork(createOrUpdate(name, client, cloudId).value).resolveAsyncUi(
             onResult = (_) => Ui(loadUserAccounts(client)),
-            onException = (_) => actions.showContactUsError(() => copyDevice(maybeName, cloudId)),
+            onException = (_) => actions.showContactUsError(() => copyDevice(maybeName, cloudId, actualName)),
             onPreTask = () => actions.showLoading())
         }
       case _ => actions.showInvalidConfigurationNameError(() => {
-        if (copy) actions.showDialogForCopyDevice(cloudId) else actions.showDialogForRenameDevice(cloudId)
+        if (copy) {
+          actions.showDialogForCopyDevice(cloudId, actualName)
+        } else {
+          actions.showDialogForRenameDevice(cloudId, actualName)
+        }
       }).run
     }
   }
@@ -407,9 +411,9 @@ trait ProfileUiActions {
 
   def showDialogForDeleteDevice(resourceId: String): Unit
 
-  def showDialogForCopyDevice(resourceId: String): Unit
+  def showDialogForCopyDevice(resourceId: String, actualName: String): Unit
 
-  def showDialogForRenameDevice(cloudId: String): Unit
+  def showDialogForRenameDevice(cloudId: String, actualName: String): Unit
 
   def loadPublications(
     sharedCollections: Seq[SharedCollection],
