@@ -74,8 +74,9 @@ trait CollectionsProcessImpl extends CollectionProcess {
   def deleteCollection(collectionId: Int) = {
 
     def moveCollectionList(collectionList: Seq[Collection], position: Int) =
-      collectionList map { collection =>
-        if (collection.position > position) collection.copy(position = collection.position - 1) else collection
+      collectionList flatMap {
+        case collection if collection.position > position => Option(collection.copy(position = collection.position - 1))
+        case _ => None
       }
 
     (for {
