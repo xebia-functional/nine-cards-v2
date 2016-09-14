@@ -1,20 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
-import cats.data.Xor
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.provider.WidgetEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.WidgetPersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget
+import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
 
-import scalaz.concurrent.Task
 
 
 trait WidgetPersistenceServicesSpecification
   extends Specification
-    with DisjunctionMatchers {
+  with DisjunctionMatchers {
 
   trait WidgetPersistenceServicesScope
     extends RepositoryServicesScope
@@ -32,11 +32,11 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return a Widget for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.addWidget(any) returns TaskService(Task(Xor.right(repoWidget)))
+      mockWidgetRepository.addWidget(any) returns TaskService(Task(Either.right(repoWidget)))
       val result = persistenceServices.addWidget(createAddWidgetRequest()).value.run
 
       result must beLike {
-        case Xor.Right(widget) =>
+        case Right(widget) =>
           widget.id shouldEqual widgetId
           widget.packageName shouldEqual packageName
       }
@@ -44,11 +44,11 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return Unit for a valid request when AppWidgetId is None" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.addWidget(any) returns TaskService(Task(Xor.right(repoWidgetNone)))
+      mockWidgetRepository.addWidget(any) returns TaskService(Task(Either.right(repoWidgetNone)))
       val result = persistenceServices.addWidget(createAddWidgetRequest()).value.run
 
       result must beLike {
-        case Xor.Right(widget) =>
+        case Right(widget) =>
           widget.id shouldEqual widgetId
           widget.packageName shouldEqual packageName
           widget.appWidgetId shouldEqual None
@@ -56,9 +56,9 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
-      mockWidgetRepository.addWidget(any) returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.addWidget(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.addWidget(createAddWidgetRequest()).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -66,16 +66,16 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return Unit for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.addWidgets(any) returns TaskService(Task(Xor.right(seqRepoWidget)))
+      mockWidgetRepository.addWidgets(any) returns TaskService(Task(Either.right(seqRepoWidget)))
       val result = persistenceServices.addWidgets(Seq(createAddWidgetRequest())).value.run
-      result shouldEqual Xor.Right(seqWidget)
+      result shouldEqual Right(seqWidget)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.addWidgets(any) returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.addWidgets(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.addWidgets(Seq(createAddWidgetRequest())).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -83,16 +83,16 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return the number of elements deleted for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.deleteWidgets() returns TaskService(Task(Xor.right(items)))
+      mockWidgetRepository.deleteWidgets() returns TaskService(Task(Either.right(items)))
       val result = persistenceServices.deleteAllWidgets().value.run
-      result shouldEqual Xor.Right(items)
+      result shouldEqual Right(items)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.deleteWidgets() returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.deleteWidgets() returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.deleteAllWidgets().value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -100,16 +100,16 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return the number of elements deleted for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.deleteWidget(any) returns TaskService(Task(Xor.right(item)))
+      mockWidgetRepository.deleteWidget(any) returns TaskService(Task(Either.right(item)))
       val result = persistenceServices.deleteWidget(createDeleteWidgetRequest(widget = servicesWidget)).value.run
-      result shouldEqual Xor.Right(item)
+      result shouldEqual Right(item)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.deleteWidget(any) returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.deleteWidget(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.deleteWidget(createDeleteWidgetRequest(widget = servicesWidget)).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -117,16 +117,16 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return the number of elements deleted for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.deleteWidgets(any) returns TaskService(Task(Xor.right(items)))
+      mockWidgetRepository.deleteWidgets(any) returns TaskService(Task(Either.right(items)))
       val result = persistenceServices.deleteWidgetsByMoment(momentId).value.run
-      result shouldEqual Xor.Right(items)
+      result shouldEqual Right(items)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.deleteWidgets(any) returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.deleteWidgets(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.deleteWidgetsByMoment(momentId).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -134,18 +134,18 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return a Widget elements for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.fetchWidgetByAppWidgetId(any) returns TaskService(Task(Xor.right(Some(repoWidget))))
+      mockWidgetRepository.fetchWidgetByAppWidgetId(any) returns TaskService(Task(Either.right(Some(repoWidget))))
       val result = persistenceServices.fetchWidgetByAppWidgetId(appWidgetId).value.run
       result must beLike {
-        case Xor.Right(cards) => cards.size shouldEqual item
+        case Right(cards) => cards.size shouldEqual item
       }
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.fetchWidgetByAppWidgetId(any) returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.fetchWidgetByAppWidgetId(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.fetchWidgetByAppWidgetId(appWidgetId).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -153,19 +153,19 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return a list of Widget elements for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.fetchWidgetsByMoment(any) returns TaskService(Task(Xor.right(seqRepoWidget)))
+      mockWidgetRepository.fetchWidgetsByMoment(any) returns TaskService(Task(Either.right(seqRepoWidget)))
       val result = persistenceServices.fetchWidgetsByMoment(momentId).value.run
 
       result must beLike {
-        case Xor.Right(cards) => cards.size shouldEqual items
+        case Right(cards) => cards.size shouldEqual items
       }
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.fetchWidgetsByMoment(any) returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.fetchWidgetsByMoment(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.fetchWidgetsByMoment(momentId).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -173,19 +173,19 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return a list of Widget elements for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.fetchWidgets() returns TaskService(Task(Xor.right(seqRepoWidget)))
+      mockWidgetRepository.fetchWidgets() returns TaskService(Task(Either.right(seqRepoWidget)))
       val result = persistenceServices.fetchWidgets.value.run
 
       result must beLike {
-        case Xor.Right(collections) => collections.size shouldEqual seqWidget.size
+        case Right(collections) => collections.size shouldEqual seqWidget.size
       }
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.fetchWidgets() returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.fetchWidgets() returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.fetchWidgets.value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -193,11 +193,11 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return a Widget for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.findWidgetById(any) returns TaskService(Task(Xor.right(Option(repoWidget))))
+      mockWidgetRepository.findWidgetById(any) returns TaskService(Task(Either.right(Option(repoWidget))))
       val result = persistenceServices.findWidgetById(widgetId).value.run
 
       result must beLike {
-        case Xor.Right(maybeWidget) =>
+        case Right(maybeWidget) =>
           maybeWidget must beSome[Widget].which { widget =>
             widget.id shouldEqual widgetId
           }
@@ -206,16 +206,16 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return None when a non-existent id is given" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.findWidgetById(any) returns TaskService(Task(Xor.right(None)))
+      mockWidgetRepository.findWidgetById(any) returns TaskService(Task(Either.right(None)))
       val result = persistenceServices.findWidgetById(nonExistentWidgetId).value.run
-      result shouldEqual Xor.Right(None)
+      result shouldEqual Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.findWidgetById(any) returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.findWidgetById(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.findWidgetById(widgetId).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -223,16 +223,16 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return the number of elements updated for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.updateWidget(any) returns TaskService(Task(Xor.right(item)))
+      mockWidgetRepository.updateWidget(any) returns TaskService(Task(Either.right(item)))
       val result = persistenceServices.updateWidget(createUpdateWidgetRequest()).value.run
-      result shouldEqual Xor.Right(item)
+      result shouldEqual Right(item)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.updateWidget(any) returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.updateWidget(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.updateWidget(createUpdateWidgetRequest()).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -240,16 +240,16 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return the sequence with the number of elements updated for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.updateWidgets(any) returns TaskService(Task(Xor.right(item to items)))
+      mockWidgetRepository.updateWidgets(any) returns TaskService(Task(Either.right(item to items)))
       val result = persistenceServices.updateWidgets(createUpdateWidgetsRequest()).value.run
-      result shouldEqual Xor.Right(item to items)
+      result shouldEqual Right(item to items)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.updateWidgets(any) returns TaskService(Task(Xor.left(exception)))
+      mockWidgetRepository.updateWidgets(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.updateWidgets(createUpdateWidgetsRequest()).value.run
-      result must beAnInstanceOf[Xor.Left[RepositoryException]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 }

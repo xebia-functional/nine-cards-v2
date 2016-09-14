@@ -1,9 +1,9 @@
 package com.fortysevendeg.repository.app
 
 import android.net.Uri
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.App
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity.{allFields, imagePath, name, packageName, _}
@@ -113,7 +113,7 @@ class AppRepositorySpec
           val result = appRepository.addApp(data = createAppData).value.run
 
           result must beLike {
-            case Xor.Right(appResult) =>
+            case Right(appResult) =>
               appResult.id shouldEqual testAppId
               appResult.data.packageName shouldEqual testPackageName
           }
@@ -124,7 +124,7 @@ class AppRepositorySpec
 
           contentResolverWrapper.insert(any, any, any) throws contentResolverException
           val result = appRepository.addApp(data = createAppData).value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
 
@@ -134,7 +134,7 @@ class AppRepositorySpec
         new AppRepositoryScope {
 
           val result = appRepository.fetchAlphabeticalAppsCounter.value.run
-          result shouldEqual Xor.Right(appsDataCounters)
+          result shouldEqual Right(appsDataCounters)
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -142,7 +142,7 @@ class AppRepositorySpec
           with ErrorCounterAppRepositoryResponses {
 
           val result = appRepositoryException.fetchAlphabeticalAppsCounter.value.run
-          result must beAnInstanceOf[Xor.Left[RepositoryException]]
+          result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
   }
@@ -153,7 +153,7 @@ class AppRepositorySpec
       new AppRepositoryScope {
 
         val result = appRepository.fetchCategorizedAppsCounter.value.run
-        result shouldEqual Xor.Right(categoryDataCounters)
+        result shouldEqual Right(categoryDataCounters)
       }
 
     "return a RepositoryException when a exception is thrown" in
@@ -161,7 +161,7 @@ class AppRepositorySpec
         with ErrorCounterAppRepositoryResponses {
 
         val result = appRepositoryException.fetchCategorizedAppsCounter.value.run
-        result must beAnInstanceOf[Xor.Left[RepositoryException]]
+        result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 
@@ -171,7 +171,7 @@ class AppRepositorySpec
       new AppRepositoryScope {
 
         val result = appRepository.fetchInstallationDateAppsCounter.value.run
-        result shouldEqual Xor.Right(installationDateDateCounters)
+        result shouldEqual Right(installationDateDateCounters)
       }
 
     "return a RepositoryException when a exception is thrown" in
@@ -179,7 +179,7 @@ class AppRepositorySpec
         with ErrorCounterAppRepositoryResponses {
 
         val result = appRepositoryException.fetchInstallationDateAppsCounter.value.run
-        result must beAnInstanceOf[Xor.Left[RepositoryException]]
+        result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 
@@ -190,7 +190,7 @@ class AppRepositorySpec
 
         contentResolverWrapper.delete(any, any, any, any) returns 1
         val result = appRepository.deleteApps().value.run
-        result shouldEqual Xor.Right(1)
+        result shouldEqual Right(1)
       }
 
     "return a RepositoryException when a exception is thrown" in
@@ -198,7 +198,7 @@ class AppRepositorySpec
 
         contentResolverWrapper.delete(any, any, any, any) throws contentResolverException
         val result = appRepository.deleteApps().value.run
-        result must beAnInstanceOf[Xor.Left[RepositoryException]]
+        result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 
@@ -209,7 +209,7 @@ class AppRepositorySpec
 
         contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
         val result = appRepository.deleteApp(app = app).value.run
-        result shouldEqual Xor.Right(1)
+        result shouldEqual Right(1)
       }
 
     "return a RepositoryException when a exception is thrown" in
@@ -217,7 +217,7 @@ class AppRepositorySpec
 
         contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
         val result = appRepository.deleteApp(app = app).value.run
-        result must beAnInstanceOf[Xor.Left[RepositoryException]]
+        result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 
@@ -228,7 +228,7 @@ class AppRepositorySpec
 
         contentResolverWrapper.delete(any, any, any, any) returns 1
         val result = appRepository.deleteAppByPackage(packageName = testPackageName).value.run
-        result shouldEqual Xor.Right(1)
+        result shouldEqual Right(1)
       }
 
     "return a RepositoryException when a exception is thrown" in
@@ -236,7 +236,7 @@ class AppRepositorySpec
 
         contentResolverWrapper.delete(any, any, any, any) throws contentResolverException
         val result = appRepository.deleteAppByPackage(packageName = testPackageName).value.run
-        result must beAnInstanceOf[Xor.Left[RepositoryException]]
+        result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 
@@ -252,7 +252,7 @@ class AppRepositorySpec
           f = getListFromCursor(appEntityFromCursor)) returns appEntitySeq
 
         val result = appRepository.fetchApps().value.run
-        result shouldEqual Xor.Right(appSeq)
+        result shouldEqual Right(appSeq)
       }
 
     "return a RepositoryException when a exception is thrown" in
@@ -265,7 +265,7 @@ class AppRepositorySpec
           f = getListFromCursor(appEntityFromCursor)) throws contentResolverException
 
         val result = appRepository.fetchApps().value.run
-        result must beAnInstanceOf[Xor.Left[RepositoryException]]
+        result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 
@@ -278,7 +278,7 @@ class AppRepositorySpec
         val result = appRepository.findAppById(id = testAppId).value.run
 
         result must beLike {
-          case Xor.Right(maybeApp) =>
+          case Right(maybeApp) =>
             maybeApp must beSome[App].which { app =>
               app.id shouldEqual testAppId
               app.data.packageName shouldEqual testPackageName
@@ -291,7 +291,7 @@ class AppRepositorySpec
 
         contentResolverWrapper.findById(any, any, any, any, any, any)(any) returns None
         val result = appRepository.findAppById(id = testNonExistingAppId).value.run
-        result shouldEqual Xor.Right(None)
+        result shouldEqual Right(None)
       }
 
     "return a RepositoryException when a exception is thrown" in
@@ -299,7 +299,7 @@ class AppRepositorySpec
 
         contentResolverWrapper.findById(any, any, any, any, any, any)(any) throws contentResolverException
         val result = appRepository.findAppById(id = testAppId).value.run
-        result must beAnInstanceOf[Xor.Left[RepositoryException]]
+        result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 
@@ -317,7 +317,7 @@ class AppRepositorySpec
         val result = appRepository.fetchAppByPackage(packageName = testPackageName).value.run
 
         result must beLike {
-          case Xor.Right(maybeApp) =>
+          case Right(maybeApp) =>
             maybeApp must beSome[App].which { app =>
               app.id shouldEqual testAppId
               app.data.packageName shouldEqual testPackageName
@@ -336,7 +336,7 @@ class AppRepositorySpec
           f = getEntityFromCursor(appEntityFromCursor)) returns None
 
         val result = appRepository.fetchAppByPackage(packageName = testNonExistingPackageName).value.run
-        result shouldEqual Xor.Right(None)
+        result shouldEqual Right(None)
       }
 
     "return a RepositoryException when a exception is thrown" in
@@ -350,7 +350,7 @@ class AppRepositorySpec
           f = getEntityFromCursor(appEntityFromCursor)) throws contentResolverException
 
         val result = appRepository.fetchAppByPackage(packageName = testPackageName).value.run
-        result must beAnInstanceOf[Xor.Left[RepositoryException]]
+        result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 
@@ -367,7 +367,7 @@ class AppRepositorySpec
           f = getListFromCursor(appEntityFromCursor)) returns appEntitySeq
 
         val result = appRepository.fetchAppsByCategory(category = testCategory).value.run
-        result shouldEqual Xor.Right(appSeq)
+        result shouldEqual Right(appSeq)
       }
 
     "return an empty sequence when a non-existent category is given" in
@@ -382,7 +382,7 @@ class AppRepositorySpec
           f = getListFromCursor(appEntityFromCursor)) returns Seq.empty
 
         val result = appRepository.fetchAppsByCategory(category = testNonExistingCategory).value.run
-        result shouldEqual Xor.Right(Seq.empty)
+        result shouldEqual Right(Seq.empty)
 
       }
 
@@ -398,7 +398,7 @@ class AppRepositorySpec
           f = getListFromCursor(appEntityFromCursor)) throws contentResolverException
 
         val result = appRepository.fetchAppsByCategory(category = testCategory).value.run
-        result must beAnInstanceOf[Xor.Left[RepositoryException]]
+        result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 
@@ -409,7 +409,7 @@ class AppRepositorySpec
 
         contentResolverWrapper.updateById(any, any, any, any) returns 1
         val result = appRepository.updateApp(app = app).value.run
-        result shouldEqual Xor.Right(1)
+        result shouldEqual Right(1)
       }
 
     "return a RepositoryException when a exception is thrown" in
@@ -417,7 +417,7 @@ class AppRepositorySpec
 
         contentResolverWrapper.updateById(any, any, any, any) throws contentResolverException
         val result = appRepository.updateApp(app = app).value.run
-        result must beAnInstanceOf[Xor.Left[RepositoryException]]
+        result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 

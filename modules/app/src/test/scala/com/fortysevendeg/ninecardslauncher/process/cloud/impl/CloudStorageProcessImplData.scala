@@ -10,7 +10,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
 import org.joda.time.DateTime
 
 import scala.util.Random
-import scalaz.Scalaz._
 
 trait CloudStorageProcessImplData {
 
@@ -42,7 +41,7 @@ trait CloudStorageProcessImplData {
   def generateDriveServiceFileSummary =
     DriveServiceFileSummary(
       uuid = java.util.UUID.randomUUID.toString,
-      deviceId = Random.nextString(10).some,
+      deviceId = Option(Random.nextString(10)),
       title = Random.nextString(10),
       createdDate = DateTime.now().minusMonths(6).toDate,
       modifiedDate = DateTime.now().minusMonths(3).toDate)
@@ -97,13 +96,13 @@ trait CloudStorageProcessImplData {
   def generateCollections(num: Int, numItems: Int): Seq[CloudStorageCollection] = 1 to num map { i =>
     CloudStorageCollection(
       name = s"Collection $num",
-      originalSharedCollectionId = s"Original Shared Collection Id $num".some,
-      sharedCollectionId = s"Shared Collection Id $num".some,
-      sharedCollectionSubscribed = true.some,
+      originalSharedCollectionId = Option(s"Original Shared Collection Id $num"),
+      sharedCollectionId = Option(s"Shared Collection Id $num"),
+      sharedCollectionSubscribed = Option(true),
       generateCollectionItems(num: Int),
       collectionType = FreeCollectionType,
       icon = s"Collection Icon $num",
-      category = Business.some,
+      category = Option(Business),
       None)
   }
 
