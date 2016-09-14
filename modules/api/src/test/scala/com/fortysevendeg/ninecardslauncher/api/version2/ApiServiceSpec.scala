@@ -336,12 +336,12 @@ class ApiServiceSpec
         val response = SubscriptionsResponse(subscriptions)
 
         mockedServiceClient.get[SubscriptionsResponse](any, any, any, any) returns
-          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
+          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
         val serviceClientResponse = apiService.getSubscriptions(serviceHeader).value.run
 
         serviceClientResponse must beLike {
-          case Xor.Right(r) =>
+          case Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beSome(response)
         }
@@ -360,12 +360,12 @@ class ApiServiceSpec
       "return the status code" in new ApiServiceScope {
 
         mockedServiceClient.emptyPut[Unit](any, any, any, any) returns
-          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, None))))
+          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, None))))
 
         val serviceClientResponse = apiService.subscribe(publicIdentifier, serviceHeader).value.run
 
         serviceClientResponse must beLike {
-          case Xor.Right(r) =>
+          case Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beNone
         }
@@ -385,12 +385,12 @@ class ApiServiceSpec
       "return the status code" in new ApiServiceScope {
 
         mockedServiceClient.delete[Unit](any, any, any, any) returns
-          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, None))))
+          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, None))))
 
         val serviceClientResponse = apiService.unsubscribe(publicIdentifier, serviceHeader).value.run
 
         serviceClientResponse must beLike {
-          case Xor.Right(r) =>
+          case Right(r) =>
             r.statusCode shouldEqual statusCodeOk
             r.data must beNone
         }

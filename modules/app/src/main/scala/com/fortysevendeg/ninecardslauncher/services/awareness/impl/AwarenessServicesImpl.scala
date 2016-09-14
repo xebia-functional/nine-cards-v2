@@ -64,8 +64,7 @@ class AwarenessServicesImpl(client: GoogleApiClient)
 
   override def getLocation =
     TaskService {
-      Task.async[AwarenessException Xor LocationState] { handler =>
-
+      Task.async[AwarenessException Either LocationState] {(scheduler, callback)  =>
         Awareness.SnapshotApi.getLocation(client)
           .setResultCallback(new ResultCallback[LocationResult]() {
             override def onResult(locationResult: LocationResult): Unit = {
@@ -82,17 +81,17 @@ class AwarenessServicesImpl(client: GoogleApiClient)
                         speed = location.getSpeed,
                         elapsedTime = location.getElapsedRealtimeNanos,
                         time = location.getTime)
-                      handler(\/.right(Xor.right(locationState)))
+                      callback(Success(Either.right(locationState)))
                     case _ =>
-                      handler(\/.right(Xor.left(AwarenessException("Location not found"))))
+                      callback(Success(Either.left(AwarenessException("Location not found"))))
                   }
                 case _ =>
-                  handler(\/.right(Xor.left(AwarenessException("Location result not found"))))
+                  callback(Success(Either.left(AwarenessException("Location result not found"))))
               }
             }
 
           })
-
+        Cancelable.empty
       }
     }
 

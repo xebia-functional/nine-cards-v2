@@ -100,7 +100,7 @@ class CollectionRepository(
 
   def fetchCollectionsBySharedCollectionIds(ids: Seq[String]): TaskService[Seq[Collection]] =
     TaskService {
-        XorCatchAll[RepositoryException] {
+        CatchAll[RepositoryException] {
           fetchCollections(selection = s"$sharedCollectionId IN (${ids.map(id => s"'$id'").mkString(",")})")
         }
     }

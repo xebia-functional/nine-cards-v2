@@ -291,12 +291,12 @@ class ApiServicesImplSpec
 
         apiService.getCollection(any, any)(any) returns
           TaskService {
-            Task(Xor.right(ServiceClientResponse[version2.Collection](statusCode, Some(sharedCollection))))
+            Task(Either.right(ServiceClientResponse[version2.Collection](statusCode, Some(sharedCollection))))
           }
 
         val result = apiServices.getSharedCollection(sharedCollectionId).value.run
         result must beLike {
-          case Xor.Right(response) =>
+          case Right(response) =>
             response.statusCode shouldEqual statusCode
             response.sharedCollection shouldEqual toSharedCollection(sharedCollection)
         }
@@ -305,10 +305,10 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope {
 
-        apiService.getCollection(any, any)(any) returns TaskService(Task(Xor.left(exception)))
+        apiService.getCollection(any, any)(any) returns TaskService(Task(Either.left(exception)))
 
         val result = apiServices.getSharedCollection(sharedCollectionId).value.run
-        result must beAnInstanceOf[Xor.Left[HttpClientException]]
+        result must beAnInstanceOf[Left[HttpClientException, _]]
       }
 
   }
@@ -432,12 +432,12 @@ class ApiServicesImplSpec
 
         apiService.getSubscriptions(any)(any) returns
           TaskService {
-            Task(Xor.right(ServiceClientResponse[version2.SubscriptionsResponse](statusCode, Some(version2.SubscriptionsResponse(Seq(originalSharedCollectionId))))))
+            Task(Either.right(ServiceClientResponse[version2.SubscriptionsResponse](statusCode, Some(version2.SubscriptionsResponse(Seq(originalSharedCollectionId))))))
           }
 
         val result = apiServices.getSubscriptions().value.run
         result must beLike {
-          case Xor.Right(response) =>
+          case Right(response) =>
             response.statusCode shouldEqual statusCode
             response.items.map(_.originalSharedCollectionId) shouldEqual subscriptions.subscriptions
         }
@@ -446,11 +446,11 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope {
 
-        apiService.getSubscriptions(any)(any) returns TaskService(Task(Xor.left(exception)))
+        apiService.getSubscriptions(any)(any) returns TaskService(Task(Either.left(exception)))
 
         val result = apiServices.getSubscriptions().value.run
         result must beLike {
-          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
+          case Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
@@ -463,12 +463,12 @@ class ApiServicesImplSpec
 
         apiService.subscribe(any, any) returns
           TaskService {
-            Task(Xor.right(ServiceClientResponse(statusCode, None)))
+            Task(Either.right(ServiceClientResponse(statusCode, None)))
           }
 
         val result = apiServices.subscribe(originalSharedCollectionId).value.run
         result must beLike {
-          case Xor.Right(response) =>
+          case Right(response) =>
             response.statusCode shouldEqual statusCode
         }
       }
@@ -476,11 +476,11 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope {
 
-        apiService.subscribe(any, any) returns TaskService(Task(Xor.left(exception)))
+        apiService.subscribe(any, any) returns TaskService(Task(Either.left(exception)))
 
         val result = apiServices.subscribe(originalSharedCollectionId).value.run
         result must beLike {
-          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
+          case Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 
@@ -493,12 +493,12 @@ class ApiServicesImplSpec
 
         apiService.unsubscribe(any, any) returns
           TaskService {
-            Task(Xor.right(ServiceClientResponse(statusCode, None)))
+            Task(Either.right(ServiceClientResponse(statusCode, None)))
           }
 
         val result = apiServices.unsubscribe(originalSharedCollectionId).value.run
         result must beLike {
-          case Xor.Right(response) =>
+          case Right(response) =>
             response.statusCode shouldEqual statusCode
         }
       }
@@ -506,11 +506,11 @@ class ApiServicesImplSpec
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope {
 
-        apiService.unsubscribe(any, any) returns TaskService(Task(Xor.left(exception)))
+        apiService.unsubscribe(any, any) returns TaskService(Task(Either.left(exception)))
 
         val result = apiServices.unsubscribe(originalSharedCollectionId).value.run
         result must beLike {
-          case Xor.Left(e) => e.cause must beSome.which(_ shouldEqual exception)
+          case Left(e) => e.cause must beSome.which(_ shouldEqual exception)
         }
       }
 

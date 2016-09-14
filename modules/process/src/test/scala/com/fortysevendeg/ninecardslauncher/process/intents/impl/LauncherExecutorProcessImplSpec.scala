@@ -140,7 +140,7 @@ class LauncherExecutorProcessImplSpec
         there was no(mockServices).launchIntentAction(appGooglePlayAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception " +
+    "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception " +
       "for the application action" in
       new LauncherExecutorProcessImplScope with WithAppIntent {
         mockServices.launchIntentAction(===(appAction))(any) returns servicePermissionException
@@ -153,7 +153,7 @@ class LauncherExecutorProcessImplSpec
         there was no(mockServices).launchIntentAction(appGooglePlayAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns an exception for " +
+    "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns an exception for " +
       "the application action and a Permission exception for the application launch action" in
       new LauncherExecutorProcessImplScope with WithAppIntent {
         mockServices.launchIntentAction(===(appAction))(any) returns serviceException
@@ -167,7 +167,7 @@ class LauncherExecutorProcessImplSpec
         there was no(mockServices).launchIntentAction(appGooglePlayAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns an exception " +
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns an exception " +
       "for both the application action and the application launch action but a Permission exception " +
       "for google play store action" in
       new LauncherExecutorProcessImplScope with WithAppIntent {
@@ -183,7 +183,7 @@ class LauncherExecutorProcessImplSpec
         there was one(mockServices).launchIntentAction(appGooglePlayAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception for all actions" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception for all actions" in
       new LauncherExecutorProcessImplScope with WithAppIntent {
         mockServices.launchIntentAction(any)(any) returns serviceException
 
@@ -195,7 +195,7 @@ class LauncherExecutorProcessImplSpec
         there was one(mockServices).launchIntentAction(appGooglePlayAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the intent doesn't have a package name" in
+    "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a package name" in
       new LauncherExecutorProcessImplScope {
 
         mockIntent.getAction returns NineCardIntentExtras.openApp
@@ -222,7 +222,7 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.execute(mockIntent)(_), appGooglePlayAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openNoInstalledApp
         mockIntent.extractPackageName() returns Some(packageName)
@@ -230,7 +230,7 @@ class LauncherExecutorProcessImplSpec
         verifyLeftPermission(process.execute(mockIntent)(_), appGooglePlayAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openNoInstalledApp
         mockIntent.extractPackageName() returns Some(packageName)
@@ -238,7 +238,7 @@ class LauncherExecutorProcessImplSpec
         verifyLeft(process.execute(mockIntent)(_), appGooglePlayAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the intent doesn't have a package name" in
+    "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a package name" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openNoInstalledApp
         mockIntent.extractPackageName() returns None
@@ -261,7 +261,7 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.execute(mockIntent)(_), phoneSmsAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openSms
         mockIntent.extractPhone() returns Some(phoneNumber)
@@ -269,7 +269,7 @@ class LauncherExecutorProcessImplSpec
         verifyLeftPermission(process.execute(mockIntent)(_), phoneSmsAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openSms
         mockIntent.extractPhone() returns Some(phoneNumber)
@@ -277,7 +277,7 @@ class LauncherExecutorProcessImplSpec
         verifyLeft(process.execute(mockIntent)(_), phoneSmsAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the intent doesn't have a phone number" in
+    "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a phone number" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openSms
         mockIntent.extractPhone() returns None
@@ -300,7 +300,7 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.execute(mockIntent)(_), phoneCallAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openPhone
         mockIntent.extractPhone() returns Some(phoneNumber)
@@ -308,7 +308,7 @@ class LauncherExecutorProcessImplSpec
         verifyLeftPermission(process.execute(mockIntent)(_), phoneCallAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openPhone
         mockIntent.extractPhone() returns Some(phoneNumber)
@@ -316,7 +316,7 @@ class LauncherExecutorProcessImplSpec
         verifyLeft(process.execute(mockIntent)(_), phoneCallAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the intent doesn't have a phone number" in
+    "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a phone number" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openPhone
         mockIntent.extractPhone() returns None
@@ -339,7 +339,7 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.execute(mockIntent)(_), emailAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openEmail
         mockIntent.extractEmail() returns Some(email)
@@ -347,7 +347,7 @@ class LauncherExecutorProcessImplSpec
         verifyLeftPermission(process.execute(mockIntent)(_), emailAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openEmail
         mockIntent.extractEmail() returns Some(email)
@@ -355,7 +355,7 @@ class LauncherExecutorProcessImplSpec
         verifyLeft(process.execute(mockIntent)(_), emailAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the intent doesn't have an email" in
+    "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have an email" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openEmail
         mockIntent.extractEmail() returns None
@@ -378,7 +378,7 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.execute(mockIntent)(_), contactAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openContact
         mockIntent.extraLookup() returns Some(lookupKey)
@@ -386,7 +386,7 @@ class LauncherExecutorProcessImplSpec
         verifyLeftPermission(process.execute(mockIntent)(_), contactAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openContact
         mockIntent.extraLookup() returns Some(lookupKey)
@@ -394,7 +394,7 @@ class LauncherExecutorProcessImplSpec
         verifyLeft(process.execute(mockIntent)(_), contactAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the intent doesn't have a contact lookup" in
+    "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a contact lookup" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openContact
         mockIntent.extraLookup() returns None
@@ -421,7 +421,7 @@ class LauncherExecutorProcessImplSpec
 
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns unknownAction
         mockServices.launchIntent(any)(any) returns servicePermissionException
@@ -432,7 +432,7 @@ class LauncherExecutorProcessImplSpec
         there was one(mockServices).launchIntent(mockIntent)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns unknownAction
         mockServices.launchIntent(any)(any) returns serviceException
@@ -452,12 +452,12 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.executeContact(lookupKey)(_), contactAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeftPermission(process.executeContact(lookupKey)(_), contactAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.executeContact(lookupKey)(_), contactAction)
       }
@@ -471,12 +471,12 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.launchShare(shareText)(_), shareAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeftPermission(process.launchShare(shareText)(_), shareAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.launchShare(shareText)(_), shareAction)
       }
@@ -503,7 +503,7 @@ class LauncherExecutorProcessImplSpec
         there was one(mockServices).launchIntentAction(searchWebAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception " +
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception " +
       "for the global search action" in
       new LauncherExecutorProcessImplScope {
         mockServices.launchIntentAction(anyOf(SearchGlobalAction))(any) returns servicePermissionException
@@ -515,7 +515,7 @@ class LauncherExecutorProcessImplSpec
         there was no(mockServices).launchIntentAction(searchWebAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns an exception for " +
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns an exception for " +
       "the global search action and permission exception for the web search" in
       new LauncherExecutorProcessImplScope {
         mockServices.launchIntentAction(anyOf(SearchGlobalAction))(any) returns serviceException
@@ -528,7 +528,7 @@ class LauncherExecutorProcessImplSpec
         there was one(mockServices).launchIntentAction(searchWebAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception " +
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception " +
       "for both search actions" in
       new LauncherExecutorProcessImplScope {
         mockServices.launchIntentAction(anyOf(SearchGlobalAction))(any) returns serviceException
@@ -550,12 +550,12 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.launchGoogleWeather(_), googleWeatherAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeftPermission(process.launchGoogleWeather(_), googleWeatherAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.launchGoogleWeather(_), googleWeatherAction)
       }
@@ -569,12 +569,12 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.launchVoiceSearch(_), searchVoiceAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeftPermission(process.launchVoiceSearch(_), searchVoiceAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.launchVoiceSearch(_), searchVoiceAction)
       }
@@ -601,7 +601,7 @@ class LauncherExecutorProcessImplSpec
         there was one(mockServices).launchIntentAction(globalSettingsAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception " +
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception " +
       "for the app settings action" in
       new LauncherExecutorProcessImplScope {
         mockServices.launchIntentAction(any[AppSettingsAction])(any) returns servicePermissionException
@@ -613,7 +613,7 @@ class LauncherExecutorProcessImplSpec
         there was no(mockServices).launchIntentAction(globalSettingsAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns an exception for " +
+    "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns an exception for " +
       "the app settings action and permission exception for the global settings search" in
       new LauncherExecutorProcessImplScope {
         mockServices.launchIntentAction(any[AppSettingsAction])(any) returns serviceException
@@ -626,7 +626,7 @@ class LauncherExecutorProcessImplSpec
         there was one(mockServices).launchIntentAction(globalSettingsAction)(mockActivityContext)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception " +
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception " +
       "for both search actions" in
       new LauncherExecutorProcessImplScope {
         mockServices.launchIntentAction(any[AppSettingsAction])(any) returns serviceException
@@ -648,12 +648,12 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.launchUninstall(packageName)(_), appUninstallAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeftPermission(process.launchUninstall(packageName)(_), appUninstallAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.launchUninstall(packageName)(_), appUninstallAction)
       }
@@ -667,12 +667,12 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.launchDial(Some(phoneNumber))(_), phoneDialAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeftPermission(process.launchDial(Some(phoneNumber))(_), phoneDialAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.launchDial(Some(phoneNumber))(_), phoneDialAction)
       }
@@ -686,12 +686,12 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.launchPlayStore(_), googlePlayStoreAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeftPermission(process.launchPlayStore(_), googlePlayStoreAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.launchPlayStore(_), googlePlayStoreAction)
       }
@@ -705,12 +705,12 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.launchApp(packageName)(_), appLauncherAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeftPermission(process.launchApp(packageName)(_), appLauncherAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.launchApp(packageName)(_), appLauncherAction)
       }
@@ -724,12 +724,12 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.launchGooglePlay(packageName)(_), appGooglePlayAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeftPermission(process.launchGooglePlay(packageName)(_), appGooglePlayAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.launchGooglePlay(packageName)(_), appGooglePlayAction)
       }
@@ -743,12 +743,12 @@ class LauncherExecutorProcessImplSpec
         verifyRight(process.launchUrl(url)(_), urlAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+    "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeftPermission(process.launchUrl(url)(_), urlAction)
       }
 
-    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+    "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.launchUrl(url)(_), urlAction)
       }

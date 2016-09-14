@@ -6,14 +6,13 @@ import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.ContextWrapper
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
-import scalaz.concurrent.Task
 
 class Jobs(implicit contextWrapper: ContextWrapper)
   extends ContextSupportProvider
@@ -37,9 +36,7 @@ class Jobs(implicit contextWrapper: ContextWrapper)
   }
 
   def sendBroadCastTask(broadAction: BroadAction): TaskService[Unit] = TaskService {
-    Task {
-      XorCatchAll[UiException](sendBroadCast(broadAction))
-    }
+      CatchAll[UiException](sendBroadCast(broadAction))
   }
 
 }

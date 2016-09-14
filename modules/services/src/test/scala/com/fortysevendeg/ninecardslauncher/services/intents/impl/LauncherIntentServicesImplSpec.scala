@@ -241,7 +241,7 @@ class LauncherIntentServicesImplSpec
 
         mockIntentCreator.createUrlViewIntent(any) returns mockIntent
         val result = services.launchIntentAction(urlAction)(mockContextSupport).value.run
-        result shouldEqual Xor.right((): Unit)
+        result shouldEqual Right((): Unit)
 
         there was one(mockIntentCreator).createUrlViewIntent(url)
         there was one(mockActivity).startActivity(mockIntent)
@@ -254,9 +254,9 @@ class LauncherIntentServicesImplSpec
     "execute the function if the ActivityContextSupport.getActivity returns Some of Activity" in
       new LauncherIntentServicesImplScope with WithActivity {
 
-        val xor = Right[NineCardException, Unit]((): Unit)
-        val result = services.withActivity(_ => xor)(mockContextSupport)
-        result should be(xor)
+        val right = Right[NineCardException, Unit]((): Unit)
+        val result = services.withActivity(_ => right)(mockContextSupport)
+        result should be(right)
 
         there was one(mockContextSupport).getActivity
       }
@@ -265,8 +265,8 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope {
 
         mockContextSupport.getActivity returns None
-        val xor = Right[NineCardException, Unit]((): Unit)
-        val result = services.withActivity(_ => xor)(mockContextSupport)
+        val right = Right[NineCardException, Unit]((): Unit)
+        val result = services.withActivity(_ => right)(mockContextSupport)
         result should beAnInstanceOf[Left[IntentLauncherServicesException,_]]
 
         there was one(mockContextSupport).getActivity

@@ -125,7 +125,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def loadSubscriptions(): Unit = {
 
-    def getSubscriptions: XorT[Task, NineCardException, (Seq[Subscription])] =
+    def getSubscriptions: EitherT[Task, NineCardException, (Seq[Subscription])] =
       for {
         subscriptions <- di.sharedCollectionsProcess.getSubscriptions()
       } yield subscriptions
@@ -144,18 +144,18 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def onSubscribe(originalSharedCollectionId: String, subscribeStatus: Boolean): Unit = {
 
-    def subscribe(originalSharedCollectionId: String): XorT[Task, NineCardException, Unit] =
+    def subscribe(originalSharedCollectionId: String): EitherT[Task, NineCardException, Unit] =
       for {
         _ <- di.sharedCollectionsProcess.subscribe(originalSharedCollectionId)
       } yield ()
 
-    def unsubscribe(originalSharedCollectionId: String): XorT[Task, NineCardException, Unit] =
+    def unsubscribe(originalSharedCollectionId: String): EitherT[Task, NineCardException, Unit] =
       for {
         _ <- di.sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)
       } yield ()
 
-    Task.fork(
-      (if (subscribeStatus) subscribe(originalSharedCollectionId) else unsubscribe(originalSharedCollectionId)).value).resolveAsyncUi(
+
+      (if (subscribeStatus) subscribe(originalSharedCollectionId) else unsubscribe(originalSharedCollectionId)).resolveAsyncUi2(
       onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
   }
 
