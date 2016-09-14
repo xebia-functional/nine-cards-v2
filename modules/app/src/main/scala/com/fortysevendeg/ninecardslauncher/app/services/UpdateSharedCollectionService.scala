@@ -27,8 +27,8 @@ class UpdateSharedCollectionService
     def readIntValue(i: Intent, key: String): Option[Int] =
       if (i.hasExtra(key)) Option(i.getIntExtra(key, 0)) else None
 
-    def readStringValue(i: Intent, key: String): Option[Int] =
-      if (i.hasExtra(key)) Option(i.getIntExtra(key, 0)) else None
+    def readStringValue(i: Intent, key: String): Option[String] =
+      if (i.hasExtra(key)) Option(i.getStringExtra(key)) else None
 
     def readArrayValue(i: Intent, key: String): Array[String] =
       if (i.hasExtra(key)) Option(i.getStringArrayExtra(key)).getOrElse(Array.empty) else Array.empty
