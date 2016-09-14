@@ -14,7 +14,6 @@ import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TopSharedC
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 
-import scalaz.concurrent.Task
 
 class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs

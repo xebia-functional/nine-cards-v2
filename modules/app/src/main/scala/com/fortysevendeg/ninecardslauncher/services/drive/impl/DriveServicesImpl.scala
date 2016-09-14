@@ -16,7 +16,6 @@ import monix.eval.Task
 
 import scala.collection.JavaConversions._
 import scala.util.{Failure, Success, Try}
-import scalaz.Scalaz._
 
 class DriveServicesImpl(client: GoogleApiClient)
   extends DriveServices
@@ -82,7 +81,7 @@ class DriveServicesImpl(client: GoogleApiClient)
     val query = new Query.Builder()
       .addFilter(Filters.eq(propertyUUID, driveId))
       .build()
-    searchFiles(query.some)(seq => f(seq.headOption))
+    searchFiles(Option(query))(seq => f(seq.headOption))
   }
 
   private[this] def searchFiles[R](query: Option[Query])(f: (Seq[DriveServiceFileSummary]) => R) = TaskService {

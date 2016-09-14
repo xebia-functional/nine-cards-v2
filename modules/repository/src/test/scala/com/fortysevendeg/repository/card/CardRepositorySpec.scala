@@ -17,7 +17,6 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import scala.language.postfixOps
-import scalaz.Maybe.Empty
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
 trait CardRepositorySpecification
