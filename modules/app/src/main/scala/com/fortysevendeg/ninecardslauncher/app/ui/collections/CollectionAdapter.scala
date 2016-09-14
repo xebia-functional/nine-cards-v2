@@ -6,8 +6,8 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.CollectionAdapterStyles
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{BackgroundSelectedDrawable, IconTypes, PathMorphDrawable}
@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize,
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardTextColor, NineCardsTheme, PrimaryColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -48,10 +48,9 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     notifyItemRangeInserted(collection.cards.length - count, count)
   }
 
-  def removeCard(card: Card) = {
-    val position = collection.cards.indexOf(card)
-    collection = collection.copy(cards = collection.cards.filterNot(c => card == c))
-    notifyItemRemoved(position)
+  def removeCards(cards: Seq[Card]) = {
+    collection = collection.copy(cards = collection.cards.filterNot(c => cards.contains(c)))
+    notifyDataSetChanged()
   }
 
   def updateCard(card: Card) = {

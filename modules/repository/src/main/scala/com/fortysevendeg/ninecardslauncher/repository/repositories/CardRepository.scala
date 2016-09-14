@@ -79,18 +79,18 @@ class CardRepository(
           contentResolverWrapper.delete(
             uri = cardUri,
             where = where,
-            notificationUris = Seq(cardNotificationUri))
+            notificationUris = Seq(cardNotificationUri, collectionNotificationUri))
         }
       }
     }
 
-  def deleteCard(collectionId: Int, card: Card): TaskService[Int] =
+  def deleteCard(collectionId: Int, cardId: Int): TaskService[Int] =
     TaskService {
       Task {
         XorCatchAll[RepositoryException] {
           contentResolverWrapper.deleteById(
             uri = cardUri,
-            id = card.id,
+            id = cardId,
             notificationUris = Seq(cardNotificationUri, uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
         }
       }

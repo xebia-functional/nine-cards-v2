@@ -135,12 +135,10 @@ trait CollectionUiActionsImpl
       nrvScheduleLayoutAnimation <~
       getScrollListener(spaceMove)).ifUi(animateCards)
 
-  override def moveToCollection(collections: Seq[Collection], card: Card): Ui[Any] =
-    fragmentContextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) =>
-        Ui(new CollectionDialog(collections, c => collectionsPresenter.moveToCollection(c, collections.indexWhere(_.id == c), card), () => ()).show())
-      case _ => showContactUsError()
-    }
+  override def moveToCollection(collections: Seq[Collection]): Ui[Any] =
+    Ui(new CollectionDialog(collections,
+      c => collectionsPresenter.moveToCollection(c, collections.indexWhere(_.id == c)),
+      () => ()).show())
 
   override def editCard(collectionId: Int, cardId: Int, cardName: String): Unit =
     showDialog(new EditCardDialogFragment(collectionId, cardId, cardName))
@@ -153,8 +151,8 @@ trait CollectionUiActionsImpl
     resetScroll ~ showData(emptyCollection)
   } getOrElse Ui.nop
 
-  override def removeCard(card: Card): Ui[Any] = getAdapter map { adapter =>
-    adapter.removeCard(card)
+  override def removeCards(cards: Seq[Card]): Ui[Any] = getAdapter map { adapter =>
+    adapter.removeCards(cards)
     updateScroll()
     val emptyCollection = adapter.collection.cards.isEmpty
     if (emptyCollection) collectionsPresenter.emptyCollection()

@@ -88,6 +88,13 @@ class CollectionFragment
   }
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
+    case R.id.action_edit =>
+      true
+    case R.id.action_move_to_collection =>
+      presenter.moveToCollection()
+      true
+    case R.id.action_delete =>
+      true
     case _ => super.onOptionsItemSelected(item)
   }
 

@@ -183,14 +183,14 @@ trait CollectionsPagerUiActionsImpl
     }
   }
 
-  override def removeCards(card: Card): Ui[Any] = Ui {
+  override def removeCards(cards: Seq[Card]): Ui[Any] = Ui {
     for {
       adapter <- getAdapter
       presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
-      adapter.removeCardFromCollection(currentPosition, card)
-      presenter.removeCard(card)
+      adapter.removeCardFromCollection(currentPosition, cards)
+      presenter.removeCards(cards)
     }
   }
 
