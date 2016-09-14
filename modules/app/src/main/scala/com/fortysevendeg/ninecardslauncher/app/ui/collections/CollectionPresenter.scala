@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
@@ -14,7 +14,6 @@ import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProce
 import com.fortysevendeg.ninecardslauncher.process.trackevent._
 import macroid.{ActivityContextWrapper, Ui}
 
-import scalaz.concurrent.Task
 
 case class CollectionPresenter(
   animateCards: Boolean,
@@ -38,13 +37,13 @@ case class CollectionPresenter(
   def startReorderCards(holder: ViewHolder): Unit = if (!actions.isPulling) actions.startReorder(holder).run
 
   def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit = {
-    Task.fork(di.collectionProcess.reorderCard(collectionId, cardId, position).value).resolveAsyncUi(
+    di.collectionProcess.reorderCard(collectionId, cardId, position).resolveAsyncUi2(
       onResult = (_) => actions.reloadCards()
     )
   }
 
   def moveToCollection(card: Card): Unit =
-    Task.fork(di.collectionProcess.getCollections.value).resolveAsyncUi(
+    di.collectionProcess.getCollections.resolveAsyncUi2(
       onResult = (collections) => actions.moveToCollection(collections, card),
       onException = (_) => actions.showContactUsError())
 
@@ -75,7 +74,7 @@ case class CollectionPresenter(
 
     cardName match {
       case Some(name) if name.length > 0 =>
-          Task.fork(saveCard(collectionId, cardId, name).value).resolveAsyncUi(
+          saveCard(collectionId, cardId, name).resolveAsyncUi2(
             onResult = (card) => actions.reloadCard(card),
             onException = (_) => actions.showContactUsError())
       case _ => actions.showMessageFormFieldError.run
@@ -84,7 +83,7 @@ case class CollectionPresenter(
 
   def showData(): Unit = maybeCollection foreach (c => actions.showData(c.cards.isEmpty).run)
 
-  def launchCard(card : Card): Unit = Task.fork(di.launcherExecutorProcess.execute(card.intent).value).resolveAsyncUi(
+  def launchCard(card : Card): Unit = di.launcherExecutorProcess.execute(card.intent).resolveAsyncUi2(
     onException = (throwable: Throwable) => throwable match {
       case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
         statuses = statuses.copy(lastPhone = card.intent.extractPhone())
@@ -102,13 +101,13 @@ case class CollectionPresenter(
       if (result.exists(_.hasPermission(CallPhone))) {
         statuses.lastPhone foreach { phone =>
           statuses = statuses.copy(lastPhone = None)
-          Task.fork(di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)).value).resolveAsyncUi(
+          di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)).resolveAsyncUi2(
             onException = _ => actions.showContactUsError())
         }
       } else {
         statuses.lastPhone foreach { phone =>
           statuses = statuses.copy(lastPhone = None)
-          Task.fork(di.launcherExecutorProcess.launchDial(Some(phone)).value).resolveAsyncUi(
+          di.launcherExecutorProcess.launchDial(Some(phone)).resolveAsyncUi2(
             onException = _ => actions.showContactUsError())
         }
         actions.showNoPhoneCallPermissionError().run
@@ -126,11 +125,11 @@ case class CollectionPresenter(
       } yield {
         action match {
           case OpenCardAction =>
-            Task.fork(di.trackEventProcess.openAppFromCollection(packageName, category).value).resolveAsync()
+            di.trackEventProcess.openAppFromCollection(packageName, category).resolveAsync2()
           case AddedToCollectionAction =>
-            Task.fork(di.trackEventProcess.addAppToCollection(packageName, category).value).resolveAsync()
+            di.trackEventProcess.addAppToCollection(packageName, category).resolveAsync2()
           case RemovedInCollectionAction =>
-            Task.fork(di.trackEventProcess.removedInCollection(packageName, category).value).resolveAsync()
+            di.trackEventProcess.removedInCollection(packageName, category).resolveAsync2()
           case _ =>
         }
       }

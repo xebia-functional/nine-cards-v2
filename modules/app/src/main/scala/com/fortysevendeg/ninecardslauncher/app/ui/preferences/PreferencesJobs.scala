@@ -7,8 +7,6 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import macroid.ActivityContextWrapper
 
-import scalaz.concurrent.Task
-
 class PreferencesJobs(ui: PreferencesUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with ImplicitsUiExceptions {
@@ -29,7 +27,7 @@ class PreferencesJobs(ui: PreferencesUiActions)(implicit contextWrapper: Activit
   def launchSettings(): TaskService[Unit] = {
 
     def readPackageName: TaskService[String] =
-      TaskService(Task(CatchAll[UiException](activityContextSupport.context.getPackageName)))
+      TaskService(CatchAll[UiException](activityContextSupport.context.getPackageName))
 
     def launchSettingsService: TaskService[Unit] =
       for {

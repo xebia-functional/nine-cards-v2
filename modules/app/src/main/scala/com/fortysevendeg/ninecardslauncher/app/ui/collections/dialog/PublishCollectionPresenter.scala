@@ -1,9 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
-import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -12,8 +11,8 @@ import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedColle
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreateSharedCollection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
-
-import scalaz.concurrent.Task
+import cats.syntax.either._
+import monix.eval.Task
 
 class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
@@ -38,7 +37,7 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit co
       description <- maybeDescription
       category <- maybeCategory
     } yield {
-      Task.fork(createPublishedCollection(name, description, category).value).resolveAsyncUi(
+      createPublishedCollection(name, description, category).resolveAsyncUi2(
         onPreTask = () => actions.goToPublishCollectionPublishing(),
         onResult = (sharedCollectionId: String) => actions.goToPublishCollectionEnd(sharedCollectionId),
         onException = (ex: Throwable) => {
@@ -48,9 +47,9 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit co
     }) getOrElse actions.showMessageFormFieldError.run
 
   def launchShareCollection(sharedCollectionId: String): Unit =
-    Task.fork(di.launcherExecutorProcess
-      .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId)).value)
-      .resolveAsyncUi(onException = _ => actions.showContactUsError)
+    di.launcherExecutorProcess
+      .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
+      .resolveAsyncUi2(onException = _ => actions.showContactUsError)
 
   private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): TaskService[String] =
     for {
@@ -69,8 +68,8 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit co
     } yield sharedCollectionId
 
   private[this] def getCollection: TaskService[Collection] = statuses.collection map { col =>
-    TaskService(Task(Xor.right(col)))
-  } getOrElse TaskService(Task(Xor.left(SharedCollectionsExceptions("", None))))
+    TaskService(Task(Either.right(col)))
+  } getOrElse TaskService(Task(Either.left(SharedCollectionsExceptions("", None))))
 
 }
 

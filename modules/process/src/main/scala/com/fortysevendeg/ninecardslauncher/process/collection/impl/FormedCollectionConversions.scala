@@ -14,7 +14,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest,
 import monix.eval.Task
 
 import scala.annotation.tailrec
-import scalaz.{-\/, \/-}
 
 trait FormedCollectionDependencies {
   val contactsServices: ContactsServices

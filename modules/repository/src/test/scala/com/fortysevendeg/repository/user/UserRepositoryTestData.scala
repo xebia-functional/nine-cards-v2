@@ -3,8 +3,6 @@ package com.fortysevendeg.repository.user
 import com.fortysevendeg.ninecardslauncher.repository.model.{User, UserData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{UserEntity, UserEntityData}
 
-import scalaz.Scalaz._
-
 import scala.util.Random
 
 trait UserRepositoryTestData {
@@ -46,16 +44,16 @@ trait UserRepositoryTestData {
     i => User(
       id = testId + i,
       data = UserData(
-        email = testEmail.some,
-        apiKey = testApiKey.some,
-        sessionToken = testSessionToken.some,
-        deviceToken = testDeviceToken.some,
-        marketToken = testAndroidToken.some,
-        name = testName.some,
-        avatar = testAvatar.some,
-        cover = testCover.some,
-        deviceName = testDeviceName.some,
-        deviceCloudId = testDeviceCloudId.some)))
+        email = Option(testEmail),
+        apiKey = Option(testApiKey),
+        sessionToken = Option(testSessionToken),
+        deviceToken = Option(testDeviceToken),
+        marketToken = Option(testAndroidToken),
+        name = Option(testName),
+        avatar = Option(testAvatar),
+        cover = Option(testCover),
+        deviceName = Option(testDeviceName),
+        deviceCloudId = Option(testDeviceCloudId))))
 
   def createUserValues = Map[String, Any](
     UserEntity.email -> testEmail,
@@ -70,14 +68,14 @@ trait UserRepositoryTestData {
     UserEntity.deviceCloudId -> testDeviceCloudId)
 
   def createUserData = UserData(
-    email = testEmail.some,
-    apiKey = testApiKey.some,
-    sessionToken = testSessionToken.some,
-    deviceToken = testDeviceToken.some,
-    marketToken = testAndroidToken.some,
-    name = testName.some,
-    avatar = testAvatar.some,
-    cover = testCover.some,
-    deviceName = testDeviceName.some,
-    deviceCloudId = testDeviceCloudId.some)
+    email = Option(testEmail),
+    apiKey = Option(testApiKey),
+    sessionToken = Option(testSessionToken),
+    deviceToken = Option(testDeviceToken),
+    marketToken = Option(testAndroidToken),
+    name = Option(testName),
+    avatar = Option(testAvatar),
+    cover = Option(testCover),
+    deviceName = Option(testDeviceName),
+    deviceCloudId = Option(testDeviceCloudId))
 }
