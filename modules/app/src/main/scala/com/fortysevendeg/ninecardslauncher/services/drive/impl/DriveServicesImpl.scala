@@ -239,15 +239,15 @@ object Extensions {
         case _ =>
           Left(DriveServicesException(
             message = "Received a null reference in pending result",
-            cause = new NullPointerException().some))
+            cause = Option(new NullPointerException())))
       }
 
     private[this] def fetchResult: Option[T] = Option(pendingResult) map (_.await())
 
     private[this] def statusCodeToError(statusCode: Int) = statusCode match {
-      case CommonStatusCodes.SIGN_IN_REQUIRED => DriveSigInRequired.some
-      case DriveStatusCodes.DRIVE_RATE_LIMIT_EXCEEDED => DriveRateLimitExceeded.some
-      case DriveStatusCodes.DRIVE_RESOURCE_NOT_AVAILABLE => DriveResourceNotAvailable.some
+      case CommonStatusCodes.SIGN_IN_REQUIRED => Option(DriveSigInRequired)
+      case DriveStatusCodes.DRIVE_RATE_LIMIT_EXCEEDED => Option(DriveRateLimitExceeded)
+      case DriveStatusCodes.DRIVE_RESOURCE_NOT_AVAILABLE => Option(DriveResourceNotAvailable)
       case _ => None
     }
 
