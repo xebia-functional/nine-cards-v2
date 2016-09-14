@@ -180,26 +180,6 @@ trait Conversions extends CommonConversions {
     ))
   }
 
-  def toNewPositionCard(card: Card, newPosition: Int): Card = Card(
-    id = card.id,
-    position = card.position,
-    term = card.term,
-    packageName = card.packageName,
-    cardType = card.cardType,
-    intent = card.intent,
-    imagePath = card.imagePath,
-    notification = card.notification)
-
-  def toUpdatedCard(card: Card, name: String): Card = Card(
-    id = card.id,
-    position = card.position,
-    term = name,
-    packageName = card.packageName,
-    cardType = card.cardType,
-    intent = card.intent,
-    imagePath = card.imagePath,
-    notification = card.notification)
-
   def toAddCardRequestByContacts(items: Seq[UnformedContact]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestByContact(zipped._1, zipped._2))
 

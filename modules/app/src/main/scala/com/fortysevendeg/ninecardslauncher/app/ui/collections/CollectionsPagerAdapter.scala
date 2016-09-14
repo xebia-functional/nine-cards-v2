@@ -51,19 +51,19 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     super.destroyItem(container, position, `object`)
   }
 
-  def addCardsToCollection(positionCollection: Int, cards: Seq[Card]) = {
+  def addCardsToCollection(positionCollection: Int, cards: Seq[Card]): Unit = {
     val currentCollection = collections(positionCollection)
     val newCollection = currentCollection.copy(cards = currentCollection.cards ++ cards)
     collections = collections.patch(positionCollection, Seq(newCollection), 1)
   }
 
-  def removeCardFromCollection(positionCollection: Int, card: Card) = {
+  def removeCardFromCollection(positionCollection: Int, cards: Seq[Card]): Unit = {
     val currentCollection = collections(positionCollection)
-    val newCollection = currentCollection.copy(cards = currentCollection.cards.filterNot(c => card == c))
+    val newCollection = currentCollection.copy(cards = currentCollection.cards.filterNot(c => cards.contains(c)))
     collections = collections.patch(positionCollection, Seq(newCollection), 1)
   }
 
-  def updateCardFromCollection(positionCollection: Int, cards: Seq[Card]) = {
+  def updateCardFromCollection(positionCollection: Int, cards: Seq[Card]): Unit = {
     val currentCollection = collections(positionCollection)
     val newCollection = currentCollection.copy(cards = cards)
     collections = collections.patch(positionCollection, Seq(newCollection), 1)

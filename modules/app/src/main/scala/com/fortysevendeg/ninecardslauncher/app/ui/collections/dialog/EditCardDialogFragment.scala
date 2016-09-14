@@ -8,15 +8,14 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionPresenter
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
-class EditCardDialogFragment(collectionId: Int, cardId: Int, cardName: String)(implicit contextWrapper: ContextWrapper, collectionPresenter: CollectionPresenter)
+class EditCardDialogFragment(cardName: String, onChangeName: (Option[String]) => Unit)(implicit contextWrapper: ContextWrapper)
   extends DialogFragment {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
@@ -28,7 +27,7 @@ class EditCardDialogFragment(collectionId: Int, cardId: Int, cardName: String)(i
       setView(dialogView).
       setPositiveButton(android.R.string.ok, new OnClickListener {
         override def onClick(dialog: DialogInterface, which: Int): Unit = {
-          collectionPresenter.saveEditedCard(collectionId, cardId, dialogView.readText.get)
+          onChangeName(dialogView.readText)
         }
       }).
       setNegativeButton(android.R.string.cancel, javaNull).
@@ -48,11 +47,11 @@ class EditCardDialogFragment(collectionId: Int, cardId: Int, cardName: String)(i
 
     LayoutInflater.from(getActivity).inflate(R.layout.dialog_edit_card, this)
 
-    private[this] lazy val editCardName = Option(findView(TR.dialog_edit_card_name))
+    private[this] lazy val editCardName = findView(TR.dialog_edit_card_name)
 
     def setCardName(cardName: String): Ui[Any] = editCardName <~ tvText(cardName)
 
-    def readText: Ui[Option[String]] = (editCardName ~> text) map (_.flatten)
+    def readText: Option[String] = (editCardName ~> text).get
 
     def showKeyboard: Ui[Any] = editCardName <~ etShowKeyboard
 

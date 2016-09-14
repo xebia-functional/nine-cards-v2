@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.animation.ValueAnimator
 import android.os.Bundle
-import android.support.v4.app.FragmentActivity
+import android.support.v4.app.{DialogFragment, FragmentActivity}
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
@@ -21,7 +21,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsF
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.PublishCollectionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.{EditCardDialogFragment, PublishCollectionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -147,6 +147,11 @@ trait CollectionsPagerUiActionsImpl
       case _ => Ui.nop
     }
 
+  override def editCard(collectionId: Int, cardId: Int, cardName: String): Unit =
+    showDialog(new EditCardDialogFragment(cardName, (maybeNewName) => {
+      getActivePresenter foreach (_.saveEditedCard(collectionId, cardId, maybeNewName))
+    }))
+
   override def reloadCards(cards: Seq[Card], reloadFragments: Boolean): Ui[Any] = Ui {
     for {
       adapter <- getAdapter
@@ -183,14 +188,14 @@ trait CollectionsPagerUiActionsImpl
     }
   }
 
-  override def removeCards(card: Card): Ui[Any] = Ui {
+  override def removeCards(cards: Seq[Card]): Ui[Any] = Ui {
     for {
       adapter <- getAdapter
       presenter <- getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
-      adapter.removeCardFromCollection(currentPosition, card)
-      presenter.removeCard(card)
+      adapter.removeCardFromCollection(currentPosition, cards)
+      presenter.removeCards(cards)
     }
   }
 
@@ -236,8 +241,7 @@ trait CollectionsPagerUiActionsImpl
   }
 
   override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] =
-    invalidateOptionMenu() ~
-      hideFabButton ~
+    hideFabButton ~
       ((toolbar <~~
         applyAnimation(onUpdate = (ratio) => current match {
           case ScrollDown =>
@@ -250,13 +254,15 @@ trait CollectionsPagerUiActionsImpl
 
   override def startEditing(): Ui[Any] = {
     val items = collectionsPagerPresenter.statuses.positionsEditing.toSeq.length
-    (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
+    invalidateOptionMenu() ~
+      (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
       notifyDataSetChangedCollectionAdapter
   }
 
   override def reloadItemCollection(position: Int): Ui[Any] = {
     val items = collectionsPagerPresenter.statuses.positionsEditing.toSeq.length
-    (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
+    invalidateOptionMenu() ~
+      (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
       notifyItemChangedCollectionAdapter(position)
   }
 
@@ -294,12 +300,7 @@ trait CollectionsPagerUiActionsImpl
   override def showPublishCollectionWizardDialog(collection: Collection): Ui[Any] =
     activityContextWrapper.getOriginal match {
       case activity: AppCompatActivity => Ui {
-        val fragmentManager = activity.getSupportFragmentManager
-        val ft = fragmentManager.beginTransaction()
-        Option(fragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-        ft.addToBackStack(javaNull)
-        val dialog = PublishCollectionFragment(collection)
-        dialog.show(ft, tagDialog)
+        showDialog(PublishCollectionFragment(collection))
       }
       case _ => showContactUsError
     }
@@ -318,6 +319,17 @@ trait CollectionsPagerUiActionsImpl
   private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = root <~ vSnackbarShort(error)
 
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
+
+  private[this] def showDialog(dialog: DialogFragment): Unit = {
+    activityContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) =>
+        val ft = activity.getSupportFragmentManager.beginTransaction()
+        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+        ft.addToBackStack(javaNull)
+        dialog.show(ft, tagDialog)
+      case _ =>
+    }
+  }
 
   private[this] def elevationsDefault: Ui[Any] = Lollipop.ifSupportedThen {
     (viewPager <~ vElevation(elevation)) ~

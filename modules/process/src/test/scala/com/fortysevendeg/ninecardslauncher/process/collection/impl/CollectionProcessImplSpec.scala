@@ -494,49 +494,17 @@ class CollectionProcessImplSpec
 
         mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
         mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
-        mockPersistenceServices.deleteCard(any) returns TaskService(Task(Xor.right(cardId)))
+        mockPersistenceServices.deleteCard(any, any) returns TaskService(Task(Xor.right(cardId)))
         mockPersistenceServices.updateCards(any) returns TaskService(Task(Xor.right(Seq(1))))
 
         val result = collectionProcess.deleteCard(collectionId, cardId).value.run
         result shouldEqual Xor.Right((): Unit)
       }
 
-    "returns a CardException if the service throws a exception finding the card by Id" in
+    "returns a CardException if the service throws a exception" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
-        val result = collectionProcess.deleteCard(collectionId, cardId).value.run
-        result must beAnInstanceOf[Xor.Left[CardException]]
-      }
-
-    "returns a CardException if the service throws a exception fetching the cards" in
-      new CollectionProcessScope {
-
-        mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
-        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
-
-        val result = collectionProcess.deleteCard(collectionId, cardId).value.run
-        result must beAnInstanceOf[Xor.Left[CardException]]
-      }
-
-    "returns a CardException if the service throws a exception deleting the card" in
-      new CollectionProcessScope {
-
-        mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
-        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
-        mockPersistenceServices.deleteCard(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
-
-        val result = collectionProcess.deleteCard(collectionId, cardId).value.run
-        result must beAnInstanceOf[Xor.Left[CardException]]
-      }
-
-    "returns a CardException if the service throws a exception updating the cards" in
-      new CollectionProcessScope {
-
-        mockPersistenceServices.findCardById(any) returns TaskService(Task(Xor.right(Option(servicesCard))))
-        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Xor.right(seqServicesCard)))
-        mockPersistenceServices.deleteCard(any) returns TaskService(Task(Xor.right(cardId)))
-        mockPersistenceServices.updateCards(any) returns TaskService(Task(Xor.left(persistenceServiceException)))
+        mockPersistenceServices.deleteCard(any, any) returns TaskService(Task(Xor.left(persistenceServiceException)))
 
         val result = collectionProcess.deleteCard(collectionId, cardId).value.run
         result must beAnInstanceOf[Xor.Left[CardException]]

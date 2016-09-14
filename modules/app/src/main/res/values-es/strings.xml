@@ -469,6 +469,8 @@
 
     <string name="devClearCacheImagesTitle">Limpiar imágenes en caché</string>
 
+    <string name="devShowPositionInCardsTitle">Mostrar posiciones en las tarjetas</string>
+
     <string name="devCacheCleared">Caché limpiada</string>
 
     <string name="collectionDetailAddCardsMessage">

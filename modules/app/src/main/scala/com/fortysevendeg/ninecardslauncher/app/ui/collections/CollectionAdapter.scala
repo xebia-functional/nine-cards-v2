@@ -6,16 +6,16 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.CollectionAdapterStyles
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{BackgroundSelectedDrawable, IconTypes, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize, IconsSize}
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize, IconsSize, NineCardsPreferencesValue, ShowPositionInCards}
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardTextColor, NineCardsTheme, PrimaryColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -30,11 +30,14 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with ReorderItemTouchListener { self =>
 
+  val showPositions = ShowPositionInCards.readValue(new NineCardsPreferencesValue)
+
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.card_item, parent, false)
     ViewHolderCollectionAdapter(
       content = view,
-      heightCard = heightCard)
+      heightCard = heightCard,
+      showPositions = showPositions)
   }
 
   override def getItemCount: Int = collection.cards.size
@@ -48,10 +51,9 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     notifyItemRangeInserted(collection.cards.length - count, count)
   }
 
-  def removeCard(card: Card) = {
-    val position = collection.cards.indexOf(card)
-    collection = collection.copy(cards = collection.cards.filterNot(c => card == c))
-    notifyItemRemoved(position)
+  def removeCards(cards: Seq[Card]) = {
+    collection = collection.copy(cards = collection.cards.filterNot(c => cards.contains(c)))
+    notifyDataSetChanged()
   }
 
   def updateCard(card: Card) = {
@@ -73,7 +75,8 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
 
 case class ViewHolderCollectionAdapter(
   content: CardView,
-  heightCard: Int)
+  heightCard: Int,
+  showPositions: Boolean)
   (implicit context: ActivityContextWrapper,
     theme: NineCardsTheme,
     collectionPresenter: CollectionPresenter,
@@ -115,11 +118,12 @@ case class ViewHolderCollectionAdapter(
       case EditingCollectionMode => selectCard(collectionsPagerPresenter.statuses.positionsEditing.contains(getAdapterPosition))
       case _ => if (selectedIcon.getVisibility == View.VISIBLE) clearSelectedCard() else Ui.nop
     }
+    val text = if (showPositions) s"${card.position} - ${card.term}" else card.term
     (content <~ On.click {
       Ui(collectionsPagerPresenter.performCard(card, getAdapterPosition))
     }) ~
       (icon <~ vResize(IconsSize.getIconApp) <~ iconCardTransform(card)) ~
-      (name <~ tvText(card.term) <~ tvSizeResource(FontSize.getSizeResource) <~ nameStyle(card.cardType)) ~
+      (name <~ tvText(text) <~ tvSizeResource(FontSize.getSizeResource) <~ nameStyle(card.cardType)) ~
       (badge <~ (getBadge(card.cardType) map {
         ivSrc(_) + vVisible
       } getOrElse vGone)) ~

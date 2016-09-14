@@ -155,11 +155,21 @@ trait PersistenceServices {
 
   /**
     * Deletes a card from the repository by the card
-    * @param request includes the card to delete
+    * @param collectionId includes the collection where the card is included
+    * @param cardId includes the card to delete
     * @return an Int if the card has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the card
     */
-  def deleteCard(request: DeleteCardRequest): TaskService[Int]
+  def deleteCard(collectionId: Int, cardId: Int): TaskService[Int]
+
+  /**
+    * Deletes a card from the repository by the card
+    * @param collectionId includes the collection where the card is included
+    * @param cardIds includes the cards to delete
+    * @return an Int if the card has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the card
+    */
+  def deleteCards(collectionId: Int, cardIds: Seq[Int]): TaskService[Int]
 
   /**
     * Deletes the cards from the repository by the collection id

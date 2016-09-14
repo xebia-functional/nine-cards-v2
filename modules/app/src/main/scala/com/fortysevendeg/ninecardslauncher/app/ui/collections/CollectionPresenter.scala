@@ -32,25 +32,23 @@ case class CollectionPresenter(
 
   def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit = {
     Task.fork(di.collectionProcess.reorderCard(collectionId, cardId, position).value).resolveAsyncUi(
-      onResult = (_) => actions.reloadCards()
-    )
+      onResult = (_) => actions.reloadCards())
   }
 
-  def moveToCollection(card: Card): Unit =
+  def moveToCollection(): Unit =
     Task.fork(di.collectionProcess.getCollections.value).resolveAsyncUi(
-      onResult = (collections) => actions.moveToCollection(collections, card),
+      onResult = (collections) =>
+        actions.moveToCollection(collections),
       onException = (_) => actions.showContactUsError())
-
-  def editCard(collectionId: Int, cardId: Int, cardName: String): Unit = actions.editCard(collectionId, cardId, cardName)
 
   def addCards(cards: Seq[Card]): Unit = {
     cards foreach (card => trackCard(card, AddedToCollectionAction))
     actions.addCards(cards).run
   }
 
-  def removeCard(card: Card): Unit = {
-    trackCard(card, RemovedInCollectionAction)
-    actions.removeCard(card).run
+  def removeCards(cards: Seq[Card]): Unit = {
+    cards foreach (trackCard(_, RemovedInCollectionAction))
+    actions.removeCards(cards).run
   }
 
   def reloadCards(cards: Seq[Card]): Unit = actions.reloadCards(cards).run
@@ -121,13 +119,11 @@ trait CollectionUiActions {
 
   def showEmptyCollection(): Ui[Any]
 
-  def moveToCollection(collections: Seq[Collection], card: Card): Ui[Any]
-
-  def editCard(collectionId: Int, cardId: Int, cardName: String): Unit
+  def moveToCollection(collections: Seq[Collection]): Ui[Any]
 
   def addCards(cards: Seq[Card]): Ui[Any]
 
-  def removeCard(card: Card): Ui[Any]
+  def removeCards(cards: Seq[Card]): Ui[Any]
 
   def reloadCard(card: Card): Ui[Any]
 
