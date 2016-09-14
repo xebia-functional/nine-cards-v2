@@ -307,6 +307,8 @@
     <string name="menuAccountSync">Sincronizar</string>
     <string name="menuAccountCopy">Copiar</string>
     <string name="menuAccountDelete">Eliminar</string>
+    <string name="menuAccountChangeName">Cambiar nombre</string>
+    <string name="menuAccountPrintInfo">Imprimir información</string>
 
     <string name="accountSynced">Cuenta sincronizada</string>
 
@@ -474,6 +476,8 @@
             Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +
         ]]>
     </string>
+
+    <string name="devShowPrintInfoOptionInAccounts">Imprimir información de Drive</string>
 
     <!-- Preferences About -->
     <string name="others">Otros</string>

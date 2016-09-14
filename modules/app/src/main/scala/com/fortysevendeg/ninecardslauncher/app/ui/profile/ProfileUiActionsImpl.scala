@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.AccountOptions._
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, SubscriptionsAdapter}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{CopyAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
@@ -188,12 +189,13 @@ trait ProfileUiActionsImpl
     (rootLayout <~ vSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)) ~
       (loadingView <~ vInvisible)
 
-  private[this] def accountClickListener(position: Int, itemId: Int, accountSync: AccountSync): Unit =
-    itemId match {
-      case R.id.action_sync => presenter.launchService()
-      case R.id.action_delete => accountSync.cloudId foreach showDialogForDeleteDevice
-      case R.id.action_copy => accountSync.cloudId foreach showDialogForCopyDevice
-      case _ =>
+  private[this] def accountClickListener(position: Int, accountOption: AccountOption, accountSync: AccountSync): Unit =
+    accountOption match {
+      case SyncOption => presenter.launchService()
+      case DeleteOption => accountSync.cloudId foreach showDialogForDeleteDevice
+      case CopyOption => accountSync.cloudId foreach showDialogForCopyDevice
+      case ChangeNameOption =>
+      case PrintInfoOption =>
     }
 
   override def onTabReselected(tab: Tab): Unit = {}

@@ -322,6 +322,8 @@
     <string name="menuAccountSync">Synchronize</string>
     <string name="menuAccountCopy">Copy</string>
     <string name="menuAccountDelete">Delete</string>
+    <string name="menuAccountChangeName">Change name</string>
+    <string name="menuAccountPrintInfo">Print info</string>
 
     <string name="collectionAdded">This collection has been added to your collections</string>
 
@@ -488,6 +490,8 @@
             This collection doesn\'t have cards. You can add <b>apps, contacts, recommendations or shortcuts</b> from the + button
         ]]>
     </string>
+
+    <string name="devShowPrintInfoOptionInAccounts">Print Drive information</string>
 
     <!-- Preferences About -->
     <string name="others">Others</string>
