@@ -86,7 +86,7 @@ object Settings {
   lazy val basicSettings = Seq(
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
-    libraryDependencies ++= Seq(scalaz, scalazConcurrent, cats, monixTypes, monixEval)
+    libraryDependencies ++= Seq(cats, monixTypes, monixEval)
   )
 
   lazy val duplicatedFiles = Set(

@@ -10,8 +10,6 @@ object Libraries {
 
     lazy val scalaReflect = "org.scala-lang" % "scala-reflect" % scalaV
     lazy val scalap = "org.scala-lang" % "scalap" % scalaV
-    lazy val scalaz = "org.scalaz" %% "scalaz-core" % scalaZV
-    lazy val scalazConcurrent = "org.scalaz" %% "scalaz-concurrent" % scalaZV
   }
 
   object cats {
