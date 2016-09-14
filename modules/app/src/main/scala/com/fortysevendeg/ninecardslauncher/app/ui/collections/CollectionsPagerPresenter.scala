@@ -63,15 +63,26 @@ class CollectionsPagerPresenter(
     )
   }
 
+  def removeCards(): Unit = actions.getCurrentCollection match {
+    case Some(collection) =>
+      val currentCollectionId = collection.id
+      val cards = filterSelectedCards(collection.cards)
+      closeEditingMode()
+
+      di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id)).value.resolveAsyncUi(
+        onResult = (_) => {
+          momentReloadBroadCastIfNecessary()
+          actions.removeCards(cards)
+        },
+        onException = (_) => actions.showContactUsError)
+    case _ => actions.showContactUsError.run
+  }
+
   def moveToCollection(toCollectionId: Int, collectionPosition: Int): Unit =
     actions.getCurrentCollection match {
       case Some(collection) =>
         val currentCollectionId = collection.id
-
-        val cards = collection.cards.zipWithIndex flatMap {
-          case (card, index) if statuses.positionsEditing.contains(index) => Option(card)
-          case _ => None
-        }
+        val cards = filterSelectedCards(collection.cards)
         closeEditingMode()
 
         (for {
@@ -232,6 +243,11 @@ class CollectionsPagerPresenter(
 
   private[this] def saveShortcutIcon(bitmap: Option[Bitmap]): TaskService[String] =
     bitmap map (di.deviceProcess.saveShortcutIcon(_)) getOrElse TaskService(Task(Xor.right(""))) // We use a empty string because the UI will generate an image
+
+  private[this] def filterSelectedCards(cards: Seq[Card]): Seq[Card] = cards.zipWithIndex flatMap {
+    case (card, index) if statuses.positionsEditing.contains(index) => Option(card)
+    case _ => None
+  }
 
 }
 
