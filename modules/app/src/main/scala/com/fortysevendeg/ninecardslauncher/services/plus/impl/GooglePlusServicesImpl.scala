@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.plus.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
@@ -12,9 +11,9 @@ import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient}
 import com.google.android.gms.plus.People.LoadPeopleResult
 import com.google.android.gms.plus.Plus
 import com.google.android.gms.plus.model.people.Person
+import monix.eval.Task
 
 import scala.util.{Failure, Success, Try}
-import scalaz.concurrent.Task
 
 class GooglePlusServicesImpl(googleApiClient: GoogleApiClient)
   extends GooglePlusServices
@@ -47,27 +46,25 @@ class GooglePlusServicesImpl(googleApiClient: GoogleApiClient)
   private[this] def loadPeopleApi: TaskService[LoadPeopleResult] = TaskService {
     Task {
       Try(Plus.PeopleApi.load(googleApiClient, me).await()) match {
-        case Success(r) if validCodes.contains(r.getStatus.getStatusCode) => Xor.Right(r)
+        case Success(r) if validCodes.contains(r.getStatus.getStatusCode) => Right(r)
         case Success(r) =>
           val message = Option(r.getStatus.getStatusMessage) getOrElse "Unknown error with Google API"
-          Xor.Left(GooglePlusServicesException(
+          Left(GooglePlusServicesException(
             message = message,
             recoverable = recoverableStatusCodes.contains(r.getStatus.getStatusCode)))
-        case Failure(e) => Xor.Left(GooglePlusServicesException(message = e.getMessage, cause = Some(e)))
+        case Failure(e) => Left(GooglePlusServicesException(message = e.getMessage, cause = Some(e)))
       }
     }
   }
 
   private[this] def fetchPerson(loadPeopleResult: LoadPeopleResult): TaskService[Person] = TaskService {
-    Task {
-      CatchAll[GooglePlusServicesException] {
-        val people = notNullOrThrow(loadPeopleResult, "LoadPeopleResult is null")
-        val personBuffer = notNullOrThrow(people.getPersonBuffer, "PersonBuffer on LoadPeopleResult is null")
-        if (personBuffer.getCount > 0) {
-          notNullOrThrow(personBuffer.get(0), "Person in PersonBuffer is null")
-        } else {
-          throw new IllegalStateException("There aren't any persons in the PersonBuffer")
-        }
+    CatchAll[GooglePlusServicesException] {
+      val people = notNullOrThrow(loadPeopleResult, "LoadPeopleResult is null")
+      val personBuffer = notNullOrThrow(people.getPersonBuffer, "PersonBuffer on LoadPeopleResult is null")
+      if (personBuffer.getCount > 0) {
+        notNullOrThrow(personBuffer.get(0), "Person in PersonBuffer is null")
+      } else {
+        throw new IllegalStateException("There aren't any persons in the PersonBuffer")
       }
     }
   }

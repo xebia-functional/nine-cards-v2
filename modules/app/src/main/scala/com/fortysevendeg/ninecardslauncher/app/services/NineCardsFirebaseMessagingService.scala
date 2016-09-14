@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.services.payloads.SharedCollectionPayload
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.messaging.{FirebaseMessagingService, RemoteMessage}
@@ -17,7 +17,6 @@ import macroid.Contexts
 import play.api.libs.json._
 
 import scala.util.{Failure, Success, Try}
-import scalaz.concurrent.Task
 
 class NineCardsFirebaseMessagingService
   extends FirebaseMessagingService
@@ -52,7 +51,7 @@ class NineCardsFirebaseMessagingService
   }
 
   def sharedCollectionNotification(payload: SharedCollectionPayload): Unit = {
-    Task.fork(di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier, original = true).value).resolveAsync(
+    di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier, original = true).resolveAsync2(
       onResult = (maybeCol: Option[Collection]) => {
 
         maybeCol foreach { col =>

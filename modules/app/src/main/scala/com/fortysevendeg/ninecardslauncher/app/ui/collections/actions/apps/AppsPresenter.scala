@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AllAppsCategory, Misc, NineCardCategory}
@@ -10,7 +10,6 @@ import com.fortysevendeg.ninecardslauncher.process.device.{AppException, GetAppO
 import macroid.{ActivityContextWrapper, Ui}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{TermCounter, App, IterableApps}
 
-import scalaz.concurrent.Task
 
 case class AppsPresenter(
   category: NineCardCategory,
@@ -33,7 +32,7 @@ case class AppsPresenter(
       case AllApps => getLoadApps(GetByName)
       case AppsByCategory => getLoadAppsByCategory(category)
     }
-    Task.fork(task.value).resolveAsyncUi(
+    task.resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = {
         case (apps: IterableApps, counters: Seq[TermCounter]) =>

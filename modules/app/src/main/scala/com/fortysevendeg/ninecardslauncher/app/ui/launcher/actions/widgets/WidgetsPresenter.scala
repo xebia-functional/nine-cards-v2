@@ -1,11 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.process.device.models.AppsWithWidgets
 import macroid._
 
-import scalaz.concurrent.Task
 
 class WidgetsPresenter(actions: WidgetsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
@@ -16,7 +15,7 @@ class WidgetsPresenter(actions: WidgetsUiActions)(implicit contextWrapper: Activ
   }
 
   def loadWidgets(): Unit = {
-    Task.fork(di.deviceProcess.getWidgets.value).resolveAsyncUi(
+    di.deviceProcess.getWidgets.resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = (widgets: Seq[AppsWithWidgets]) => actions.loadWidgets(widgets),
       onException = (_) => actions.showErrorLoadingWidgetsInScreen()

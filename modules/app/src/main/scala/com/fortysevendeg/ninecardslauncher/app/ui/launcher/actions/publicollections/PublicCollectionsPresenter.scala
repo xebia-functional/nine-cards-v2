@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollect
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
@@ -18,7 +18,7 @@ import scalaz.concurrent.Task
 
 class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with Conversions {
+    with Conversions {
 
   protected var statuses = PublicCollectionStatuses(Communication, TopSharedCollection)
 
@@ -40,7 +40,7 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
   }
 
   def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
-    Task.fork(addCollection(sharedCollection).value).resolveAsyncUi(
+    addCollection(sharedCollection).resolveAsyncUi2(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
       onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }
@@ -49,7 +49,7 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
     launchShareCollection(sharedCollection.id)
 
   def loadPublicCollections(): Unit = {
-    Task.fork(getSharedCollections(statuses.category, statuses.typeSharedCollection).value).resolveAsyncUi(
+    getSharedCollections(statuses.category, statuses.typeSharedCollection).resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = (sharedCollections: Seq[SharedCollection]) => {
         if (sharedCollections.isEmpty) {
@@ -62,9 +62,8 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
   }
 
   def launchShareCollection(sharedCollectionId: String): Unit =
-    Task.fork(
-      di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId)).value)
-      .resolveAsyncUi(onException = _ => actions.showContactUsError)
+    di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
+      .resolveAsyncUi2(onException = _ => actions.showContactUsError)
 
   private[this] def getSharedCollections(
     category: NineCardCategory,

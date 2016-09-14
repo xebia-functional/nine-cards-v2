@@ -8,7 +8,6 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskServ
 import macroid.Ui
 
 import scala.concurrent.Future
-import scalaz.concurrent.Task
 
 object UiOps {
 
@@ -31,7 +30,7 @@ object UiOps {
   implicit class ServiceUi(ui: Ui[Any]) extends ImplicitsUiExceptions {
 
     def toService: TaskService[Unit] = TaskService {
-      Task(CatchAll[UiException](ui.run))
+      CatchAll[UiException](ui.run)
     }
 
   }

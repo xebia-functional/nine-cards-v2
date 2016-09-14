@@ -2,14 +2,13 @@ package com.fortysevendeg.ninecardslauncher.app.services
 
 import android.app.{IntentService, Service}
 import android.content.{Context, Intent}
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, BroadcastDispatcher, ContextSupportProvider}
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.observers.NineCardsObserver._
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -22,8 +21,8 @@ import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{ImplicitsS
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
-
-import scalaz.concurrent.Task
+import monix.eval.Task
+import cats.syntax.either._
 
 class SynchronizeDeviceService
   extends IntentService("synchronizeDeviceService")
@@ -44,7 +43,7 @@ class SynchronizeDeviceService
   override def onHandleIntent(intent: Intent): Unit = {
     registerDispatchers
 
-    Task.fork(updateCollections().value).resolveAsync()
+    updateCollections().resolveAsync2()
 
     synchronizeDevice
   }
@@ -86,7 +85,7 @@ class SynchronizeDeviceService
       } yield ()
     }
 
-    Task.fork(sync(client).value).resolveAsync(
+    sync(client).resolveAsync2(
       _ => sendStateAndFinish(stateSuccess),
       throwable => {
         error(
@@ -113,7 +112,7 @@ class SynchronizeDeviceService
                 name = collection.name,
                 description = None,
                 packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName))).map(Option(_))
-          case _ => services.TaskService(Task(Xor.right(None)))
+          case _ => services.TaskService(Task(Either.right(None)))
         }
 
       for {
@@ -122,15 +121,14 @@ class SynchronizeDeviceService
       } yield ()
     }
 
-    val ids = preferences.getString(collectionIdsKey, "").split(",")
+    val ids = preferences.getString(collectionIdsKey, "").split(",").toSeq
     val updateServices = ids filterNot (_.isEmpty) map (id => updateCollection(id.toInt).value)
     preferences.edit().remove(collectionIdsKey).apply()
 
-    services.TaskService {
-      Task.gatherUnordered(updateServices, exceptionCancels = false) map { results =>
-        CatchAll[SharedCollectionsExceptions](results.collect { case Xor.Right(r) => r })
-      }
+    services.TaskService{
+      Task.gatherUnordered(updateServices) map (_ => Right(():Unit))
     }
+
   }
 
   private[this] def sendStateAndFinish(state: String) = {

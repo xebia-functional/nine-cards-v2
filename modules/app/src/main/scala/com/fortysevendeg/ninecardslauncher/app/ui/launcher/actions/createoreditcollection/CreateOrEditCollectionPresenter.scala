@@ -1,13 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCollectionRequest, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.FreeCollectionType
 import macroid.{ActivityContextWrapper, Ui}
 
-import scalaz.concurrent.Task
 
 class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
@@ -21,7 +20,7 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
   }
 
   def findCollection(collectionId: Int): Unit =
-    Task.fork(di.collectionProcess.getCollectionById(collectionId).value).resolveAsyncUi(
+    di.collectionProcess.getCollectionById(collectionId).resolveAsyncUi2(
       onResult = {
         case Some(collection) => actions.initializeEditCollection(collection)
         case _ => actions.showMessageContactUsError
@@ -41,7 +40,7 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
         themedColorIndex = index,
         appsCategory = collection.appsCategory
       )
-      Task.fork(di.collectionProcess.editCollection(collection.id, request).value).resolveAsyncUi(
+      di.collectionProcess.editCollection(collection.id, request).resolveAsyncUi2(
         onResult = (c) => actions.editCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError
       )
@@ -62,7 +61,7 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
         cards = Seq.empty,
         moment = None
       )
-      Task.fork(di.collectionProcess.addCollection(request).value).resolveAsyncUi(
+      di.collectionProcess.addCollection(request).resolveAsyncUi2(
         onResult = (c) => actions.addCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError
       )
