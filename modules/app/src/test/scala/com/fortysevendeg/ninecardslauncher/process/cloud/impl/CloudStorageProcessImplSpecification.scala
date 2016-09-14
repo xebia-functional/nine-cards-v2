@@ -4,6 +4,7 @@ import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcessException
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.RawCloudStorageDevice
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
 import org.hamcrest.{Description, TypeSafeMatcher}
@@ -272,7 +273,7 @@ class CloudStorageProcessImplSpec
 
   "createOrUpdateCloudStorageDevice" should {
 
-    "call to create file in Service with a valid Json" in
+    "call to create file in Service with a valid Json and None for cloudId" in
       new CloudStorageProcessImplScope {
 
         driveServices.createFile(
@@ -284,14 +285,27 @@ class CloudStorageProcessImplSpec
 
         val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-        cloudStorageProcess.createCloudStorageDevice(cloudStorageServiceData).value.run
+        cloudStorageProcess.createOrUpdateCloudStorageDevice(None, cloudStorageServiceData).value.run
+      }
+
+    "call to create file in Service with a valid Json and a cloudId" in
+      new CloudStorageProcessImplScope {
+
+        driveServices.updateFile(
+          anyString,
+          anyString,
+          anyString) returns TaskService(Task(Xor.right(driveServiceFileSummary)))
+
+        val cloudStorageServiceData = generateCloudStorageDeviceData()
+
+        cloudStorageProcess.createOrUpdateCloudStorageDevice(Some(cloudId), cloudStorageServiceData).value.run
       }
 
     "return a CloudStorageProcessException when the service return an exception" in
       new CloudStorageProcessImplScope  {
 
         driveServices.createFile(anyString, anyString, anyString, anyString, anyString) returns TaskService(Task(Xor.left(driveServicesException)))
-        val result = cloudStorageProcess.createCloudStorageDevice(generateCloudStorageDeviceData()).value.run
+        val result = cloudStorageProcess.createOrUpdateCloudStorageDevice(None, generateCloudStorageDeviceData()).value.run
         result must beAnInstanceOf[Xor.Left[DriveServicesException]]
       }
 
@@ -326,6 +340,7 @@ class CloudStorageProcessImplSpec
         persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
         driveServices.fileExists(cloudId) returns TaskService(Task(Xor.right(true)))
         driveServices.updateFile(
+          anyString,
           anyString,
           anyString) returns TaskService(Task(Xor.right(driveServiceFileSummary)))
 
@@ -379,7 +394,7 @@ class CloudStorageProcessImplSpec
       new CloudStorageProcessImplScope  {
 
         persistenceServices.getAndroidId returns TaskService(Task(Xor.left(androidIdNotFoundException)))
-        driveServices.updateFile(anyString, anyString) returns TaskService(Task(Xor.left(driveServicesException)))
+        driveServices.updateFile(anyString, anyString, anyString) returns TaskService(Task(Xor.left(driveServicesException)))
         context.getActiveUserId returns Some(activeUserId)
         persistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(user))))
 
@@ -443,6 +458,34 @@ class CloudStorageProcessImplSpec
 
         driveServices.deleteFile(any) returns TaskService(Task(Xor.left(driveServicesException)))
         val result = cloudStorageProcess.deleteCloudStorageDevice(cloudId).value.run
+        result must beAnInstanceOf[Xor.Left[DriveServicesException]]
+      }
+
+  }
+
+  "getRawCloudStorageDevice" should {
+
+    "return a valid response when the service finds the device" in
+      new CloudStorageProcessImplScope {
+
+        driveServices.readFile(cloudId) returns TaskService(Task(Xor.right(driveServiceFile)))
+        val expected = RawCloudStorageDevice(
+          cloudId = cloudId,
+          uuid = driveServiceFile.summary.uuid,
+          deviceId = driveServiceFile.summary.deviceId,
+          title = driveServiceFile.summary.title,
+          createdDate = driveServiceFile.summary.createdDate,
+          modifiedDate = driveServiceFile.summary.modifiedDate,
+          json = driveServiceFile.content)
+        val result = cloudStorageProcess.getRawCloudStorageDevice(cloudId).value.run
+        result shouldEqual Xor.right(expected)
+      }
+
+    "return a CloudStorageProcessException when the service returns an exception" in
+      new CloudStorageProcessImplScope  {
+
+        driveServices.readFile(any) returns TaskService(Task(Xor.left(driveServicesException)))
+        val result = cloudStorageProcess.getRawCloudStorageDevice(cloudId).value.run
         result must beAnInstanceOf[Xor.Left[DriveServicesException]]
       }
 

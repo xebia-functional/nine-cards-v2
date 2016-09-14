@@ -339,6 +339,7 @@
     <string name="logout">Logout</string>
 
     <string name="copyAccountSyncDialogTitle">New configuration</string>
+    <string name="renameAccountSyncDialogTitle">New name</string>
     <string name="hintNewConfigurationName">Name</string>
     <string name="removeAccountSyncMessage">Are you sure that you want remove this device?</string>
 

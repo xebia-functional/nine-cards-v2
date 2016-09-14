@@ -316,7 +316,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
   private[this] def loadDevices(maybeProfileName: Option[String]): Unit = {
 
     def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = TaskService {
-      val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).value)
+      val tasks = cloudStorageDevices map (d => cloudStorageProcess.createOrUpdateCloudStorageDevice(None, d).value)
       Task.gatherUnordered(tasks) map (c => XorCatchAll[CloudStorageProcessException](c.collect { case Xor.Right(r) => r }))
     }
 

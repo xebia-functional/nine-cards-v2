@@ -324,6 +324,7 @@
     <string name="logout">Salir</string>
 
     <string name="copyAccountSyncDialogTitle">Nueva configuración</string>
+    <string name="renameAccountSyncDialogTitle">Nuevo nombre</string>
     <string name="hintNewConfigurationName">Nombre</string>
     <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
 
