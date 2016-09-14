@@ -79,7 +79,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       val subscriptionsIds = subscriptions.items map (_.originalSharedCollectionId)
 
       val collectionsWithOriginalSharedCollectionId: Seq[(String, Collection)] =
-        collections.flatMap(collection => collection.sharedCollectionId.map((_, collection)))
+        collections.flatMap(collection => collection.originalSharedCollectionId.map((_, collection)))
 
       (collectionsWithOriginalSharedCollectionId map {
         case (originalSharedCollectionId: String, collection: Collection) =>

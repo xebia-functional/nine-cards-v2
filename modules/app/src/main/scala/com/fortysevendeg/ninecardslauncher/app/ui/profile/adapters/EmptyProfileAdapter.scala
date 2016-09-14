@@ -21,7 +21,7 @@ case class EmptyProfileAdapter(tab: ProfileTab)(implicit activityContext: Activi
   override def onBindViewHolder(viewHolder: ViewHolderEmptyProfileAdapter, position: Int): Unit =
     viewHolder.bind(tab).run
 
-  override def onCreateViewHolder(parent: ViewGroup, i: Int): ViewHolderEmptyProfileAdapter = {
+  override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderEmptyProfileAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(R.layout.empty_profile_item, parent, false)
     new ViewHolderEmptyProfileAdapter(view)
   }

@@ -40,8 +40,6 @@ trait EmptyProfileAdapterStyles {
 
   implicit val theme: NineCardsTheme
 
-  val themeTextColor = theme.get(CardTextColor)
-
   def rootStyle()(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     vVisible +
       cvCardBackgroundColor(theme.get(CardBackgroundColor))
