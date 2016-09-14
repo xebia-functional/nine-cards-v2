@@ -63,6 +63,20 @@ class CollectionsPagerPresenter(
     )
   }
 
+  def editCard(): Unit = actions.getCurrentCollection match {
+    case Some(collection) =>
+      val currentCollectionId = collection.id
+      val cards = filterSelectedCards(collection.cards)
+      cards match {
+        case head :: tail if tail.isEmpty =>
+          closeEditingMode()
+          actions.editCard(currentCollectionId, head.id, head.term)
+        case _ => actions.showContactUsError.run
+      }
+
+    case _ => actions.showContactUsError.run
+  }
+
   def removeCards(): Unit = actions.getCurrentCollection match {
     case Some(collection) =>
       val currentCollectionId = collection.id
@@ -276,6 +290,8 @@ trait CollectionsPagerUiActions {
   def showNoPhoneCallPermissionError(): Ui[Any]
 
   def showCollections(collections: Seq[Collection], position: Int): Ui[Any]
+
+  def editCard(collectionId: Int, cardId: Int, cardName: String): Unit
 
   def reloadCards(cards: Seq[Card], reloadFragments: Boolean): Ui[Any]
 

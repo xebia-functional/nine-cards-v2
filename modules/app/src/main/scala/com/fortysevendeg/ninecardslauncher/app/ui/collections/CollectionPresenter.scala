@@ -41,8 +41,6 @@ case class CollectionPresenter(
         actions.moveToCollection(collections),
       onException = (_) => actions.showContactUsError())
 
-  def editCard(collectionId: Int, cardId: Int, cardName: String): Unit = actions.editCard(collectionId, cardId, cardName)
-
   def addCards(cards: Seq[Card]): Unit = {
     cards foreach (card => trackCard(card, AddedToCollectionAction))
     actions.addCards(cards).run
@@ -122,8 +120,6 @@ trait CollectionUiActions {
   def showEmptyCollection(): Ui[Any]
 
   def moveToCollection(collections: Seq[Collection]): Ui[Any]
-
-  def editCard(collectionId: Int, cardId: Int, cardName: String): Unit
 
   def addCards(cards: Seq[Card]): Ui[Any]
 

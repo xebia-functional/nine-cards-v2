@@ -71,17 +71,23 @@ class CollectionFragment
 
   override def onPrepareOptionsMenu(menu: Menu): Unit = {
     super.onPrepareOptionsMenu(menu)
-    collectionsPresenter.statuses.collectionMode match {
-      case NormalCollectionMode =>
+    (collectionsPresenter.statuses.collectionMode, collectionsPresenter.statuses.positionsEditing.toSeq.length) match {
+      case (NormalCollectionMode, _) =>
         menu.findItem(R.id.action_make_public).setVisible(true)
         menu.findItem(R.id.action_share).setVisible(true)
         menu.findItem(R.id.action_edit).setVisible(false)
         menu.findItem(R.id.action_move_to_collection).setVisible(false)
         menu.findItem(R.id.action_delete).setVisible(false)
-      case EditingCollectionMode =>
+      case (EditingCollectionMode, 1) =>
         menu.findItem(R.id.action_make_public).setVisible(false)
         menu.findItem(R.id.action_share).setVisible(false)
         menu.findItem(R.id.action_edit).setVisible(true)
+        menu.findItem(R.id.action_move_to_collection).setVisible(true)
+        menu.findItem(R.id.action_delete).setVisible(true)
+      case (EditingCollectionMode, _) =>
+        menu.findItem(R.id.action_make_public).setVisible(false)
+        menu.findItem(R.id.action_share).setVisible(false)
+        menu.findItem(R.id.action_edit).setVisible(false)
         menu.findItem(R.id.action_move_to_collection).setVisible(true)
         menu.findItem(R.id.action_delete).setVisible(true)
     }
@@ -89,7 +95,7 @@ class CollectionFragment
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case R.id.action_edit =>
-      presenter.editCard()
+      collectionsPresenter.editCard()
       true
     case R.id.action_move_to_collection =>
       presenter.moveToCollection()

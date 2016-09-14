@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
-import android.support.v4.app.{DialogFragment, Fragment}
-import android.support.v7.app.AppCompatActivity
+import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
@@ -13,7 +12,6 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
@@ -26,7 +24,6 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Pull
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullingListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.CardPadding
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardBackgroundColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -46,8 +43,6 @@ trait CollectionUiActionsImpl
   implicit val uiContext: UiContext[_]
 
   implicit val collectionsPresenter: CollectionsPagerPresenter
-
-  val tagDialog = "dialog"
 
   var statuses = CollectionStatuses()
 
@@ -140,9 +135,6 @@ trait CollectionUiActionsImpl
       c => collectionsPresenter.moveToCollection(c, collections.indexWhere(_.id == c)),
       () => ()).show())
 
-  override def editCard(collectionId: Int, cardId: Int, cardName: String): Unit =
-    showDialog(new EditCardDialogFragment(collectionId, cardId, cardName))
-
   override def addCards(cards: Seq[Card]): Ui[Any] = getAdapter map { adapter =>
     adapter.addCards(cards)
     updateScroll()
@@ -177,17 +169,6 @@ trait CollectionUiActionsImpl
   override def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get
 
   override def getCurrentCollection: Option[Collection] = getAdapter map (_.collection)
-
-  private[this] def showDialog(dialog: DialogFragment): Unit = {
-    fragmentContextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) =>
-        val ft = activity.getSupportFragmentManager.beginTransaction()
-        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-        ft.addToBackStack(javaNull)
-        dialog.show(ft, tagDialog)
-      case _ =>
-    }
-  }
 
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
 
