@@ -70,7 +70,7 @@ class NineCardsFirebaseMessagingService
           val unsubscribeIntent = new Intent(this, classOf[UpdateSharedCollectionService])
           unsubscribeIntent.setAction(UpdateSharedCollectionService.actionUnsubscribe)
           unsubscribeIntent.putExtra(UpdateSharedCollectionService.intentExtraCollectionId, collectionId)
-          unsubscribeIntent.putExtra(UpdateSharedCollectionService.intentExtraSharedCollectionId, col.sharedCollectionId)
+          unsubscribeIntent.putExtra(UpdateSharedCollectionService.intentExtraSharedCollectionId, payload.publicIdentifier)
 
           val syncIntent = new Intent(this, classOf[UpdateSharedCollectionService])
           syncIntent.setAction(UpdateSharedCollectionService.actionSync)
