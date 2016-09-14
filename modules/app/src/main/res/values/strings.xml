@@ -339,13 +339,26 @@
     <string name="copyAccountSyncDialogTitle">New configuration</string>
     <string name="hintNewConfigurationName">Name</string>
     <string name="removeAccountSyncMessage">Are you sure that you want remove this device?</string>
+    <string name="emptyAccountsMessage">
+        <![CDATA[
+            There aren\'t any <b>accounts configured</b> in this moment. Synchronization is disabled
+        ]]>
+    </string>
 
     <string name="errorLoadingPublishedCollections">Error loading published collections</string>
-    <string name="emptyPublishedCollections">There aren\'t collections published. Maybe you can share one of your collections :-)</string>
+    <string name="emptyPublishedCollectionsMessage">
+        <![CDATA[
+            There aren\'t any <b>published</b> collections. Maybe you can share one of <b>your collections</b> :-)
+        ]]>
+    </string>
 
     <string name="errorLoadingSubscriptions">Error loading subscriptions</string>
     <string name="errorSubscribing">Error subscribing to the collection</string>
-    <string name="emptySubscriptions">You are not subscribed to any collection in this moment</string>
+    <string name="emptySubscriptionsMessage">
+        <![CDATA[
+            You are not <b>subscribed</b> to any <b>collection</b> in this moment
+        ]]>
+    </string>
 
     <string name="installed_apps_number">%s installed apps</string>
 

@@ -494,8 +494,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:layout_marginLeft">@dimen/padding_large</item>
-        <item name="android:layout_marginRight">@dimen/padding_large</item>
         <item name="android:layout_marginBottom">@dimen/padding_large</item>
         <item name="flexWrap">wrap</item>
     </style>

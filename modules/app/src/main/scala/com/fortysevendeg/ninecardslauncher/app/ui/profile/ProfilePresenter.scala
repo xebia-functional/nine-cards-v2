@@ -114,13 +114,9 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   def loadPublications(): Unit =
     Task.fork(di.sharedCollectionsProcess.getPublishedCollections().value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
-      onResult = (sharedCollections) => {
-        if (sharedCollections.isEmpty) {
-          actions.showEmptyPublicationsMessageInScreen() ~
-            actions.hideLoading()
-        } else {
-          actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
-        }
+      onResult = {
+        case sharedCollections if sharedCollections.isEmpty => actions.showEmptyPublicationsContent()
+        case sharedCollections => actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
       },
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen(() => loadPublications()))
 
@@ -134,11 +130,8 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     Task.fork(getSubscriptions.value).resolveAsyncUi(
       onPreTask = () => actions.showLoading(),
       onResult = {
-        case subscriptions if subscriptions.isEmpty =>
-          actions.showEmptySubscriptionsMessageInScreen() ~
-            actions.hideLoading()
-        case subscriptions =>
-          actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
+        case subscriptions if subscriptions.isEmpty => actions.showEmptySubscriptionsContent()
+        case subscriptions => actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
       },
       onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen())
   }
@@ -280,17 +273,17 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
 
     Task.fork(loadAccounts(client, filterOutResourceIds).value).resolveAsyncUi(
+      onPreTask = () => actions.showLoading(),
       onResult = accountSyncs => {
         syncEnabled = true
         if (accountSyncs.isEmpty) {
           launchService()
-          actions.showLoading()
+          actions.showEmptyAccountsContent()
         } else {
           actions.setAccountsAdapter(accountSyncs)
         }
       },
-      onException = (_) => actions.showConnectingGoogleError(() => loadUserAccounts(client)),
-      onPreTask = () => actions.showLoading()
+      onException = (_) => actions.showConnectingGoogleError(() => loadUserAccounts(client))
     )
   }
 
@@ -339,11 +332,7 @@ trait ProfileUiActions {
 
   def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any]
 
-  def showEmptyPublicationsMessageInScreen(): Ui[Any]
-
   def showErrorLoadingSubscriptionsInScreen(): Ui[Any]
-
-  def showEmptySubscriptionsMessageInScreen(): Ui[Any]
 
   def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
 
@@ -371,6 +360,12 @@ trait ProfileUiActions {
     sharedCollections: Seq[SharedCollection],
     onAddCollection: (SharedCollection) => Unit,
     onShareCollection: (SharedCollection) => Unit): Ui[Any]
+
+  def showEmptyPublicationsContent(): Ui[Any]
+
+  def showEmptySubscriptionsContent(): Ui[Any]
+
+  def showEmptyAccountsContent(): Ui[Any]
 
   def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
 

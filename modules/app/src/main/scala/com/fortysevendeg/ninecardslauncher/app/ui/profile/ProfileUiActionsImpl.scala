@@ -12,13 +12,13 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TabLayoutTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, SubscriptionsAdapter}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, EmptyProfileAdapter, SubscriptionsAdapter}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{CopyAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -41,25 +41,25 @@ trait ProfileUiActionsImpl
 
   val tagDialog = "dialog"
 
-  lazy val rootLayout = Option(findView(TR.profile_root))
+  lazy val rootLayout = findView(TR.profile_root)
 
-  lazy val barLayout = Option(findView(TR.profile_appbar))
+  lazy val barLayout = findView(TR.profile_appbar)
 
-  lazy val toolbar = Option(findView(TR.profile_toolbar))
+  lazy val toolbar = findView(TR.profile_toolbar)
 
-  lazy val userContainer = Option(findView(TR.profile_user_container))
+  lazy val userContainer = findView(TR.profile_user_container)
 
-  lazy val userAvatar = Option(findView(TR.profile_user_avatar))
+  lazy val userAvatar = findView(TR.profile_user_avatar)
 
-  lazy val userName = Option(findView(TR.profile_user_name))
+  lazy val userName = findView(TR.profile_user_name)
 
-  lazy val userEmail = Option(findView(TR.profile_user_email))
+  lazy val userEmail = findView(TR.profile_user_email)
 
-  lazy val tabs = Option(findView(TR.profile_tabs))
+  lazy val tabs = findView(TR.profile_tabs)
 
   lazy val recyclerView = findView(TR.profile_recycler)
 
-  lazy val loadingView = Option(findView(TR.profile_loading))
+  lazy val loadingView = findView(TR.profile_loading)
 
   lazy val iconIndicatorDrawable = PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
@@ -96,11 +96,7 @@ trait ProfileUiActionsImpl
 
   override def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingPublishedCollections, clickAction)
 
-  override def showEmptyPublicationsMessageInScreen(): Ui[Any] = showMessage(R.string.emptyPublishedCollections)
-
   override def showErrorLoadingSubscriptionsInScreen(): Ui[Any] = showMessage(R.string.errorLoadingSubscriptions)
-
-  override def showEmptySubscriptionsMessageInScreen(): Ui[Any] = showMessage(R.string.emptySubscriptions)
 
   override def showErrorSubscribing(clickAction: () => Unit): Ui[Any] = showError(R.string.errorSubscribing, clickAction)
 
@@ -145,8 +141,8 @@ trait ProfileUiActionsImpl
       (loadingView <~ vInvisible)
 
   override def handleToolbarVisibility(percentage: Float): Ui[Any] = toolbar match {
-    case Some(t) if percentage >= 0.5 && t.getVisibility == View.VISIBLE => toolbar <~ SnailsCommons.applyFadeOut()
-    case Some(t) if percentage < 0.5 && t.getVisibility == View.INVISIBLE => toolbar <~ SnailsCommons.applyFadeIn()
+    case t if percentage >= 0.5 && t.getVisibility == View.VISIBLE => toolbar <~ SnailsCommons.applyFadeOut()
+    case t if percentage < 0.5 && t.getVisibility == View.INVISIBLE => toolbar <~ SnailsCommons.applyFadeIn()
     case _ => Ui.nop
   }
 
@@ -172,6 +168,21 @@ trait ProfileUiActionsImpl
       rvAdapter(adapter)) ~
       (loadingView <~ vInvisible)
   }
+
+  override def showEmptyPublicationsContent(): Ui[Any] =
+    showEmptyContent(PublicationsTab)
+
+  override def showEmptySubscriptionsContent(): Ui[Any] =
+    showEmptyContent(SubscriptionsTab)
+
+  override def showEmptyAccountsContent(): Ui[Any] =
+    showEmptyContent(AccountsTab)
+
+  private[this] def showEmptyContent(tab: ProfileTab): Ui[Any] =
+    (recyclerView <~
+      vVisible <~
+      rvAdapter(EmptyProfileAdapter(tab))) ~
+      (loadingView <~ vInvisible)
 
   private[this] def showDialog(dialog: DialogFragment): Unit = {
     activityContextWrapper.original.get match {
