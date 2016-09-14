@@ -99,6 +99,9 @@ class LauncherExecutorProcessImpl(
   override def launchGooglePlay(packageName: String)(implicit activityContext: ActivityContextSupport) =
     toProcessServiceAction(AppGooglePlayAction(config.googlePlayUrl, packageName))
 
+  override def launchUrl(url: String)(implicit activityContext: ActivityContextSupport) =
+    toProcessServiceAction(UrlAction(url))
+
   private[this] def mapServicesException[E >: NineCardException]: (NineCardException => E) = {
     case e: IntentLauncherServicesPermissionException =>
       LauncherExecutorProcessPermissionException(e.message, Some(e))

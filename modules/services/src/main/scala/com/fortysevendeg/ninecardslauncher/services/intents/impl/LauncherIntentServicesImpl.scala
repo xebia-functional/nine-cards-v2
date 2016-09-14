@@ -53,6 +53,8 @@ class LauncherIntentServicesImpl
         createSearchWebIntent()
       case ShareAction(text, titleDialog) =>
         createShareIntent(text, titleDialog)
+      case UrlAction(url) =>
+        createUrlViewIntent(url)
     }
     launchIntent(intent)
   }

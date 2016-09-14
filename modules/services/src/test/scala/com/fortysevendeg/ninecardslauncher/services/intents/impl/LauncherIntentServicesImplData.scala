@@ -9,7 +9,8 @@ trait LauncherIntentServicesImplData {
 
   val packageName = "package.name"
   val className = "class.Name"
-  val googlePlayUrl = "http://mockUrl"
+  val googlePlayUrl = "http://googlePlayUrl"
+  val url = "http://mockUrl"
   val lookupKey = "lookupKey"
   val email = "email@google.com"
   val titleDialog = "Dialog Tile"
@@ -33,5 +34,6 @@ trait LauncherIntentServicesImplData {
   val searchVoiceAction = SearchVoiceAction
   val searchWebAction = SearchWebAction
   val shareAction = ShareAction(shareText, titleDialog)
+  val urlAction = UrlAction(url)
 
 }

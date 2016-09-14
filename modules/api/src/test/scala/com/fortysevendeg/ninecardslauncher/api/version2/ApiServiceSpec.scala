@@ -329,5 +329,81 @@ class ApiServiceSpec
 
     }
 
+    "get subscriptions" should {
+
+      "return the status code and the response" in new ApiServiceScope {
+
+        val response = SubscriptionsResponse(subscriptions)
+
+        mockedServiceClient.get[SubscriptionsResponse](any, any, any, any) returns
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, Some(response)))))
+
+        val serviceClientResponse = apiService.getSubscriptions(serviceHeader).value.run
+
+        serviceClientResponse must beLike {
+          case Xor.Right(r) =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data must beSome(response)
+        }
+
+        there was one(mockedServiceClient).get(
+          path = "/collections/subscriptions",
+          headers = createHeaders(subscriptionsAuthToken),
+          reads = Some(subscriptionsResponseReads))
+
+      }
+
+    }
+
+    "subscribe" should {
+
+      "return the status code" in new ApiServiceScope {
+
+        mockedServiceClient.emptyPut[Unit](any, any, any, any) returns
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, None))))
+
+        val serviceClientResponse = apiService.subscribe(publicIdentifier, serviceHeader).value.run
+
+        serviceClientResponse must beLike {
+          case Xor.Right(r) =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data must beNone
+        }
+
+        there was one(mockedServiceClient).emptyPut(
+          path = s"/collections/subscriptions/$publicIdentifier",
+          headers = createHeaders(subscriptionsAuthToken),
+          reads = None,
+          emptyResponse = true)
+
+      }
+
+    }
+
+    "unsubscribe" should {
+
+      "return the status code" in new ApiServiceScope {
+
+        mockedServiceClient.delete[Unit](any, any, any, any) returns
+          TaskService(Task(Xor.Right(ServiceClientResponse(statusCodeOk, None))))
+
+        val serviceClientResponse = apiService.unsubscribe(publicIdentifier, serviceHeader).value.run
+
+        serviceClientResponse must beLike {
+          case Xor.Right(r) =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data must beNone
+        }
+
+        there was one(mockedServiceClient).delete(
+          path = s"/collections/subscriptions/$publicIdentifier",
+          headers = createHeaders(subscriptionsAuthToken),
+          reads = None,
+          emptyResponse = true)
+
+      }
+
+    }
+
   }
 }

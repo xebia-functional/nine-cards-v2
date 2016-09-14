@@ -98,13 +98,11 @@ class CollectionRepository(
       }
     }
 
-  def fetchCollectionByOriginalSharedCollectionId(sharedCollectionId: String): TaskService[Option[Collection]] =
+  def fetchCollectionsBySharedCollectionIds(ids: Seq[String]): TaskService[Seq[Collection]] =
     TaskService {
-      CatchAll[RepositoryException] {
-        fetchCollection(
-          selection = s"$originalSharedCollectionId = ?",
-          selectionArgs = Seq(sharedCollectionId.toString))
-      }
+        XorCatchAll[RepositoryException] {
+          fetchCollections(selection = s"$sharedCollectionId IN (${ids.map(id => s"'$id'").mkString(",")})")
+        }
     }
 
   def fetchCollectionByPosition(position: Int): TaskService[Option[Collection]] =

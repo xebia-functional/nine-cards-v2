@@ -33,6 +33,10 @@
             android:title="@string/devHeadphonesTitle"/>
 
         <Preference
+            android:key="location"
+            android:title="@string/devLocationTitle"/>
+
+        <Preference
             android:key="weather"
             android:title="@string/devWeatherTitle"/>
 

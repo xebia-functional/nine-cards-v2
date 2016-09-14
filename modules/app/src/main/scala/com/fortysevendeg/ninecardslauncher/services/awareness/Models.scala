@@ -11,3 +11,13 @@ case class WeatherState(
   dewPointFahrenheit: Float,
   temperatureCelsius: Float,
   temperatureFahrenheit: Float)
+
+case class LocationState(
+  accuracy: Float,
+  altitude: Double,
+  bearing: Float,
+  latitude: Double,
+  longitude: Double,
+  speed: Float,
+  elapsedTime: Long,
+  time: Long)

@@ -7,11 +7,12 @@ import com.fortysevendeg.ninecardslauncher.services.intents.models._
 trait LauncherExecutorProcessImplData {
 
   val intentLauncherServicesException = IntentLauncherServicesException("Irrelevant Message")
-  val intentLauncherServicesPermissionExcetpion = IntentLauncherServicesPermissionException("Irrelevant Message")
+  val intentLauncherServicesPermissionException = IntentLauncherServicesPermissionException("Irrelevant Message")
 
   val packageName = "package.name"
   val className = "class.Name"
-  val googlePlayUrl = "http://mockUrl"
+  val googlePlayUrl = "http://googlePlayUrl"
+  val url = "http://mockUrl"
   val lookupKey = "lookupKey"
   val email = "email@google.com"
   val phoneNumber = "666 66 66 66"
@@ -38,6 +39,7 @@ trait LauncherExecutorProcessImplData {
   val searchVoiceAction = SearchVoiceAction
   val searchWebAction = SearchWebAction
   val shareAction = ShareAction(shareText, shareTitleDialog)
+  val urlAction = UrlAction(url)
 
   val config = LauncherExecutorProcessConfig(googlePlayUrl, emailTitleDialog, shareTitleDialog)
 

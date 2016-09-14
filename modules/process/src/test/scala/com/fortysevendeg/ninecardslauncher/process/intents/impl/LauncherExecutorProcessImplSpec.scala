@@ -24,7 +24,7 @@ trait LauncherExecutorProcessImplSpecification
   val serviceException: TaskService[Unit] =
     TaskService(Task(Either.left(intentLauncherServicesException)))
   val servicePermissionException: TaskService[Unit] =
-    TaskService(Task(Either.left(intentLauncherServicesPermissionExcetpion)))
+    TaskService(Task(Either.left(intentLauncherServicesPermissionException)))
 
   trait LauncherExecutorProcessImplScope
     extends Scope {
@@ -732,6 +732,25 @@ class LauncherExecutorProcessImplSpec
     "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         verifyLeft(process.launchGooglePlay(packageName)(_), appGooglePlayAction)
+      }
+
+  }
+
+  "launchUrl" should {
+
+    "call to the services with the right parameters" in
+      new LauncherExecutorProcessImplScope {
+        verifyRight(process.launchUrl(url)(_), urlAction)
+      }
+
+    "returns a Xor.Left[LauncherExecutorProcessPermissionException] if the service returns a Permission exception" in
+      new LauncherExecutorProcessImplScope {
+        verifyLeftPermission(process.launchUrl(url)(_), urlAction)
+      }
+
+    "returns a Xor.Left[LauncherExecutorProcessException] if the service returns an exception" in
+      new LauncherExecutorProcessImplScope {
+        verifyLeft(process.launchUrl(url)(_), urlAction)
       }
 
   }

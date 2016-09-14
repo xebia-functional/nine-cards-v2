@@ -6,12 +6,18 @@ import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
+import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.ContextWrapper
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
+import scalaz.concurrent.Task
+
 class Jobs(implicit contextWrapper: ContextWrapper)
-  extends ContextSupportProvider {
+  extends ContextSupportProvider
+  with ImplicitsUiExceptions {
 
   implicit lazy val di: Injector = new InjectorImpl
 
@@ -28,6 +34,12 @@ class Jobs(implicit contextWrapper: ContextWrapper)
     intent.putExtra(keyType, commandType)
     broadAction.command foreach (d => intent.putExtra(keyCommand, d))
     contextWrapper.bestAvailable.sendBroadcast(intent)
+  }
+
+  def sendBroadCastTask(broadAction: BroadAction): TaskService[Unit] = TaskService {
+    Task {
+      XorCatchAll[UiException](sendBroadCast(broadAction))
+    }
   }
 
 }

@@ -1,14 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="200dp">
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/subscriptions_item_layout"
+        style="@style/SubscriptionsItemContent">
 
+    <LinearLayout
+            style="@style/SubscriptionsItem">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"/>
+        <FrameLayout
+                style="@style/SubscriptionsItemIconContent"
+                android:id="@+id/subscriptions_item_content">
 
-</android.support.v7.widget.CardView>
+            <ImageView
+                    android:id="@+id/subscriptions_item_icon"
+                    style="@style/SubscriptionsItemIcon"/>
+
+        </FrameLayout>
+
+        <LinearLayout
+                style="@style/SubscriptionsItemNames">
+
+            <TextView
+                    android:id="@+id/subscriptions_item_name"
+                    style="@style/SubscriptionsItemName"/>
+
+            <TextView
+                    android:id="@+id/subscriptions_item_apps"
+                    style="@style/SubscriptionsItemApps"/>
+
+        </LinearLayout>
+
+        <Switch
+                android:id="@+id/subscriptions_item_subscribed"
+                style="@style/SubscriptionsItemSubscribed"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -2,6 +2,14 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.models
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 
+sealed trait SubscriptionType
+
+case object NotSubscribed extends SubscriptionType
+
+case object Subscribed extends SubscriptionType
+
+case object Owned extends SubscriptionType
+
 case class SharedCollection(
   id: String,
   sharedCollectionId: String,
@@ -15,7 +23,8 @@ case class SharedCollection(
   subscriptions: Option[Int],
   category: NineCardCategory,
   icon: String,
-  community: Boolean)
+  community: Boolean,
+  subscriptionType: SubscriptionType)
 
 case class CreateSharedCollection(
    description: String,
@@ -50,3 +59,12 @@ case class CreatedCollection(
   icon: String,
   community: Boolean
 )
+
+case class Subscription(
+  id: Int,
+  originalSharedCollectionId: String,
+  name: String,
+  apps: Int,
+  icon: String,
+  themedColorIndex: Int,
+  subscribed: Boolean)

@@ -2,14 +2,13 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollect
 
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
-import com.fortysevendeg.ninecardslauncher.process.device.GetByName
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
@@ -17,7 +16,8 @@ import macroid.{ActivityContextWrapper, Ui}
 
 class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-    with Conversions {
+  with Conversions
+  with CollectionJobs {
 
   protected var statuses = PublicCollectionStatuses(Communication, TopSharedCollection)
 
@@ -39,13 +39,14 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
   }
 
   def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
-    addCollection(sharedCollection).resolveAsyncUi2(
+    addSharedCollection(sharedCollection).resolveAsyncUi2(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
       onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }
 
   def shareCollection(sharedCollection: SharedCollection): Unit =
-    launchShareCollection(sharedCollection.id)
+    di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+      .resolveAsyncUi2(onException = _ => actions.showContactUsError)
 
   def loadPublicCollections(): Unit = {
     getSharedCollections(statuses.category, statuses.typeSharedCollection).resolveAsyncUi2(
@@ -60,28 +61,10 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen())
   }
 
-  def launchShareCollection(sharedCollectionId: String): Unit =
-    di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
-      .resolveAsyncUi2(onException = _ => actions.showContactUsError)
-
   private[this] def getSharedCollections(
     category: NineCardCategory,
     typeSharedCollection: TypeSharedCollection): TaskService[Seq[SharedCollection]] =
     di.sharedCollectionsProcess.getSharedCollectionsByCategory(category, typeSharedCollection)
-
-  private[this] def addCollection(sharedCollection: SharedCollection):
-  TaskService[Collection] =
-    for {
-      appsInstalled <- di.deviceProcess.getSavedApps(GetByName)
-      collection <- di.collectionProcess.addCollection(toAddCollectionRequest(sharedCollection, getCards(appsInstalled, sharedCollection.resolvedPackages)))
-    } yield collection
-
-  private[this] def getCards(appsInstalled: Seq[App], packages: Seq[SharedCollectionPackage]) =
-    packages map { pck =>
-      appsInstalled find (_.packageName == pck.packageName) map { app =>
-        toAddCardRequest(app)
-      } getOrElse toAddCardRequest(pck)
-    }
 
 }
 

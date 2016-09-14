@@ -51,7 +51,7 @@ class NineCardsFirebaseMessagingService
   }
 
   def sharedCollectionNotification(payload: SharedCollectionPayload): Unit = {
-    di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier, original = true).resolveAsync2(
+    di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier).resolveAsync2(
       onResult = (maybeCol: Option[Collection]) => {
 
         maybeCol foreach { col =>

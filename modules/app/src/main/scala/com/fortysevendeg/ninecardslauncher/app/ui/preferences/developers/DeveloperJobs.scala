@@ -19,6 +19,7 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
       loadAppsCategorized |@|
       loadMostProbableActivity |@|
       loadHeadphone |@|
+      loadLocation |@|
       loadWeather).tupled
 
   def loadAppsCategorized: TaskService[Unit] = for {
@@ -53,6 +54,11 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
   def loadHeadphone: TaskService[Unit] = for {
     headphone <- di.recognitionProcess.getHeadphone
     _ <- ui.setHeadphonesSummary(headphone.connected)
+  } yield ()
+
+  def loadLocation: TaskService[Unit] = for {
+    location <- di.recognitionProcess.getLocation
+    _ <- ui.setLocationSummary(location)
   } yield ()
 
   def loadWeather: TaskService[Unit] = for {
