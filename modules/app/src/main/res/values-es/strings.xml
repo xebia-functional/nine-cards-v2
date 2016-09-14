@@ -330,7 +330,7 @@
         ]]>
     </string>
 
-    <string name="errorLoadingPublishedCollections">Error cargando colleciones publicadas</string>
+    <string name="errorLoadingPublishedCollections">Error cargando colecciones publicadas</string>
     <string name="emptyPublishedCollectionsMessage">
         <![CDATA[
             No hay colecciones <b>publicadas</b>. Quizás podrías publicar una de <b>tus colecciones</b> :-)
@@ -341,7 +341,7 @@
     <string name="errorSubscribing">Error suscribiendote a la colección</string>
     <string name="emptySubscriptionsMessage">
         <![CDATA[
-            No estás <b>suscrito</b> a ninguna <b>colección</b> en este momento
+            No estás <b>suscrito</b> a ninguna <b>colección pública</b> en este momento
         ]]>
     </string>
 
