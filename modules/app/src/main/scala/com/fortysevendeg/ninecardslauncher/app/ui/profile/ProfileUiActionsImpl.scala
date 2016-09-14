@@ -69,13 +69,13 @@ trait ProfileUiActionsImpl
 
   override def initialize(): Ui[Any] =
       (tabs <~ tlAddTabs(
+        (resGetString(R.string.accounts), AccountsTab),
         (resGetString(R.string.publications), PublicationsTab),
-        (resGetString(R.string.subscriptions), SubscriptionsTab),
-        (resGetString(R.string.accounts), AccountsTab))) ~
+        (resGetString(R.string.subscriptions), SubscriptionsTab))) ~
       (tabs <~ tlSetListener(this)) ~
       (recyclerView <~
         rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
-      Ui(presenter.loadPublications())
+      Ui(presenter.loadUserAccounts())
 
   override def showLoading(): Ui[Any] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
 
@@ -212,9 +212,9 @@ trait ProfileUiActionsImpl
   override def onTabUnselected(tab: Tab): Unit = {}
 
   override def onTabSelected(tab: Tab): Unit = tab.getTag match {
+    case AccountsTab => presenter.loadUserAccounts()
     case PublicationsTab => presenter.loadPublications()
     case SubscriptionsTab => presenter.loadSubscriptions()
-    case AccountsTab => presenter.loadUserAccounts()
     case _ =>
   }
 
