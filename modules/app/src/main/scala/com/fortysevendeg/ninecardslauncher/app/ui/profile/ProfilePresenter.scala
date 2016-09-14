@@ -116,7 +116,8 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       onPreTask = () => actions.showLoading(),
       onResult = (sharedCollections) => {
         if (sharedCollections.isEmpty) {
-          actions.showEmptyPublicationsMessageInScreen(() => loadPublications())
+          actions.showEmptyPublicationsMessageInScreen() ~
+            actions.hideLoading()
         } else {
           actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
         }
@@ -338,7 +339,7 @@ trait ProfileUiActions {
 
   def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any]
 
-  def showEmptyPublicationsMessageInScreen(clickAction: () => Unit): Ui[Any]
+  def showEmptyPublicationsMessageInScreen(): Ui[Any]
 
   def showErrorLoadingSubscriptionsInScreen(): Ui[Any]
 

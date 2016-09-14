@@ -96,7 +96,7 @@ trait ProfileUiActionsImpl
 
   override def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingPublishedCollections, clickAction)
 
-  override def showEmptyPublicationsMessageInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.emptyPublishedCollections, clickAction)
+  override def showEmptyPublicationsMessageInScreen(): Ui[Any] = showMessage(R.string.emptyPublishedCollections)
 
   override def showErrorLoadingSubscriptionsInScreen(): Ui[Any] = showMessage(R.string.errorLoadingSubscriptions)
 
