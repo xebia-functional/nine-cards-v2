@@ -65,7 +65,7 @@ trait Conversions {
       CategorizedDetailPackage(
         packageName = app.packageName,
         title = app.title,
-        category = app.category.headOption,
+        category = app.categories.headOption,
         icon = app.icon,
         free = app.free,
         downloads = app.downloads,

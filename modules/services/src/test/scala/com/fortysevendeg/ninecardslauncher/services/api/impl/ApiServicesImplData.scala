@@ -58,7 +58,7 @@ trait ApiServicesImplData {
     version2.CategorizedAppDetail(
       packageName = Random.nextString(10),
       title = Random.nextString(10),
-      category = Seq("SOCIAL"),
+      categories = Seq("SOCIAL"),
       icon = Random.nextString(10),
       free = Random.nextBoolean(),
       downloads = "500,000,000+",
@@ -179,7 +179,7 @@ trait ApiServicesImplData {
     CategorizedDetailPackage(
       packageName = app.packageName,
       title = app.title,
-      category = app.category.headOption,
+      category = app.categories.headOption,
       icon = app.icon,
       free = app.free,
       downloads = app.downloads,

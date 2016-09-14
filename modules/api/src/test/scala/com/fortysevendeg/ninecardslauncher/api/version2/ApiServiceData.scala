@@ -116,7 +116,7 @@ trait ApiServiceData {
     items = Seq(CategorizedAppDetail(
       packageName = collectionApp.packageName,
       title = collectionApp.title,
-      category = Seq(category),
+      categories = Seq(category),
       icon = collectionApp.icon,
       free = collectionApp.free,
       downloads = collectionApp.downloads,

@@ -99,7 +99,7 @@ case class CategorizedApp(
 case class CategorizedAppDetail(
   packageName: String,
   title: String,
-  category: Seq[String],
+  categories: Seq[String],
   icon: String,
   free: Boolean,
   downloads: String,
