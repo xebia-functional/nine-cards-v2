@@ -219,7 +219,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
 
     maybeName match {
-      case Some(name) if name.length > 0 =>
+      case Some(name) if name.nonEmpty =>
         withConnectedClient { client =>
           copyAccountDevice(name, client, cloudId).resolveAsyncUi2(
             onResult = (_) => Ui(loadUserAccounts(client)),

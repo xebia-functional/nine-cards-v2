@@ -6,6 +6,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.AccountsAdapterStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{AccountSync, Device, Header}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -52,10 +53,13 @@ abstract class ViewHolderAccountsAdapter(content: View)(implicit context: Activi
 
 }
 
-case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends ViewHolderAccountsAdapter(content) {
+case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: ActivityContextWrapper, val theme: NineCardsTheme)
+  extends ViewHolderAccountsAdapter(content)
+  with AccountsAdapterStyles {
 
-  lazy val title = Option(findView(TR.title))
+  lazy val title = findView(TR.title)
+
+  (title <~ textStyle).run
 
   def bind(accountSync: AccountSync, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     title <~ tvText(accountSync.title)
@@ -64,14 +68,22 @@ case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: Acti
 
 case class ViewHolderAccountItemAdapter(
   content: View,
-  onClick: (Int, Int, AccountSync) => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends ViewHolderAccountsAdapter(content) {
+  onClick: (Int, Int, AccountSync) => Unit)(implicit context: ActivityContextWrapper, val theme: NineCardsTheme)
+  extends ViewHolderAccountsAdapter(content)
+  with AccountsAdapterStyles {
 
-  lazy val title = Option(findView(TR.profile_account_title))
+  lazy val title = findView(TR.profile_account_title)
 
-  lazy val subtitle = Option(findView(TR.profile_account_subtitle))
+  lazy val subtitle = findView(TR.profile_account_subtitle)
 
-  lazy val icon = Option(findView(TR.profile_account_action))
+  lazy val device = findView(TR.profile_account_device)
+
+  lazy val icon = findView(TR.profile_account_action)
+
+  ((title <~ textStyle) ~
+    (subtitle <~ textStyle) ~
+    (device <~ iconStyle) ~
+    (icon <~ iconStyle)).run
 
   def bind(accountSync: AccountSync, position: Int)(implicit uiContext: UiContext[_]): Ui[_] = {
     val isCurrent = accountSync.accountSyncType match {
@@ -80,15 +92,16 @@ case class ViewHolderAccountItemAdapter(
     }
     (title <~ tvText(accountSync.title)) ~
       (subtitle <~ tvText(accountSync.subtitle getOrElse "")) ~
-      (icon <~ ivSrc(R.drawable.icon_action_bar_options_dark) <~ On.click {
-        icon <~ vPopupMenuShow(
-          menu = if (isCurrent) R.menu.action_menu_current_account else R.menu.action_menu_other_accounts,
-          onMenuItemClickListener = (item: MenuItem) => {
-            onClick(getAdapterPosition, item.getItemId, accountSync)
-            true
-          }
-        )
-      })
+      (icon <~ ivSrc(R.drawable.icon_action_bar_options_dark) <~
+        On.click {
+          icon <~ vPopupMenuShow(
+            menu = if (isCurrent) R.menu.action_menu_current_account else R.menu.action_menu_other_accounts,
+            onMenuItemClickListener = (item: MenuItem) => {
+              onClick(getAdapterPosition, item.getItemId, accountSync)
+              true
+            }
+          )
+        })
   }
 
 }

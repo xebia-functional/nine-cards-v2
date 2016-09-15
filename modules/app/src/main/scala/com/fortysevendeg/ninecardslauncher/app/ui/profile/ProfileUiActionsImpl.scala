@@ -23,6 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{CopyAccountDev
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscribed, Subscription}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -68,6 +69,7 @@ trait ProfileUiActionsImpl
   def showMessage(res: Int): Ui[Any] = rootLayout <~ vSnackbarShort(res)
 
   override def initialize(): Ui[Any] =
+    (rootLayout <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
       (tabs <~ tlAddTabs(
         (resGetString(R.string.accounts), AccountsTab),
         (resGetString(R.string.publications), PublicationsTab),
