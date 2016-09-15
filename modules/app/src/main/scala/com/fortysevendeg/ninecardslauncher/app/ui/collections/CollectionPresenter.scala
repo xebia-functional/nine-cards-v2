@@ -2,18 +2,14 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.support.v7.widget.RecyclerView.ViewHolder
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, PhoneCardType}
-import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
+import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.trackevent._
 import macroid.{ActivityContextWrapper, Ui}
-
 
 case class CollectionPresenter(
   animateCards: Boolean,
@@ -21,10 +17,6 @@ case class CollectionPresenter(
   actions: CollectionUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions { self =>
-
-  val permissionChecker = new PermissionChecker
-
-  var statuses = CollectionPresenterStatuses()
 
   def initialize(sType: ScrollType): Unit = {
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
@@ -38,25 +30,22 @@ case class CollectionPresenter(
 
   def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit = {
     di.collectionProcess.reorderCard(collectionId, cardId, position).resolveAsyncUi2(
-      onResult = (_) => actions.reloadCards()
-    )
+      onResult = (_) => actions.reloadCards())
   }
 
-  def moveToCollection(card: Card): Unit =
+  def moveToCollection(): Unit =
     di.collectionProcess.getCollections.resolveAsyncUi2(
-      onResult = (collections) => actions.moveToCollection(collections, card),
+      onResult = (collections) => actions.moveToCollection(collections),
       onException = (_) => actions.showContactUsError())
-
-  def editCard(collectionId: Int, cardId: Int, cardName: String): Unit = actions.editCard(collectionId, cardId, cardName)
 
   def addCards(cards: Seq[Card]): Unit = {
     cards foreach (card => trackCard(card, AddedToCollectionAction))
     actions.addCards(cards).run
   }
 
-  def removeCard(card: Card): Unit = {
-    trackCard(card, RemovedInCollectionAction)
-    actions.removeCard(card).run
+  def removeCards(cards: Seq[Card]): Unit = {
+    cards foreach (trackCard(_, RemovedInCollectionAction))
+    actions.removeCards(cards).run
   }
 
   def reloadCards(cards: Seq[Card]): Unit = actions.reloadCards(cards).run
@@ -83,37 +72,6 @@ case class CollectionPresenter(
 
   def showData(): Unit = maybeCollection foreach (c => actions.showData(c.cards.isEmpty).run)
 
-  def launchCard(card : Card): Unit = di.launcherExecutorProcess.execute(card.intent).resolveAsyncUi2(
-    onException = (throwable: Throwable) => throwable match {
-      case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
-        statuses = statuses.copy(lastPhone = card.intent.extractPhone())
-        actions.askForPhoneCallPermission(RequestCodes.phoneCallPermission)
-      case _ => actions.showContactUsError()
-    }
-  )
-
-  def requestPermissionsResult(
-    requestCode: Int,
-    permissions: Array[String],
-    grantResults: Array[Int]): Unit =
-    if (requestCode == RequestCodes.phoneCallPermission) {
-      val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
-      if (result.exists(_.hasPermission(CallPhone))) {
-        statuses.lastPhone foreach { phone =>
-          statuses = statuses.copy(lastPhone = None)
-          di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)).resolveAsyncUi2(
-            onException = _ => actions.showContactUsError())
-        }
-      } else {
-        statuses.lastPhone foreach { phone =>
-          statuses = statuses.copy(lastPhone = None)
-          di.launcherExecutorProcess.launchDial(Some(phone)).resolveAsyncUi2(
-            onException = _ => actions.showContactUsError())
-        }
-        actions.showNoPhoneCallPermissionError().run
-      }
-    }
-
   private[this] def trackCard(card: Card, action: Action): Unit = card.cardType match {
     case AppCardType =>
       for {
@@ -138,9 +96,6 @@ case class CollectionPresenter(
 
 }
 
-case class CollectionPresenterStatuses(
-  lastPhone: Option[String] = None)
-
 trait CollectionUiActions {
 
   def initialize(animateCards: Boolean, collection: Collection): Ui[Any]
@@ -159,25 +114,19 @@ trait CollectionUiActions {
 
   def showMessageFormFieldError: Ui[Any]
 
-  def showNoPhoneCallPermissionError(): Ui[Any]
-
   def showEmptyCollection(): Ui[Any]
 
-  def moveToCollection(collections: Seq[Collection], card: Card): Ui[Any]
-
-  def editCard(collectionId: Int, cardId: Int, cardName: String): Unit
+  def moveToCollection(collections: Seq[Collection]): Ui[Any]
 
   def addCards(cards: Seq[Card]): Ui[Any]
 
-  def removeCard(card: Card): Ui[Any]
+  def removeCards(cards: Seq[Card]): Ui[Any]
 
   def reloadCard(card: Card): Ui[Any]
 
   def reloadCards(cards: Seq[Card]): Ui[Any]
 
   def showData(emptyCollection: Boolean): Ui[Any]
-
-  def askForPhoneCallPermission(requestCode: Int): Ui[Any]
 
   def isPulling: Boolean
 

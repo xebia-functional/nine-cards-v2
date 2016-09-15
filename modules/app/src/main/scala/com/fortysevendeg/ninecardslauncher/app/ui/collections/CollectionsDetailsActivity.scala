@@ -6,7 +6,6 @@ import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
@@ -23,7 +22,7 @@ class CollectionsDetailsActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
-  with CollectionsUiActionsImpl
+  with CollectionsPagerUiActionsImpl
   with TypedFindView
   with UiExtensions
   with ActionsScreenListener
@@ -75,10 +74,6 @@ class CollectionsDetailsActivity
       defaultStateChanged)
 
     setContentView(R.layout.collections_detail_activity)
-
-    toolbar foreach setSupportActionBar
-    getSupportActionBar.setDisplayHomeAsUpEnabled(true)
-    getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
 
     collectionsPagerPresenter.initialize(indexColor, icon, position, isStateChanged)
 
@@ -151,6 +146,11 @@ class CollectionsDetailsActivity
       collectionsPagerPresenter.shareCollection()
       true
     case _ => super.onOptionsItemSelected(item)
+  }
+
+  override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit = {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    collectionsPagerPresenter.requestPermissionsResult(requestCode, permissions, grantResults)
   }
 
   override def onBackPressed(): Unit = collectionsPagerPresenter.back()

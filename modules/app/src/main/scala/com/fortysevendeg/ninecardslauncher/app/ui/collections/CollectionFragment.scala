@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.view.{LayoutInflater, View, ViewGroup}
+import android.view._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}
 import macroid.Contexts
+
 import scala.language.postfixOps
 
 class CollectionFragment
@@ -45,6 +46,11 @@ class CollectionFragment
 
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
 
+  override def onCreate(savedInstanceState: Bundle): Unit = {
+    super.onCreate(savedInstanceState)
+    setHasOptionsMenu(true)
+  }
+
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
     val baseView = LayoutInflater.from(getActivity).inflate(TR.layout.collection_detail_fragment, container, false)
     rootView = Some(baseView)
@@ -58,8 +64,47 @@ class CollectionFragment
     super.onViewCreated(view, savedInstanceState)
   }
 
-  override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
-    presenter.requestPermissionsResult(requestCode, permissions, grantResults)
+  override def onCreateOptionsMenu(menu: Menu, inflater: MenuInflater): Unit = {
+    inflater.inflate(R.menu.collection_edit_menu, menu)
+    super.onCreateOptionsMenu(menu, inflater)
+  }
+
+  override def onPrepareOptionsMenu(menu: Menu): Unit = {
+    super.onPrepareOptionsMenu(menu)
+    (collectionsPresenter.statuses.collectionMode, collectionsPresenter.statuses.positionsEditing.toSeq.length) match {
+      case (NormalCollectionMode, _) =>
+        menu.findItem(R.id.action_make_public).setVisible(true)
+        menu.findItem(R.id.action_share).setVisible(true)
+        menu.findItem(R.id.action_edit).setVisible(false)
+        menu.findItem(R.id.action_move_to_collection).setVisible(false)
+        menu.findItem(R.id.action_delete).setVisible(false)
+      case (EditingCollectionMode, 1) =>
+        menu.findItem(R.id.action_make_public).setVisible(false)
+        menu.findItem(R.id.action_share).setVisible(false)
+        menu.findItem(R.id.action_edit).setVisible(true)
+        menu.findItem(R.id.action_move_to_collection).setVisible(true)
+        menu.findItem(R.id.action_delete).setVisible(true)
+      case (EditingCollectionMode, _) =>
+        menu.findItem(R.id.action_make_public).setVisible(false)
+        menu.findItem(R.id.action_share).setVisible(false)
+        menu.findItem(R.id.action_edit).setVisible(false)
+        menu.findItem(R.id.action_move_to_collection).setVisible(true)
+        menu.findItem(R.id.action_delete).setVisible(true)
+    }
+  }
+
+  override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
+    case R.id.action_edit =>
+      collectionsPresenter.editCard()
+      true
+    case R.id.action_move_to_collection =>
+      presenter.moveToCollection()
+      true
+    case R.id.action_delete =>
+      collectionsPresenter.removeCards()
+      true
+    case _ => super.onOptionsItemSelected(item)
+  }
 
 }
 

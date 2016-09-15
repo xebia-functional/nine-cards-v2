@@ -316,6 +316,14 @@ case object ClearCacheImages
   override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
 }
 
+case object ShowPositionInCards
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = showPositionInCards
+  override val default: Boolean = false
+
+  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+}
+
 case object ShowPrintInfoOptionInAccounts
   extends NineCardsPreferenceValue[Boolean] {
   override val name: String = showPrintInfoOptionInAccounts
@@ -394,6 +402,7 @@ object PreferencesValuesKeys {
   val location = "location"
   val weather = "weather"
   val clearCacheImages = "clearCacheImages"
+  val showPositionInCards = "showPositionInCards"
   val showPrintInfoOptionInAccounts = "showPrintInfoOptionInAccounts"
 }
 
