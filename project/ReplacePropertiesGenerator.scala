@@ -21,6 +21,21 @@ object ReplacePropertiesGenerator {
 
     val log = streams.value.log
 
+    log.debug("Replacing values")
+    try {
+      val dir: (File, File) = (collectResources in Android).value
+      val valuesFile: File =  new File(dir._2, "/values/values.xml")
+      replaceContent(valuesFile, valuesFile)(log)
+      Seq(valuesFile)
+    } catch {
+      case e: Throwable =>
+        log.error(s"An error occurred replacing values")
+        throw e
+    }
+  }
+
+  def replaceContent(origin: File, target: File)(log: Logger) = {
+
     def loadPropertiesFile: Option[File] = {
       val file = new File(propertiesFileName)
       if (file.exists()) Some(file) else {
@@ -54,25 +69,10 @@ object ReplacePropertiesGenerator {
       replace(properties, line)
     }
 
-    def replaceContent(propertiesMap: Map[String, String], origin: File, target: File) = {
-      val content = IO.readLines(origin) map (replaceLine(propertiesMap, _))
-      IO.write(target, content.mkString("\n"))
-    }
-
     log.debug(s"Loading properties file $propertiesFileName")
     val propertiesMap = loadPropertiesMap
-
-    log.debug("Replacing values")
-    try {
-      val dir: (File, File) = (collectResources in Android).value
-      val valuesFile: File =  new File(dir._2, "/values/values.xml")
-      replaceContent(propertiesMap, valuesFile, valuesFile)
-      Seq(valuesFile)
-    } catch {
-      case e: Throwable =>
-        log.error(s"An error occurred replacing values")
-        throw e
-    }
+    val content = IO.readLines(origin) map (replaceLine(propertiesMap, _))
+    IO.write(target, content.mkString("\n"))
   }
 
 }
