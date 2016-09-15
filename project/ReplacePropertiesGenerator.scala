@@ -10,63 +10,69 @@ import scala.collection.JavaConverters._
 
 object ReplacePropertiesGenerator {
 
-  val debugPropertiesFile = "debug.properties"
+  lazy val propertyNames: List[String] = List(
+    "backend.v1.url",
+    "backend.v1.appid",
+    "backend.v1.appkey")
 
-  val releasePropertiesFile = "release.properties"
-
-  var debug = true
-
-  lazy val propertiesMap: Map[String, String] = {
-    (loadPropertiesFile map { file =>
-      val properties = new Properties()
-      properties.load(new FileInputStream(file))
-      properties.asScala.toMap
-    }) getOrElse Map.empty
-  }
-
-  private def namePropertyInConfig(name: String) = s"$${$name}"
-
-  private def loadPropertiesFile: Option[File] = {
-    val file = new File(if (debug) debugPropertiesFile else releasePropertiesFile)
-    if (file.exists()) Some(file) else None
-  }
-
-  def replaceContent(origin: File, target: File) = {
-    val content = IO.readLines(origin) map (replaceLine(propertiesMap, _))
-    IO.write(target, content.mkString("\n"))
-  }
-
-  private def replaceLine(properties: Map[String, String], line: String) = {
-    @tailrec
-    def replace(properties: Map[String, String], line: String): String = {
-      properties.headOption match {
-        case Some(property) =>
-          val (key, value) = property
-          val name = namePropertyInConfig(key)
-          replace(properties.tail, if (line.contains(name)) line.replace(name, value) else line)
-        case None => line
-      }
-    }
-    replace(properties, line)
-  }
+  lazy val propertiesFileName = sys.env.getOrElse("9CARDS_PROPERTIES", "debug.properties")
 
   def replaceValuesTask = Def.task[Seq[File]] {
+
     val log = streams.value.log
-    println("Replacing values")
+
+    def loadPropertiesFile: Option[File] = {
+      val file = new File(propertiesFileName)
+      if (file.exists()) Some(file) else {
+        log.warn(s"File not found at ${file.getAbsolutePath}")
+        None
+      }
+    }
+
+    def populateDefaultProperties(propertiesMap: Map[String, String]): Map[String, String] =
+      propertiesMap ++ (propertyNames filterNot propertiesMap.contains map (_ -> "") toMap)
+
+    def loadPropertiesMap: Map[String, String] = populateDefaultProperties {
+      (loadPropertiesFile map { file =>
+        val properties = new Properties()
+        properties.load(new FileInputStream(file))
+        properties.asScala.toMap
+      }) getOrElse Map.empty
+    }
+
+    def replaceLine(properties: Map[String, String], line: String) = {
+      @tailrec
+      def replace(properties: Map[String, String], line: String): String = {
+        properties.headOption match {
+          case Some(property) =>
+            val (key, value) = property
+            val name = s"$${$key}"
+            replace(properties.tail, if (line.contains(name)) line.replace(name, value) else line)
+          case None => line
+        }
+      }
+      replace(properties, line)
+    }
+
+    def replaceContent(propertiesMap: Map[String, String], origin: File, target: File) = {
+      val content = IO.readLines(origin) map (replaceLine(propertiesMap, _))
+      IO.write(target, content.mkString("\n"))
+    }
+
+    log.debug(s"Loading properties file $propertiesFileName")
+    val propertiesMap = loadPropertiesMap
+
+    log.debug("Replacing values")
     try {
       val dir: (File, File) = (collectResources in Android).value
       val valuesFile: File =  new File(dir._2, "/values/values.xml")
-      replaceContent(valuesFile, valuesFile)
+      replaceContent(propertiesMap, valuesFile, valuesFile)
       Seq(valuesFile)
     } catch {
       case e: Throwable =>
-        log.error("An error occurred replacing values")
+        log.error(s"An error occurred replacing values")
         throw e
     }
-  }
-
-  def setDebugTask(debug: Boolean) = Def.task[Unit] {
-    this.debug = debug
   }
 
 }

@@ -5,8 +5,8 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.userv1.models.{Device, UserV1Info}
-import com.fortysevendeg.ninecardslauncher.process.userv1.{ImplicitsUserV1Exception, UserV1Conversions, UserV1Exception, UserV1Process}
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GetUserV1Response, LoginResponseV1, RequestConfigV1}
+import com.fortysevendeg.ninecardslauncher.process.userv1._
+import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
 import monix.eval.Task
@@ -32,7 +32,7 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
             deviceId = androidId,
             secretToken = marketToken,
             permissions = oauthScopes)
-          apiServices.loginV1(email, toGoogleDevice(device)).resolve[UserV1Exception]
+          apiServices.loginV1(email, toGoogleDevice(device))
         case _ =>
           TaskService(Task(Either.left(UserV1Exception(marketTokenErrorMsg))))
       }
@@ -43,7 +43,7 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
       marketToken: Option[String]): TaskService[GetUserV1Response] =
       maybeSessionToken match {
         case Some(sessionToken) =>
-          apiServices.getUserConfigV1()(RequestConfigV1(androidId, sessionToken, marketToken)).resolve[UserV1Exception]
+          apiServices.getUserConfigV1()(RequestConfigV1(androidId, sessionToken, marketToken))
         case _ =>
           TaskService(Task(Either.left(UserV1Exception(userNotLoggedMsg))))
       }
@@ -54,7 +54,10 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
         androidId <- persistenceServices.getAndroidId
         loginResponse <- loginV1(user, androidId)
         userConfigResponse <- requestConfig(androidId, loginResponse.sessionToken, user.marketToken)
-      } yield toUserInfo(androidId, userConfigResponse.userConfig)).resolve[UserV1Exception]
+      } yield toUserInfo(androidId, userConfigResponse.userConfig)) resolveLeft {
+        case e: ApiServiceV1ConfigurationException => Left(UserV1ConfigurationException(e.getMessage, Some(e)))
+        case e => Left(userConfigException(e))
+      }
 
     context.getActiveUserId match {
       case Some(id) => loadUserConfig(id)

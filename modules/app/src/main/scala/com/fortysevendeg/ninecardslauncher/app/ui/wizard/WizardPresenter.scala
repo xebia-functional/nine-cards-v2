@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider, GooglePlusApiClientProvider}
@@ -25,7 +25,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDev
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
+import com.fortysevendeg.ninecardslauncher.process.userv1.{UserV1ConfigurationException, UserV1Exception}
 import com.fortysevendeg.ninecardslauncher.process.userv1.models.UserV1Device
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.auth.api.Auth
@@ -34,6 +34,7 @@ import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 import cats.syntax.either._
+
 import scala.util.{Failure, Try}
 
 class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -328,7 +329,12 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     def loadDevicesFromV1(): TaskService[Seq[UserV1Device]] =
       di.userV1Process.getUserInfo(Build.MODEL, Seq(resGetString(R.string.android_market_oauth_scopes)))
         .map(_.devices)
-        .resolveLeftTo(Seq.empty)
+        .resolveLeft {
+          case e: UserV1ConfigurationException =>
+            android.util.Log.i(AppLog.tag, "Invalid configuration for backend V1")
+            Right(Seq.empty)
+          case  e => Right(Seq.empty)
+        }
 
     def fakeUserConfigException: TaskService[Unit] = TaskService(Task(Either.right(())))
 

@@ -12,7 +12,10 @@ object NineCardExtensions {
   implicit class EitherTExtensions[A](r: EitherT[Task, NineCardException, A]) {
 
     def resolve[E <: NineCardException](implicit converter: Throwable => E): EitherT[Task, NineCardException, A] =
-      resolveLeft(e => Left(converter(e)))
+      resolveLeft {
+        case e: E => Left(e)
+        case e => Left(converter(e))
+      }
 
     def resolveLeftTo(result: A): EitherT[Task, NineCardException, A] =
       resolveLeft((_) => Right(result))

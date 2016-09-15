@@ -33,11 +33,6 @@ class ApiServicesImpl(
 
   val headerLocalization = "X-Android-Market-Localization"
 
-  val baseHeader: Seq[(String, String)] = Seq(
-    (headerAppId, apiServicesConfig.appId),
-    (headerAppKey, apiServicesConfig.appKey),
-    (headerLocalization, apiServicesConfig.localization))
-
   val userNotFoundMessage = "User not found"
 
   val userNotAuthenticatedMessage = "User not authenticated"
@@ -62,11 +57,18 @@ class ApiServicesImpl(
 
   override def loginV1(
     email: String,
-    device: LoginV1Device) =
-    (for {
-      response <- apiServiceV1.login(toUser(email, device), baseHeader)
-      user <- readOption(response.data, userNotFoundMessage)
-    } yield toLoginResponseV1(response.statusCode, user)).resolve[ApiServiceException]
+    device: LoginV1Device) = withValidV1Config { baseHeader =>
+    resolveOption(apiServiceV1.login(toUser(email, device), baseHeader), userNotFoundMessage) map {
+      case (statusCode, user) => toLoginResponseV1(statusCode, user)
+    }
+  }
+
+  override def getUserConfigV1()(implicit requestConfig: RequestConfigV1) = withValidV1Config { baseHeader =>
+    val header = baseHeader :+ ((headerDevice, requestConfig.deviceId)) :+ ((headerToken, requestConfig.token))
+    resolveOption(apiServiceV1.getUserConfig(header), userConfigNotFoundMessage) map {
+      case (statusCode, userConfig) => GetUserV1Response(statusCode, toUserConfig(userConfig))
+    }
+  }
 
   override def login(
     email: String,
@@ -103,12 +105,6 @@ class ApiServicesImpl(
     } yield GooglePlayPackagesDetailResponse(
         statusCode = response.statusCode,
         packages = response.data map toCategorizedDetailPackages getOrElse Seq.empty)).resolve[ApiServiceException]
-
-  override def getUserConfigV1()(implicit requestConfig: RequestConfigV1) =
-    (for {
-      response <- apiServiceV1.getUserConfig(requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield GetUserV1Response(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
 
   override def getRecommendedApps(
     category: String,
@@ -219,11 +215,6 @@ class ApiServicesImpl(
       response <- apiService.unsubscribe(originalSharedCollectionId, requestConfig.toServiceHeader)
     } yield UnsubscribeResponse(response.statusCode)).resolve[ApiServiceException]
 
-  implicit class RequestHeaderHeader(request: RequestConfigV1) {
-    def toHeader: Seq[(String, String)] =
-      baseHeader :+ ((headerDevice, request.deviceId)) :+ ((headerToken, request.token))
-  }
-
   implicit class RequestConfigExt(request: RequestConfig) {
     def toServiceHeader: version2.ServiceHeader =
       version2.ServiceHeader(request.apiKey, request.sessionToken, request.androidId)
@@ -231,6 +222,32 @@ class ApiServicesImpl(
     def toGooglePlayHeader: version2.ServiceMarketHeader =
       version2.ServiceMarketHeader(request.apiKey, request.sessionToken, request.androidId, request.marketToken)
   }
+
+  private[this] def withValidV1Config[T](service: (Seq[(String, String)]) => TaskService[T]): TaskService[T] = {
+
+    def isConfigValid: Boolean = apiServiceV1.baseUrl.nonEmpty &&
+      apiServicesConfig.appId.nonEmpty &&
+      apiServicesConfig.appKey.nonEmpty
+
+    if (isConfigValid) {
+      val header = Seq(
+        (headerAppId, apiServicesConfig.appId),
+        (headerAppKey, apiServicesConfig.appKey),
+        (headerLocalization, apiServicesConfig.localization))
+      service(header)
+    } else {
+      TaskService(Task(Left(ApiServiceV1ConfigurationException("Invalid configuration"))))
+    }
+
+  }
+
+  private[this] def resolveOption[T](taskService: TaskService[ServiceClientResponse[T]], msg: String = ""): TaskService[(Int, T)] =
+    taskService.resolveSides(
+      mapRight = {
+        case ServiceClientResponse(statusCode, Some(value)) => Right((statusCode, value))
+        case _ => Left(ApiServiceException(msg))
+      },
+      mapLeft = e => Left(ApiServiceException(e.getMessage, Some(e))))
 
   private[this] def readOption[T](maybe: Option[T], msg: String = ""): TaskService[T] = TaskService {
     Task {
