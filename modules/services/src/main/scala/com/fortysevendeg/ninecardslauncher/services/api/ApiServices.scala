@@ -10,11 +10,21 @@ trait ApiServices {
    * @param email user email
    * @param device user device
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponseV1]]
+   * @throws ApiServiceV1ConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if the user is not found or the request throws an Exception
    */
   def loginV1(
     email: String,
     device: LoginV1Device): TaskService[LoginResponseV1]
+
+  /**
+    * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfigV1]]
+    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GetUserV1Response]] with the HTTP Code
+    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserV1]]
+    * @throws ApiServiceV1ConfigurationException if the configuration is not valid or can't be found
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def getUserConfigV1()(implicit requestConfig: RequestConfigV1): TaskService[GetUserV1Response]
 
   /**
     * Tries to login with the email, the androidId and the tokenId
@@ -70,14 +80,6 @@ trait ApiServices {
    * @throws ApiServiceException if there was an error in the request
    */
   def googlePlayPackagesDetail(packageNames: Seq[String])(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackagesDetailResponse]
-
-  /**
-   * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfigV1]]
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GetUserV1Response]] with the HTTP Code
-   *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserV1]]
-   * @throws ApiServiceException if the user doesn't exists or there was an error in the request
-   */
-  def getUserConfigV1()(implicit requestConfig: RequestConfigV1): TaskService[GetUserV1Response]
 
   /**
    * Fetches the recommended applications based on a category

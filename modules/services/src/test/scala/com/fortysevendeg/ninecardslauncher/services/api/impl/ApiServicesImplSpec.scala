@@ -34,6 +34,8 @@ trait ApiServicesSpecification
     appKey = Random.nextString(10),
     localization = "EN")
 
+  val baseUrl = "http://mockedUrl"
+
   val statusCode = 200
 
   trait ApiServicesScope
@@ -87,6 +89,8 @@ class ApiServicesImplSpec
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope {
 
+        apiServiceV1.baseUrl returns baseUrl
+
         apiServiceV1.login(any, any)(any, any) returns
           TaskService {
             Task(Either.right(ServiceClientResponse[version1.User](statusCode, Some(user))))
@@ -98,6 +102,8 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope {
+
+        apiServiceV1.baseUrl returns baseUrl
 
         apiServiceV1.login(any, any)(any, any) returns TaskService {
           Task(Either.left(exception))
@@ -232,6 +238,8 @@ class ApiServicesImplSpec
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope {
 
+        apiServiceV1.baseUrl returns baseUrl
+
         apiServiceV1.getUserConfig(any)(any) returns
           TaskService {
             Task(Either.right(ServiceClientResponse[version1.UserConfig](statusCode, Some(userConfig))))
@@ -247,6 +255,8 @@ class ApiServicesImplSpec
 
     "return an ApiServiceException with the cause the exception returned by the service" in
       new ApiServicesScope {
+
+        apiServiceV1.baseUrl returns baseUrl
 
         apiServiceV1.getUserConfig(any)(any) returns TaskService {
           Task(Either.left(exception))

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Api -->
-    <string name="api_base_url">${appsly.url}</string>
-    <string name="api_app_id">${appsly.appid}</string>
-    <string name="api_app_key">${appsly.appkey}</string>
+    <string name="api_base_url">${backend.v1.url}</string>
+    <string name="api_app_id">${backend.v1.appid}</string>
+    <string name="api_app_key">${backend.v1.appkey}</string>
     <string name="api_localization">en-EN</string>
     <string name="api_v2_base_url">${9c_backend.baseurl}</string>
 

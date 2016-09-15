@@ -26,7 +26,7 @@ object Crashlytics {
       val templates = loadTemplates(baseDirectory.value / "crashlytics" / "templates")
       templates map { file =>
         val target = baseDirectory.value / "crashlytics" / file.getName
-        replaceContent(file, target)
+        replaceContent(file, target)(log)
         target
       }
     } catch {
