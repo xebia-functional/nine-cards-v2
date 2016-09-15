@@ -15,6 +15,7 @@ import Libraries.debug._
 import android.Keys._
 import S3._
 import Crashlytics._
+import Libraries.monix._
 import Proguard._
 import sbt.Keys._
 import sbt._
@@ -85,7 +86,7 @@ object Settings {
   lazy val basicSettings = Seq(
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
-    libraryDependencies ++= Seq(scalaz, scalazConcurrent, cats)
+    libraryDependencies ++= Seq(cats, monixTypes, monixEval)
   )
 
   lazy val duplicatedFiles = Set(

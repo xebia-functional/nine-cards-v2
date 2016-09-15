@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps
@@ -95,7 +95,7 @@ trait AppsDeviceProcessImpl
     for {
       requestConfig <- apiUtils.getRequestConfig
       appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).value.run match {
-        case Xor.Right(g) => (g.app.category map (NineCardCategory(_))).getOrElse(Misc)
+        case Right(g) => (g.app.category map (NineCardCategory(_))).getOrElse(Misc)
         case _ => Misc
       }
     } yield appCategory

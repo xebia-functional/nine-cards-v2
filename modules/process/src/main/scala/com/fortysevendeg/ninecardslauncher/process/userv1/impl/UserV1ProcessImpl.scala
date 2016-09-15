@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.userv1.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -10,8 +9,9 @@ import com.fortysevendeg.ninecardslauncher.process.userv1.{ImplicitsUserV1Except
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GetUserV1Response, LoginResponseV1, RequestConfigV1}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
+import monix.eval.Task
+import cats.syntax.either._
 
-import scalaz.concurrent.Task
 
 class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
   extends UserV1Process
@@ -34,7 +34,7 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
             permissions = oauthScopes)
           apiServices.loginV1(email, toGoogleDevice(device)).resolve[UserV1Exception]
         case _ =>
-          TaskService(Task(Xor.left(UserV1Exception(marketTokenErrorMsg))))
+          TaskService(Task(Either.left(UserV1Exception(marketTokenErrorMsg))))
       }
 
     def requestConfig(
@@ -45,7 +45,7 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
         case Some(sessionToken) =>
           apiServices.getUserConfigV1()(RequestConfigV1(androidId, sessionToken, marketToken)).resolve[UserV1Exception]
         case _ =>
-          TaskService(Task(Xor.left(UserV1Exception(userNotLoggedMsg))))
+          TaskService(Task(Either.left(UserV1Exception(userNotLoggedMsg))))
       }
 
     def loadUserConfig(userId: Int): TaskService[UserV1Info] =
@@ -58,7 +58,7 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
 
     context.getActiveUserId match {
       case Some(id) => loadUserConfig(id)
-      case None =>  TaskService(Task(Xor.left(UserV1Exception(noActiveUserErrorMsg))))
+      case None =>  TaskService(Task(Either.left(UserV1Exception(noActiveUserErrorMsg))))
     }
 
   }

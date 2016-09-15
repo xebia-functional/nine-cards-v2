@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.{Build, Bundle}
 import android.support.v7.app.AppCompatActivity
-import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
@@ -13,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider, GooglePlusApiClientProvider}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
@@ -22,7 +21,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.accounts.AccountsProcessOperationCancelledException
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceData, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
@@ -33,15 +32,15 @@ import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}
 import macroid.{ActivityContextWrapper, Ui}
-
+import monix.eval.Task
+import cats.syntax.either._
 import scala.util.{Failure, Try}
-import scalaz.concurrent.Task
 
 class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with GoogleDriveApiClientProvider
-  with GooglePlusApiClientProvider
-  with ImplicitsCloudStorageProcessExceptions {
+    with GoogleDriveApiClientProvider
+    with GooglePlusApiClientProvider
+    with ImplicitsCloudStorageProcessExceptions {
 
   import PermissionChecker._
   import Statuses._
@@ -200,7 +199,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     clientStatuses.plusApiClient match {
       case Some(apiClient) =>
         val socialProfileProcess = di.createSocialProfileProcess(apiClient)
-        Task.fork(socialProfileProcess.updateUserProfile().value).resolveAsync(
+        socialProfileProcess.updateUserProfile().resolveAsync2(
           onResult = loadDevices,
           onException = error,
           onPreTask = () => actions.showLoading().run
@@ -259,13 +258,13 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
     def invalidateToken(): Unit = {
       clientStatuses.androidMarketToken foreach { token =>
-        Task.fork(di.userAccountsProcess.invalidateToken(token).value).resolveAsync()
+        di.userAccountsProcess.invalidateToken(token).resolveAsync2()
       }
     }
 
     invalidateToken()
     val scopes = resGetString(R.string.android_market_oauth_scopes)
-    Task.fork(di.userAccountsProcess.getAuthToken(account, scopes).value).resolveAsync(
+    di.userAccountsProcess.getAuthToken(account, scopes).resolveAsync2(
       onResult = (token: String) => {
         clientStatuses = clientStatuses.copy(androidMarketToken = Some(token))
         requestGooglePermission(account, client)
@@ -285,7 +284,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     account: String,
     client: GoogleApiClient): Unit = {
     val scopes = resGetString(R.string.profile_and_drive_oauth_scopes)
-    Task.fork(di.userAccountsProcess.getAuthToken(account, scopes).value).resolveAsync(
+    di.userAccountsProcess.getAuthToken(account, scopes).resolveAsync2(
       onResult = (_) => clientStatuses.driveApiClient foreach (_.connect()),
       onException = (ex: Throwable) => ex match {
         case ex: AccountsProcessOperationCancelledException =>
@@ -315,10 +314,15 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   private[this] def loadDevices(maybeProfileName: Option[String]): Unit = {
 
-    def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) = TaskService {
-      val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).value)
-      Task.gatherUnordered(tasks) map (c => XorCatchAll[CloudStorageProcessException](c.collect { case Xor.Right(r) => r }))
-    }
+    def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) =
+      TaskService {
+        val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).value)
+        Task.gatherUnordered(tasks) map { list =>
+          Right(list.collect {
+            case Right(r) => r
+          })
+        }
+      }
 
     // If we found some error when connecting to Backend V1 we just return an empty collection of devices
     def loadDevicesFromV1(): TaskService[Seq[UserV1Device]] =
@@ -326,7 +330,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         .map(_.devices)
         .resolveLeftTo(Seq.empty)
 
-    def fakeUserConfigException: TaskService[Unit] = TaskService(Task(Xor.right(())))
+    def fakeUserConfigException: TaskService[Unit] = TaskService(Task(Either.right(())))
 
     def verifyAndUpdate(
       cloudStorageProcess: CloudStorageProcess,
@@ -374,7 +378,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
     clientStatuses match {
       case WizardPresenterStatuses(_, Some(client), _, Some(email), Some(androidMarketToken), Some(emailTokenId)) =>
-        Task.fork(loadCloudDevices(client, email, androidMarketToken, emailTokenId).value).resolveAsyncUi(
+        loadCloudDevices(client, email, androidMarketToken, emailTokenId).resolveAsyncUi2(
           onPreTask = () => actions.showLoading(),
           onResult = (devices: UserCloudDevices) => actions.showDevices(devices),
           onException = (ex: Throwable) => ex match {

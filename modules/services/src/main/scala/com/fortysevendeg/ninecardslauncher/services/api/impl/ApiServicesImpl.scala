@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.api.version2.{CollectionUpdateInfo, CollectionsResponse}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
@@ -9,8 +8,7 @@ import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-
-import scalaz.concurrent.Task
+import monix.eval.Task
 
 case class ApiServicesConfig(appId: String, appKey: String, localization: String)
 
@@ -143,7 +141,7 @@ class ApiServicesImpl(
           apiService.topCollections(category, offset, limit, requestConfig.toGooglePlayHeader).resolve[ApiServiceException]
         case "latest" =>
           apiService.latestCollections(category, offset, limit, requestConfig.toGooglePlayHeader).resolve[ApiServiceException]
-        case _ => TaskService(Task(Xor.left(ApiServiceException(shareCollectionNotFoundMessage))))
+        case _ => TaskService(Task(Left(ApiServiceException(shareCollectionNotFoundMessage))))
 
       }
 
@@ -230,8 +228,8 @@ class ApiServicesImpl(
   private[this] def readOption[T](maybe: Option[T], msg: String = ""): TaskService[T] = TaskService {
     Task {
       maybe match {
-        case Some(v) => Xor.right(v)
-        case _ => Xor.left(ApiServiceException(msg))
+        case Some(v) => Right(v)
+        case _ => Left(ApiServiceException(msg))
       }
     }
   }

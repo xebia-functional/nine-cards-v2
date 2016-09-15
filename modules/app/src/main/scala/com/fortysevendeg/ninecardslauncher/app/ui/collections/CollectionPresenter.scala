@@ -3,15 +3,14 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.support.v7.widget.RecyclerView.ViewHolder
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.trackevent._
 import macroid.{ActivityContextWrapper, Ui}
 
-import scalaz.concurrent.Task
 
 case class CollectionPresenter(
   animateCards: Boolean,
@@ -31,14 +30,13 @@ case class CollectionPresenter(
   def startReorderCards(holder: ViewHolder): Unit = if (!actions.isPulling) actions.startReorder(holder).run
 
   def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit = {
-    Task.fork(di.collectionProcess.reorderCard(collectionId, cardId, position).value).resolveAsyncUi(
+    di.collectionProcess.reorderCard(collectionId, cardId, position).resolveAsyncUi2(
       onResult = (_) => actions.reloadCards())
   }
 
   def moveToCollection(): Unit =
-    Task.fork(di.collectionProcess.getCollections.value).resolveAsyncUi(
-      onResult = (collections) =>
-        actions.moveToCollection(collections),
+    di.collectionProcess.getCollections.resolveAsyncUi2(
+      onResult = (collections) => actions.moveToCollection(collections),
       onException = (_) => actions.showContactUsError())
 
   def addCards(cards: Seq[Card]): Unit = {
@@ -66,7 +64,7 @@ case class CollectionPresenter(
 
     cardName match {
       case Some(name) if name.length > 0 =>
-          Task.fork(saveCard(collectionId, cardId, name).value).resolveAsyncUi(
+          saveCard(collectionId, cardId, name).resolveAsyncUi2(
             onResult = (card) => actions.reloadCard(card),
             onException = (_) => actions.showContactUsError())
       case _ => actions.showMessageFormFieldError.run
@@ -86,11 +84,11 @@ case class CollectionPresenter(
       } yield {
         action match {
           case OpenCardAction =>
-            Task.fork(di.trackEventProcess.openAppFromCollection(packageName, category).value).resolveAsync()
+            di.trackEventProcess.openAppFromCollection(packageName, category).resolveAsync2()
           case AddedToCollectionAction =>
-            Task.fork(di.trackEventProcess.addAppToCollection(packageName, category).value).resolveAsync()
+            di.trackEventProcess.addAppToCollection(packageName, category).resolveAsync2()
           case RemovedInCollectionAction =>
-            Task.fork(di.trackEventProcess.removedInCollection(packageName, category).value).resolveAsync()
+            di.trackEventProcess.removedInCollection(packageName, category).resolveAsync2()
           case _ =>
         }
       }

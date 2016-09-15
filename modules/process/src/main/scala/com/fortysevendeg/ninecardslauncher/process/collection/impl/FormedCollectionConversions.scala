@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
@@ -9,12 +8,12 @@ import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory, _}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
+import monix.eval.Task
 
 import scala.annotation.tailrec
-import scalaz.{-\/, \/-}
 
 trait FormedCollectionDependencies {
   val contactsServices: ContactsServices
@@ -145,24 +144,7 @@ trait FormedCollectionConversions
     )
   }
 
-  def fillImageUri(formedCollections: Seq[FormedCollection], apps: Seq[Application])(implicit context: ContextSupport): Seq[FormedCollection] = {
-    def fetchPhotoUri(
-      extract: => Option[String],
-      service: String => TaskService[Option[Contact]]): Option[String] = {
-      val maybeContact = extract flatMap { value =>
-        val task = (for {
-          s <- service(value)
-        } yield s).value
-        (task map {
-          case Xor.Right(r) => r
-          case _ => None
-        }).attemptRun match {
-          case -\/(f) => None
-          case \/-(f) => f
-        }
-      }
-      maybeContact map (_.photoUri)
-    }
+  def adaptCardsToAppsInstalled(formedCollections: Seq[FormedCollection], apps: Seq[Application]): Seq[FormedCollection] =
     formedCollections map { fc =>
       val itemsWithPath = fc.items map { item =>
         val nineCardIntent = jsonToNineCardIntent(item.intent)
@@ -187,20 +169,9 @@ trait FormedCollectionConversions
             }) getOrElse item.copy(itemType = NoInstalledAppCardType.name)
           case _ => item
         }
-
-        val nineCardIntentAdapted = jsonToNineCardIntent(itemAdapted.intent)
-
-        val path = CardType(itemAdapted.itemType) match {
-          case PhoneCardType | SmsCardType =>
-            fetchPhotoUri(nineCardIntentAdapted.extractPhone(), contactsServices.fetchContactByPhoneNumber)
-          case EmailCardType =>
-            fetchPhotoUri(nineCardIntentAdapted.extractEmail(), contactsServices.fetchContactByEmail)
-          case _ => None
-        }
-        itemAdapted.copy(uriImage = path)
+        itemAdapted
       }
       fc.copy(items = itemsWithPath)
     }
-  }
 
 }

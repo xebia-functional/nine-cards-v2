@@ -2,8 +2,6 @@ package com.fortysevendeg.ninecardslauncher.repository
 
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
-import scalaz.Scalaz._
-
 case class RepositoryException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)
   with NineCardException {
@@ -11,5 +9,5 @@ case class RepositoryException(message: String, cause: Option[Throwable] = None)
 }
 
 trait ImplicitsRepositoryExceptions {
-  implicit def repositoryException = (t: Throwable) => RepositoryException(t.getMessage, t.some)
+  implicit def repositoryException = (t: Throwable) => RepositoryException(t.getMessage, Option(t))
 }

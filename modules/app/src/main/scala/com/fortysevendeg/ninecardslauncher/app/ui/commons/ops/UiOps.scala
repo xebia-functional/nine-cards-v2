@@ -2,13 +2,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
 
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, UiException}
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import macroid.Ui
 
 import scala.concurrent.Future
-import scalaz.concurrent.Task
 
 object UiOps {
 
@@ -31,7 +30,7 @@ object UiOps {
   implicit class ServiceUi(ui: Ui[Any]) extends ImplicitsUiExceptions {
 
     def toService: TaskService[Unit] = TaskService {
-      Task(XorCatchAll[UiException](ui.run))
+      CatchAll[UiException](ui.run)
     }
 
   }

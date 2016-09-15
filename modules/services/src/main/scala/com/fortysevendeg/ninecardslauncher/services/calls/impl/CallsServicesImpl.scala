@@ -1,14 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.services.calls.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.ContentResolverWrapper
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.calls.CallsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServices, CallsServicesException, CallsServicesPermissionException, ImplicitsCallsExceptions}
 import com.fortysevendeg.ninecardslauncher.services.contacts._
-
-import scalaz.concurrent.Task
+import monix.eval.Task
+import cats.syntax.either._
 
 class CallsServicesImpl(
   contentResolverWrapper: ContentResolverWrapper)
@@ -18,7 +17,7 @@ class CallsServicesImpl(
   override def getLastCalls =
     TaskService {
       Task {
-        Xor.catchNonFatal {
+        Either.catchNonFatal {
           contentResolverWrapper.fetchAll(
             uri = Fields.CALL_CONTENT_URI,
             projection = allFields,

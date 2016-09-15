@@ -4,7 +4,7 @@ import android.app.Service
 import android.os.Bundle
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher2.R
@@ -12,7 +12,6 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 
-import scalaz.concurrent.Task
 
 trait GoogleDriveApiClientService
   extends GoogleDriveApiClientProvider {
@@ -43,7 +42,7 @@ trait GoogleDriveApiClientService
     error(resGetString(R.string.errorConnectingGoogle))
 
   def synchronizeDevice(implicit di: Injector, contextSupport: ContextSupport): Unit = {
-    Task.fork(di.userProcess.getUser.value).resolveAsync(
+    di.userProcess.getUser.resolveAsync2(
       user => user.email match {
         case Some(account) =>
           val client = createGoogleDriveClient(account)

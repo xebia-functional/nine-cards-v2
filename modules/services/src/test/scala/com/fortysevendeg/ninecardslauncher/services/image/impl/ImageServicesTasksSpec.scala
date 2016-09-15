@@ -5,10 +5,9 @@ import java.io.{File, FileOutputStream, InputStream}
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics._
-import android.util.DisplayMetrics
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationException, FileException}
 import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
 import org.specs2.mock.Mockito
@@ -17,7 +16,7 @@ import org.specs2.specification.Scope
 
 trait ImageServicesTasksSpecification
   extends Specification
-    with Mockito {
+  with Mockito {
 
   trait ImageServicesTasksScope
     extends Scope
@@ -60,7 +59,7 @@ class ImageServicesTasksSpec
 
         val result = mockImageServicesTask.getPathByName(packageName)(contextSupport).value.run
         result must beLike {
-          case Xor.Right(resultFile) =>
+          case Right(resultFile) =>
             resultFile.getName shouldEqual packageName
             resultFile.getPath shouldEqual resultFilePathPackage
         }
@@ -70,7 +69,7 @@ class ImageServicesTasksSpec
       new ImageServicesTasksScope {
 
         val result = mockImageServicesTask.getPathByName(packageName)(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[FileException]]
+        result must beAnInstanceOf[Left[FileException, _]]
 
       }
 
@@ -86,7 +85,7 @@ class ImageServicesTasksSpec
         }
 
         val result = mockImageServicesTask.getBitmapFromURL(uri).value.run
-        result shouldEqual Xor.Right(mockBitmap)
+        result shouldEqual Right(mockBitmap)
       }
 
     "return a BitmapTransformationException with an invalid uri" in
@@ -97,7 +96,7 @@ class ImageServicesTasksSpec
         }
 
         val result = mockImageServicesTask.getBitmapFromURL(uri).value.run
-        result must beAnInstanceOf[Xor.Left[BitmapTransformationException]]
+        result must beAnInstanceOf[Left[BitmapTransformationException, _]]
       }
 
 
@@ -111,7 +110,7 @@ class ImageServicesTasksSpec
         }
 
         val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).value.run
-        result shouldEqual Xor.Right((): Unit)
+        result shouldEqual Right((): Unit)
         there was one(mockBitmap).compress(Bitmap.CompressFormat.PNG, 90, mockFileOutputStream)
       }
 
@@ -122,7 +121,7 @@ class ImageServicesTasksSpec
           override def createFileOutputStream(file: File): FileOutputStream = javaNull
         }
         val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).value.run
-        result must beAnInstanceOf[Xor.Left[FileException]]
+        result must beAnInstanceOf[Left[FileException, _]]
       }
   }
 }

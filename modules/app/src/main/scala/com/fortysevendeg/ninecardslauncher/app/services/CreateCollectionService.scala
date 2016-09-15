@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiCl
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState.{stateFailure => _, stateSuccess => _}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
@@ -24,7 +24,6 @@ import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 
-import scalaz.concurrent.Task
 
 class CreateCollectionService
   extends Service
@@ -60,7 +59,7 @@ class CreateCollectionService
 
     val hasKey = Option(intent) exists (_.hasExtra(cloudIdKey))
 
-    Task.fork(di.userProcess.getUser.value).resolveAsync(
+    di.userProcess.getUser.resolveAsync2(
       onResult = (user: User) => {
         if (hasKey && user.deviceCloudId.isEmpty) {
           selectedCloudId = Option(intent) flatMap { i =>
@@ -133,7 +132,7 @@ class CreateCollectionService
       case _ => createNewConfiguration(client, readToken)
     }
 
-    Task.fork(service.value).resolveAsync(
+    service.resolveAsync2(
       onResult = collections => {
         setState(stateSuccess, close = true)
       },

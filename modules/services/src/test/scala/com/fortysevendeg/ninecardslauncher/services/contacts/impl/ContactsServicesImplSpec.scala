@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
 import android.net.Uri
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider._
@@ -10,11 +9,13 @@ import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactNotFoundExc
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
 trait ContactsServicesSpecification
   extends Specification
-    with Mockito
-    with ContactsServicesImplData {
+  with Mockito
+  with ContactsServicesImplData {
 
   val contentResolverException = new RuntimeException("Irrelevant message")
 
@@ -53,7 +54,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetchAll[Contact](any,any,any,any,any)(any) returns contacts
           val result = contactsServices.getContacts.value.run
-          result shouldEqual Xor.Right(contacts)
+          result shouldEqual Right(contacts)
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
@@ -61,7 +62,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetchAll(any,any,any,any,any)(any) throws contentResolverException
           val result = contactsServices.getContacts.value.run
-          result must beAnInstanceOf[Xor.Left[ContactsServiceException]]
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
     }
 
@@ -73,7 +74,7 @@ class ContactsServicesImplSpec
           contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
 
           val result = contactsServices.getAlphabeticalCounterContacts.value.run
-          result shouldEqual Xor.Right(contactCounters)
+          result shouldEqual Right(contactCounters)
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
@@ -84,7 +85,7 @@ class ContactsServicesImplSpec
               throw contentResolverException
           }
           val result = contactsServicesException.getAlphabeticalCounterContacts.value.run
-          result must beAnInstanceOf[Xor.Left[ContactsServiceException]]
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
     }
 
@@ -95,7 +96,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetch[Contact](any,any,any,any,any)(any) returns contactWithEmail
           val result = contactsServices.fetchContactByEmail(emailHome).value.run
-          result shouldEqual Xor.Right(contactWithEmail)
+          result shouldEqual Right(contactWithEmail)
         }
 
       "return None from the content resolver for a non existent email" in
@@ -103,7 +104,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetch(any,any,any,any,any)(any) returns None
           val result = contactsServices.fetchContactByEmail(nonExistentEmail).value.run
-          result shouldEqual Xor.Right(None)
+          result shouldEqual Right(None)
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
@@ -111,7 +112,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetch(any,any,any,any,any)(any) throws contentResolverException
           val result = contactsServices.fetchContactByEmail(emailHome).value.run
-          result must beAnInstanceOf[Xor.Left[ContactsServiceException]]
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
 
     }
@@ -123,7 +124,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetch[Contact](any,any,any,any,any)(any) returns contactWithPhone
           val result = contactsServices.fetchContactByPhoneNumber(phoneHome).value.run
-          result shouldEqual Xor.Right(contactWithPhone)
+          result shouldEqual Right(contactWithPhone)
         }
 
       "return None from the content resolver for a non existent email" in
@@ -131,7 +132,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetch(any,any,any,any,any)(any) returns None
           val result = contactsServices.fetchContactByPhoneNumber(nonExistentPhone).value.run
-          result shouldEqual Xor.Right(None)
+          result shouldEqual Right(None)
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
@@ -139,7 +140,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetch(any,any,any,any,any)(any) throws contentResolverException
           val result = contactsServices.fetchContactByPhoneNumber(phoneHome).value.run
-          result must beAnInstanceOf[Xor.Left[ContactsServiceException]]
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
     }
 
@@ -165,7 +166,7 @@ class ContactsServicesImplSpec
             where = s"${Fields.PHONE_CONTACT_SELECTION} ('$firstLookupKey')")(getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
 
           val result = contactsServices.findContactByLookupKey(firstLookupKey).value.run
-          result shouldEqual Xor.Right(contact)
+          result shouldEqual Right(contact)
         }
 
       "return a ContactNotFoundException for a non existent lookup key" in
@@ -173,7 +174,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetchAll(any, any, any, any, any)(any) returns Seq.empty
           val result = contactsServices.findContactByLookupKey(nonExistentLookupKey).value.run
-          result must beAnInstanceOf[Xor.Left[ContactNotFoundException]]
+          result must beAnInstanceOf[Left[ContactNotFoundException, _]]
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
@@ -181,7 +182,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetchAll(any, any, any, any, any)(any) throws contentResolverException
           val result = contactsServices.findContactByLookupKey(firstLookupKey).value.run
-          result must beAnInstanceOf[Xor.Left[ContactsServiceException]]
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
 
     }
@@ -202,7 +203,7 @@ class ContactsServicesImplSpec
             where = s"${Fields.PHONE_CONTACT_SELECTION} ('$firstLookupKey')")(getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
 
           val result = contactsServices.populateContactInfo(Seq(contact.copy(info = None))).value.run
-          result shouldEqual Xor.Right(Seq(contact))
+          result shouldEqual Right(Seq(contact))
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
@@ -211,7 +212,7 @@ class ContactsServicesImplSpec
           contentResolverWrapper.fetchAll(any, any, any, any, any)(any) throws contentResolverException
 
           val result = contactsServices.findContactByLookupKey(firstLookupKey).value.run
-          result must beAnInstanceOf[Xor.Left[ContactsServiceException]]
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
 
     }
@@ -223,7 +224,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetchAll[Contact](any,any,any,any,any)(any) returns contacts
           val result = contactsServices.getFavoriteContacts.value.run
-          result shouldEqual Xor.Right(contacts)
+          result shouldEqual Right(contacts)
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
@@ -231,7 +232,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetchAll(any,any,any,any,any)(any) throws contentResolverException
           val result = contactsServices.getFavoriteContacts.value.run
-          result must beAnInstanceOf[Xor.Left[ContactsServiceException]]
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
 
     }
@@ -243,7 +244,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetchAll[Contact](any,any,any,any,any)(any) returns contacts
           val result = contactsServices.getContactsWithPhone.value.run
-          result shouldEqual Xor.Right(contacts)
+          result shouldEqual Right(contacts)
         }
 
       "return a ContactsServiceException when the content resolver throws an exception" in
@@ -251,7 +252,7 @@ class ContactsServicesImplSpec
 
           contentResolverWrapper.fetchAll(any,any,any,any,any)(any) throws contentResolverException
           val result = contactsServices.getContactsWithPhone.value.run
-          result must beAnInstanceOf[Xor.Left[ContactsServiceException]]
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
 
     }
@@ -262,21 +263,21 @@ class ContactsServicesImplSpec
         new ContactsServicesScope {
           val value = "my-value"
           val result = contactsServices.catchMapPermission(value).value.run
-          result shouldEqual Xor.right(value)
+          result shouldEqual Right(value)
         }
       }
 
       "return a ContactsServicePermissionException when the function throws a SecurityException" in {
         new ContactsServicesScope {
           val result = contactsServices.catchMapPermission(throw securityException).value.run
-          result must beAnInstanceOf[Xor.Left[ContactsServicePermissionException]]
+          result must beAnInstanceOf[Left[ContactsServicePermissionException, _]]
         }
       }
 
       "return a ContactsServiceException when the function throws a RuntimeException" in {
         new ContactsServicesScope {
           val result = contactsServices.catchMapPermission(throw contentResolverException).value.run
-          result must beAnInstanceOf[Xor.Left[ContactsServiceException]]
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
       }
 
