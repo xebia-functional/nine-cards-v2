@@ -21,8 +21,8 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.accounts.AccountsProcessOperationCancelledException
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDevice, CloudStorageDeviceData, CloudStorageDeviceSummary}
-import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, ImplicitsCloudStorageProcessExceptions}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
+import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
@@ -316,7 +316,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
     def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) =
       TaskService {
-        val tasks = cloudStorageDevices map (d => cloudStorageProcess.createCloudStorageDevice(d).value)
+        val tasks = cloudStorageDevices map (d => cloudStorageProcess.createOrUpdateCloudStorageDevice(None, d).value)
         Task.gatherUnordered(tasks) map { list =>
           Right(list.collect {
             case Right(r) => r
