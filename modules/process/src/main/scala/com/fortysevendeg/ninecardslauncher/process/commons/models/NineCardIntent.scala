@@ -22,7 +22,7 @@ case class NineCardIntent(intentExtras: NineCardIntentExtras) extends Intent {
   def extractClassName(): Option[String] =
     Option(intentExtras.class_name.getOrElse(getStringExtra(nineCardExtraClassName)))
 
-  def extraLookup(): Option[String] =
+  def extractLookup(): Option[String] =
     Option(intentExtras.contact_lookup_key.getOrElse(getStringExtra(nineCardExtraLookup)))
 
   def extractPhone(): Option[String] =
@@ -38,7 +38,7 @@ case class NineCardIntent(intentExtras: NineCardIntentExtras) extends Intent {
     val intent = new Intent(this)
     extractPackageName() map (packageName => intent.putExtra(nineCardExtraPackageName, packageName))
     extractClassName() map (className => intent.putExtra(nineCardExtraClassName, className))
-    extraLookup() map (lookupKey => intent.putExtra(nineCardExtraLookup, lookupKey))
+    extractLookup() map (lookupKey => intent.putExtra(nineCardExtraLookup, lookupKey))
     extractPhone() map (phone => intent.putExtra(nineCardExtraPhone, phone))
     extractEmail() map (email => intent.putExtra(nineCardExtraEmail, email))
     extractUrlAd() map (urlAd => intent.putExtra(nineCardExtraUrlAd, urlAd))

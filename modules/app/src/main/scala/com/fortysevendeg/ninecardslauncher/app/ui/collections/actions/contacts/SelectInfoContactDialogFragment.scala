@@ -39,8 +39,8 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     val views = contact.info map { info =>
       generateHeaderView(contact.name, contact.photoUri) ++
         generateGeneralInfoView(contact.lookupKey, contact.photoUri) ++
-        generatePhoneViews(info.phones map (phone => (phone.number, phone.category)), Seq.empty) ++
-        generateEmailViews(info.emails map (email => (email.address, email.category)), Seq.empty)
+        generatePhoneViews(contact.lookupKey, info.phones map (phone => (phone.number, phone.category)), Seq.empty) ++
+        generateEmailViews(contact.lookupKey, info.emails map (email => (email.address, email.category)), Seq.empty)
     } getOrElse Seq.empty
 
     ((rootView <~ vgAddViews(views)) ~ (scrollView <~ vgAddView(rootView))).run
@@ -79,10 +79,10 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       vBackgroundColor(primaryColor)) ~
       (generalInfo <~
       tvText(getResources.getString(R.string.generalInfo))) ~
-      (generalContent <~ On.click(generateIntent(lookupKey, ContactCardType)))).run
+      (generalContent <~ On.click(generateIntent(lookupKey, lookupKey, ContactCardType)))).run
   }
 
-  class PhoneView(data: (String, PhoneCategory))
+  class PhoneView(lookupKey: String, data: (String, PhoneCategory))
     extends LinearLayout(contextWrapper.bestAvailable)
       with TypedFindView {
 
@@ -110,11 +110,11 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       tvText(phone)) ~
       (phoneCategory <~
       tvText(categoryName)) ~
-      (phoneContent <~ On.click(generateIntent(phone, PhoneCardType))) ~
-      (phoneSms <~ On.click(generateIntent(phone, SmsCardType)))).run
+      (phoneContent <~ On.click(generateIntent(lookupKey, phone, PhoneCardType))) ~
+      (phoneSms <~ On.click(generateIntent(lookupKey, phone, SmsCardType)))).run
   }
 
-  class EmailView(data: (String, EmailCategory))
+  class EmailView(lookupKey: String, data: (String, EmailCategory))
     extends LinearLayout(contextWrapper.bestAvailable)
       with TypedFindView {
 
@@ -136,7 +136,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       tvText(email)) ~
       (emailCategory <~
       tvText(categoryName)) ~
-      (emailContent <~ On.click(generateIntent(email, EmailCardType)))).run
+      (emailContent <~ On.click(generateIntent(lookupKey, email, EmailCardType)))).run
   }
 
   private[this] def generateHeaderView(name: String, avatarUrl: String): Seq[View] = Seq(new HeaderView(name, avatarUrl))
@@ -145,32 +145,34 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
   @tailrec
   private[this] def generatePhoneViews(
+    lookupKey: String,
     items: Seq[(String, PhoneCategory)],
     acc: Seq[View]): Seq[View] = items match {
     case Nil => acc
     case h :: t =>
-      val viewItem = new PhoneView(h)
+      val viewItem = new PhoneView(lookupKey, h)
       val newAcc = acc :+ viewItem
-      generatePhoneViews(t, newAcc)
+      generatePhoneViews(lookupKey, t, newAcc)
   }
 
   @tailrec
   private[this] def generateEmailViews(
+    lookupKey: String,
     items: Seq[(String, EmailCategory)],
     acc: Seq[View]): Seq[View] = items match {
     case Nil => acc
     case h :: t =>
-      val viewItem = new EmailView(h)
+      val viewItem = new EmailView(lookupKey, h)
       val newAcc = acc :+ viewItem
-      generateEmailViews(t, newAcc)
+      generateEmailViews(lookupKey, t, newAcc)
   }
 
-  private[this] def generateIntent(data: String, cardType: CardType): Ui[_] = Ui {
+  private[this] def generateIntent(lookupKey: String, data: String, cardType: CardType): Ui[_] = Ui {
     val maybeIntent: Option[NineCardIntent] = cardType match {
-      case EmailCardType => Some(emailToNineCardIntent(data))
-      case SmsCardType => Some(smsToNineCardIntent(data))
-      case PhoneCardType => Some(phoneToNineCardIntent(data))
-      case ContactCardType => Some(contactToNineCardIntent(data))
+      case EmailCardType => Option(emailToNineCardIntent(Option(lookupKey), data))
+      case SmsCardType => Option(smsToNineCardIntent(Option(lookupKey), data))
+      case PhoneCardType => Option(phoneToNineCardIntent(Option(lookupKey), data))
+      case ContactCardType => Option(contactToNineCardIntent(lookupKey))
       case _ => None
     }
     maybeIntent foreach { intent =>
@@ -179,8 +181,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
         packageName = None,
         cardType = cardType,
         intent = intent,
-        imagePath = contact.photoUri
-      )
+        imagePath = contact.photoUri)
       val responseIntent = new Intent
       responseIntent.putExtra(ContactsFragment.addCardRequest, card)
       getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)

@@ -162,22 +162,25 @@ trait NineCardIntentConversions {
     intent
   }
 
-  def phoneToNineCardIntent(tel: String): NineCardIntent = {
+  def phoneToNineCardIntent(lookupKey: Option[String], tel: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
+      contact_lookup_key = lookupKey,
       tel = Option(tel)))
     intent.setAction(NineCardIntentExtras.openPhone)
     intent
   }
 
-  def smsToNineCardIntent(tel: String): NineCardIntent = {
+  def smsToNineCardIntent(lookupKey: Option[String], tel: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
+      contact_lookup_key = lookupKey,
       tel = Option(tel)))
     intent.setAction(NineCardIntentExtras.openSms)
     intent
   }
 
-  def emailToNineCardIntent(email: String): NineCardIntent = {
+  def emailToNineCardIntent(lookupKey: Option[String], email: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
+      contact_lookup_key = lookupKey,
       email = Option(email)))
     intent.setAction(NineCardIntentExtras.openEmail)
     intent
