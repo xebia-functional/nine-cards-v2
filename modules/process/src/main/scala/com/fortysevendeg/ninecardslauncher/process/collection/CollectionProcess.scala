@@ -114,15 +114,6 @@ trait CollectionProcess {
   def updateSharedCollection(collectionId: Int, sharedCollectionId: String): TaskService[Collection]
 
   /**
-    * Unsubscribe a Collection
-    *
-    * @param collectionId the Id of the Collection
-    * @return the [[Collection]]
-    * @throws CollectionException if there was an error finding the collection or updating it
-    */
-  def unsubscribeSharedCollection(collectionId: Int): TaskService[Collection]
-
-  /**
     * Adds some new packages to a given Collection
     *
     * @param collectionId the Id of the Collection

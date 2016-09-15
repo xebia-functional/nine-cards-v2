@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api._
+import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
 
 import scala.util.Random
 
@@ -43,10 +44,25 @@ trait ApiServicesImplData {
       generateCategorizedApp
     }
 
+  def generateCategorizedAppsDetail(num: Int = 10) =
+    1 to num map { _ =>
+      generateCategorizedAppDetail
+    }
+
   def generateCategorizedApp =
     version2.CategorizedApp(
       packageName = Random.nextString(10),
       category = "SOCIAL")
+
+  def generateCategorizedAppDetail =
+    version2.CategorizedAppDetail(
+      packageName = Random.nextString(10),
+      title = Random.nextString(10),
+      categories = Seq("SOCIAL"),
+      icon = Random.nextString(10),
+      free = Random.nextBoolean(),
+      downloads = "500,000,000+",
+      stars = Random.nextDouble() * 5)
 
   def generateUserConfig =
     version1.UserConfig(
@@ -156,6 +172,19 @@ trait ApiServicesImplData {
   val user = generateUser
 
   val categorizeApps = generateCategorizedApps()
+
+  val categorizeAppsDetail = generateCategorizedAppsDetail()
+
+  val categorizedDetailPackages = categorizeAppsDetail map { app =>
+    CategorizedDetailPackage(
+      packageName = app.packageName,
+      title = app.title,
+      category = app.categories.headOption,
+      icon = app.icon,
+      free = app.free,
+      downloads = app.downloads,
+      stars = app.stars)
+  }
 
   val recommendationApps = 1 to 10 map (_ => generateRecommendationApp)
 
