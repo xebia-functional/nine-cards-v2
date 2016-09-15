@@ -237,6 +237,10 @@ object ExtraTweaks {
 
   def sChecked(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setChecked(status))
 
+  def sThumbTintList(colorStateList: ColorStateList): Tweak[Switch] = Tweak[Switch](_.setThumbTintList(colorStateList))
+
+  def sTrackTintList(colorStateList: ColorStateList): Tweak[Switch] = Tweak[Switch](_.setTrackTintList(colorStateList))
+
   def tvAllCaps2(allCaps: Boolean = true): Tweak[TextView] = Tweak[TextView](_.setAllCaps(allCaps))
 
 }
