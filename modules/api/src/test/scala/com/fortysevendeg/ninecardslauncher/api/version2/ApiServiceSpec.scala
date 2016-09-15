@@ -277,6 +277,32 @@ class ApiServiceSpec
 
     }
 
+    "categorizeDetail" should {
+
+      "return the status code and the response" in new ApiServiceScope {
+
+        mockedServiceClient.post[CategorizeRequest, CategorizeDetailResponse](any, any, any, any, any)(any) returns
+          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(categorizeDetailResponse)))))
+
+        val serviceClientResponse = apiService.categorizeDetail(categorizeRequest, serviceMarketHeader).value.run
+
+        serviceClientResponse must beLike {
+          case Right(r) =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data must beSome(categorizeDetailResponse)
+        }
+
+        there was one(mockedServiceClient).post(
+          path = "/applications/details",
+          headers = createMarketHeaders(categorizeDetailAuthToken),
+          body = categorizeRequest,
+          reads = Some(categorizeDetailResponseReads),
+          emptyResponse = false)(categorizeRequestWrites)
+
+      }
+
+    }
+
     "recommendations" should {
 
       "return the status code and the response and call with the right category" in new ApiServiceScope {

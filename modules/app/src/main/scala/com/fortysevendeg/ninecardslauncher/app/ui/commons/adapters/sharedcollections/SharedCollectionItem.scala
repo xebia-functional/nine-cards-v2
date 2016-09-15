@@ -75,7 +75,7 @@ trait SharedCollectionItem
         tvText(R.string.addMyCollection) +
           tvAllCaps2(true) + tvNormalMedium + On.click(Ui(onAddCollection)) + vEnabled(true)
       case Subscribed =>
-        tvText(R.string.alreadySubscribedCollection) +
+        tvText(R.string.alreadyAddedCollection) +
           tvAllCaps2(false) + tvItalicLight + vEnabled(false)
       case Owned =>
         tvText(R.string.ownedCollection) +

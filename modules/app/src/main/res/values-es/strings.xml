@@ -119,7 +119,7 @@
     <string name="selectColor">Seleccionar color</string>
 
     <string name="addMyCollection">Añadir a mis collecciones</string>
-    <string name="alreadySubscribedCollection">Ya estás subscrito</string>
+    <string name="alreadyAddedCollection">Collección ya añadida</string>
     <string name="ownedCollection">Esta colección es tuya</string>
 
     <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta colección?</string>
