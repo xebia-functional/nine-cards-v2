@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.services.apps.impl
 
 import android.content.Intent
 import android.content.pm._
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsInstalledException
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import org.specs2.mock.Mockito
@@ -14,11 +14,11 @@ import scala.collection.JavaConversions._
 
 trait AppsServicesImplSpecification
   extends Specification
-    with Mockito {
+  with Mockito {
 
   trait AppsServicesImplScope
     extends Scope
-      with AppsServicesImplData {
+    with AppsServicesImplData {
 
     val packageManager = mock[PackageManager]
     val contextSupport = mock[ContextSupport]
@@ -87,7 +87,7 @@ class AppsServicesImplSpec
 
           packageManager.queryIntentActivities(mockIntent, 0) returns mockApps
           val result = mockAppsServicesImpl.getInstalledApplications(contextSupport).value.run
-          result shouldEqual Xor.Right(applicationList)
+          result shouldEqual Right(applicationList)
         }
 
       "returns an AppsInstalledException when no apps exist" in
@@ -95,7 +95,7 @@ class AppsServicesImplSpec
 
           packageManager.queryIntentActivities(mockIntent, 0) throws exception
           val result = mockAppsServicesImpl.getInstalledApplications(contextSupport).value.run
-          result must beAnInstanceOf[Xor.Left[AppsInstalledException]]
+          result must beAnInstanceOf[Left[AppsInstalledException, _]]
         }
     }
 
@@ -108,7 +108,7 @@ class AppsServicesImplSpec
           packageManager.getLaunchIntentForPackage(sampleApp1.packageName) returns mockIntent
 
           val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
-          result shouldEqual Xor.Right(sampleApp1)
+          result shouldEqual Right(sampleApp1)
         }
 
       "returns an AppsInstalledException when an invalid packageName is provided" in
@@ -116,7 +116,7 @@ class AppsServicesImplSpec
 
           packageManager.getLaunchIntentForPackage(invalidPackageName) throws exception
           val result = mockAppsServicesImpl.getApplication(invalidPackageName)(contextSupport).value.run
-          result must beAnInstanceOf[Xor.Left[AppsInstalledException]]
+          result must beAnInstanceOf[Left[AppsInstalledException, _]]
         }
 
       "returns an AppsInstalledException when the resolveActivity method fails" in
@@ -124,7 +124,7 @@ class AppsServicesImplSpec
 
           packageManager.resolveActivity(mockIntent, 0) throws exception
           val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
-          result must beAnInstanceOf[Xor.Left[AppsInstalledException]]
+          result must beAnInstanceOf[Left[AppsInstalledException, _ ]]
         }
 
       "returns an AppsInstalledException when the getPackageInfo method fails" in
@@ -132,7 +132,7 @@ class AppsServicesImplSpec
 
           packageManager.getPackageInfo(sampleApp1.packageName, 0) throws exception
           val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
-          result must beAnInstanceOf[Xor.Left[AppsInstalledException]]
+          result must beAnInstanceOf[Left[AppsInstalledException, _]]
         }
     }
 
@@ -143,7 +143,7 @@ class AppsServicesImplSpec
 
           packageManager.queryIntentActivities(mockIntent, 0) returns mockApps
           val result = mockAppsServicesImpl.getDefaultApps(contextSupport).value.run
-          result shouldEqual Xor.Right(defaultApplicationList)
+          result shouldEqual Right(defaultApplicationList)
         }
 
       "returns an AppsInstalledException when no default apps exist" in
@@ -151,7 +151,7 @@ class AppsServicesImplSpec
 
           packageManager.queryIntentActivities(mockIntent, 0) throws exception
           val result = mockAppsServicesImpl.getDefaultApps(contextSupport).value.run
-          result must beAnInstanceOf[Xor.Left[AppsInstalledException]]
+          result must beAnInstanceOf[Left[AppsInstalledException, _]]
         }
     }
   }

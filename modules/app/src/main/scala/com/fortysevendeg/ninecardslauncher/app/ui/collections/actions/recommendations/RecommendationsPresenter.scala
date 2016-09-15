@@ -2,13 +2,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommend
 
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import macroid.{ActivityContextWrapper, Ui}
 
-import scalaz.concurrent.Task
 
 class RecommendationsPresenter(
   category: NineCardCategory,
@@ -23,7 +22,7 @@ class RecommendationsPresenter(
   }
 
   def installNow(app: RecommendedApp): Unit = {
-    Task.fork(di.launcherExecutorProcess.launchGooglePlay(app.packageName).value).resolveAsyncUi(
+    di.launcherExecutorProcess.launchGooglePlay(app.packageName).resolveAsyncUi2(
       onException = _ => actions.showContactUsError())
     val card = AddCardRequest(
       term = app.title,
@@ -40,7 +39,7 @@ class RecommendationsPresenter(
     } else {
       di.recommendationsProcess.getRecommendedAppsByPackages(packages, packages)
     }
-    Task.fork(task.value).resolveAsyncUi(
+    task.resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = (recommendations: Seq[RecommendedApp]) => actions.loadRecommendations(recommendations),
       onException = (_) => actions.showErrorLoadingRecommendationInScreen())

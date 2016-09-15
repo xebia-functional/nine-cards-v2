@@ -10,12 +10,15 @@ object Libraries {
 
     lazy val scalaReflect = "org.scala-lang" % "scala-reflect" % scalaV
     lazy val scalap = "org.scala-lang" % "scalap" % scalaV
-    lazy val scalaz = "org.scalaz" %% "scalaz-core" % scalaZV
-    lazy val scalazConcurrent = "org.scalaz" %% "scalaz-concurrent" % scalaZV
   }
 
   object cats {
     lazy val cats = "org.typelevel" %% "cats" % Versions.catsV
+  }
+
+  object monix {
+    lazy val monixTypes = "io.monix" %% "monix-types" % Versions.monixV
+    lazy val monixEval = "io.monix" %% "monix-eval" % Versions.monixV
   }
 
   object android {

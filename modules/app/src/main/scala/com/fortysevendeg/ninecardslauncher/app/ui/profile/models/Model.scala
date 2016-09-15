@@ -5,7 +5,7 @@ import java.util.Date
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher2.R
 import org.ocpsoft.prettytime.PrettyTime
-import scalaz.Scalaz._
+
 
 sealed trait AccountSyncType
 
@@ -35,7 +35,7 @@ object AccountSync {
     AccountSync(
       title = title,
       accountSyncType = Device(current),
-      cloudId = cloudId.some,
+      cloudId = Option(cloudId),
       subtitle = Option(context.getResources.getString(R.string.syncLastSynced, time)))
   }
 

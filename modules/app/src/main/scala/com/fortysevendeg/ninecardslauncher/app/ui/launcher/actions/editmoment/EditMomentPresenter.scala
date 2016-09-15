@@ -2,15 +2,13 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
 
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadAction
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentConstrainsChangedActionFilter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.moment.UpdateMomentRequest
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import macroid._
-
-import scalaz.concurrent.Task
 
 class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
@@ -24,7 +22,7 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
       collections <- di.collectionProcess.getCollections
     } yield (moment, collections)
 
-    Task.fork(getData.value).resolveAsyncUi(
+    getData.resolveAsyncUi2(
       onResult = {
         case (moment: Moment, collections: Seq[Collection]) =>
           statuses = statuses.start(moment)
@@ -80,7 +78,7 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
   }
 
   def addWifi(): Unit = {
-    Task.fork(di.deviceProcess.getConfiguredNetworks.value).resolveAsyncUi(
+    di.deviceProcess.getConfiguredNetworks.resolveAsyncUi2(
       onResult = actions.showWifiDialog,
       onException = (_) => actions.showFieldErrorMessage()
     )
@@ -117,7 +115,7 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
         headphone = moment.headphone,
         momentType = moment.momentType
       )
-      Task.fork(di.momentProcess.updateMoment(request).value).resolveAsyncUi(
+      di.momentProcess.updateMoment(request).resolveAsyncUi2(
         onResult = (_) => Ui(momentConstrainsChangedBroadCastIfNecessary()) ~ actions.success(),
         onException = (_) => actions.showSavingMomentErrorMessage())
     case _ => actions.success().run

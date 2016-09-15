@@ -6,10 +6,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import macroid.Contexts
 
-import scalaz.concurrent.Task
 import UpdateSharedCollectionService._
 import com.fortysevendeg.ninecardslauncher2.R
 
@@ -46,11 +45,11 @@ class UpdateSharedCollectionService
 
     (collectionId, sharedCollectionId, action) match {
       case (_, Some(shareCollectionId), Some(`actionUnsubscribe`)) =>
-        Task.fork(di.sharedCollectionsProcess.unsubscribe(shareCollectionId).value).resolveAsync(
+        di.sharedCollectionsProcess.unsubscribe(shareCollectionId).resolveAsync2(
           onResult = (_) => uiShortToast2(R.string.sharedCollectionUnsubscribed),
           onException = e => printErrorMessage(e))
       case (Some(id), _, Some(`actionSync`)) =>
-        Task.fork(di.collectionProcess.addPackages(id, packages.toSeq).value).resolveAsync(
+        di.collectionProcess.addPackages(id, packages.toSeq).resolveAsync2(
           onResult = (_) => uiShortToast2(R.string.sharedCollectionUpdated),
           onException = e => printErrorMessage(e))
       case _ =>

@@ -1,19 +1,20 @@
 package com.fortysevendeg.ninecardslauncher.api.version1
 
-import cats.data.Xor
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
+import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-import scalaz.concurrent.Task
 
 trait ApiServiceSpecification
   extends Specification
-    with Mockito
-    with ApiServiceData {
+  with Mockito
+  with ApiServiceData {
 
   trait ApiServiceScope
     extends Scope {
@@ -38,12 +39,12 @@ class ApiServiceSpec
     "return the status code and the response" in new ApiServiceScope {
 
       mockedServiceClient.post[User, User](any, any, any, any, any)(any) returns
-        TaskService(Task(Xor.right(ServiceClientResponse(statusCodeOk, Some(user)))))
+        TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(user)))))
 
       val serviceResponse = apiService.login(emptyUser, headers).value.run
 
       serviceResponse must beLike {
-        case Xor.Right(r) =>
+        case Right(r) =>
           r.statusCode shouldEqual statusCodeOk
           r.data must beSome(user)
       }
@@ -64,12 +65,12 @@ class ApiServiceSpec
     "return the status code and the response" in new ApiServiceScope {
 
       mockedServiceClient.get[UserConfig](any, any, any, any) returns
-        TaskService(Task(Xor.right(ServiceClientResponse(statusCodeOk, Some(userConfig)))))
+        TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(userConfig)))))
 
       val serviceClientResponse = apiService.getUserConfig(headers).value.run
 
       serviceClientResponse must beLike {
-        case Xor.Right(r) =>
+        case Right(r) =>
           r.statusCode shouldEqual statusCodeOk
           r.data must beSome(userConfig)
       }

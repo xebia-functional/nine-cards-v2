@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -9,8 +8,7 @@ import com.fortysevendeg.ninecardslauncher.repository.model.Moment
 import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
-
-import scalaz.concurrent.Task
+import monix.eval.Task
 
 trait MomentPersistenceServicesImpl extends PersistenceServices {
 
@@ -74,6 +72,6 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
 
   private[this] def getHead(maybeMoment: Option[Moment]): TaskService[Moment]=
     maybeMoment map { m =>
-      TaskService(Task(Xor.right(m)))
-    } getOrElse TaskService(Task(Xor.left(RepositoryException("Moment not found"))))
+      TaskService(Task(Right(m)))
+    } getOrElse TaskService(Task(Left(RepositoryException("Moment not found"))))
 }

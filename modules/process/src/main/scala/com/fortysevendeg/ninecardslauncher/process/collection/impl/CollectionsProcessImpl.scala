@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-import cats.data.Xor
+
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
@@ -17,8 +17,9 @@ import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
+import monix.eval.Task
+import cats.syntax.either._
 
-import scalaz.concurrent.Task
 
 trait CollectionsProcessImpl extends CollectionProcess {
 
@@ -41,15 +42,13 @@ trait CollectionsProcessImpl extends CollectionProcess {
   def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) =
     (for {
       apps <- appsServices.getInstalledApplications
-      collectionsRequest = toAddCollectionRequestByFormedCollection(fillImageUri(items, apps))
+      collectionsRequest = toAddCollectionRequestByFormedCollection(adaptCardsToAppsInstalled(items, apps))
       collections <- persistenceServices.addCollections(collectionsRequest)
     } yield collections map toCollection).resolve[CollectionException]
 
   def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = TaskService {
-    Task {
-      XorCatchAll[CollectionException] {
+      CatchAll[CollectionException] {
         createPrivateCollections(apps, appsCategories, minAppsGenerateCollections)
-      }
     }
   }
 
@@ -127,7 +126,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
     def fetchInstalledPackages(packages: Seq[String]): TaskService[Seq[App]] =
       if (packages.isEmpty) {
-        TaskService(Task(Xor.right(Seq.empty)))
+        TaskService(Task(Either.right(Seq.empty)))
       } else {
         persistenceServices.fetchAppByPackages(packages)
       }
@@ -135,7 +134,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
     def categorizeNotInstalledPackages(installedApps: Seq[App], notAdded: Seq[String]): TaskService[Seq[CategorizedDetailPackage]] = {
       val notInstalledApps = notAdded.filterNot(packageName => installedApps.exists(_.packageName == packageName))
       if (notInstalledApps.isEmpty) {
-        TaskService(Task(Xor.right(Seq.empty)))
+        TaskService(Task(Either.right(Seq.empty)))
       } else {
         for {
           requestConfig <- apiUtils.getRequestConfig
@@ -150,7 +149,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
       categorizedPackages: Seq[CategorizedDetailPackage]): TaskService[Unit] = {
 
       if (installedApps.isEmpty && categorizedPackages.isEmpty) {
-        TaskService(Task(Xor.right((): Unit)))
+        TaskService(Task(Either.right((): Unit)))
       } else {
         val installedRequests = installedApps map (app => toAddCardRequest(collectionId, app, 0))
         val notInstalledRequests = categorizedPackages map { detailPackage =>

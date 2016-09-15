@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
@@ -9,8 +8,8 @@ import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactCounter
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServicePermissionException
-
-import scalaz.concurrent.Task
+import monix.eval.Task
+import cats.syntax.either._
 
 trait ContactsDeviceProcessImpl extends DeviceProcess {
 
@@ -19,7 +18,7 @@ trait ContactsDeviceProcessImpl extends DeviceProcess {
     with ImplicitsDeviceException =>
 
   val emptyContactCounterService: TaskService[Seq[ContactCounter]] =
-    TaskService(Task(Xor.Right(Seq.empty)))
+    TaskService(Task(Right(Seq.empty)))
 
   def mapServicesException[E >: NineCardException]: (NineCardException => E) = {
     case e: ContactsServicePermissionException => ContactPermissionException(e.message, Some(e))
