@@ -2,7 +2,6 @@ object Versions {
 
   val appV = "1.0.0"
   val scalaV = "2.11.7"
-  val scalaZV = "7.1.3"
   val androidPlatformV = "android-23"
   val androidV = "24.2.0"
   val androidProvidedV = "4.1.1.4"
@@ -24,5 +23,6 @@ object Versions {
   val crashlyticsV = "2.5.2"
   val jodaTimeV = "2.9.2"
   val gfcTimeUUIDV = "0.0.6"
-  val catsV = "0.6.1"
+  val monixV = "2.0.0"
+  val catsV = "0.7.2"
 }

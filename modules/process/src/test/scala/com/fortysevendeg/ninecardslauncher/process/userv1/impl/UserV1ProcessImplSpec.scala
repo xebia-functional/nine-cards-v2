@@ -3,27 +3,28 @@ package com.fortysevendeg.ninecardslauncher.process.userv1.impl
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
+import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import cats.syntax.either._
+import  com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
-import scalaz.concurrent.Task
 
 trait UserV1ProcessSpecification
   extends Specification
-    with Mockito {
+  with Mockito {
 
   val apiServiceException = ApiServiceException("")
 
   trait UserV1ProcessScope
     extends Scope
-      with UserV1ProcessData {
+    with UserV1ProcessData {
 
     val resources = mock[Resources]
     resources.getDisplayMetrics returns mock[DisplayMetrics]
@@ -35,7 +36,7 @@ trait UserV1ProcessSpecification
     val mockApiServices = mock[ApiServices]
 
     val mockPersistenceServices = mock[PersistenceServices]
-    mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Xor.right(deviceId)))
+    mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Either.right(deviceId)))
 
     val userConfigProcess = new UserV1ProcessImpl(mockApiServices, mockPersistenceServices)
 
@@ -53,7 +54,7 @@ class UserV1ProcessImplSpec
 
         contextSupport.getActiveUserId returns None
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[UserV1Exception]]
+        result must beAnInstanceOf[Left[UserV1Exception,  _]]
 
         there was one(contextSupport).getActiveUserId
         there was no(mockPersistenceServices).findUserById(any)
@@ -66,10 +67,10 @@ class UserV1ProcessImplSpec
       new UserV1ProcessScope {
 
         contextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(None)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(None)))
 
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[UserV1Exception]]
+        result must beAnInstanceOf[Left[UserV1Exception,  _]]
 
         there was one(contextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -82,10 +83,10 @@ class UserV1ProcessImplSpec
       new UserV1ProcessScope {
 
         contextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser.copy(email = None)))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(persistenceUser.copy(email = None)))))
 
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[UserV1Exception]]
+        result must beAnInstanceOf[Left[UserV1Exception,  _]]
 
         there was one(contextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -98,10 +99,10 @@ class UserV1ProcessImplSpec
       new UserV1ProcessScope {
 
         contextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser.copy(marketToken = None)))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(persistenceUser.copy(marketToken = None)))))
 
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[UserV1Exception]]
+        result must beAnInstanceOf[Left[UserV1Exception,  _]]
 
         there was one(contextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -114,11 +115,11 @@ class UserV1ProcessImplSpec
       new UserV1ProcessScope {
 
         contextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser))))
-        mockApiServices.loginV1(any, any) returns TaskService(Task(Xor.right(loginResponseV1.copy(sessionToken = None))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(persistenceUser))))
+        mockApiServices.loginV1(any, any) returns TaskService(Task(Either.right(loginResponseV1.copy(sessionToken = None))))
 
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[UserV1Exception]]
+        result must beAnInstanceOf[Left[UserV1Exception,  _]]
 
         there was one(contextSupport).getActiveUserId
         there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
@@ -131,13 +132,13 @@ class UserV1ProcessImplSpec
       new UserV1ProcessScope {
 
         contextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(any) returns TaskService(Task(Xor.right(Some(persistenceUser))))
-        mockApiServices.loginV1(any, any) returns TaskService(Task(Xor.right(loginResponseV1)))
-        mockApiServices.getUserConfigV1()(any) returns TaskService(Task(Xor.right(getUserConfigResponse)))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(persistenceUser))))
+        mockApiServices.loginV1(any, any) returns TaskService(Task(Either.right(loginResponseV1)))
+        mockApiServices.getUserConfigV1()(any) returns TaskService(Task(Either.right(getUserConfigResponse)))
 
         val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
         result must beLike {
-          case Xor.Right(userInfo) =>
+          case Right(userInfo) =>
             userInfo.devices.length shouldEqual userConfig.devices.length
             userInfo.devices map (_.deviceName) shouldEqual userConfig.devices.map(_.deviceName)
         }

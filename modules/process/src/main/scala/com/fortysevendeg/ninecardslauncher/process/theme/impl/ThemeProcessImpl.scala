@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.theme.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -11,7 +11,6 @@ import com.fortysevendeg.ninecardslauncher.process.theme.{ImplicitsThemeExceptio
 import play.api.libs.json.Json
 
 import scala.util.{Failure, Success}
-import scalaz.concurrent.Task
 
 class ThemeProcessImpl
   extends ThemeProcess
@@ -26,21 +25,17 @@ class ThemeProcessImpl
   } yield theme
 
   private[this] def getJsonFromThemeFile(defaultTheme: String)(implicit context: ContextSupport) = TaskService {
-    Task {
-      XorCatchAll[AssetException] {
+      CatchAll[AssetException] {
         fileUtils.readFile(s"$defaultTheme.json") match {
           case Success(json) => json
           case Failure(ex) => throw ex
         }
-      }
     }
   }
 
   private[this] def getNineCardsThemeFromJson(json: String) = TaskService {
-    Task {
-      XorCatchAll[ThemeException] {
+      CatchAll[ThemeException] {
           Json.parse(json).as[NineCardsTheme]
         }
-    }
   }
 }

@@ -2,7 +2,6 @@ package com.fortysevendeg.ninecardslauncher.process.theme.impl
 
 import android.content.res.Resources
 import android.util.DisplayMetrics
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.process.theme.ThemeException
@@ -11,12 +10,13 @@ import com.fortysevendeg.ninecardslauncher.commons.utils.AssetException
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
 import scala.util.Success
 
 trait ThemeProcessSpecification
   extends Specification
-    with Mockito {
+  with Mockito {
 
   val assetException = AssetException("")
 
@@ -48,7 +48,7 @@ class ThemeProcessImplSpec
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
 
         result must beLike {
-          case Xor.Right(theme) =>
+          case Right(theme) =>
             theme.name mustEqual defaultThemeName
             theme.get(SearchBackgroundColor) mustEqual intSampleColorWithoutAlpha
             theme.get(SearchPressedColor) mustEqual intSampleColorWithAlpha
@@ -60,7 +60,7 @@ class ThemeProcessImplSpec
 
         mockFileUtils.readFile(any)(any) returns Success(wrongThemeJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[ThemeException]]
+        result must beAnInstanceOf[Left[ThemeException, _]]
       }
 
     "return a ThemeException if a wrong theme style type is included in the JSON" in
@@ -68,7 +68,7 @@ class ThemeProcessImplSpec
 
         mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleTypeJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[ThemeException]]
+        result must beAnInstanceOf[Left[ThemeException, _]]
       }
 
     "return a ThemeException if a wrong theme style color is included in the JSON" in
@@ -76,7 +76,7 @@ class ThemeProcessImplSpec
 
         mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleColorJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[ThemeException]]
+        result must beAnInstanceOf[Left[ThemeException, _]]
       }
 
     "return a AssetException if getJsonFromFile throws a exception" in
@@ -84,7 +84,7 @@ class ThemeProcessImplSpec
 
         mockFileUtils.readFile(any)(any) throws assetException
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[AssetException]]
+        result must beAnInstanceOf[Left[AssetException, _]]
       }
   }
 

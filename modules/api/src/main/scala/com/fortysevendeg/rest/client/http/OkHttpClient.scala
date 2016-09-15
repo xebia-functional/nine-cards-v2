@@ -1,13 +1,11 @@
 package com.fortysevendeg.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.rest.client.http.Methods._
 import play.api.libs.json.{Json, Writes}
-
 import scala.collection.JavaConverters._
-import scalaz.concurrent.Task
 
 class OkHttpClient(okHttpClient: okhttp3.OkHttpClient = new okhttp3.OkHttpClient)
   extends HttpClient
@@ -66,17 +64,15 @@ class OkHttpClient(okHttpClient: okhttp3.OkHttpClient = new okhttp3.OkHttpClient
     httpHeaders: Seq[(String, String)],
     body: Option[String] = None,
     responseHandler: okhttp3.Response => T = defaultResponseHandler _): TaskService[T] = TaskService {
-    Task {
-      XorCatchAll[HttpClientException] {
-        val builder = createBuilderRequest(url, httpHeaders)
-        val request = (method match {
-          case GET => builder.get()
-          case DELETE => builder.delete()
-          case POST => builder.post(createBody(body))
-          case PUT => builder.put(createBody(body))
-        }).build()
-        responseHandler(okHttpClient.newCall(request).execute())
-      }
+    CatchAll[HttpClientException] {
+      val builder = createBuilderRequest(url, httpHeaders)
+      val request = (method match {
+        case GET => builder.get()
+        case DELETE => builder.delete()
+        case POST => builder.post(createBody(body))
+        case PUT => builder.put(createBody(body))
+      }).build()
+      responseHandler(okHttpClient.newCall(request).execute())
     }
   }
 

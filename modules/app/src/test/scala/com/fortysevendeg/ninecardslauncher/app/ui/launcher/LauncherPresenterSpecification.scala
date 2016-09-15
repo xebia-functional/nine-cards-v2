@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 
-import cats.data.Xor
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.LauncherPresenterStatuses
@@ -11,12 +11,12 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.DeviceProcess
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentProcess
 import macroid.{ActivityContextWrapper, Ui}
+import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
 import scala.concurrent.duration._
-import scalaz.concurrent.Task
 
 trait LauncherPresenterSpecification
   extends Specification
@@ -94,51 +94,5 @@ class LauncherPresenterSpec
 
   }
 
-  "Remove Collection" should {
-
-    "show error returning a failed" in
-      new WizardPresenterScope {
-        presenter.removeCollection(collection)
-        there was after(1 seconds).one(mockActions).showContactUsError()
-      }
-
-  }
-
-  "Load Collections and DockApps" should {
-
-    "returning a empty list the information is loaded" in
-      new WizardPresenterScope {
-
-        mockCollectionProcess.getCollections returns TaskService(Task(Xor.right(Seq(collection))))
-        mockDeviceProcess.getDockApps returns TaskService(Task(Xor.right(Seq(dockApp))))
-        mockMomentProcess.getBestAvailableMoment(any[ContextSupport]) returns TaskService(Task(Xor.right(Some(moment))))
-
-        mockInjector.collectionProcess returns mockCollectionProcess
-        mockInjector.deviceProcess returns mockDeviceProcess
-        mockInjector.momentProcess returns mockMomentProcess
-
-        presenter.loadLauncherInfo()
-        there was after(1 seconds).one(mockActions).loadLauncherInfo(any, any)
-      }
-
-    "returning a empty list the information isn't loaded" in
-      new WizardPresenterScope {
-
-        mockCollectionProcess.getCollections returns TaskService(Task(Xor.right(Seq.empty[Collection])))
-
-        presenter.loadLauncherInfo()
-        there was after(1 seconds).no(mockActions).loadLauncherInfo(any, any)
-      }
-
-    "go to wizard returning a failed loading collections" in
-      new WizardPresenterScope {
-
-        mockCollectionProcess.getCollections returns TaskService(Task(Xor.left(collectionException)))
-
-        presenter.loadLauncherInfo()
-        there was after(1 seconds).no(mockActions).loadLauncherInfo(any, any)
-      }
-
-  }
 
 }

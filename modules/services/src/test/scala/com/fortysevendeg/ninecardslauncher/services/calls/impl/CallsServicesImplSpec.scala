@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.calls.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.ContentResolverWrapperImpl
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
 import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServicesException, CallsServicesPermissionException}
 import org.specs2.mock.Mockito
@@ -10,8 +10,8 @@ import org.specs2.specification.Scope
 
 trait CallsServicesSpecification
   extends Specification
-    with Mockito
-    with CallsServicesImplData {
+  with Mockito
+  with CallsServicesImplData {
 
   trait CallsServicesScope
     extends Scope {
@@ -35,7 +35,7 @@ class CallsServicesImplSpec
 
           contentResolverWrapper.fetchAll[Call](any, any, any, any, any)(any) returns calls
           val result = callServices.getLastCalls.value.run
-          result shouldEqual Xor.Right(calls)
+          result shouldEqual Right(calls)
         }
 
       "return a CallsServicePermissionException when the content resolver throws a SecurityException" in
@@ -44,7 +44,7 @@ class CallsServicesImplSpec
           val contentResolverException = new SecurityException("Irrelevant message")
           contentResolverWrapper.fetchAll[Call](any, any, any, any, any)(any) throws contentResolverException
           val result = callServices.getLastCalls.value.run
-          result must beAnInstanceOf[Xor.Left[CallsServicesPermissionException]]
+          result must beAnInstanceOf[Left[CallsServicesPermissionException, _]]
         }
 
       "return a CallsServicesException when the content resolver throws an exception" in
@@ -53,7 +53,7 @@ class CallsServicesImplSpec
           val contentResolverException = new RuntimeException("Irrelevant message")
           contentResolverWrapper.fetchAll[Call](any, any, any, any, any)(any) throws contentResolverException
           val result = callServices.getLastCalls.value.run
-          result must beAnInstanceOf[Xor.Left[CallsServicesException]]
+          result must beAnInstanceOf[Left[CallsServicesException, _]]
         }
     }
 

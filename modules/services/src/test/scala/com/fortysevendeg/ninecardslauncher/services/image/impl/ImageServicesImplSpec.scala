@@ -6,24 +6,25 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.DisplayMetrics
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.image._
+import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
-import scalaz.concurrent.Task
 
 trait ImageServicesImplSpecification
   extends Specification
-    with Mockito {
+  with Mockito {
 
   val bitmapException = BitmapTransformationException("")
 
-  val serviceFileException: TaskService[Unit] = TaskService(Task(Xor.Left(FileException(""))))
+  val serviceFileException: TaskService[Unit] = TaskService(Task(Left(FileException(""))))
 
   trait ImageServicesScope
     extends Scope
@@ -43,19 +44,21 @@ trait ImageServicesImplSpecification
     val saveBitmap = SaveBitmap(bitmap = mock[Bitmap], bitmapResize = None)
 
     val saveBitmapTask = TaskService(Task {
-      Xor.catchOnly[FileException] {
+      Either.catchOnly[FileException] {
         val file = mock[File]
         file.exists() returns true
         file.getAbsolutePath returns resultFileSaveBitmap
         file
       }
-    })
+    }
+    )
 
     val mockTasks = mock[ImageServicesTasks]
 
     val mockImageService = new ImageServicesImpl(imageServiceConfig, mockTasks)
 
   }
+
 }
 
 class ImageServicesImplSpec
@@ -66,12 +69,12 @@ class ImageServicesImplSpec
     "returns filename when the file exists" in
       new ImageServicesScope {
 
-        mockTasks.saveBitmap(any[File], any[Bitmap]) returns TaskService(Task(Xor.catchOnly[FileException](())))
+        mockTasks.saveBitmap(any[File], any[Bitmap]) returns TaskService(Task(Either.catchOnly[FileException](())))
         mockTasks.getPathByName(any)(any) returns saveBitmapTask
 
         val result = mockImageService.saveBitmap(saveBitmap)(contextSupport).value.run
         result must beLike {
-          case Xor.Right(resultSaveBitmapPath) =>
+          case Right(resultSaveBitmapPath) =>
             resultSaveBitmapPath.path shouldEqual saveBitmapPath.path
         }
       }
@@ -83,7 +86,7 @@ class ImageServicesImplSpec
         mockTasks.saveBitmap(any[File], any[Bitmap]) returns serviceFileException
 
         val result = mockImageService.saveBitmap(saveBitmap)(contextSupport).value.run
-        result must beAnInstanceOf[Xor.Left[FileException]]
+        result must beAnInstanceOf[Left[FileException, _]]
       }
   }
 
