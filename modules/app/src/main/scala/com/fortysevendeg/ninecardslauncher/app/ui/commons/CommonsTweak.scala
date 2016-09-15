@@ -7,14 +7,14 @@ import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable._
 import android.os.Vibrator
 import android.support.design.widget.Snackbar
-import android.view.{View, ViewGroup}
+import android.view.{MotionEvent, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import android.support.v4.view.GravityCompat
+import android.support.v4.view.{GravityCompat, ViewPager}
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.ListPopupWindow
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
-import android.view.View.OnClickListener
+import android.view.View.{OnClickListener, OnTouchListener}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}

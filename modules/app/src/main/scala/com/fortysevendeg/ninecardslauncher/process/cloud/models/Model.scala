@@ -31,6 +31,15 @@ case class CloudStorageDevice(
   override def deviceName: String = data.deviceName
 }
 
+case class RawCloudStorageDevice(
+  cloudId: String,
+  uuid: String,
+  title: String,
+  deviceId: Option[String],
+  createdDate: Date,
+  modifiedDate: Date,
+  json: String)
+
 case class CloudStorageDeviceData(
   deviceId: String,
   deviceName: String,

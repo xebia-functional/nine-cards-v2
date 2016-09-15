@@ -143,6 +143,15 @@ trait CollectionProcess {
   def deleteCard(collectionId: Int, cardId: Int): TaskService[Unit]
 
   /**
+    * Deletes several Card and updates the position of the other Cards in the Collection
+    *
+    * @param collectionId the Id of the Collection
+    * @param cardIds list of Ids of the Card to delete
+    * @throws CardException if there was an error finding the card, getting the existing collection's cards, deleting the card or updating the rest of them
+    */
+  def deleteCards(collectionId: Int, cardIds: Seq[Int]): TaskService[Unit]
+
+  /**
    * Moves a Card to another position and updates the position of the other Cards in the Collection
    *
    * @param collectionId the Id of the Collection

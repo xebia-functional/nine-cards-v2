@@ -57,18 +57,20 @@ trait DriveServices {
   /**
     * Updates the content of an existing text file
     * @param driveId that identifies the file to be updated
+    * @param title the new title
     * @param content the content as String
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def updateFile(driveId: String, content: String): TaskService[DriveServiceFileSummary]
+  def updateFile(driveId: String, title: String, content: String): TaskService[DriveServiceFileSummary]
 
   /**
     * Updates the content of an existing file
     * @param driveId that identifies the file to be updated
+    * @param title the new title
     * @param content the content as InputStream (won't be closed after finish)
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def updateFile(driveId: String, content: InputStream): TaskService[DriveServiceFileSummary]
+  def updateFile(driveId: String, title: String, content: InputStream): TaskService[DriveServiceFileSummary]
 
   /**
     * Try to delete the file

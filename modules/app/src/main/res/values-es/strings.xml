@@ -136,6 +136,8 @@
     <string name="contacts">Contactos</string>
     <string name="shortcuts">Accesos directos</string>
 
+    <string name="itemsSelected">%s seleccionados</string>
+
     <string name="unnamed">Sin nombre</string>
 
     <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta?</string>
@@ -307,6 +309,8 @@
     <string name="menuAccountSync">Sincronizar</string>
     <string name="menuAccountCopy">Copiar</string>
     <string name="menuAccountDelete">Eliminar</string>
+    <string name="menuAccountChangeName">Cambiar nombre</string>
+    <string name="menuAccountPrintInfo">Imprimir información</string>
 
     <string name="accountSynced">Cuenta sincronizada</string>
 
@@ -322,6 +326,7 @@
     <string name="logout">Salir</string>
 
     <string name="copyAccountSyncDialogTitle">Nueva configuración</string>
+    <string name="renameAccountSyncDialogTitle">Nuevo nombre</string>
     <string name="hintNewConfigurationName">Nombre</string>
     <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
     <string name="emptyAccountsMessage">
@@ -480,6 +485,8 @@
 
     <string name="devClearCacheImagesTitle">Limpiar imágenes en caché</string>
 
+    <string name="devShowPositionInCardsTitle">Mostrar posiciones en las tarjetas</string>
+
     <string name="devCacheCleared">Caché limpiada</string>
 
     <string name="collectionDetailAddCardsMessage">
@@ -487,6 +494,8 @@
             Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +
         ]]>
     </string>
+
+    <string name="devShowPrintInfoOptionInAccounts">Imprimir información de Drive</string>
 
     <!-- Preferences About -->
     <string name="others">Otros</string>

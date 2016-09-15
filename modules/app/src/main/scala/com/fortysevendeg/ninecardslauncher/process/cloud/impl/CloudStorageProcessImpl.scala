@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageImpl
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, CloudStorageProcessException, Conversions, ImplicitsCloudStorageProcessExceptions}
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
-import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
+import com.fortysevendeg.ninecardslauncher.services.drive.DriveServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
 import monix.eval.Task
 import play.api.libs.json.Json
@@ -87,8 +87,20 @@ class CloudStorageProcessImpl(
       data = device)).resolve[CloudStorageProcessException]
   }
 
-  override def createCloudStorageDevice(cloudStorageDeviceData: CloudStorageDeviceData) =
-    createOrUpdateCloudStorageDevice(None, cloudStorageDeviceData)
+  override def getRawCloudStorageDevice(cloudId: String) =
+    driveServices.readFile(cloudId).map { driveFile =>
+      RawCloudStorageDevice(
+        cloudId = cloudId,
+        uuid = driveFile.summary.uuid,
+        deviceId = driveFile.summary.deviceId,
+        title = driveFile.summary.title,
+        createdDate = driveFile.summary.createdDate,
+        modifiedDate = driveFile.summary.modifiedDate,
+        json = driveFile.content)
+    }.resolve[CloudStorageProcessException]
+
+  override def createOrUpdateCloudStorageDevice(maybeCloudId: Option[String], cloudStorageDeviceData: CloudStorageDeviceData) =
+    createOrUpdate(maybeCloudId, cloudStorageDeviceData)
 
   override def createOrUpdateActualCloudStorageDevice(
     collections: Seq[CloudStorageCollection],
@@ -116,7 +128,7 @@ class CloudStorageProcessImpl(
           collections = collections,
           moments = Some(moments),
           dockApps = Some(dockApps))
-        device <- createOrUpdateCloudStorageDevice(
+        device <- createOrUpdate(
           maybeCloudId = if (exists) maybeCloudId else None,
           cloudStorageDeviceData = cloudStorageDeviceData)
       } yield device).resolve[CloudStorageProcessException]
@@ -128,7 +140,7 @@ class CloudStorageProcessImpl(
   override def deleteCloudStorageDevice(cloudId: String) =
     driveServices.deleteFile(cloudId).resolve[CloudStorageProcessException]
 
-  private[this] def createOrUpdateCloudStorageDevice(
+  private[this] def createOrUpdate(
     maybeCloudId: Option[String],
     cloudStorageDeviceData: CloudStorageDeviceData): TaskService[CloudStorageDevice] = {
 
@@ -138,7 +150,7 @@ class CloudStorageProcessImpl(
       content: String,
       deviceId: String): TaskService[DriveServiceFileSummary] =
       maybeCloudId match {
-        case Some(cloudId) => driveServices.updateFile(cloudId, content)
+        case Some(cloudId) => driveServices.updateFile(cloudId, title, content)
         case _ => driveServices.createFile(title, content, deviceId, userDeviceType, jsonMimeType)
       }
 
