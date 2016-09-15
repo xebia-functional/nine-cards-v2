@@ -62,7 +62,7 @@ case class CreatedCollection(
 
 case class Subscription(
   id: Int,
-  originalSharedCollectionId: String,
+  sharedCollectionId: String,
   name: String,
   apps: Int,
   icon: String,

@@ -241,7 +241,7 @@ class SharedCollectionsProcessImplSpec
         result must beLike {
           case Right(subscriptions) =>
             subscriptions.size shouldEqual publicCollectionList.size
-            subscriptions map (s => Option(s.originalSharedCollectionId)) shouldEqual publicCollectionList.map(_.originalSharedCollectionId)
+            subscriptions map (s => Option(s.sharedCollectionId)) shouldEqual publicCollectionList.map(_.sharedCollectionId)
         }
       }
 
@@ -274,7 +274,7 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.subscribe(any)(any) returns
           TaskService(Task(Either.right(subscribeResponse)))
 
-        val result = sharedCollectionsProcess.subscribe(originalSharedCollectionId)(contextSupport).value.run
+        val result = sharedCollectionsProcess.subscribe(sharedCollectionId)(contextSupport).value.run
 
         result mustEqual Right(())
       }
@@ -284,7 +284,7 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.subscribe(any)(any) returns
           TaskService(Task(Either.left(apiException)))
 
-        val result = sharedCollectionsProcess.subscribe(originalSharedCollectionId)(contextSupport).value.run
+        val result = sharedCollectionsProcess.subscribe(sharedCollectionId)(contextSupport).value.run
         result must beAnInstanceOf[Left[SharedCollectionsExceptions, _]]
       }
   }
@@ -296,7 +296,7 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.unsubscribe(any)(any) returns
           TaskService(Task(Either.right(unsubscribeResponse)))
 
-        val result = sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)(contextSupport).value.run
+        val result = sharedCollectionsProcess.unsubscribe(sharedCollectionId)(contextSupport).value.run
 
         result mustEqual Right(())
       }
@@ -306,7 +306,7 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.unsubscribe(any)(any) returns
           TaskService(Task(Either.left(apiException)))
 
-        val result = sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)(contextSupport).value.run
+        val result = sharedCollectionsProcess.unsubscribe(sharedCollectionId)(contextSupport).value.run
         result must beAnInstanceOf[Left[SharedCollectionsExceptions, _]]
       }
   }

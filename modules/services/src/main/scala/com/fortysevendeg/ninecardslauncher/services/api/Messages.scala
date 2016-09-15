@@ -32,9 +32,22 @@ case class CategorizedPackage(
   packageName: String,
   category: Option[String])
 
+case class CategorizedDetailPackage(
+  packageName: String,
+  title: String,
+  category: Option[String],
+  icon: String,
+  free: Boolean,
+  downloads: String,
+  stars: Double)
+
 case class GooglePlayPackagesResponse(
   statusCode: Int,
   packages: Seq[CategorizedPackage])
+
+case class GooglePlayPackagesDetailResponse(
+  statusCode: Int,
+  packages: Seq[CategorizedDetailPackage])
 
 trait UserV1Response {
   def statusCode: Int
@@ -96,7 +109,7 @@ case class SubscriptionResponseList(
   items: Seq[SubscriptionResponse])
 
 case class SubscriptionResponse(
-  originalSharedCollectionId: String)
+  sharedCollectionId: String)
 
 case class SubscribeResponse(statusCode: Int)
 
