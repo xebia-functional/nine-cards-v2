@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
@@ -15,7 +15,6 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationU
 import com.fortysevendeg.ninecardslauncher.repository.repositories.RepositoryUtils._
 
 import scala.language.postfixOps
-import scalaz.concurrent.Task
 
 class UserRepository(
   contentResolverWrapper: ContentResolverWrapper,
@@ -28,64 +27,54 @@ class UserRepository(
 
   def addUser(data: UserData): TaskService[User] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val values = createMapValues(data)
+      CatchAll[RepositoryException] {
+        val values = createMapValues(data)
 
-          val id = contentResolverWrapper.insert(
-            uri = userUri,
-            values = values,
-            notificationUris = Seq(userNotificationUri))
+        val id = contentResolverWrapper.insert(
+          uri = userUri,
+          values = values,
+          notificationUris = Seq(userNotificationUri))
 
-          User(id = id, data = data)
-        }
+        User(id = id, data = data)
       }
     }
 
   def deleteUsers(where: String = ""): TaskService[Int] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.delete(
-            uri = userUri,
-            where = where,
-            notificationUris = Seq(userNotificationUri))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.delete(
+          uri = userUri,
+          where = where,
+          notificationUris = Seq(userNotificationUri))
       }
     }
 
   def deleteUser(user: User): TaskService[Int] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.deleteById(
-            uri = userUri,
-            id = user.id,
-            notificationUris = Seq(userNotificationUri))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.deleteById(
+          uri = userUri,
+          id = user.id,
+          notificationUris = Seq(userNotificationUri))
       }
     }
 
   def findUserById(id: Int): TaskService[Option[User]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.findById(
-            uri = userUri,
-            id = id,
-            projection = allFields)(getEntityFromCursor(userEntityFromCursor)) map toUser
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.findById(
+          uri = userUri,
+          id = id,
+          projection = allFields)(getEntityFromCursor(userEntityFromCursor)) map toUser
       }
     }
 
   def fetchUsers: TaskService[Seq[User]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.fetchAll(
-            uri = userUri,
-            projection = allFields)(getListFromCursor(userEntityFromCursor)) map toUser
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.fetchAll(
+          uri = userUri,
+          projection = allFields)(getListFromCursor(userEntityFromCursor)) map toUser
       }
     }
 
@@ -94,30 +83,26 @@ class UserRepository(
     whereParams: Seq[String] = Seq.empty,
     orderBy: String = ""): TaskService[IterableCursor[User]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.getCursor(
-            uri = userUri,
-            projection = allFields,
-            where = where,
-            whereParams = whereParams,
-            orderBy = orderBy).toIterator(userFromCursor)
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.getCursor(
+          uri = userUri,
+          projection = allFields,
+          where = where,
+          whereParams = whereParams,
+          orderBy = orderBy).toIterator(userFromCursor)
       }
     }
 
   def updateUser(item: User): TaskService[Int] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val values = createMapValues(item.data)
+      CatchAll[RepositoryException] {
+        val values = createMapValues(item.data)
 
-          contentResolverWrapper.updateById(
-            uri = userUri,
-            id = item.id,
-            values = values,
-            notificationUris = Seq(userNotificationUri))
-        }
+        contentResolverWrapper.updateById(
+          uri = userUri,
+          id = item.id,
+          values = values,
+          notificationUris = Seq(userNotificationUri))
       }
     }
 

@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.intents.impl
 
-import cats.data.{Xor, XorT}
+import cats.data.EitherT
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -9,8 +9,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig, LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.intents.models._
 import com.fortysevendeg.ninecardslauncher.services.intents.{IntentLauncherServicesPermissionException, LauncherIntentServices}
-
-import scalaz.concurrent.Task
+import monix.eval.Task
+import cats.syntax.either._
 
 class LauncherExecutorProcessImpl(
   config: LauncherExecutorProcessConfig,
@@ -57,7 +57,7 @@ class LauncherExecutorProcessImpl(
       case `openContact` =>
         intent.extraLookup() match {
           case Some(lookupKey) => executeContact(lookupKey)
-          case None => TaskService(Task(Xor.left(LauncherExecutorProcessException("Contact lookup not found", None))))
+          case None => TaskService(Task(Either.left(LauncherExecutorProcessException("Contact lookup not found", None))))
         }
       case _ =>
         launcherIntentServices.launchIntent(intent).leftMap(mapServicesException)
@@ -118,13 +118,13 @@ class LauncherExecutorProcessImpl(
     maybeAction match {
       case Some(action) => toProcessServiceAction(action)
       case None => TaskService {
-        Task(Xor.left(LauncherExecutorProcessException(s"Not suitable intent for this NineCardIntent")))
+        Task(Either.left(LauncherExecutorProcessException(s"Not suitable intent for this NineCardIntent")))
       }
     }
 
   private[this] def verifyPermissionExceptionOrTry[A](f: => Option[IntentAction])
-    (implicit activityContext: ActivityContextSupport): PartialFunction[NineCardException, XorT[Task, NineCardException, Unit]] = {
-    case e: LauncherExecutorProcessPermissionException => TaskService(Task(Xor.left(e)))
+    (implicit activityContext: ActivityContextSupport): PartialFunction[NineCardException, EitherT[Task, NineCardException, Unit]] = {
+    case e: LauncherExecutorProcessPermissionException => TaskService(Task(Either.left(e)))
     case _ => tryLaunchIntentService(f)
   }
 }

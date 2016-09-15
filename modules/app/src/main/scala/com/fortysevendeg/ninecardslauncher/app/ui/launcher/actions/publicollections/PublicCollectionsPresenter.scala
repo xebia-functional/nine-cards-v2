@@ -4,7 +4,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
@@ -13,7 +13,6 @@ import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TopSharedC
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 
-import scalaz.concurrent.Task
 
 class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
@@ -40,17 +39,17 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
   }
 
   def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
-    Task.fork(addSharedCollection(sharedCollection).value).resolveAsyncUi(
+    addSharedCollection(sharedCollection).resolveAsyncUi2(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
       onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }
 
   def shareCollection(sharedCollection: SharedCollection): Unit =
-    Task.fork(di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id)).value)
-      .resolveAsyncUi(onException = _ => actions.showContactUsError)
+    di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+      .resolveAsyncUi2(onException = _ => actions.showContactUsError)
 
   def loadPublicCollections(): Unit = {
-    Task.fork(getSharedCollections(statuses.category, statuses.typeSharedCollection).value).resolveAsyncUi(
+    getSharedCollections(statuses.category, statuses.typeSharedCollection).resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = (sharedCollections: Seq[SharedCollection]) => {
         if (sharedCollections.isEmpty) {

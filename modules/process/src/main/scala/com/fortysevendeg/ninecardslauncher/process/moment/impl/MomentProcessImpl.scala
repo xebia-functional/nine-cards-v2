@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.moment.impl
 
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -19,7 +19,6 @@ import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
 
 import scala.annotation.tailrec
-import scalaz.concurrent.Task
 
 class MomentProcessImpl(
   val momentProcessConfig: MomentProcessConfig,
@@ -67,10 +66,8 @@ class MomentProcessImpl(
     } yield moments map toMoment).resolve[MomentException]
 
   override def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport) = TaskService {
-    Task {
-      XorCatchAll[MomentException] {
+      CatchAll[MomentException] {
         generatePrivateMomentsCollections(apps, moments, Seq.empty, position)
-      }
     }
   }
 

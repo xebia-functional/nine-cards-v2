@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
@@ -14,8 +14,6 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
 import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntity, NineCardsUri}
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import org.joda.time.DateTime
-
-import scalaz.concurrent.Task
 
 class AppRepository(
   contentResolverWrapper: ContentResolverWrapper,
@@ -34,83 +32,72 @@ class AppRepository(
 
   def addApp(data: AppData): TaskService[App] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val values = createMapValues(data)
+      CatchAll[RepositoryException] {
+        val values = createMapValues(data)
 
-          val id = contentResolverWrapper.insert(
-            uri = appUri,
-            values = values,
-            notificationUris = Seq(appNotificationUri))
+        val id = contentResolverWrapper.insert(
+          uri = appUri,
+          values = values,
+          notificationUris = Seq(appNotificationUri))
 
-          App(
-            id = id,
-            data = data)
-        }
+        App(
+          id = id,
+          data = data)
       }
     }
 
   def addApps(datas: Seq[AppData]): TaskService[Unit] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val values = datas map createMapValues
+      CatchAll[RepositoryException] {
+        val values = datas map createMapValues
 
-          contentResolverWrapper.inserts(
-            authority = NineCardsUri.authorityPart,
-            uri = appUri,
-            allValues = values,
-            notificationUris = Seq(appNotificationUri))
-        }
+        contentResolverWrapper.inserts(
+          authority = NineCardsUri.authorityPart,
+          uri = appUri,
+          allValues = values,
+          notificationUris = Seq(appNotificationUri))
       }
     }
 
+
   def deleteApps(where: String = ""): TaskService[Int] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.delete(
-            uri = appUri,
-            where = where,
-            notificationUris = Seq(appNotificationUri))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.delete(
+          uri = appUri,
+          where = where,
+          notificationUris = Seq(appNotificationUri))
       }
     }
 
   def deleteApp(app: App): TaskService[Int] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.deleteById(
-            uri = appUri,
-            id = app.id,
-            notificationUris = Seq(appNotificationUri))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.deleteById(
+          uri = appUri,
+          id = app.id,
+          notificationUris = Seq(appNotificationUri))
       }
     }
 
   def deleteAppByPackage(packageName: String): TaskService[Int] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.delete(
-            uri = appUri,
-            where = s"${AppEntity.packageName} = ?",
-            whereParams = Seq(packageName),
-            notificationUris = Seq(appNotificationUri))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.delete(
+          uri = appUri,
+          where = s"${AppEntity.packageName} = ?",
+          whereParams = Seq(packageName),
+          notificationUris = Seq(appNotificationUri))
       }
     }
 
   def fetchApps(orderBy: String = ""): TaskService[Seq[App]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.fetchAll(
-            uri = appUri,
-            projection = allFields,
-            orderBy = orderBy)(getListFromCursor(appEntityFromCursor)) map toApp
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.fetchAll(
+          uri = appUri,
+          projection = allFields,
+          orderBy = orderBy)(getListFromCursor(appEntityFromCursor)) map toApp
       }
     }
 
@@ -119,15 +106,13 @@ class AppRepository(
     whereParams: Seq[String] = Seq.empty,
     orderBy: String = ""): TaskService[IterableCursor[App]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.getCursor(
-            uri = appUri,
-            projection = allFields,
-            where = where,
-            whereParams = whereParams,
-            orderBy = orderBy).toIterator(appFromCursor)
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.getCursor(
+          uri = appUri,
+          projection = allFields,
+          where = where,
+          whereParams = whereParams,
+          orderBy = orderBy).toIterator(appFromCursor)
       }
     }
 
@@ -152,84 +137,72 @@ class AppRepository(
 
   def findAppById(id: Int): TaskService[Option[App]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.findById(
-            uri = appUri,
-            id = id,
-            projection = allFields)(getEntityFromCursor(appEntityFromCursor)) map toApp
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.findById(
+          uri = appUri,
+          id = id,
+          projection = allFields)(getEntityFromCursor(appEntityFromCursor)) map toApp
       }
     }
 
   def fetchAppByPackage(packageName: String): TaskService[Option[App]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.fetch(
-            uri = appUri,
-            projection = allFields,
-            where = s"${AppEntity.packageName} = ?",
-            whereParams = Seq(packageName))(getEntityFromCursor(appEntityFromCursor)) map toApp
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.fetch(
+          uri = appUri,
+          projection = allFields,
+          where = s"${AppEntity.packageName} = ?",
+          whereParams = Seq(packageName))(getEntityFromCursor(appEntityFromCursor)) map toApp
       }
     }
 
   def fetchAppByPackages(packageName: Seq[String]): TaskService[Seq[App]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.fetchAll(
-            uri = appUri,
-            projection = allFields,
-            where = s"${AppEntity.packageName} IN (${packageName.mkString("\"", ",", "\"")})")(getListFromCursor(appEntityFromCursor)) map toApp
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.fetchAll(
+          uri = appUri,
+          projection = allFields,
+          where = s"${AppEntity.packageName} IN (${packageName.mkString("\"", ",", "\"")})")(getListFromCursor(appEntityFromCursor)) map toApp
       }
     }
 
   def fetchAppsByCategory(category: String, orderBy: String = ""): TaskService[Seq[App]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val (where, param) = whereCategory(category)
-          contentResolverWrapper.fetchAll(
-            uri = appUri,
-            projection = allFields,
-            where = where,
-            whereParams = Seq(param),
-            orderBy = orderBy)(getListFromCursor(appEntityFromCursor)) map toApp
-        }
+      CatchAll[RepositoryException] {
+        val (where, param) = whereCategory(category)
+        contentResolverWrapper.fetchAll(
+          uri = appUri,
+          projection = allFields,
+          where = where,
+          whereParams = Seq(param),
+          orderBy = orderBy)(getListFromCursor(appEntityFromCursor)) map toApp
       }
     }
 
   def fetchIterableAppsByCategory(category: String, orderBy: String = ""): TaskService[IterableCursor[App]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val (where, param) = whereCategory(category)
-          contentResolverWrapper.getCursor(
-            uri = appUri,
-            projection = allFields,
-            where = where,
-            whereParams = Seq(param),
-            orderBy = orderBy).toIterator(appFromCursor)
-        }
+      CatchAll[RepositoryException] {
+        val (where, param) = whereCategory(category)
+        contentResolverWrapper.getCursor(
+          uri = appUri,
+          projection = allFields,
+          where = where,
+          whereParams = Seq(param),
+          orderBy = orderBy).toIterator(appFromCursor)
       }
     }
 
   def updateApp(app: App): TaskService[Int] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val values = createMapValues(app.data)
+      CatchAll[RepositoryException] {
+        val values = createMapValues(app.data)
 
-          contentResolverWrapper.updateById(
-            uri = appUri,
-            id = app.id,
-            values = values,
-            notificationUris = Seq(appNotificationUri)
-          )
-        }
+        contentResolverWrapper.updateById(
+          uri = appUri,
+          id = app.id,
+          values = values,
+          notificationUris = Seq(appNotificationUri)
+        )
       }
     }
 
@@ -262,19 +235,17 @@ class AppRepository(
     fetchData: => Seq[String],
     normalize: (String) => String = (term) => term): TaskService[Seq[DataCounter]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val data = fetchData
-          data.foldLeft(Seq.empty[DataCounter]) { (acc, name) =>
-            val term = normalize(name)
-            val lastWithSameTerm = acc.lastOption flatMap {
-              case last if last.term == term => Some(last)
-              case _ => None
-            }
-            lastWithSameTerm map { c =>
-              acc.dropRight(1) :+ c.copy(count = c.count + 1)
-            } getOrElse acc :+ DataCounter(term, 1)
+      CatchAll[RepositoryException] {
+        val data = fetchData
+        data.foldLeft(Seq.empty[DataCounter]) { (acc, name) =>
+          val term = normalize(name)
+          val lastWithSameTerm = acc.lastOption flatMap {
+            case last if last.term == term => Some(last)
+            case _ => None
           }
+          lastWithSameTerm map { c =>
+            acc.dropRight(1) :+ c.copy(count = c.count + 1)
+          } getOrElse acc :+ DataCounter(term, 1)
         }
       }
     }
@@ -282,29 +253,27 @@ class AppRepository(
   private[this] def toInstallationDateDataCounter(
    fetchData: => Seq[Long]): TaskService[Seq[DataCounter]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val now = new DateTime()
-          val moreOfTwoMoths = "moreOfTwoMoths"
-          val dates = Seq(
-            InstallationDateInterval("oneWeek", now.minusWeeks(1)),
-            InstallationDateInterval("twoWeeks", now.minusWeeks(2)),
-            InstallationDateInterval("oneMonth", now.minusMonths(1)),
-            InstallationDateInterval("twoMonths", now.minusMonths(2)),
-            InstallationDateInterval("fourMonths", now.minusMonths(4)),
-            InstallationDateInterval("sixMonths", now.minusMonths(6)))
-          val data = fetchData
-          data.foldLeft(Seq.empty[DataCounter]) { (acc, date) =>
-            val installationDate = new DateTime(date)
-            val term = termInterval(installationDate, dates) map (_.term) getOrElse moreOfTwoMoths
-            val lastWithSameTerm = acc.lastOption flatMap {
-              case last if last.term == term => Some(last)
-              case _ => None
-            }
-            lastWithSameTerm map { c =>
-              acc.dropRight(1) :+ c.copy(count = c.count + 1)
-            } getOrElse acc :+ DataCounter(term, 1)
+      CatchAll[RepositoryException] {
+        val now = new DateTime()
+        val moreOfTwoMoths = "moreOfTwoMoths"
+        val dates = Seq(
+          InstallationDateInterval("oneWeek", now.minusWeeks(1)),
+          InstallationDateInterval("twoWeeks", now.minusWeeks(2)),
+          InstallationDateInterval("oneMonth", now.minusMonths(1)),
+          InstallationDateInterval("twoMonths", now.minusMonths(2)),
+          InstallationDateInterval("fourMonths", now.minusMonths(4)),
+          InstallationDateInterval("sixMonths", now.minusMonths(6)))
+        val data = fetchData
+        data.foldLeft(Seq.empty[DataCounter]) { (acc, date) =>
+          val installationDate = new DateTime(date)
+          val term = termInterval(installationDate, dates) map (_.term) getOrElse moreOfTwoMoths
+          val lastWithSameTerm = acc.lastOption flatMap {
+            case last if last.term == term => Some(last)
+            case _ => None
           }
+          lastWithSameTerm map { c =>
+            acc.dropRight(1) :+ c.copy(count = c.count + 1)
+          } getOrElse acc :+ DataCounter(term, 1)
         }
       }
     }

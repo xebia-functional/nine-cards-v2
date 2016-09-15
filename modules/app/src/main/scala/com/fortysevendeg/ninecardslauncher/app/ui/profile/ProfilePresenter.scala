@@ -5,7 +5,7 @@ import java.util.Date
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import cats.data.XorT
+import cats.data.EitherT
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
 import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJo
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -23,9 +23,9 @@ import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
+import monix.eval.Task
 
 import scala.util.{Failure, Try}
-import scalaz.concurrent.Task
 
 class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
@@ -64,7 +64,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
 
   def initialize(): Unit = {
-    Task.fork(di.userProcess.getUser.value).resolveAsync(
+    di.userProcess.getUser.resolveAsync2(
       onResult = user => {
         (user.userProfile.name, user.email) match {
           case (Some(name), Some(email)) =>
@@ -102,17 +102,17 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   def loadUserAccounts(): Unit = withConnectedClient(loadUserAccounts(_))
 
   def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
-    Task.fork(addSharedCollection(sharedCollection).value).resolveAsyncUi(
+    addSharedCollection(sharedCollection).resolveAsyncUi2(
       onResult = (c) => actions.showAddCollectionMessage(sharedCollection.sharedCollectionId) ~ Ui(sendBroadCast(BroadAction(CollectionAddedActionFilter.action, Some(c.id.toString)))),
       onException = (ex) => actions.showErrorSavingCollectionInScreen(() => loadPublications()))
   }
 
   def shareCollection(sharedCollection: SharedCollection): Unit =
-    Task.fork(di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id)).value)
-      .resolveAsyncUi(onException = _ => actions.showContactUsError())
+    di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+      .resolveAsyncUi2(onException = _ => actions.showContactUsError())
 
   def loadPublications(): Unit =
-    Task.fork(di.sharedCollectionsProcess.getPublishedCollections().value).resolveAsyncUi(
+    di.sharedCollectionsProcess.getPublishedCollections().resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = (sharedCollections) => {
         if (sharedCollections.isEmpty) {
@@ -125,12 +125,12 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def loadSubscriptions(): Unit = {
 
-    def getSubscriptions: XorT[Task, NineCardException, (Seq[Subscription])] =
+    def getSubscriptions: EitherT[Task, NineCardException, (Seq[Subscription])] =
       for {
         subscriptions <- di.sharedCollectionsProcess.getSubscriptions()
       } yield subscriptions
 
-    Task.fork(getSubscriptions.value).resolveAsyncUi(
+    getSubscriptions.resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = {
         case subscriptions if subscriptions.isEmpty =>
@@ -144,18 +144,17 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def onSubscribe(originalSharedCollectionId: String, subscribeStatus: Boolean): Unit = {
 
-    def subscribe(originalSharedCollectionId: String): XorT[Task, NineCardException, Unit] =
+    def subscribe(originalSharedCollectionId: String): EitherT[Task, NineCardException, Unit] =
       for {
         _ <- di.sharedCollectionsProcess.subscribe(originalSharedCollectionId)
       } yield ()
 
-    def unsubscribe(originalSharedCollectionId: String): XorT[Task, NineCardException, Unit] =
+    def unsubscribe(originalSharedCollectionId: String): EitherT[Task, NineCardException, Unit] =
       for {
         _ <- di.sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)
       } yield ()
 
-    Task.fork(
-      (if (subscribeStatus) subscribe(originalSharedCollectionId) else unsubscribe(originalSharedCollectionId)).value).resolveAsyncUi(
+      (if (subscribeStatus) subscribe(originalSharedCollectionId) else unsubscribe(originalSharedCollectionId)).resolveAsyncUi2(
         onResult = (_) => actions.showUpdatedSubscriptions(originalSharedCollectionId, subscribeStatus),
         onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
   }
@@ -184,7 +183,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         _ <- di.userProcess.unregister
       } yield ()
 
-    Task.fork(logout.value).resolveAsyncUi(
+    logout.resolveAsyncUi2(
       onResult = (_) => Ui {
         contextWrapper.original.get foreach { activity =>
           activity.setResult(ResultCodes.logoutSuccessful)
@@ -209,7 +208,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
 
     withConnectedClient { client =>
-      Task.fork(deleteAccountDevice(client, cloudId).value).resolveAsyncUi(
+      deleteAccountDevice(client, cloudId).resolveAsyncUi2(
         onResult = (_) => Ui(loadUserAccounts(client, Seq(cloudId))),
         onException = (_) => actions.showContactUsError(() => deleteDevice(cloudId)),
         onPreTask = () => actions.showLoading())
@@ -229,7 +228,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     maybeName match {
       case Some(name) if name.length > 0 =>
         withConnectedClient { client =>
-          Task.fork(copyAccountDevice(name, client, cloudId).value).resolveAsyncUi(
+          copyAccountDevice(name, client, cloudId).resolveAsyncUi2(
             onResult = (_) => Ui(loadUserAccounts(client)),
             onException = (_) => actions.showContactUsError(() => copyDevice(maybeName, cloudId)),
             onPreTask = () => actions.showLoading())
@@ -279,7 +278,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       }
     }
 
-    Task.fork(loadAccounts(client, filterOutResourceIds).value).resolveAsyncUi(
+    loadAccounts(client, filterOutResourceIds).resolveAsyncUi2(
       onResult = accountSyncs => {
         syncEnabled = true
         if (accountSyncs.isEmpty) {
@@ -299,7 +298,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     def loadUserEmail() = di.userProcess.getUser.map(_.email)
 
     def loadUserInfo(): Unit =
-      Task.fork(loadUserEmail().value).resolveAsyncUi(
+      loadUserEmail().resolveAsyncUi2(
         onResult = email => Ui {
           val client = email map createGoogleDriveClient
           clientStatuses = clientStatuses.copy(apiClient = client)

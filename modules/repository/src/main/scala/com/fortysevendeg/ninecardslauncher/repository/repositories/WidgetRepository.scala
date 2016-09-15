@@ -1,8 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.XorCatchAll
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
@@ -17,7 +16,6 @@ import com.fortysevendeg.ninecardslauncher.repository.provider.{NineCardsUri, Wi
 import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scala.language.postfixOps
-import scalaz.concurrent.Task
 
 class WidgetRepository(
   contentResolverWrapper: ContentResolverWrapper,
@@ -30,96 +28,82 @@ class WidgetRepository(
 
   def addWidget(data: WidgetData): TaskService[Widget] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val values = createMapValues(data)
+      CatchAll[RepositoryException] {
+        val values = createMapValues(data)
 
-          val id = contentResolverWrapper.insert(
-            uri = widgetUri,
-            values = values,
-            notificationUris = Seq(widgetNotificationUri))
+        val id = contentResolverWrapper.insert(
+          uri = widgetUri,
+          values = values,
+          notificationUris = Seq(widgetNotificationUri))
 
-          Widget(id = id, data = data)
-        }
+        Widget(id = id, data = data)
       }
     }
 
   def addWidgets(datas: Seq[WidgetData]): TaskService[Seq[Widget]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
+      CatchAll[RepositoryException] {
 
-          val values = datas map createMapValues
+        val values = datas map createMapValues
 
-          val ids = contentResolverWrapper.inserts(
-            authority = NineCardsUri.authorityPart,
-            uri = widgetUri,
-            allValues = values,
-            notificationUris = Seq(widgetNotificationUri))
+        val ids = contentResolverWrapper.inserts(
+          authority = NineCardsUri.authorityPart,
+          uri = widgetUri,
+          allValues = values,
+          notificationUris = Seq(widgetNotificationUri))
 
-          datas zip ids map {
-            case (data, id) => Widget(id = id, data = data)
-          }
+        datas zip ids map {
+          case (data, id) => Widget(id = id, data = data)
         }
       }
     }
 
   def deleteWidgets(where: String = ""): TaskService[Int] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.delete(
-            uri = widgetUri,
-            where = where,
-            notificationUris = Seq(widgetNotificationUri))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.delete(
+          uri = widgetUri,
+          where = where,
+          notificationUris = Seq(widgetNotificationUri))
       }
     }
 
   def deleteWidget(widget: Widget): TaskService[Int] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.deleteById(
-            uri = widgetUri,
-            id = widget.id,
-            notificationUris = Seq(widgetNotificationUri))
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.deleteById(
+          uri = widgetUri,
+          id = widget.id,
+          notificationUris = Seq(widgetNotificationUri))
       }
     }
 
   def findWidgetById(id: Int): TaskService[Option[Widget]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.findById(
-            uri = widgetUri,
-            id = id,
-            projection = allFields)(getEntityFromCursor(widgetEntityFromCursor)) map toWidget
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.findById(
+          uri = widgetUri,
+          id = id,
+          projection = allFields)(getEntityFromCursor(widgetEntityFromCursor)) map toWidget
       }
     }
 
   def fetchWidgetByAppWidgetId(appWidgetId: Int): TaskService[Option[Widget]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          fetchWidget(selection = s"${WidgetEntity.appWidgetId} = ?", selectionArgs = Seq(appWidgetId.toString))
-        }
+      CatchAll[RepositoryException] {
+        fetchWidget(selection = s"${WidgetEntity.appWidgetId} = ?", selectionArgs = Seq(appWidgetId.toString))
       }
     }
 
   def fetchWidgetsByMoment(momentId: Int): TaskService[Seq[Widget]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.fetchAll(
-            uri = widgetUri,
-            projection = allFields,
-            where = s"${WidgetEntity.momentId} = ?",
-            whereParams = Seq(momentId.toString),
-            orderBy = s"${WidgetEntity.momentId} asc")(getListFromCursor(widgetEntityFromCursor)) map toWidget
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.fetchAll(
+          uri = widgetUri,
+          projection = allFields,
+          where = s"${WidgetEntity.momentId} = ?",
+          whereParams = Seq(momentId.toString),
+          orderBy = s"${WidgetEntity.momentId} asc")(getListFromCursor(widgetEntityFromCursor)) map toWidget
       }
     }
 
@@ -128,15 +112,13 @@ class WidgetRepository(
     whereParams: Seq[String] = Seq.empty,
     orderBy: String = ""): TaskService[Seq[Widget]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.fetchAll(
-            uri = widgetUri,
-            projection = allFields,
-            where = where,
-            whereParams = whereParams,
-            orderBy = orderBy)(getListFromCursor(widgetEntityFromCursor)) map toWidget
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.fetchAll(
+          uri = widgetUri,
+          projection = allFields,
+          where = where,
+          whereParams = whereParams,
+          orderBy = orderBy)(getListFromCursor(widgetEntityFromCursor)) map toWidget
       }
     }
 
@@ -145,47 +127,41 @@ class WidgetRepository(
     whereParams: Seq[String] = Seq.empty,
     orderBy: String = ""): TaskService[IterableCursor[Widget]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          contentResolverWrapper.getCursor(
-            uri = widgetUri,
-            projection = allFields,
-            where = where,
-            whereParams = whereParams,
-            orderBy = orderBy).toIterator(widgetFromCursor)
-        }
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.getCursor(
+          uri = widgetUri,
+          projection = allFields,
+          where = where,
+          whereParams = whereParams,
+          orderBy = orderBy).toIterator(widgetFromCursor)
       }
     }
 
   def updateWidget(widget: Widget): TaskService[Int] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val values = createMapValues(widget.data)
+      CatchAll[RepositoryException] {
+        val values = createMapValues(widget.data)
 
-          contentResolverWrapper.updateById(
-            uri = widgetUri,
-            id = widget.id,
-            values = values,
-            notificationUris = Seq(widgetNotificationUri))
-        }
+        contentResolverWrapper.updateById(
+          uri = widgetUri,
+          id = widget.id,
+          values = values,
+          notificationUris = Seq(widgetNotificationUri))
       }
     }
 
   def updateWidgets(widgets: Seq[Widget]): TaskService[Seq[Int]] =
     TaskService {
-      Task {
-        XorCatchAll[RepositoryException] {
-          val values = widgets map { widget =>
-            (widget.id, createMapValues(widget.data))
-          }
-
-          contentResolverWrapper.updateByIds(
-            authority = NineCardsUri.authorityPart,
-            uri = widgetUri,
-            idAndValues = values,
-            notificationUris = Seq(widgetNotificationUri))
+      CatchAll[RepositoryException] {
+        val values = widgets map { widget =>
+          (widget.id, createMapValues(widget.data))
         }
+
+        contentResolverWrapper.updateByIds(
+          authority = NineCardsUri.authorityPart,
+          uri = widgetUri,
+          idAndValues = values,
+          notificationUris = Seq(widgetNotificationUri))
       }
     }
 

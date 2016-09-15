@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.social.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
@@ -10,8 +9,8 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => 
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.plus.GooglePlusServices
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
-
-import scalaz.concurrent.Task
+import monix.eval.Task
+import cats.syntax.either._
 
 class SocialProfileProcessImpl(
   googlePlusServices: GooglePlusServices,
@@ -36,13 +35,13 @@ class SocialProfileProcessImpl(
         _ <- updateUser(maybeUser, googlePlusProfile)
       } yield ()).resolve[SocialProfileProcessException]
     } getOrElse {
-      TaskService(Task(Xor.left(SocialProfileProcessException(noActiveUserErrorMessage))))
+      TaskService(Task(Either.left(SocialProfileProcessException(noActiveUserErrorMessage))))
     }
 
   private[this] def updateUser(maybeUser: Option[ServicesUser], googlePlusProfile: GooglePlusProfile) =
     maybeUser match {
       case Some(user) => persistenceServices.updateUser(toUpdateRequest(user, googlePlusProfile))
-      case None => TaskService(Task(Xor.left(PersistenceServiceException(noActiveUserErrorMessage))))
+      case None => TaskService(Task(Either.left(PersistenceServiceException(noActiveUserErrorMessage))))
     }
 
 }
