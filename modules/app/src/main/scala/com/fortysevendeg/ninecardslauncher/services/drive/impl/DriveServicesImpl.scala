@@ -44,11 +44,16 @@ class DriveServicesImpl(client: GoogleApiClient)
     searchFileByUUID(driveId)(_.nonEmpty)
 
   override def readFile(driveId: String) =
-    openDriveFile(driveId) { (summary, driveContentsResult) =>
-      val contents = driveContentsResult.getDriveContents
-      val stringContent = scala.io.Source.fromInputStream(contents.getInputStream).mkString
-      contents.discard(client)
-      Right(DriveServiceFile(summary, stringContent))
+    fetchDriveFile(driveId) { metadata =>
+      val summary = toGoogleDriveFileSummary(metadata)
+      metadata.getDriveId.asDriveFile
+        .open(client, DriveFile.MODE_READ_ONLY, javaNull)
+        .withResult { driveContentsResult =>
+          val contents = driveContentsResult.getDriveContents
+          val stringContent = scala.io.Source.fromInputStream(contents.getInputStream).mkString
+          contents.discard(client)
+          Right(DriveServiceFile(summary, stringContent))
+        }
     }
 
   override def createFile(title: String, content: String, deviceId: String, fileType: String, mimeType: String) =
@@ -61,12 +66,13 @@ class DriveServicesImpl(client: GoogleApiClient)
         .takeWhile(_ != -1)
         .foreach(writer.write))
 
-  override def updateFile(driveId: String, content: String) =
-    updateFile(driveId, _.write(content))
+  override def updateFile(driveId: String, title: String, content: String) =
+    updateFile(driveId, title, _.write(content))
 
-  override def updateFile(driveId: String, content: InputStream) =
+  override def updateFile(driveId: String, title: String, content: InputStream) =
     updateFile(
       driveId,
+      title,
       writer => Iterator
         .continually(content.read)
         .takeWhile(_ != -1)
@@ -109,7 +115,7 @@ class DriveServicesImpl(client: GoogleApiClient)
             .asDriveResource()
             .updateMetadata(client, changeSet)
             .await()
-          toGoogleDriveFileSummary(uuid, metadata)
+          toGoogleDriveFileSummary(uuid, metadata).copy(uuid = uuid)
         }
         // End fix
 
@@ -162,13 +168,26 @@ class DriveServicesImpl(client: GoogleApiClient)
     }
   }
 
-  private[this] def updateFile(driveId: String, f: (OutputStreamWriter) => Unit) =
-    openDriveFile(driveId, DriveFile.MODE_WRITE_ONLY) { (summary, driveContentsResult) =>
-      val contents = driveContentsResult.getDriveContents
-      val writer = new OutputStreamWriter(contents.getOutputStream)
-      f(writer)
-      writer.close()
-      contents.commit(client, javaNull).withResult(_ => Right(summary))
+  private[this] def updateFile(driveId: String, title: String, f: (OutputStreamWriter) => Unit) =
+    fetchDriveFile(driveId) { metadata =>
+      val changeSet = new MetadataChangeSet.Builder()
+        .setTitle(title)
+        .build()
+      metadata.getDriveId.asDriveResource()
+        .updateMetadata(client, changeSet)
+        .withResult { metadataResult =>
+          val newMetadata = metadataResult.getMetadata
+          val summary = toGoogleDriveFileSummary(newMetadata)
+          newMetadata.getDriveId.asDriveFile
+            .open(client, DriveFile.MODE_WRITE_ONLY, javaNull)
+            .withResult { driveContentsResult =>
+              val contents = driveContentsResult.getDriveContents
+              val writer = new OutputStreamWriter(contents.getOutputStream)
+              f(writer)
+              writer.close()
+              contents.commit(client, javaNull).withResult(_ => Right(summary))
+            }
+        }
     }
 
   private[this] def fetchDriveFile[R](driveId: String)(f: (Metadata) => Either[DriveServicesException, R]) =
@@ -186,14 +205,6 @@ class DriveServicesImpl(client: GoogleApiClient)
             response
           }
       }
-    }
-
-  private[this] def openDriveFile[R](
-    driveId: String,
-    mode: Int = DriveFile.MODE_READ_ONLY)(f: (DriveServiceFileSummary, DriveApi.DriveContentsResult) => Either[DriveServicesException, R]) =
-    fetchDriveFile(driveId) { metadata =>
-      val driveServiceFileSummary = toGoogleDriveFileSummary(metadata)
-      metadata.getDriveId.asDriveFile.open(client, mode, javaNull).withResult(f(driveServiceFileSummary, _))
     }
 
 }
