@@ -18,8 +18,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.AccountOptions._
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, EmptyProfileAdapter, SubscriptionsAdapter}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{CopyAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{EditAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscribed, Subscription}
@@ -100,6 +101,18 @@ trait ProfileUiActionsImpl
 
   override def showErrorLoadingSubscriptionsInScreen(): Ui[Any] = showMessage(R.string.errorLoadingSubscriptions)
 
+  override def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any] = {
+    val adapter = recyclerView.getAdapter match {
+      case subscriptionsAdapter: SubscriptionsAdapter =>
+        val subscriptions = subscriptionsAdapter.subscriptions map {
+          case subscription if subscription.sharedCollectionId == sharedCollectionId => subscription.copy(subscribed = subscribed)
+          case subscription => subscription
+        }
+        subscriptionsAdapter.copy(subscriptions = subscriptions)
+    }
+    recyclerView <~ rvSwapAdapter(adapter)
+  }
+
   override def showErrorSubscribing(clickAction: () => Unit): Ui[Any] = showError(R.string.errorSubscribing, clickAction)
 
   override def showContactUsError(clickAction: () => Unit): Ui[Any] = showError(R.string.contactUsError, clickAction)
@@ -112,11 +125,11 @@ trait ProfileUiActionsImpl
 
   override def showSyncingError(): Ui[Any] = showMessage(R.string.errorSyncing) ~ (loadingView <~ vInvisible)
 
-  override def showInvalidConfigurationNameError(resourceId: String): Ui[Any] =
+  override def showInvalidConfigurationNameError(action: () => Unit): Ui[Any] =
     rootLayout <~ vSnackbarIndefiniteAction(
-      R.string.errorEmptyNameForDevice,
-      R.string.errorEmptyNameForDeviceButton,
-      () => showDialogForCopyDevice(resourceId))
+      res = R.string.errorEmptyNameForDevice,
+      buttonText = R.string.errorEmptyNameForDeviceButton,
+      f = action)
 
   override def showErrorSavingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorSavingPublicCollections, clickAction)
 
@@ -156,8 +169,17 @@ trait ProfileUiActionsImpl
   override def showDialogForDeleteDevice(cloudId: String): Unit =
     showDialog(new RemoveAccountDeviceDialogFragment(cloudId))
 
-  override def showDialogForCopyDevice(cloudId: String): Unit =
-    showDialog(new CopyAccountDeviceDialogFragment(cloudId))
+  override def showDialogForCopyDevice(cloudId: String, actualName: String): Unit =
+    showDialog(new EditAccountDeviceDialogFragment(
+      title = R.string.copyAccountSyncDialogTitle,
+      maybeText = None,
+      action = presenter.copyDevice(_, cloudId, actualName)))
+
+  override def showDialogForRenameDevice(cloudId: String, actualName: String): Unit =
+    showDialog(new EditAccountDeviceDialogFragment(
+      title = R.string.renameAccountSyncDialogTitle,
+      maybeText = Some(actualName),
+      action = presenter.renameDevice(_, cloudId, actualName)))
 
   override def loadPublications(
     sharedCollections: Seq[SharedCollection],
@@ -201,11 +223,13 @@ trait ProfileUiActionsImpl
     (rootLayout <~ vSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)) ~
       (loadingView <~ vInvisible)
 
-  private[this] def accountClickListener(position: Int, itemId: Int, accountSync: AccountSync): Unit =
-    itemId match {
-      case R.id.action_sync => presenter.launchService()
-      case R.id.action_delete => accountSync.cloudId foreach showDialogForDeleteDevice
-      case R.id.action_copy => accountSync.cloudId foreach showDialogForCopyDevice
+  private[this] def accountClickListener(position: Int, accountOption: AccountOption, accountSync: AccountSync): Unit =
+    (accountOption, accountSync.cloudId) match {
+      case (SyncOption, _) => presenter.launchService()
+      case (DeleteOption, Some(cloudId)) => showDialogForDeleteDevice(cloudId)
+      case (CopyOption, Some(cloudId)) => showDialogForCopyDevice(cloudId, accountSync.title)
+      case (ChangeNameOption, Some(cloudId)) => showDialogForRenameDevice(cloudId, accountSync.title)
+      case (PrintInfoOption, Some(cloudId)) => presenter.printDeviceInfo(cloudId)
       case _ =>
     }
 

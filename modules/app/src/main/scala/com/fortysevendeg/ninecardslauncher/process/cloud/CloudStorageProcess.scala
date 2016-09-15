@@ -31,12 +31,21 @@ trait CloudStorageProcess {
   def getCloudStorageDevice(cloudStorageResourceId: String): TaskService[CloudStorageDevice]
 
   /**
-    * Create a new device in the cloud
+    * Fetch the raw content of a device by his id
+    * @param cloudStorageResourceId google drive identifier
+    * @return the `RawCloudStorageDevice`
+    * @throws CloudStorageProcessException if the device not exists or the service throws an error
+    */
+  def getRawCloudStorageDevice(cloudStorageResourceId: String): TaskService[RawCloudStorageDevice]
+
+  /**
+    * Create or update a device in the cloud
+    * @param maybeCloudId None if a new device should be created. Some(id) for updating an existing device
     * @param cloudStorageDevice the device to create or update
     * @return the saved device
     * @throws CloudStorageProcessException if the services throws an error
     */
-  def createCloudStorageDevice(cloudStorageDevice: CloudStorageDeviceData): TaskService[CloudStorageDevice]
+  def createOrUpdateCloudStorageDevice(maybeCloudId: Option[String], cloudStorageDevice: CloudStorageDeviceData): TaskService[CloudStorageDevice]
 
   /**
     * Create or update a device the collections, moments and dockApps using as actual devices

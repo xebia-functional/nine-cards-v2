@@ -317,7 +317,7 @@ object FastScrollerLayoutTweak {
 object SlidingTabLayoutTweaks {
   type W = SlidingTabLayout
 
-  def stlViewPager(viewPager: Option[ViewPager]): Tweak[W] = Tweak[W](viewPager foreach _.setViewPager)
+  def stlViewPager(viewPager: ViewPager): Tweak[W] = Tweak[W](_.setViewPager(viewPager))
 
   def stlDefaultTextColor(color: Int): Tweak[W] = Tweak[W](_.setDefaultTextColor(color))
 

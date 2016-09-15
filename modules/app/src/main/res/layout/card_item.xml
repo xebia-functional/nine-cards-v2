@@ -23,6 +23,10 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/card_selected"
+        style="@style/CardSelected"/>
+
+    <ImageView
         android:id="@+id/card_badge"
         style="@style/CardBadge"/>
 
