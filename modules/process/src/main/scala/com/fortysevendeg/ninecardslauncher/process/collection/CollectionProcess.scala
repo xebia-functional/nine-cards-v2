@@ -4,6 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 
 trait CollectionProcess {
 
@@ -50,6 +51,15 @@ trait CollectionProcess {
     * @throws CollectionException if there was an error getting the existing collections
     */
   def getCollectionById(id: Int): TaskService[Option[Collection]]
+
+  /**
+    * Get collection by category if exists
+    *
+    * @param category category of collection
+    * @return the Option[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+    * @throws CollectionException if there was an error getting the existing collections
+    */
+  def getCollectionByCategory(category: NineCardCategory): TaskService[Option[Collection]]
 
   /**
     * Get collection by his shared collection id if exists

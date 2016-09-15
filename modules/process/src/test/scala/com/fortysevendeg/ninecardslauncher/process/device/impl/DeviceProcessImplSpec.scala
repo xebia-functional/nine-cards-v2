@@ -8,7 +8,7 @@ import android.util.DisplayMetrics
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppDockType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppDockType, Misc}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api._
@@ -746,7 +746,7 @@ class DeviceProcessImplSpec
         mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
 
         val result = deviceProcess.saveApp(packageName1)(contextSupport).value.run
-        result shouldEqual Right((): Unit)
+        result shouldEqual Right(apps.head)
       }
 
     "returns an AppException if app service fails" in
@@ -760,18 +760,22 @@ class DeviceProcessImplSpec
         result must beAnInstanceOf[Left[AppException, _]]
       }
 
-    "returns an empty Answer if api service fails" in
+    "returns an app with Misc category if api service fails" in
       new DeviceProcessScope {
+
+        val appsPersistenceFailed = appsPersistence map (_.copy(category = Misc.name))
+        val appExpected = apps.head.copy(category = Misc)
 
         mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService(Task(Either.right(applications.head)))
         mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.left(apiServiceException)))
         mockPersistenceServices.addApp(any[AddAppRequest]) returns(
-          TaskService(Task(Either.right(appsPersistence.head))),
-          TaskService(Task(Either.right(appsPersistence(1)))),
-          TaskService(Task(Either.right(appsPersistence(2)))))
+          TaskService(Task(Either.right(appsPersistenceFailed.head))),
+          TaskService(Task(Either.right(appsPersistenceFailed(1)))),
+          TaskService(Task(Either.right(appsPersistenceFailed(2)))))
 
         val result = deviceProcess.saveApp(packageName1)(contextSupport).value.run
-        result shouldEqual Right((): Unit)
+
+        result shouldEqual Right(appExpected)
       }
 
     "returns an empty Answer if persistence service fails" in

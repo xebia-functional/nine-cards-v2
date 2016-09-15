@@ -73,10 +73,10 @@ trait AppsDeviceProcessImpl
 
   def saveApp(packageName: String)(implicit context: ContextSupport) =
     (for {
-      app <- appsServices.getApplication(packageName)
+      application <- appsServices.getApplication(packageName)
       appCategory <- getAppCategory(packageName)
-      _ <- persistenceServices.addApp(toAddAppRequest(app, appCategory))
-    } yield ()).resolve[AppException]
+      app <- persistenceServices.addApp(toAddAppRequest(application, appCategory))
+    } yield toApp(app)).resolve[AppException]
 
   def deleteApp(packageName: String)(implicit context: ContextSupport) =
     (for {
