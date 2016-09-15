@@ -53,6 +53,10 @@
             android:key="showPositionInCards"
             android:title="@string/devShowPositionInCardsTitle"/>
 
+        <CheckBoxPreference
+            android:key="showPrintInfoOptionInAccounts"
+            android:title="@string/devShowPrintInfoOptionInAccounts"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>
