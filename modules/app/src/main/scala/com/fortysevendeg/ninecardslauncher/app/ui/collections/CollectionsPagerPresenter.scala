@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProce
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 
 class CollectionsPagerPresenter(
   actions: CollectionsPagerUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
@@ -151,7 +152,7 @@ class CollectionsPagerPresenter(
           actions.reloadItemCollection(position).run
         }
       case NormalCollectionMode =>
-        Task.fork(di.launcherExecutorProcess.execute(card.intent).value).resolveAsyncUi(
+        di.launcherExecutorProcess.execute(card.intent).resolveAsyncUi2(
           onException = (throwable: Throwable) => throwable match {
             case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
               statuses = statuses.copy(lastPhone = card.intent.extractPhone())
@@ -170,13 +171,13 @@ class CollectionsPagerPresenter(
       if (result.exists(_.hasPermission(CallPhone))) {
         statuses.lastPhone foreach { phone =>
           statuses = statuses.copy(lastPhone = None)
-          Task.fork(di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)).value).resolveAsyncUi(
+          di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)).resolveAsyncUi2(
             onException = _ => actions.showContactUsError)
         }
       } else {
         statuses.lastPhone foreach { phone =>
           statuses = statuses.copy(lastPhone = None)
-          Task.fork(di.launcherExecutorProcess.launchDial(Some(phone)).value).resolveAsyncUi(
+          di.launcherExecutorProcess.launchDial(Some(phone)).resolveAsyncUi2(
             onException = _ => actions.showContactUsError)
         }
         actions.showNoPhoneCallPermissionError().run

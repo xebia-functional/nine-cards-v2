@@ -3,14 +3,13 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.support.v7.widget.RecyclerView.ViewHolder
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.trackevent._
 import macroid.{ActivityContextWrapper, Ui}
-
 
 case class CollectionPresenter(
   animateCards: Boolean,
