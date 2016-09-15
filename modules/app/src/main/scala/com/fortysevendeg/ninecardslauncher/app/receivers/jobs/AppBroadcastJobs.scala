@@ -32,10 +32,9 @@ class AppBroadcastJobs(implicit contextWrapper: ContextWrapper)
   }
 
   def deleteApp(packageName: String) =
-    for {
-      _ <- di.deviceProcess.deleteApp(packageName)
-      _ <- sendBroadCastTask(BroadAction(AppUninstalledActionFilter.action))
-    } yield (): Unit
+    di.deviceProcess.deleteApp(packageName) *>
+      di.collectionProcess.deleteAllCardsByPackageName(packageName) *>
+      sendBroadCastTask(BroadAction(AppUninstalledActionFilter.action))
 
   def updateApp(packageName: String) =
     di.deviceProcess.updateApp(packageName) *>
