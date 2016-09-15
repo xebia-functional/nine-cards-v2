@@ -205,8 +205,11 @@ class CollectionsPagerPresenter(
   def scrollY(scroll: Int, dy: Int): Unit = actions.translationScrollY(scroll).run
 
   def openReorderMode(current: ScrollType, canScroll: Boolean): Unit = {
-    statuses = statuses.copy(collectionMode = EditingCollectionMode)
-    actions.openReorderModeUi(current, canScroll).run
+    ((statuses.collectionMode match {
+      case EditingCollectionMode => actions.closeEditingModeUi()
+      case _ => Ui(statuses = statuses.copy(collectionMode = EditingCollectionMode))
+    }) ~
+      actions.openReorderModeUi(current, canScroll)).run
   }
 
   def closeReorderMode(position: Int): Unit = {
