@@ -106,7 +106,7 @@ trait ProfileUiActionsImpl
     val adapter = recyclerView.getAdapter match {
       case subscriptionsAdapter: SubscriptionsAdapter =>
         val subscriptions = subscriptionsAdapter.subscriptions map {
-          case subscription if subscription.originalSharedCollectionId == originalSharedCollectionId => subscription.copy(subscribed = subscribed)
+          case subscription if subscription.sharedCollectionId == originalSharedCollectionId => subscription.copy(subscribed = subscribed)
           case subscription => subscription
         }
         subscriptionsAdapter.copy(subscriptions = subscriptions)

@@ -41,7 +41,11 @@ class ApiService(serviceClient: ServiceClient) {
 
   private[this] val topCollectionsPath = s"$collectionsPath/top"
 
-  private[this] val categorizePath = "/applications/categorize"
+  private[this] val applicationsPath = "/applications"
+
+  private[this] val categorizePath = s"$applicationsPath/categorize"
+
+  private[this] val categorizeDetailPath = s"$applicationsPath/details"
 
   private[this] val recommendationsPath = "/recommendations"
 
@@ -145,6 +149,16 @@ class ApiService(serviceClient: ServiceClient) {
     serviceClient.post[CategorizeRequest, CategorizeResponse](
       path = categorizePath,
       headers = createHeaders(categorizePath, header),
+      body = request,
+      reads = Some(reads))
+
+  def categorizeDetail(
+    request: CategorizeRequest,
+    header: ServiceMarketHeader)(
+    implicit reads: Reads[CategorizeDetailResponse], writes: Writes[CategorizeRequest]): TaskService[ServiceClientResponse[CategorizeDetailResponse]] =
+    serviceClient.post[CategorizeRequest, CategorizeDetailResponse](
+      path = categorizeDetailPath,
+      headers = createHeaders(categorizeDetailPath, header),
       body = request,
       reads = Some(reads))
 
