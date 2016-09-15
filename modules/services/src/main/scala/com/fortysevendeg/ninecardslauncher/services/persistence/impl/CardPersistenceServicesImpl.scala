@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity
+import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, NineCardsSqlHelper}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import monix.eval.Task
@@ -33,10 +33,17 @@ trait CardPersistenceServicesImpl extends PersistenceServices {
       deleted <- cardRepository.deleteCards()
     } yield deleted).resolve[PersistenceServiceException]
 
-  def deleteCard(request: DeleteCardRequest) =
+  def deleteCard(collectionId: Int, cardId: Int) =
     (for {
-      deleted <- cardRepository.deleteCard(request.collectionId, toRepositoryCard(request.card))
+      deleted <- cardRepository.deleteCard(collectionId, cardId)
     } yield deleted).resolve[PersistenceServiceException]
+
+  def deleteCards(collectionId: Int, cardIds: Seq[Int]) = {
+    val where = s"${NineCardsSqlHelper.id} IN (${cardIds.mkString(",")})"
+    (for {
+      deleted <- cardRepository.deleteCards(where)
+    } yield deleted).resolve[PersistenceServiceException]
+  }
 
   def deleteCardsByCollection(collectionId: Int) =
     (for {

@@ -8,7 +8,13 @@
         android:id="@+id/collections_toolbar"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        style="@style/CollectionsToolbar"/>
+        style="@style/CollectionsToolbar">
+
+        <TextView
+            android:id="@+id/collections_toolbar_title"
+            style="@style/CollectionsToolbarTitle" />
+
+    </android.support.v7.widget.Toolbar>
 
     <FrameLayout
         android:id="@+id/collections_icon_content"

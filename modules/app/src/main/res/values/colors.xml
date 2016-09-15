@@ -121,11 +121,9 @@
 
     <!-- Collections detail -->
     <color name="background_icon_collection_detail">#4bffffff</color>
+    <color name="toolbar_title_collection_detail">#eeffffff</color>
     <color name="text_tab_color_default">#77ffffff</color>
     <color name="text_tab_color_selected">#ffffff</color>
-
-    <color name="actions_bar_background">#ffffff</color>
-    <color name="actions_bar_default">#727272</color>
 
     <!-- Windows actions -->
     <color name="background_actions">#EEEEEE</color>

@@ -14,6 +14,14 @@
 
     <style name="CollectionsToolbar" parent="CollectionsToolbarParent" />
 
+    <style name="CollectionsToolbarTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:textColor">@color/toolbar_title_collection_detail</item>
+    </style>
+
     <style name="CollectionsIconContentParent">
         <item name="android:layout_width">@dimen/size_icon_collection_detail</item>
         <item name="android:layout_height">@dimen/size_icon_collection_detail</item>

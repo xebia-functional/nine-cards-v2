@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, ResultCodes}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
@@ -142,11 +142,11 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen())
   }
 
-  def onSubscribe(originalSharedCollectionId: String, subscribeStatus: Boolean): Unit = {
+  def onSubscribe(sharedCollectionId: String, subscribeStatus: Boolean): Unit = {
 
-    def subscribe(originalSharedCollectionId: String): EitherT[Task, NineCardException, Unit] =
+    def subscribe(sharedCollectionId: String): EitherT[Task, NineCardException, Unit] =
       for {
-        _ <- di.sharedCollectionsProcess.subscribe(originalSharedCollectionId)
+        _ <- di.sharedCollectionsProcess.subscribe(sharedCollectionId)
       } yield ()
 
     def unsubscribe(originalSharedCollectionId: String): EitherT[Task, NineCardException, Unit] =
@@ -154,9 +154,9 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         _ <- di.sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)
       } yield ()
 
-
-      (if (subscribeStatus) subscribe(originalSharedCollectionId) else unsubscribe(originalSharedCollectionId)).resolveAsyncUi2(
-      onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
+      (if (subscribeStatus) subscribe(sharedCollectionId) else unsubscribe(sharedCollectionId)).resolveAsyncUi2(
+        onResult = (_) => actions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus),
+        onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
   }
 
   def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
@@ -215,25 +215,72 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
   }
 
-  def copyDevice(maybeName: Option[String], cloudId: String): Unit = {
+  def copyDevice(maybeName: Option[String], cloudId: String, actualName: String): Unit =
+    copyOrRenameDevice(maybeName, cloudId, actualName, copy = true)
 
-    def copyAccountDevice(name: String, client: GoogleApiClient, cloudId: String) = {
+  def renameDevice(maybeName: Option[String], cloudId: String, actualName: String): Unit =
+    copyOrRenameDevice(maybeName, cloudId, actualName, copy = false)
+
+  def printDeviceInfo(cloudId: String): Unit = {
+
+    def splitString(string: String, seq: Seq[String] = Seq.empty): Seq[String] = {
+      val limit = 1000
+
+      if (string.length < limit) {
+        seq :+ string
+      } else {
+        splitString(string.substring(limit), seq :+ string.substring(0, limit))
+      }
+    }
+
+    def printInfo(client: GoogleApiClient, cloudId: String) = {
+      val cloudStorageProcess = di.createCloudStorageProcess(client)
+      cloudStorageProcess.getRawCloudStorageDevice(cloudId) map { device =>
+        AppLog.info(s"----------------------------- Device Info -----------------------------")
+        AppLog.info(s" Cloud id: ${device.cloudId}")
+        AppLog.info(s" UUID: ${device.uuid}")
+        AppLog.info(s" Device name: ${device.title}")
+        AppLog.info(s" Device id: ${device.deviceId}")
+        AppLog.info(s" Created date: ${device.createdDate}")
+        AppLog.info(s" Modified date: ${device.modifiedDate}")
+        AppLog.info(s" JSON")
+        splitString(device.json) foreach { line =>
+          AppLog.info(line)
+        }
+        AppLog.info(s"----------------------------- Device Info -----------------------------")
+      }
+    }
+
+    withConnectedClient(client => printInfo(client, cloudId).resolveAsyncUi2())
+
+  }
+
+  private[this] def copyOrRenameDevice(maybeName: Option[String], cloudId: String, actualName: String, copy: Boolean): Unit = {
+
+    def createOrUpdate(name: String, client: GoogleApiClient, cloudId: String) = {
       val cloudStorageProcess = di.createCloudStorageProcess(client)
       for {
         device <- cloudStorageProcess.getCloudStorageDevice(cloudId)
-        _ <- cloudStorageProcess.createCloudStorageDevice(device.data.copy(deviceName = name))
+        maybeCloudId = if (copy) None else Some(cloudId)
+        _ <- cloudStorageProcess.createOrUpdateCloudStorageDevice(maybeCloudId, device.data.copy(deviceName = name))
       } yield ()
     }
 
     maybeName match {
       case Some(name) if name.length > 0 =>
         withConnectedClient { client =>
-          copyAccountDevice(name, client, cloudId).resolveAsyncUi2(
+          createOrUpdate(name, client, cloudId).resolveAsyncUi2(
             onResult = (_) => Ui(loadUserAccounts(client)),
-            onException = (_) => actions.showContactUsError(() => copyDevice(maybeName, cloudId)),
+            onException = (_) => actions.showContactUsError(() => copyDevice(maybeName, cloudId, actualName)),
             onPreTask = () => actions.showLoading())
         }
-      case _ => actions.showInvalidConfigurationNameError(cloudId).run
+      case _ => actions.showInvalidConfigurationNameError(() => {
+        if (copy) {
+          actions.showDialogForCopyDevice(cloudId, actualName)
+        } else {
+          actions.showDialogForRenameDevice(cloudId, actualName)
+        }
+      }).run
     }
   }
 
@@ -344,6 +391,8 @@ trait ProfileUiActions {
 
   def showEmptySubscriptionsMessageInScreen(): Ui[Any]
 
+  def showUpdatedSubscriptions(originalSharedCollectionId: String, subscribed: Boolean): Ui[Any]
+
   def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
 
   def showContactUsError(clickAction: () => Unit): Ui[Any]
@@ -356,15 +405,17 @@ trait ProfileUiActions {
 
   def showSyncingError(): Ui[Any]
 
-  def showInvalidConfigurationNameError(resourceId: String): Ui[Any]
+  def showInvalidConfigurationNameError(action: () => Unit): Ui[Any]
 
   def showErrorSavingCollectionInScreen(clickAction: () => Unit): Ui[Any]
 
   def showMessageAccountSynced(): Ui[Any]
 
-  def showDialogForDeleteDevice(resourceId: String): Unit
+  def showDialogForDeleteDevice(cloudId: String): Unit
 
-  def showDialogForCopyDevice(resourceId: String): Unit
+  def showDialogForCopyDevice(cloudId: String, actualName: String): Unit
+
+  def showDialogForRenameDevice(cloudId: String, actualName: String): Unit
 
   def loadPublications(
     sharedCollections: Seq[SharedCollection],

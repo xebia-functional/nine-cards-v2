@@ -8,14 +8,18 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfilePresenter
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import macroid._
 
-class CopyAccountDeviceDialogFragment(cloudId: String)(implicit contextWrapper: ContextWrapper, profilePresenter: ProfilePresenter)
+class EditAccountDeviceDialogFragment(
+  title: Int,
+  maybeText: Option[String],
+  action: (Option[String] => Unit))(implicit contextWrapper: ContextWrapper, profilePresenter: ProfilePresenter)
   extends DialogFragment {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
@@ -23,17 +27,20 @@ class CopyAccountDeviceDialogFragment(cloudId: String)(implicit contextWrapper: 
     val dialogView = new DialogView
 
     val dialog = new AlertDialog.Builder(getActivity).
-      setTitle(R.string.copyAccountSyncDialogTitle).
+      setTitle(title).
       setView(dialogView).
       setPositiveButton(android.R.string.ok, new OnClickListener {
         override def onClick(dialog: DialogInterface, which: Int): Unit =
-          profilePresenter.copyDevice(dialogView.readText.get, cloudId)
+          action(dialogView.readText.get)
       }).
       setNegativeButton(android.R.string.cancel, javaNull).
       create()
 
     dialog.setOnShowListener(new OnShowListener {
-      override def onShow(dialog: DialogInterface): Unit = dialogView.showKeyboard.run
+      override def onShow(dialog: DialogInterface): Unit = {
+        (dialogView.showKeyboard ~
+          (maybeText map dialogView.setText getOrElse Ui.nop)).run
+      }
     })
 
     dialog
@@ -45,9 +52,11 @@ class CopyAccountDeviceDialogFragment(cloudId: String)(implicit contextWrapper: 
 
     LayoutInflater.from(getActivity).inflate(R.layout.dialog_edit_text, this)
 
-    private[this] lazy val editText = Option(findView(TR.dialog_edittext))
+    private[this] lazy val editText = findView(TR.dialog_edittext)
 
-    def readText: Ui[Option[String]] = (editText ~> text) map (_.flatten)
+    def setText(text: String) = editText <~ tvText(text)
+
+    def readText: Ui[Option[String]] = editText ~> text
 
     def showKeyboard: Ui[Any] = editText <~ etShowKeyboard
 
