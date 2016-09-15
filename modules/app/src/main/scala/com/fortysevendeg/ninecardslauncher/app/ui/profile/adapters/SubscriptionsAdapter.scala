@@ -20,14 +20,14 @@ import macroid.FullDsl._
 import macroid._
 
 case class SubscriptionsAdapter(
-  items: Seq[Subscription],
+  subscriptions: Seq[Subscription],
   onSubscribe: (String, Boolean) => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderSubscriptionsAdapter] {
 
-  override def getItemCount: Int = items.size
+  override def getItemCount: Int = subscriptions.size
 
   override def onBindViewHolder(viewHolder: ViewHolderSubscriptionsAdapter, position: Int): Unit =
-    viewHolder.bind(items(position), position).run
+    viewHolder.bind(subscriptions(position), position).run
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): ViewHolderSubscriptionsAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(R.layout.profile_subscription_item, parent, false)
@@ -65,8 +65,10 @@ case class ViewHolderSubscriptionsAdapter(
       (icon <~ ivSrc(subscription.getIconSubscriptionDetail)) ~
       (name <~ tvText(resGetString(subscription.name) getOrElse subscription.name)) ~
       (apps <~ tvText(resGetString(R.string.installed_apps_number, subscription.apps.toString))) ~
-      (subscribed <~ sChecked(subscription.subscribed) +
-        On.click(Ui(onSubscribe(subscription.sharedCollectionId, !subscription.subscribed))))
+      (subscribed <~ vEnabled(true) + sChecked(subscription.subscribed) +
+        On.click(
+          (subscribed <~ vEnabled(false)) ~
+            Ui(onSubscribe(subscription.sharedCollectionId, !subscription.subscribed))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)
