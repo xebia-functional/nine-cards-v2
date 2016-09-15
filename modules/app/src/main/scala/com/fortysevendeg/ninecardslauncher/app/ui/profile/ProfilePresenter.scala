@@ -142,11 +142,11 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen())
   }
 
-  def onSubscribe(originalSharedCollectionId: String, subscribeStatus: Boolean): Unit = {
+  def onSubscribe(sharedCollectionId: String, subscribeStatus: Boolean): Unit = {
 
-    def subscribe(originalSharedCollectionId: String): EitherT[Task, NineCardException, Unit] =
+    def subscribe(sharedCollectionId: String): EitherT[Task, NineCardException, Unit] =
       for {
-        _ <- di.sharedCollectionsProcess.subscribe(originalSharedCollectionId)
+        _ <- di.sharedCollectionsProcess.subscribe(sharedCollectionId)
       } yield ()
 
     def unsubscribe(originalSharedCollectionId: String): EitherT[Task, NineCardException, Unit] =
@@ -154,9 +154,9 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         _ <- di.sharedCollectionsProcess.unsubscribe(originalSharedCollectionId)
       } yield ()
 
-
-      (if (subscribeStatus) subscribe(originalSharedCollectionId) else unsubscribe(originalSharedCollectionId)).resolveAsyncUi2(
-      onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
+      (if (subscribeStatus) subscribe(sharedCollectionId) else unsubscribe(sharedCollectionId)).resolveAsyncUi2(
+        onResult = (_) => actions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus),
+        onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
   }
 
   def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
@@ -343,6 +343,8 @@ trait ProfileUiActions {
   def showErrorLoadingSubscriptionsInScreen(): Ui[Any]
 
   def showEmptySubscriptionsMessageInScreen(): Ui[Any]
+
+  def showUpdatedSubscriptions(originalSharedCollectionId: String, subscribed: Boolean): Ui[Any]
 
   def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
 
