@@ -136,6 +136,8 @@
     <string name="contacts">Contactos</string>
     <string name="shortcuts">Accesos directos</string>
 
+    <string name="itemsSelected">%s seleccionados</string>
+
     <string name="unnamed">Sin nombre</string>
 
     <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta?</string>
@@ -466,6 +468,8 @@
     <string name="devOthersTitle">Otros</string>
 
     <string name="devClearCacheImagesTitle">Limpiar imágenes en caché</string>
+
+    <string name="devShowPositionInCardsTitle">Mostrar posiciones en las tarjetas</string>
 
     <string name="devCacheCleared">Caché limpiada</string>
 

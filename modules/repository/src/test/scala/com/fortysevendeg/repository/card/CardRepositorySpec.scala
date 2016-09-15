@@ -143,7 +143,7 @@ class CardRepositorySpec
         new CardRepositoryScope {
 
           contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
-          val result = cardRepository.deleteCard(testCollectionId, card = card).value.run
+          val result = cardRepository.deleteCard(testCollectionId, card.id).value.run
           result shouldEqual Right(1)
         }
 
@@ -151,7 +151,7 @@ class CardRepositorySpec
         new CardRepositoryScope {
 
           contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
-          val result = cardRepository.deleteCard(testCollectionId, card = card).value.run
+          val result = cardRepository.deleteCard(testCollectionId, card.id).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }

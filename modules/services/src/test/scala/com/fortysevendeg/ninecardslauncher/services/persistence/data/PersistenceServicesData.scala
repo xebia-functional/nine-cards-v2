@@ -274,8 +274,6 @@ trait PersistenceServicesData extends Conversions {
       imagePath = imagePath,
       notification = Option(notification))
 
-  def createDeleteCardRequest(card: Card): DeleteCardRequest = DeleteCardRequest(collectionId, card = card)
-
   def createFetchCardsByCollectionRequest(collectionId: Int): FetchCardsByCollectionRequest =
     FetchCardsByCollectionRequest(collectionId = collectionId)
 
