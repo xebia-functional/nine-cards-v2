@@ -37,10 +37,10 @@ trait Conversions {
       free = item.free)
 
   def toSubscription(subscriptions: (String, Collection, Boolean)): Subscription = {
-    val (originalSharedCollectionId, collection, subscribed) = subscriptions
+    val (sharedCollectionId, collection, subscribed) = subscriptions
     Subscription(
       id = collection.id,
-      originalSharedCollectionId = originalSharedCollectionId,
+      sharedCollectionId = sharedCollectionId,
       name = collection.name,
       apps = collection.cards.count(card => CardType(card.cardType) == AppCardType),
       icon = collection.icon,

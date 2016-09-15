@@ -52,10 +52,9 @@ class NineCardsFirebaseMessagingService
 
   def sharedCollectionNotification(payload: SharedCollectionPayload): Unit = {
     di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier).resolveAsync2(
-      onResult = (maybeCol: Option[Collection]) => {
-
-        maybeCol foreach { col =>
-
+      onResult = {
+        case None => di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync2()
+        case Some(col) =>
           val collectionName = col.name
           val collectionId = col.id
 
@@ -69,6 +68,7 @@ class NineCardsFirebaseMessagingService
           val unsubscribeIntent = new Intent(this, classOf[UpdateSharedCollectionService])
           unsubscribeIntent.setAction(UpdateSharedCollectionService.actionUnsubscribe)
           unsubscribeIntent.putExtra(UpdateSharedCollectionService.intentExtraCollectionId, collectionId)
+          unsubscribeIntent.putExtra(UpdateSharedCollectionService.intentExtraSharedCollectionId, payload.publicIdentifier)
 
           val syncIntent = new Intent(this, classOf[UpdateSharedCollectionService])
           syncIntent.setAction(UpdateSharedCollectionService.actionSync)
@@ -94,8 +94,6 @@ class NineCardsFirebaseMessagingService
             .build()
 
           notifyManager.notify(UpdateSharedCollectionService.notificationId, notification)
-
-        }
       },
       onException = (_) => stopSelf()
     )

@@ -156,13 +156,13 @@ class AppRepository(
       }
     }
 
-  def fetchAppByPackages(packageName: Seq[String]): TaskService[Seq[App]] =
+  def fetchAppByPackages(packageNames: Seq[String]): TaskService[Seq[App]] =
     TaskService {
       CatchAll[RepositoryException] {
         contentResolverWrapper.fetchAll(
           uri = appUri,
           projection = allFields,
-          where = s"${AppEntity.packageName} IN (${packageName.mkString("\"", ",", "\"")})")(getListFromCursor(appEntityFromCursor)) map toApp
+          where = s"${AppEntity.packageName} IN (${packageNames.map(p => s"'$p'").mkString(",")})")(getListFromCursor(appEntityFromCursor)) map toApp
       }
     }
 

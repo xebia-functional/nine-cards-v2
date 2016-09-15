@@ -99,7 +99,7 @@ trait Conversions
       intent = contactToNineCardIntent(contact.lookupKey),
       imagePath = contact.photoUri)
 
-  def toAddCollectionRequest(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
+  def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
     AddCollectionRequest(
       name = collection.name,
       collectionType = AppsCollectionType,
@@ -110,17 +110,6 @@ trait Conversions
       moment = None,
       sharedCollectionId = Option(collection.sharedCollectionId),
       originalSharedCollectionId = Option(collection.sharedCollectionId))
-
-  def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
-    AddCollectionRequest(
-      name = collection.name,
-      collectionType = AppsCollectionType,
-      icon = collection.icon,
-      themedColorIndex = Random.nextInt(numSpaces),
-      appsCategory = Option(collection.category),
-      cards = cards,
-      moment = None,
-      sharedCollectionId = Option(collection.sharedCollectionId))
 
   def toAddCardRequest(app: SharedCollectionPackage): AddCardRequest =
     AddCardRequest(

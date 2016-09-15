@@ -43,7 +43,7 @@ trait SharedCollectionsProcessImplData {
     statusCode = statusCodeOk,
     items = generateSharedCollectionSeq())
 
-  val sharedCollectionId = Random.nextString(10)
+  val sharedCollectionId = "shared-collection-id"
 
   def generateCreateSharedCollection =
     CreateSharedCollection(
@@ -62,14 +62,11 @@ trait SharedCollectionsProcessImplData {
       statusCode = statusCodeOk,
       sharedCollectionId = sharedCollectionId)
 
-  val originalSharedCollectionId = Random.nextString(30)
-
-  def generateOriginalSharedCollectionId() =
-    originalSharedCollectionId + Random.nextInt(10)
+  def generateSharedCollectionId() =
+    sharedCollectionId + Random.nextInt(10)
 
   def generateSubscriptionResponse() = 1 to 10 map { i =>
-    SubscriptionResponse(
-      originalSharedCollectionId = generateOriginalSharedCollectionId())
+    SubscriptionResponse(sharedCollectionId = generateSharedCollectionId())
   }
 
   val subscriptionList = SubscriptionResponseList(
@@ -79,7 +76,7 @@ trait SharedCollectionsProcessImplData {
   def generateOptionOriginalSharedCollectionId() =
     Random.nextBoolean() match {
       case true => None
-      case false => Some(generateOriginalSharedCollectionId())
+      case false => Some(generateSharedCollectionId())
     }
 
   def generateCollection() = 1 to 10 map { i =>
@@ -91,8 +88,8 @@ trait SharedCollectionsProcessImplData {
       icon = Random.nextString(10),
       themedColorIndex = Random.nextInt(10),
       appsCategory = None,
-      originalSharedCollectionId = generateOptionOriginalSharedCollectionId(),
-      sharedCollectionId = None,
+      originalSharedCollectionId = None,
+      sharedCollectionId = generateOptionOriginalSharedCollectionId(),
       sharedCollectionSubscribed = false,
       cards = Seq.empty,
       moment = None)
@@ -100,7 +97,7 @@ trait SharedCollectionsProcessImplData {
 
   val collectionList = generateCollection()
 
-  val publicCollectionList = collectionList.filter(_.originalSharedCollectionId.isDefined)
+  val publicCollectionList = collectionList.filter(_.sharedCollectionId.isDefined)
 
   val subscribeResponse =
     SubscribeResponse(

@@ -124,7 +124,7 @@
     <string name="selectColor">Select color</string>
 
     <string name="addMyCollection">Add to my collections</string>
-    <string name="alreadySubscribedCollection">Already subscribed</string>
+    <string name="alreadyAddedCollection">Already added</string>
     <string name="ownedCollection">This collection is yours</string>
 
     <string name="removeCollectionMessage">Are you sure that you want remove this collection?</string>
