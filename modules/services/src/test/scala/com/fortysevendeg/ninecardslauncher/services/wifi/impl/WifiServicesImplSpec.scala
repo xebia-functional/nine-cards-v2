@@ -3,9 +3,9 @@ package com.fortysevendeg.ninecardslauncher.services.wifi.impl
 import android.content.Context
 import android.net.wifi.{WifiConfiguration, WifiInfo, WifiManager}
 import android.net.{ConnectivityManager, NetworkInfo}
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -14,8 +14,8 @@ import scala.collection.JavaConversions._
 
 trait WifiImplSpecification
   extends Specification
-    with Mockito
-    with WifiServicesImplData {
+  with Mockito
+  with WifiServicesImplData {
 
   trait WifiImplScope
     extends Scope {
@@ -48,7 +48,7 @@ class WifiServicesImplSpec
         mockNetWorkInfo.getExtraInfo returns ssid
 
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result shouldEqual Xor.Right(Some(ssidResult))
+        result shouldEqual Right(Some(ssidResult))
       }
 
     "returns the current SSID with quotes" in
@@ -62,7 +62,7 @@ class WifiServicesImplSpec
         mockNetWorkInfo.getExtraInfo returns ssidWithQuotes
 
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result shouldEqual Xor.Right(Some(ssidWithQuotesResult))
+        result shouldEqual Right(Some(ssidWithQuotesResult))
       }
 
     "returns None if there isn't active network" in
@@ -70,7 +70,7 @@ class WifiServicesImplSpec
 
         mockConnectivityManager.getActiveNetworkInfo returns javaNull
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result shouldEqual Xor.Right(None)
+        result shouldEqual Right(None)
       }
 
     "returns None if it is not connected" in
@@ -78,7 +78,7 @@ class WifiServicesImplSpec
 
         mockNetWorkInfo.isConnected returns false
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result shouldEqual Xor.Right(None)
+        result shouldEqual Right(None)
       }
 
     "returns None if type isn't WIFI" in
@@ -86,7 +86,7 @@ class WifiServicesImplSpec
 
         mockNetWorkInfo.getType returns ConnectivityManager.TYPE_MOBILE
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result shouldEqual Xor.Right(None)
+        result shouldEqual Right(None)
       }
 
     "returns None if SSID is empty" in
@@ -94,7 +94,7 @@ class WifiServicesImplSpec
 
         mockNetWorkInfo.getExtraInfo returns ""
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result shouldEqual Xor.Right(None)
+        result shouldEqual Right(None)
       }
 
     "returns None if SSID is null" in
@@ -102,7 +102,7 @@ class WifiServicesImplSpec
 
         mockNetWorkInfo.getExtraInfo returns javaNull
         val result = wifiServicesImpl.getCurrentSSID(mockContextSupport).value.run
-        result shouldEqual Xor.Right(None)
+        result shouldEqual Right(None)
       }
   }
 
@@ -115,7 +115,7 @@ class WifiServicesImplSpec
         mockWifiManager.getConfiguredNetworks returns wifiConfigurations
 
         val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).value.run
-        result shouldEqual Xor.Right(networksSorted)
+        result shouldEqual Right(networksSorted)
       }
 
     "returns empty list if android don't return data" in
@@ -123,7 +123,7 @@ class WifiServicesImplSpec
 
         mockWifiManager.getConfiguredNetworks returns Seq.empty[WifiConfiguration]
         val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).value.run
-        result shouldEqual Xor.Right(Seq.empty)
+        result shouldEqual Right(Seq.empty)
       }
 
     "returns empty list if android returns null" in
@@ -131,7 +131,7 @@ class WifiServicesImplSpec
 
         mockWifiManager.getConfiguredNetworks returns javaNull
         val result = wifiServicesImpl.getConfiguredNetworks(mockContextSupport).value.run
-        result shouldEqual Xor.Right(Seq.empty)
+        result shouldEqual Right(Seq.empty)
       }
 
   }

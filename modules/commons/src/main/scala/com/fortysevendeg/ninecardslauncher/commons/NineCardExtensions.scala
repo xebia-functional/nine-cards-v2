@@ -1,42 +1,42 @@
 package com.fortysevendeg.ninecardslauncher.commons
 
-import cats.data.{Xor, XorT}
+import cats.data.EitherT
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import monix.eval.Task
 
 import scala.language.implicitConversions
-import scalaz.concurrent.Task
 
 object NineCardExtensions {
 
 
-  implicit class XorTExtensions[A](r: XorT[Task, NineCardException, A]) {
+  implicit class EitherTExtensions[A](r: EitherT[Task, NineCardException, A]) {
 
-    def resolve[E <: NineCardException](implicit converter: Throwable => E): XorT[Task, NineCardException, A] =
-      resolveLeft(e => Xor.left(converter(e)))
+    def resolve[E <: NineCardException](implicit converter: Throwable => E): EitherT[Task, NineCardException, A] =
+      resolveLeft(e => Left(converter(e)))
 
-    def resolveLeftTo(result: A): XorT[Task, NineCardException, A] =
-      resolveLeft((_) => Xor.right(result))
+    def resolveLeftTo(result: A): EitherT[Task, NineCardException, A] =
+      resolveLeft((_) => Right(result))
 
-    def resolveLeft(mapLeft: NineCardException => Xor[NineCardException, A]): XorT[Task, NineCardException, A] =
-      resolveSides((r) => Xor.right(r), mapLeft)
+    def resolveLeft(mapLeft: NineCardException => Either[NineCardException, A]): EitherT[Task, NineCardException, A] =
+      resolveSides((r) => Right(r), mapLeft)
 
-    def resolveRight[B](mapRight: (A) => Xor[NineCardException, B]): XorT[Task, NineCardException, B] =
-      resolveSides(mapRight, (e) => Xor.left(e))
+    def resolveRight[B](mapRight: (A) => Either[NineCardException, B]): EitherT[Task, NineCardException, B] =
+      resolveSides(mapRight, (e) => Left(e))
 
     def resolveSides[B](
-      mapRight: (A) => Xor[NineCardException, B],
-      mapLeft: NineCardException => Xor[NineCardException, B] = (e: NineCardException) => Xor.left(e)): XorT[Task, NineCardException, B] = {
-      val task: Task[Xor[NineCardException, A]] = r.value
-      val innerResult: Task[NineCardException Xor B] = task.map {
-        case Xor.Right(v) => mapRight(v)
-        case Xor.Left(e) => mapLeft(e)
+      mapRight: (A) => Either[NineCardException, B],
+      mapLeft: NineCardException => Either[NineCardException, B] = (e: NineCardException) => Left(e)): EitherT[Task, NineCardException, B] = {
+      val task: Task[Either[NineCardException, A]] = r.value
+      val innerResult: Task[NineCardException Either B] = task.map {
+        case Right(v) => mapRight(v)
+        case Left(e) => mapLeft(e)
       }
-      XorT(innerResult)
+      EitherT(innerResult)
     }
 
   }
 
-  implicit class XorTOptionExtensions[A](r : XorT[Task, NineCardException, Option[A]]) {
+  implicit class EitherTOptionExtensions[A](r : EitherT[Task, NineCardException, Option[A]]) {
 
     case class EmptyException(message: String, cause: Option[Throwable] = None)
       extends RuntimeException(message)
@@ -46,8 +46,8 @@ object NineCardExtensions {
 
     def resolveOption() =
       r.resolveRight {
-        case Some(v) => Xor.right(v)
-        case None => Xor.left(EmptyException("Value not found"))
+        case Some(v) => Right(v)
+        case None => Left(EmptyException("Value not found"))
       }
 
   }

@@ -1,16 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.process.trackevent.impl
 
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Game
 import com.fortysevendeg.ninecardslauncher.process.trackevent._
 import com.fortysevendeg.ninecardslauncher.services.analytics.{AnalyticEvent, AnalyticsServices}
+import monix.eval.Task
 import cats.implicits._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-
-import scalaz.concurrent.Task
 
 class TrackEventProcessImpl(analyticsServices: AnalyticsServices)
   extends TrackEventProcess
@@ -29,7 +26,7 @@ class TrackEventProcessImpl(analyticsServices: AnalyticsServices)
     def eventForGames(isGame: Boolean): TaskService[Unit] = if (isGame) {
       analyticsServices.trackEvent(event.copy(category = Game.name)).resolve[TrackEventException]
     } else {
-      TaskService(Task(Xor.Right(())))
+      TaskService(Task(Right(())))
     }
 
     (analyticsServices.trackEvent(event) *> eventForGames(category.name.startsWith(startNameGame))).resolve[TrackEventException]

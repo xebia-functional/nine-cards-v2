@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.services.accounts.impl
 import android.accounts.{AccountManager, AccountManagerFuture, OperationCanceledException}
 import android.app.Activity
 import android.os.Bundle
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
 import com.fortysevendeg.ninecardslauncher.services.accounts.{AccountsServicesException, AccountsServicesOperationCancelledException, AccountsServicesPermissionException}
@@ -11,14 +10,16 @@ import com.fortysevendeg.ninecardslauncher.services.accounts.models.GoogleAccoun
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cats.syntax.either._
 
 trait AccountsServicesImplSpecification
   extends Specification
-    with Mockito {
+  with Mockito {
 
   trait AccountsServicesImplScope
     extends Scope
-      with AccountsServicesImplData {
+    with AccountsServicesImplData {
 
     implicit val activityContextSupport = mock[ActivityContextSupport]
 
@@ -57,7 +58,7 @@ class AccountsServicesImplSpec
         accountManager.getAccountsByType(any) returns Array(androidAccount1, androidAccount2)
 
         val result = accountsServices.getAccounts(Some(GoogleAccount)).value.run
-        result shouldEqual Xor.Right(Seq(account1, account2))
+        result shouldEqual Right(Seq(account1, account2))
 
         there was one(accountManager).getAccountsByType(GoogleAccount.value)
       }
@@ -68,7 +69,7 @@ class AccountsServicesImplSpec
         accountManager.getAccounts returns Array(androidAccount1, androidAccount2)
 
         val result = accountsServices.getAccounts(None).value.run
-        result shouldEqual Xor.Right(Seq(account1, account2))
+        result shouldEqual Right(Seq(account1, account2))
 
         there was one(accountManager).getAccounts
       }
@@ -79,7 +80,7 @@ class AccountsServicesImplSpec
         accountManager.getAccountsByType(any) throws securityException
 
         val result = accountsServices.getAccounts(Some(GoogleAccount)).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesPermissionException]]
+        result must beAnInstanceOf[Left[AccountsServicesPermissionException, _]]
 
         there was one(accountManager).getAccountsByType(GoogleAccount.value)
       }
@@ -90,7 +91,7 @@ class AccountsServicesImplSpec
         accountManager.getAccounts throws securityException
 
         val result = accountsServices.getAccounts(None).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesPermissionException]]
+        result must beAnInstanceOf[Left[AccountsServicesPermissionException, _]]
 
         there was one(accountManager).getAccounts
       }
@@ -101,7 +102,7 @@ class AccountsServicesImplSpec
         accountManager.getAccountsByType(any) throws runtimeException
 
         val result = accountsServices.getAccounts(Some(GoogleAccount)).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesException]]
+        result must beAnInstanceOf[Left[AccountsServicesException, _]]
 
         there was one(accountManager).getAccountsByType(GoogleAccount.value)
       }
@@ -112,7 +113,7 @@ class AccountsServicesImplSpec
         accountManager.getAccounts throws runtimeException
 
         val result = accountsServices.getAccounts(None).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesException]]
+        result must beAnInstanceOf[Left[AccountsServicesException, _]]
 
         there was one(accountManager).getAccounts
       }
@@ -128,7 +129,7 @@ class AccountsServicesImplSpec
         bundle.getString(any) returns authToken
 
         val result = accountsServices.getAuthToken(account1, scope).value.run
-        result shouldEqual Xor.Right(authToken)
+        result shouldEqual Right(authToken)
 
         there was one(accountManager).getAuthToken(androidAccount1, scope, javaNull, activity, javaNull, javaNull)
       }
@@ -139,7 +140,7 @@ class AccountsServicesImplSpec
         activityContextSupport.getActivity returns None
 
         val result = accountsServices.getAuthToken(account1, scope).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesException]]
+        result must beAnInstanceOf[Left[AccountsServicesException, _]]
       }
 
     "returns an AccountsServiceException when the token is null" in
@@ -150,7 +151,7 @@ class AccountsServicesImplSpec
         bundle.getString(any) returns javaNull
 
         val result = accountsServices.getAuthToken(account1, scope).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesException]]
+        result must beAnInstanceOf[Left[AccountsServicesException, _]]
 
         there was one(accountManager).getAuthToken(androidAccount1, scope, javaNull, activity, javaNull, javaNull)
       }
@@ -162,7 +163,7 @@ class AccountsServicesImplSpec
         accountManagerFuture.getResult throws operationCancelledException
 
         val result = accountsServices.getAuthToken(account1, scope).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesOperationCancelledException]]
+        result must beAnInstanceOf[Left[AccountsServicesOperationCancelledException, _]]
 
         there was one(accountManager).getAuthToken(androidAccount1, scope, javaNull, activity, javaNull, javaNull)
       }
@@ -174,7 +175,7 @@ class AccountsServicesImplSpec
         accountManagerFuture.getResult throws runtimeException
 
         val result = accountsServices.getAuthToken(account1, scope).value.run
-        result must beAnInstanceOf[Xor.Left[AccountsServicesException]]
+        result must beAnInstanceOf[Left[AccountsServicesException, _]]
 
         there was one(accountManager).getAuthToken(androidAccount1, scope, javaNull, activity, javaNull, javaNull)
       }
@@ -187,7 +188,7 @@ class AccountsServicesImplSpec
       new AccountsServicesImplScope {
 
         val result = accountsServices.invalidateToken(account1.accountType, authToken).value.run
-        result shouldEqual Xor.Right(())
+        result shouldEqual Right(())
 
         there was one(accountManager).invalidateAuthToken(account1.accountType, authToken)
       }

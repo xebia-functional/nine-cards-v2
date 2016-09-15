@@ -4,14 +4,13 @@ import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.ReadContacts
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactPermissionException, ContactsFilter}
 import macroid.{ActivityContextWrapper, Ui}
 
-import scalaz.concurrent.Task
 
 class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs {
@@ -35,7 +34,7 @@ class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrap
         counters <- di.deviceProcess.getTermCountersForContacts(order)
       } yield (iterableContacts, counters)
 
-    Task.fork(getLoadContacts(filter).value).resolveAsyncUi(
+    getLoadContacts(filter).resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = {
         case (contacts: IterableContacts, counters: Seq[TermCounter]) =>
@@ -51,7 +50,7 @@ class ContactsPresenter(actions: ContactsUiActions)(implicit activityContextWrap
     )
   }
 
-  def showContact(lookupKey: String): Unit = Task.fork(di.deviceProcess.getContact(lookupKey).value).resolveAsyncUi(
+  def showContact(lookupKey: String): Unit = di.deviceProcess.getContact(lookupKey).resolveAsyncUi2(
     onResult = actions.showDialog,
     onException = (ex: Throwable) => actions.showGeneralError()
   )

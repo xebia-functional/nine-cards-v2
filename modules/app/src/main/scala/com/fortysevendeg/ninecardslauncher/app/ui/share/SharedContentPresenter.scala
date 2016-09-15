@@ -4,11 +4,10 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.webkit.URLUtil
-import cats.data.Xor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.share.models.{SharedContent, Web}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -18,8 +17,9 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.ShortcutCardTyp
 import com.fortysevendeg.ninecardslauncher.process.device.IconResize
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
+import monix.eval.Task
+import cats.syntax.either._
 
-import scalaz.concurrent.Task
 
 class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
@@ -55,7 +55,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
             content = content,
             image = readImageUri(i))
           statuses = statuses.copy(sharedContent = Some(sharedContent))
-          Task.fork(di.collectionProcess.getCollections.value).resolveAsyncUi(
+          di.collectionProcess.getCollections.resolveAsyncUi2(
             onResult = uiActions.showChooseCollection,
             onException = error)
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) =>
@@ -93,7 +93,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
           di.deviceProcess.saveShortcutIcon(
             MediaStore.Images.Media.getBitmap(contextWrapper.bestAvailable.getContentResolver, uri),
             Some(IconResize(iconSize, iconSize)))
-        case _ => TaskService(Task(Xor.right("")))
+        case _ => TaskService(Task(Either.right("")))
       }
     }
 
@@ -104,7 +104,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
 
     statuses.sharedContent match {
       case Some(sharedContent) =>
-        Task.fork(addCard(sharedContent).value).resolveAsyncUi(
+        addCard(sharedContent).resolveAsyncUi2(
           onResult = (_) => uiActions.showSuccess(),
           onException = error)
       case _ => uiActions.showUnexpectedError().run

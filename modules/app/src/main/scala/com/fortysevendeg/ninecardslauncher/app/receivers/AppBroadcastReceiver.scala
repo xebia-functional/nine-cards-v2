@@ -4,11 +4,10 @@ import android.content.Intent._
 import android.content._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportImpl, ContextSupportPreferences}
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppUninstalledActionFilter, AppUpdatedActionFilter, AppsActionFilter}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 
-import scalaz.concurrent.Task
 
 class AppBroadcastReceiver
   extends BroadcastReceiver
@@ -25,13 +24,13 @@ class AppBroadcastReceiver
       implicit val di = new InjectorImpl
 
       (action, replacing) match {
-        case (ACTION_PACKAGE_ADDED, false) => Task.fork(addApp(packageName).value).resolveAsync(
+        case (ACTION_PACKAGE_ADDED, false) => addApp(packageName).resolveAsync2(
           onResult = _ => sendBroadcast(AppInstalledActionFilter)
         )
-        case (ACTION_PACKAGE_REMOVED, false) => Task.fork(deleteApp(packageName).value).resolveAsync(
+        case (ACTION_PACKAGE_REMOVED, false) =>deleteApp(packageName).resolveAsync2(
           onResult = _ => sendBroadcast(AppUninstalledActionFilter)
         )
-        case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => Task.fork(updateApp(packageName).value).resolveAsync(
+        case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => updateApp(packageName).resolveAsync2(
           onResult = _ => sendBroadcast(AppUpdatedActionFilter)
         )
         case (_, _) =>

@@ -2,14 +2,12 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecolle
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TasksOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models._
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentConversions
 import macroid.{ActivityContextWrapper, Ui}
-
-import scalaz.concurrent.Task
 
 class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
@@ -22,7 +20,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   }
 
   def loadPrivateCollections(): Unit = {
-    Task.fork(getPrivateCollections.value).resolveAsyncUi(
+    getPrivateCollections.resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = (privateCollections: Seq[PrivateCollection]) => {
         if (privateCollections.isEmpty) {
@@ -35,7 +33,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   }
 
   def saveCollection(privateCollection: PrivateCollection): Unit = {
-    Task.fork(di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection)).value).resolveAsyncUi(
+    di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection)).resolveAsyncUi2(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
       onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }

@@ -2,19 +2,20 @@ package com.fortysevendeg.ninecardslauncher.services.shortcuts.impl
 
 import android.content.Intent
 import android.content.pm.{ActivityInfo, ApplicationInfo, PackageManager, ResolveInfo}
-import cats.data.Xor
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutServicesException
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+
 
 import scala.collection.JavaConversions._
 
 trait ShortcutsImplSpecification
   extends Specification
-    with Mockito {
+  with Mockito {
 
   trait ShortcutsImplScope
     extends Scope
@@ -55,7 +56,7 @@ class ShortcutsServicesImplSpec
 
       packageManager.queryIntentActivities(mockIntent, 0) returns mockShortcuts
       val result = shortcutsServicesImpl.getShortcuts(contextSupport).value.run
-      result shouldEqual Xor.Right(shotcutsList.sortBy(_.title))
+      result shouldEqual Right(shotcutsList.sortBy(_.title))
     }
 
   "returns an ShortcutException when no shortcuts exist" in
@@ -65,7 +66,7 @@ class ShortcutsServicesImplSpec
       packageManager.queryIntentActivities(mockIntent, 0) throws exception
 
       val result = shortcutsServicesImpl.getShortcuts(contextSupport).value.run
-      result must beAnInstanceOf[Xor.Left[ShortcutServicesException]]
+      result must beAnInstanceOf[Left[ShortcutServicesException, _]]
     }
 
 }
