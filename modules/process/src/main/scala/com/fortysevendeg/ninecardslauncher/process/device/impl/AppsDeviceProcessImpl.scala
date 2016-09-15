@@ -75,8 +75,8 @@ trait AppsDeviceProcessImpl
     (for {
       application <- appsServices.getApplication(packageName)
       appCategory <- getAppCategory(packageName)
-      app <- persistenceServices.addApp(toAddAppRequest(application, appCategory))
-    } yield toApp(app)).resolve[AppException]
+      applicationAdded <- persistenceServices.addApp(toAddAppRequest(application, appCategory))
+    } yield toApp(applicationAdded)).resolve[AppException]
 
   def deleteApp(packageName: String)(implicit context: ContextSupport) =
     (for {
