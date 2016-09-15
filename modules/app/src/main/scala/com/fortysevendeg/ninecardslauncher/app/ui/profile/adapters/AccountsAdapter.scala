@@ -99,15 +99,19 @@ case class ViewHolderAccountItemAdapter(
       case _ => false
     }
 
-    val menu = if (showPrintDriveInfo) menuOptions(isCurrent) :+ printDriveInfo else menuOptions(isCurrent)
+    val menuSeq = if (showPrintDriveInfo) menuOptions(isCurrent) :+ printDriveInfo else menuOptions(isCurrent)
 
     (title <~ tvText(accountSync.title)) ~
       (subtitle <~ tvText(accountSync.subtitle getOrElse "")) ~
       (icon <~ ivSrc(R.drawable.icon_action_bar_options_dark) <~ On.click {
         icon <~ vPopupMenuShow(
-          menu = menu.map(_._2),
+          menuSeq map {
+            case (_, name) => name
+          },
           onMenuItemClickListener = (item: MenuItem) => {
-            menu.lift(item.getOrder) foreach (option => onClick(getAdapterPosition, option._1, accountSync))
+            menuSeq lift item.getOrder foreach {
+              case (option, _) => onClick(getAdapterPosition, option, accountSync)
+            }
             true
           }
         )

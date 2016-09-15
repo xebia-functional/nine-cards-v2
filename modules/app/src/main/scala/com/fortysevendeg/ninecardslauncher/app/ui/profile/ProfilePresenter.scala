@@ -409,9 +409,9 @@ trait ProfileUiActions {
 
   def showMessageAccountSynced(): Ui[Any]
 
-  def showDialogForDeleteDevice(resourceId: String): Unit
+  def showDialogForDeleteDevice(cloudId: String): Unit
 
-  def showDialogForCopyDevice(resourceId: String, actualName: String): Unit
+  def showDialogForCopyDevice(cloudId: String, actualName: String): Unit
 
   def showDialogForRenameDevice(cloudId: String, actualName: String): Unit
 
