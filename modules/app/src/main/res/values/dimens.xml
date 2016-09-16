@@ -34,6 +34,7 @@
     <dimen name="padding_medium">12dp</dimen>
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_xlarge">24dp</dimen>
+    <dimen name="padding_xxlarge">48dp</dimen>
 
     <dimen name="size_icon_small">36dp</dimen>
     <dimen name="size_icon_default">48dp</dimen>

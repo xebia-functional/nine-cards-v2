@@ -24,7 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{EditAccountDev
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscribed, Subscription}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, CardLayoutBackgroundColor}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -191,19 +191,19 @@ trait ProfileUiActionsImpl
       (loadingView <~ vInvisible)
   }
 
-  override def showEmptyPublicationsContent(error: Boolean = false): Ui[Any] =
-    showEmptyContent(PublicationsTab, error)
+  override def showEmptyPublicationsContent(error: Boolean = false, reload: () => Unit = () => ()): Ui[Any] =
+    showEmptyContent(PublicationsTab, error, reload)
 
-  override def showEmptySubscriptionsContent(error: Boolean = false): Ui[Any] =
-    showEmptyContent(SubscriptionsTab, error)
+  override def showEmptySubscriptionsContent(error: Boolean = false, reload: () => Unit = () => ()): Ui[Any] =
+    showEmptyContent(SubscriptionsTab, error, reload)
 
-  override def showEmptyAccountsContent(error: Boolean = false): Ui[Any] =
-    showEmptyContent(AccountsTab, error)
+  override def showEmptyAccountsContent(error: Boolean = false, reload: () => Unit = () => ()): Ui[Any] =
+    showEmptyContent(AccountsTab, error, reload)
 
-  private[this] def showEmptyContent(tab: ProfileTab, error: Boolean): Ui[Any] =
+  private[this] def showEmptyContent(tab: ProfileTab, error: Boolean, reload: () => Unit): Ui[Any] =
     (recyclerView <~
       vVisible <~
-      rvAdapter(EmptyProfileAdapter(tab, error))) ~
+      rvAdapter(EmptyProfileAdapter(tab, error, reload))) ~
       (loadingView <~ vInvisible)
 
   private[this] def showDialog(dialog: DialogFragment): Unit = {
