@@ -367,6 +367,7 @@
         ]]>
     </string>
     <string name="errorSubscribing">Error subscribing to the collection</string>
+    <string name="errorUnsubscribing">Error unsubscribing from the collection</string>
     <string name="emptySubscriptionsMessage">
         <![CDATA[
             You are not <b>subscribed</b> to any <b>public collection</b> in this moment
