@@ -24,7 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{EditAccountDev
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscribed, Subscription}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.CardLayoutBackgroundColor
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{PrimaryColor, CardLayoutBackgroundColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -71,6 +71,7 @@ trait ProfileUiActionsImpl
 
   override def initialize(): Ui[Any] =
     (rootLayout <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
+      (loadingView <~ sChangeProgressBarColor(theme.get(PrimaryColor))) ~
       (tabs <~ tlAddTabs(
         (resGetString(R.string.accounts), AccountsTab),
         (resGetString(R.string.publications), PublicationsTab),
@@ -99,7 +100,7 @@ trait ProfileUiActionsImpl
 
   override def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingPublishedCollections, clickAction)
 
-  override def showErrorLoadingSubscriptionsInScreen(): Ui[Any] = showMessage(R.string.errorLoadingSubscriptions)
+  override def showErrorLoadingSubscriptionsInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingSubscriptions, clickAction)
 
   override def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {

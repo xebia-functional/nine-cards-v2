@@ -243,6 +243,8 @@ object ExtraTweaks {
 
   def tvAllCaps2(allCaps: Boolean = true): Tweak[TextView] = Tweak[TextView](_.setAllCaps(allCaps))
 
+  def sChangeProgressBarColor(color: Int) = Tweak[ProgressBar](_.getIndeterminateDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
+
 }
 
 object CommonsResourcesExtras {

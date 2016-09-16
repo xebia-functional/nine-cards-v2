@@ -133,7 +133,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         case subscriptions if subscriptions.isEmpty => actions.showEmptySubscriptionsContent()
         case subscriptions => actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
       },
-      onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen())
+      onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen(() => loadSubscriptions()))
   }
 
   def onSubscribe(sharedCollectionId: String, subscribeStatus: Boolean): Unit = {
@@ -379,9 +379,9 @@ trait ProfileUiActions {
 
   def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any]
 
-  def showErrorLoadingSubscriptionsInScreen(): Ui[Any]
+  def showErrorLoadingSubscriptionsInScreen(clickAction: () => Unit): Ui[Any]
 
-  def showUpdatedSubscriptions(originalSharedCollectionId: String, subscribed: Boolean): Ui[Any]
+  def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any]
 
   def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
 
