@@ -71,6 +71,8 @@ trait ProfileUiActionsImpl
 
   override def initialize(): Ui[Any] =
     (rootLayout <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
+      (userContainer <~ vBackgroundColor(theme.get(PrimaryColor))) ~
+      (barLayout <~ vBackgroundColor(theme.get(PrimaryColor))) ~
       (loadingView <~ sChangeProgressBarColor(theme.get(PrimaryColor))) ~
       (tabs <~ tlAddTabs(
         (resGetString(R.string.accounts), AccountsTab),

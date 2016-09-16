@@ -27,7 +27,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/height_profile_user</item>
         <item name="android:layout_gravity">bottom|center_horizontal</item>
-        <item name="android:background">@color/primary</item>
         <item name="layout_collapseMode">parallax</item>
         <item name="layout_collapseParallaxMultiplier">0.3</item>
     </style>
