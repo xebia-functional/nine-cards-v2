@@ -331,7 +331,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         .map(_.devices)
         .resolveLeft {
           case e: UserV1ConfigurationException =>
-            android.util.Log.i(AppLog.tag, "Invalid configuration for backend V1")
+            AppLog.info("Invalid configuration for backend V1")
             Right(Seq.empty)
           case  e => Right(Seq.empty)
         }

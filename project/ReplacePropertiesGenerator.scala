@@ -13,7 +13,8 @@ object ReplacePropertiesGenerator {
   lazy val propertyNames: List[String] = List(
     "backend.v1.url",
     "backend.v1.appid",
-    "backend.v1.appkey")
+    "backend.v1.appkey",
+    "backend.v2.url")
 
   lazy val propertiesFileName = sys.env.getOrElse("9CARDS_PROPERTIES", "debug.properties")
 

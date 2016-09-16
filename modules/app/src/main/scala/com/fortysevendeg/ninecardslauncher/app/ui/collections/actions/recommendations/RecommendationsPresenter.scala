@@ -1,10 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations
 
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NoInstalledAppCardType}
+import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendedAppsConfigurationException
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import macroid.{ActivityContextWrapper, Ui}
 
@@ -42,7 +43,13 @@ class RecommendationsPresenter(
     task.resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = (recommendations: Seq[RecommendedApp]) => actions.loadRecommendations(recommendations),
-      onException = (_) => actions.showErrorLoadingRecommendationInScreen())
+      onException = (e: Throwable) => e match {
+        case e: RecommendedAppsConfigurationException =>
+          AppLog.invalidConfigurationV2
+          actions.showErrorLoadingRecommendationInScreen()
+        case e =>
+          actions.showErrorLoadingRecommendationInScreen()
+      })
   }
 
 }
