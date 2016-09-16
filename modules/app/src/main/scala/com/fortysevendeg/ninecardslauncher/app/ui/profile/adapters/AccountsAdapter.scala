@@ -6,6 +6,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCardsPreferencesValue, ShowPrintInfoOptionInAccounts}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.AccountOptions._
@@ -115,19 +116,21 @@ case class ViewHolderAccountItemAdapter(
 
     (title <~ tvText(accountSync.title)) ~
       (subtitle <~ tvText(accountSync.subtitle getOrElse "")) ~
-      (icon <~ ivSrc(R.drawable.icon_action_bar_options_dark) <~ On.click {
-        icon <~ vPopupMenuShow(
-          menuSeq map {
-            case (_, name) => name
-          },
-          onMenuItemClickListener = (item: MenuItem) => {
-            menuSeq lift item.getOrder foreach {
-              case (option, _) => onClick(getAdapterPosition, option, accountSync)
-            }
-            true
-          }
-        )
-      })
+      (icon <~ ivSrc(R.drawable.icon_action_bar_options_dark) <~
+        On.click {
+          icon <~
+            vListThemedPopupWindowShow(
+              icons = Seq.empty,
+              values = menuSeq map {
+                case (_, name) => name
+              },
+              onItemClickListener = (position) => {
+                menuSeq.lift(position) foreach {
+                  case (option, _) => onClick(getAdapterPosition, option, accountSync)
+                }
+              },
+              width = Option(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)))
+        })
   }
 
 }
