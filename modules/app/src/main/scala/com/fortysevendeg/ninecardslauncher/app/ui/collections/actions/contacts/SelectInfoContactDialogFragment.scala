@@ -15,7 +15,6 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.models.Contact
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
@@ -79,7 +78,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       vBackgroundColor(primaryColor)) ~
       (generalInfo <~
       tvText(getResources.getString(R.string.generalInfo))) ~
-      (generalContent <~ On.click(generateIntent(lookupKey, lookupKey, ContactCardType)))).run
+      (generalContent <~ On.click(generateIntent(lookupKey, None, ContactCardType)))).run
   }
 
   class PhoneView(lookupKey: String, data: (String, PhoneCategory))
@@ -110,8 +109,8 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       tvText(phone)) ~
       (phoneCategory <~
       tvText(categoryName)) ~
-      (phoneContent <~ On.click(generateIntent(lookupKey, phone, PhoneCardType))) ~
-      (phoneSms <~ On.click(generateIntent(lookupKey, phone, SmsCardType)))).run
+      (phoneContent <~ On.click(generateIntent(lookupKey, Option(phone), PhoneCardType))) ~
+      (phoneSms <~ On.click(generateIntent(lookupKey, Option(phone), SmsCardType)))).run
   }
 
   class EmailView(lookupKey: String, data: (String, EmailCategory))
@@ -136,7 +135,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       tvText(email)) ~
       (emailCategory <~
       tvText(categoryName)) ~
-      (emailContent <~ On.click(generateIntent(lookupKey, email, EmailCardType)))).run
+      (emailContent <~ On.click(generateIntent(lookupKey, Option(email), EmailCardType)))).run
   }
 
   private[this] def generateHeaderView(name: String, avatarUrl: String): Seq[View] = Seq(new HeaderView(name, avatarUrl))
@@ -167,25 +166,22 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       generateEmailViews(lookupKey, t, newAcc)
   }
 
-  private[this] def generateIntent(lookupKey: String, data: String, cardType: CardType): Ui[_] = Ui {
-    val maybeIntent: Option[NineCardIntent] = cardType match {
-      case EmailCardType => Option(emailToNineCardIntent(Option(lookupKey), data))
-      case SmsCardType => Option(smsToNineCardIntent(Option(lookupKey), data))
-      case PhoneCardType => Option(phoneToNineCardIntent(Option(lookupKey), data))
-      case ContactCardType => Option(contactToNineCardIntent(lookupKey))
-      case _ => None
+  private[this] def generateIntent(lookupKey: String, maybeData: Option[String], cardType: CardType): Ui[_] = Ui {
+    val (intent, lastCardType)= (cardType, maybeData) match {
+      case (EmailCardType, Some(data)) => (emailToNineCardIntent(Option(lookupKey), data), cardType)
+      case (SmsCardType, Some(data)) => (smsToNineCardIntent(Option(lookupKey), data), cardType)
+      case (PhoneCardType, Some(data)) => (phoneToNineCardIntent(Option(lookupKey), data), cardType)
+      case _ => (contactToNineCardIntent(lookupKey), ContactCardType)
     }
-    maybeIntent foreach { intent =>
-      val card = AddCardRequest(
-        term = contact.name,
-        packageName = None,
-        cardType = cardType,
-        intent = intent,
-        imagePath = contact.photoUri)
-      val responseIntent = new Intent
-      responseIntent.putExtra(ContactsFragment.addCardRequest, card)
-      getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
-    }
+    val card = AddCardRequest(
+      term = contact.name,
+      packageName = None,
+      cardType = lastCardType,
+      intent = intent,
+      imagePath = contact.photoUri)
+    val responseIntent = new Intent
+    responseIntent.putExtra(ContactsFragment.addCardRequest, card)
+    getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
     dismiss()
   }
 
