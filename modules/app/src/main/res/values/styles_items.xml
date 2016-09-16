@@ -603,8 +603,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lines">1</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:textColor">@color/text_default_title</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
     </style>
 
     <style name="SubscriptionsItemApps">
@@ -612,8 +611,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lines">1</item>
         <item name="android:ellipsize">end</item>
-        <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:textColor">@color/text_default_subtitle</item>
+        <item name="android:textSize">@dimen/text_large</item>
     </style>
 
     <style name="SubscriptionsItemSubscribed">

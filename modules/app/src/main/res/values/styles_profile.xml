@@ -53,7 +53,7 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:paddingTop">@dimen/padding_large</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
     </style>
 
     <style name="ProfileUserEmail">
@@ -129,8 +129,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_large</item>
-        <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:textColor">@color/text_default_subtitle</item>
+        <item name="android:textSize">@dimen/text_large</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
@@ -159,8 +158,8 @@
     <style name="ProfileAccountsItemTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:textColor">@color/text_default_title</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
         <item name="android:lines">1</item>
         <item name="android:ellipsize">end</item>
     </style>
@@ -168,8 +167,8 @@
     <style name="ProfileAccountsItemSubtitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:textColor">@color/text_default_subtitle</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
     </style>
 
     <style name="ProfileAccountsItemAction">

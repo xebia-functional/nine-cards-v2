@@ -61,7 +61,7 @@ case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: Acti
 
   lazy val title = findView(TR.title)
 
-  (title <~ textStyle).run
+  (title <~ subtitleTextStyle).run
 
   def bind(accountSync: AccountSync, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     title <~ tvText(accountSync.title)
@@ -99,8 +99,8 @@ case class ViewHolderAccountItemAdapter(
 
   lazy val icon = findView(TR.profile_account_action)
 
-  ((title <~ textStyle) ~
-    (subtitle <~ textStyle) ~
+  ((title <~ titleTextStyle) ~
+    (subtitle <~ subtitleTextStyle) ~
     (device <~ iconStyle) ~
     (icon <~ iconStyle)).run
 

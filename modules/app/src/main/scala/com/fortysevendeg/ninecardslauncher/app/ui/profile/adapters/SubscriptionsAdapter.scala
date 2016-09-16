@@ -54,8 +54,8 @@ case class ViewHolderSubscriptionsAdapter(
 
   lazy val subscribed = findView(TR.subscriptions_item_subscribed)
 
-  ((name <~ textStyle) ~
-    (apps <~ textStyle) ~
+  ((name <~ titleTextStyle) ~
+    (apps <~ subtitleTextStyle) ~
     (subscribed <~ switchStyle)).run
 
   def bind(subscription: Subscription, position: Int)(implicit uiContext: UiContext[_]): Ui[_] = {

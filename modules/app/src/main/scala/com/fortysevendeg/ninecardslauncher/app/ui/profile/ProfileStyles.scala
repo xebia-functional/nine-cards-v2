@@ -25,26 +25,27 @@ trait ProfileStyles {
 
 }
 
-trait AccountsAdapterStyles {
+trait CommonStyles {
 
   implicit val theme: NineCardsTheme
 
+  def titleTextStyle(implicit context: ContextWrapper): Tweak[TextView] =
+    tvColor(theme.get(DrawerTextColor).alpha(0.87f))
+
+  def subtitleTextStyle(implicit context: ContextWrapper): Tweak[TextView] =
+    tvColor(theme.get(DrawerTextColor).alpha(0.54f))
+}
+
+trait AccountsAdapterStyles extends CommonStyles {
+
   def rootStyle()(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[View] =
     vBackgroundColor(theme.get(CardLayoutBackgroundColor))
-
-  def textStyle(implicit context: ContextWrapper): Tweak[TextView] =
-    tvColor(theme.get(DrawerTextColor))
 
   def iconStyle(implicit context: ContextWrapper): Tweak[TintableImageView] =
     tivDefaultColor(theme.get(DrawerIconColor))
 }
 
-trait SubscriptionsAdapterStyles {
-
-  implicit val theme: NineCardsTheme
-
-  def textStyle(implicit context: ContextWrapper): Tweak[TextView] =
-    tvColor(theme.get(DrawerTextColor))
+trait SubscriptionsAdapterStyles extends CommonStyles {
 
   def switchStyle(implicit context: ContextWrapper): Tweak[Switch] = {
     val colorStateList =
