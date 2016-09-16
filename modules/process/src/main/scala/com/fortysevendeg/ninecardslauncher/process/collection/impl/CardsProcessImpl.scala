@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
+import cats.data.EitherT
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
@@ -8,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException, CollectionProcess}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection, Card => ServicesCard}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, ImplicitsPersistenceServiceExceptions}
 import monix.eval.Task
 
@@ -34,6 +35,23 @@ trait CardsProcessImpl extends CollectionProcess {
       cardList <- getCardsByCollectionId(collectionId)
       _ <- updateCardList(reloadPositions(cardList))
     } yield ()).resolve[CardException]
+
+  override def deleteAllCardsByPackageName(packageName: String) = {
+
+    def removeAllCards(collections: Seq[Collection]): TaskService[Unit] = {
+      val tasks = collections flatMap { collection =>
+        collection.cards.filter(_.packageName == Option(packageName)) map { card =>
+          deleteCard(collection.id, card.id).value
+        }
+      }
+      TaskService(Task.gatherUnordered(tasks).map(_ => Right((): Unit)))
+    }
+
+    (for {
+      collections <- persistenceServices.fetchCollections
+      _ <- removeAllCards(collections)
+    } yield ()).resolve[CardException]
+  }
 
   override def deleteCards(collectionId: Int, cardIds: Seq[Int]) =
     (for {
