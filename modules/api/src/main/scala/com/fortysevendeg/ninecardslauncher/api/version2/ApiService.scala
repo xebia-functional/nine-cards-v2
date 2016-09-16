@@ -11,6 +11,8 @@ import play.api.libs.json.{Reads, Writes}
 
 class ApiService(serviceClient: ServiceClient) {
 
+  def baseUrl: String = serviceClient.baseUrl
+
   type ApiException = HttpClientException with ServiceClientException
 
   private[this] val headerContentType = "Content-Type"
