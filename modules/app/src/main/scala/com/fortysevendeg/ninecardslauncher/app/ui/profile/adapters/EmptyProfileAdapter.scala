@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
-case class EmptyProfileAdapter(tab: ProfileTab)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
+case class EmptyProfileAdapter(tab: ProfileTab, error: Boolean)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderEmptyProfileAdapter] {
 
   val emptyElement = 1
@@ -19,7 +19,7 @@ case class EmptyProfileAdapter(tab: ProfileTab)(implicit activityContext: Activi
   override def getItemCount: Int = emptyElement
 
   override def onBindViewHolder(viewHolder: ViewHolderEmptyProfileAdapter, position: Int): Unit =
-    viewHolder.bind(tab).run
+    viewHolder.bind(tab, error).run
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderEmptyProfileAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(R.layout.empty_profile_item, parent, false)
@@ -44,14 +44,23 @@ case class ViewHolderEmptyProfileAdapter(
 
   lazy val messageAccountsText = Html.fromHtml(resGetString(R.string.emptySubscriptionsMessage))
 
+  lazy val messageAccountsErrorText = Html.fromHtml(resGetString(R.string.errorConnectingGoogle))
+
+  lazy val messagePublicationsErrorText = Html.fromHtml(resGetString(R.string.errorLoadingPublishedCollections))
+
+  lazy val messageSubscriptionsErrorText = Html.fromHtml(resGetString(R.string.errorLoadingSubscriptions))
+
   ((root <~ rootStyle()) ~
     (emptyProfileMessage <~ textStyle)).run
 
-  def bind(tab: ProfileTab)(implicit uiContext: UiContext[_]): Ui[_] = {
+  def bind(tab: ProfileTab, error: Boolean)(implicit uiContext: UiContext[_]): Ui[_] = {
 
     val textTweak = tab match {
+      case PublicationsTab if error => tvText(messagePublicationsErrorText)
       case PublicationsTab => tvText(messagePublicationsText)
+      case SubscriptionsTab if error => tvText(messageSubscriptionsErrorText)
       case SubscriptionsTab => tvText(messageSubscriptionsText)
+      case AccountsTab if error => tvText(messageAccountsErrorText)
       case AccountsTab => tvText(messageAccountsText)
     }
 

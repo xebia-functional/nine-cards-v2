@@ -46,7 +46,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   override def onDriveConnected(bundle: Bundle): Unit = clientStatuses match {
     case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
       loadUserAccounts(client)
-    case _ => actions.showConnectingGoogleError(() => tryToConnect()).run
+    case _ => actions.showEmptyAccountsContent(error = true)// actions.showConnectingGoogleError(() => tryToConnect()).run
   }
 
   override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit =
@@ -54,13 +54,13 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       contextWrapper.original.get match {
         case Some(activity) =>
           Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
-            case Failure(e) => showError()
+            case Failure(e) => actions.showEmptyAccountsContent(error = true)
             case _ =>
           }
         case _ =>
       }
     } else {
-      showError()
+      actions.showEmptyAccountsContent(error = true)
     }
 
   def initialize(): Unit = {
@@ -118,7 +118,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         case sharedCollections if sharedCollections.isEmpty => actions.showEmptyPublicationsContent()
         case sharedCollections => actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
       },
-      onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen(() => loadPublications()))
+      onException = (ex: Throwable) =>  actions.showEmptyPublicationsContent(error = true))
 
   def loadSubscriptions(): Unit = {
 
@@ -133,7 +133,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         case subscriptions if subscriptions.isEmpty => actions.showEmptySubscriptionsContent()
         case subscriptions => actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
       },
-      onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen(() => loadSubscriptions()))
+      onException = (ex: Throwable) => actions.showEmptySubscriptionsContent(error = true))
   }
 
   def onSubscribe(sharedCollectionId: String, subscribeStatus: Boolean): Unit = {
@@ -150,10 +150,10 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
       (if (subscribeStatus) subscribe(sharedCollectionId) else unsubscribe(sharedCollectionId)).resolveAsyncUi2(
         onResult = (_) => actions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus),
-        onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
+        onException = (ex) => actions.showErrorSubscribing())
   }
 
-  def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
+  //def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
 
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean =
     (requestCode, resultCode) match {
@@ -161,7 +161,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         tryToConnect()
         true
       case (`resolveGooglePlayConnection`, _) =>
-        showError()
+        actions.showEmptyAccountsContent(error = true)
         true
       case _ => false
     }
@@ -330,7 +330,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
           actions.setAccountsAdapter(accountSyncs)
         }
       },
-      onException = (_) => actions.showConnectingGoogleError(() => loadUserAccounts(client))
+      onException = (_) => actions.showEmptyAccountsContent(error = true) //actions.showConnectingGoogleError(() => loadUserAccounts(client))
     )
   }
 
@@ -377,19 +377,13 @@ trait ProfileUiActions {
 
   def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any]
 
-  def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any]
-
-  def showErrorLoadingSubscriptionsInScreen(clickAction: () => Unit): Ui[Any]
-
   def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any]
 
-  def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
+  def showErrorSubscribing(): Ui[Any]
 
   def showContactUsError(clickAction: () => Unit): Ui[Any]
 
   def showContactUsError(): Ui[Any]
-
-  def showConnectingGoogleError(clickAction: () => Unit): Ui[Any]
 
   def showLoadingUserError(clickAction: () => Unit): Ui[Any]
 
@@ -412,11 +406,11 @@ trait ProfileUiActions {
     onAddCollection: (SharedCollection) => Unit,
     onShareCollection: (SharedCollection) => Unit): Ui[Any]
 
-  def showEmptyPublicationsContent(): Ui[Any]
+  def showEmptyPublicationsContent(error: Boolean = false): Ui[Any]
 
-  def showEmptySubscriptionsContent(): Ui[Any]
+  def showEmptySubscriptionsContent(error: Boolean = false): Ui[Any]
 
-  def showEmptyAccountsContent(): Ui[Any]
+  def showEmptyAccountsContent(error: Boolean = false): Ui[Any]
 
   def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
 

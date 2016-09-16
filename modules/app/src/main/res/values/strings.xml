@@ -350,14 +350,22 @@
         ]]>
     </string>
 
-    <string name="errorLoadingPublishedCollections">Error loading published collections</string>
+    <string name="errorLoadingPublishedCollections">
+        <![CDATA[
+            There has been an error loading your <b>public collections</b>
+        ]]>
+    </string>
     <string name="emptyPublishedCollectionsMessage">
         <![CDATA[
             There aren\'t any <b>published</b> collections. Maybe you can share one of <b>your collections</b> :-)
         ]]>
     </string>
 
-    <string name="errorLoadingSubscriptions">Error loading subscriptions</string>
+    <string name="errorLoadingSubscriptions">
+        <![CDATA[
+            There has been an error loading your <b>subscriptions</b>
+        ]]>
+    </string>
     <string name="errorSubscribing">Error subscribing to the collection</string>
     <string name="emptySubscriptionsMessage">
         <![CDATA[

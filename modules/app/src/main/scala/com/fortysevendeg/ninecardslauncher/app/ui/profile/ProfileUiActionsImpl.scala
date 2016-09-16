@@ -98,10 +98,6 @@ trait ProfileUiActionsImpl
       (recyclerView <~ rvSwapAdapter(adapter))
   }
 
-  override def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingPublishedCollections, clickAction)
-
-  override def showErrorLoadingSubscriptionsInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingSubscriptions, clickAction)
-
   override def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {
       case subscriptionsAdapter: SubscriptionsAdapter =>
@@ -114,13 +110,11 @@ trait ProfileUiActionsImpl
     recyclerView <~ rvSwapAdapter(adapter)
   }
 
-  override def showErrorSubscribing(clickAction: () => Unit): Ui[Any] = showError(R.string.errorSubscribing, clickAction)
+  override def showErrorSubscribing(): Ui[Any] = showMessage(R.string.errorSubscribing)
 
   override def showContactUsError(clickAction: () => Unit): Ui[Any] = showError(R.string.contactUsError, clickAction)
 
   override def showContactUsError(): Ui[Any] = uiShortToast2(R.string.contactUsError)
-
-  override def showConnectingGoogleError(clickAction: () => Unit): Ui[Any] = showError(R.string.errorConnectingGoogle, clickAction)
 
   override def showLoadingUserError(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingUser, clickAction)
 
@@ -194,19 +188,19 @@ trait ProfileUiActionsImpl
       (loadingView <~ vInvisible)
   }
 
-  override def showEmptyPublicationsContent(): Ui[Any] =
-    showEmptyContent(PublicationsTab)
+  override def showEmptyPublicationsContent(error: Boolean = false): Ui[Any] =
+    showEmptyContent(PublicationsTab, error)
 
-  override def showEmptySubscriptionsContent(): Ui[Any] =
-    showEmptyContent(SubscriptionsTab)
+  override def showEmptySubscriptionsContent(error: Boolean = false): Ui[Any] =
+    showEmptyContent(SubscriptionsTab, error)
 
-  override def showEmptyAccountsContent(): Ui[Any] =
-    showEmptyContent(AccountsTab)
+  override def showEmptyAccountsContent(error: Boolean = false): Ui[Any] =
+    showEmptyContent(AccountsTab, error)
 
-  private[this] def showEmptyContent(tab: ProfileTab): Ui[Any] =
+  private[this] def showEmptyContent(tab: ProfileTab, error: Boolean): Ui[Any] =
     (recyclerView <~
       vVisible <~
-      rvAdapter(EmptyProfileAdapter(tab))) ~
+      rvAdapter(EmptyProfileAdapter(tab, error))) ~
       (loadingView <~ vInvisible)
 
   private[this] def showDialog(dialog: DialogFragment): Unit = {
