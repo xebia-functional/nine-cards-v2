@@ -210,7 +210,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     withConnectedClient { client =>
       deleteAccountDevice(client, cloudId).resolveAsyncUi2(
         onResult = (_) => Ui(loadUserAccounts(client, Seq(cloudId))),
-        onException = (_) => actions.showContactUsError(() => deleteDevice(cloudId)),
+        onException = (_) => actions.showContactUsError(() => Ui(loadUserAccounts(client))),
         onPreTask = () => actions.showLoading())
     }
   }
@@ -271,7 +271,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         withConnectedClient { client =>
           createOrUpdate(name, client, cloudId).resolveAsyncUi2(
             onResult = (_) => Ui(loadUserAccounts(client)),
-            onException = (_) => actions.showContactUsError(() => copyDevice(maybeName, cloudId, actualName)),
+            onException = (_) => actions.showContactUsError(() => Ui(loadUserAccounts(client))),
             onPreTask = () => actions.showLoading())
         }
       case _ => actions.showInvalidConfigurationNameError(() => {

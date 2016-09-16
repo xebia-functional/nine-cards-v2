@@ -171,7 +171,7 @@ class CollectionsPagerPresenter(
       if (result.exists(_.hasPermission(CallPhone))) {
         statuses.lastPhone foreach { phone =>
           statuses = statuses.copy(lastPhone = None)
-          di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)).resolveAsyncUi2(
+          di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, phone)).resolveAsyncUi2(
             onException = _ => actions.showContactUsError)
         }
       } else {

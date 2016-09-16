@@ -88,6 +88,14 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       moments <- getMomentsByCollection(collection)
     } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
 
+  def findCollectionByCategory(category: String) =
+    (for {
+      collections <- collectionRepository.fetchCollectionsByCategory(category)
+      collection = collections.headOption
+      cards <- fetchCards(collection)
+      moments <- getMomentsByCollection(collection)
+    } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
+
   def updateCollection(request: UpdateCollectionRequest) =
     (for {
       updated <- collectionRepository.updateCollection(toRepositoryCollection(request))

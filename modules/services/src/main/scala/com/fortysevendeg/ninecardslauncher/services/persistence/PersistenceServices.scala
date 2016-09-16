@@ -291,6 +291,14 @@ trait PersistenceServices {
   def findCollectionById(request: FindCollectionByIdRequest): TaskService[Option[Collection]]
 
   /**
+    * Obtains a collection from the repository by category
+    * @param category category of collection
+    * @return an Option[com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection]
+    * @throws PersistenceServiceException if exist some problem obtaining the collection
+    */
+  def findCollectionByCategory(category: String): TaskService[Option[Collection]]
+
+  /**
     * Updates the data of an collection from the repository
     * @param request includes the data to update the collection
     * @return an Int if the collection has been updated correctly

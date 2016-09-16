@@ -105,6 +105,15 @@ class CollectionRepository(
         }
     }
 
+  def fetchCollectionsByCategory(category: String): TaskService[Seq[Collection]] =
+    TaskService {
+      CatchAll[RepositoryException] {
+        fetchCollections(
+          selection = s"$appsCategory = ?",
+          selectionArgs = Seq(category))
+      }
+    }
+
   def fetchCollectionByPosition(position: Int): TaskService[Option[Collection]] =
     TaskService {
       CatchAll[RepositoryException] {
