@@ -150,7 +150,7 @@ trait DeviceProcess {
     * @param packageName the packageName of the app to save
     * @throws AppException if exist some problem getting the app or storing it
     */
-  def saveApp(packageName: String)(implicit context: ContextSupport): TaskService[Unit]
+  def saveApp(packageName: String)(implicit context: ContextSupport): TaskService[App]
 
   /**
     * Delete an app from the repository

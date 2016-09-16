@@ -373,7 +373,7 @@ class LauncherExecutorProcessImplSpec
     "call to the services with the right parameters" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openContact
-        mockIntent.extraLookup() returns Some(lookupKey)
+        mockIntent.extractLookup() returns Some(lookupKey)
 
         verifyRight(process.execute(mockIntent)(_), contactAction)
       }
@@ -381,7 +381,7 @@ class LauncherExecutorProcessImplSpec
     "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openContact
-        mockIntent.extraLookup() returns Some(lookupKey)
+        mockIntent.extractLookup() returns Some(lookupKey)
 
         verifyLeftPermission(process.execute(mockIntent)(_), contactAction)
       }
@@ -389,7 +389,7 @@ class LauncherExecutorProcessImplSpec
     "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openContact
-        mockIntent.extraLookup() returns Some(lookupKey)
+        mockIntent.extractLookup() returns Some(lookupKey)
 
         verifyLeft(process.execute(mockIntent)(_), contactAction)
       }
@@ -397,7 +397,7 @@ class LauncherExecutorProcessImplSpec
     "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a contact lookup" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns NineCardIntentExtras.openContact
-        mockIntent.extraLookup() returns None
+        mockIntent.extractLookup() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
         result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]

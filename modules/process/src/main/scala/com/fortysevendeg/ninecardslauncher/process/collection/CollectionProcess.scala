@@ -4,6 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, PrivateCollection}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 
 trait CollectionProcess {
 
@@ -50,6 +51,15 @@ trait CollectionProcess {
     * @throws CollectionException if there was an error getting the existing collections
     */
   def getCollectionById(id: Int): TaskService[Option[Collection]]
+
+  /**
+    * Get collection by category if exists
+    *
+    * @param category category of collection
+    * @return the Option[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+    * @throws CollectionException if there was an error getting the existing collections
+    */
+  def getCollectionByCategory(category: NineCardCategory): TaskService[Option[Collection]]
 
   /**
     * Get collection by his shared collection id if exists
@@ -141,6 +151,14 @@ trait CollectionProcess {
    * @throws CardException if there was an error finding the card, getting the existing collection's cards, deleting the card or updating the rest of them
    */
   def deleteCard(collectionId: Int, cardId: Int): TaskService[Unit]
+
+  /**
+    * Delete all Cards in all collection by package name
+    *
+    * @param packageName package name that you want to remove
+    * @throws CardException if there was an error finding the card, getting the existing collection's cards, deleting the card or updating the rest of them
+    */
+  def deleteAllCardsByPackageName(packageName: String): TaskService[Unit]
 
   /**
     * Deletes several Card and updates the position of the other Cards in the Collection
