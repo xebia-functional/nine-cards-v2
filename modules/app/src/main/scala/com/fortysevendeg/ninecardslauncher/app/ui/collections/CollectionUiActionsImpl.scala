@@ -42,7 +42,7 @@ trait CollectionUiActionsImpl
 
   implicit val uiContext: UiContext[_]
 
-  implicit val collectionsPresenter: CollectionsPagerPresenter
+  implicit val collectionsPagerPresenter: CollectionsPagerPresenter
 
   var statuses = CollectionStatuses()
 
@@ -95,23 +95,32 @@ trait CollectionUiActionsImpl
         loadCollection(collection, paddingSmall, spaceMove, animateCards) ~
           uiHandler(startScroll())
       }) <~
+      rvAddOnScrollListener(
+        scrolled = (dx, dy) => {
+          collectionsPagerPresenter.scrollY(dy)
+        },
+        scrollStateChanged = (newState) => {
+          if (statuses.activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && !isPulling) {
+            collectionsPagerPresenter.scrollIdle()
+          }
+        }) <~
       (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)) ~
       (pullToCloseView <~
         pcvListener(PullToCloseListener(
-          close = () => collectionsPresenter.close()
+          close = () => collectionsPagerPresenter.close()
         )) <~
         pdvPullingListener(PullingListener(
           start = () => (recyclerView <~ nrvDisableScroll(true)).run,
           end = () => (recyclerView <~ nrvDisableScroll(false)).run,
-          scroll = (scroll: Int, close: Boolean) => collectionsPresenter.pullToClose(scroll, statuses.scrollType, close)
+          scroll = (scroll: Int, close: Boolean) => collectionsPagerPresenter.pullToClose(scroll, statuses.scrollType, close)
         )))
   }
 
   override def reloadCards(): Ui[Any] = Ui {
-    collectionsPresenter.reloadCards(false)
+    collectionsPagerPresenter.reloadCards(false)
   }
 
-  override def showMessageNotImplemented(): Ui[Any] = Ui(collectionsPresenter.showMessageNotImplemented())
+  override def showMessageNotImplemented(): Ui[Any] = Ui(collectionsPagerPresenter.showMessageNotImplemented())
 
   override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
 
@@ -127,44 +136,50 @@ trait CollectionUiActionsImpl
   override def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): Ui[Any] =
     (recyclerView <~
       rvAdapter(createAdapter(collection)) <~
-      nrvScheduleLayoutAnimation <~
-      getScrollListener(spaceMove)).ifUi(animateCards)
+      nrvScheduleLayoutAnimation).ifUi(animateCards)
 
   override def moveToCollection(collections: Seq[Collection]): Ui[Any] =
     Ui(new CollectionDialog(collections,
-      c => collectionsPresenter.moveToCollection(c, collections.indexWhere(_.id == c)),
+      c => collectionsPagerPresenter.moveToCollection(c, collections.indexWhere(_.id == c)),
       () => ()).show())
 
   override def addCards(cards: Seq[Card]): Ui[Any] = getAdapter map { adapter =>
     adapter.addCards(cards)
     updateScroll()
     val emptyCollection = adapter.collection.cards.isEmpty
-    if (!emptyCollection) collectionsPresenter.firstItemInCollection()
-    resetScroll ~ showData(emptyCollection)
+    if (!emptyCollection) collectionsPagerPresenter.firstItemInCollection()
+    showData(emptyCollection)
   } getOrElse Ui.nop
 
   override def removeCards(cards: Seq[Card]): Ui[Any] = getAdapter map { adapter =>
     adapter.removeCards(cards)
     updateScroll()
     val emptyCollection = adapter.collection.cards.isEmpty
-    if (emptyCollection) collectionsPresenter.emptyCollection()
-    resetScroll ~ showData(emptyCollection)
+    if (emptyCollection) collectionsPagerPresenter.emptyCollection()
+    showData(emptyCollection)
   } getOrElse Ui.nop
 
   override def reloadCard(card: Card): Ui[Any] = getAdapter map { adapter =>
-    adapter.updateCard(card)
-    updateScroll()
-    resetScroll
+    Ui {
+      adapter.updateCard(card)
+      updateScroll()
+    }
   } getOrElse Ui.nop
 
   override def reloadCards(cards: Seq[Card]): Ui[Any] = getAdapter map { adapter =>
-    adapter.updateCards(cards)
-    updateScroll()
-    resetScroll
+    Ui {
+      adapter.updateCards(cards)
+      updateScroll()
+    }
   } getOrElse Ui.nop
 
   override def showData(emptyCollection: Boolean): Ui[_] =
     if (emptyCollection) showEmptyCollection() else showCollection()
+
+  override def changeScrollType(scrollType: ScrollType, scrollY: Int) = {
+    val dy = if (scrollType == ScrollUp) spaceMove + scrollY else scrollY
+    recyclerView <~ rvSmoothScrollBy(dy = dy)
+  }
 
   override def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get
 
@@ -177,27 +192,14 @@ trait CollectionUiActionsImpl
       (emptyCollectionView <~ vGone)
 
   private[this] def openReorderMode: Ui[_] = {
-    collectionsPresenter.openReorderMode(statuses.scrollType, statuses.canScroll)
-    (pullToCloseView <~ pdvEnable(false)) ~
-      (recyclerView <~ nrvRegisterScroll(false)) ~
-      (Ui(collectionsPresenter.scrollType(ScrollUp)) ~
-      (recyclerView <~
-        vPadding(paddingSmall, paddingSmall, paddingSmall, paddingSmall))).ifUi(statuses.canScroll)
+    collectionsPagerPresenter.openReorderMode(statuses.scrollType, statuses.canScroll)
+    pullToCloseView <~ pdvEnable(false)
   }
 
   private[this] def closeReorderMode(position: Int): Ui[_] = {
-    collectionsPresenter.closeReorderMode(position)
-    (pullToCloseView <~ pdvEnable(true)) ~
-      (recyclerView <~
-        vPadding(paddingSmall, spaceMove, paddingSmall, paddingSmall) <~
-        vScrollBy(0, -Int.MaxValue) <~
-        vScrollBy(0, spaceMove)).ifUi(statuses.canScroll) ~
-      (recyclerView <~ nrvRegisterScroll(true) <~ nrvResetScroll(spaceMove))
+    collectionsPagerPresenter.closeReorderMode(position)
+    pullToCloseView <~ pdvEnable(true)
   }
-
-  def resetScroll: Ui[_] =
-    recyclerView <~
-      getScrollListener(spaceMove)
 
   def scrollType(newScrollType: ScrollType): Ui[_] = {
     (statuses.canScroll, statuses.scrollType) match {
@@ -233,12 +235,11 @@ trait CollectionUiActionsImpl
   private[this] def loadCollection(collection: Collection, padding: Int, spaceMove: Int, animateCards: Boolean): Ui[_] = {
 
     val adapterTweaks = if (!animateCards) {
-      rvAdapter(createAdapter(collection)) +
-        getScrollListener(spaceMove)
+      rvAdapter(createAdapter(collection))
     } else Tweak.blank
 
     if (statuses.activeFragment && collection.position == 0 && collection.cards.isEmpty)
-      collectionsPresenter.emptyCollection()
+      collectionsPagerPresenter.emptyCollection()
 
     recyclerView <~
       rvLayoutManager(new GridLayoutManager(fragmentContextWrapper.application, numInLine)) <~
@@ -248,27 +249,27 @@ trait CollectionUiActionsImpl
       rvItemAnimator(new DefaultItemAnimator)
   }
 
-  private[this] def getScrollListener(spaceMove: Int) =
-    nrvCollectionScrollListener(
-      scrolled = (scrollY: Int, dx: Int, dy: Int) => {
-        val sy = scrollY + dy
-        if (statuses.activeFragment && statuses.canScroll && !isPulling) {
-          collectionsPresenter.scrollY(sy, dy)
-        }
-        sy
-      },
-      scrollStateChanged = (scrollY: Int, recyclerView: RecyclerView, newState: Int) => {
-        if (newState == RecyclerView.SCROLL_STATE_DRAGGING) collectionsPresenter.startScroll()
-        if (statuses.activeFragment &&
-          newState == RecyclerView.SCROLL_STATE_IDLE &&
-          statuses.canScroll &&
-          !isPulling) {
-          val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollDown) else (spaceMove, ScrollUp)
-          if (scrollY < spaceMove && moveTo != scrollY) recyclerView.smoothScrollBy(0, moveTo - scrollY)
-          collectionsPresenter.scrollType(sType)
-        }
-      }
-    )
+//  private[this] def getScrollListener(spaceMove: Int) =
+//    nrvCollectionScrollListener(
+//      scrolled = (scrollY: Int, dx: Int, dy: Int) => {
+//        val sy = scrollY + dy
+//        if (statuses.activeFragment && statuses.canScroll && !isPulling) {
+//          collectionsPresenter.scrollY(sy, dy)
+//        }
+//        sy
+//      },
+//      scrollStateChanged = (scrollY: Int, recyclerView: RecyclerView, newState: Int) => {
+//        if (newState == RecyclerView.SCROLL_STATE_DRAGGING) collectionsPresenter.startScroll()
+//        if (statuses.activeFragment &&
+//          newState == RecyclerView.SCROLL_STATE_IDLE &&
+//          statuses.canScroll &&
+//          !isPulling) {
+//          val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollDown) else (spaceMove, ScrollUp)
+//          if (scrollY < spaceMove && moveTo != scrollY) recyclerView.smoothScrollBy(0, moveTo - scrollY)
+//          collectionsPresenter.scrollType(sType)
+//        }
+//      }
+//    )
 
   private[this] def startScroll(): Ui[_] =
     (statuses.canScroll, statuses.scrollType) match {

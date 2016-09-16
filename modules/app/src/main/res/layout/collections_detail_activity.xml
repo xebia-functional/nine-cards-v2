@@ -4,6 +4,10 @@
              android:id="@+id/collections_root"
              style="@style/CollectionsRoot">
 
+    <android.support.v4.view.ViewPager
+        style="@style/CollectionsPager"
+        android:id="@+id/collections_view_pager"/>
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/collections_toolbar"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -25,10 +29,6 @@
             style="@style/CollectionsIcon"/>
 
     </FrameLayout>
-
-    <android.support.v4.view.ViewPager
-        style="@style/CollectionsPager"
-        android:id="@+id/collections_view_pager"/>
 
     <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SlidingTabLayout
         android:id="@+id/collections_tabs"

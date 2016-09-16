@@ -8,13 +8,12 @@ import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.View
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
@@ -27,11 +26,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
@@ -40,7 +38,6 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -138,12 +135,11 @@ trait CollectionsPagerUiActionsImpl
             stlViewPager(viewPager) <~
             stlOnPageChangeListener(
               new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
-          uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
+          uiHandler(viewPager <~ vpCurrentItem(position, smoothScroll = false)) ~
           uiHandlerDelayed(Ui {
             getActivePresenter foreach (_.bindAnimatedAdapter())
           }, 100) ~
-          (tabs <~ vVisible <~~ enterViews) ~
-          elevationsDefault
+          (tabs <~ vVisible <~~ enterViews)
       case _ => Ui.nop
     }
 
@@ -229,28 +225,25 @@ trait CollectionsPagerUiActionsImpl
       }
   }
 
-  override def translationScrollY(scroll: Int): Ui[Any] = {
-    val move = math.min(scroll, spaceMove)
+  override def translationScrollY(dy: Int): Ui[Any] = {
+    val move = math.min(0, math.max(tabs.getTranslationY.toInt - dy, -spaceMove))
     val ratio: Float = move.toFloat / spaceMove.toFloat
-    val isTop = ratio >= 1
-    val scale = 1 - (ratio / 2)
-    (tabs <~ vTranslationY(-move)) ~
-      (toolbar <~ tbReduceLayout(move * 2)) ~
-      (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio)) ~
-      (if (isTop) elevationsUp else elevationsDefault)
+    val scale = 1 + (ratio / 2)
+    (tabs <~ vTranslationY(move)) ~
+      (toolbar <~ tbReduceLayout(-move)) ~
+      (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 + ratio))
   }
 
-  override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] =
-    hideFabButton ~
-      ((toolbar <~~
-        applyAnimation(onUpdate = (ratio) => current match {
-          case ScrollDown =>
-            (tabs <~ vTranslationY(-ratio * spaceMove)) ~
-              (toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = false)))
-          case _ => Ui.nop
-        })) ~
-        elevationsUp ~
-        (iconContent <~ vAlpha(0))).ifUi(canScroll)
+  override def scrollIdle(): Ui[Any] = {
+    val scrollY = tabs.getTranslationY.toInt
+    val sType = if (scrollY < -spaceMove / 2) ScrollUp else ScrollDown
+    if (scrollY < 0 && scrollY > -spaceMove) {
+      getActivePresenter foreach (_.changeScrollType(sType, scrollY))
+    }
+    notifyScroll(sType)
+  }
+
+  override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] = hideFabButton
 
   override def startEditing(): Ui[Any] = {
     val items = collectionsPagerPresenter.statuses.positionsEditing.toSeq.length
@@ -269,13 +262,6 @@ trait CollectionsPagerUiActionsImpl
   override def closeEditingModeUi(): Ui[Any] =
     (toolbarTitle <~ tvText("")) ~
       notifyDataSetChangedCollectionAdapter ~ invalidateOptionMenu()
-
-  override def notifyScroll(sType: ScrollType): Ui[Any] = (for {
-    adapter <- getAdapter
-  } yield {
-      adapter.setScrollType(sType)
-      adapter.notifyChanged(viewPager.getCurrentItem)
-    }) getOrElse Ui.nop
 
   override def exitTransition: Ui[Any] = {
     val activity = activityContextWrapper.getOriginal
@@ -309,6 +295,13 @@ trait CollectionsPagerUiActionsImpl
 
   override def showMessageNotPublishedCollectionError: Ui[Any] = showError(R.string.notPublishedCollectionError)
 
+  private[this] def notifyScroll(sType: ScrollType): Ui[Any] = (for {
+    adapter <- getAdapter
+  } yield {
+    adapter.setScrollType(sType)
+    adapter.notifyChanged(viewPager.getCurrentItem)
+  }) getOrElse Ui.nop
+
   private[this] def invalidateOptionMenu(): Ui[Any] = Ui {
     activityContextWrapper.original.get match {
       case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
@@ -331,19 +324,19 @@ trait CollectionsPagerUiActionsImpl
     }
   }
 
-  private[this] def elevationsDefault: Ui[Any] = Lollipop.ifSupportedThen {
-    (viewPager <~ vElevation(elevation)) ~
-      (tabs <~ vElevation(elevation)) ~
-      (toolbar <~ vElevation(elevation)) ~
-      (iconContent <~ vElevation(elevation))
-  } getOrElse Ui.nop
-
-  private[this] def elevationsUp: Ui[Any] = Lollipop.ifSupportedThen {
-    (viewPager <~ vElevation(elevation)) ~
-      (tabs <~ vElevation(elevationUp)) ~
-      (toolbar <~ vElevation(elevationUp)) ~
-      (iconContent <~ vElevation(elevationUp))
-  } getOrElse Ui.nop
+//  private[this] def elevationsDefault: Ui[Any] = Lollipop.ifSupportedThen {
+//    (viewPager <~ vElevation(elevation)) ~
+//      (tabs <~ vElevation(elevation)) ~
+//      (toolbar <~ vElevation(elevation)) ~
+//      (iconContent <~ vElevation(elevation))
+//  } getOrElse Ui.nop
+//
+//  private[this] def elevationsUp: Ui[Any] = Lollipop.ifSupportedThen {
+//    (viewPager <~ vElevation(elevation)) ~
+//      (tabs <~ vElevation(elevationUp)) ~
+//      (toolbar <~ vElevation(elevationUp)) ~
+//      (iconContent <~ vElevation(elevationUp))
+//  } getOrElse Ui.nop
 
   private[this] def calculateReduce(ratio: Float, spaceMove: Int, reversed: Boolean) = {
     val newRatio = if (reversed) 1f - ratio else ratio

@@ -54,8 +54,6 @@ object RippleBackgroundViewTweaks {
 object CollectionRecyclerViewTweaks {
   type W = CollectionRecyclerView
 
-  def nrvRegisterScroll(register: Boolean) = Tweak[W]( view => view.statuses = view.statuses.copy(registerScroll = register))
-
   def nrvDisableScroll(disable: Boolean) = Tweak[W]( view => view.statuses = view.statuses.copy(disableScroll = disable))
 
   def nrvEnableAnimation(res: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
@@ -64,15 +62,6 @@ object CollectionRecyclerViewTweaks {
   }
 
   def nrvScheduleLayoutAnimation = Tweak[W](_.scheduleLayoutAnimation())
-
-  def nrvResetScroll(y: Int) = Tweak[W] { rv =>
-    rv.scrollListener.foreach(_.scrollY = y)
-  }
-
-  def nrvCollectionScrollListener(
-    scrolled: (Int, Int, Int) => Int,
-    scrollStateChanged: (Int, RecyclerView, Int) => Unit
-  )(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.createScrollListener(scrolled, scrollStateChanged))
 
 }
 

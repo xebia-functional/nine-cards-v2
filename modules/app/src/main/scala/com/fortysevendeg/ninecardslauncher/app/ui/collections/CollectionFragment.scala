@@ -30,7 +30,7 @@ class CollectionFragment
     maybeCollection = Option(getSerialize[Collection](Seq(getArguments), keyCollection, javaNull)),
     actions = self)
 
-  override lazy val collectionsPresenter: CollectionsPagerPresenter = getActivity match {
+  override lazy val collectionsPagerPresenter: CollectionsPagerPresenter = getActivity match {
     case activity: CollectionsDetailsActivity => activity.collectionsPagerPresenter
     case _ => throw new IllegalArgumentException(badActivityMessage)
   }
@@ -71,7 +71,7 @@ class CollectionFragment
 
   override def onPrepareOptionsMenu(menu: Menu): Unit = {
     super.onPrepareOptionsMenu(menu)
-    (collectionsPresenter.statuses.collectionMode, collectionsPresenter.statuses.positionsEditing.toSeq.length) match {
+    (collectionsPagerPresenter.statuses.collectionMode, collectionsPagerPresenter.statuses.positionsEditing.toSeq.length) match {
       case (NormalCollectionMode, _) =>
         menu.findItem(R.id.action_make_public).setVisible(true)
         menu.findItem(R.id.action_share).setVisible(true)
@@ -95,13 +95,13 @@ class CollectionFragment
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case R.id.action_edit =>
-      collectionsPresenter.editCard()
+      collectionsPagerPresenter.editCard()
       true
     case R.id.action_move_to_collection =>
       presenter.moveToCollection()
       true
     case R.id.action_delete =>
-      collectionsPresenter.removeCards()
+      collectionsPagerPresenter.removeCards()
       true
     case _ => super.onOptionsItemSelected(item)
   }
