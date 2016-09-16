@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedColl
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NoInstalledAppCardType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
@@ -56,6 +56,11 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def getCollectionById(id: Int) =
     persistenceServices.findCollectionById(FindCollectionByIdRequest(id))
+      .map(_.map(toCollection))
+      .resolve[CollectionException]
+
+  def getCollectionByCategory(category: NineCardCategory) =
+    persistenceServices.findCollectionByCategory(category.name)
       .map(_.map(toCollection))
       .resolve[CollectionException]
 

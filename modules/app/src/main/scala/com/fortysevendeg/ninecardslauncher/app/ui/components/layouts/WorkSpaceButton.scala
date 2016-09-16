@@ -62,7 +62,7 @@ class WorkSpaceButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
     (title <~ tvText(card.term)) ~
       (icon <~
         (card.cardType match {
-          case cardType if cardType.isContact => ivUriContact(card.imagePath, card.term, circular = true)
+          case cardType if cardType.isContact => ivUriContactFromLookup(card.intent.extractLookup(), card.term, circular = true)
           case AppCardType => ivSrcByPackageName(card.packageName, card.term)
           case _ => ivCardUri(card.imagePath, card.term, circular = true)
         }))
