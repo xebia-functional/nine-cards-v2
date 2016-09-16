@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs, ResultC
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
@@ -121,7 +122,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
           actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
         }
       },
-      onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen(() => loadPublications()))
+      onException = onException(actions.showErrorLoadingCollectionInScreen(() => loadPublications())))
 
   def loadSubscriptions(): Unit = {
 
@@ -139,7 +140,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         case subscriptions =>
           actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
       },
-      onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen())
+      onException = onException(actions.showErrorLoadingSubscriptionsInScreen()))
   }
 
   def onSubscribe(sharedCollectionId: String, subscribeStatus: Boolean): Unit = {
@@ -156,7 +157,14 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
       (if (subscribeStatus) subscribe(sharedCollectionId) else unsubscribe(sharedCollectionId)).resolveAsyncUi2(
         onResult = (_) => actions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus),
-        onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
+        onException = onException(actions.showErrorSubscribing(() => loadSubscriptions())))
+  }
+
+  private[this] def onException(ui: Ui[Any]) = (e: Throwable) => e match {
+    case e: SharedCollectionsConfigurationException =>
+      AppLog.invalidConfigurationV2
+      ui
+    case _ => ui
   }
 
   def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run

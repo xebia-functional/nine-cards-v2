@@ -95,6 +95,6 @@ trait UserProcessData
 
   val updateInstallationResponse = UpdateInstallationResponse(statusCodeOk)
 
-  val loginResponse = LoginResponse(apiKey, sessionToken)
+  val loginResponse = LoginResponse(statusCodeOk, apiKey, sessionToken)
 
 }

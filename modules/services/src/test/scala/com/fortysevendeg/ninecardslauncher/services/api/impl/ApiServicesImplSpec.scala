@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import com.fortysevendeg.rest.client.http.HttpClientException
@@ -13,6 +14,7 @@ import org.specs2.specification.Scope
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import cats.syntax.either._
 
+import scala.reflect.ClassTag
 import scala.util.Random
 
 trait ApiServicesSpecification
@@ -27,12 +29,24 @@ trait ApiServicesSpecification
   implicit val requestConfig = RequestConfig(
     apiKey = Random.nextString(10),
     sessionToken = Random.nextString(10),
-    androidId = Random.nextString(10))
+    androidId = Random.nextString(10),
+    marketToken = Some(Random.nextString(10)))
 
   val apiServicesConfig = ApiServicesConfig(
     appId = Random.nextString(10),
     appKey = Random.nextString(10),
     localization = "EN")
+
+  val serviceHeader = version2.ServiceHeader(
+    requestConfig.apiKey,
+    requestConfig.sessionToken,
+    requestConfig.androidId)
+
+  val serviceMarketHeader = version2.ServiceMarketHeader(
+    requestConfig.apiKey,
+    requestConfig.sessionToken,
+    requestConfig.androidId,
+    requestConfig.marketToken)
 
   val baseUrl = "http://mockedUrl"
 
@@ -53,36 +67,16 @@ trait ApiServicesSpecification
       apiServiceV1)
 
     val exception = HttpClientException("")
+
+    def mustLeft[T <: NineCardException](service: TaskService[_])(implicit classTag: ClassTag[T]): Unit =
+      service.value.run must beLike {
+        case Left(e) => e must beAnInstanceOf[T]
+      }
   }
 }
 
 class ApiServicesImplSpec
   extends ApiServicesSpecification {
-
-  "login" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope {
-
-        apiService.login(any)(any, any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse[version2.LoginResponse](statusCode, Some(version2.LoginResponse(apiKey, sessionToken)))))
-          }
-
-        val result = apiServices.login(email, androidId, tokenId).value.run
-        result shouldEqual Right(LoginResponse(apiKey, sessionToken))
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope {
-
-        apiService.login(any)(any, any) returns TaskService(Task(Either.left(exception)))
-
-        val result = apiServices.login(email, androidId, tokenId).value.run
-        result must beAnInstanceOf[Left[HttpClientException, _]]
-      }
-
-  }
 
   "loginV1" should {
 
@@ -90,145 +84,44 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiServiceV1.baseUrl returns baseUrl
-
         apiServiceV1.login(any, any)(any, any) returns
           TaskService {
             Task(Either.right(ServiceClientResponse[version1.User](statusCode, Some(user))))
           }
 
-        val result = apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)).value.run
+        val result = apiServices.loginV1(email, LoginV1Device(name, deviceId, secretToken, permissions)).value.run
         result shouldEqual Right(toLoginResponseV1(statusCode, user))
+
+        there was one(apiServiceV1).login(===(loginV1User), any)(any, any)
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service" in
+    "return an ApiServiceV1ConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiServiceV1.baseUrl returns ""
+        apiServiceV1.login(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceV1ConfigurationException](apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)))
+      }
+
+    "return an ApiServiceException when the service returns None" in
       new ApiServicesScope {
 
         apiServiceV1.baseUrl returns baseUrl
+        apiServiceV1.login(any, any)(any, any) returns TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
+        mustLeft[ApiServiceException](apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiServiceV1.baseUrl returns baseUrl
         apiServiceV1.login(any, any)(any, any) returns TaskService {
           Task(Either.left(exception))
         }
 
-        val result = apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)).value.run
-        result must beAnInstanceOf[Left[HttpClientException, _]]
-      }
-
-  }
-
-  "updateInstallation" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope {
-
-        apiService.installations(any, any)(any, any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse[version2.InstallationResponse](statusCode, Some(version2.InstallationResponse(androidId, deviceToken)))))
-          }
-
-        val result = apiServices.updateInstallation(Some("")).value.run
-        result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope {
-
-        apiService.installations(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
-
-        val result = apiServices.updateInstallation(Some("")).value.run
-        result must beAnInstanceOf[Left[HttpClientException,  _]]
-      }
-
-  }
-
-  "googlePlayPackage" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope {
-
-        apiService.categorize(any, any)(any, any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse[version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
-          }
-
-        val result = apiServices.googlePlayPackage(categorizeApps.head.packageName).value.run
-        result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            Some(response.app) shouldEqual categorizeApps.headOption.map(a => CategorizedPackage(a.packageName, Some(a.category)))
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope {
-
-        apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
-
-        val result = apiServices.googlePlayPackage("").value.run
-        result must beAnInstanceOf[Left[HttpClientException,  _]]
-      }
-
-  }
-
-  "googlePlayPackages" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope {
-
-        apiService.categorize(any, any)(any, any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse[version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
-          }
-
-        val result = apiServices.googlePlayPackages(Seq.empty).value.run
-        result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.packages shouldEqual (categorizeApps map (a => CategorizedPackage(a.packageName, Some(a.category))))
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope {
-
-        apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
-
-        val result = apiServices.googlePlayPackages(Seq.empty).value.run
-        result must beAnInstanceOf[Left[HttpClientException,  _]]
-      }
-
-  }
-
-  "googlePlayPackagesDetail" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope {
-
-        apiService.categorizeDetail(any, any)(any, any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse[version2.CategorizeDetailResponse](
-              statusCode, Some(version2.CategorizeDetailResponse(Seq.empty, categorizeAppsDetail)))))
-          }
-
-
-
-        val result = apiServices.googlePlayPackagesDetail(Seq.empty).value.run
-        result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.packages shouldEqual categorizedDetailPackages
-        }
-      }
-
-    "return an ApiServiceException with the cause the exception returned by the service" in
-      new ApiServicesScope {
-
-        apiService.categorizeDetail(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
-
-        val result = apiServices.googlePlayPackagesDetail(Seq.empty).value.run
-        result must beAnInstanceOf[Left[HttpClientException, _]]
+        mustLeft[ApiServiceException](apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)))
       }
 
   }
@@ -239,7 +132,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiServiceV1.baseUrl returns baseUrl
-
         apiServiceV1.getUserConfig(any)(any) returns
           TaskService {
             Task(Either.right(ServiceClientResponse[version1.UserConfig](statusCode, Some(userConfig))))
@@ -253,17 +145,324 @@ class ApiServicesImplSpec
         }
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service" in
+    "return an ApiServiceV1ConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiServiceV1.baseUrl returns ""
+        apiServiceV1.getUserConfig(any)(any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceV1ConfigurationException](apiServices.getUserConfigV1())
+      }
+
+    "return an ApiServiceException when the service returns None" in
       new ApiServicesScope {
 
         apiServiceV1.baseUrl returns baseUrl
+        apiServiceV1.getUserConfig(any)(any) returns TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
-        apiServiceV1.getUserConfig(any)(any) returns TaskService {
-          Task(Either.left(exception))
+        mustLeft[ApiServiceException](apiServices.getUserConfigV1())
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiServiceV1.baseUrl returns baseUrl
+        apiServiceV1.getUserConfig(any)(any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.getUserConfigV1())
+      }
+
+  }
+
+  "login" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.login(any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse[version2.LoginResponse](statusCode, Some(version2.LoginResponse(apiKey, sessionToken)))))
+          }
+
+        val result = apiServices.login(email, androidId, tokenId).value.run
+        result shouldEqual Right(LoginResponse(statusCode, apiKey, sessionToken))
+
+        there was one(apiService).login(===(loginRequest))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+        apiService.login(any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceConfigurationException](apiServices.login(email, androidId, tokenId))
+      }
+
+    "return an ApiServiceException when the service returns None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.login(any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse[version2.LoginResponse](statusCode, None)))
+          }
+
+        mustLeft[ApiServiceException](apiServices.login(email, androidId, tokenId))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.login(any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.login(email, androidId, tokenId))
+      }
+
+  }
+
+  "updateInstallation" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.installations(any, any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse[version2.InstallationResponse](statusCode, Some(version2.InstallationResponse(androidId, deviceToken)))))
+          }
+
+        val result = apiServices.updateInstallation(Some(deviceToken)).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
         }
 
-        val result = apiServices.getUserConfigV1().value.run
-        result must beAnInstanceOf[Left[HttpClientException,  _]]
+        there was one(apiService).installations(===(installationRequest), ===(serviceHeader))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+        apiService.installations(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceConfigurationException](apiServices.updateInstallation(Some("")))
+      }
+
+    "return an ApiServiceException when the service returns None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.installations(any, any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse[version2.InstallationResponse](statusCode, None)))
+          }
+
+        mustLeft[ApiServiceException](apiServices.updateInstallation(Some("")))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.installations(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.updateInstallation(Some("")))
+      }
+
+  }
+
+  "googlePlayPackage" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorize(any, any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse(statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
+          }
+
+        val result = apiServices.googlePlayPackage(categorizeApps.head.packageName).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
+            Some(response.app) shouldEqual categorizeApps.headOption.map(a => CategorizedPackage(a.packageName, Some(a.category)))
+        }
+
+        there was one(apiService).categorize(===(categorizeOneRequest), ===(serviceMarketHeader))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+        apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceConfigurationException](apiServices.googlePlayPackage(""))
+      }
+
+    "return an ApiServiceException when the service returns None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
+
+        mustLeft[ApiServiceException](apiServices.googlePlayPackage(""))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.googlePlayPackage(""))
+      }
+
+  }
+
+  "googlePlayPackages" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorize(any, any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse[version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
+          }
+
+        val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.packages shouldEqual (categorizeApps map (a => CategorizedPackage(a.packageName, Some(a.category))))
+        }
+
+        there was one(apiService).categorize(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
+      }
+
+    "return an empty sequence if the services returns a valid response with None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorize(any, any)(any, any) returns
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
+
+        val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.packages must beEmpty
+        }
+
+        there was one(apiService).categorize(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+        apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceConfigurationException](apiServices.googlePlayPackages(Seq.empty))
+      }
+
+    "return an empty sequence when the service returns None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
+
+        val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.packages must beEmpty
+        }
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.googlePlayPackages(Seq.empty))
+      }
+
+  }
+
+  "googlePlayPackagesDetail" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorizeDetail(any, any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse[version2.CategorizeDetailResponse](
+              statusCode, Some(version2.CategorizeDetailResponse(Seq.empty, categorizeAppsDetail)))))
+          }
+
+        val result = apiServices.googlePlayPackagesDetail(categorizeApps.map(_.packageName)).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.packages shouldEqual categorizedDetailPackages
+        }
+
+        there was one(apiService).categorizeDetail(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
+      }
+
+    "return an empty sequence if the services returns a valid response with None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorizeDetail(any, any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse[version2.CategorizeDetailResponse](statusCode, None)))
+          }
+
+        val result = apiServices.googlePlayPackagesDetail(categorizeApps.map(_.packageName)).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.packages must beEmpty
+        }
+
+        there was one(apiService).categorizeDetail(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+        apiService.categorizeDetail(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceConfigurationException](apiServices.googlePlayPackagesDetail(Seq.empty))
+      }
+
+    "return an ApiServiceException when the service returns None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorizeDetail(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.googlePlayPackagesDetail(Seq.empty))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.categorizeDetail(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.googlePlayPackagesDetail(Seq.empty))
       }
 
   }
@@ -273,26 +472,38 @@ class ApiServicesImplSpec
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.recommendations(any, any, any)(any, any) returns
           TaskService {
             Task(Either.right(ServiceClientResponse[version2.RecommendationsResponse](statusCode, Some(recommendationResponse))))
           }
 
-        val result = apiServices.getRecommendedApps(category, Seq.empty, limit).value.run
+        val result = apiServices.getRecommendedApps(category, excludedPackages, limit).value.run
         result must beLike {
           case Right(response) =>
             response.statusCode shouldEqual statusCode
             response.seq.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
         }
+
+        there was one(apiService).recommendations(===(category), ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service" in
+    "return an ApiServiceConfigurationException when the base url is empty" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns ""
         apiService.recommendations(any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.getRecommendedApps(category, Seq.empty, limit).value.run
-        result must beAnInstanceOf[Left[HttpClientException,  _]]
+        mustLeft[ApiServiceConfigurationException](apiServices.getRecommendedApps(category, Seq.empty, limit))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.recommendations(any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.getRecommendedApps(category, Seq.empty, limit))
       }
 
   }
@@ -302,26 +513,46 @@ class ApiServicesImplSpec
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.recommendationsByApps(any, any)(any, any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse[version2.RecommendationsByAppsResponse](statusCode, Some(recommendationByAppsResponse))))
-          }
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(recommendationByAppsResponse)))))
 
-        val result = apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit).value.run
+        val result = apiServices.getRecommendedAppsByPackages(packages, excludedPackages, limit).value.run
         result must beLike {
           case Right(response) =>
             response.statusCode shouldEqual statusCode
             response.seq.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
         }
+
+        there was one(apiService).recommendationsByApps(===(recommendationsByAppsRequest), ===(serviceMarketHeader))(any, any)
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service" in
+    "return an ApiServiceConfigurationException when the base url is empty" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns ""
         apiService.recommendationsByApps(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit).value.run
-        result must beAnInstanceOf[Left[HttpClientException,  _]]
+        mustLeft[ApiServiceConfigurationException](apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit))
+      }
+
+    "return an ApiServiceException when the service returns None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.recommendationsByApps(any, any)(any, any) returns 
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
+
+        mustLeft[ApiServiceException](apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.recommendationsByApps(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit))
       }
 
   }
@@ -331,10 +562,9 @@ class ApiServicesImplSpec
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.getCollection(any, any)(any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse[version2.Collection](statusCode, Some(sharedCollection))))
-          }
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(sharedCollection)))))
 
         val result = apiServices.getSharedCollection(sharedCollectionId).value.run
         result must beLike {
@@ -342,15 +572,36 @@ class ApiServicesImplSpec
             response.statusCode shouldEqual statusCode
             response.sharedCollection shouldEqual toSharedCollection(sharedCollection)
         }
+
+        there was one(apiService).getCollection(===(sharedCollectionId), ===(serviceMarketHeader))(any)
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service" in
+    "return an ApiServiceConfigurationException when the base url is empty" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns ""
         apiService.getCollection(any, any)(any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.getSharedCollection(sharedCollectionId).value.run
-        result must beAnInstanceOf[Left[HttpClientException, _]]
+        mustLeft[ApiServiceConfigurationException](apiServices.getSharedCollection(sharedCollectionId))
+      }
+
+    "return an ApiServiceException when the service returns None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.getCollection(any, any)(any) returns
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
+
+        mustLeft[ApiServiceException](apiServices.getSharedCollection(sharedCollectionId))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.getCollection(any, any)(any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.getSharedCollection(sharedCollectionId))
       }
 
   }
@@ -360,6 +611,7 @@ class ApiServicesImplSpec
     "return a valid response if the services returns a valid response for TOP apps" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.topCollections(any, any, any, any)(any) returns
           TaskService {
             Task(Either.right(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
@@ -371,24 +623,25 @@ class ApiServicesImplSpec
             response.statusCode shouldEqual statusCode
             response.items.size shouldEqual collections.size
         }
+
+        there was one(apiService).topCollections(===(category), ===(offset), ===(limit), ===(serviceMarketHeader))(any)
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service for TOP apps" in
+    "return an ApiServiceException when the service returns an exception for TOP apps" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.topCollections(any, any, any, any)(any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeTop, offset, limit).value.run
-        result must beAnInstanceOf[Left[HttpClientException,  _]]
+        mustLeft[ApiServiceException](apiServices.getSharedCollectionsByCategory(category, collectionTypeTop, offset, limit))
       }
 
     "return a valid response if the services returns a valid response for LATEST apps" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.latestCollections(any, any, any, any)(any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
-          }
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(version2.CollectionsResponse(collections))))))
 
         val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit).value.run
         result must beLike {
@@ -396,15 +649,36 @@ class ApiServicesImplSpec
             response.statusCode shouldEqual statusCode
             response.items.size shouldEqual collections.size
         }
+
+        there was one(apiService).latestCollections(===(category), ===(offset), ===(limit), ===(serviceMarketHeader))(any)
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service for LATEST apps" in
+    "return an ApiServiceException when the service returns an exception for LATEST apps" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.latestCollections(any, any, any, any)(any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit).value.run
-        result must beAnInstanceOf[Left[ApiServiceException, _]]
+        mustLeft[ApiServiceException](apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit))
+      }
+
+    "return an ApiServiceException for an invalid collection type" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+
+        mustLeft[ApiServiceException](apiServices.getSharedCollectionsByCategory(category, collectionTypeUnknown, offset, limit))
+
+        there was no(apiService).latestCollections(any, any, any, any)(any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+        apiService.latestCollections(any, any, any, any)(any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceConfigurationException](apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit))
       }
 
   }
@@ -414,6 +688,7 @@ class ApiServicesImplSpec
     "return a valid response if the services return a valid response" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.createCollection(any, any)(any, any) returns
           TaskService {
             Task(Either.right(ServiceClientResponse[version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
@@ -425,15 +700,111 @@ class ApiServicesImplSpec
             response.statusCode shouldEqual statusCode
             response.sharedCollectionId shouldEqual sharedCollectionId
         }
+
+        there was one(apiService).createCollection(===(createCollectionRequest), ===(serviceHeader))(any, any)
       }
 
-    "return an ApiServiceException with the calue the exception returned by the service" in
+    "return an ApiServiceConfigurationException when the base url is empty" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns ""
         apiService.createCollection(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
-        result must beAnInstanceOf[Left[HttpClientException,  _]]
+        result must beAnInstanceOf[Left[ApiServiceConfigurationException, _]]
+      }
+
+    "return an ApiServiceException when the service return None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.createCollection(any, any)(any, any) returns
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
+
+        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
+        result must beAnInstanceOf[Left[ApiServiceException,  _]]
+      }
+
+    "return an ApiServiceException when the service return an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.createCollection(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
+        result must beAnInstanceOf[Left[ApiServiceException,  _]]
+      }
+
+  }
+
+  "updateSharedCollection" should {
+
+    "return a valid response if the services return a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.updateCollection(any, any, any)(any, any) returns
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(updateCollectionResponse)))))
+
+        val result = apiServices.updateSharedCollection(sharedCollectionId, Some(name), Some(description), packages).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.sharedCollectionId shouldEqual sharedCollectionId
+        }
+
+        there was one(apiService).updateCollection(===(sharedCollectionId), ===(updateCollectionRequest), ===(serviceHeader))(any, any)
+      }
+
+    "return a valid response if the services return a valid response but don't send a update info when the name is not set" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.updateCollection(any, any, any)(any, any) returns
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(updateCollectionResponse)))))
+
+        val result = apiServices.updateSharedCollection(sharedCollectionId, None, Some(description), packages).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.sharedCollectionId shouldEqual sharedCollectionId
+        }
+
+        there was one(apiService).updateCollection(===(sharedCollectionId), ===(updateCollectionRequest.copy(collectionInfo = None)), ===(serviceHeader))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+        apiService.updateCollection(any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceConfigurationException] {
+          apiServices.updateSharedCollection(sharedCollectionId, Some(name), Some(description), packages)
+        }
+      }
+
+    "return an ApiServiceException when the service returns None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.updateCollection(any, any, any)(any, any) returns
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
+
+        mustLeft[ApiServiceException] {
+          apiServices.updateSharedCollection(sharedCollectionId, Some(name), Some(description), packages)
+        }
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.updateCollection(any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException] {
+          apiServices.updateSharedCollection(sharedCollectionId, Some(name), Some(description), packages)
+        }
       }
 
   }
@@ -443,9 +814,10 @@ class ApiServicesImplSpec
     "return a valid response if the services return a valid response" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.getCollections(any)(any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(version2.CollectionsResponse(collections)))))
           }
 
         val result = apiServices.getPublishedCollections().value.run
@@ -454,15 +826,35 @@ class ApiServicesImplSpec
             response.statusCode shouldEqual statusCode
             response.items.size shouldEqual collections.size
         }
+
+        there was one(apiService).getCollections(===(serviceMarketHeader))(any)
       }
 
-    "return an ApiServiceException with the calue the exception returned by the service" in
+    "return an ApiServiceConfigurationException when the base url is empty" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns ""
+        apiService.getCollections(any)(any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceConfigurationException](apiServices.getPublishedCollections())
+      }
+
+    "return an ApiServiceException when the service returns None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.getCollections(any)(any) returns TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
+
+        mustLeft[ApiServiceException](apiServices.getPublishedCollections())
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
         apiService.getCollections(any)(any) returns TaskService(Task(Left(exception)))
 
-        val result = apiServices.getPublishedCollections().value.run
-        result must beAnInstanceOf[Left[HttpClientException,  _]]
+        mustLeft[ApiServiceException](apiServices.getPublishedCollections())
       }
 
   }
@@ -472,9 +864,10 @@ class ApiServicesImplSpec
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.getSubscriptions(any)(any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.SubscriptionsResponse](statusCode, Some(version2.SubscriptionsResponse(Seq(originalSharedCollectionId))))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(version2.SubscriptionsResponse(Seq(sharedCollectionId))))))
           }
 
         val result = apiServices.getSubscriptions().value.run
@@ -483,17 +876,35 @@ class ApiServicesImplSpec
             response.statusCode shouldEqual statusCode
             response.items.map(_.sharedCollectionId) shouldEqual subscriptions.subscriptions
         }
+
+        there was one(apiService).getSubscriptions(===(serviceHeader))(any)
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service" in
+    "return an ApiServiceConfigurationException when the base url is empty" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns ""
         apiService.getSubscriptions(any)(any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.getSubscriptions().value.run
-        result must beLike {
-          case Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-        }
+        mustLeft[ApiServiceConfigurationException](apiServices.getSubscriptions())
+      }
+
+    "return an ApiServiceException when the service returns None" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.getSubscriptions(any)(any) returns TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
+
+        mustLeft[ApiServiceException](apiServices.getSubscriptions())
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.getSubscriptions(any)(any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.getSubscriptions())
       }
 
   }
@@ -503,27 +914,35 @@ class ApiServicesImplSpec
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.subscribe(any, any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse(statusCode, None)))
-          }
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
-        val result = apiServices.subscribe(originalSharedCollectionId).value.run
+        val result = apiServices.subscribe(sharedCollectionId).value.run
         result must beLike {
           case Right(response) =>
             response.statusCode shouldEqual statusCode
         }
+
+        there was one(apiService).subscribe(sharedCollectionId, serviceHeader)
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service" in
+    "return an ApiServiceConfigurationException when the base url is empty" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns ""
         apiService.subscribe(any, any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.subscribe(originalSharedCollectionId).value.run
-        result must beLike {
-          case Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-        }
+        mustLeft[ApiServiceConfigurationException](apiServices.subscribe(sharedCollectionId))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.subscribe(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.subscribe(sharedCollectionId))
       }
 
   }
@@ -533,27 +952,35 @@ class ApiServicesImplSpec
     "return a valid response if the services returns a valid response" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns baseUrl
         apiService.unsubscribe(any, any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse(statusCode, None)))
-          }
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
-        val result = apiServices.unsubscribe(originalSharedCollectionId).value.run
+        val result = apiServices.unsubscribe(sharedCollectionId).value.run
         result must beLike {
           case Right(response) =>
             response.statusCode shouldEqual statusCode
         }
+
+        there was one(apiService).unsubscribe(sharedCollectionId, serviceHeader)
       }
 
-    "return an ApiServiceException with the cause the exception returned by the service" in
+    "return an ApiServiceConfigurationException when the base url is empty" in
       new ApiServicesScope {
 
+        apiService.baseUrl returns ""
         apiService.unsubscribe(any, any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.unsubscribe(originalSharedCollectionId).value.run
-        result must beLike {
-          case Left(e) => e.cause must beSome.which(_ shouldEqual exception)
-        }
+        mustLeft[ApiServiceConfigurationException](apiServices.unsubscribe(sharedCollectionId))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.unsubscribe(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.unsubscribe(sharedCollectionId))
       }
 
   }
