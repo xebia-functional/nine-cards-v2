@@ -107,7 +107,7 @@ trait CollectionAdapterStyles {
   def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
     card.cardType match {
       case cardType if cardType.isContact =>
-        ivUriContact(card.imagePath, card.term) +
+        ivUriContactFromLookup(card.intent.extractLookup(), card.term) +
           vBackground(javaNull) +
           expandLayout +
           ivScaleType(ScaleType.CENTER_CROP)

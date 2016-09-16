@@ -270,7 +270,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def openLastCall(number: String) = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
-    launcherCallService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(number)), Some(number))
+    launcherCallService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, number)), Some(number))
   }
 
   def execute(intent: NineCardIntent): Unit =
@@ -847,7 +847,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case RequestCodes.phoneCallPermission if result.exists(_.hasPermission(CallPhone)) =>
         statuses.lastPhone foreach { phone =>
           statuses = statuses.copy(lastPhone = None)
-          launcherService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(phone)))
+          launcherService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, phone)))
         }
       case RequestCodes.contactsPermission =>
         (actions.reloadDrawerApps() ~
