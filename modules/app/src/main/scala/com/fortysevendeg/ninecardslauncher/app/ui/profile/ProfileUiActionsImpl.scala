@@ -100,6 +100,9 @@ trait ProfileUiActionsImpl
       (recyclerView <~ rvSwapAdapter(adapter))
   }
 
+  override def refreshCurrentSubscriptions(): Ui[Any] = // TODO Remove when we've got different states for the switch - issue #783
+    recyclerView <~ rvSwapAdapter(recyclerView.getAdapter)
+
   override def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {
       case subscriptionsAdapter: SubscriptionsAdapter =>
@@ -191,13 +194,13 @@ trait ProfileUiActionsImpl
       (loadingView <~ vInvisible)
   }
 
-  override def showEmptyPublicationsContent(error: Boolean = false, reload: () => Unit = () => ()): Ui[Any] =
+  override def showEmptyPublicationsContent(error: Boolean, reload: () => Unit): Ui[Any] =
     showEmptyContent(PublicationsTab, error, reload)
 
-  override def showEmptySubscriptionsContent(error: Boolean = false, reload: () => Unit = () => ()): Ui[Any] =
+  override def showEmptySubscriptionsContent(error: Boolean, reload: () => Unit): Ui[Any] =
     showEmptyContent(SubscriptionsTab, error, reload)
 
-  override def showEmptyAccountsContent(error: Boolean = false, reload: () => Unit = () => ()): Ui[Any] =
+  override def showEmptyAccountsContent(error: Boolean, reload: () => Unit): Ui[Any] =
     showEmptyContent(AccountsTab, error, reload)
 
   private[this] def showEmptyContent(tab: ProfileTab, error: Boolean, reload: () => Unit): Ui[Any] =

@@ -67,8 +67,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     di.userProcess.getUser.resolveAsync2(
       onResult = user => {
         (user.userProfile.name, user.email) match {
-          case (Some(name), Some(email)) =>
-            actions.userProfile(name, email, user.userProfile.avatar).run
+          case (Some(name), Some(email)) => actions.userProfile(name, email, user.userProfile.avatar).run
           case _ =>
         }
       })
@@ -103,7 +102,9 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
     addSharedCollection(sharedCollection).resolveAsyncUi2(
-      onResult = (c) => actions.showAddCollectionMessage(sharedCollection.sharedCollectionId) ~ Ui(sendBroadCast(BroadAction(CollectionAddedActionFilter.action, Some(c.id.toString)))),
+      onResult = (c) =>
+        actions.showAddCollectionMessage(sharedCollection.sharedCollectionId) ~
+          Ui(sendBroadCast(BroadAction(CollectionAddedActionFilter.action, Some(c.id.toString)))),
       onException = (ex) => actions.showErrorSavingCollectionInScreen(() => loadPublications()))
   }
 
@@ -118,7 +119,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         case sharedCollections if sharedCollections.isEmpty => actions.showEmptyPublicationsContent()
         case sharedCollections => actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
       },
-      onException = (ex: Throwable) =>  actions.showEmptyPublicationsContent(error = true, () => loadPublications()))
+      onException = (ex: Throwable) => actions.showEmptyPublicationsContent(error = true, () => loadPublications()))
 
   def loadSubscriptions(): Unit = {
 
@@ -151,7 +152,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       (if (subscribeStatus) subscribe(sharedCollectionId) else unsubscribe(sharedCollectionId)).resolveAsyncUi2(
         onResult = (_) => actions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus),
         onException = (ex) => actions.showErrorSubscribing(subscribeStatus) ~
-          actions.showUpdatedSubscriptions(sharedCollectionId, !subscribeStatus) //TODO Remove when we've got different states for the switch
+            actions.refreshCurrentSubscriptions() // TODO Remove when we've got different states for the switch - issue #783
       )
   }
 
@@ -325,7 +326,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         syncEnabled = true
         if (accountSyncs.isEmpty) {
           launchService()
-          actions.showEmptyAccountsContent(error = false, () => loadUserAccounts(client))
+          actions.showEmptyAccountsContent()
         } else {
           actions.setAccountsAdapter(accountSyncs)
         }
@@ -376,6 +377,8 @@ trait ProfileUiActions {
   def hideLoading(): Ui[Any]
 
   def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any]
+
+  def refreshCurrentSubscriptions(): Ui[Any] // TODO Remove when we've got different states for the switch - issue #783
 
   def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any]
 
