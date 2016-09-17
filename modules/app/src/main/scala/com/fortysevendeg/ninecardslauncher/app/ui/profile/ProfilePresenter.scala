@@ -374,13 +374,13 @@ trait ProfileUiActions {
 
   def showLoading(): Ui[Any]
 
-  def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any]
+  def showAddCollectionMessage(sharedCollectionId: String): Ui[Any]
 
   def refreshCurrentSubscriptions(): Ui[Any] // TODO Remove when we've got different states for the switch - issue #783
 
   def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any]
 
-  def showErrorSubscribing(subscribeStatus: Boolean): Ui[Any]
+  def showErrorSubscribing(subscribed: Boolean): Ui[Any]
 
   def showContactUsError(clickAction: () => Unit): Ui[Any]
 

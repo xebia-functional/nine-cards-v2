@@ -86,11 +86,11 @@ trait ProfileUiActionsImpl
 
   override def showLoading(): Ui[Any] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
 
-  override def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any] = {
+  override def showAddCollectionMessage(sharedCollectionId: String): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {
       case sharedCollectionsAdapter: SharedCollectionsAdapter =>
         val newCollections = sharedCollectionsAdapter.sharedCollections map {
-          case col if col.sharedCollectionId == mySharedCollectionId => col.copy(subscriptionType = Subscribed)
+          case col if col.sharedCollectionId == sharedCollectionId => col.copy(subscriptionType = Subscribed)
           case col => col
         }
         sharedCollectionsAdapter.copy(sharedCollections = newCollections)
@@ -114,8 +114,8 @@ trait ProfileUiActionsImpl
     recyclerView <~ rvSwapAdapter(adapter)
   }
 
-  override def showErrorSubscribing(subscribeStatus: Boolean): Ui[Any] =
-    showMessage(if (subscribeStatus) R.string.errorSubscribing else R.string.errorUnsubscribing)
+  override def showErrorSubscribing(subscribed: Boolean): Ui[Any] =
+    showMessage(if (subscribed) R.string.errorSubscribing else R.string.errorUnsubscribing)
 
   override def showContactUsError(clickAction: () => Unit): Ui[Any] = showError(R.string.contactUsError, clickAction)
 
