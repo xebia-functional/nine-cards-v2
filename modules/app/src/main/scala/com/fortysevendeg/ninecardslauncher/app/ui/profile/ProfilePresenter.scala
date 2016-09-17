@@ -374,8 +374,6 @@ trait ProfileUiActions {
 
   def showLoading(): Ui[Any]
 
-  def hideLoading(): Ui[Any]
-
   def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any]
 
   def refreshCurrentSubscriptions(): Ui[Any] // TODO Remove when we've got different states for the switch - issue #783

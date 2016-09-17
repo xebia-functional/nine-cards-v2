@@ -86,8 +86,6 @@ trait ProfileUiActionsImpl
 
   override def showLoading(): Ui[Any] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
 
-  override def hideLoading(): Ui[Any] = loadingView <~ vInvisible
-
   override def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {
       case sharedCollectionsAdapter: SharedCollectionsAdapter =>
