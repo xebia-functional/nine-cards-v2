@@ -249,7 +249,7 @@ trait ApiServicesImplData {
 
   val installationRequest = version2.InstallationRequest(deviceToken)
 
-  val loginRequest = version2.LoginRequest(email, androidId, tokenId)
+  val loginRequest = version2.ApiLoginRequest(email, androidId, tokenId)
 
   val loginV1User = version1.User(
     _id = None,

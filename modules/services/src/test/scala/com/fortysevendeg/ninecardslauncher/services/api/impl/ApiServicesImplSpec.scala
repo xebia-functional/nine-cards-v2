@@ -99,7 +99,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiServiceV1.baseUrl returns ""
-        apiServiceV1.login(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceV1ConfigurationException](apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)))
       }
@@ -149,7 +148,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiServiceV1.baseUrl returns ""
-        apiServiceV1.getUserConfig(any)(any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceV1ConfigurationException](apiServices.getUserConfigV1())
       }
@@ -182,7 +180,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.login(any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.LoginResponse](statusCode, Some(version2.LoginResponse(apiKey, sessionToken)))))
+            Task(Either.right(ServiceClientResponse[version2.ApiLoginResponse](statusCode, Some(version2.ApiLoginResponse(apiKey, sessionToken)))))
           }
 
         val result = apiServices.login(email, androidId, tokenId).value.run
@@ -195,7 +193,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.login(any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.login(email, androidId, tokenId))
       }
@@ -206,7 +203,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.login(any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.LoginResponse](statusCode, None)))
+            Task(Either.right(ServiceClientResponse[version2.ApiLoginResponse](statusCode, None)))
           }
 
         mustLeft[ApiServiceException](apiServices.login(email, androidId, tokenId))
@@ -247,7 +244,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.installations(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.updateInstallation(Some("")))
       }
@@ -300,7 +296,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.googlePlayPackage(""))
       }
@@ -367,7 +362,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.googlePlayPackages(Seq.empty))
       }
@@ -442,18 +436,8 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.categorizeDetail(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.googlePlayPackagesDetail(Seq.empty))
-      }
-
-    "return an ApiServiceException when the service returns None" in
-      new ApiServicesScope {
-
-        apiService.baseUrl returns baseUrl
-        apiService.categorizeDetail(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
-
-        mustLeft[ApiServiceException](apiServices.googlePlayPackagesDetail(Seq.empty))
       }
 
     "return an ApiServiceException when the service returns an exception" in
@@ -492,7 +476,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.recommendations(any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.getRecommendedApps(category, Seq.empty, limit))
       }
@@ -527,23 +510,29 @@ class ApiServicesImplSpec
         there was one(apiService).recommendationsByApps(===(recommendationsByAppsRequest), ===(serviceMarketHeader))(any, any)
       }
 
-    "return an ApiServiceConfigurationException when the base url is empty" in
-      new ApiServicesScope {
-
-        apiService.baseUrl returns ""
-        apiService.recommendationsByApps(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
-
-        mustLeft[ApiServiceConfigurationException](apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit))
-      }
-
-    "return an ApiServiceException when the service returns None" in
+    "return an empty sequence if the services returns None" in
       new ApiServicesScope {
 
         apiService.baseUrl returns baseUrl
         apiService.recommendationsByApps(any, any)(any, any) returns
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
-        mustLeft[ApiServiceException](apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit))
+        val result = apiServices.getRecommendedAppsByPackages(packages, excludedPackages, limit).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.seq must beEmpty
+        }
+
+        there was one(apiService).recommendationsByApps(===(recommendationsByAppsRequest), ===(serviceMarketHeader))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+
+        mustLeft[ApiServiceConfigurationException](apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit))
       }
 
     "return an ApiServiceException when the service returns an exception" in
@@ -580,7 +569,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.getCollection(any, any)(any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.getSharedCollection(sharedCollectionId))
       }
@@ -676,7 +664,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.latestCollections(any, any, any, any)(any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit))
       }
@@ -708,7 +695,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.createCollection(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
         result must beAnInstanceOf[Left[ApiServiceConfigurationException, _]]
@@ -777,7 +763,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.updateCollection(any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException] {
           apiServices.updateSharedCollection(sharedCollectionId, Some(name), Some(description), packages)
@@ -834,7 +819,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.getCollections(any)(any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.getPublishedCollections())
       }
@@ -884,7 +868,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.getSubscriptions(any)(any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.getSubscriptions())
       }
@@ -931,7 +914,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.subscribe(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.subscribe(sharedCollectionId))
       }
@@ -969,7 +951,6 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns ""
-        apiService.unsubscribe(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceConfigurationException](apiServices.unsubscribe(sharedCollectionId))
       }
