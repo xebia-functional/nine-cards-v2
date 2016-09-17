@@ -81,6 +81,7 @@ trait ProfileUiActionsImpl
       (tabs <~ tlSetListener(this)) ~
       (recyclerView <~
         rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
+      updateStatusColor(theme.get(PrimaryColor)) ~
       Ui(presenter.loadUserAccounts())
 
   override def showLoading(): Ui[Any] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)

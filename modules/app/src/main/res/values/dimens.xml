@@ -67,6 +67,8 @@
     <integer name="anim_duration_normal">220</integer>
     <integer name="anim_duration_slow">270</integer>
 
+    <dimen name="footer_height_default">48dp</dimen>
+
     <!-- Top bar -->
     <dimen name="width_icon_content_top_bar_moment">54dp</dimen>
     <dimen name="height_icon_content_top_bar_moment">48dp</dimen>

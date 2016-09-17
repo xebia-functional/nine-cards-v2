@@ -511,7 +511,7 @@
 
     <style name="PublicCollectionsItemActionsContent">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">@dimen/footer_height_default</item>
         <item name="android:orientation">horizontal</item>
     </style>
 
