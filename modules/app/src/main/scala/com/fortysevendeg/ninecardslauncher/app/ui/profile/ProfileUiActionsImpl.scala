@@ -224,7 +224,7 @@ trait ProfileUiActionsImpl
     (rootLayout <~ vSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)) ~
       (loadingView <~ vInvisible)
 
-  private[this] def accountClickListener(position: Int, accountOption: AccountOption, accountSync: AccountSync): Unit =
+  private[this] def accountClickListener(accountOption: AccountOption, accountSync: AccountSync): Unit =
     (accountOption, accountSync.cloudId) match {
       case (SyncOption, _) => presenter.launchService()
       case (DeleteOption, Some(cloudId)) => showDialogForDeleteDevice(cloudId)

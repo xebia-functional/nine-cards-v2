@@ -19,7 +19,7 @@ import macroid.FullDsl._
 
 case class AccountsAdapter(
   items: Seq[AccountSync],
-  clickListener: (Int, AccountOption, AccountSync) => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
+  clickListener: (AccountOption, AccountSync) => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderAccountsAdapter] {
 
   private[this] val headerType = 0
@@ -71,7 +71,7 @@ case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: Acti
 
 case class ViewHolderAccountItemAdapter(
   content: View,
-  onClick: (Int, AccountOption, AccountSync) => Unit)(implicit context: ActivityContextWrapper, val theme: NineCardsTheme)
+  onClick: (AccountOption, AccountSync) => Unit)(implicit context: ActivityContextWrapper, val theme: NineCardsTheme)
   extends ViewHolderAccountsAdapter(content)
   with AccountsAdapterStyles {
 
@@ -120,13 +120,12 @@ case class ViewHolderAccountItemAdapter(
         On.click {
           icon <~
             vListThemedPopupWindowShow(
-              icons = Seq.empty,
               values = menuSeq map {
                 case (_, name) => name
               },
               onItemClickListener = (position) => {
                 menuSeq.lift(position) foreach {
-                  case (option, _) => onClick(getAdapterPosition, option, accountSync)
+                  case (option, _) => onClick(option, accountSync)
                 }
               },
               width = Option(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)))

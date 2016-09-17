@@ -6,7 +6,7 @@ import android.graphics.{Paint, PorterDuff}
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable._
 import android.os.Vibrator
-import android.support.design.widget.Snackbar
+import android.support.design.widget.{TabLayout, Snackbar}
 import android.view.{MotionEvent, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import android.support.v4.view.{GravityCompat, ViewPager}
@@ -98,7 +98,6 @@ object CommonsTweak {
   def vLayerHardware(activate: Boolean) = Transformer {
     case v: View if v.hasLayerHardware => v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
   }
-
 
   def vListThemedPopupWindowShow(
     icons: Seq[Int] = Seq.empty,
@@ -243,7 +242,8 @@ object ExtraTweaks {
 
   def tvAllCaps2(allCaps: Boolean = true): Tweak[TextView] = Tweak[TextView](_.setAllCaps(allCaps))
 
-  def sChangeProgressBarColor(color: Int) = Tweak[ProgressBar](_.getIndeterminateDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
+  def sChangeProgressBarColor(color: Int) =
+    Tweak[ProgressBar](_.getIndeterminateDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
 
 }
 
