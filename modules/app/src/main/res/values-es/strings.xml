@@ -152,7 +152,6 @@
     <string name="publishingHeader">Publicando</string>
     <string name="publishingMessage">Tu colección se está publicando</string>
     <string name="addInformationcollectionName">Nombre de la colección</string>
-    <string name="addInformationDescription">Descripción</string>
     <string name="addInformationCategory">Selecciona una categoría</string>
     <string name="congratulationsHeader">¡Enhorabuena!</string>
     <string name="congratulationsMessage">Tu colección se ha publicado con éxito</string>

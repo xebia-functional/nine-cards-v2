@@ -161,7 +161,6 @@
     <string name="publishingHeader">Publishing</string>
     <string name="publishingMessage">Your collection is being published</string>
     <string name="addInformationcollectionName">Collection name</string>
-    <string name="addInformationDescription">Description</string>
     <string name="addInformationCategory">Select a category</string>
     <string name="congratulationsHeader">Congratulations!</string>
     <string name="congratulationsMessage">Your collection has been successfully published</string>

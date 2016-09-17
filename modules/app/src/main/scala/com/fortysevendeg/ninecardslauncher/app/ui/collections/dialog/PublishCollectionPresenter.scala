@@ -31,18 +31,17 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit co
     }
   }
 
-  def publishCollection(maybeName: Option[String], maybeDescription: Option[String], maybeCategory: Option[NineCardCategory]): Unit =
+  def publishCollection(maybeName: Option[String], maybeCategory: Option[NineCardCategory]): Unit =
     (for {
       name <- maybeName
-      description <- maybeDescription
       category <- maybeCategory
     } yield {
-      createPublishedCollection(name, description, category).resolveAsyncUi2(
+      createPublishedCollection(name, category).resolveAsyncUi2(
         onPreTask = () => actions.goToPublishCollectionPublishing(),
         onResult = (sharedCollectionId: String) => actions.goToPublishCollectionEnd(sharedCollectionId),
         onException = (ex: Throwable) => {
           actions.showMessagePublishingError ~
-            actions.goBackToPublishCollectionInformation(name, description, category)
+            actions.goBackToPublishCollectionInformation(name, category)
         })
     }) getOrElse actions.showMessageFormFieldError.run
 
@@ -51,12 +50,11 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit co
       .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
       .resolveAsyncUi2(onException = _ => actions.showContactUsError)
 
-  private[this] def createPublishedCollection(name: String, description: String, category: NineCardCategory): TaskService[String] =
+  private[this] def createPublishedCollection(name: String, category: NineCardCategory): TaskService[String] =
     for {
       user <- di.userProcess.getUser
       collection <- getCollection
       sharedCollection = CreateSharedCollection(
-        description = description,
         author = user.userProfile.name getOrElse (user.email getOrElse resGetString(R.string.defaultUser)),
         name = name,
         packages = collection.cards flatMap (_.packageName),
@@ -82,7 +80,7 @@ trait PublishCollectionActions {
 
   def goToPublishCollectionInformation(collection: Collection): Ui[Any]
 
-  def goBackToPublishCollectionInformation(name: String, description: String, category: NineCardCategory): Ui[Any]
+  def goBackToPublishCollectionInformation(name: String, category: NineCardCategory): Ui[Any]
 
   def goToPublishCollectionPublishing(): Ui[Any]
 

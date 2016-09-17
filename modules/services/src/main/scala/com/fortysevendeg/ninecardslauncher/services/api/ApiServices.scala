@@ -143,7 +143,6 @@ trait ApiServices {
   /**
     * Persists a new shared collection
     * @param name The name of the collection
-    * @param description The user's description of the collection
     * @param author The original author of the collection
     * @param packages The list of packages in the collection
     * @param icon The collection's icon
@@ -154,7 +153,6 @@ trait ApiServices {
     */
   def createSharedCollection(
     name: String,
-    description: String,
     author: String,
     packages: Seq[String],
     category: String,
@@ -165,7 +163,6 @@ trait ApiServices {
     * Updates an existing  shared collection
     * @param sharedCollectionId The collection identifier
     * @param name The name of the collection
-    * @param description The user's description of the collection
     * @param packages The list of packages in the collection
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UpdateSharedCollectionResponse]] with the HTTP Code
     *         of the response and the sharedCollectionId
@@ -174,7 +171,6 @@ trait ApiServices {
   def updateSharedCollection(
     sharedCollectionId: String,
     name: Option[String],
-    description: Option[String],
     packages: Seq[String])(implicit requestConfig: RequestConfig): TaskService[UpdateSharedCollectionResponse]
 
   /**

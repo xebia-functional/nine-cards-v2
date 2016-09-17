@@ -24,7 +24,7 @@ trait PublishCollectionActionsImpl
 
   implicit val publishCollectionPresenter: PublishCollectionPresenter
 
-  val steps = 4
+  val steps = 3
 
   lazy val startLayout = findView(TR.publish_collection_wizard_start)
 
@@ -37,8 +37,6 @@ trait PublishCollectionActionsImpl
   lazy val startArrow = findView(TR.publish_collection_wizard_arrow)
 
   lazy val collectionName = findView(TR.collection_name)
-
-  lazy val descriptionText = findView(TR.description)
 
   lazy val categorySpinner = findView(TR.category)
 
@@ -72,18 +70,18 @@ trait PublishCollectionActionsImpl
       (endLayout <~ vInvisible) ~
       (collectionName <~ tvText(collection.name)) ~
       addCategoriesToSpinner(collection) ~
-      (publishButton <~ On.click(Ui(publishCollectionPresenter.publishCollection(getName, getDescription, getCategory)))) ~
+      (publishButton <~ On.click(Ui(publishCollectionPresenter.publishCollection(getName, getCategory)))) ~
       (paginationPanel <~ reloadPagers(currentPage = 1))
 
-  override def goBackToPublishCollectionInformation(name: String, description: String, category: NineCardCategory): Ui[Any] =
+  override def goBackToPublishCollectionInformation(name: String, category: NineCardCategory): Ui[Any] =
     (startLayout <~ vInvisible) ~
       (informationLayout <~ applyFadeIn()) ~
       (publishingLayout <~ applyFadeOut()) ~
       (endLayout <~ vInvisible) ~
       (collectionName <~ tvText(name)) ~
-      (descriptionText <~ tvText(description)) ~
       addCategoriesToSpinner(collection) ~
-      (publishButton <~ On.click(Ui(publishCollectionPresenter.publishCollection(getName, getDescription, getCategory)))) ~
+      Ui(setCategory(category)) ~
+      (publishButton <~ On.click(Ui(publishCollectionPresenter.publishCollection(getName, getCategory)))) ~
       (paginationPanel <~ reloadPagers(currentPage = 1))
 
   override def goToPublishCollectionPublishing(): Ui[Any] =
@@ -91,12 +89,13 @@ trait PublishCollectionActionsImpl
       (informationLayout <~ applyFadeOut()) ~
       (publishingLayout <~ applyFadeIn()) ~
       (endLayout <~ vInvisible) ~
-      (paginationPanel <~ reloadPagers(currentPage = 2))
+      (paginationPanel <~ reloadPagers(currentPage = 1))
 
   override def goToPublishCollectionEnd(sharedCollectionId: String): Ui[Any] =
     (startLayout <~ vInvisible) ~
       (informationLayout <~ vInvisible) ~
       (publishingLayout <~ applyFadeOut()) ~
+      (paginationPanel <~ vInvisible)~
       (endLayout <~ applyFadeIn()) ~
       (endButton <~ On.click(Ui(publishCollectionPresenter.launchShareCollection(sharedCollectionId)) ~ Ui(dismiss())))
 
@@ -145,9 +144,8 @@ trait PublishCollectionActionsImpl
     text <- Option(collectionName.getText)
   } yield if (text.toString.isEmpty) None else Some(text.toString)).flatten
 
-  private[this] def getDescription: Option[String] = (for {
-    text <- Option(descriptionText.getText)
-  } yield if (text.toString.isEmpty) None else Some(text.toString)).flatten
+  private[this] def setCategory(category: NineCardCategory): Unit =
+    categorySpinner.setSelection(categories.indexOf(category) + 1)
 
   private[this] def getCategory: Option[NineCardCategory] = categorySpinner.getSelectedItemPosition match {
     case pos if pos == 0 => None
