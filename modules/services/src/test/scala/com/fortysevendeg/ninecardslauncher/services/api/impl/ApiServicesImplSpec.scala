@@ -409,7 +409,7 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
           }
 
-        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
+        val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
         result must beLike {
           case Right(response) =>
             response.statusCode shouldEqual statusCode
@@ -422,7 +422,7 @@ class ApiServicesImplSpec
 
         apiService.createCollection(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
+        val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
         result must beAnInstanceOf[Left[HttpClientException,  _]]
       }
 

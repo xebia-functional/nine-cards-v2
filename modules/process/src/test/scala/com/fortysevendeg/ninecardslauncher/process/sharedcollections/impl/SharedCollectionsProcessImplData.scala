@@ -27,7 +27,6 @@ trait SharedCollectionsProcessImplData {
       id = Random.nextString(10),
       sharedCollectionId = Random.nextString(10),
       publishedOn = Random.nextLong(),
-      description = Random.nextString(10),
       icon = Random.nextString(10),
       author = Random.nextString(10),
       name = Random.nextString(10),
@@ -47,7 +46,6 @@ trait SharedCollectionsProcessImplData {
 
   def generateCreateSharedCollection =
     CreateSharedCollection(
-      description = Random.nextString(10),
       author = Random.nextString(10),
       name = Random.nextString(10),
       packages = Seq.empty,
