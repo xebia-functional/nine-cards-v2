@@ -10,8 +10,11 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.Styles
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor, PrimaryColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -25,7 +28,11 @@ trait PublishCollectionActionsImpl
 
   implicit val publishCollectionPresenter: PublishCollectionPresenter
 
+  implicit lazy val theme: NineCardsTheme = publishCollectionPresenter.getTheme
+
   val steps = 3
+
+  lazy val colorPrimary = theme.get(PrimaryColor)
 
   lazy val startLayout = findView(TR.publish_collection_wizard_start)
 
@@ -35,19 +42,41 @@ trait PublishCollectionActionsImpl
 
   lazy val endLayout = findView(TR.publish_collection_wizard_end)
 
+  lazy val startHeader = findView(TR.publish_collection_wizard_start_header)
+
+  lazy val startMessage = findView(TR.publish_collection_wizard_start_message)
+
   lazy val startArrow = findView(TR.publish_collection_wizard_arrow)
+
+  lazy val informationHeader = findView(TR.publish_collection_wizard_information_header)
+
+  lazy val informationMessage = findView(TR.publish_collection_information_message)
+
+  lazy val collectionInput = findView(TR.collection_name_information)
 
   lazy val collectionName = findView(TR.collection_name)
 
   lazy val categorySpinner = findView(TR.category)
 
-  lazy val paginationPanel = Option(findView(TR.publish_collection_wizard_steps_pagination_panel))
+  lazy val categoryLine = findView(TR.category_line)
 
   lazy val publishButton = findView(TR.publish_collection_wizard_information_button)
 
-  lazy val endButton = findView(TR.publish_collection_wizard_end_button)
+  lazy val publishingHeader = findView(TR.publish_collection_wizard_publishing_header)
+
+  lazy val publishingMessage = findView(TR.publish_collection_wizard_publishing_message)
 
   lazy val loading = findView(TR.action_loading)
+
+  lazy val endHeader = findView(TR.publish_collection_wizard_end_header)
+
+  lazy val endMessage = findView(TR.publish_collection_wizard_end_message)
+
+  lazy val endLine = findView(TR.end_line)
+
+  lazy val endButton = findView(TR.publish_collection_wizard_end_button)
+
+  lazy val paginationPanel = findView(TR.publish_collection_wizard_steps_pagination_panel)
 
   lazy val (categoryNamesMenu, categories) = {
     val categoriesSorted = NineCardCategory.appsCategories map { category =>
@@ -57,11 +86,25 @@ trait PublishCollectionActionsImpl
   }
 
   override def initialize(): Ui[Any] =
-    (startLayout <~ vVisible) ~
-      (informationLayout <~ vInvisible) ~
-      (publishingLayout <~ vInvisible) ~
-      (endLayout <~ vInvisible) ~
-      (startArrow <~ On.click(Ui(publishCollectionPresenter.showCollectionInformation()))) ~
+    (startLayout <~ dialogBackgroundStyle <~ vVisible) ~
+      (informationLayout <~ dialogBackgroundStyle <~ vInvisible) ~
+      (publishingLayout <~ dialogBackgroundStyle <~ vInvisible) ~
+      (endLayout <~ dialogBackgroundStyle <~ vInvisible) ~
+      (startHeader <~ titleTextStyle) ~
+      (startMessage <~ subtitleTextStyle) ~
+      (informationHeader <~ titleTextStyle) ~
+      (informationMessage <~ subtitleTextStyle) ~
+      (collectionName <~ titleTextStyle) ~
+      (publishButton <~ subtitleTextStyle) ~
+      (publishingHeader <~ titleTextStyle) ~
+      (publishingMessage <~ subtitleTextStyle) ~
+      (endHeader <~ titleTextStyle) ~
+      (endMessage <~ subtitleTextStyle) ~
+      (startArrow <~ tivColor(theme.get(DrawerIconColor)) <~ On.click(Ui(publishCollectionPresenter.showCollectionInformation()))) ~
+      (categoryLine <~ tivColor(theme.get(DrawerIconColor))) ~
+      (loading <~ sChangeProgressBarColor(colorPrimary)) ~
+      (endLine <~ tivColor(theme.get(DrawerIconColor))) ~
+      (endButton <~ subtitleTextStyle) ~
       createPagers()
 
   override def goToPublishCollectionInformation(collection: Collection): Ui[Any] =
@@ -90,7 +133,7 @@ trait PublishCollectionActionsImpl
       (informationLayout <~ applyFadeOut()) ~
       (publishingLayout <~ applyFadeIn()) ~
       (endLayout <~ vInvisible) ~
-      (paginationPanel <~ reloadPagers(currentPage = 1))
+      (paginationPanel <~ dialogBackgroundStyle <~ reloadPagers(currentPage = 1))
 
   override def goToPublishCollectionEnd(sharedCollectionId: String): Ui[Any] =
     (startLayout <~ vInvisible) ~
@@ -126,7 +169,7 @@ trait PublishCollectionActionsImpl
   }
 
   private[this] def pagination(position: Int) =
-    (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
+    (w[TintableImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
   private[this] def addCategoriesToSpinner(collection: Collection): Ui[Any] = {
     val selectCategory = Seq(resGetString(R.string.addInformationCategory))

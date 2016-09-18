@@ -29,7 +29,7 @@
                 android:id="@+id/publish_collection_wizard_start_footer"
                 style="@style/PublishCollectionWizardStartFooter">
 
-            <ImageButton
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
                     android:id="@+id/publish_collection_wizard_arrow"
                     style="@style/PublishCollectionWizardStartArrow"/>
         </LinearLayout>
@@ -77,7 +77,8 @@
                                     android:id="@+id/category"
                                     style="@style/PublishCollectionWizardInformationCategorySpinner"/>
 
-                            <ImageView
+                            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                                    android:id="@+id/category_line"
                                     style="@style/PublishCollectionWizardInformationLineHorizontal"/>
 
                     </LinearLayout>
@@ -157,7 +158,8 @@
                 android:id="@+id/publish_collection_wizard_end_footer"
                 style="@style/PublishCollectionWizardEndFooter">
 
-            <ImageView
+            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/end_line"
                     style="@style/PublishCollectionWizardEndLineHorizontal"/>
 
             <Button
