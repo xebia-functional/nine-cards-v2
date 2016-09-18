@@ -1,20 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
 import android.support.v7.app.AppCompatActivity
-import android.widget.{ArrayAdapter, ImageView}
+import android.widget.TextView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.SpinnerTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.Styles
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor, PrimaryColor, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -33,6 +34,8 @@ trait PublishCollectionActionsImpl
   val steps = 3
 
   lazy val colorPrimary = theme.get(PrimaryColor)
+
+  lazy val rootLayout = findView(TR.publish_collection_wizard_root)
 
   lazy val startLayout = findView(TR.publish_collection_wizard_start)
 
@@ -86,10 +89,11 @@ trait PublishCollectionActionsImpl
   }
 
   override def initialize(): Ui[Any] =
-    (startLayout <~ dialogBackgroundStyle <~ vVisible) ~
-      (informationLayout <~ dialogBackgroundStyle <~ vInvisible) ~
-      (publishingLayout <~ dialogBackgroundStyle <~ vInvisible) ~
-      (endLayout <~ dialogBackgroundStyle <~ vInvisible) ~
+    (rootLayout <~ dialogBackgroundStyle) ~
+      (startLayout <~ vVisible) ~
+      (informationLayout <~ vInvisible) ~
+      (publishingLayout <~ vInvisible) ~
+      (endLayout <~ vInvisible) ~
       (startHeader <~ titleTextStyle) ~
       (startMessage <~ subtitleTextStyle) ~
       (informationHeader <~ titleTextStyle) ~
@@ -101,11 +105,12 @@ trait PublishCollectionActionsImpl
       (endHeader <~ titleTextStyle) ~
       (endMessage <~ subtitleTextStyle) ~
       (startArrow <~ tivColor(theme.get(DrawerIconColor)) <~ On.click(Ui(publishCollectionPresenter.showCollectionInformation()))) ~
-      (categoryLine <~ tivColor(theme.get(DrawerIconColor))) ~
+      (categoryLine <~ vBackgroundColor(theme.get(DrawerIconColor))) ~
       (loading <~ sChangeProgressBarColor(colorPrimary)) ~
-      (endLine <~ tivColor(theme.get(DrawerIconColor))) ~
+      (endLine <~ vBackgroundColor(theme.get(DrawerIconColor))) ~
       (endButton <~ subtitleTextStyle) ~
-      createPagers()
+      createPagers() ~
+      (paginationPanel <~ reloadPagers(currentPage = 0))
 
   override def goToPublishCollectionInformation(collection: Collection): Ui[Any] =
     (startLayout <~ applyFadeOut()) ~
@@ -113,8 +118,9 @@ trait PublishCollectionActionsImpl
       (publishingLayout <~ vInvisible) ~
       (endLayout <~ vInvisible) ~
       (collectionName <~ tvText(collection.name)) ~
-      addCategoriesToSpinner(collection) ~
-      (publishButton <~ On.click(Ui(publishCollectionPresenter.publishCollection(getName, getCategory)))) ~
+      (categorySpinner <~ spinnerStyle <~ categoryOnClick) ~
+      Ui(setCategory(collection.appsCategory)) ~
+      (publishButton <~ publishOnClick) ~
       (paginationPanel <~ reloadPagers(currentPage = 1))
 
   override def goBackToPublishCollectionInformation(name: String, category: NineCardCategory): Ui[Any] =
@@ -123,9 +129,9 @@ trait PublishCollectionActionsImpl
       (publishingLayout <~ applyFadeOut()) ~
       (endLayout <~ vInvisible) ~
       (collectionName <~ tvText(name)) ~
-      addCategoriesToSpinner(collection) ~
-      Ui(setCategory(category)) ~
-      (publishButton <~ On.click(Ui(publishCollectionPresenter.publishCollection(getName, getCategory)))) ~
+      (categorySpinner <~ spinnerStyle <~ categoryOnClick) ~
+      Ui(setCategory(Some(category))) ~
+      (publishButton <~ publishOnClick) ~
       (paginationPanel <~ reloadPagers(currentPage = 1))
 
   override def goToPublishCollectionPublishing(): Ui[Any] =
@@ -133,7 +139,7 @@ trait PublishCollectionActionsImpl
       (informationLayout <~ applyFadeOut()) ~
       (publishingLayout <~ applyFadeIn()) ~
       (endLayout <~ vInvisible) ~
-      (paginationPanel <~ dialogBackgroundStyle <~ reloadPagers(currentPage = 1))
+      (paginationPanel <~ reloadPagers(currentPage = 1))
 
   override def goToPublishCollectionEnd(sharedCollectionId: String): Ui[Any] =
     (startLayout <~ vInvisible) ~
@@ -155,47 +161,42 @@ trait PublishCollectionActionsImpl
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
 
   private[this] def createPagers() = {
-    val pagerViews = (0 until steps) map { position =>
-      val view = pagination(position)
-      view.setActivated(position == 0)
-      view
-    }
+    val pagerViews = (0 until steps) map pagination
     paginationPanel <~ vgAddViews(pagerViews)
   }
 
   private[this] def reloadPagers(currentPage: Int) = Transformer {
-    case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) => i <~ vActivated(true)
-    case i: ImageView => i <~ vActivated(false)
+    case i: TintableImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) =>
+      i <~ tivDefaultColor(theme.get(DrawerIconColor).alpha(0.5f))
+    case i: TintableImageView => i <~ tivDefaultColor(theme.get(DrawerIconColor).alpha(0.2f))
   }
 
   private[this] def pagination(position: Int) =
     (w[TintableImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
-  private[this] def addCategoriesToSpinner(collection: Collection): Ui[Any] = {
-    val selectCategory = Seq(resGetString(R.string.addInformationCategory))
-    val categoryNames = (selectCategory ++ categoryNamesMenu).toArray
-    val collectionCategoryName = collection.appsCategory map getCategoryName
-
-    val sa = new ArrayAdapter[String](fragmentContextWrapper.getOriginal, android.R.layout.simple_spinner_dropdown_item, categoryNames)
-    val spinnerPosition = collectionCategoryName map sa.getPosition getOrElse 0
-
-    categorySpinner <~ sAdapter(sa) <~ sSelection(spinnerPosition)
-  }
-
-  private[this] def getCategoryName(category: NineCardCategory) =
-    resGetString(category.getStringResource) getOrElse category.name
-
   private[this] def getName: Option[String] = (for {
     text <- Option(collectionName.getText)
   } yield if (text.toString.isEmpty) None else Some(text.toString)).flatten
 
-  private[this] def setCategory(category: NineCardCategory): Unit =
-    categorySpinner.setSelection(categories.indexOf(category) + 1)
+  private[this] def setCategory(maybeCategory: Option[NineCardCategory]): Unit =
+    maybeCategory foreach { category =>
+      categorySpinner.setText(categoryNamesMenu(categories.indexOf(category)))
+    }
 
-  private[this] def getCategory: Option[NineCardCategory] = categorySpinner.getSelectedItemPosition match {
-    case pos if pos == 0 => None
-    case pos => categories.lift(pos - 1)
-  }
+  private[this] def getCategory: Option[NineCardCategory] =
+    categories.lift(categoryNamesMenu.indexOf(categorySpinner.getText))
+
+  private[this] def categoryOnClick: Tweak[TextView] =
+    On.click {
+      categorySpinner <~ vListThemedPopupWindowShow(
+        values = categoryNamesMenu,
+        onItemClickListener = (position: Int) => categorySpinner.setText(categoryNamesMenu(position)),
+        width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
+        height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
+    }
+
+  private[this] def publishOnClick: Tweak[TextView] =
+    On.click(Ui(publishCollectionPresenter.publishCollection(getName, getCategory)))
 
   private[this] def invalidateOptionMenu(): Ui[Any] = Ui {
     fragmentContextWrapper.original.get match {

@@ -239,8 +239,6 @@
     <!-- Publish Collection Wizard -->
     <dimen name="publish_collection_message_width">260dp</dimen>
     <dimen name="publish_collection_message_height">60dp</dimen>
-    <dimen name="publish_collection_input_margin_top">15dp</dimen>
-    <dimen name="publish_collection_input_category_margin_top">20dp</dimen>
     <dimen name="publish_collection_form_padding">0dp</dimen>
     <dimen name="publish_collection_form_height">232dp</dimen>
     <dimen name="publish_collection_category_padding">4dp</dimen>
