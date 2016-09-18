@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.view.MenuItem
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
@@ -111,6 +112,16 @@ class CollectionsPagerPresenter(
     }
 
   def showMessageNotImplemented(): Unit = actions.showMessageNotImplemented.run
+
+  def setAlreadyPublished(menuItem: MenuItem): Unit = actions.setAlreadyPublishedMenu(menuItem).run
+
+  def reloadSharedCollectionId() = actions.getCurrentCollection foreach { collection =>
+    di.collectionProcess.getCollectionById(collection.id).resolveAsync2(
+      onResult = (c) => c map (newCollection => if (newCollection.sharedCollectionId != collection.sharedCollectionId) {
+        actions.reloadSharedCollectionId(newCollection.sharedCollectionId).run
+      })
+    )
+  }
 
   def showPublishCollectionWizard(): Unit = {
     actions.getCurrentCollection map { collection =>
@@ -278,6 +289,10 @@ trait CollectionsPagerUiActions {
   def resetAction: Ui[Any]
 
   def destroyAction: Ui[Any]
+
+  def setAlreadyPublishedMenu(menuItem: MenuItem): Ui[Any]
+
+  def reloadSharedCollectionId(sharedCollectionId: Option[String]): Ui[Any]
 
   def showPublishCollectionWizardDialog(collection: Collection): Ui[Any]
 

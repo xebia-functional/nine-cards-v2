@@ -7,7 +7,7 @@ import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.View
+import android.view.{MenuItem, View}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -297,11 +297,19 @@ trait CollectionsPagerUiActionsImpl
 
   override def destroyAction: Ui[Any] = Ui(removeActionFragment)
 
+  override def setAlreadyPublishedMenu(menuItem: MenuItem): Ui[Any] =
+    Ui(menuItem.setEnabled(false).setTitle(resGetString(R.string.alreadyPublishedCollection)))
+
+  override def reloadSharedCollectionId(sharedCollectionId: Option[String]): Ui[Any] = Ui {
+    for {
+      adapter <- getAdapter
+      currentPosition <- adapter.getCurrentFragmentPosition
+    } yield adapter.updateShareCollectionIdFromCollection(currentPosition, sharedCollectionId)
+  }
+
   override def showPublishCollectionWizardDialog(collection: Collection): Ui[Any] =
     activityContextWrapper.getOriginal match {
-      case activity: AppCompatActivity => Ui {
-        showDialog(PublishCollectionFragment(collection))
-      }
+      case activity: AppCompatActivity => Ui(showDialog(PublishCollectionFragment(collection)))
       case _ => showContactUsError
     }
 

@@ -135,6 +135,19 @@ class CollectionsDetailsActivity
     super.onCreateOptionsMenu(menu)
   }
 
+  override def onPrepareOptionsMenu (menu: Menu): Boolean = {
+    collectionsPagerPresenter.reloadSharedCollectionId()
+    getCurrentCollection foreach {
+      case collection
+        if collection.sharedCollectionId.isDefined &&
+          (collection.originalSharedCollectionId.isEmpty ||
+            (collection.sharedCollectionId != collection.originalSharedCollectionId)) =>
+        collectionsPagerPresenter.setAlreadyPublished(menu.findItem(R.id.action_make_public))
+      case _ =>
+    }
+    super.onPrepareOptionsMenu(menu)
+  }
+
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case android.R.id.home =>
       collectionsPagerPresenter.close()

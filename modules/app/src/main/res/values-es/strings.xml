@@ -118,15 +118,15 @@
     <string name="selectIcon">Seleccionar icono</string>
     <string name="selectColor">Seleccionar color</string>
 
-    <string name="addMyCollection">Añadir a mis collecciones</string>
-    <string name="alreadyAddedCollection">Collección ya añadida</string>
+    <string name="addMyCollection">Añadir a mis colecciones</string>
+    <string name="alreadyAddedCollection">Colección ya añadida</string>
     <string name="ownedCollection">Esta colección es tuya</string>
 
     <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta colección?</string>
 
     <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
 
-    <string name="momentNotFoundMessage">Momento no encontrado. Tu deberías crear colecciones desde la sección Mis Collections</string>
+    <string name="momentNotFoundMessage">Momento no encontrado. Deberías crear colecciones desde la sección Mis Colecciones</string>
     <string name="noPhoneCallPermissionMessage">Se necesita el permiso para poder llamar al contacto</string>
 
     <!-- Collections Detail -->
@@ -143,6 +143,8 @@
     <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta?</string>
 
     <!-- Publish Collections Wizard -->
+
+    <string name="alreadyPublishedCollection">Colección ya publicada</string>
 
     <string name="publishCollectionHeader">Publica tu colección</string>
     <string name="publishCollectionMessage">Si publicas tu colección, otros usuarios podrán encontrar nuevas aplicaciones</string>

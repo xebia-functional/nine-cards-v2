@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
+import android.support.v7.app.AppCompatActivity
 import android.widget.{ArrayAdapter, ImageView}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SpinnerTweaks._
@@ -97,6 +98,7 @@ trait PublishCollectionActionsImpl
       (publishingLayout <~ applyFadeOut()) ~
       (paginationPanel <~ vInvisible)~
       (endLayout <~ applyFadeIn()) ~
+      invalidateOptionMenu() ~
       (endButton <~ On.click(Ui(publishCollectionPresenter.launchShareCollection(sharedCollectionId)) ~ Ui(dismiss())))
 
   override def showMessageCollectionError: Ui[Any] = showMessage(R.string.collectionError)
@@ -150,6 +152,13 @@ trait PublishCollectionActionsImpl
   private[this] def getCategory: Option[NineCardCategory] = categorySpinner.getSelectedItemPosition match {
     case pos if pos == 0 => None
     case pos => categories.lift(pos - 1)
+  }
+
+  private[this] def invalidateOptionMenu(): Ui[Any] = Ui {
+    fragmentContextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
+      case _ =>
+    }
   }
 
 }
