@@ -3,12 +3,18 @@ package com.fortysevendeg.ninecardslauncher.process.theme.models
 import android.graphics.Color
 import play.api.libs.json._
 
-case class NineCardsTheme(name: String, styles: Seq[ThemeStyle]) {
+case class NineCardsTheme(name: String, parent: ThemeType, styles: Seq[ThemeStyle]) {
   def get(style: ThemeStyleType): Int = styles.find(_.styleType == style) map (_.color) getOrElse {
     android.util.Log.i("9Cards", s"The selected theme doesn't have the $style property")
     Color.TRANSPARENT
   }
 }
+
+sealed trait ThemeType
+
+case object ThemeLight extends ThemeType
+
+case object ThemeDark extends ThemeType
 
 case class ThemeStyle(styleType: ThemeStyleType, color: Int)
 
@@ -49,6 +55,21 @@ case object SearchPressedColor extends ThemeStyleType
 case object DrawerIconColor extends ThemeStyleType
 
 object NineCardsThemeImplicits {
+
+  implicit val themeTypeReads = new Reads[ThemeType] {
+    override def reads(js: JsValue) = js.as[String] match {
+      case "light" => JsSuccess(ThemeLight)
+      case "dark" => JsSuccess(ThemeDark)
+      case _ => JsError(s"Theme type should be 'light' or 'dark'")
+    }
+  }
+
+  implicit val themeTypeWrites = new Writes[ThemeType] {
+    override def writes(themeType: ThemeType) = themeType match {
+      case ThemeLight => JsString("light")
+      case ThemeDark => JsString("dark")
+    }
+  }
 
   implicit val themeStyleTypeReads = new Reads[ThemeStyleType] {
 

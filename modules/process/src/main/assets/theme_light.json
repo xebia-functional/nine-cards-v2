@@ -1,5 +1,6 @@
 {
   "name": "light",
+  "parent": "light",
   "styles": [
     {
       "styleType": "PrimaryColor",

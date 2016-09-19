@@ -19,23 +19,25 @@ class ThemeProcessImpl
 
   val fileUtils = new FileUtils()
 
-  override def getTheme(themeFile: String)(implicit context: ContextSupport) = for {
-    json <- getJsonFromThemeFile(themeFile)
-    theme <- getNineCardsThemeFromJson(json)
-  } yield theme
+  override def getTheme(themeFile: String)(implicit context: ContextSupport) = {
 
-  private[this] def getJsonFromThemeFile(defaultTheme: String)(implicit context: ContextSupport) = TaskService {
+    def getJsonFromThemeFile = TaskService {
       CatchAll[AssetException] {
-        fileUtils.readFile(s"$defaultTheme.json") match {
+        fileUtils.readFile(s"$themeFile.json") match {
           case Success(json) => json
           case Failure(ex) => throw ex
         }
+      }
     }
+
+    def getNineCardsThemeFromJson(json: String) = TaskService {
+      CatchAll[ThemeException](Json.parse(json).as[NineCardsTheme])
+    }
+
+    for {
+      json <- getJsonFromThemeFile
+      theme <- getNineCardsThemeFromJson(json)
+    } yield theme
   }
 
-  private[this] def getNineCardsThemeFromJson(json: String) = TaskService {
-      CatchAll[ThemeException] {
-          Json.parse(json).as[NineCardsTheme]
-        }
-  }
 }

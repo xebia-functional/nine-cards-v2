@@ -50,8 +50,9 @@ class ThemeProcessImplSpec
         result must beLike {
           case Right(theme) =>
             theme.name mustEqual defaultThemeName
-            theme.get(SearchBackgroundColor) mustEqual intSampleColorWithoutAlpha
-            theme.get(SearchPressedColor) mustEqual intSampleColorWithAlpha
+            theme.parent mustEqual themeParentLight
+            theme.get(PrimaryColor) mustEqual intSampleColorWithAlpha
+            theme.get(DrawerTextColor) mustEqual intSampleColorWithoutAlpha
         }
       }
 
@@ -59,6 +60,14 @@ class ThemeProcessImplSpec
       new ThemeProcessScope {
 
         mockFileUtils.readFile(any)(any) returns Success(wrongThemeJson)
+        val result = themeProcess.getTheme("")(mockContextSupport).value.run
+        result must beAnInstanceOf[Left[ThemeException, _]]
+      }
+
+    "return a ThemeException if a wrong parent is included in the JSON" in
+      new ThemeProcessScope  {
+
+        mockFileUtils.readFile(any)(any) returns Success(wrongThemeParentJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
         result must beAnInstanceOf[Left[ThemeException, _]]
       }
