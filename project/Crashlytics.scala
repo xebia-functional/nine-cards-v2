@@ -191,11 +191,11 @@ object Crashlytics {
 
     val enabled = requiredProperties.foldLeft(true) {
       case (false, _) => false
-      case (true, prop) => propertiesMap.contains(prop)
+      case (true, prop) => propertiesMap.get(prop).exists(_.nonEmpty)
     }
 
     if (enabled) f else {
-      log.info("Skipping crashlytics: There are some required properties missing")
+      log.info("Skipping crashlytics: There are some missing required properties")
       defaultValue
     }
 
