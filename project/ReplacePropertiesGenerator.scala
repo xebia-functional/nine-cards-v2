@@ -15,6 +15,7 @@ object ReplacePropertiesGenerator {
     "backend.v1.appid",
     "backend.v1.appkey",
     "backend.v2.url",
+    "crashlytics.enabled",
     "crashlytics.apikey",
     "crashlytics.apisecret")
 
