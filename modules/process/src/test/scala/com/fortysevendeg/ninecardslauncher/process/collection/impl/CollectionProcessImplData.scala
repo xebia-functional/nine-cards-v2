@@ -9,10 +9,12 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, AddCardRequest => ServicesAddCardRequest}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -48,7 +50,8 @@ trait CollectionProcessImplData {
   val newPosition: Int = position + Random.nextInt(10) + 1
   val oldPosition: Int = Random.nextInt(10)
   val term: String = Random.nextString(5)
-  val packageName = Random.nextString(5)
+  val packageName = "package.name."
+  def generatePackageName = packageName + Random.nextInt(10)
   val className = Random.nextString(5)
   val cardType: CardType = cardTypes(Random.nextInt(cardTypes.length))
   val imagePath: String = Random.nextString(5)
@@ -200,7 +203,7 @@ trait CollectionProcessImplData {
     id: Int = cardId,
     position: Int = position,
     term: String = term,
-    packageName: String = packageName,
+    packageName: String = generatePackageName,
     cardType: CardType = cardType,
     intent: String = intent,
     imagePath: String = imagePath,
@@ -216,22 +219,13 @@ trait CollectionProcessImplData {
         imagePath = imagePath,
         notification = Option(notification)))
 
-  def createSeqServicesCard(
-    num: Int = 5,
-    id: Int = cardId,
-    position: Int = position,
-    term: String = term,
-    packageName: String = packageName,
-    cardType: CardType = cardType,
-    intent: String = intent,
-    imagePath: String = imagePath,
-    notification: String = notification) =
+  def createSeqServicesCard() =
     (1 until 5) map (item =>
       ServicesCard(
-        id = id + item,
+        id = cardId + item,
         position = position,
         term = term,
-        packageName = Option(packageName),
+        packageName = Option(packageName + item),
         cardType = cardType.name,
         intent = intent,
         imagePath = imagePath,
@@ -241,7 +235,7 @@ trait CollectionProcessImplData {
     (0 until num) map { item =>
       UnformedApp(
         name = name,
-        packageName = packageName,
+        packageName = generatePackageName,
         className = className,
         imagePath = imagePath,
         category = appsCategory)
@@ -268,6 +262,20 @@ trait CollectionProcessImplData {
     notification = Option(notification))
   val seqServicesCard = Seq(servicesCard) ++ createSeqServicesCard()
 
+  val seqServicesApp = seqServicesCard map { card =>
+    ServicesApp(
+      id = card.id,
+      name = card.term,
+      packageName = card.packageName.getOrElse(""),
+      className = "",
+      category = appsCategoryName,
+      imagePath = card.imagePath,
+      dateInstalled = 0,
+      dateUpdate = 0,
+      version = "",
+      installedFromGooglePlay = false)
+  }
+
   val seqAddCardRequest = seqServicesCard map { c =>
     AddCardRequest(
       term = c.term,
@@ -275,6 +283,17 @@ trait CollectionProcessImplData {
       cardType = CardType(c.cardType),
       intent = Json.parse(c.intent).as[NineCardIntent],
       imagePath = c.imagePath)
+  }
+
+  val categorizedDetailPackages = seqServicesApp map { app =>
+    CategorizedDetailPackage(
+      packageName = app.packageName,
+      title = app.name,
+      category = Some(app.category),
+      icon = "",
+      free = true,
+      downloads = "",
+      stars = 0.0)
   }
 
   val seqCollection = createSeqCollection()
@@ -427,12 +446,12 @@ trait CollectionProcessImplData {
         notification = Option(notification)))
 
   def updatedCard = Card(
-    id = cardId,
-    position = position,
-    term = name,
-    packageName = Option(packageName),
+    id = servicesCard.id,
+    position = servicesCard.position,
+    term = servicesCard.term,
+    packageName = servicesCard.packageName,
     cardType = cardType,
-    intent = Json.parse(intent).as[NineCardIntent],
-    imagePath = imagePath,
-    notification = Option(notification))
+    intent = Json.parse(servicesCard.intent).as[NineCardIntent],
+    imagePath = servicesCard.imagePath,
+    notification = servicesCard.notification)
 }

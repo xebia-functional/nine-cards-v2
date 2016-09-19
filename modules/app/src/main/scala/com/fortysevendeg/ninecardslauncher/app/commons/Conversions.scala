@@ -99,7 +99,7 @@ trait Conversions
       intent = contactToNineCardIntent(contact.lookupKey),
       imagePath = contact.photoUri)
 
-  def toAddCollectionRequest(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
+  def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
     AddCollectionRequest(
       name = collection.name,
       collectionType = AppsCollectionType,
@@ -110,17 +110,6 @@ trait Conversions
       moment = None,
       sharedCollectionId = Option(collection.sharedCollectionId),
       originalSharedCollectionId = Option(collection.sharedCollectionId))
-
-  def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
-    AddCollectionRequest(
-      name = collection.name,
-      collectionType = AppsCollectionType,
-      icon = collection.icon,
-      themedColorIndex = Random.nextInt(numSpaces),
-      appsCategory = Option(collection.category),
-      cards = cards,
-      moment = None,
-      sharedCollectionId = Option(collection.sharedCollectionId))
 
   def toAddCardRequest(app: SharedCollectionPackage): AddCardRequest =
     AddCardRequest(
@@ -173,22 +162,25 @@ trait NineCardIntentConversions {
     intent
   }
 
-  def phoneToNineCardIntent(tel: String): NineCardIntent = {
+  def phoneToNineCardIntent(lookupKey: Option[String], tel: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
+      contact_lookup_key = lookupKey,
       tel = Option(tel)))
     intent.setAction(NineCardIntentExtras.openPhone)
     intent
   }
 
-  def smsToNineCardIntent(tel: String): NineCardIntent = {
+  def smsToNineCardIntent(lookupKey: Option[String], tel: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
+      contact_lookup_key = lookupKey,
       tel = Option(tel)))
     intent.setAction(NineCardIntentExtras.openSms)
     intent
   }
 
-  def emailToNineCardIntent(email: String): NineCardIntent = {
+  def emailToNineCardIntent(lookupKey: Option[String], email: String): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
+      contact_lookup_key = lookupKey,
       email = Option(email)))
     intent.setAction(NineCardIntentExtras.openEmail)
     intent

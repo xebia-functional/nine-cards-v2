@@ -7,6 +7,8 @@ object AppLog {
 
   val tag = "9cards"
 
+  def info(message: String) = Log.i(tag, message)
+
   def printErrorMessage(ex: Throwable, message: Option[String] = None) = {
     try {
       val outputEx = Option(ex.getCause) getOrElse ex

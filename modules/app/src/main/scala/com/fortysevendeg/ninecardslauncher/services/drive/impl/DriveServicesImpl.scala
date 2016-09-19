@@ -4,15 +4,17 @@ import java.io.{InputStream, OutputStreamWriter}
 
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.drive._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
 import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
-import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, PendingResult, Result}
+import com.google.android.gms.common.api._
 import com.google.android.gms.drive._
 import com.google.android.gms.drive.metadata.CustomPropertyKey
 import com.google.android.gms.drive.query.{Filters, Query, SortOrder, SortableField}
 import monix.eval.Task
+import monix.execution.Cancelable
 
 import scala.collection.JavaConversions._
 import scala.util.{Failure, Success, Try}
@@ -41,15 +43,30 @@ class DriveServicesImpl(client: GoogleApiClient)
   }
 
   override def fileExists(driveId: String) =
-    searchFileByUUID(driveId)(_.nonEmpty)
+    searchFiles(Option(queryUUID(driveId)))(_.nonEmpty)
 
-  override def readFile(driveId: String) =
-    openDriveFile(driveId) { (summary, driveContentsResult) =>
-      val contents = driveContentsResult.getDriveContents
-      val stringContent = scala.io.Source.fromInputStream(contents.getInputStream).mkString
-      contents.discard(client)
-      Right(DriveServiceFile(summary, stringContent))
+  override def readFile(driveId: String) = {
+
+    def readFileContentsService(driveId: DriveId): TaskService[String] =
+      driveId.asDriveFile
+        .open(client, DriveFile.MODE_READ_ONLY, javaNull)
+        .withResultAsync { result =>
+          val contents = result.getDriveContents
+          val stringContent = scala.io.Source.fromInputStream(contents.getInputStream).mkString
+          contents.discard(client)
+          Right(stringContent)
+        }
+
+    for {
+      metadataResult <- fetchDriveFile(driveId)
+      content <- readFileContentsService(metadataResult.metadata.getDriveId)
+    } yield {
+      val summary = toGoogleDriveFileSummary(metadataResult.metadata)
+      tryToClose(metadataResult.buffer)
+      DriveServiceFile(summary, content)
     }
+
+  }
 
   override def createFile(title: String, content: String, deviceId: String, fileType: String, mimeType: String) =
     createNewFile(newUUID, title, deviceId, fileType, mimeType, _.write(content))
@@ -61,62 +78,88 @@ class DriveServicesImpl(client: GoogleApiClient)
         .takeWhile(_ != -1)
         .foreach(writer.write))
 
-  override def updateFile(driveId: String, content: String) =
-    updateFile(driveId, _.write(content))
+  override def updateFile(driveId: String, title: String, content: String) =
+    updateFileWith(driveId, title, _.write(content))
 
-  override def updateFile(driveId: String, content: InputStream) =
-    updateFile(
+  override def updateFile(driveId: String, title: String, content: InputStream) =
+    updateFileWith(
       driveId,
+      title,
       writer => Iterator
         .continually(content.read)
         .takeWhile(_ != -1)
         .foreach(writer.write))
 
-  override def deleteFile(driveId: String) =
-    fetchDriveFile(driveId)(_.getDriveId.asDriveFile.delete(client).withResult(_ => Right(Unit)))
+  override def deleteFile(driveId: String) = {
+
+    def deleteFileService(driveId: DriveId): TaskService[Unit] =
+      driveId
+        .asDriveFile
+        .delete(client)
+        .withResultAsync(_ => Right(Unit))
+
+    for {
+      metadataResult <- fetchDriveFile(driveId)
+      _ <- deleteFileService(metadataResult.metadata.getDriveId)
+      _ = tryToClose(metadataResult.buffer)
+    } yield ()
+  }
 
   private[this] def newUUID = com.gilt.timeuuid.TimeUuid().toString
 
-  private[this] def searchFileByUUID[R](driveId: String)(f: (Option[DriveServiceFileSummary]) => R) = {
-    val query = new Query.Builder()
-      .addFilter(Filters.eq(propertyUUID, driveId))
-      .build()
-    searchFiles(Option(query))(seq => f(seq.headOption))
-  }
+  private[this] def searchFiles[R](query: Option[Query])(f: (Seq[DriveServiceFileSummary]) => R) = {
 
-  private[this] def searchFiles[R](query: Option[Query])(f: (Seq[DriveServiceFileSummary]) => R) = TaskService {
-    Task {
+    def searchFiles: TaskService[MetadataBuffer] = {
       val request = query match {
         case Some(q) => appFolder.queryChildren(client, q)
         case _ => appFolder.listChildren(client)
       }
-      request.withResult { r =>
-        val buffer = r.getMetadataBuffer
-
-        /*
-         * TODO - Remove this block as part of ticket 525 (https://github.com/47deg/nine-cards-v2/issues/525)
-         * This code fixes actual devices using Google Drive
-         */
-        val (validFiles, filesToFix) = buffer.iterator().toIterable.toList.partition { metadata =>
-          Option(metadata.getCustomProperties.get(propertyUUID)).nonEmpty
-        }
-        val fixedFiles = filesToFix map { metadata =>
-          val uuid = newUUID
-          val changeSet = new MetadataChangeSet.Builder()
-            .setCustomProperty(propertyUUID, uuid)
-            .build()
-          metadata.getDriveId
-            .asDriveResource()
-            .updateMetadata(client, changeSet)
-            .await()
-          toGoogleDriveFileSummary(uuid, metadata)
-        }
-        // End fix
-
-        val response = f((validFiles map toGoogleDriveFileSummary) ++ fixedFiles)
-        buffer.release()
-        Right(response)
+      request.withResultAsync { result =>
+        Right(result.getMetadataBuffer)
       }
+    }
+
+    def splitFiles(buffer: MetadataBuffer): (List[Metadata], List[Metadata]) =
+      buffer.iterator().toIterable.toList.partition { metadata =>
+        Option(metadata.getCustomProperties.get(propertyUUID)).nonEmpty
+      }
+
+    def fixUUID(files: List[Metadata]): TaskService[List[DriveServiceFileSummary]] = {
+      /*
+       * TODO - Remove this block as part of ticket 525 (https://github.com/47deg/nine-cards-v2/issues/525)
+       * This code fixes actual devices using Google Drive
+       */
+      val tasks = files map { metadata =>
+        val uuid = newUUID
+        val changeSet = new MetadataChangeSet.Builder()
+          .setCustomProperty(propertyUUID, uuid)
+          .build()
+        metadata.getDriveId
+          .asDriveResource()
+          .updateMetadata(client, changeSet)
+          .withResultAsync { result =>
+            Right(toGoogleDriveFileSummary(uuid, result.getMetadata).copy(uuid = uuid))
+          }
+          .value
+      }
+
+      TaskService {
+        Task.gatherUnordered(tasks) map { list =>
+          Right(list.collect {
+            case Right(r) => r
+          })
+        }
+      }
+    }
+
+    for {
+      buffer <- searchFiles
+      (validFiles, filesToFix) = splitFiles(buffer)
+      fixedFiles <- fixUUID(filesToFix)
+    } yield {
+      val summaryFiles = validFiles map toGoogleDriveFileSummary
+      tryToClose(buffer)
+      f(summaryFiles ++ fixedFiles)
     }
   }
 
@@ -128,73 +171,99 @@ class DriveServicesImpl(client: GoogleApiClient)
     deviceId: String,
     fileType: String,
     mimeType: String,
-    f: (OutputStreamWriter) => Unit) = TaskService {
-    Task {
+    f: (OutputStreamWriter) => Unit): TaskService[DriveServiceFileSummary] = {
+
+    def createNewFileService: TaskService[DriveContents] =
       Drive.DriveApi
         .newDriveContents(client)
-        .withResult { r =>
-          val changeSet = new MetadataChangeSet.Builder()
-            .setTitle(title)
-            .setMimeType(mimeType)
-            .setCustomProperty(propertyUUID, uuid)
-            .setCustomProperty(propertyDeviceId, deviceId)
-            .setCustomProperty(propertyFileType, fileType)
-            .build()
+        .withResultAsync(result => Right(result.getDriveContents))
 
-          val driveContents = r.getDriveContents
-          val writer = new OutputStreamWriter(driveContents.getOutputStream)
-          f(writer)
-          writer.close()
+    def writeContents(contents: DriveContents): TaskService[DriveServiceFileSummary] = {
+      val changeSet = new MetadataChangeSet.Builder()
+        .setTitle(title)
+        .setMimeType(mimeType)
+        .setCustomProperty(propertyUUID, uuid)
+        .setCustomProperty(propertyDeviceId, deviceId)
+        .setCustomProperty(propertyFileType, fileType)
+        .build()
 
-          appFolder
-            .createFile(client, changeSet, driveContents)
-            .withResult { nr =>
-              val now = new java.util.Date
-              Right(DriveServiceFileSummary(
-                uuid = uuid,
-                deviceId = Some(deviceId),
-                title = title,
-                createdDate = now,
-                modifiedDate = now))
-            }
-        }
-
-    }
-  }
-
-  private[this] def updateFile(driveId: String, f: (OutputStreamWriter) => Unit) =
-    openDriveFile(driveId, DriveFile.MODE_WRITE_ONLY) { (summary, driveContentsResult) =>
-      val contents = driveContentsResult.getDriveContents
       val writer = new OutputStreamWriter(contents.getOutputStream)
       f(writer)
       writer.close()
-      contents.commit(client, javaNull).withResult(_ => Right(summary))
+
+      appFolder
+        .createFile(client, changeSet, contents)
+        .withResultAsync { result =>
+          val now = new java.util.Date
+          Right(DriveServiceFileSummary(
+            uuid = uuid,
+            deviceId = Some(deviceId),
+            title = title,
+            createdDate = now,
+            modifiedDate = now))
+        }
     }
 
-  private[this] def fetchDriveFile[R](driveId: String)(f: (Metadata) => Either[DriveServicesException, R]) =
-    TaskService {
-      Task {
-        appFolder
-          .queryChildren(client, queryUUID(driveId))
-          .withResult { r =>
-            val buffer = r.getMetadataBuffer
-            val response = buffer.iterator().toIterable.headOption match {
-              case Some(metaData) => f(metaData)
-              case None => Left(DriveServicesException(fileNotFoundError(driveId)))
-            }
+    for {
+      contents <- createNewFileService
+      summary <- writeContents(contents)
+    } yield summary
+  }
+
+  private[this] def updateFileWith(driveId: String, title: String, f: (OutputStreamWriter) => Unit): TaskService[DriveServiceFileSummary] = {
+
+    def changeTitleService(driveId: DriveId): TaskService[Metadata] = {
+      val changeSet = new MetadataChangeSet.Builder()
+        .setTitle(title)
+        .build()
+      driveId
+        .asDriveResource()
+        .updateMetadata(client, changeSet)
+        .withResultAsync(result => Right(result.getMetadata))
+    }
+
+    def writeContentsService(driveId: DriveId): TaskService[DriveContents] =
+      driveId
+        .asDriveFile
+        .open(client, DriveFile.MODE_WRITE_ONLY, javaNull)
+        .withResultAsync { result =>
+          val contents = result.getDriveContents
+          val writer = new OutputStreamWriter(contents.getOutputStream)
+          f(writer)
+          writer.close()
+          Right(contents)
+        }
+
+    for {
+      metadataResult <- fetchDriveFile(driveId)
+      newMetadata <- changeTitleService(metadataResult.metadata.getDriveId)
+      summary = toGoogleDriveFileSummary(newMetadata)
+      contents <- writeContentsService(newMetadata.getDriveId)
+      _ <- commitContentsService(contents)
+    } yield {
+      tryToClose(metadataResult.buffer)
+      summary
+    }
+  }
+
+  private[this] def tryToClose(metadata: MetadataBuffer): Unit = Try(metadata.release())
+
+  private[this] def commitContentsService(contents: DriveContents): TaskService[Unit] =
+    contents.commit(client, javaNull).withResultAsync(_ => Right((): Unit))
+
+  private[this] def fetchDriveFile(driveId: String): TaskService[MetadataResult] =
+    appFolder
+      .queryChildren(client, queryUUID(driveId))
+      .withResultAsync { r =>
+        val buffer = r.getMetadataBuffer
+        val response = buffer.iterator().toIterable.headOption match {
+          case Some(metaData) => Right(MetadataResult(buffer, metaData))
+          case None =>
             buffer.release()
-            response
-          }
+            Left(DriveServicesException(fileNotFoundError(driveId)))
+        }
+        response
       }
-    }
-
-  private[this] def openDriveFile[R](
-    driveId: String,
-    mode: Int = DriveFile.MODE_READ_ONLY)(f: (DriveServiceFileSummary, DriveApi.DriveContentsResult) => Either[DriveServicesException, R]) =
-    fetchDriveFile(driveId) { metadata =>
-      val driveServiceFileSummary = toGoogleDriveFileSummary(metadata)
-      metadata.getDriveId.asDriveFile.open(client, mode, javaNull).withResult(f(driveServiceFileSummary, _))
-    }
 
 }
 
@@ -212,43 +281,54 @@ object DriveServicesImpl {
 
   def propertyDeviceId = new CustomPropertyKey(customDeviceId, CustomPropertyKey.PRIVATE)
 
+  case class MetadataResult(buffer: MetadataBuffer, metadata: Metadata)
+
 }
 
 object Extensions {
 
   implicit class PendingResultOps[T <: Result](pendingResult: PendingResult[T]) {
 
-    def withResult[R](f: (T) => Either[DriveServicesException, R]): Either[DriveServicesException, R] =
-      withResult(f, None)
+    def withResultAsync[R](f: (T) => Either[DriveServicesException, R]): TaskService[R] =
+      withResultAsync(f, None)
 
-    def withResult[R](
+    def withResultAsync[R](
       f: (T) => Either[DriveServicesException, R],
-      validCodesAndDefault: Option[(Seq[Int], R)]): Either[DriveServicesException, R] =
-      (fetchResult, validCodesAndDefault) match {
-        case (Some(result), _) if result.getStatus.isSuccess =>
-          Try(f(result)) match {
-            case Success(r) => r
-            case Failure(e) => Left(DriveServicesException(e.getMessage, cause = Some(e)))
-          }
-        case (Some(result), Some((validCodes, defaultValue))) if validCodes contains result.getStatus.getStatusCode =>
-          Right(defaultValue)
-        case (Some(result), _) =>
-          Left(DriveServicesException(
-            googleDriveError = statusCodeToError(result.getStatus.getStatusCode),
-            message = result.getStatus.getStatusMessage))
-        case _ =>
-          Left(DriveServicesException(
-            message = "Received a null reference in pending result",
-            cause = Option(new NullPointerException())))
+      validCodesAndDefault: Option[(Seq[Int], R)]): TaskService[R] = {
+
+      def statusCodeToError(statusCode: Int) = statusCode match {
+        case CommonStatusCodes.SIGN_IN_REQUIRED => Option(DriveSigInRequired)
+        case DriveStatusCodes.DRIVE_RATE_LIMIT_EXCEEDED => Option(DriveRateLimitExceeded)
+        case DriveStatusCodes.DRIVE_RESOURCE_NOT_AVAILABLE => Option(DriveResourceNotAvailable)
+        case _ => None
       }
 
-    private[this] def fetchResult: Option[T] = Option(pendingResult) map (_.await())
-
-    private[this] def statusCodeToError(statusCode: Int) = statusCode match {
-      case CommonStatusCodes.SIGN_IN_REQUIRED => Option(DriveSigInRequired)
-      case DriveStatusCodes.DRIVE_RATE_LIMIT_EXCEEDED => Option(DriveRateLimitExceeded)
-      case DriveStatusCodes.DRIVE_RESOURCE_NOT_AVAILABLE => Option(DriveResourceNotAvailable)
-      case _ => None
+      TaskService {
+        Task.async[DriveServicesException Either R] { (scheduler, callback) =>
+          pendingResult.setResultCallback(new ResultCallback[T] {
+            override def onResult(callbackResult: T): Unit = {
+              (Option(callbackResult), validCodesAndDefault) match {
+                case (Some(result), _) if result.getStatus.isSuccess =>
+                  Try(f(result)) match {
+                    case Success(r) => callback(Success(r))
+                    case Failure(e) => callback(Success(Left(DriveServicesException(e.getMessage, cause = Some(e)))))
+                  }
+                case (Some(result), Some((validCodes, defaultValue))) if validCodes contains result.getStatus.getStatusCode =>
+                  callback(Success(Right(defaultValue)))
+                case (Some(result), _) =>
+                  callback(Success(Left(DriveServicesException(
+                    googleDriveError = statusCodeToError(result.getStatus.getStatusCode),
+                    message = result.getStatus.getStatusMessage))))
+                case _ =>
+                  callback(Success(Left(DriveServicesException(
+                    message = "Received a null reference in pending result",
+                    cause = Option(new NullPointerException())))))
+              }
+            }
+          })
+          Cancelable.empty
+        }
+      }
     }
 
   }

@@ -1,17 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.app.receivers
 
 import android.content.Intent._
-import android.content._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportImpl, ContextSupportPreferences}
-import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
+import android.content.{BroadcastReceiver, Context, Intent}
+import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportImpl, ContextSupportPreferences}
+import com.fortysevendeg.ninecardslauncher.app.receivers.jobs.AppBroadcastJobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppUninstalledActionFilter, AppUpdatedActionFilter, AppsActionFilter}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-
+import macroid.ContextWrapper
 
 class AppBroadcastReceiver
-  extends BroadcastReceiver
-  with AppBroadcastReceiverTasks {
+  extends BroadcastReceiver {
 
   override def onReceive(context: Context, intent: Intent): Unit = {
     val packageName = getPackageName(intent)
@@ -20,28 +17,17 @@ class AppBroadcastReceiver
       val action = intent.getAction
       val replacing = intent.getBooleanExtra(EXTRA_REPLACING, false)
 
-      implicit val contextSupport = new ContextSupportReceiverImpl(context)
-      implicit val di = new InjectorImpl
+      implicit val contextWrapper = ContextWrapper(context)
+
+      val jobs = new AppBroadcastJobs
 
       (action, replacing) match {
-        case (ACTION_PACKAGE_ADDED, false) => addApp(packageName).resolveAsync2(
-          onResult = _ => sendBroadcast(AppInstalledActionFilter)
-        )
-        case (ACTION_PACKAGE_REMOVED, false) =>deleteApp(packageName).resolveAsync2(
-          onResult = _ => sendBroadcast(AppUninstalledActionFilter)
-        )
-        case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => updateApp(packageName).resolveAsync2(
-          onResult = _ => sendBroadcast(AppUpdatedActionFilter)
-        )
+        case (ACTION_PACKAGE_ADDED, false) => jobs.addApp(packageName).resolveAsync2()
+        case (ACTION_PACKAGE_REMOVED, false) => jobs.deleteApp(packageName).resolveAsync2()
+        case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => jobs.updateApp(packageName).resolveAsync2()
         case (_, _) =>
       }
     }
-  }
-
-  private[this] def sendBroadcast(filter: AppsActionFilter)(implicit contextSupport: ContextSupport) = {
-    val intent = new Intent(filter.action)
-    intent.putExtra(BroadcastDispatcher.keyType, BroadcastDispatcher.commandType)
-    contextSupport.context.sendBroadcast(intent)
   }
 
   private[this] def getPackageName(intent: Intent): String = {
