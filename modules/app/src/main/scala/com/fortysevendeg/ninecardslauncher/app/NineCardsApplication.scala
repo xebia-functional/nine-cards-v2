@@ -53,9 +53,9 @@ class NineCardsApplication
       }
 
     super.onCreate()
+    initCrashlytics
     initStetho
     initStrictMode
-    initCrashlytics
   }
 
   override def attachBaseContext(base: Context): Unit = {

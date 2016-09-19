@@ -47,7 +47,7 @@ class RecommendationsPresenter(
         case e: RecommendedAppsConfigurationException =>
           AppLog.invalidConfigurationV2
           actions.showErrorLoadingRecommendationInScreen()
-        case e =>
+        case _ =>
           actions.showErrorLoadingRecommendationInScreen()
       })
   }
