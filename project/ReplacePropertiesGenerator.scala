@@ -14,9 +14,33 @@ object ReplacePropertiesGenerator {
     "backend.v1.url",
     "backend.v1.appid",
     "backend.v1.appkey",
-    "backend.v2.url")
+    "backend.v2.url",
+    "crashlytics.enabled",
+    "crashlytics.apikey",
+    "crashlytics.apisecret")
 
   lazy val propertiesFileName = sys.env.getOrElse("9CARDS_PROPERTIES", "debug.properties")
+
+  lazy val propertiesMap = loadPropertiesMap
+
+  private[this] def loadPropertiesMap: Map[String, String] = {
+
+    def populateDefaultProperties(propertiesMap: Map[String, String]): Map[String, String] =
+      propertiesMap ++ (propertyNames filterNot propertiesMap.contains map (_ -> "") toMap)
+
+    def loadPropertiesFile: Option[File] = {
+      val file = new File(propertiesFileName)
+      if (file.exists()) Some(file) else None
+    }
+
+    populateDefaultProperties {
+      (loadPropertiesFile map { file =>
+        val properties = new Properties()
+        properties.load(new FileInputStream(file))
+        properties.asScala.toMap
+      }) getOrElse Map.empty
+    }
+  }
 
   def replaceValuesTask = Def.task[Seq[File]] {
 
@@ -37,25 +61,6 @@ object ReplacePropertiesGenerator {
 
   def replaceContent(origin: File, target: File)(log: Logger) = {
 
-    def loadPropertiesFile: Option[File] = {
-      val file = new File(propertiesFileName)
-      if (file.exists()) Some(file) else {
-        log.warn(s"File not found at ${file.getAbsolutePath}")
-        None
-      }
-    }
-
-    def populateDefaultProperties(propertiesMap: Map[String, String]): Map[String, String] =
-      propertiesMap ++ (propertyNames filterNot propertiesMap.contains map (_ -> "") toMap)
-
-    def loadPropertiesMap: Map[String, String] = populateDefaultProperties {
-      (loadPropertiesFile map { file =>
-        val properties = new Properties()
-        properties.load(new FileInputStream(file))
-        properties.asScala.toMap
-      }) getOrElse Map.empty
-    }
-
     def replaceLine(properties: Map[String, String], line: String) = {
       @tailrec
       def replace(properties: Map[String, String], line: String): String = {
@@ -71,7 +76,6 @@ object ReplacePropertiesGenerator {
     }
 
     log.debug(s"Loading properties file $propertiesFileName")
-    val propertiesMap = loadPropertiesMap
     val content = IO.readLines(origin) map (replaceLine(propertiesMap, _))
     IO.write(target, content.mkString("\n"))
   }
