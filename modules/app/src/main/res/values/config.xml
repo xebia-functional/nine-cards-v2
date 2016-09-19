@@ -5,7 +5,7 @@
     <string name="api_app_id">${backend.v1.appid}</string>
     <string name="api_app_key">${backend.v1.appkey}</string>
     <string name="api_localization">en-EN</string>
-    <string name="api_v2_base_url">${9c_backend.baseurl}</string>
+    <string name="api_v2_base_url">${backend.v2.url}</string>
 
     <!-- Google -->
     <string name="profile_and_drive_oauth_scopes">oauth2:https://www.googleapis.com/auth/plus.me https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/drive.appdata</string>
