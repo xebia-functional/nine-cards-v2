@@ -142,12 +142,4 @@ trait AppRepositoryTestData {
     DataCounter("twoMonths", 1),
     DataCounter("fourMonths", 2))
 
-
-//  trait AppMockCursor
-//    extends MockCursor {
-//
-//    val data = Seq((AppEntity.name, 0, appsDataSequence, StringDataType))
-//    prepareCursor[String](appsDataCounters.size, data)
-//  }
-
 }
