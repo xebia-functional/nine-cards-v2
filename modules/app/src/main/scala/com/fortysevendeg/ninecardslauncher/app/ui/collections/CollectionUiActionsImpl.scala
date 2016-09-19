@@ -100,6 +100,7 @@ trait CollectionUiActionsImpl
           collectionsPagerPresenter.scrollY(dy)
         },
         scrollStateChanged = (newState) => {
+          if (newState == RecyclerView.SCROLL_STATE_DRAGGING) collectionsPagerPresenter.startScroll()
           if (statuses.activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && !isPulling) {
             collectionsPagerPresenter.scrollIdle()
           }
