@@ -266,8 +266,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
       if (resources.getString(R.string.analytics_enabled).equalsIgnoreCase("true")) {
         val track = GoogleAnalytics
           .getInstance(contextSupport.context)
-          .newTracker(contextSupport.context.getString(R.string.ga_trackingId))
-        track.setAppName(contextSupport.context.getString(R.string.app_name))
+          .newTracker(resources.getString(R.string.ga_trackingId))
+        track.setAppName(resources.getString(R.string.app_name))
         track.enableAutoActivityTracking(false)
         new AnalyticsServicesImpl(track)
       } else {
