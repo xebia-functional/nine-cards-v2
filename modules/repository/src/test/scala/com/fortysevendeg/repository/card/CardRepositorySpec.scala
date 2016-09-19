@@ -18,6 +18,7 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import scala.language.postfixOps
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 
 trait CardRepositorySpecification
   extends Specification
@@ -116,6 +117,30 @@ class CardRepositorySpec
         }
     }
 
+    "addCards" should {
+
+      "return a sequence of addCard objects with a valid request" in
+        new CardRepositoryScope {
+
+          contentResolverWrapper.inserts(any,any,any,any) returns cardIdSeq
+          val result = cardRepository.addCards(datas = cardsWithCollectionIdSeq).value.run
+
+          result must beLike{
+            case Right(cards) =>
+              cards map (_.id) shouldEqual cardIdSeq
+              cards map (_.data.packageName) shouldEqual (cardDataSeq map (_.packageName))
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new CardRepositoryScope {
+
+          contentResolverWrapper.inserts(any, any, any, any) throws contentResolverException
+          val result = cardRepository.addCards(datas = cardsWithCollectionIdSeq).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+
+    }
 
 
     "deleteCards" should {
@@ -267,6 +292,38 @@ class CardRepositorySpec
         }
     }
 
+    "fetchIterableCards" should {
+
+      "return an IterableCursor[Card] " in
+        new CardMockCursor with CardRepositoryScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+
+          val result = cardRepository.fetchIterableCards(where = testMockWhere).value.run
+
+          result must beLike {
+            case Right(iterator) =>
+              toSeq(iterator) shouldEqual cardSeq
+          }
+
+          there was one(contentResolverWrapper).getCursor(
+            mockUri,
+            AppEntity.allFields,
+            testMockWhere,
+            Seq.empty,
+            "")
+        }
+
+      "return an a RepositoryException when a exception is thrown " in
+        new CardMockCursor with CardRepositoryScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+
+          val result = cardRepository.fetchIterableCards(where = testMockWhere).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+    }
+
     "updateCard" should {
 
       "return a successful result when the card is updated" in
@@ -292,6 +349,26 @@ class CardRepositorySpec
             notificationUris = Seq(mockUri)) throws contentResolverException
 
           val result = cardRepository.updateCard(card = card).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+    }
+
+
+    "updateCards" should {
+
+      "return a successful result when the updateCard are updated" in
+        new CardRepositoryScope {
+
+          contentResolverWrapper.updateByIds(any, any, any, any) returns Seq(5)
+          val result = cardRepository.updateCards(cards = cardSeq).value.run
+          result shouldEqual Right(Seq(5))
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new CardRepositoryScope {
+
+          contentResolverWrapper.updateByIds(any, any, any, any) throws contentResolverException
+          val result = cardRepository.updateCards(cards = cardSeq).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }

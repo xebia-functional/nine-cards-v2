@@ -28,4 +28,11 @@ object IterableCursor {
 
   }
 
+  def toSeq[T](iterator: IterableCursor[T], pos: Int = 0, seq: Seq[T] = Seq.empty): Seq[T] =
+    if (pos >= iterator.count()) {
+      seq
+    } else {
+      toSeq(iterator, pos + 1, seq :+ iterator.moveToPosition(pos))
+    }
+
 }

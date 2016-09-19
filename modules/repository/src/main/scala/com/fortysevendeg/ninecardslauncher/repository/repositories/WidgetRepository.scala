@@ -22,6 +22,9 @@ class WidgetRepository(
   uriCreator: UriCreator)
   extends ImplicitsRepositoryExceptions {
 
+//  val conversions = new Conversions
+//  import conversions._
+
   val widgetUri = uriCreator.parse(widgetUriString)
 
   val widgetNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$widgetUriPath")

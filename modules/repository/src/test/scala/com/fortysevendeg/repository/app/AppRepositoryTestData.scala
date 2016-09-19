@@ -21,11 +21,15 @@ trait AppRepositoryTestData {
   val testDateUpdate = Random.nextLong()
   val testVersion = Random.nextString(5)
   val testInstalledFromGooglePlay = Random.nextBoolean()
+  val testMockWhere = "mocked-where"
 
   val appEntitySeq = createAppEntitySeq(5)
   val appEntity = appEntitySeq(0)
   val appSeq = createAppSeq(5)
   val app = appSeq(0)
+  val appIdSeq = appSeq map (_.id)
+  val appDataSeq = appSeq map (_.data)
+
 
   def createAppEntitySeq(num: Int) = List.tabulate(num)(
     i => AppEntity(
@@ -137,5 +141,13 @@ trait AppRepositoryTestData {
     DataCounter("oneMonth", 1),
     DataCounter("twoMonths", 1),
     DataCounter("fourMonths", 2))
+
+
+//  trait AppMockCursor
+//    extends MockCursor {
+//
+//    val data = Seq((AppEntity.name, 0, appsDataSequence, StringDataType))
+//    prepareCursor[String](appsDataCounters.size, data)
+//  }
 
 }
