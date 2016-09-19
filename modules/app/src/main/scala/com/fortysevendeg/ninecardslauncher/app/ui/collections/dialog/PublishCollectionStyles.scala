@@ -29,8 +29,6 @@ trait PublishCollectionStyles extends CommonStyles {
 
   def spinnerStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
     titleTextStyle +
-      tvNormalMedium +
-      tvSizeResource(R.dimen.text_large) +
-      tvCompoundDrawablesWithIntrinsicBoundsResources(right = R.drawable.tab_menu_indicator)
+      tvSizeResource(R.dimen.text_xlarge)
 
 }

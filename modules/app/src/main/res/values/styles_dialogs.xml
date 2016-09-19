@@ -431,12 +431,26 @@
         <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="PublishCollectionWizardInformationCategorySpinner">
+    <style name="PublishCollectionWizardInformationCategorySelect">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">left|center_vertical</item>
         <item name="android:layout_marginTop">@dimen/padding_xxlarge</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="PublishCollectionWizardInformationCategorySpinner">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:layout_weight">1</item>
         <item name="android:text">@string/addInformationCategory</item>
+    </style>
+
+    <style name="PublishCollectionWizardInformationCategoryIndicator">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/tab_menu_indicator</item>
+        <item name="android:gravity">right|center_vertical</item>
     </style>
 
     <style name="PublishCollectionWizardInformationLineHorizontal">

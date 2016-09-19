@@ -59,7 +59,11 @@ trait PublishCollectionActionsImpl
 
   lazy val collectionName = findView(TR.collection_name)
 
+  lazy val categorySelect = findView(TR.category_select)
+
   lazy val categorySpinner = findView(TR.category)
+
+  lazy val categoryIndicator = findView(TR.category_indicator)
 
   lazy val categoryLine = findView(TR.category_line)
 
@@ -105,6 +109,7 @@ trait PublishCollectionActionsImpl
       (endHeader <~ titleTextStyle) ~
       (endMessage <~ subtitleTextStyle) ~
       (startArrow <~ tivColor(theme.get(DrawerIconColor)) <~ On.click(Ui(publishCollectionPresenter.showCollectionInformation()))) ~
+      (categoryIndicator <~ tivColor(theme.get(DrawerIconColor))) ~
       (categoryLine <~ vBackgroundColor(theme.get(DrawerIconColor))) ~
       (loading <~ sChangeProgressBarColor(colorPrimary)) ~
       (endLine <~ vBackgroundColor(theme.get(DrawerIconColor))) ~
@@ -118,7 +123,8 @@ trait PublishCollectionActionsImpl
       (publishingLayout <~ vInvisible) ~
       (endLayout <~ vInvisible) ~
       (collectionName <~ tvText(collection.name)) ~
-      (categorySpinner <~ spinnerStyle <~ categoryOnClick) ~
+      (categorySelect <~ categoryOnClick) ~
+      (categorySpinner <~ spinnerStyle) ~
       Ui(setCategory(collection.appsCategory)) ~
       (publishButton <~ publishOnClick) ~
       (paginationPanel <~ reloadPagers(currentPage = 1))
@@ -129,7 +135,8 @@ trait PublishCollectionActionsImpl
       (publishingLayout <~ applyFadeOut()) ~
       (endLayout <~ vInvisible) ~
       (collectionName <~ tvText(name)) ~
-      (categorySpinner <~ spinnerStyle <~ categoryOnClick) ~
+      (categorySelect <~ categoryOnClick) ~
+      (categorySpinner <~ spinnerStyle) ~
       Ui(setCategory(Some(category))) ~
       (publishButton <~ publishOnClick) ~
       (paginationPanel <~ reloadPagers(currentPage = 1))
@@ -167,8 +174,8 @@ trait PublishCollectionActionsImpl
 
   private[this] def reloadPagers(currentPage: Int) = Transformer {
     case i: TintableImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) =>
-      i <~ tivDefaultColor(theme.get(DrawerIconColor).alpha(0.5f))
-    case i: TintableImageView => i <~ tivDefaultColor(theme.get(DrawerIconColor).alpha(0.2f))
+      i <~ tivColor(theme.get(DrawerIconColor).alpha(0.5f))
+    case i: TintableImageView => i <~ tivColor(theme.get(DrawerIconColor).alpha(0.2f))
   }
 
   private[this] def pagination(position: Int) =

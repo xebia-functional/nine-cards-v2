@@ -74,9 +74,19 @@
                         <LinearLayout
                                 style="@style/PublishCollectionWizardInformationCategorySelectContent">
 
-                            <TextView
-                                    android:id="@+id/category"
-                                    style="@style/PublishCollectionWizardInformationCategorySpinner"/>
+                            <LinearLayout
+                                    android:id="@+id/category_select"
+                                    style="@style/PublishCollectionWizardInformationCategorySelect">
+
+                                <TextView
+                                        android:id="@+id/category"
+                                        style="@style/PublishCollectionWizardInformationCategorySpinner"/>
+
+                                <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                                        android:id="@+id/category_indicator"
+                                        style="@style/PublishCollectionWizardInformationCategoryIndicator"/>
+
+                            </LinearLayout>
 
                             <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
                                     android:id="@+id/category_line"
