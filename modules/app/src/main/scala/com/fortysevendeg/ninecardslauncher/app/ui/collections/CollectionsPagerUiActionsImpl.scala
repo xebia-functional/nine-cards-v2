@@ -27,6 +27,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
@@ -215,6 +216,7 @@ trait CollectionsPagerUiActionsImpl
       case ScrollDown => vTranslationY(displacement)
       case _ => Tweak.blank
     })) ~
+      (toolbar <~ tbReduceLayout(-displacement.toInt)) ~
       (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
       Ui {
         val newIcon = if (close) IconTypes.CLOSE else IconTypes.BACK
@@ -231,14 +233,20 @@ trait CollectionsPagerUiActionsImpl
     val scale = 1 + (ratio / 2)
     (tabs <~ vTranslationY(move)) ~
       (toolbar <~ tbReduceLayout(-move)) ~
-      (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 + ratio))
+      (collectionsPagerPresenter.statuses.collectionMode match {
+        case EditingCollectionMode => Ui.nop
+        case _ => iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 + ratio)
+      })
+
   }
 
   override def scrollIdle(): Ui[Any] = {
     val scrollY = tabs.getTranslationY.toInt
     val sType = if (scrollY < -spaceMove / 2) ScrollUp else ScrollDown
-    if (scrollY < 0 && scrollY > -spaceMove) {
-      getActivePresenter foreach (_.changeScrollType(sType, scrollY))
+    val betweenUpAndDown = scrollY < 0 && scrollY > -spaceMove
+    (betweenUpAndDown, getActivePresenter) match {
+      case (true, Some(presenter)) => presenter.changeScrollType(sType, scrollY)
+      case _ =>
     }
     notifyScroll(sType)
   }
@@ -249,6 +257,10 @@ trait CollectionsPagerUiActionsImpl
     val items = collectionsPagerPresenter.statuses.positionsEditing.toSeq.length
     invalidateOptionMenu() ~
       (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
+      (iconContent <~ (getScrollType() match {
+        case Some(ScrollDown) => applyAnimation(alpha = Some(0))
+        case _ => Snail.blank
+      })) ~
       notifyDataSetChangedCollectionAdapter
   }
 
@@ -261,6 +273,10 @@ trait CollectionsPagerUiActionsImpl
 
   override def closeEditingModeUi(): Ui[Any] =
     (toolbarTitle <~ tvText("")) ~
+      (iconContent <~ (getScrollType() match {
+        case Some(ScrollDown) => vVisible + vAlpha(0f) ++ applyAnimation(alpha = Some(1))
+        case _ => Snail.blank
+      })) ~
       notifyDataSetChangedCollectionAdapter ~ invalidateOptionMenu()
 
   override def exitTransition: Ui[Any] = {
@@ -302,6 +318,8 @@ trait CollectionsPagerUiActionsImpl
     adapter.notifyChanged(viewPager.getCurrentItem)
   }) getOrElse Ui.nop
 
+  private[this] def getScrollType(): Option[ScrollType] = getAdapter map (_.statuses.scrollType)
+
   private[this] def invalidateOptionMenu(): Ui[Any] = Ui {
     activityContextWrapper.original.get match {
       case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
@@ -322,25 +340,6 @@ trait CollectionsPagerUiActionsImpl
         dialog.show(ft, tagDialog)
       case _ =>
     }
-  }
-
-//  private[this] def elevationsDefault: Ui[Any] = Lollipop.ifSupportedThen {
-//    (viewPager <~ vElevation(elevation)) ~
-//      (tabs <~ vElevation(elevation)) ~
-//      (toolbar <~ vElevation(elevation)) ~
-//      (iconContent <~ vElevation(elevation))
-//  } getOrElse Ui.nop
-//
-//  private[this] def elevationsUp: Ui[Any] = Lollipop.ifSupportedThen {
-//    (viewPager <~ vElevation(elevation)) ~
-//      (tabs <~ vElevation(elevationUp)) ~
-//      (toolbar <~ vElevation(elevationUp)) ~
-//      (iconContent <~ vElevation(elevationUp))
-//  } getOrElse Ui.nop
-
-  private[this] def calculateReduce(ratio: Float, spaceMove: Int, reversed: Boolean) = {
-    val newRatio = if (reversed) 1f - ratio else ratio
-    (newRatio * (spaceMove * 2)).toInt
   }
 
   private[this] def getItemsForFabMenu = Seq(
