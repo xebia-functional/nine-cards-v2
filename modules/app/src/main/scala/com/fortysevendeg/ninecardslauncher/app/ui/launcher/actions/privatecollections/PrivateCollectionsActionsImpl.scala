@@ -18,7 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.styles.{CommonStyles, CollectionCardsStyles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.PrivateCollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
@@ -85,7 +85,8 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
   content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], presenter: PrivateCollectionsPresenter, val theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView
-  with CollectionCardsStyles {
+  with CollectionCardsStyles
+  with CommonStyles {
 
   val appsByRow = 5
 
@@ -102,7 +103,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
   lazy val addCollection = findView(TR.private_collections_item_add_collection)
 
   ((root <~ cardRootStyle) ~
-    (name <~ textStyle) ~
+    (name <~ titleTextStyle) ~
     (addCollection <~ buttonStyle)).run
 
   def bind(privateCollection: PrivateCollection, position: Int): Ui[_] = {

@@ -24,6 +24,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{EditAccountDev
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscribed, Subscription}
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -69,6 +70,10 @@ trait ProfileUiActionsImpl
   def showMessage(res: Int): Ui[Any] = rootLayout <~ vSnackbarShort(res)
 
   override def initialize(): Ui[Any] =
+    (rootLayout <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
+      (userContainer <~ vBackgroundColor(theme.get(PrimaryColor))) ~
+      (barLayout <~ vBackgroundColor(theme.get(PrimaryColor))) ~
+      (loadingView <~ sChangeProgressBarColor(theme.get(PrimaryColor))) ~
       (tabs <~ tlAddTabs(
         (resGetString(R.string.accounts), AccountsTab),
         (resGetString(R.string.publications), PublicationsTab),
@@ -76,17 +81,16 @@ trait ProfileUiActionsImpl
       (tabs <~ tlSetListener(this)) ~
       (recyclerView <~
         rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
+      updateStatusColor(theme.get(PrimaryColor)) ~
       Ui(presenter.loadUserAccounts())
 
   override def showLoading(): Ui[Any] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)
 
-  override def hideLoading(): Ui[Any] = loadingView <~ vInvisible
-
-  override def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any] = {
+  override def showAddCollectionMessage(sharedCollectionId: String): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {
       case sharedCollectionsAdapter: SharedCollectionsAdapter =>
         val newCollections = sharedCollectionsAdapter.sharedCollections map {
-          case col if col.sharedCollectionId == mySharedCollectionId => col.copy(subscriptionType = Subscribed)
+          case col if col.sharedCollectionId == sharedCollectionId => col.copy(subscriptionType = Subscribed)
           case col => col
         }
         sharedCollectionsAdapter.copy(sharedCollections = newCollections)
@@ -95,9 +99,8 @@ trait ProfileUiActionsImpl
       (recyclerView <~ rvSwapAdapter(adapter))
   }
 
-  override def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingPublishedCollections, clickAction)
-
-  override def showErrorLoadingSubscriptionsInScreen(): Ui[Any] = showMessage(R.string.errorLoadingSubscriptions)
+  override def refreshCurrentSubscriptions(): Ui[Any] = // TODO Remove when we've got different states for the switch - issue #783
+    recyclerView <~ rvSwapAdapter(recyclerView.getAdapter)
 
   override def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any] = {
     val adapter = recyclerView.getAdapter match {
@@ -111,13 +114,12 @@ trait ProfileUiActionsImpl
     recyclerView <~ rvSwapAdapter(adapter)
   }
 
-  override def showErrorSubscribing(clickAction: () => Unit): Ui[Any] = showError(R.string.errorSubscribing, clickAction)
+  override def showErrorSubscribing(triedToSubscribe: Boolean): Ui[Any] =
+    showMessage(if (triedToSubscribe) R.string.errorSubscribing else R.string.errorUnsubscribing)
 
   override def showContactUsError(clickAction: () => Unit): Ui[Any] = showError(R.string.contactUsError, clickAction)
 
   override def showContactUsError(): Ui[Any] = uiShortToast2(R.string.contactUsError)
-
-  override def showConnectingGoogleError(clickAction: () => Unit): Ui[Any] = showError(R.string.errorConnectingGoogle, clickAction)
 
   override def showLoadingUserError(clickAction: () => Unit): Ui[Any] = showError(R.string.errorLoadingUser, clickAction)
 
@@ -191,19 +193,19 @@ trait ProfileUiActionsImpl
       (loadingView <~ vInvisible)
   }
 
-  override def showEmptyPublicationsContent(): Ui[Any] =
-    showEmptyContent(PublicationsTab)
+  override def showEmptyPublicationsContent(error: Boolean, reload: () => Unit): Ui[Any] =
+    showEmptyContent(PublicationsTab, error, reload)
 
-  override def showEmptySubscriptionsContent(): Ui[Any] =
-    showEmptyContent(SubscriptionsTab)
+  override def showEmptySubscriptionsContent(error: Boolean, reload: () => Unit): Ui[Any] =
+    showEmptyContent(SubscriptionsTab, error, reload)
 
-  override def showEmptyAccountsContent(): Ui[Any] =
-    showEmptyContent(AccountsTab)
+  override def showEmptyAccountsContent(error: Boolean, reload: () => Unit): Ui[Any] =
+    showEmptyContent(AccountsTab, error, reload)
 
-  private[this] def showEmptyContent(tab: ProfileTab): Ui[Any] =
+  private[this] def showEmptyContent(tab: ProfileTab, error: Boolean, reload: () => Unit): Ui[Any] =
     (recyclerView <~
       vVisible <~
-      rvAdapter(EmptyProfileAdapter(tab))) ~
+      rvAdapter(EmptyProfileAdapter(tab, error, reload))) ~
       (loadingView <~ vInvisible)
 
   private[this] def showDialog(dialog: DialogFragment): Unit = {
@@ -221,7 +223,7 @@ trait ProfileUiActionsImpl
     (rootLayout <~ vSnackbarIndefiniteAction(message, R.string.buttonErrorReload, clickAction)) ~
       (loadingView <~ vInvisible)
 
-  private[this] def accountClickListener(position: Int, accountOption: AccountOption, accountSync: AccountSync): Unit =
+  private[this] def accountClickListener(accountOption: AccountOption, accountSync: AccountSync): Unit =
     (accountOption, accountSync.cloudId) match {
       case (SyncOption, _) => presenter.launchService()
       case (DeleteOption, Some(cloudId)) => showDialogForDeleteDevice(cloudId)

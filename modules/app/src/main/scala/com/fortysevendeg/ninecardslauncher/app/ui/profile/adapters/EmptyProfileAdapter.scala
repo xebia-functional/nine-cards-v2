@@ -3,15 +3,20 @@ package com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.view.{LayoutInflater, View, ViewGroup}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.profile._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import macroid.FullDsl._
 import macroid._
 
-case class EmptyProfileAdapter(tab: ProfileTab)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
+case class EmptyProfileAdapter(
+  tab: ProfileTab,
+  error: Boolean,
+  reload: () => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderEmptyProfileAdapter] {
 
   val emptyElement = 1
@@ -19,44 +24,62 @@ case class EmptyProfileAdapter(tab: ProfileTab)(implicit activityContext: Activi
   override def getItemCount: Int = emptyElement
 
   override def onBindViewHolder(viewHolder: ViewHolderEmptyProfileAdapter, position: Int): Unit =
-    viewHolder.bind(tab).run
+    viewHolder.bind(tab, error).run
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderEmptyProfileAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(R.layout.empty_profile_item, parent, false)
-    new ViewHolderEmptyProfileAdapter(view)
+    new ViewHolderEmptyProfileAdapter(view, reload)
   }
 
 }
 
 case class ViewHolderEmptyProfileAdapter(
-  content: View)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], val theme: NineCardsTheme)
+  content: View,
+  reload: () => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], val theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView
   with EmptyProfileAdapterStyles {
 
   lazy val root = findView(TR.profile_empty_item)
 
+  lazy val emptyProfileImage = findView(TR.profile_empty_image)
+
   lazy val emptyProfileMessage = findView(TR.profile_empty_message)
 
-  lazy val messagePublicationsText = Html.fromHtml(resGetString(R.string.emptyPublishedCollectionsMessage))
+  lazy val emptyProfileButton = findView(TR.profile_empty_button)
 
-  lazy val messageSubscriptionsText = Html.fromHtml(resGetString(R.string.emptySubscriptionsMessage))
+  lazy val messagePublicationsText = resGetString(R.string.emptyPublishedCollectionsMessage)
 
-  lazy val messageAccountsText = Html.fromHtml(resGetString(R.string.emptySubscriptionsMessage))
+  lazy val messageSubscriptionsText = resGetString(R.string.emptySubscriptionsMessage)
 
-  ((root <~ rootStyle()) ~
-    (emptyProfileMessage <~ textStyle)).run
+  lazy val messageAccountsText = resGetString(R.string.emptySubscriptionsMessage)
 
-  def bind(tab: ProfileTab)(implicit uiContext: UiContext[_]): Ui[_] = {
+  lazy val messageAccountsErrorText = resGetString(R.string.errorConnectingGoogle)
 
-    val textTweak = tab match {
-      case PublicationsTab => tvText(messagePublicationsText)
-      case SubscriptionsTab => tvText(messageSubscriptionsText)
-      case AccountsTab => tvText(messageAccountsText)
+  lazy val messagePublicationsErrorText = resGetString(R.string.errorLoadingPublishedCollections)
+
+  lazy val messageSubscriptionsErrorText = resGetString(R.string.errorLoadingSubscriptions)
+
+  ((root <~ rootStyle) ~
+    (emptyProfileImage <~ imageStyle) ~
+    (emptyProfileMessage <~ textStyle) ~
+    (emptyProfileButton <~ buttonStyle)).run
+
+  def bind(tab: ProfileTab, error: Boolean)(implicit uiContext: UiContext[_]): Ui[_] = {
+
+    val messageText = tab match {
+      case PublicationsTab if error => messagePublicationsErrorText
+      case PublicationsTab => messagePublicationsText
+      case SubscriptionsTab if error => messageSubscriptionsErrorText
+      case SubscriptionsTab => messageSubscriptionsText
+      case AccountsTab if error => messageAccountsErrorText
+      case AccountsTab => messageAccountsText
     }
 
-    emptyProfileMessage <~
-      textTweak
+    (emptyProfileImage <~ ivSrc(if (error) R.drawable.placeholder_error else R.drawable.placeholder_empty)) ~
+      (emptyProfileMessage <~ tvText(Html.fromHtml(messageText))) ~
+      (emptyProfileButton <~ On.click(Ui(reload())))
+
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/ProfileAccountsItemLayout">
 
-    <ImageView
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        android:id="@+id/profile_account_device"
         style="@style/ProfileAccountsItemIcon"/>
 
     <LinearLayout
@@ -18,7 +19,7 @@
 
     </LinearLayout>
 
-    <ImageView
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
         android:id="@+id/profile_account_action"
         style="@style/ProfileAccountsItemAction"/>
 

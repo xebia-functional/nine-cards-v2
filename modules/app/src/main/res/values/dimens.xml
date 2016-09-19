@@ -34,6 +34,7 @@
     <dimen name="padding_medium">12dp</dimen>
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_xlarge">24dp</dimen>
+    <dimen name="padding_xxlarge">64dp</dimen>
 
     <dimen name="size_icon_small">36dp</dimen>
     <dimen name="size_icon_default">48dp</dimen>
@@ -65,6 +66,8 @@
     <integer name="anim_duration_fast">170</integer>
     <integer name="anim_duration_normal">220</integer>
     <integer name="anim_duration_slow">270</integer>
+
+    <dimen name="footer_height_default">48dp</dimen>
 
     <!-- Top bar -->
     <dimen name="width_icon_content_top_bar_moment">54dp</dimen>
@@ -231,7 +234,7 @@
     <dimen name="pulltotabs_height_line">1dp</dimen>
 
     <!-- Profile -->
-    <dimen name="height_profile_user">180dp</dimen>
+    <dimen name="height_profile_user">130dp</dimen>
 
     <!-- Publish Collection Wizard -->
     <dimen name="publish_collection_message_width">260dp</dimen>

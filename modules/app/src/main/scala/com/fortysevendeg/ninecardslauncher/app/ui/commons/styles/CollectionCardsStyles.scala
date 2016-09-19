@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.collections
+package com.fortysevendeg.ninecardslauncher.app.ui.commons.styles
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import macroid.{ContextWrapper, Tweak}
 
-trait CollectionCardsStyles {
+trait CollectionCardsStyles extends CommonStyles {
 
   def cardRootStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     cvCardBackgroundColor(theme.get(CardBackgroundColor))
@@ -24,7 +24,7 @@ trait CollectionCardsStyles {
     tvColor(theme.get(CardTextColor))
 
   def buttonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[Button] =
-    tvColor(theme.get(CardTextColor)) + vBackground(createBackground)
+    tvColor(theme.get(DrawerTextColor).alpha(subtitleAlpha)) + vBackground(createBackground)
 
   def leftDrawableTextStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
     tvColor(theme.get(CardTextColor)) + tvCompoundDrawablesWithIntrinsicBounds(left = Some(tintDrawable(resourceId)))

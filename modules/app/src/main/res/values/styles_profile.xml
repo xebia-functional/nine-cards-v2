@@ -27,7 +27,6 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/height_profile_user</item>
         <item name="android:layout_gravity">bottom|center_horizontal</item>
-        <item name="android:background">@color/primary</item>
         <item name="layout_collapseMode">parallax</item>
         <item name="layout_collapseParallaxMultiplier">0.3</item>
     </style>
@@ -53,7 +52,7 @@
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:paddingTop">@dimen/padding_large</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
     </style>
 
     <style name="ProfileUserEmail">
@@ -68,11 +67,19 @@
         <item name="android:layout_height">?attr/actionBarSize</item>
         <item name="tabMode">fixed</item>
         <item name="tabGravity">fill</item>
+        <item name="tabPaddingStart">@dimen/padding_small</item>
+        <item name="tabPaddingEnd">@dimen/padding_small</item>
         <item name="tabIndicatorColor">@android:color/white</item>
+        <item name="tabTextAppearance">@style/ProfileTabText</item>
+    </style>
+
+    <style name="ProfileTabText" parent="TextAppearance.Design.Tab">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">@dimen/text_default</item>
     </style>
 
     <style name="ProfileEmpty">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">@dimen/padding_default</item>
         <item name="android:visibility">gone</item>
@@ -129,8 +136,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_large</item>
-        <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:textColor">@color/text_default_subtitle</item>
+        <item name="android:textSize">@dimen/text_large</item>
         <item name="android:fontFamily">sans-serif-medium</item>
     </style>
 
@@ -159,8 +165,8 @@
     <style name="ProfileAccountsItemTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_large</item>
-        <item name="android:textColor">@color/text_default_title</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
         <item name="android:lines">1</item>
         <item name="android:ellipsize">end</item>
     </style>
@@ -168,8 +174,8 @@
     <style name="ProfileAccountsItemSubtitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_default</item>
-        <item name="android:textColor">@color/text_default_subtitle</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:fontFamily">sans-serif-regular</item>
     </style>
 
     <style name="ProfileAccountsItemAction">

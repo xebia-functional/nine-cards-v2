@@ -6,9 +6,11 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCardsPreferencesValue, ShowPrintInfoOptionInAccounts}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.AccountOptions._
+import com.fortysevendeg.ninecardslauncher.app.ui.profile.AccountsAdapterStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{AccountSync, Device, Header}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -17,7 +19,7 @@ import macroid.FullDsl._
 
 case class AccountsAdapter(
   items: Seq[AccountSync],
-  clickListener: (Int, AccountOption, AccountSync) => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
+  clickListener: (AccountOption, AccountSync) => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderAccountsAdapter] {
 
   private[this] val headerType = 0
@@ -54,10 +56,13 @@ abstract class ViewHolderAccountsAdapter(content: View)(implicit context: Activi
 
 }
 
-case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends ViewHolderAccountsAdapter(content) {
+case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: ActivityContextWrapper, val theme: NineCardsTheme)
+  extends ViewHolderAccountsAdapter(content)
+  with AccountsAdapterStyles {
 
-  lazy val title = Option(findView(TR.title))
+  lazy val title = findView(TR.title)
+
+  (title <~ subtitleTextStyle).run
 
   def bind(accountSync: AccountSync, position: Int)(implicit uiContext: UiContext[_]): Ui[_] =
     title <~ tvText(accountSync.title)
@@ -66,8 +71,9 @@ case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: Acti
 
 case class ViewHolderAccountItemAdapter(
   content: View,
-  onClick: (Int, AccountOption, AccountSync) => Unit)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends ViewHolderAccountsAdapter(content) {
+  onClick: (AccountOption, AccountSync) => Unit)(implicit context: ActivityContextWrapper, val theme: NineCardsTheme)
+  extends ViewHolderAccountsAdapter(content)
+  with AccountsAdapterStyles {
 
   lazy val currentAccountOptions = Seq(
     (CopyOption, resGetString(R.string.menuAccountCopy)),
@@ -82,15 +88,22 @@ case class ViewHolderAccountItemAdapter(
   def menuOptions(isCurrent: Boolean): Seq[(AccountOption, String)] =
     if (isCurrent) currentAccountOptions else otherAccountOptions
 
+  lazy val title = findView(TR.profile_account_title)
+
   lazy val printDriveInfo = (PrintInfoOption, resGetString(R.string.menuAccountPrintInfo))
 
   lazy val showPrintDriveInfo = ShowPrintInfoOptionInAccounts.readValue(new NineCardsPreferencesValue)
 
-  lazy val title = Option(findView(TR.profile_account_title))
+  lazy val subtitle = findView(TR.profile_account_subtitle)
 
-  lazy val subtitle = Option(findView(TR.profile_account_subtitle))
+  lazy val device = findView(TR.profile_account_device)
 
-  lazy val icon = Option(findView(TR.profile_account_action))
+  lazy val icon = findView(TR.profile_account_action)
+
+  ((title <~ titleTextStyle) ~
+    (subtitle <~ subtitleTextStyle) ~
+    (device <~ iconStyle) ~
+    (icon <~ iconStyle)).run
 
   def bind(accountSync: AccountSync, position: Int)(implicit uiContext: UiContext[_]): Ui[_] = {
 
@@ -103,19 +116,20 @@ case class ViewHolderAccountItemAdapter(
 
     (title <~ tvText(accountSync.title)) ~
       (subtitle <~ tvText(accountSync.subtitle getOrElse "")) ~
-      (icon <~ ivSrc(R.drawable.icon_action_bar_options_dark) <~ On.click {
-        icon <~ vPopupMenuShow(
-          menuSeq map {
-            case (_, name) => name
-          },
-          onMenuItemClickListener = (item: MenuItem) => {
-            menuSeq lift item.getOrder foreach {
-              case (option, _) => onClick(getAdapterPosition, option, accountSync)
-            }
-            true
-          }
-        )
-      })
+      (icon <~ ivSrc(R.drawable.icon_action_bar_options_dark) <~
+        On.click {
+          icon <~
+            vListThemedPopupWindowShow(
+              values = menuSeq map {
+                case (_, name) => name
+              },
+              onItemClickListener = (position) => {
+                menuSeq.lift(position) foreach {
+                  case (option, _) => onClick(option, accountSync)
+                }
+              },
+              width = Option(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)))
+        })
   }
 
 }
