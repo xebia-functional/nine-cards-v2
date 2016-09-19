@@ -114,8 +114,8 @@ trait ProfileUiActionsImpl
     recyclerView <~ rvSwapAdapter(adapter)
   }
 
-  override def showErrorSubscribing(subscribed: Boolean): Ui[Any] =
-    showMessage(if (subscribed) R.string.errorSubscribing else R.string.errorUnsubscribing)
+  override def showErrorSubscribing(triedToSubscribe: Boolean): Ui[Any] =
+    showMessage(if (triedToSubscribe) R.string.errorSubscribing else R.string.errorUnsubscribing)
 
   override def showContactUsError(clickAction: () => Unit): Ui[Any] = showError(R.string.contactUsError, clickAction)
 
