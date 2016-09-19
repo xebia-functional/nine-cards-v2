@@ -33,7 +33,7 @@ import com.fortysevendeg.ninecardslauncher.process.social.impl.SocialProfileProc
 import com.fortysevendeg.ninecardslauncher.process.theme.ThemeProcess
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.trackevent.TrackEventProcess
-import com.fortysevendeg.ninecardslauncher.process.trackevent.impl.{LogAnalyticsServices, TrackEventProcessImpl}
+import com.fortysevendeg.ninecardslauncher.process.trackevent.impl.TrackEventProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.user.UserProcess
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Process
@@ -42,7 +42,7 @@ import com.fortysevendeg.ninecardslauncher.process.widget.WidgetProcess
 import com.fortysevendeg.ninecardslauncher.process.widget.impl.WidgetProcessImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.accounts.impl.AccountsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.analytics.impl.AnalyticsServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.analytics.impl.AnalyticsTrackServices
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.awareness.impl.AwarenessServicesImpl
@@ -55,6 +55,7 @@ import com.fortysevendeg.ninecardslauncher.services.intents.impl.LauncherIntentS
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.plus.impl.GooglePlusServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.track.impl.ConsoleTrackServices
 import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.wifi.impl.WifiServicesImpl
 import com.fortysevendeg.ninecardslauncher2.R
@@ -269,9 +270,9 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
           .newTracker(resources.getString(R.string.ga_trackingId))
         track.setAppName(resources.getString(R.string.app_name))
         track.enableAutoActivityTracking(false)
-        new AnalyticsServicesImpl(track)
+        new AnalyticsTrackServices(track)
       } else {
-        new LogAnalyticsServices
+        new ConsoleTrackServices
       }
     }
     new TrackEventProcessImpl(createService())

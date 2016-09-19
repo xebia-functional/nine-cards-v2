@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.analytics
+package com.fortysevendeg.ninecardslauncher.services.track
 
-case class AnalyticEvent(
+case class TrackEvent(
   screen: String,
   category: String,
   action: String,

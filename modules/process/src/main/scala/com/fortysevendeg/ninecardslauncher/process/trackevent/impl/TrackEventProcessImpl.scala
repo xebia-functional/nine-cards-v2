@@ -5,18 +5,19 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Game
 import com.fortysevendeg.ninecardslauncher.process.trackevent._
-import com.fortysevendeg.ninecardslauncher.services.analytics.{AnalyticEvent, AnalyticsServices}
 import monix.eval.Task
 import cats.implicits._
+import com.fortysevendeg.ninecardslauncher.process.trackevent.models._
+import com.fortysevendeg.ninecardslauncher.services.track.{TrackEvent, TrackServices}
 
-class TrackEventProcessImpl(analyticsServices: AnalyticsServices)
+class TrackEventProcessImpl(trackServices: TrackServices)
   extends TrackEventProcess
   with ImplicitsTrackEventException {
 
   private[this] val startNameGame = "GAME_"
 
   override def openAppFromAppDrawer(packageName: String, category: Category) = {
-    val event = AnalyticEvent(
+    val event = TrackEvent(
       screen = LauncherScreen.name,
       category = category.name,
       action = OpenAction.name,
@@ -24,67 +25,55 @@ class TrackEventProcessImpl(analyticsServices: AnalyticsServices)
       value = Option(OpenAppFromAppDrawerValue.value))
 
     def eventForGames(isGame: Boolean): TaskService[Unit] = if (isGame) {
-      analyticsServices.trackEvent(event.copy(category = Game.name)).resolve[TrackEventException]
+      trackServices.trackEvent(event.copy(category = Game.name)).resolve[TrackEventException]
     } else {
       TaskService(Task(Right(())))
     }
 
-    (analyticsServices.trackEvent(event) *> eventForGames(category.name.startsWith(startNameGame))).resolve[TrackEventException]
+    (trackServices.trackEvent(event) *> eventForGames(category.name.startsWith(startNameGame))).resolve[TrackEventException]
   }
 
   override def openAppFromCollection(packageName: String, category: Category) = {
-    val event = AnalyticEvent(
+    val event = TrackEvent(
       screen = CollectionDetailScreen.name,
       category = category.name,
       action = OpenCardAction.name,
       label = Option(packageName),
       value = Option(OpenAppFromCollectionValue.value))
-    analyticsServices.trackEvent(event).resolve[TrackEventException]
+    trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
   override def addAppToCollection(packageName: String, category: Category) = {
-    val event = AnalyticEvent(
+    val event = TrackEvent(
       screen = CollectionDetailScreen.name,
       category = category.name,
       action = AddedToCollectionAction.name,
       label = Option(packageName),
       value = Option(AddedToCollectionValue.value))
-    analyticsServices.trackEvent(event).resolve[TrackEventException]
+    trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def removedInCollection(packageName: String, category: Category) = {
-    val event = AnalyticEvent(
+  override def removeFromCollection(packageName: String, category: Category) = {
+    val event = TrackEvent(
       screen = CollectionDetailScreen.name,
       category = category.name,
-      action = RemovedInCollectionAction.name,
+      action = RemovedFromCollectionAction.name,
       label = Option(packageName),
-      value = Option(RemovedInCollectionValue.value))
-    analyticsServices.trackEvent(event).resolve[TrackEventException]
+      value = Option(RemovedFromCollectionValue.value))
+    trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
   def addWidgetToMoment(packageName: String, className: String, moment: MomentCategory) = {
     val widgetLabel = s"$packageName:$className"
     val widgetCategory = s"WIDGET_${moment.name}"
-    val event = AnalyticEvent(
+    val event = TrackEvent(
       screen = WidgetScreen.name,
       category = widgetCategory,
       action = AddedWidgetToMomentAction.name,
       label = Option(widgetLabel),
       value = Option(AddedWidgetToMomentValue.value))
-    analyticsServices.trackEvent(event).resolve[TrackEventException]
+    trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
 }
 
-class LogAnalyticsServices extends AnalyticsServices {
-
-  override def trackEvent(event: AnalyticEvent): TaskService[Unit] = TaskService {
-    Task(Right(println(
-      s"""Track
-         | Action ${event.action}
-         | Category ${event.category}
-         | Label ${event.label.getOrElse("")}
-         | Screen ${event.screen}
-         | Value ${event.value.getOrElse(0)}""".stripMargin)))
-  }
-}
