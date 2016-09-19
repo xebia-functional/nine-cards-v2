@@ -55,7 +55,7 @@ class LauncherExecutorProcessImpl(
       case `openEmail` =>
         tryLaunchIntentService(createEmailAction)
       case `openContact` =>
-        intent.extraLookup() match {
+        intent.extractLookup() match {
           case Some(lookupKey) => executeContact(lookupKey)
           case None => TaskService(Task(Either.left(LauncherExecutorProcessException("Contact lookup not found", None))))
         }

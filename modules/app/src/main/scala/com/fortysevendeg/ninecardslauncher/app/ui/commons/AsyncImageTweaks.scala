@@ -100,6 +100,19 @@ object AsyncImageTweaks {
       }
     })
 
+  def ivUriContactFromLookup(maybeLookup: Option[String], name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+    imageView => {
+      glide() foreach { glide =>
+        val uri = Uri.parse(ContactPhotoLoader.getUrl(maybeLookup))
+        makeRequest(
+          request = glide.using(new ContactPhotoLoader(context.application.getContentResolver)).load(uri),
+          imageView = imageView,
+          char = name.substring(0, 1),
+          circular = circular,
+          fadeInFailed = false)
+      }
+    })
+
   def ivUriContact(uri: String, name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
@@ -230,6 +243,10 @@ object AsyncImageTweaks {
 
         override def cancel(): Unit = {}
       }
+  }
+
+  object ContactPhotoLoader {
+    def getUrl(maybeLookup: Option[String]) = s"content://${ContactsContract.AUTHORITY}/contacts/lookup/${maybeLookup.getOrElse("")}"
   }
 
 }

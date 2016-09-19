@@ -111,7 +111,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     val space = x.toInt / (getWidth / numberOfItems)
     space match {
       case `appDrawerPosition` => None
-      case s if s < appDrawerPosition => Some(s)
+      case s if s < appDrawerPosition => Option(s)
       case s => Some(s - 1)
     }
   }
@@ -122,7 +122,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (dockApp map { app =>
         (app.dockType match {
           case AppDockType => ivSrcByPackageName(app.intent.extractPackageName(), app.name)
-          case ContactDockType => ivUriContact(app.imagePath, app.name, circular = true)
+          case ContactDockType => ivUriContactFromLookup(app.intent.extractLookup(), app.name, circular = true)
           case _ => ivSrc(noFoundAppDrawable)
         }) +
           On.click (Ui(presenter.execute(app.intent)))
@@ -131,14 +131,14 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   private[this] def select(position: Int)(implicit contextWrapper: ActivityContextWrapper) = Transformer {
     case view: TintableImageView if view.getPosition.contains(position) =>
       view <~ applyAnimation(
-        scaleX = Some(selectedScale),
-        scaleY = Some(selectedScale),
-        alpha = Some(selectedAlpha))
+        scaleX = Option(selectedScale),
+        scaleY = Option(selectedScale),
+        alpha = Option(selectedAlpha))
     case view: TintableImageView =>
       view <~ applyAnimation(
-        scaleX = Some(defaultScale),
-        scaleY = Some(defaultScale),
-        alpha = Some(defaultAlpha))
+        scaleX = Option(defaultScale),
+        scaleY = Option(defaultScale),
+        alpha = Option(defaultAlpha))
   }
 
   private[this] def getDockApp(position: Int) = dockApps.find(_.position == position)
