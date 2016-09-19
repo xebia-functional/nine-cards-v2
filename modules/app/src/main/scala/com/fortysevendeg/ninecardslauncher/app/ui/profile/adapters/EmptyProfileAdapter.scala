@@ -6,6 +6,7 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.profile._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -78,7 +79,7 @@ case class ViewHolderEmptyProfileAdapter(
 
     (emptyProfileImage <~ ivSrc(if (error) R.drawable.placeholder_error else R.drawable.placeholder_empty)) ~
       (emptyProfileMessage <~ tvText(Html.fromHtml(messageText))) ~
-      (emptyProfileButton <~ On.click(Ui(reload())))
+      (emptyProfileButton <~ (if (error) On.click(Ui(reload())) else vInvisible))
 
   }
 

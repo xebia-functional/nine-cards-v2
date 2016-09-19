@@ -73,15 +73,19 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     (for {
       userConfig <- apiUtils.getRequestConfig
       subscriptions <- apiServices.getSubscriptions()(userConfig)
+      publications <- apiServices.getPublishedCollections()(userConfig)
       collections <- persistenceServices.fetchCollections
     } yield {
 
       val subscriptionsIds = subscriptions.items map (_.sharedCollectionId)
+      val publicationsIds = publications.items map (_.sharedCollectionId)
 
-      val collectionsWithSharedCollectionId: Seq[(String, Collection)] =
-        collections.flatMap(collection => collection.sharedCollectionId.map((_, collection)))
+      val collectionsWithOriginalSharedCollectionId: Seq[(String, Collection)] =
+        collections.flatMap(collection => collection.originalSharedCollectionId.map((_, collection))).filter{
+          case (sharedCollectionId: String, _) => !publicationsIds.contains(sharedCollectionId)
+        }
 
-      (collectionsWithSharedCollectionId map {
+      (collectionsWithOriginalSharedCollectionId map {
         case (sharedCollectionId: String, collection: Collection) =>
           (sharedCollectionId, collection, subscriptionsIds.contains(sharedCollectionId))
       }) map toSubscription
