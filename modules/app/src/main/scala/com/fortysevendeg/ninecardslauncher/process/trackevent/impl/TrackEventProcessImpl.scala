@@ -75,3 +75,16 @@ class TrackEventProcessImpl(analyticsServices: AnalyticsServices)
   }
 
 }
+
+class LogAnalyticsServices extends AnalyticsServices {
+
+  override def trackEvent(event: AnalyticEvent): TaskService[Unit] = TaskService {
+    Task(Right(println(
+      s"""Track
+         | Action ${event.action}
+         | Category ${event.category}
+         | Label ${event.label.getOrElse("")}
+         | Screen ${event.screen}
+         | Value ${event.value.getOrElse(0)}""".stripMargin)))
+  }
+}

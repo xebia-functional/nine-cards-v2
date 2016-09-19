@@ -16,7 +16,9 @@ object ReplacePropertiesGenerator {
     "backend.v1.appkey",
     "backend.v2.url",
     "crashlytics.apikey",
-    "crashlytics.apisecret")
+    "crashlytics.apisecret",
+    "analytics.enabled",
+    "analytics.trackid")
 
   lazy val propertiesFileName = sys.env.getOrElse("9CARDS_PROPERTIES", "debug.properties")
 

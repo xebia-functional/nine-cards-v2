@@ -33,7 +33,7 @@ import com.fortysevendeg.ninecardslauncher.process.social.impl.SocialProfileProc
 import com.fortysevendeg.ninecardslauncher.process.theme.ThemeProcess
 import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.trackevent.TrackEventProcess
-import com.fortysevendeg.ninecardslauncher.process.trackevent.impl.TrackEventProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.trackevent.impl.{LogAnalyticsServices, TrackEventProcessImpl}
 import com.fortysevendeg.ninecardslauncher.process.user.UserProcess
 import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Process
@@ -261,15 +261,20 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   }
 
   override def trackEventProcess: TrackEventProcess = {
-    val tracker = {
-      val track = GoogleAnalytics
-        .getInstance(contextSupport.context)
-        .newTracker(contextSupport.context.getString(R.string.ga_trackingId))
-      track.setAppName(contextSupport.context.getString(R.string.app_name))
-      track.enableAutoActivityTracking(false)
-      track
+    def createService() = {
+      val resources = contextSupport.getResources
+      if (resources.getString(R.string.analytics_enabled).equalsIgnoreCase("true")) {
+        val track = GoogleAnalytics
+          .getInstance(contextSupport.context)
+          .newTracker(contextSupport.context.getString(R.string.ga_trackingId))
+        track.setAppName(contextSupport.context.getString(R.string.app_name))
+        track.enableAutoActivityTracking(false)
+        new AnalyticsServicesImpl(track)
+      } else {
+        new LogAnalyticsServices
+      }
     }
-    new TrackEventProcessImpl(new AnalyticsServicesImpl(tracker))
+    new TrackEventProcessImpl(createService())
   }
 
   lazy val observerRegister = new ObserverRegister(uriCreator)
