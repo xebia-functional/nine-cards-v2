@@ -129,6 +129,8 @@ object ExtraTweaks {
 
   // TODO - Move to macroid extras
 
+  def vRotation(rotation: Float) = Tweak[View](_.setRotation(rotation))
+
   def rvAddOnScrollListener(
     scrolled: (Int, Int) => Unit,
     scrollStateChanged: (Int) => Unit): Tweak[RecyclerView] =

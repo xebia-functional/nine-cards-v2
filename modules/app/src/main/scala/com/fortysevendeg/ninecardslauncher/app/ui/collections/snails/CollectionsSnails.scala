@@ -4,42 +4,61 @@ import android.animation.{Animator, AnimatorListenerAdapter}
 import android.graphics.Point
 import android.view.View
 import android.view.animation.{AccelerateDecelerateInterpolator, DecelerateInterpolator}
-import android.widget.ImageView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.{ActivityContextWrapper, ContextWrapper, Snail}
+import macroid.{ActivityContextWrapper, ContextWrapper, Snail, Tweak}
 
 import scala.concurrent.Promise
 
 object CollectionsSnails {
 
-  def changeIcon(resDrawable: Int, fromLeft: Boolean)(implicit context: ContextWrapper): Snail[ImageView] = Snail[ImageView] {
-    view =>
-      val distance = if (fromLeft) -resGetDimensionPixelSize(R.dimen.padding_default) else resGetDimensionPixelSize(R.dimen.padding_default)
-      val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      view.animate.translationX(-distance).alpha(0f).scaleX(0.7f).scaleY(0.7f).setDuration(duration).setListener(new AnimatorListenerAdapter {
-        override def onAnimationEnd(animation: Animator) {
-          super.onAnimationEnd(animation)
-          view.setTranslationX(distance)
-          view.setImageResource(resDrawable)
-          view.animate.translationX(0).alpha(1).scaleX(1).scaleY(1).setDuration(duration).setListener(new AnimatorListenerAdapter {
-            override def onAnimationEnd(animation: Animator): Unit = {
-              super.onAnimationEnd(animation)
-              view.setRotation(0)
-              view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-              animPromise.trySuccess(())
-            }
-          }).start()
-        }
-      }).start()
-      animPromise.future
+  def animationEnterTitle(implicit context: ContextWrapper) = {
+    val distance = resGetDimensionPixelSize(R.dimen.padding_default)
+    val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
+    vTranslationY(distance) +
+      vVisible +
+      vAlpha(0) ++
+      applyAnimation(
+      duration = Option(duration),
+      y = Option(0),
+      alpha = Option(1))
+  }
+
+  def animationOutTitle(implicit context: ContextWrapper) = {
+    val distance = resGetDimensionPixelSize(R.dimen.padding_default)
+    val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
+    applyAnimation(
+      duration = Option(duration),
+      y = Option(distance),
+      alpha = Option(0)) +
+      vGone
+  }
+
+  def animationTitle[W <: View](
+    fromLeft: Boolean,
+    transformation: Tweak[W])(implicit context: ContextWrapper) = {
+    val distance = if (fromLeft) -resGetDimensionPixelSize(R.dimen.padding_default) else resGetDimensionPixelSize(R.dimen.padding_default)
+    val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
+    applyAnimation(
+        duration = Option(duration),
+        x = Option(-distance),
+        alpha = Option(0),
+        scaleX = Option(0.7f),
+        scaleY = Option(0.7f)) +
+      vTranslationX(distance) +
+      transformation ++
+      applyAnimation(
+        duration = Option(duration),
+        x = Option(0),
+        alpha = Option(1),
+        scaleX = Option(1f),
+        scaleY = Option(1f)) +
+      vRotation(0)
   }
 
   def enterToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] = {

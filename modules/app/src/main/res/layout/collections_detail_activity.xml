@@ -18,6 +18,10 @@
             android:id="@+id/collections_toolbar_title"
             style="@style/CollectionsToolbarTitle" />
 
+        <TextView
+            android:id="@+id/collections_title"
+            style="@style/CollectionsTitle"/>
+
     </android.support.v7.widget.Toolbar>
 
     <FrameLayout

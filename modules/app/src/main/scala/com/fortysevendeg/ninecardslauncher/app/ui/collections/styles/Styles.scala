@@ -36,10 +36,14 @@ import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 
 trait Styles {
 
-  def tabsStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[SlidingTabLayout] =
+  def tabsStyle(implicit theme: NineCardsTheme): Tweak[SlidingTabLayout] =
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
       vInvisible
+
+  def titleStyle(implicit theme: NineCardsTheme): Tweak[TextView] =
+    tvColor(theme.get(CollectionDetailTextTabSelectedColor)) +
+      vGone
 
   def fabButtonApplicationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     fabButton(R.string.applications, R.drawable.fab_menu_icon_applications, 1)
