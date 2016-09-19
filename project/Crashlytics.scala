@@ -19,20 +19,24 @@ object Crashlytics {
         }
       )
 
+  val requiredProperties = Seq("crashlytics.apikey", "crashlytics.apisecret")
+
   def createFiles = Def.task[Seq[File]] {
     val log = streams.value.log
-    log.info("Creating crashlytics files")
-    try {
-      val templates = loadTemplates(baseDirectory.value / "crashlytics" / "templates")
-      templates map { file =>
-        val target = baseDirectory.value / "crashlytics" / file.getName
-        replaceContent(file, target)(log)
-        target
+    configTask[Seq[File]](log, Seq.empty) {
+      log.info("Creating crashlytics files")
+      try {
+        val templates = loadTemplates(baseDirectory.value / "crashlytics" / "templates")
+        templates map { file =>
+          val target = baseDirectory.value / "crashlytics" / file.getName
+          replaceContent(file, target)(log)
+          target
+        }
+      } catch {
+        case e: Throwable =>
+          log.error("An error occurred loading creating files")
+          throw e
       }
-    } catch {
-      case e: Throwable =>
-        log.error("An error occurred loading creating files")
-        throw e
     }
   }
 
@@ -43,99 +47,120 @@ object Crashlytics {
    * with namespace
    */
   def fixNameSpace = Def.task[Unit] {
-    crashlyticsCodeGen.value
-    val file = baseDirectory.value / "src/main/res/values/com_crashlytics_export_strings.xml"
-    if (file.exists()) {
-      val xml = scala.xml.XML.loadFile(file)
+    val log = streams.value.log
+    configTask[Unit](log, ()) {
+      crashlyticsCodeGen.value
+      val file = baseDirectory.value / "src/main/res/values/com_crashlytics_export_strings.xml"
+      if (file.exists()) {
+        val xml = scala.xml.XML.loadFile(file)
 
-      val rewriteRule = new scala.xml.transform.RewriteRule {
-        override def transform(node: scala.xml.Node) = node match {
-          case elem: scala.xml.Elem if elem.label == "resources" =>
-            elem.copy(child = fixChilds(elem.child))
-          case x => x
+        val rewriteRule = new scala.xml.transform.RewriteRule {
+          override def transform(node: scala.xml.Node) = node match {
+            case elem: scala.xml.Elem if elem.label == "resources" =>
+              elem.copy(child = fixChilds(elem.child))
+            case x => x
+          }
         }
-      }
 
-      scala.xml.XML.save(
-        filename = file.getAbsolutePath,
-        node = rewriteRule(xml),
-        enc = "UTF-8",
-        xmlDecl = true)
+        scala.xml.XML.save(
+          filename = file.getAbsolutePath,
+          node = rewriteRule(xml),
+          enc = "UTF-8",
+          xmlDecl = true)
+      }
     }
   }
 
   def crashlyticsPreBuild = Def.task[Unit] {
     val log = streams.value.log
-    log.info("Crashlytics pre build")
+    configTask[Unit](log, ()) {
+      log.info("Crashlytics pre build")
 
-    // Cleanup
-    crashlyticsCleanupResources.value
+      // Cleanup
+      crashlyticsCleanupResources.value
 
-    // Upload deobs - Disabled
-    // crashlyticsUploadDeobs.value
+      // Upload deobs - Disabled
+      // crashlyticsUploadDeobs.value
+    }
   }
 
   def crashlyticsCodeGen = Def.task[Unit] {
     val log = streams.value.log
-    log.info("Crashlytics code gen")
+    configTask[Unit](log, ()) {
+      log.info("Crashlytics code gen")
 
-    // Generate resources
-    crashlyticsGenerateResources.value
+      // Generate resources
+      crashlyticsGenerateResources.value
+    }
   }
 
   def crashlyticsPostPackage = Def.task[Unit] {
     val log = streams.value.log
-    log.info("Crashlytics post package")
+    configTask[Unit](log, ()) {
+      log.info("Crashlytics post package")
 
-    // Store deobs - Disabled
-    // crashlyticsStoreDeobs.value
+      // Store deobs - Disabled
+      // crashlyticsStoreDeobs.value
 
-    // Upload deobs - Disabled
-    // crashlyticsUploadDeobs.value
+      // Upload deobs - Disabled
+      // crashlyticsUploadDeobs.value
 
-    // Cleanup
-    crashlyticsCleanupResources.value
+      // Cleanup
+      crashlyticsCleanupResources.value
+    }
   }
 
   def crashlyticsCleanupResources = Def.task[Unit] {
-    crashlyticsTask(
-      log = streams.value.log,
-      task = Crashlytics.CleanupResources,
-      projectPath = baseDirectory.value.getAbsolutePath)
+    val log = streams.value.log
+    configTask[Unit](log, ()) {
+      crashlyticsTask(
+        log = streams.value.log,
+        task = Crashlytics.CleanupResources,
+        projectPath = baseDirectory.value.getAbsolutePath)
+    }
   }
 
   def crashlyticsGenerateResources = Def.task[Unit] {
-    crashlyticsTask(
-      log = streams.value.log,
-      task = Crashlytics.GenerateResources,
-      projectPath = baseDirectory.value.getAbsolutePath,
-      extraArgs = Seq(
-        "-buildEvent",
-        "-tool", "com.crashlytics.tools.ant",
-        "-version", "1.20.0"))
+    val log = streams.value.log
+    configTask[Unit](log, ()) {
+      crashlyticsTask(
+        log = streams.value.log,
+        task = Crashlytics.GenerateResources,
+        projectPath = baseDirectory.value.getAbsolutePath,
+        extraArgs = Seq(
+          "-buildEvent",
+          "-tool", "com.crashlytics.tools.ant",
+          "-version", "1.20.0"))
+    }
   }
 
   def crashlyticsStoreDeobs = Def.task[Unit] {
-    crashlyticsTask(
-      log = streams.value.log,
-      task = Crashlytics.StoreDeobs,
-      projectPath = baseDirectory.value.getAbsolutePath,
-      extraArgs = Seq(
-        s"${(baseDirectory.value / "proguard-mapping.txt").getAbsolutePath}",
-        "-obfuscating",
-        "-obfuscator",
-        "proguard",
-        "-obVer",
-        "4.7",
-        "-verbose"))
+    val log = streams.value.log
+    configTask[Unit](log, ()) {
+      crashlyticsTask(
+        log = streams.value.log,
+        task = Crashlytics.StoreDeobs,
+        projectPath = baseDirectory.value.getAbsolutePath,
+        extraArgs = Seq(
+          s"${(baseDirectory.value / "proguard-mapping.txt").getAbsolutePath}",
+          "-obfuscating",
+          "-obfuscator",
+          "proguard",
+          "-obVer",
+          "4.7",
+          "-verbose"))
+    }
   }
 
   def crashlyticsUploadDeobs = Def.task[Unit] {
-    crashlyticsTask(
-      log = streams.value.log,
-      task = Crashlytics.UploadDeobs,
-      projectPath = baseDirectory.value.getAbsolutePath,
-      extraArgs = Seq("-verbose"))
+    val log = streams.value.log
+    configTask[Unit](log, ()) {
+      crashlyticsTask(
+        log = streams.value.log,
+        task = Crashlytics.UploadDeobs,
+        projectPath = baseDirectory.value.getAbsolutePath,
+        extraArgs = Seq("-verbose"))
+    }
   }
 
   object Crashlytics {
@@ -158,6 +183,20 @@ object Crashlytics {
 
     case object UploadDeobs extends Task {
       val param = "-uploadDeobs"
+    }
+
+  }
+
+  private[this] def configTask[T](log: Logger, defaultValue: T)(f: => T) = {
+
+    val enabled = requiredProperties.foldLeft(true) {
+      case (false, _) => false
+      case (true, prop) => propertiesMap.contains(prop)
+    }
+
+    if (enabled) f else {
+      log.info("Skipping crashlytics: There are some required properties missing")
+      defaultValue
     }
 
   }
