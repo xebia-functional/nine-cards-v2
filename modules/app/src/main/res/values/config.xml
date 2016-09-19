@@ -49,12 +49,12 @@
     <string name="ninecards_tos">http://www.9cards.io</string>
 
     <!-- Firebase -->
-    <string name="google_app_id" translatable="false">${google_app_id}</string>
-    <string name="gcm_defaultSenderId" translatable="false">${gcm_defaultSenderId}</string>
-    <string name="default_web_client_id" translatable="false">${default_web_client_id}</string>
-    <string name="firebase_database_url" translatable="false">${firebase_database_url}</string>
-    <string name="google_api_key" translatable="false">${google_api_key}</string>
-    <string name="google_crash_reporting_api_key" translatable="false">${google_crash_reporting_api_key}</string>
+    <string name="firebase_enabled" translatable="false">${firebase.enabled}</string>
+    <string name="firebase_database_url" translatable="false">${firebase.url}</string>
+    <string name="google_app_id" translatable="false">${firebase.google.appid}</string>
+    <string name="google_api_key" translatable="false">${firebase.google.apikey}</string>
+    <string name="gcm_defaultSenderId" translatable="false">${firebase.gcm.senderid}</string>
+    <string name="default_web_client_id" translatable="false">${firebase.clientid}</string>
 
 
 </resources>

@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher
 import android.content.{ComponentName, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.{CallPhone, ReadCallLog, ReadContacts}
@@ -33,18 +34,14 @@ import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
-import com.fortysevendeg.ninecardslauncher.process.trackevent._
+import com.fortysevendeg.ninecardslauncher.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.R
-import com.google.firebase.analytics.FirebaseAnalytics
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
-import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
 
 import scala.language.postfixOps
-import scala.util.Try
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
@@ -63,7 +60,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   val permissionChecker = new PermissionChecker
 
   def initialize(): Unit = {
-    Try(FirebaseAnalytics.getInstance(contextWrapper.bestAvailable))
     di.userProcess.register.resolveAsync2()
     actions.initialize.run
   }
