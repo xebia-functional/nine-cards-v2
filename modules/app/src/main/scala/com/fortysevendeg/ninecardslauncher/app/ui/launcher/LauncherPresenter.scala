@@ -41,6 +41,7 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
 
 import scala.language.postfixOps
 import scala.util.Try

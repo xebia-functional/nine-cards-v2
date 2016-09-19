@@ -15,7 +15,8 @@
     <string name="google_play_url">http://play.google.com/store/apps/details</string>
 
     <!-- Google Analytics -->
-    <string name="ga_trackingId">${google_analytics_id}</string>
+    <string name="analytics_enabled">${analytics.enabled}</string>
+    <string name="ga_trackingId">${analytics.trackid}</string>
 
     <!-- 9Cards -->
     <string name="icons_apps_folder">icons_apps</string>
