@@ -116,7 +116,7 @@ case class ViewHolderAccountItemAdapter(
 
     (title <~ tvText(accountSync.title)) ~
       (subtitle <~ tvText(accountSync.subtitle getOrElse "")) ~
-      (icon <~ ivSrc(R.drawable.icon_action_bar_options_dark) <~
+      (icon <~ ivSrc(R.drawable.icon_account_options) <~
         On.click {
           icon <~
             vListThemedPopupWindowShow(
