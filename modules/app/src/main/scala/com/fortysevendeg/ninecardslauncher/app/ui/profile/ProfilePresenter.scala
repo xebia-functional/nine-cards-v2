@@ -151,7 +151,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
       (if (subscribeStatus) subscribe(sharedCollectionId) else unsubscribe(sharedCollectionId)).resolveAsyncUi2(
         onResult = (_) => actions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus),
-        onException = (ex) => actions.showErrorSubscribing(subscribeStatus) ~
+        onException = (ex) => actions.showErrorSubscribing(triedToSubscribe = subscribeStatus) ~
             actions.refreshCurrentSubscriptions() // TODO Remove when we've got different states for the switch - issue #783
       )
   }
@@ -380,7 +380,7 @@ trait ProfileUiActions {
 
   def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any]
 
-  def showErrorSubscribing(subscribed: Boolean): Ui[Any]
+  def showErrorSubscribing(triedToSubscribe: Boolean): Ui[Any]
 
   def showContactUsError(clickAction: () => Unit): Ui[Any]
 
