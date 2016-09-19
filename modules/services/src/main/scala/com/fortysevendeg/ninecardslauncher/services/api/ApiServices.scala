@@ -32,6 +32,7 @@ trait ApiServices {
     * @param androidId device identifier
     * @param tokenId token id obtained in the email authentication
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponse]]
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user is not found or the request throws an Exception
     */
   def login(
@@ -45,6 +46,7 @@ trait ApiServices {
    * @param requestConfig necessary info for the headers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UpdateInstallationResponse]] with the HTTP Code
    *         of the response
+   * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if there was an error in the request
    */
   def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig): TaskService[UpdateInstallationResponse]
@@ -55,6 +57,7 @@ trait ApiServices {
    * @param requestConfig necessary info for the headers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackageResponse]] with the HTTP Code
    *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
+   * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if there was an error in the request
    */
   def googlePlayPackage(packageName: String)(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackageResponse]
@@ -66,6 +69,7 @@ trait ApiServices {
    * @param requestConfig necessary info for the headers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesResponse]] with the HTTP Code
    *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
+   * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if there was an error in the request
    */
   def googlePlayPackages(packageNames: Seq[String])(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackagesResponse]
@@ -77,6 +81,7 @@ trait ApiServices {
    * @param requestConfig necessary info for the headers
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesDetailResponse]] with the HTTP Code
    *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
+   * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if there was an error in the request
    */
   def googlePlayPackagesDetail(packageNames: Seq[String])(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackagesDetailResponse]
@@ -88,6 +93,7 @@ trait ApiServices {
    * @param limit the maximum number of apps returned
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
    *         of the response and the sequence of recommended apps
+   * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
    */
   def getRecommendedApps(
@@ -102,6 +108,7 @@ trait ApiServices {
    * @param limit the maximum number of apps returned
    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
    *         of the response and the sequence of recommended apps
+   * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
    */
   def getRecommendedAppsByPackages(
@@ -114,6 +121,8 @@ trait ApiServices {
     * @param sharedCollectionId the public collection id
     * @return the TaskService containing a SharedCollectionResponse with the HTTP Code of the response and the
     *         collection or ApiServiceException if the user doesn't exists or there was an error in the request
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def getSharedCollection(
     sharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[SharedCollectionResponse]
@@ -126,6 +135,7 @@ trait ApiServices {
     * @param limit the maximum number of collection returned
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SharedCollectionResponseList]] with the HTTP Code
     *         of the response and the sequence of recommended collections
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def getSharedCollectionsByCategory(
@@ -138,6 +148,7 @@ trait ApiServices {
     * Fetches the published collections
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SharedCollectionResponseList]] with the HTTP Code
     *         of the response and the sequence of recommended collections
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def getPublishedCollections()(implicit requestConfig: RequestConfig): TaskService[SharedCollectionResponseList]
@@ -152,6 +163,7 @@ trait ApiServices {
     * @param community A flag for whether this is a community collection
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.CreateSharedCollectionResponse]] with the HTTP Code
     *         of the response and the sharedCollectionId
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the service is unable to create the shared collection
     */
   def createSharedCollection(
@@ -171,6 +183,7 @@ trait ApiServices {
     * @param packages The list of packages in the collection
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UpdateSharedCollectionResponse]] with the HTTP Code
     *         of the response and the sharedCollectionId
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the service is unable to create the shared collection
     */
   def updateSharedCollection(
@@ -183,6 +196,7 @@ trait ApiServices {
     * Fetches the subscriptions
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SubscriptionResponseList]] with the HTTP Code
     *         of the response and the sequence subscriptions
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def getSubscriptions()(implicit requestConfig: RequestConfig): TaskService[SubscriptionResponseList]
@@ -192,6 +206,7 @@ trait ApiServices {
     * @param originalSharedCollectionId the public id of the collection to subscribe on
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SubscribeResponse]] with the HTTP Code
     *         of the response
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def subscribe(
@@ -202,6 +217,7 @@ trait ApiServices {
     * @param originalSharedCollectionId the public id of the collection to unsubscribe from
     * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UnsubscribeResponse]] with the HTTP Code
     *         of the response
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def unsubscribe(
