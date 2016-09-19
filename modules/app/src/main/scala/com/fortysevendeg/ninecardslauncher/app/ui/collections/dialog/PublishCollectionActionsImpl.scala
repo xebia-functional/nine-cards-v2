@@ -178,19 +178,24 @@ trait PublishCollectionActionsImpl
     text <- Option(collectionName.getText)
   } yield if (text.toString.isEmpty) None else Some(text.toString)).flatten
 
-  private[this] def setCategory(maybeCategory: Option[NineCardCategory]): Unit =
+  private[this] def setCategory(maybeCategory: Option[NineCardCategory]): Unit = {
     maybeCategory foreach { category =>
+      categorySpinner.setTag(category)
       categorySpinner.setText(categoryNamesMenu(categories.indexOf(category)))
     }
+  }
 
   private[this] def getCategory: Option[NineCardCategory] =
-    categories.lift(categoryNamesMenu.indexOf(categorySpinner.getText))
+    categorySpinner.getTag match {
+      case category: NineCardCategory => Some(category)
+      case _ => None
+    }
 
   private[this] def categoryOnClick: Tweak[TextView] =
     On.click {
       categorySpinner <~ vListThemedPopupWindowShow(
         values = categoryNamesMenu,
-        onItemClickListener = (position: Int) => categorySpinner.setText(categoryNamesMenu(position)),
+        onItemClickListener = (position: Int) => setCategory(Some(categories(position))),
         width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
         height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
     }
