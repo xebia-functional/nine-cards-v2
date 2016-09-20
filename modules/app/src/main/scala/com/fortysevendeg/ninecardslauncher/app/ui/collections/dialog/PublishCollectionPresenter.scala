@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
 import cats.syntax.either._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
@@ -14,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 
-class PublishCollectionPresenter(actions: PublishCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
+class PublishCollectionPresenter(actions: PublishCollectionActions)(implicit val collectionsPagerPresenter: CollectionsPagerPresenter, contextWrapper: ActivityContextWrapper)
   extends Jobs {
 
   var statuses = PublishCollectionStatuses()

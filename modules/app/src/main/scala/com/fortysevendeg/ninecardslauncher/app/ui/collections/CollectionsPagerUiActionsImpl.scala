@@ -304,7 +304,9 @@ trait CollectionsPagerUiActionsImpl
     for {
       adapter <- getAdapter
       currentPosition <- adapter.getCurrentFragmentPosition
-    } yield adapter.updateShareCollectionIdFromCollection(currentPosition, sharedCollectionId)
+      _ = adapter.updateShareCollectionIdFromCollection(currentPosition, sharedCollectionId)
+      _ = invalidateOptionMenu()
+    } yield ()
   }
 
   override def showPublishCollectionWizardDialog(collection: Collection): Ui[Any] =

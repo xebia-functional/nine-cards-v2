@@ -168,7 +168,7 @@ trait PublishCollectionActionsImpl
       (publishingLayout <~ applyFadeOut()) ~
       (paginationPanel <~ vInvisible)~
       (endLayout <~ applyFadeIn()) ~
-      invalidateOptionMenu() ~
+      Ui(collectionsPagerPresenter.reloadSharedCollectionId()) ~
       (endButton <~ On.click(Ui(publishCollectionPresenter.launchShareCollection(sharedCollectionId)) ~ Ui(dismiss())))
 
   override def showMessageCollectionError: Ui[Any] = showMessage(R.string.collectionError)
@@ -195,9 +195,11 @@ trait PublishCollectionActionsImpl
   private[this] def pagination(position: Int) =
     (w[TintableImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
-  private[this] def getName: Option[String] = (for {
-    text <- Option(collectionName.getText)
-  } yield if (text.toString.isEmpty) None else Some(text.toString)).flatten
+  private[this] def getName: Option[String] =
+    Option(collectionName.getText) flatMap {
+      case text if text.toString.nonEmpty => Some(text.toString)
+      case _ => None
+    }
 
   private[this] def setCategory(maybeCategory: Option[NineCardCategory]): Unit = {
     maybeCategory foreach { category =>
@@ -224,13 +226,6 @@ trait PublishCollectionActionsImpl
 
   private[this] def publishOnClick: Tweak[TextView] =
     On.click(Ui(publishCollectionPresenter.publishCollection(getName, getCategory)))
-
-  private[this] def invalidateOptionMenu(): Ui[Any] = Ui {
-    fragmentContextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
-      case _ =>
-    }
-  }
 
 }
 

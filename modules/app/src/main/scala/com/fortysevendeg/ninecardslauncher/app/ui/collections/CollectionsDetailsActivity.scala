@@ -136,7 +136,6 @@ class CollectionsDetailsActivity
   }
 
   override def onPrepareOptionsMenu (menu: Menu): Boolean = {
-    collectionsPagerPresenter.reloadSharedCollectionId()
     getCurrentCollection foreach {
       case collection
         if collection.sharedCollectionId.isDefined &&
