@@ -24,6 +24,10 @@
 
     </android.support.v7.widget.Toolbar>
 
+    <ImageView
+        android:id="@+id/collections_selector"
+        style="@style/CollectionsSelector"/>
+
     <FrameLayout
         android:id="@+id/collections_icon_content"
         style="@style/CollectionsIconContent">

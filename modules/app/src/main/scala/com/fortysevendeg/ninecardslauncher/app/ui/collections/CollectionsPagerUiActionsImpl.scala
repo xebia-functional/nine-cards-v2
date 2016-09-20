@@ -32,7 +32,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehavi
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{TranslationAnimator, TranslationY}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CollectionSelectorDrawable, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -92,6 +92,8 @@ trait CollectionsPagerUiActionsImpl
 
   lazy val title = findView(TR.collections_title)
 
+  lazy val selector = findView(TR.collections_selector)
+
   lazy val root = findView(TR.collections_root)
 
   lazy val viewPager = findView(TR.collections_view_pager)
@@ -101,6 +103,8 @@ trait CollectionsPagerUiActionsImpl
   lazy val iconContent = findView(TR.collections_icon_content)
 
   lazy val icon = findView(TR.collections_icon)
+
+  lazy val selectorDrawable = CollectionSelectorDrawable()
 
   val tagDialog = "dialog"
 
@@ -122,6 +126,7 @@ trait CollectionsPagerUiActionsImpl
       (root <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
       (tabs <~ tabsStyle) ~
       (title <~ titleStyle) ~
+      (selector <~ selectorStyle(selectorDrawable)) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
@@ -147,6 +152,7 @@ trait CollectionsPagerUiActionsImpl
     activityContextWrapper.getOriginal match {
       case fragmentActivity: FragmentActivity =>
         val adapter = CollectionsPagerAdapter(fragmentActivity.getSupportFragmentManager, collections, position)
+        selectorDrawable.setNumberOfItems(collections.length)
         (viewPager <~ vpAdapter(adapter)) ~
           Ui(adapter.activateFragment(position)) ~
           (tabs <~
@@ -247,25 +253,28 @@ trait CollectionsPagerUiActionsImpl
       }
   }
 
-  override def translationScrollY(dy: Int): Ui[Any] = {
+  override def translationScrollY(dy: Int): Ui[Any] = if (toolbarAnimation.isRunning) {
+    Ui.nop
+  } else {
     val translationY = tabs.getTranslationY.toInt
     val move = math.min(0, math.max(translationY - dy, -spaceMove))
-    val ratio: Float = move.toFloat / spaceMove.toFloat
-    (tabs <~ vTranslationY(move) <~ vAlpha(1 + ratio)) ~ moveToolbar(move)
+    (tabs <~ vTranslationY(move)) ~ moveToolbar(move)
   }
 
   private[this] def moveToolbar(move: Int) = {
     val ratio: Float = move.toFloat / spaceMove.toFloat
     val scale = 1 + (ratio / 2)
     val isTop = ratio <= -1
-    (toolbar <~ tbReduceLayout(-move)) ~
+    val alpha = 1 + ratio
+    (tabs <~ vAlpha(alpha)) ~
+      (toolbar <~ tbReduceLayout(-move)) ~
       (collectionsPagerPresenter.statuses.collectionMode match {
         case EditingCollectionMode => Ui.nop
-        case _ => iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 + ratio)
+        case _ => iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(alpha)
       }) ~
       ((isTop, title.getVisibility) match {
-        case (true, View.GONE) => title <~ animationEnterTitle
-        case (false, View.VISIBLE) => title <~ animationOutTitle
+        case (true, View.GONE) => (title <~~ animationEnterTitle) ~~ (selector <~ vVisible)
+        case (false, View.VISIBLE) => (selector <~ vGone) ~ (title <~ animationOutTitle)
         case _ => Ui.nop
       })
   }
@@ -276,7 +285,6 @@ trait CollectionsPagerUiActionsImpl
     val betweenUpAndDown = scrollY < 0 && scrollY > -spaceMove
     ((betweenUpAndDown, getActivePresenter) match {
       case (true, Some(presenter)) =>
-        //presenter.changeScrollType(sType, scrollY)
         statuses = statuses.reset()
         val to = if (sType == ScrollUp) -spaceMove else 0
         tabs <~ toolbarAnimation.move(scrollY, to, attachTarget = true)
@@ -464,6 +472,7 @@ trait CollectionsPagerUiActionsImpl
                 (title <~ animationTitle(fromLeft = false, collection.name))
             case _ => Ui.nop
           }) ~
+            Ui(selectorDrawable.setSelected(position)) ~
             adapter.notifyChanged(position) ~
             (if (collection.cards.isEmpty) {
               val color = getIndexColor(collection.themedColorIndex)

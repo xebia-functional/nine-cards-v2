@@ -17,4 +17,8 @@
         <item name="android:elevation">@dimen/elevation_default</item>
     </style>
 
+    <style name="CollectionsSelector" parent="CollectionsSelectorParent">
+        <item name="android:elevation">@dimen/elevation_default</item>
+    </style>
+
 </resources>

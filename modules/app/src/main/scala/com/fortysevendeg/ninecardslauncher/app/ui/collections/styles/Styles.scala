@@ -8,7 +8,7 @@ import android.support.v7.widget.CardView
 import android.view.View
 import android.view.ViewGroup.LayoutParams._
 import android.widget.ImageView.ScaleType
-import android.widget.{FrameLayout, TextView}
+import android.widget.{FrameLayout, ImageView, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
@@ -43,6 +43,10 @@ trait Styles {
 
   def titleStyle(implicit theme: NineCardsTheme): Tweak[TextView] =
     tvColor(theme.get(CollectionDetailTextTabSelectedColor)) +
+      vGone
+
+  def selectorStyle(drawable: Drawable)(implicit theme: NineCardsTheme): Tweak[ImageView] =
+    ivSrc(drawable)+
       vGone
 
   def fabButtonApplicationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
