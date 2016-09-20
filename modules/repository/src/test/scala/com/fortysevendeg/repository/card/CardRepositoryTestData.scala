@@ -1,6 +1,6 @@
 package com.fortysevendeg.repository.card
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{CardData, Card}
+import com.fortysevendeg.ninecardslauncher.repository.model.{CardsWithCollectionId, CardData, Card}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntityData, CardEntity}
 
 import scala.util.Random
@@ -22,10 +22,14 @@ trait CardRepositoryTestData {
   val testNotification = Random.nextString(10)
   val testPackageNameOption = Option(testPackageName)
   val testNotificationOption = Option(testNotification)
+  val testMockWhere = "mocked-where"
 
   val cardEntitySeq = createCardEntitySeq(5)
   val cardEntity = cardEntitySeq(0)
   val cardSeq = createCardSeq(5)
+  val cardDataSeq = cardSeq map (_.data)
+  val cardsWithCollectionIdSeq = createCardWithCollectionIdSeq(5)
+  val cardIdSeq = cardSeq map (_.id)
   val card = cardSeq(0)
 
   def createCardEntitySeq(num: Int) = List.tabulate(num)(
@@ -80,4 +84,10 @@ trait CardRepositoryTestData {
     intent = testIntent,
     imagePath = testImagePath,
     notification = testNotificationOption)
+
+  def createCardWithCollectionIdSeq(num: Int) = List.tabulate(num){
+    i => CardsWithCollectionId (
+      collectionId = testCollectionId ,
+      data = cardDataSeq)
+  }
 }

@@ -14,6 +14,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 
 trait DockAppRepositorySpecification
   extends Specification
@@ -96,6 +97,31 @@ class DockAppRepositorySpec
           val result = dockAppRepository.addDockApp(data = createDockAppData).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
+    }
+
+    "addDockApps" should {
+
+      "return a sequence of DockApp objects with a valid request" in
+        new DockAppRepositoryScope {
+
+          contentResolverWrapper.inserts(any,any,any,any) returns dockAppIdSeq
+          val result = dockAppRepository.addDockApps(datas = dockAppDataSeq).value.run
+
+          result must beLike{
+            case Right(dockApps) =>
+              dockApps map (_.id) shouldEqual dockAppIdSeq
+              dockApps map (_.data.name) shouldEqual (dockAppDataSeq map (_.name))
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new DockAppRepositoryScope {
+
+          contentResolverWrapper.inserts(any, any, any, any) throws contentResolverException
+          val result = dockAppRepository.addDockApps(datas = dockAppDataSeq).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+
     }
 
     "deleteDockApps" should {
@@ -189,6 +215,25 @@ class DockAppRepositorySpec
         }
     }
 
+    "updateDockApps" should {
+
+      "return a successful result when the dockApps are updated" in
+        new DockAppRepositoryScope {
+
+          contentResolverWrapper.updateByIds(any, any, any, any) returns Seq(5)
+          val result = dockAppRepository.updateDockApps(items = dockAppSeq).value.run
+          result shouldEqual Right(Seq(5))
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new DockAppRepositoryScope {
+
+          contentResolverWrapper.updateByIds(any, any, any, any) throws contentResolverException
+          val result = dockAppRepository.updateDockApps(items = dockAppSeq).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+    }
+
     "fetchDockApps" should {
 
       "return all DockApps" in
@@ -233,6 +278,38 @@ class DockAppRepositorySpec
             f = getListFromCursor(dockAppEntityFromCursor)) throws contentResolverException
 
           val result = dockAppRepository.fetchDockApps().value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+    }
+
+    "fetchIterableDockApps" should {
+
+      "return an IterableCursor of Widget  " in
+        new DockAppMockCursor with DockAppRepositoryScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+
+          val result = dockAppRepository.fetchIterableDockApps(where = testMockWhere).value.run
+
+          result must beLike {
+            case Right(iterator) =>
+              toSeq(iterator) shouldEqual dockAppSeq
+          }
+
+          there was one(contentResolverWrapper).getCursor(
+            mockUri,
+            AppEntity.allFields,
+            testMockWhere,
+            Seq.empty,
+            "")
+        }
+
+      "return an a RepositoryException when a exception is thrown " in
+        new DockAppMockCursor with DockAppRepositoryScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+
+          val result = dockAppRepository.fetchIterableDockApps(where = testMockWhere).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }

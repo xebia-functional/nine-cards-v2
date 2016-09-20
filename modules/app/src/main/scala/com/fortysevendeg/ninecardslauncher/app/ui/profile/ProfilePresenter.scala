@@ -46,7 +46,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   override def onDriveConnected(bundle: Bundle): Unit = clientStatuses match {
     case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
       loadUserAccounts(client)
-    case _ => actions.showConnectingGoogleError(() => tryToConnect()).run
+    case _ => actions.showEmptyAccountsContent(error = true, () => tryToConnect())
   }
 
   override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit =
@@ -54,21 +54,20 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       contextWrapper.original.get match {
         case Some(activity) =>
           Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
-            case Failure(e) => showError()
+            case Failure(e) => actions.showEmptyAccountsContent(error = true, () => tryToConnect())
             case _ =>
           }
         case _ =>
       }
     } else {
-      showError()
+      actions.showEmptyAccountsContent(error = true, () => tryToConnect())
     }
 
   def initialize(): Unit = {
     di.userProcess.getUser.resolveAsync2(
       onResult = user => {
         (user.userProfile.name, user.email) match {
-          case (Some(name), Some(email)) =>
-            actions.userProfile(name, email, user.userProfile.avatar).run
+          case (Some(name), Some(email)) => actions.userProfile(name, email, user.userProfile.avatar).run
           case _ =>
         }
       })
@@ -103,7 +102,9 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def saveSharedCollection(sharedCollection: SharedCollection): Unit = {
     addSharedCollection(sharedCollection).resolveAsyncUi2(
-      onResult = (c) => actions.showAddCollectionMessage(sharedCollection.sharedCollectionId) ~ Ui(sendBroadCast(BroadAction(CollectionAddedActionFilter.action, Some(c.id.toString)))),
+      onResult = (c) =>
+        actions.showAddCollectionMessage(sharedCollection.sharedCollectionId) ~
+          Ui(sendBroadCast(BroadAction(CollectionAddedActionFilter.action, Some(c.id.toString)))),
       onException = (ex) => actions.showErrorSavingCollectionInScreen(() => loadPublications()))
   }
 
@@ -114,14 +115,11 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   def loadPublications(): Unit =
     di.sharedCollectionsProcess.getPublishedCollections().resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
-      onResult = (sharedCollections) => {
-        if (sharedCollections.isEmpty) {
-          actions.showEmptyPublicationsMessageInScreen(() => loadPublications())
-        } else {
-          actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
-        }
+      onResult = {
+        case sharedCollections if sharedCollections.isEmpty => actions.showEmptyPublicationsContent()
+        case sharedCollections => actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
       },
-      onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen(() => loadPublications()))
+      onException = (ex: Throwable) => actions.showEmptyPublicationsContent(error = true, () => loadPublications()))
 
   def loadSubscriptions(): Unit = {
 
@@ -133,13 +131,10 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     getSubscriptions.resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = {
-        case subscriptions if subscriptions.isEmpty =>
-          actions.showEmptySubscriptionsMessageInScreen() ~
-            actions.hideLoading()
-        case subscriptions =>
-          actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
+        case subscriptions if subscriptions.isEmpty => actions.showEmptySubscriptionsContent()
+        case subscriptions => actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
       },
-      onException = (ex: Throwable) => actions.showErrorLoadingSubscriptionsInScreen())
+      onException = (ex: Throwable) => actions.showEmptySubscriptionsContent(error = true, () => loadSubscriptions()))
   }
 
   def onSubscribe(sharedCollectionId: String, subscribeStatus: Boolean): Unit = {
@@ -156,10 +151,10 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
       (if (subscribeStatus) subscribe(sharedCollectionId) else unsubscribe(sharedCollectionId)).resolveAsyncUi2(
         onResult = (_) => actions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus),
-        onException = (ex) => actions.showErrorSubscribing(() => loadSubscriptions()))
+        onException = (ex) => actions.showErrorSubscribing(triedToSubscribe = subscribeStatus) ~
+            actions.refreshCurrentSubscriptions() // TODO Remove when we've got different states for the switch - issue #783
+      )
   }
-
-  def showError(): Unit = actions.showConnectingGoogleError(() => tryToConnect()).run
 
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean =
     (requestCode, resultCode) match {
@@ -167,7 +162,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         tryToConnect()
         true
       case (`resolveGooglePlayConnection`, _) =>
-        showError()
+        actions.showEmptyAccountsContent(error = true, () => tryToConnect())
         true
       case _ => false
     }
@@ -267,7 +262,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
 
     maybeName match {
-      case Some(name) if name.length > 0 =>
+      case Some(name) if name.nonEmpty =>
         withConnectedClient { client =>
           createOrUpdate(name, client, cloudId).resolveAsyncUi2(
             onResult = (_) => Ui(loadUserAccounts(client)),
@@ -326,17 +321,17 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
 
     loadAccounts(client, filterOutResourceIds).resolveAsyncUi2(
+      onPreTask = () => actions.showLoading(),
       onResult = accountSyncs => {
         syncEnabled = true
         if (accountSyncs.isEmpty) {
           launchService()
-          actions.showLoading()
+          actions.showEmptyAccountsContent()
         } else {
           actions.setAccountsAdapter(accountSyncs)
         }
       },
-      onException = (_) => actions.showConnectingGoogleError(() => loadUserAccounts(client)),
-      onPreTask = () => actions.showLoading()
+      onException = (_) => actions.showEmptyAccountsContent(error = true, () => loadUserAccounts(client))
     )
   }
 
@@ -379,27 +374,17 @@ trait ProfileUiActions {
 
   def showLoading(): Ui[Any]
 
-  def hideLoading(): Ui[Any]
+  def showAddCollectionMessage(sharedCollectionId: String): Ui[Any]
 
-  def showAddCollectionMessage(mySharedCollectionId: String): Ui[Any]
+  def refreshCurrentSubscriptions(): Ui[Any] // TODO Remove when we've got different states for the switch - issue #783
 
-  def showErrorLoadingCollectionInScreen(clickAction: () => Unit): Ui[Any]
+  def showUpdatedSubscriptions(sharedCollectionId: String, subscribed: Boolean): Ui[Any]
 
-  def showEmptyPublicationsMessageInScreen(clickAction: () => Unit): Ui[Any]
-
-  def showErrorLoadingSubscriptionsInScreen(): Ui[Any]
-
-  def showEmptySubscriptionsMessageInScreen(): Ui[Any]
-
-  def showUpdatedSubscriptions(originalSharedCollectionId: String, subscribed: Boolean): Ui[Any]
-
-  def showErrorSubscribing(clickAction: () => Unit): Ui[Any]
+  def showErrorSubscribing(triedToSubscribe: Boolean): Ui[Any]
 
   def showContactUsError(clickAction: () => Unit): Ui[Any]
 
   def showContactUsError(): Ui[Any]
-
-  def showConnectingGoogleError(clickAction: () => Unit): Ui[Any]
 
   def showLoadingUserError(clickAction: () => Unit): Ui[Any]
 
@@ -421,6 +406,12 @@ trait ProfileUiActions {
     sharedCollections: Seq[SharedCollection],
     onAddCollection: (SharedCollection) => Unit,
     onShareCollection: (SharedCollection) => Unit): Ui[Any]
+
+  def showEmptyPublicationsContent(error: Boolean = false, reload: () => Unit = () => ()): Ui[Any]
+
+  def showEmptySubscriptionsContent(error: Boolean = false, reload: () => Unit = () => ()): Ui[Any]
+
+  def showEmptyAccountsContent(error: Boolean = false, reload: () => Unit = () => ()): Ui[Any]
 
   def userProfile(name: String, email: String, avatarUrl: Option[String]): Ui[Any]
 
