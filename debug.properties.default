@@ -1,5 +1,6 @@
 # Backend V2
 backend.v2.url=
+backend.v2.clientid=
 
 # Third Parties
 crashlytics.enabled=false
