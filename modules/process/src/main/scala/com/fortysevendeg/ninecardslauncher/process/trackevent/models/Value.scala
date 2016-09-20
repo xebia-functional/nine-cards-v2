@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.trackevent
+package com.fortysevendeg.ninecardslauncher.process.trackevent.models
 
 sealed trait Value {
   def value: Long
@@ -50,7 +50,7 @@ case object AddedToCollectionValue extends Value {
   override def value: Long = 10
 }
 
-case object RemovedInCollectionValue extends Value {
+case object RemovedFromCollectionValue extends Value {
   override def value: Long = -3
 }
 

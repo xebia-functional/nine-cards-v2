@@ -12,7 +12,8 @@ trait SharedCollectionsProcess {
     *
     * @param sharedCollectionId the shared collection identifier
     * @return the SharedCollection
-    * @throws SharedCollectionsExceptions if there was an error fetching the collection or it doesn't exists
+    * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
+    * @throws SharedCollectionsException if there was an error fetching the collection or it doesn't exists
     */
   def getSharedCollection(
     sharedCollectionId: String)(implicit context: ContextSupport): TaskService[SharedCollection]
@@ -25,7 +26,8 @@ trait SharedCollectionsProcess {
     * @param offset offset of query
     * @param limit limit of query
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]
-    * @throws SharedCollectionsExceptions if there was an error fetching the collections
+    * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
+    * @throws SharedCollectionsException if there was an error fetching the collections
     */
   def getSharedCollectionsByCategory(
     category: NineCardCategory,
@@ -37,15 +39,18 @@ trait SharedCollectionsProcess {
     * Get published collections
     *
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]
-    * @throws SharedCollectionsExceptions if there was an error fetching the published collections
+    * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
+    * @throws SharedCollectionsException if there was an error fetching the published collections
     */
   def getPublishedCollections()(implicit context: ContextSupport): TaskService[Seq[SharedCollection]]
 
   /**
     * Persist a SharedCollection
+    *
     * @param sharedCollection the defined collection to create
     * @return shared collection identifier
-    * @throws SharedCollectionsExceptions if the service cannot create the collection for some reason
+    * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
+    * @throws SharedCollectionsException if the service cannot create the collection for some reason
     */
   def createSharedCollection(
     sharedCollection: CreateSharedCollection
@@ -53,9 +58,11 @@ trait SharedCollectionsProcess {
 
   /**
     * Updates a SharedCollection
+    *
     * @param sharedCollection the defined collection to update
     * @return shared collection identifier
-    * @throws SharedCollectionsExceptions if the service cannot create the collection for some reason
+    * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
+    * @throws SharedCollectionsException if the service cannot create the collection for some reason
     */
   def updateSharedCollection(
     sharedCollection: UpdateSharedCollection
@@ -63,22 +70,28 @@ trait SharedCollectionsProcess {
 
   /**
     * Gets all the subscriptions of the current user
+    *
     * @return the Seq[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.Subscription]
-    * @throws SharedCollectionsExceptions if the service cannot get the subscriptions or the collections
+    * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
+    * @throws SharedCollectionsException if the service cannot get the subscriptions or the collections
     */
   def getSubscriptions()(implicit context: ContextSupport): TaskService[Seq[Subscription]]
 
   /**
     * Subscribes to a public collection
+    *
     * @param originalSharedCollectionId the public id of the collection to subscribe on
-    * @throws SharedCollectionsExceptions if the service cannot subscribe to the collection
+    * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
+    * @throws SharedCollectionsException if the service cannot subscribe to the collection
     */
   def subscribe(originalSharedCollectionId: String)(implicit context: ContextSupport): TaskService[Unit]
 
   /**
     * Unsubscribes from a public collection
+    *
     * @param originalSharedCollectionId the public id of the collection to unsubscribe from
-    * @throws SharedCollectionsExceptions if the service cannot unsubscribe from the collection
+    * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
+    * @throws SharedCollectionsException if the service cannot unsubscribe from the collection
     */
   def unsubscribe(originalSharedCollectionId: String)(implicit context: ContextSupport): TaskService[Unit]
 }

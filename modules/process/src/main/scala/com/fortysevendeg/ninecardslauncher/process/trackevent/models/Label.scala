@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.trackevent
+package com.fortysevendeg.ninecardslauncher.process.trackevent.models
 
 sealed trait Label {
   def name: String
