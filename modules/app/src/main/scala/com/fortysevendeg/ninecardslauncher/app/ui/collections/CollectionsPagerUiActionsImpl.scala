@@ -250,6 +250,7 @@ trait CollectionsPagerUiActionsImpl
   override def translationScrollY(dy: Int): Ui[Any] = {
     val translationY = tabs.getTranslationY.toInt
     val move = math.min(0, math.max(translationY - dy, -spaceMove))
+    val ratio: Float = move.toFloat / spaceMove.toFloat
     (tabs <~ vTranslationY(move) <~ vAlpha(1 + ratio)) ~ moveToolbar(move)
   }
 
@@ -450,17 +451,17 @@ trait CollectionsPagerUiActionsImpl
               (icon <~ ivSrc(resIcon)) ~
                 (title <~ tvText(collection.name))
             case (Left, ScrollDown) =>
-              (icon <~ animationTitle(fromLeft = true, ivSrc(resIcon))) ~
+              (icon <~ animationIcon(fromLeft = true, resIcon)) ~
                 (title <~ tvText(collection.name))
             case (Left, ScrollUp) =>
               (icon <~ ivSrc(resIcon)) ~
-                (title <~ animationTitle(fromLeft = true, tvText(collection.name)))
+                (title <~ animationTitle(fromLeft = true, collection.name))
             case (Right | Jump, ScrollDown) =>
-              (icon <~ animationTitle(fromLeft = false, ivSrc(resIcon))) ~
+              (icon <~ animationIcon(fromLeft = false, resIcon)) ~
                 (title <~ tvText(collection.name))
             case (Right | Jump, ScrollUp) =>
               (icon <~ ivSrc(resIcon)) ~
-                (title <~ animationTitle(fromLeft = false, tvText(collection.name)))
+                (title <~ animationTitle(fromLeft = false, collection.name))
             case _ => Ui.nop
           }) ~
             adapter.notifyChanged(position) ~

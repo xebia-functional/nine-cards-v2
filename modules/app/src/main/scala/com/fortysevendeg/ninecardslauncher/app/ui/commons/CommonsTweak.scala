@@ -161,13 +161,13 @@ object ExtraTweaks {
   def uiLongToast2(msg: String)(implicit c: ContextWrapper): Ui[Unit] =
     Ui(Toast.makeText(c.application, msg, Toast.LENGTH_LONG).show())
 
-  def vResize(size: Int): Tweak[View] = vResize(size, size)
+  def vResize(size: Int): Tweak[View] = vResize(Option(size), Option(size))
 
-  def vResize(width: Int, height: Int): Tweak[View] = Tweak[View] {
+  def vResize(width: Option[Int] = None, height: Option[Int] = None): Tweak[View] = Tweak[View] {
     view =>
       val params = view.getLayoutParams
-      params.height = width
-      params.width = height
+      height foreach (params.height = _)
+      width foreach (params.width = _)
       view.requestLayout()
   }
 
