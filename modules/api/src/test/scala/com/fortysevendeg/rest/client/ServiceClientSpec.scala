@@ -22,90 +22,8 @@ trait ServiceClientSpecification
 
     val httpClient = mock[HttpClient]
 
-    val mockResponse = mock[HttpClientResponse]
-
     val serviceClient = new ServiceClient(httpClient, baseUrl)
 
-  }
-
-  trait WithValidResponse {
-
-    self: ServiceClientScope =>
-
-    mockResponse.statusCode returns 200
-    mockResponse.body returns Some(json)
-
-  }
-
-  trait WithValidEmptyResponse {
-
-    self: ServiceClientScope =>
-
-    mockResponse.statusCode returns 200
-    mockResponse.body returns None
-
-  }
-
-  trait WithSuccessfullyHttpClientMock {
-
-    self: ServiceClientScope =>
-
-    mockResponse.statusCode returns 200
-
-    mockResponse.body returns Some(json)
-
-    httpClient.doGet(any, any) returns TaskService(Task(Either.right(mockResponse)))
-
-    httpClient.doDelete(any, any) returns TaskService {
-      Task(Either.right(mockResponse))
-    }
-
-    httpClient.doPost(any, any) returns TaskService {
-      Task(Either.right(mockResponse))
-    }
-
-    httpClient.doPost[SampleRequest](any, any, any)(any) returns TaskService {
-      Task(Either.right(mockResponse))
-    }
-
-    httpClient.doPut(any, any) returns TaskService {
-      Task(Either.right(mockResponse))
-    }
-
-    httpClient.doPut[SampleRequest](any, any, any)(any) returns TaskService {
-      Task(Either.right(mockResponse))
-    }
-  }
-
-  trait WithFailedHttpClientMock {
-
-    self: ServiceClientScope =>
-
-    val exception = HttpClientException("")
-
-    httpClient.doGet(any, any) returns TaskService {
-      Task(Either.left(exception))
-    }
-
-    httpClient.doDelete(any, any) returns TaskService {
-      Task(Either.left(exception))
-    }
-
-    httpClient.doPost(any, any) returns TaskService {
-      Task(Either.left(exception))
-    }
-
-    httpClient.doPost[SampleRequest](any, any, any)(any) returns TaskService {
-      Task(Either.left(exception))
-    }
-
-    httpClient.doPut(any, any) returns TaskService {
-      Task(Either.left(exception))
-    }
-
-    httpClient.doPut[SampleRequest](any, any, any)(any) returns TaskService {
-      Task(Either.left(exception))
-    }
   }
 
 }
@@ -115,127 +33,540 @@ case class Test(value: Int)
 class ServiceClientSpec
   extends ServiceClientSpecification {
 
-  "Service Client component" should {
+  "get method from ServiceClient" should {
 
-    "return a valid response for a valid call to get with response" in
-      new ServiceClientScope with WithValidResponse {
-
-        httpClient.doGet(any, any) returns serviceRight(mockResponse)
-
-        serviceClient.get(baseUrl, Seq.empty, Some(readsResponse)) mustRight {
-          _.data shouldEqual sampleResponse
-        }
-
-        there was one(httpClient).doGet(any, any)
-        there was noMoreCallsTo(httpClient)
-      }
-
-    "return a valid response for a valid call to get without response" in
-      new ServiceClientScope with WithValidEmptyResponse {
-
-        httpClient.doGet(any, any) returns serviceRight(mockResponse)
-
-        serviceClient.get[Unit](baseUrl, Seq.empty, None, emptyResponse = true) mustRight (_.data must beNone)
-
-        there was one(httpClient).doGet(any, any)
-        there was noMoreCallsTo(httpClient)
-      }
-
-    "return a valid response for a valid call to delete with response" in
-      new ServiceClientScope with WithValidResponse {
-
-        httpClient.doDelete(any, any) returns serviceRight(mockResponse)
-
-        serviceClient.delete[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)) mustRight {
-          _.data shouldEqual sampleResponse
-        }
-
-        there was one(httpClient).doDelete(any, any)
-        there was noMoreCallsTo(httpClient)
-      }
-
-    "return a valid response for a valid call to post" in
-      new ServiceClientScope with WithValidResponse {
-
-        httpClient.doPost(any, any) returns serviceRight(mockResponse)
-
-        serviceClient.emptyPost[SampleResponse](baseUrl, Seq.empty, Some(readsResponse)) mustRight {
-          _.data shouldEqual sampleResponse
-        }
-
-        there was one(httpClient).doPost(any, any)
-        there was noMoreCallsTo(httpClient)
-      }
-
-    "return a valid response for a valid call to post with valid arguments" in
-      new ServiceClientScope with WithValidResponse {
-
-        httpClient.doPost(any, any, any)(any) returns serviceRight(mockResponse)
-
-        val request = SampleRequest("sample-request")
-        serviceClient.post(baseUrl, Seq.empty, request, Some(readsResponse)) mustRight {
-          _.data shouldEqual sampleResponse
-        }
-
-        there was one(httpClient).doPost[SampleRequest](any, any, ===(request))(any)
-        there was noMoreCallsTo(httpClient)
-      }
-
-    "return a valid response for a valid call to put" in
-      new ServiceClientScope with WithValidResponse {
-
-        httpClient.doPut(any, any) returns serviceRight(mockResponse)
-
-        serviceClient.emptyPut(baseUrl, Seq.empty, Some(readsResponse)) mustRight (_.data shouldEqual sampleResponse)
-
-        there was one(httpClient).doPut(any, any)
-        there was noMoreCallsTo(httpClient)
-      }
-
-    "return a valid response for a valid call to put with valid arguments" in
-      new ServiceClientScope with WithValidResponse {
-
-        httpClient.doPut(any, any, any)(any) returns serviceRight(mockResponse)
-
-        val request = SampleRequest("sample-request")
-        serviceClient.put(baseUrl, Seq.empty, request, Some(readsResponse)) mustRight {
-          _.data shouldEqual sampleResponse
-        }
-
-        there was one(httpClient).doPut[SampleRequest](any, any, anArgThat(IsEqual.equalTo(request)))(any)
-        there was noMoreCallsTo(httpClient)
-      }
-
-    "throws a ServiceClientException when no Reads found for the response type" in
+    "return a valid response when service return a valid response" in
       new ServiceClientScope {
-        httpClient.doGet(any, any) returns serviceLeft(exception)
-        serviceClient.get[Test](baseUrl, Seq.empty).mustLeft[ServiceClientException]
+
+        httpClient.doGet(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data shouldEqual sampleResponse
+        }
+
+        there was one(httpClient).doGet(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
       }
 
-    "return a HttpClientException response when the call to get method throw an exception" in
-      new ServiceClientScope with WithFailedHttpClientMock {
-        httpClient.doGet(any, any) returns serviceLeft(exception)
-        serviceClient.get(baseUrl, Seq.empty, Some(readsResponse)).mustLeft[ServiceClientException]
+    "return None when the service return a valid empty response" in
+      new ServiceClientScope {
+
+        httpClient.doGet(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.get[Unit](path, headers, None, emptyResponse = true) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beNone
+        }
+
+        there was one(httpClient).doGet(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
       }
 
-    "return a HttpClientException when the call to delete method throw an exception" in
-      new ServiceClientScope with WithFailedHttpClientMock {
+    "return ServiceClientException when the service return an exception" in
+      new ServiceClientScope {
+
+        httpClient.doGet(any, any) returns serviceLeft(exception)
+
+        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+
+        there was one(httpClient).doGet(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a status code of 'Not Found'" in
+      new ServiceClientScope {
+
+        httpClient.doGet(any, any) returns serviceRight(notFoundHttpClientResponse)
+
+        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+
+        there was one(httpClient).doGet(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a invalid JSON in the response" in
+      new ServiceClientScope {
+
+        httpClient.doGet(any, any) returns serviceRight(invalidHttpClientResponse)
+
+        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+
+        there was one(httpClient).doGet(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an empty response but we're expecting some" in
+      new ServiceClientScope {
+
+        httpClient.doGet(any, any) returns serviceRight(validEmptyHttpClientResponse)
+
+        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+
+        there was one(httpClient).doGet(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a valid response but the JSON reads is not provided'" in
+      new ServiceClientScope {
+
+        httpClient.doGet(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.get(path, headers, None, emptyResponse = false).mustLeft[ServiceClientException]
+
+        there was one(httpClient).doGet(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+  }
+
+  "delete method from ServiceClient" should {
+
+    "return a valid response when service return a valid response" in
+      new ServiceClientScope {
+
+        httpClient.doDelete(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data shouldEqual sampleResponse
+        }
+
+        there was one(httpClient).doDelete(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return None when the service return a valid empty response" in
+      new ServiceClientScope {
+
+        httpClient.doDelete(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.delete[Unit](path, headers, None, emptyResponse = true) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beNone
+        }
+
+        there was one(httpClient).doDelete(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an exception" in
+      new ServiceClientScope {
+
         httpClient.doDelete(any, any) returns serviceLeft(exception)
-        serviceClient.delete(baseUrl, Seq.empty, Some(readsResponse)).mustLeft[ServiceClientException]
+
+        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+
+        there was one(httpClient).doDelete(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
       }
 
-    "return a HttpClientException when the call to post method throw an exception" in
-      new ServiceClientScope with WithFailedHttpClientMock {
+    "return ServiceClientException when the service return a status code of 'Not Found'" in
+      new ServiceClientScope {
+
+        httpClient.doDelete(any, any) returns serviceRight(notFoundHttpClientResponse)
+
+        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+
+        there was one(httpClient).doDelete(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a invalid JSON in the response" in
+      new ServiceClientScope {
+
+        httpClient.doDelete(any, any) returns serviceRight(invalidHttpClientResponse)
+
+        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+
+        there was one(httpClient).doDelete(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an empty response but we're expecting some" in
+      new ServiceClientScope {
+
+        httpClient.doDelete(any, any) returns serviceRight(validEmptyHttpClientResponse)
+
+        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+
+        there was one(httpClient).doDelete(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a valid response but the JSON reads is not provided'" in
+      new ServiceClientScope {
+
+        httpClient.doDelete(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.delete(path, headers, None, emptyResponse = false).mustLeft[ServiceClientException]
+
+        there was one(httpClient).doDelete(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+  }
+
+  "emptyPost method from ServiceClient" should {
+
+    "return a valid response when service return a valid response" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.emptyPost(path, headers, Some(readsResponse), emptyResponse = false) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data shouldEqual sampleResponse
+        }
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return None when the service return a valid empty response" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.emptyPost[Unit](path, headers, None, emptyResponse = true) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beNone
+        }
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an exception" in
+      new ServiceClientScope {
+
         httpClient.doPost(any, any) returns serviceLeft(exception)
-        serviceClient.emptyPost(baseUrl, Seq.empty, Some(readsResponse)).mustLeft[ServiceClientException]
+
+        serviceClient.emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
       }
 
-    "return a HttpClientException when the call to put method throw an exception" in
-      new ServiceClientScope with WithFailedHttpClientMock {
+    "return ServiceClientException when the service return a status code of 'Not Found'" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any) returns serviceRight(notFoundHttpClientResponse)
+
+        serviceClient.emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a invalid JSON in the response" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any) returns serviceRight(invalidHttpClientResponse)
+
+        serviceClient.emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an empty response but we're expecting some" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any) returns serviceRight(validEmptyHttpClientResponse)
+
+        serviceClient.emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a valid response but the JSON reads is not provided'" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.emptyPost(path, headers, None, emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+  }
+
+  "post method from ServiceClient" should {
+
+    "return a valid response when service return a valid response" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any, any)(any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data shouldEqual sampleResponse
+        }
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return None when the service return a valid empty response" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any, any)(any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.post[SampleRequest, Unit](path, headers, sampleRequest, None, emptyResponse = true) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beNone
+        }
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an exception" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any, any)(any) returns serviceLeft(exception)
+
+        serviceClient.post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a status code of 'Not Found'" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any, any)(any) returns serviceRight(notFoundHttpClientResponse)
+
+        serviceClient.post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a invalid JSON in the response" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any, any)(any) returns serviceRight(invalidHttpClientResponse)
+
+        serviceClient.post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an empty response but we're expecting some" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any, any)(any) returns serviceRight(validEmptyHttpClientResponse)
+
+        serviceClient.post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a valid response but the JSON reads is not provided'" in
+      new ServiceClientScope {
+
+        httpClient.doPost(any, any, any)(any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.post(path, headers, sampleRequest, None, emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+  }
+
+  "emptyPut method from ServiceClient" should {
+
+    "return a valid response when service return a valid response" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.emptyPut(path, headers, Some(readsResponse), emptyResponse = false) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data shouldEqual sampleResponse
+        }
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return None when the service return a valid empty response" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.emptyPut[Unit](path, headers, None, emptyResponse = true) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beNone
+        }
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an exception" in
+      new ServiceClientScope {
+
         httpClient.doPut(any, any) returns serviceLeft(exception)
-        serviceClient.emptyPut(baseUrl, Seq.empty, Some(readsResponse)).mustLeft[ServiceClientException]
+
+        serviceClient.emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
       }
 
+    "return ServiceClientException when the service return a status code of 'Not Found'" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any) returns serviceRight(notFoundHttpClientResponse)
+
+        serviceClient.emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a invalid JSON in the response" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any) returns serviceRight(invalidHttpClientResponse)
+
+        serviceClient.emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an empty response but we're expecting some" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any) returns serviceRight(validEmptyHttpClientResponse)
+
+        serviceClient.emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a valid response but the JSON reads is not provided'" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.emptyPut(path, headers, None, emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers)
+        there was noMoreCallsTo(httpClient)
+      }
+  }
+
+  "put method from ServiceClient" should {
+
+    "return a valid response when service return a valid response" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any, any)(any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data shouldEqual sampleResponse
+        }
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return None when the service return a valid empty response" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any, any)(any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.put[SampleRequest, Unit](path, headers, sampleRequest, None, emptyResponse = true) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beNone
+        }
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an exception" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any, any)(any) returns serviceLeft(exception)
+
+        serviceClient.put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a status code of 'Not Found'" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any, any)(any) returns serviceRight(notFoundHttpClientResponse)
+
+        serviceClient.put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a invalid JSON in the response" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any, any)(any) returns serviceRight(invalidHttpClientResponse)
+
+        serviceClient.put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return an empty response but we're expecting some" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any, any)(any) returns serviceRight(validEmptyHttpClientResponse)
+
+        serviceClient.put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
+
+    "return ServiceClientException when the service return a valid response but the JSON reads is not provided'" in
+      new ServiceClientScope {
+
+        httpClient.doPut(any, any, any)(any) returns serviceRight(validHttpClientResponse)
+
+        serviceClient.put(path, headers, sampleRequest, None, emptyResponse = false)
+          .mustLeft[ServiceClientException]
+
+        there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
+        there was noMoreCallsTo(httpClient)
+      }
   }
 
 }

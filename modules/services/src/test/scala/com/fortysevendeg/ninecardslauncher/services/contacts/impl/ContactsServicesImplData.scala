@@ -4,7 +4,6 @@ import com.fortysevendeg.ninecardslauncher.commons.test.repository.{MockCursor, 
 import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.Fields
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
-import com.fortysevendeg.repository.StringDataType
 
 trait ContactsServicesImplData {
 

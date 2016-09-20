@@ -96,8 +96,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String)
     TaskService {
       Task {
         if (isError) {
-          val errorMessage = clientResponse.body getOrElse "No content"
-          Left(ServiceClientException(s"Status code ${clientResponse.statusCode}. $errorMessage"))
+          Left(ServiceClientException(s"Error making request. Status code ${clientResponse.statusCode}"))
         } else {
           (clientResponse.body, emptyResponse, maybeReads) match {
             case (Some(d), false, Some(r)) => transformResponse[T](d, r)
