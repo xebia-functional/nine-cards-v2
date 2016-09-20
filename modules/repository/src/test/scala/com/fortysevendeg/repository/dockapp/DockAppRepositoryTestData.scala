@@ -14,10 +14,13 @@ trait DockAppRepositoryTestData {
   val testIntent= Random.nextString(10)
   val testImagePath = Random.nextString(10)
   val testPosition = Random.nextInt(5)
+  val testMockWhere = "mock-where"
 
   val dockAppEntitySeq = createDockAppEntitySeq(5)
   val dockAppEntity = dockAppEntitySeq(0)
   val dockAppSeq = createDockAppSeq(5)
+  val dockAppIdSeq = dockAppSeq map (_.id)
+  val dockAppDataSeq = dockAppSeq map (_.data)
   val dockApp = dockAppSeq(0)
 
   def createDockAppEntitySeq(num: Int) = List.tabulate(num)(

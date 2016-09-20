@@ -26,6 +26,7 @@ trait WidgetRepositoryTestData {
   val testLabelOption = Option(testLabel)
   val testImagePathOption = Option(testImagePath)
   val testIntentOption = Option(testIntent)
+  val testMockWhere = "mock-where"
 
   val widgetEntitySeq = createWidgetEntitySeq(5)
   val widgetEntity = widgetEntitySeq(0)

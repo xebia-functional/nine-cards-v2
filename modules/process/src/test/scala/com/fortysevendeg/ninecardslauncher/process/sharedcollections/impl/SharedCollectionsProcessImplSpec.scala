@@ -374,6 +374,9 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.getSubscriptions()(any) returns
           TaskService(Task(Either.right(subscriptionList)))
 
+        mockApiServices.getPublishedCollections()(any) returns
+          TaskService(Task(Either.right(publicationList)))
+
         mockPersistenceServices.fetchCollections returns
           TaskService(Task(Either.right(collectionList)))
 
@@ -382,13 +385,24 @@ class SharedCollectionsProcessImplSpec
         result must beLike {
           case Right(subscriptions) =>
             subscriptions.size shouldEqual publicCollectionList.size
-            subscriptions map (s => Option(s.sharedCollectionId)) shouldEqual publicCollectionList.map(_.sharedCollectionId)
+            subscriptions map (s => Option(s.sharedCollectionId)) shouldEqual publicCollectionList.map(_._1)
         }
       }
 
     "returns a SharedCollectionsException if the service throws an exception getting the subscriptions" in
       new SharedCollectionsProcessProcessScope {
         mockApiServices.getSubscriptions()(any) returns
+          TaskService(Task(Either.left(apiException)))
+
+        mustLeft[SharedCollectionsException](sharedCollectionsProcess.getSubscriptions()(contextSupport))
+      }
+
+    "returns a SharedCollectionsExceptions if the service throws a exception getting the published collections" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.getSubscriptions()(any) returns
+          TaskService(Task(Either.right(subscriptionList)))
+
+        mockApiServices.getPublishedCollections()(any) returns
           TaskService(Task(Either.left(apiException)))
 
         mustLeft[SharedCollectionsException](sharedCollectionsProcess.getSubscriptions()(contextSupport))
@@ -406,6 +420,9 @@ class SharedCollectionsProcessImplSpec
       new SharedCollectionsProcessProcessScope {
         mockApiServices.getSubscriptions()(any) returns
           TaskService(Task(Either.right(subscriptionList)))
+
+        mockApiServices.getPublishedCollections()(any) returns
+          TaskService(Task(Either.right(publicationList)))
 
         mockPersistenceServices.fetchCollections returns
           TaskService(Task(Either.left(apiException)))

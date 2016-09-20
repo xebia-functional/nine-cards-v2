@@ -15,6 +15,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 
 trait WidgetRepositorySpecification
   extends Specification
@@ -45,7 +46,7 @@ trait WidgetMockCursor
   extends MockCursor
     with WidgetRepositoryTestData {
 
-  val cursorData = Seq(
+   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, widgetSeq map (_.id), IntDataType),
     (momentId, 1, widgetSeq map (_.data.momentId), IntDataType),
     (packageName, 2, widgetSeq map (_.data.packageName), StringDataType),
@@ -333,6 +334,39 @@ class WidgetRepositorySpec
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
+
+    "fetchIterableWidgets" should {
+
+      "return an IterableCursor of Widget  " in
+        new WidgetMockCursor with WidgetRepositoryScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+
+          val result = widgetRepository.fetchIterableWidgets(where = testMockWhere).value.run
+
+          result must beLike {
+            case Right(iterator) =>
+              toSeq(iterator) shouldEqual widgetSeq
+          }
+
+          there was one(contentResolverWrapper).getCursor(
+            mockUri,
+            AppEntity.allFields,
+            testMockWhere,
+            Seq.empty,
+            "")
+        }
+
+      "return an a RepositoryException when a exception is thrown " in
+        new WidgetMockCursor with WidgetRepositoryScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+
+          val result = widgetRepository.fetchIterableWidgets(where = testMockWhere).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+    }
+
 
     "updateWidget" should {
 
