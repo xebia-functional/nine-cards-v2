@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.trackevent
+package com.fortysevendeg.ninecardslauncher.process.trackevent.models
 
-import com.fortysevendeg.ninecardslauncher.process.trackevent.Action._
+import Action._
 
 sealed trait Action {
   def name: String
@@ -18,8 +18,8 @@ case object AddedToCollectionAction extends Action {
   override def name: String = addedToCollectionName
 }
 
-case object RemovedInCollectionAction extends Action {
-  override def name: String = removedInCollectionName
+case object RemovedFromCollectionAction extends Action {
+  override def name: String = removedFromCollectionName
 }
 
 case object AddedWidgetToMomentAction extends Action {
@@ -30,6 +30,6 @@ object Action {
   val openName = "Open"
   val openCardName = "OpenCard"
   val addedToCollectionName = "AddedToCollection"
-  val removedInCollectionName = "RemovedInCollection"
+  val removedFromCollectionName = "RemovedFromCollection"
   val addedWidgetToMomentName = "AddedWidgetToMoment"
 }

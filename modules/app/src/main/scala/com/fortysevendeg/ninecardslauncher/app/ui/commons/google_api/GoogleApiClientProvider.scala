@@ -45,7 +45,7 @@ trait GooglePlusApiClientProvider {
   def createGooglePlusClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient = {
     val gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
       .requestScopes(Plus.SCOPE_PLUS_PROFILE)
-      .requestIdToken(contextWrapper.bestAvailable.getString(R.string.default_web_client_id))
+      .requestIdToken(contextWrapper.bestAvailable.getString(R.string.api_v2_client_id))
       .setAccountName(account)
       .build()
 

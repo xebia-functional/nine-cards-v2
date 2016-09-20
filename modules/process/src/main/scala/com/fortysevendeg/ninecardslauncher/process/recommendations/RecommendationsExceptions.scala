@@ -8,6 +8,8 @@ case class RecommendedAppsException(message: String, cause: Option[Throwable] = 
   cause map initCause
 }
 
-trait ImplicitsRecommendationsException {
-  implicit def recommendedAppException = (t: Throwable) => RecommendedAppsException(t.getMessage, Option(t))
+case class RecommendedAppsConfigurationException(message: String, cause: Option[Throwable] = None)
+  extends RuntimeException(message)
+  with NineCardException{
+  cause map initCause
 }

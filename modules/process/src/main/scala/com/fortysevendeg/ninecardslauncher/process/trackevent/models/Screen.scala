@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.trackevent
+package com.fortysevendeg.ninecardslauncher.process.trackevent.models
 
-import com.fortysevendeg.ninecardslauncher.process.trackevent.Screen._
+import Screen._
 
 sealed trait Screen {
   def name: String
