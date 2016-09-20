@@ -16,8 +16,10 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+
 import scala.language.postfixOps
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 
 trait CardRepositorySpecification
   extends Specification

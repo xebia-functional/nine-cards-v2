@@ -1,14 +1,17 @@
 package com.fortysevendeg.rest.client
 
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.rest.client.http.{HttpClient, HttpClientResponse}
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import monix.eval.Task
 import play.api.libs.json.{Json, Reads, Writes}
+
 import scala.util.{Failure, Success, Try}
 
-class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
+class ServiceClient(httpClient: HttpClient, val baseUrl: String)
+  extends ImplicitsServiceClientExceptions {
 
   def get[Res](
     path: String,
@@ -17,7 +20,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     emptyResponse: Boolean = false
     ): TaskService[ServiceClientResponse[Res]] =
     for {
-      clientResponse <- httpClient.doGet(baseUrl.concat(path), headers)
+      clientResponse <- httpClient.doGet(baseUrl.concat(path), headers).resolve[ServiceClientException]
       response <- readResponse(clientResponse, reads, emptyResponse)
     } yield ServiceClientResponse(clientResponse.statusCode.intValue, response)
 
@@ -29,7 +32,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     emptyResponse: Boolean = false
     ): TaskService[ServiceClientResponse[Res]] =
     for {
-      clientResponse <- httpClient.doPost(baseUrl.concat(path), headers)
+      clientResponse <- httpClient.doPost(baseUrl.concat(path), headers).resolve[ServiceClientException]
       response <- readResponse(clientResponse, reads, emptyResponse)
     } yield ServiceClientResponse(clientResponse.statusCode, response)
 
@@ -42,7 +45,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     emptyResponse: Boolean = false
     )(implicit writes: Writes[Req]): TaskService[ServiceClientResponse[Res]] =
     for {
-      clientResponse <- httpClient.doPost[Req](baseUrl.concat(path), headers, body)
+      clientResponse <- httpClient.doPost[Req](baseUrl.concat(path), headers, body).resolve[ServiceClientException]
       response <- readResponse(clientResponse, reads, emptyResponse)
     } yield ServiceClientResponse(clientResponse.statusCode, response)
 
@@ -53,7 +56,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     emptyResponse: Boolean = false
     ): TaskService[ServiceClientResponse[Res]] =
     for {
-      clientResponse <- httpClient.doPut(baseUrl.concat(path), headers)
+      clientResponse <- httpClient.doPut(baseUrl.concat(path), headers).resolve[ServiceClientException]
       response <- readResponse(clientResponse, reads, emptyResponse)
     } yield ServiceClientResponse(clientResponse.statusCode, response)
 
@@ -65,7 +68,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     emptyResponse: Boolean = false
     )(implicit writes: Writes[Req]): TaskService[ServiceClientResponse[Res]] =
     for {
-      httpResponse <- httpClient.doPut[Req](baseUrl.concat(path), headers, body)
+      httpResponse <- httpClient.doPut[Req](baseUrl.concat(path), headers, body).resolve[ServiceClientException]
       response <- readResponse(httpResponse, reads, emptyResponse)
     } yield ServiceClientResponse(httpResponse.statusCode, response)
 
@@ -77,7 +80,7 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
     emptyResponse: Boolean = false
     ): TaskService[ServiceClientResponse[Res]] =
     for {
-      clientResponse <- httpClient.doDelete(baseUrl.concat(path), headers)
+      clientResponse <- httpClient.doDelete(baseUrl.concat(path), headers).resolve[ServiceClientException]
       response <- readResponse(clientResponse, reads, emptyResponse)
     } yield ServiceClientResponse(clientResponse.statusCode, response)
 
@@ -115,9 +118,5 @@ class ServiceClient(httpClient: HttpClient, val baseUrl: String) {
       case Success(s) => Right(Some(s))
       case Failure(e) => Left(ServiceClientException(message = e.getMessage, cause = Some(e)))
     }
-
-}
-
-object ServiceClient {
 
 }
