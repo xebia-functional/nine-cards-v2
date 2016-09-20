@@ -19,6 +19,7 @@ trait UserRepositoryTestData {
   val testCover = Random.nextString(10)
   val testDeviceName = Random.nextString(10)
   val testDeviceCloudId = Random.nextString(10)
+  val testMockWhere = "mock-where"
 
   val userEntitySeq = createUserEntitySeq(5)
   val userEntity = userEntitySeq.head
