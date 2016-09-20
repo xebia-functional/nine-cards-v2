@@ -26,8 +26,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
@@ -90,7 +90,11 @@ trait CollectionsPagerUiActionsImpl
 
   lazy val toolbarTitle = findView(TR.collections_toolbar_title)
 
-  lazy val title = findView(TR.collections_title)
+  lazy val titleContent = findView(TR.collections_title_content)
+
+  lazy val titleName = findView(TR.collections_title_name)
+
+  lazy val titleIcon = findView(TR.collections_title_icon)
 
   lazy val selector = findView(TR.collections_selector)
 
@@ -125,7 +129,8 @@ trait CollectionsPagerUiActionsImpl
     } ~
       (root <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
       (tabs <~ tabsStyle) ~
-      (title <~ titleStyle) ~
+      (titleContent <~ titleContentStyle) ~
+      (titleName <~ titleNameStyle) ~
       (selector <~ selectorStyle(selectorDrawable)) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
@@ -272,9 +277,9 @@ trait CollectionsPagerUiActionsImpl
         case EditingCollectionMode => Ui.nop
         case _ => iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(alpha)
       }) ~
-      ((isTop, title.getVisibility) match {
-        case (true, View.GONE) => (title <~~ animationEnterTitle) ~~ (selector <~ vVisible)
-        case (false, View.VISIBLE) => (selector <~ vGone) ~ (title <~ animationOutTitle)
+      ((isTop, titleContent.getVisibility, collectionsPagerPresenter.statuses.collectionMode) match {
+        case (true, View.GONE, NormalCollectionMode) => (titleContent <~~ animationEnterTitle) ~~ (selector <~ vVisible)
+        case (false, View.VISIBLE, NormalCollectionMode) => (selector <~ vGone) ~ (titleContent <~ animationOutTitle)
         case _ => Ui.nop
       })
   }
@@ -298,10 +303,13 @@ trait CollectionsPagerUiActionsImpl
     val items = collectionsPagerPresenter.statuses.positionsEditing.toSeq.length
     invalidateOptionMenu() ~
       (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
-      (iconContent <~ (getScrollType match {
-        case Some(ScrollDown) => applyAnimation(alpha = Some(0))
-        case _ => Snail.blank
-      })) ~
+      (getScrollType match {
+        case Some(ScrollDown) =>
+          iconContent <~ applyAnimation(alpha = Some(0))
+        case Some(ScrollUp) =>
+          titleContent <~ applyAnimation(alpha = Some(0))
+        case _ => Ui.nop
+      }) ~
       notifyDataSetChangedCollectionAdapter
   }
 
@@ -314,15 +322,20 @@ trait CollectionsPagerUiActionsImpl
 
   override def closeEditingModeUi(): Ui[Any] =
     (toolbarTitle <~ tvText("")) ~
-      (iconContent <~ (getScrollType match {
-        case Some(ScrollDown) => vVisible + vAlpha(0f) ++ applyAnimation(alpha = Some(1))
-        case _ => Snail.blank
-      })) ~
+      (getScrollType match {
+        case Some(ScrollDown) =>
+          iconContent <~ (vVisible + vAlpha(0f) ++ applyAnimation(alpha = Some(1)))
+        case Some(ScrollUp) =>
+          titleContent <~ applyAnimation(alpha = Some(1))
+        case _ => Ui.nop
+      }) ~
       notifyDataSetChangedCollectionAdapter ~ invalidateOptionMenu()
 
   override def exitTransition: Ui[Any] = {
     val activity = activityContextWrapper.getOriginal
-    ((toolbar <~ exitToolbar) ~
+    ((titleContent <~ applyAnimation(alpha = Some(0))) ~
+      (selector <~ applyAnimation(alpha = Some(0))) ~
+      (toolbar <~ exitToolbar) ~
       (tabs <~ exitViews) ~
       (iconContent <~ exitViews)) ~
       (viewPager <~~ exitViews) ~~
@@ -454,22 +467,51 @@ trait CollectionsPagerUiActionsImpl
       (getAdapter map {
         adapter =>
           val resIcon = collection.getIconDetail
+          val distance = resGetDimensionPixelSize(R.dimen.padding_large)
+          val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
           ((pageMovement, adapter.statuses.scrollType) match {
             case (Start | Idle, _) =>
               (icon <~ ivSrc(resIcon)) ~
-                (title <~ tvText(collection.name))
+                (titleName <~ tvText(collection.name)) ~
+                (titleIcon <~ ivSrc(resIcon))
             case (Left, ScrollDown) =>
               (icon <~ animationIcon(fromLeft = true, resIcon)) ~
-                (title <~ tvText(collection.name))
+                (titleName <~ tvText(collection.name)) ~
+                (titleIcon <~ ivSrc(resIcon))
             case (Left, ScrollUp) =>
               (icon <~ ivSrc(resIcon)) ~
-                (title <~ animationTitle(fromLeft = true, collection.name))
+                (titleContent <~~
+                  applyAnimation(
+                    duration = Option(duration),
+                    x = Option(distance),
+                    alpha = Option(0))) ~~
+                (titleContent <~ vTranslationX(-distance)) ~~
+                (titleName <~ tvText(collection.name)) ~~
+                (titleIcon <~ ivSrc(resIcon)) ~~
+                (titleContent <~~
+                  applyAnimation(
+                    duration = Option(duration),
+                    x = Option(0),
+                    alpha = Option(1)))
             case (Right | Jump, ScrollDown) =>
               (icon <~ animationIcon(fromLeft = false, resIcon)) ~
-                (title <~ tvText(collection.name))
+                (titleName <~ tvText(collection.name)) ~
+                (titleIcon <~ ivSrc(resIcon))
             case (Right | Jump, ScrollUp) =>
               (icon <~ ivSrc(resIcon)) ~
-                (title <~ animationTitle(fromLeft = false, collection.name))
+                (titleContent <~~
+                  applyAnimation(
+                    duration = Option(duration),
+                    x = Option(-distance),
+                    alpha = Option(0))) ~~
+                (titleContent <~ vTranslationX(distance)) ~~
+                (titleName <~ tvText(collection.name)) ~~
+                (titleIcon <~ ivSrc(resIcon)) ~~
+                (titleContent <~~
+                  applyAnimation(
+                    duration = Option(duration),
+                    x = Option(0),
+                    alpha = Option(1)))
             case _ => Ui.nop
           }) ~
             Ui(selectorDrawable.setSelected(position)) ~

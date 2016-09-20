@@ -5,14 +5,13 @@ import android.graphics._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
-import macroid.FullDsl._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 
 case class CollectionSelectorDrawable(
   color: Int = Color.WHITE)(implicit contextWrapper: ContextWrapper)
   extends Drawable {
 
-  val padding = 2 dp
+  val padding = resGetDimensionPixelSize(R.dimen.padding_selector_collection_details)
 
   var selected = -1
 

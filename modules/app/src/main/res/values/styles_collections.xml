@@ -40,11 +40,24 @@
         <item name="android:scaleType">centerInside</item>
     </style>
 
-    <style name="CollectionsTitle">
+    <style name="CollectionsTitleContent">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">top|center_horizontal</item>
-        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="CollectionsTitleIcon">
+        <item name="android:layout_width">@dimen/size_icon_title_collapse_collection_details</item>
+        <item name="android:layout_height">@dimen/size_icon_title_collapse_collection_details</item>
+        <item name="android:layout_marginRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="CollectionsTitleName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textAllCaps">true</item>
     </style>
 

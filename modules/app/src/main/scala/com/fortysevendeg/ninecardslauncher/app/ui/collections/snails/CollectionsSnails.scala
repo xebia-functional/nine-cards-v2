@@ -7,7 +7,6 @@ import android.view.View
 import android.view.animation.{AccelerateDecelerateInterpolator, DecelerateInterpolator}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
@@ -61,24 +60,6 @@ object CollectionsSnails {
         alpha = Option(1),
         scaleX = Option(1f),
         scaleY = Option(1f)) +
-      vRotation(0)
-  }
-
-  def animationTitle(
-    fromLeft: Boolean,
-    name: String)(implicit context: ContextWrapper) = {
-    val distance = if (fromLeft) -resGetDimensionPixelSize(R.dimen.padding_large) else resGetDimensionPixelSize(R.dimen.padding_large)
-    val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
-    applyAnimation(
-      duration = Option(duration),
-      x = Option(-distance),
-      alpha = Option(0)) +
-      vTranslationX(distance) +
-      tvText(name) ++
-      applyAnimation(
-        duration = Option(duration),
-        x = Option(0),
-        alpha = Option(1)) +
       vRotation(0)
   }
 

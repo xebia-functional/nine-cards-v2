@@ -8,7 +8,7 @@ import android.support.v7.widget.CardView
 import android.view.View
 import android.view.ViewGroup.LayoutParams._
 import android.widget.ImageView.ScaleType
-import android.widget.{FrameLayout, ImageView, TextView}
+import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
@@ -41,9 +41,11 @@ trait Styles {
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
       vInvisible
 
-  def titleStyle(implicit theme: NineCardsTheme): Tweak[TextView] =
-    tvColor(theme.get(CollectionDetailTextTabSelectedColor)) +
+  def titleContentStyle(implicit theme: NineCardsTheme): Tweak[LinearLayout] =
       vGone
+
+  def titleNameStyle(implicit theme: NineCardsTheme): Tweak[TextView] =
+    tvColor(theme.get(CollectionDetailTextTabSelectedColor))
 
   def selectorStyle(drawable: Drawable)(implicit theme: NineCardsTheme): Tweak[ImageView] =
     ivSrc(drawable)+

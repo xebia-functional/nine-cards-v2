@@ -18,9 +18,19 @@
             android:id="@+id/collections_toolbar_title"
             style="@style/CollectionsToolbarTitle" />
 
-        <TextView
-            android:id="@+id/collections_title"
-            style="@style/CollectionsTitle"/>
+        <LinearLayout
+            android:id="@+id/collections_title_content"
+            style="@style/CollectionsTitleContent">
+
+            <ImageView
+                android:id="@+id/collections_title_icon"
+                style="@style/CollectionsTitleIcon"/>
+
+            <TextView
+                android:id="@+id/collections_title_name"
+                style="@style/CollectionsTitleName"/>
+
+        </LinearLayout>
 
     </android.support.v7.widget.Toolbar>
 
