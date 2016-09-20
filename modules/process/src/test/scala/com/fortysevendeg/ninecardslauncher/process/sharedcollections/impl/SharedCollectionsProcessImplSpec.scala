@@ -233,6 +233,9 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.getSubscriptions()(any) returns
           TaskService(Task(Either.right(subscriptionList)))
 
+        mockApiServices.getPublishedCollections()(any) returns
+          TaskService(Task(Either.right(publicationList)))
+
         mockPersistenceServices.fetchCollections returns
           TaskService(Task(Either.right(collectionList)))
 
@@ -241,7 +244,7 @@ class SharedCollectionsProcessImplSpec
         result must beLike {
           case Right(subscriptions) =>
             subscriptions.size shouldEqual publicCollectionList.size
-            subscriptions map (s => Option(s.sharedCollectionId)) shouldEqual publicCollectionList.map(_.sharedCollectionId)
+            subscriptions map (s => Option(s.sharedCollectionId)) shouldEqual publicCollectionList.map(_._1)
         }
       }
 
@@ -254,10 +257,25 @@ class SharedCollectionsProcessImplSpec
         result must beAnInstanceOf[Left[SharedCollectionsExceptions, _]]
       }
 
+    "returns a SharedCollectionsExceptions if the service throws a exception getting the published collections" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.getSubscriptions()(any) returns
+          TaskService(Task(Either.right(subscriptionList)))
+
+        mockApiServices.getPublishedCollections()(any) returns
+          TaskService(Task(Either.left(apiException)))
+
+        val result = sharedCollectionsProcess.getSubscriptions()(contextSupport).value.run
+        result must beAnInstanceOf[Left[SharedCollectionsExceptions, _]]
+      }
+
     "returns a SharedCollectionsExceptions if the service throws a exception getting the collections" in
       new SharedCollectionsProcessProcessScope {
         mockApiServices.getSubscriptions()(any) returns
           TaskService(Task(Either.right(subscriptionList)))
+
+        mockApiServices.getPublishedCollections()(any) returns
+          TaskService(Task(Either.right(publicationList)))
 
         mockPersistenceServices.fetchCollections returns
           TaskService(Task(Either.left(apiException)))
