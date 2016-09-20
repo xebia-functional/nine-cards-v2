@@ -11,6 +11,8 @@ class ApiService(serviceClient: ServiceClient) {
 
   val prefixPathUserConfig = "/ninecards/userconfig"
 
+  def baseUrl: String = serviceClient.baseUrl
+
   def login(
     user: User,
     headers: Seq[(String, String)])

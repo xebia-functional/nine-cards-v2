@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.observers.NineCardsObserver._
 import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, SyncDeviceState}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
@@ -17,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.UpdateSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{ImplicitsSharedCollectionsExceptions, SharedCollectionsExceptions}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
@@ -29,8 +29,7 @@ class SynchronizeDeviceService
   with Contexts[Service]
   with ContextSupportProvider
   with GoogleDriveApiClientService
-  with BroadcastDispatcher
-  with ImplicitsSharedCollectionsExceptions { self =>
+  with BroadcastDispatcher { self =>
 
   import SyncDeviceState._
 
@@ -43,7 +42,10 @@ class SynchronizeDeviceService
   override def onHandleIntent(intent: Intent): Unit = {
     registerDispatchers
 
-    updateCollections().resolveAsync2()
+    updateCollections().resolveAsync2(onException = (e: Throwable) => e match {
+      case e: SharedCollectionsConfigurationException => AppLog.invalidConfigurationV2
+      case _ =>
+    })
 
     synchronizeDevice
   }

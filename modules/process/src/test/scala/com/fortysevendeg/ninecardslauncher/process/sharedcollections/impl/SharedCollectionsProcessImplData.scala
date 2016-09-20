@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppsCollectionType, Communication}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreateSharedCollection
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, UpdateSharedCollection}
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection => CollectionPersistence}
 
@@ -21,6 +21,41 @@ trait SharedCollectionsProcessImplData {
   val limit = 50
 
   val statusCodeOk = 200
+  val sharedCollectionResponseList = SharedCollectionResponseList(
+    statusCode = statusCodeOk,
+    items = generateSharedCollectionSeq())
+  val sharedCollectionResponse = SharedCollectionResponse(
+    statusCode = statusCodeOk,
+    sharedCollection = sharedCollectionResponseList.items.head)
+  val sharedCollectionId = "shared-collection-id"
+  val createSharedCollection = generateCreateSharedCollection
+  val createSharedCollectionResponse =
+    CreateSharedCollectionResponse(
+      statusCode = statusCodeOk,
+      sharedCollectionId = sharedCollectionId)
+  val updateSharedCollectionResponse =
+    UpdateSharedCollectionResponse(
+      statusCode = statusCodeOk,
+      sharedCollectionId = sharedCollectionId)
+  val updateSharedCollection = generateUpdateSharedCollection
+  val subscriptionList = SubscriptionResponseList(
+    statusCode = statusCodeOk,
+    items = generateSubscriptionResponse())
+  val publicationList = SharedCollectionResponseList(
+    statusCode = statusCodeOk,
+    items = generateSharedCollection())
+  val publicationListIds = publicationList.items.map(_.sharedCollectionId)
+  val collectionList = generateCollection()
+  val publicCollectionList =
+    collectionList.flatMap(collection => collection.originalSharedCollectionId.map((_, collection))).filter{
+      case (sharedCollectionId: String, _) => !publicationListIds.contains(sharedCollectionId)
+    }
+  val subscribeResponse =
+    SubscribeResponse(
+      statusCode = statusCodeOk)
+  val unsubscribeResponse =
+    UnsubscribeResponse(
+      statusCode = statusCodeOk)
 
   def generateSharedCollectionSeq() = 1 to 10 map { i =>
     SharedCollection(
@@ -38,12 +73,6 @@ trait SharedCollectionsProcessImplData {
       community = Random.nextBoolean())
   }
 
-  val shareCollectionList = SharedCollectionResponseList(
-    statusCode = statusCodeOk,
-    items = generateSharedCollectionSeq())
-
-  val sharedCollectionId = "shared-collection-id"
-
   def generateCreateSharedCollection =
     CreateSharedCollection(
       author = Random.nextString(10),
@@ -53,23 +82,15 @@ trait SharedCollectionsProcessImplData {
       icon = Random.nextString(10),
       community = Random.nextBoolean())
 
-  val createSharedCollection = generateCreateSharedCollection
-
-  val createSharedCollectionResponse =
-    CreateSharedCollectionResponse(
-      statusCode = statusCodeOk,
-      sharedCollectionId = sharedCollectionId)
-
-  def generateSharedCollectionId() =
-    sharedCollectionId + Random.nextInt(10)
+  def generateUpdateSharedCollection =
+    UpdateSharedCollection(
+      sharedCollectionId,
+      name = Random.nextString(10),
+      packages = Seq.empty)
 
   def generateSubscriptionResponse() = 1 to 10 map { i =>
     SubscriptionResponse(sharedCollectionId = generateSharedCollectionId())
   }
-
-  val subscriptionList = SubscriptionResponseList(
-    statusCode = statusCodeOk,
-    items = generateSubscriptionResponse())
 
   def generateSharedCollection() = 1 to 10 map { i =>
     SharedCollection(
@@ -87,18 +108,6 @@ trait SharedCollectionsProcessImplData {
       community = false)
   }
 
-  val publicationList = SharedCollectionResponseList(
-    statusCode = statusCodeOk,
-    items = generateSharedCollection())
-
-  val publicationListIds = publicationList.items.map(_.sharedCollectionId)
-
-  def generateOptionOriginalSharedCollectionId() =
-    Random.nextBoolean() match {
-      case true => None
-      case false => Some(generateSharedCollectionId())
-    }
-
   def generateCollection() = 1 to 10 map { i =>
     CollectionPersistence(
       id = i,
@@ -115,22 +124,16 @@ trait SharedCollectionsProcessImplData {
       moment = None)
   }
 
-  val collectionList = generateCollection()
-
-  val publicCollectionList =
-    collectionList.flatMap(collection => collection.originalSharedCollectionId.map((_, collection))).filter{
-      case (sharedCollectionId: String, _) => !publicationListIds.contains(sharedCollectionId)
+  def generateOptionOriginalSharedCollectionId() =
+    Random.nextBoolean() match {
+      case true => None
+      case false => Some(generateSharedCollectionId())
     }
 
-  val subscribeResponse =
-    SubscribeResponse(
-      statusCode = statusCodeOk)
+  def generateSharedCollectionId() =
+    sharedCollectionId + Random.nextInt(10)
 
-  val unsubscribeResponse =
-    UnsubscribeResponse(
-      statusCode = statusCodeOk)
-
-  def collectionPersistenceOwnedSeq = shareCollectionList.items.map { col =>
+  def collectionPersistenceOwnedSeq = sharedCollectionResponseList.items.map { col =>
     CollectionPersistence(
       id = Random.nextInt(),
       position = Random.nextInt(10),
@@ -146,7 +149,7 @@ trait SharedCollectionsProcessImplData {
       moment = None)
   }
 
-  def collectionPersistenceSubscribedSeq = shareCollectionList.items.map { col =>
+  def collectionPersistenceSubscribedSeq = sharedCollectionResponseList.items.map { col =>
     CollectionPersistence(
       id = Random.nextInt(),
       position = Random.nextInt(10),

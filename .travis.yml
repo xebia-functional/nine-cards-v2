@@ -9,9 +9,6 @@ addons:
       - lib32z1
       - lib32stdc++6
 before_install:
-  - openssl aes-256-cbc -k "$encrypted_key" -in debug-keys.tar.enc -out debug-keys.tar -d
-  - tar xvf debug-keys.tar
-  - mv local.properties modules/app/local.properties
   - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
   - tar xf android-sdk_r24-linux.tgz
   - export ANDROID_HOME=$PWD/android-sdk-linux
@@ -23,10 +20,6 @@ before_install:
   - echo yes | android update sdk --all --filter extra-android-support --no-ui
   - echo yes | android update sdk --all --filter extra-android-m2repository --no-ui
   - echo yes | android update sdk --all --filter extra-google-m2repository --no-ui
-  - export GIT_BRANCH=${TRAVIS_BRANCH}
-  - export GIT_PR=${TRAVIS_PULL_REQUEST}
-  - export GIT_COMMIT=${TRAVIS_COMMIT}
-  - pip install --user codecov && codecov -t ${CODECOV_TOKEN}
 script:
   - sbt ++$TRAVIS_SCALA_VERSION "project commons" coverage test
   - sbt ++$TRAVIS_SCALA_VERSION "project api" coverage test
@@ -36,4 +29,4 @@ script:
   - sbt ++$TRAVIS_SCALA_VERSION "project app" coverage test
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
-  - codecov
+  - bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}

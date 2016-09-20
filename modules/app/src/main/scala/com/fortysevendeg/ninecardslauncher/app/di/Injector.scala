@@ -42,7 +42,7 @@ import com.fortysevendeg.ninecardslauncher.process.widget.WidgetProcess
 import com.fortysevendeg.ninecardslauncher.process.widget.impl.WidgetProcessImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.accounts.impl.AccountsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.analytics.impl.AnalyticsServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.analytics.impl.AnalyticsTrackServices
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.awareness.impl.AwarenessServicesImpl
@@ -55,6 +55,7 @@ import com.fortysevendeg.ninecardslauncher.services.intents.impl.LauncherIntentS
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.plus.impl.GooglePlusServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.track.impl.ConsoleTrackServices
 import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.wifi.impl.WifiServicesImpl
 import com.fortysevendeg.ninecardslauncher2.R
@@ -261,15 +262,20 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   }
 
   override def trackEventProcess: TrackEventProcess = {
-    val tracker = {
-      val track = GoogleAnalytics
-        .getInstance(contextSupport.context)
-        .newTracker(contextSupport.context.getString(R.string.ga_trackingId))
-      track.setAppName(contextSupport.context.getString(R.string.app_name))
-      track.enableAutoActivityTracking(false)
-      track
+    def createService() = {
+      val resources = contextSupport.getResources
+      if (resources.getString(R.string.analytics_enabled).equalsIgnoreCase("true")) {
+        val track = GoogleAnalytics
+          .getInstance(contextSupport.context)
+          .newTracker(resources.getString(R.string.ga_trackingId))
+        track.setAppName(resources.getString(R.string.app_name))
+        track.enableAutoActivityTracking(false)
+        new AnalyticsTrackServices(track)
+      } else {
+        new ConsoleTrackServices
+      }
     }
-    new TrackEventProcessImpl(new AnalyticsServicesImpl(tracker))
+    new TrackEventProcessImpl(createService())
   }
 
   lazy val observerRegister = new ObserverRegister(uriCreator)

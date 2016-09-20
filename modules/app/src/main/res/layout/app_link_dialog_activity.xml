@@ -5,7 +5,7 @@
     style="@style/AppLinkDialogRoot">
 
     <LinearLayout
-        android:id="@+id/app_link_loading"
+        android:id="@+id/app_link_loading_layout"
         style="@style/AppLinkLoadingLayout">
 
         <ProgressBar
