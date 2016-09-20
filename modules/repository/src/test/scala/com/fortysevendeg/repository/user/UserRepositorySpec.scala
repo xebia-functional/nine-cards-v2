@@ -2,7 +2,10 @@ package com.fortysevendeg.repository.user
 
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.User
 import com.fortysevendeg.ninecardslauncher.repository.provider.UserEntity._
@@ -13,8 +16,6 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 
 import scala.language.postfixOps
 
@@ -233,6 +234,60 @@ class UserRepositorySpec
             f = getEntityFromCursor(userEntityFromCursor))
         }
     }
+
+    "fetchUsers" should {
+
+      "return all User" in
+        new UserRepositoryScope {
+
+          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields)(f = getListFromCursor(userEntityFromCursor)) returns userEntitySeq
+          val result = userRepository.fetchUsers.value.run
+          result shouldEqual Right(userSeq)
+        }
+
+
+      "return a RepositoryException when a exception is thrown" in
+        new UserRepositoryScope {
+
+          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields)(f = getListFromCursor(userEntityFromCursor)) throws contentResolverException
+          val result = userRepository.fetchUsers.value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+
+    }
+
+    "fetchIterableUsers" should {
+
+      "return an IterableCursor of User " in
+        new UserMockCursor with UserRepositoryScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+
+          val result = userRepository.fetchIterableUsers(where = testMockWhere).value.run
+
+          result must beLike {
+            case Right(iterator) =>
+              toSeq(iterator) shouldEqual userSeq
+          }
+
+          there was one(contentResolverWrapper).getCursor(
+            mockUri,
+            AppEntity.allFields,
+            testMockWhere,
+            Seq.empty,
+            "")
+        }
+
+      "return an a RepositoryException when a exception is thrown " in
+        new UserMockCursor with UserRepositoryScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+
+          val result = userRepository.fetchIterableUsers(where = testMockWhere).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+    }
+
 
     "updateUser" should {
 

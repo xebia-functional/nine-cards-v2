@@ -3,7 +3,10 @@ package com.fortysevendeg.repository.moment
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.Moment
 import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity._
@@ -14,8 +17,6 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 
 trait MomentRepositorySpecification
   extends Specification
@@ -113,6 +114,31 @@ class MomentRepositorySpec
         }
     }
 
+    "addMoments" should {
+
+      "return a sequence of Moment objects with a valid request" in
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.inserts(any,any,any,any) returns momentIdSeq
+
+          val result = momentRepository.addMoments(datas = momentDataSeq).value.run
+
+          result must beLike{
+            case Right(moments) =>
+              moments map (_.data.wifi) shouldEqual (momentSeq map (_.data.wifi))
+              moments map (_.id) shouldEqual momentIdSeq
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.inserts(any, any, any, any) throws contentResolverException
+          val result = momentRepository.addMoments(datas = momentDataSeq).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+    }
+
     "deleteMoments" should {
 
       "return a successful result when all the moments are deleted" in
@@ -137,7 +163,7 @@ class MomentRepositorySpec
       "return a successful result when a valid moment id is given" in
         new MomentRepositoryScope {
 
-          contentResolverWrapper.deleteById(any,any,any,any,any) returns 1
+          contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
           val result = momentRepository.deleteMoment(moment).value.run
           result shouldEqual Right(1)
         }
@@ -145,7 +171,7 @@ class MomentRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new MomentRepositoryScope {
 
-          contentResolverWrapper.deleteById(any,any,any,any,any) throws contentResolverException
+          contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
           val result = momentRepository.deleteMoment(moment).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
@@ -194,7 +220,7 @@ class MomentRepositorySpec
       "return a successful result when the moment is updated" in
         new MomentRepositoryScope {
 
-          contentResolverWrapper.updateById(any,any,any,any) returns 1
+          contentResolverWrapper.updateById(any, any, any, any) returns 1
           val result = momentRepository.updateMoment(item = moment).value.run
           result shouldEqual Right(1)
         }
@@ -202,7 +228,7 @@ class MomentRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new MomentRepositoryScope {
 
-          contentResolverWrapper.updateById(any,any,any,any) throws contentResolverException
+          contentResolverWrapper.updateById(any, any, any, any) throws contentResolverException
           val result = momentRepository.updateMoment(item = moment).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
@@ -256,6 +282,38 @@ class MomentRepositorySpec
             f = getListFromCursor(momentEntityFromCursor)) throws contentResolverException
 
           val result = momentRepository.fetchMoments().value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+    }
+
+    "fetchIterableMoments" should {
+
+      "return an IterableCursor of Moment" in
+        new MomentMockCursor with MomentRepositoryScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+
+          val result = momentRepository.fetchIterableMoments(where = testMockWhere).value.run
+
+          result must beLike {
+            case Right(iterator) =>
+              toSeq(iterator) shouldEqual momentSeq
+          }
+
+          there was one(contentResolverWrapper).getCursor(
+            mockUri,
+            AppEntity.allFields,
+            testMockWhere,
+            Seq.empty,
+            "")
+        }
+
+      "return an a RepositoryException when a exception is thrown " in
+        new MomentMockCursor with MomentRepositoryScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+
+          val result = momentRepository.fetchIterableMoments(where = testMockWhere).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
