@@ -8,6 +8,8 @@ import monix.eval.Task
 import cats.syntax.either._
 import monix.execution.Scheduler.Implicits.global
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
 import scala.util.{Either, Failure, Success}
 
 object TaskServiceOps {
@@ -52,6 +54,8 @@ object TaskServiceOps {
         }
       }
     }
+
+    def resolveNow: Either[NineCardException, A] = Await.result(t.value.runAsync, 10.seconds)
 
     def resolve2[E >: Throwable](
       onResult: A => Unit = a => (),

@@ -5,11 +5,11 @@ import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher._
 import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
 import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.ContextWrapper
 
@@ -23,9 +23,11 @@ class Jobs(implicit contextWrapper: ContextWrapper)
   lazy val preferenceValues = new NineCardsPreferencesValue
 
   def getTheme: NineCardsTheme =
-    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).value.run match {
+    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).resolveNow match {
       case Right(t) => t
-      case _ => getDefaultTheme
+      case Left(e) =>
+        AppLog.printErrorMessage(e)
+        getDefaultTheme
     }
 
   def sendBroadCast(broadAction: BroadAction) = {
