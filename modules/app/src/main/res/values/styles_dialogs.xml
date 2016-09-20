@@ -407,40 +407,62 @@
         <item name="android:padding">@dimen/publish_collection_form_padding</item>
     </style>
 
+    <style name="PublishCollectionWizardInformationCollectionNameContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/padding_xlarge</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+
+    <style name="PublishCollectionWizardInformationCollectionNameTag">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:text">@string/collectionName</item>
+    </style>
+
     <style name="PublishCollectionWizardInformationInput">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/padding_xlarge</item>
     </style>
 
-    <style name="PublishCollectionWizardInformationInputMessage">
+    <style name="PublishCollectionWizardInformationCollectionNameInputMessage">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">@dimen/publish_collection_field_height</item>
         <item name="android:inputType">text</item>
-    </style>
-
-    <style name="PublishCollectionWizardInformationCollectionNameInputMessage" parent="PublishCollectionWizardInformationInputMessage">
         <item name="android:hint">@string/addInformationcollectionName</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:paddingLeft">@dimen/publish_collection_form_padding</item>
+        <item name="android:paddingRight">@dimen/publish_collection_form_padding</item>
     </style>
 
     <style name="PublishCollectionWizardInformationCategorySelectContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">@dimen/publish_collection_category_padding</item>
-        <item name="android:paddingRight">@dimen/publish_collection_category_padding</item>
+        <item name="android:layout_marginTop">@dimen/padding_xlarge</item>
         <item name="android:orientation">vertical</item>
     </style>
+
+    <style name="PublishCollectionWizardInformationCategoryTag">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:text">@string/category</item>
+    </style>
+
 
     <style name="PublishCollectionWizardInformationCategorySelect">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/padding_xxlarge</item>
         <item name="android:orientation">horizontal</item>
     </style>
 
     <style name="PublishCollectionWizardInformationCategorySpinner">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">@dimen/publish_collection_field_height</item>
         <item name="android:gravity">left|center_vertical</item>
         <item name="android:layout_weight">1</item>
         <item name="android:text">@string/addInformationCategory</item>
@@ -450,6 +472,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:src">@drawable/tab_menu_indicator</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:gravity">right|center_vertical</item>
     </style>
 

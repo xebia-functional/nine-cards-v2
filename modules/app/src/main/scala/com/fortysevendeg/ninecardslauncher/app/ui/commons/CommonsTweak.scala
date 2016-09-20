@@ -26,7 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.adapters.ThemeArrayAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerBackgroundDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.flexbox.FlexboxLayout
 import macroid._
@@ -244,6 +244,8 @@ object ExtraTweaks {
 
   def sChangeProgressBarColor(color: Int) =
     Tweak[ProgressBar](_.getIndeterminateDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
+
+  def etHintColor(color: Int): Tweak[EditText] = Tweak[EditText](_.setHintTextColor(color))
 
 }
 

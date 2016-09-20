@@ -61,18 +61,29 @@
                             android:id="@+id/publish_collection_wizard_information_form"
                             style="@style/PublishCollectionWizardInformationForm">
 
-                        <android.support.design.widget.TextInputLayout
-                                android:id="@+id/collection_name_information"
-                                style="@style/PublishCollectionWizardInformationInput">
+                        <LinearLayout
+                                style="@style/PublishCollectionWizardInformationCollectionNameContent">
+
+                            <TextView
+                                    android:id="@+id/collection_name_tag"
+                                    style="@style/PublishCollectionWizardInformationCollectionNameTag"/>
 
                             <EditText
                                     android:id="@+id/collection_name"
                                     style="@style/PublishCollectionWizardInformationCollectionNameInputMessage"/>
 
-                        </android.support.design.widget.TextInputLayout>
+                            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                                    android:id="@+id/collection_name_line"
+                                    style="@style/PublishCollectionWizardInformationLineHorizontal"/>
+
+                        </LinearLayout>
 
                         <LinearLayout
                                 style="@style/PublishCollectionWizardInformationCategorySelectContent">
+
+                            <TextView
+                                    android:id="@+id/category_tag"
+                                    style="@style/PublishCollectionWizardInformationCategoryTag"/>
 
                             <LinearLayout
                                     android:id="@+id/category_select"
@@ -92,7 +103,7 @@
                                     android:id="@+id/category_line"
                                     style="@style/PublishCollectionWizardInformationLineHorizontal"/>
 
-                    </LinearLayout>
+                        </LinearLayout>
 
                     </LinearLayout>
 

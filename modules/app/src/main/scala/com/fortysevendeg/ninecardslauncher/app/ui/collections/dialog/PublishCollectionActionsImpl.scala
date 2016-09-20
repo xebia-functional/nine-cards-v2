@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.TextView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -55,9 +56,15 @@ trait PublishCollectionActionsImpl
 
   lazy val informationMessage = findView(TR.publish_collection_information_message)
 
-  lazy val collectionInput = findView(TR.collection_name_information)
+  lazy val collectionTag = findView(TR.collection_name_tag)
+
+  lazy val collectionInput = findView(TR.collection_name)
 
   lazy val collectionName = findView(TR.collection_name)
+
+  lazy val collectionNameLine = findView(TR.collection_name_line)
+
+  lazy val categoryTag = findView(TR.category_tag)
 
   lazy val categorySelect = findView(TR.category_select)
 
@@ -102,17 +109,24 @@ trait PublishCollectionActionsImpl
       (startMessage <~ subtitleTextStyle) ~
       (informationHeader <~ titleTextStyle) ~
       (informationMessage <~ subtitleTextStyle) ~
-      (collectionName <~ titleTextStyle) ~
+      (collectionTag <~ subtitleTextStyle) ~
+      (collectionName <~
+        titleTextStyle <~
+        etHintColor(theme.get(DrawerIconColor).alpha(0.3f))) ~
+      (categoryTag <~ subtitleTextStyle) ~
       (publishButton <~ subtitleTextStyle) ~
       (publishingHeader <~ titleTextStyle) ~
       (publishingMessage <~ subtitleTextStyle) ~
       (endHeader <~ titleTextStyle) ~
       (endMessage <~ subtitleTextStyle) ~
-      (startArrow <~ tivColor(theme.get(DrawerIconColor)) <~ On.click(Ui(publishCollectionPresenter.showCollectionInformation()))) ~
+      (startArrow <~
+        tivColor(theme.get(DrawerIconColor)) <~
+        On.click(Ui(publishCollectionPresenter.showCollectionInformation()))) ~
+      (collectionNameLine <~ iconStyle(0.5f)) ~
       (categoryIndicator <~ tivColor(theme.get(DrawerIconColor))) ~
-      (categoryLine <~ vBackgroundColor(theme.get(DrawerIconColor))) ~
+      (categoryLine <~ iconStyle(0.5f)) ~
       (loading <~ sChangeProgressBarColor(colorPrimary)) ~
-      (endLine <~ vBackgroundColor(theme.get(DrawerIconColor))) ~
+      (endLine <~ iconStyle()) ~
       (endButton <~ subtitleTextStyle) ~
       createPagers() ~
       (paginationPanel <~ reloadPagers(currentPage = 0))
@@ -189,6 +203,7 @@ trait PublishCollectionActionsImpl
     maybeCategory foreach { category =>
       categorySpinner.setTag(category)
       categorySpinner.setText(categoryNamesMenu(categories.indexOf(category)))
+      categorySpinner.setTextColor(theme.get(DrawerIconColor))
     }
   }
 
@@ -198,7 +213,7 @@ trait PublishCollectionActionsImpl
       case _ => None
     }
 
-  private[this] def categoryOnClick: Tweak[TextView] =
+  private[this] def categoryOnClick: Tweak[View] =
     On.click {
       categorySpinner <~ vListThemedPopupWindowShow(
         values = categoryNamesMenu,
