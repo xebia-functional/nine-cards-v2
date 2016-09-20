@@ -8,10 +8,11 @@ dist
 /.ivy*
 
 # Keys
-debug.properties
-release.properties
-debug.keystore
-local.properties
+/debug.properties
+/release.properties
+/debug.keystore
+/local.properties
+/modules/app/local.properties
 
 # Crashlytics
 /modules/app/crashlytics/fabric.properties

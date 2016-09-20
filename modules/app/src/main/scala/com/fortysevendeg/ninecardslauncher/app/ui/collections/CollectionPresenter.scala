@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
-import com.fortysevendeg.ninecardslauncher.process.trackevent._
+import com.fortysevendeg.ninecardslauncher.process.trackevent.models._
 import macroid.{ActivityContextWrapper, Ui}
 
 case class CollectionPresenter(
@@ -44,7 +44,7 @@ case class CollectionPresenter(
   }
 
   def removeCards(cards: Seq[Card]): Unit = {
-    cards foreach (trackCard(_, RemovedInCollectionAction))
+    cards foreach (trackCard(_, RemovedFromCollectionAction))
     actions.removeCards(cards).run
   }
 
@@ -88,8 +88,8 @@ case class CollectionPresenter(
             di.trackEventProcess.openAppFromCollection(packageName, category).resolveAsync2()
           case AddedToCollectionAction =>
             di.trackEventProcess.addAppToCollection(packageName, category).resolveAsync2()
-          case RemovedInCollectionAction =>
-            di.trackEventProcess.removedInCollection(packageName, category).resolveAsync2()
+          case RemovedFromCollectionAction =>
+            di.trackEventProcess.removeFromCollection(packageName, category).resolveAsync2()
           case _ =>
         }
       }

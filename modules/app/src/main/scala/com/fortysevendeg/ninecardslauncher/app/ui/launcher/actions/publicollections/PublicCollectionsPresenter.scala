@@ -3,13 +3,13 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollect
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{TopSharedCollection, TypeSharedCollection}
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 
@@ -49,6 +49,12 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
       .resolveAsyncUi2(onException = _ => actions.showContactUsError)
 
   def loadPublicCollections(): Unit = {
+
+    def getSharedCollections(
+      category: NineCardCategory,
+      typeSharedCollection: TypeSharedCollection): TaskService[Seq[SharedCollection]] =
+      di.sharedCollectionsProcess.getSharedCollectionsByCategory(category, typeSharedCollection)
+
     getSharedCollections(statuses.category, statuses.typeSharedCollection).resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = (sharedCollections: Seq[SharedCollection]) => {
@@ -58,13 +64,13 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
           actions.loadPublicCollections(sharedCollections, saveSharedCollection, shareCollection)
         }
       },
-      onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen())
+      onException = (e: Throwable) => e match {
+        case e: SharedCollectionsConfigurationException =>
+          AppLog.invalidConfigurationV2
+          actions.showErrorLoadingCollectionInScreen()
+        case _ => actions.showErrorLoadingCollectionInScreen()
+      })
   }
-
-  private[this] def getSharedCollections(
-    category: NineCardCategory,
-    typeSharedCollection: TypeSharedCollection): TaskService[Seq[SharedCollection]] =
-    di.sharedCollectionsProcess.getSharedCollectionsByCategory(category, typeSharedCollection)
 
 }
 

@@ -18,6 +18,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs, ResultC
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
@@ -119,7 +120,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         case sharedCollections if sharedCollections.isEmpty => actions.showEmptyPublicationsContent()
         case sharedCollections => actions.loadPublications(sharedCollections, saveSharedCollection, shareCollection)
       },
-      onException = (ex: Throwable) => actions.showEmptyPublicationsContent(error = true, () => loadPublications()))
+      onException = onException(actions.showEmptyPublicationsContent(error = true, () => loadPublications())))
 
   def loadSubscriptions(): Unit = {
 
@@ -134,7 +135,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         case subscriptions if subscriptions.isEmpty => actions.showEmptySubscriptionsContent()
         case subscriptions => actions.setSubscriptionsAdapter(subscriptions, onSubscribe)
       },
-      onException = (ex: Throwable) => actions.showEmptySubscriptionsContent(error = true, () => loadSubscriptions()))
+      onException = onException(actions.showEmptySubscriptionsContent(error = true, () => loadSubscriptions())))
   }
 
   def onSubscribe(sharedCollectionId: String, subscribeStatus: Boolean): Unit = {
@@ -151,9 +152,15 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
       (if (subscribeStatus) subscribe(sharedCollectionId) else unsubscribe(sharedCollectionId)).resolveAsyncUi2(
         onResult = (_) => actions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus),
-        onException = (ex) => actions.showErrorSubscribing(triedToSubscribe = subscribeStatus) ~
-            actions.refreshCurrentSubscriptions() // TODO Remove when we've got different states for the switch - issue #783
-      )
+        onException = onException(actions.showErrorSubscribing(triedToSubscribe = subscribeStatus) ~
+          actions.refreshCurrentSubscriptions()))
+  }
+
+  private[this] def onException(ui: Ui[Any]) = (e: Throwable) => e match {
+    case e: SharedCollectionsConfigurationException =>
+      AppLog.invalidConfigurationV2
+      ui
+    case _ => ui
   }
 
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): Boolean =
