@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.collections.CollectionCardsStyles
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.styles.{CommonStyles, CollectionCardsStyles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.SharedCollectionOps._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
@@ -25,6 +25,7 @@ import macroid._
 
 trait SharedCollectionItem
   extends CollectionCardsStyles
+  with CommonStyles
   with TypedFindView {
 
   implicit val context: ActivityContextWrapper
@@ -57,10 +58,10 @@ trait SharedCollectionItem
 
   def initialize()(implicit theme: NineCardsTheme): Ui[Any] = {
     (root <~ cardRootStyle) ~
-      (name <~ textStyle) ~
-      (author <~ textStyle) ~
-      (downloads <~ leftDrawableTextStyle(R.drawable.icon_collection_downloads)) ~
-      (subscriptions <~ leftDrawableTextStyle(R.drawable.icon_collection_subscriptions)) ~
+      (name <~ titleTextStyle) ~
+      (author <~ subtitleTextStyle) ~
+      (downloads <~ leftDrawableTextStyle(R.drawable.icon_collection_downloads) <~ subtitleTextStyle) ~
+      (subscriptions <~ leftDrawableTextStyle(R.drawable.icon_collection_subscriptions) <~ subtitleTextStyle) ~
       (addCollection <~ buttonStyle) ~
       (shareCollection <~ ivSrc(tintDrawable(R.drawable.icon_dialog_collection_share)))
   }
@@ -93,7 +94,7 @@ trait SharedCollectionItem
       (name <~ tvText(resGetString(collection.name) getOrElse collection.name)) ~
       (author <~ tvText(collection.author)) ~
       (subscriptions <~
-        (if (collection.subscriptions.isDefined) vVisible + tvText(resGetString(R.string.subscriptions_number, collection.views.toString)) else vGone )) ~
+        (if (collection.subscriptions.isDefined) vVisible + tvText(resGetString(R.string.subscriptions_number, collection.views.toString)) else vGone)) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (addCollection <~ addCollectionTweak()) ~
       (shareCollection <~ On.click(Ui(onShareCollection)))
