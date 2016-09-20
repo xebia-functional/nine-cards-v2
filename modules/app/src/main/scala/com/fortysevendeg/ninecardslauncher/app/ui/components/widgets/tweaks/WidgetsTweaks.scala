@@ -27,6 +27,12 @@ object TintableImageViewTweaks {
     view.setTint(Color.WHITE)
   }
 
+  def tivColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W] { view =>
+    view.defaultColor = color
+    view.pressedColor = color
+    view.setTint(color)
+  }
+
 }
 
 object TintableButtonTweaks {

@@ -24,10 +24,13 @@ trait CollectionRepositoryTestData {
   val testOriginalSharedCollectionIdOption = Option(testOriginalSharedCollectionId)
   val testSharedCollectionIdOption = Option(testSharedCollectionId)
   val testSharedCollectionSubscribedOption = Option(testSharedCollectionSubscribed)
+  val testMockWhere = "mock-where"
 
   val collectionEntitySeq = createCollectionEntitySeq(5)
   val collectionEntity = collectionEntitySeq(0)
   val collectionSeq = createCollectionSeq(5)
+  val collectionIdSeq = collectionSeq map (_.id)
+  val collectionDataSeq = collectionSeq map (_.data)
   val collection = collectionSeq(0)
 
   def createCollectionEntitySeq(num: Int) = List.tabulate(num)(

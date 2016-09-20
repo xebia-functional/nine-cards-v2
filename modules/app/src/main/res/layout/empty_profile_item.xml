@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/profile_empty_item"
+    style="@style/BaseActionsErrorContent">
+
+    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            android:id="@+id/profile_empty_image"
+            style="@style/BaseActionsErrorIcon"/>
+
+    <TextView
+            android:id="@+id/profile_empty_message"
+            style="@style/BaseActionsErrorMessage"/>
+
+    <android.support.v7.widget.AppCompatButton
+            android:id="@+id/profile_empty_button"
+            style="@style/BaseActionsErrorButton"/>
+
+</LinearLayout>

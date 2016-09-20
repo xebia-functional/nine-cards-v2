@@ -72,7 +72,7 @@ case class CollectionPresenter(
 
   def showData(): Unit = maybeCollection foreach (c => actions.showData(c.cards.isEmpty).run)
 
-  def changeScrollType(scrollType: ScrollType, scrollY: Int): Unit = actions.changeScrollType(scrollType, scrollY).run
+  def updateScroll(scrollY: Int): Unit = actions.updateVerticalScroll(scrollY).run
 
   private[this] def trackCard(card: Card, action: Action): Unit = card.cardType match {
     case AppCardType =>
@@ -130,7 +130,7 @@ trait CollectionUiActions {
 
   def showData(emptyCollection: Boolean): Ui[Any]
 
-  def changeScrollType(scrollType: ScrollType, scrollY: Int): Ui[Any]
+  def updateVerticalScroll(scrollY: Int): Ui[Any]
 
   def isPulling: Boolean
 

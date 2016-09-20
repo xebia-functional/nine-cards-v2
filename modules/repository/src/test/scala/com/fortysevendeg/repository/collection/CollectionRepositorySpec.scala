@@ -13,6 +13,7 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
@@ -108,6 +109,31 @@ class CollectionRepositorySpec
           val result = collectionRepository.addCollection(data = createCollectionData).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
+    }
+
+    "addCollections" should {
+
+      "return a sequence of DockApp objects with a valid request" in
+        new CollectionRepositoryScope {
+
+          contentResolverWrapper.inserts(any,any,any,any) returns collectionIdSeq
+          val result = collectionRepository.addCollections(datas = collectionDataSeq).value.run
+
+          result must beLike {
+            case Right(collections) =>
+              collections map (_.id) shouldEqual collectionIdSeq
+              collections map (_.data.name) shouldEqual (collectionDataSeq map (_.name))
+          }
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new CollectionRepositoryScope {
+
+          contentResolverWrapper.inserts(any, any, any, any) throws contentResolverException
+          val result =  collectionRepository.addCollections(datas = collectionDataSeq).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+
     }
 
     "deleteCollections" should {
@@ -327,6 +353,38 @@ class CollectionRepositorySpec
           }
       }
 
+      "fetchIterableCollections" should {
+
+        "return an IterableCursor of Collection " in
+          new CollectionMockCursor with CollectionRepositoryScope {
+
+            contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+
+            val result = collectionRepository.fetchIterableCollections(where = testMockWhere).value.run
+
+            result must beLike {
+              case Right(iterator) =>
+                toSeq(iterator) shouldEqual collectionSeq
+            }
+
+            there was one(contentResolverWrapper).getCursor(
+              mockUri,
+              AppEntity.allFields,
+              testMockWhere,
+              Seq.empty,
+              "")
+          }
+
+        "return an a RepositoryException when a exception is thrown " in
+          new CollectionMockCursor with CollectionRepositoryScope {
+
+            contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+
+            val result = collectionRepository.fetchIterableCollections(where = testMockWhere).value.run
+            result must beAnInstanceOf[Left[RepositoryException, _]]
+          }
+      }
+
       "fetchSortedCollections" should {
 
         "return all the cache categories stored in the database" in
@@ -375,6 +433,25 @@ class CollectionRepositorySpec
 
             contentResolverWrapper.updateById(any, any, any, any) throws contentResolverException
             val result = collectionRepository.updateCollection(collection = collection).value.run
+            result must beAnInstanceOf[Left[RepositoryException, _]]
+          }
+      }
+
+      "updateCollections" should {
+
+        "return a successful result when the updateCollection are updated" in
+          new CollectionRepositoryScope {
+
+            contentResolverWrapper.updateByIds(any, any, any, any) returns Seq(5)
+            val result = collectionRepository.updateCollections(collections = collectionSeq).value.run
+            result shouldEqual Right(Seq(5))
+          }
+
+        "return a RepositoryException when a exception is thrown" in
+          new CollectionRepositoryScope {
+
+            contentResolverWrapper.updateByIds(any, any, any, any) throws contentResolverException
+            val result = collectionRepository.updateCollections(collections = collectionSeq).value.run
             result must beAnInstanceOf[Left[RepositoryException, _]]
           }
       }
