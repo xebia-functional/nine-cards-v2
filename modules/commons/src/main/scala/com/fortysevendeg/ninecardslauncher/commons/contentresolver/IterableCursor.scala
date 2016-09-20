@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.commons.contentresolver
 
 import android.database.Cursor
-
 import scala.annotation.tailrec
 
 trait IterableCursor[T] {
@@ -17,12 +16,10 @@ object IterableCursor {
   implicit class RichCursor(c: Cursor) {
     private def implicitIterator[T](f: => T) = new IterableCursor[T] {
       override def count(): Int = if (c.isClosed) 0 else c.getCount
-
       override def moveToPosition(pos: Int): T = {
         c.moveToPosition(pos)
         f
       }
-
       override def close(): Unit = if (!c.isClosed) c.close()
     }
 
@@ -34,11 +31,11 @@ object IterableCursor {
 
   }
 
-  @tailrec def toSeq[T](iterator: IterableCursor[T], pos: Int = 0, seq: Seq[T] = Seq.empty): Seq[T] =
+  @tailrec
+  def toSeq[T](iterator: IterableCursor[T], pos: Int = 0, seq: Seq[T] = Seq.empty): Seq[T] =
     if (pos >= iterator.count()) {
       seq
     } else {
       toSeq(iterator, pos + 1, seq :+ iterator.moveToPosition(pos))
     }
-
 }
