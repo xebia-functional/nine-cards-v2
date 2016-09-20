@@ -105,7 +105,7 @@ class OkHttpClientSpec
 
       override val acceptedMethod = Some(Methods.GET.toString)
 
-      val response = okHttpClient.doGet(baseUrl, Seq.empty).run
+      val response = okHttpClient.doGet(baseUrl, acceptedHeaders).run
 
       response shouldEqual Right(HttpClientResponse(statusCode, Some(json)))
     }
@@ -165,7 +165,7 @@ class OkHttpClientSpec
 
       override val acceptedMethod = Some(Methods.GET.toString)
 
-      val response = okHttpClient.doDelete(baseUrl, Seq.empty).value.run
+      val response = okHttpClient.doDelete(baseUrl, Seq.empty).run
 
       response must beAnInstanceOf[Left[IllegalArgumentException, _]]
     }
@@ -176,7 +176,7 @@ class OkHttpClientSpec
 
       override val acceptedBody = Some(SampleRequest("request"))
 
-      val response = okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")).value.run
+      val response = okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")).run
 
       response must beAnInstanceOf[Left[IllegalArgumentException, _]]
     }
