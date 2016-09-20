@@ -10,16 +10,24 @@ import scala.collection.JavaConverters._
 
 object ReplacePropertiesGenerator {
 
-  lazy val propertyNames: List[String] = List(
-    "backend.v1.url",
-    "backend.v1.appid",
-    "backend.v1.appkey",
-    "backend.v2.url",
-    "crashlytics.enabled",
-    "crashlytics.apikey",
-    "crashlytics.apisecret",
-    "analytics.enabled",
-    "analytics.trackid")
+  lazy val propertyNames: Map[String, String] = Map(
+    "backend.v1.url" -> "",
+    "backend.v1.appid" -> "",
+    "backend.v1.appkey" -> "",
+    "backend.v2.url" -> "",
+    "crashlytics.enabled" -> "false",
+    "crashlytics.apikey" -> "",
+    "crashlytics.apisecret" -> "",
+    "stetho.enabled" -> "false",
+    "strictmode.enabled" -> "false",
+    "analytics.enabled" -> "false",
+    "analytics.trackid" -> "",
+    "firebase.enabled" -> "false",
+    "firebase.url" -> "",
+    "firebase.google.appid" -> "",
+    "firebase.google.apikey" -> "",
+    "firebase.gcm.senderid" -> "",
+    "firebase.clientid" -> "")
 
   lazy val propertiesFileName = sys.env.getOrElse("9CARDS_PROPERTIES", "debug.properties")
 
@@ -28,7 +36,7 @@ object ReplacePropertiesGenerator {
   private[this] def loadPropertiesMap: Map[String, String] = {
 
     def populateDefaultProperties(propertiesMap: Map[String, String]): Map[String, String] =
-      propertiesMap ++ (propertyNames filterNot propertiesMap.contains map (_ -> "") toMap)
+      propertiesMap ++ (propertyNames filterKeys (key => !propertiesMap.contains(key)))
 
     def loadPropertiesFile: Option[File] = {
       val file = new File(propertiesFileName)
