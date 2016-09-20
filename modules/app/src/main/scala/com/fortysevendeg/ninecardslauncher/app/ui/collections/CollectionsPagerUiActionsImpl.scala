@@ -31,6 +31,7 @@ import SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{TranslationAnimator, TranslationY}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
@@ -55,6 +56,19 @@ trait CollectionsPagerUiActionsImpl
   implicit val collectionsPagerPresenter: CollectionsPagerPresenter
 
   implicit lazy val theme: NineCardsTheme = collectionsPagerPresenter.getTheme
+
+  lazy val toolbarAnimation = new TranslationAnimator(
+    translation = TranslationY,
+    update = (translationY) => {
+      val move = math.min(0, math.max(translationY, -spaceMove))
+      val dy = if (statuses.lastScrollYInMovement == 0) 0 else -(translationY - statuses.lastScrollYInMovement)
+      statuses = statuses.copy(lastScrollYInMovement = translationY)
+      moveToolbar(move.toInt) ~
+        Ui(getActivePresenter foreach (_.updateScroll(dy.toInt)))
+    }
+  )
+
+  var statuses = CollectionsPagerUiActionsImplStatuses()
 
   val resistanceDisplacement = .2f
 
@@ -216,7 +230,10 @@ trait CollectionsPagerUiActionsImpl
       case ScrollDown => vTranslationY(displacement)
       case _ => Tweak.blank
     })) ~
-      (toolbar <~ tbReduceLayout(-displacement.toInt)) ~
+      (toolbar <~ (scrollType match {
+        case ScrollDown => tbReduceLayout(-displacement.toInt)
+        case _ => Tweak.blank
+      })) ~
       (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
       Ui {
         val newIcon = if (close) IconTypes.CLOSE else IconTypes.BACK
@@ -230,26 +247,31 @@ trait CollectionsPagerUiActionsImpl
   override def translationScrollY(dy: Int): Ui[Any] = {
     val translationY = tabs.getTranslationY.toInt
     val move = math.min(0, math.max(translationY - dy, -spaceMove))
+    (tabs <~ vTranslationY(move)) ~ moveToolbar(move)
+  }
+
+  private[this] def moveToolbar(move: Int) = {
     val ratio: Float = move.toFloat / spaceMove.toFloat
     val scale = 1 + (ratio / 2)
-    (tabs <~ vTranslationY(move)) ~
-      (toolbar <~ tbReduceLayout(-move)) ~
+    (toolbar <~ tbReduceLayout(-move)) ~
       (collectionsPagerPresenter.statuses.collectionMode match {
         case EditingCollectionMode => Ui.nop
         case _ => iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 + ratio)
       })
-
   }
 
   override def scrollIdle(): Ui[Any] = {
     val scrollY = tabs.getTranslationY.toInt
     val sType = if (scrollY < -spaceMove / 2) ScrollUp else ScrollDown
     val betweenUpAndDown = scrollY < 0 && scrollY > -spaceMove
-    (betweenUpAndDown, getActivePresenter) match {
-      case (true, Some(presenter)) => presenter.changeScrollType(sType, scrollY)
-      case _ =>
-    }
-    notifyScroll(sType)
+    ((betweenUpAndDown, getActivePresenter) match {
+      case (true, Some(presenter)) =>
+        //presenter.changeScrollType(sType, scrollY)
+        statuses = statuses.reset()
+        val to = if (sType == ScrollUp) -spaceMove else 0
+        tabs <~ toolbarAnimation.move(scrollY, to, attachTarget = true)
+      case _ => Ui.nop
+    }) ~ notifyScroll(sType)
   }
 
   override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] = hideFabButton
@@ -528,6 +550,11 @@ trait CollectionsPagerUiActionsImpl
 
   }
 
+}
+
+case class CollectionsPagerUiActionsImplStatuses(
+  lastScrollYInMovement: Float = 0) {
+  def reset() = copy(lastScrollYInMovement = 0)
 }
 
 sealed trait PageMovement

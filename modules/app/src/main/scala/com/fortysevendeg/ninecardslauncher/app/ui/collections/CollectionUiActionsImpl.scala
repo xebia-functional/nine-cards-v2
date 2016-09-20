@@ -177,10 +177,7 @@ trait CollectionUiActionsImpl
   override def showData(emptyCollection: Boolean): Ui[_] =
     if (emptyCollection) showEmptyCollection() else showCollection()
 
-  override def changeScrollType(scrollType: ScrollType, scrollY: Int) = {
-    val dy = if (scrollType == ScrollUp) spaceMove + scrollY else scrollY
-    recyclerView <~ rvSmoothScrollBy(dy = dy)
-  }
+  override def updateVerticalScroll(scrollY: Int) = recyclerView <~ rvScrollBy(dy = scrollY)
 
   override def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get
 

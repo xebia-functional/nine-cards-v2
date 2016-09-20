@@ -144,6 +144,9 @@ object ExtraTweaks {
   def rvSmoothScrollBy(dx: Int = 0, dy: Int = 0): Tweak[RecyclerView] =
     Tweak[RecyclerView](_.smoothScrollBy(dx, dy))
 
+  def rvScrollBy(dx: Int = 0, dy: Int = 0): Tweak[RecyclerView] =
+    Tweak[RecyclerView](_.scrollBy(dx, dy))
+
   def uiShortToast2(msg: Int)(implicit c: ContextWrapper): Ui[Unit] =
     Ui(Toast.makeText(c.application, msg, Toast.LENGTH_SHORT).show())
 
