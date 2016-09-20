@@ -250,28 +250,6 @@ trait CollectionUiActionsImpl
       rvItemAnimator(new DefaultItemAnimator)
   }
 
-//  private[this] def getScrollListener(spaceMove: Int) =
-//    nrvCollectionScrollListener(
-//      scrolled = (scrollY: Int, dx: Int, dy: Int) => {
-//        val sy = scrollY + dy
-//        if (statuses.activeFragment && statuses.canScroll && !isPulling) {
-//          collectionsPresenter.scrollY(sy, dy)
-//        }
-//        sy
-//      },
-//      scrollStateChanged = (scrollY: Int, recyclerView: RecyclerView, newState: Int) => {
-//        if (newState == RecyclerView.SCROLL_STATE_DRAGGING) collectionsPresenter.startScroll()
-//        if (statuses.activeFragment &&
-//          newState == RecyclerView.SCROLL_STATE_IDLE &&
-//          statuses.canScroll &&
-//          !isPulling) {
-//          val (moveTo, sType) = if (scrollY < spaceMove / 2) (0, ScrollDown) else (spaceMove, ScrollUp)
-//          if (scrollY < spaceMove && moveTo != scrollY) recyclerView.smoothScrollBy(0, moveTo - scrollY)
-//          collectionsPresenter.scrollType(sType)
-//        }
-//      }
-//    )
-
   private[this] def startScroll(): Ui[_] =
     (statuses.canScroll, statuses.scrollType) match {
       case (true, ScrollUp) => recyclerView <~ vScrollBy(0, spaceMove)

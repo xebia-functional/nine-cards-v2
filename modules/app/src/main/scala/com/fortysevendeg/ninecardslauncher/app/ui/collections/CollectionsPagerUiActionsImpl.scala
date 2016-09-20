@@ -228,7 +228,8 @@ trait CollectionsPagerUiActionsImpl
   }
 
   override def translationScrollY(dy: Int): Ui[Any] = {
-    val move = math.min(0, math.max(tabs.getTranslationY.toInt - dy, -spaceMove))
+    val translationY = tabs.getTranslationY.toInt
+    val move = math.min(0, math.max(translationY - dy, -spaceMove))
     val ratio: Float = move.toFloat / spaceMove.toFloat
     val scale = 1 + (ratio / 2)
     (tabs <~ vTranslationY(move)) ~
