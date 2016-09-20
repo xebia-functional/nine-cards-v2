@@ -6,7 +6,9 @@ import android.os.StrictMode
 import android.support.multidex.MultiDex
 import com.crashlytics.android.Crashlytics
 import com.facebook.stetho.Stetho
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
 import com.fortysevendeg.ninecardslauncher2.R
+import com.google.firebase.analytics.FirebaseAnalytics
 import io.fabric.sdk.android.Fabric
 
 class NineCardsApplication
@@ -17,15 +19,18 @@ class NineCardsApplication
 
     def readFlag(key: Int): Boolean = getString(key).equalsIgnoreCase("true")
 
-    def initCrashlytics =
+    def initCrashlytics(): Unit =
       if (readFlag(R.string.crashlytics_enabled) && getString(R.string.crashlytics_api_key).nonEmpty) {
-        try { Fabric.`with`(self, new Crashlytics()) } catch { case _: Throwable => }
+        try {
+          Fabric.`with`(self, new Crashlytics())
+        } catch {
+          case e: Throwable => AppLog.printErrorMessage(e, Some("Error initializing Crashlytics"))
+        }
       }
 
-    def initStrictMode =
+    def initStrictMode(): Unit =
       if (readFlag(R.string.strict_mode_enabled)) {
         try {
-          // Create variables for enabling Stetho and StrictMode in issue #212
           StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
             .detectDiskReads()
             .detectDiskWrites()
@@ -39,23 +44,37 @@ class NineCardsApplication
             .penaltyLog()
             .build())
         } catch {
-          case _: Throwable =>
+          case e: Throwable => AppLog.printErrorMessage(e, Some("Error initializing strict mode"))
         }
       }
 
-    def initStetho =
+    def initStetho(): Unit =
       if (readFlag(R.string.stetho_enabled)) {
-        Stetho.initialize(
-          Stetho.newInitializerBuilder(this)
-            .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-            .build())
+        try {
+          Stetho.initialize(
+            Stetho.newInitializerBuilder(this)
+              .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
+              .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
+              .build())
+        } catch {
+          case e: Throwable => AppLog.printErrorMessage(e, Some("Error initializing Stetho"))
+        }
+      }
+
+    def initFirebase(): Unit =
+      if (readFlag(R.string.firebase_enabled)) {
+        try {
+          FirebaseAnalytics.getInstance(this)
+        } catch {
+          case e: Throwable => AppLog.printErrorMessage(e, Some("Error initializing Firebase"))
+        }
       }
 
     super.onCreate()
-    initCrashlytics
-    initStetho
-    initStrictMode
+    initFirebase()
+    initCrashlytics()
+    initStetho()
+    initStrictMode()
   }
 
   override def attachBaseContext(base: Context): Unit = {
