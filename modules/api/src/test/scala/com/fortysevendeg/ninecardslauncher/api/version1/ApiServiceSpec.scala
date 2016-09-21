@@ -2,17 +2,16 @@ package com.fortysevendeg.ninecardslauncher.api.version1
 
 import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import monix.eval.Task
 import org.specs2.mock.Mockito
-import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
 
 trait ApiServiceSpecification
-  extends Specification
+  extends TaskServiceSpecification
   with Mockito
   with ApiServiceData {
 
@@ -41,12 +40,9 @@ class ApiServiceSpec
       mockedServiceClient.post[User, User](any, any, any, any, any)(any) returns
         TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(user)))))
 
-      val serviceResponse = apiService.login(emptyUser, headers).value.run
-
-      serviceResponse must beLike {
-        case Right(r) =>
-          r.statusCode shouldEqual statusCodeOk
-          r.data must beSome(user)
+      apiService.login(emptyUser, headers) mustRight { r =>
+        r.statusCode shouldEqual statusCodeOk
+        r.data must beSome(user)
       }
 
       there was one(mockedServiceClient).post(
@@ -67,12 +63,9 @@ class ApiServiceSpec
       mockedServiceClient.get[UserConfig](any, any, any, any) returns
         TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(userConfig)))))
 
-      val serviceClientResponse = apiService.getUserConfig(headers).value.run
-
-      serviceClientResponse must beLike {
-        case Right(r) =>
-          r.statusCode shouldEqual statusCodeOk
-          r.data must beSome(userConfig)
+      apiService.getUserConfig(headers) mustRight { r =>
+        r.statusCode shouldEqual statusCodeOk
+        r.data must beSome(userConfig)
       }
 
       there was one(mockedServiceClient).get(
