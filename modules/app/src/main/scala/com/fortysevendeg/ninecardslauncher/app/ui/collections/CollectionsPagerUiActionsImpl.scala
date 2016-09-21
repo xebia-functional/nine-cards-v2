@@ -284,8 +284,13 @@ trait CollectionsPagerUiActionsImpl
         case _ => iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(alpha)
       }) ~
       ((isTop, titleContent.getVisibility, collectionsPagerPresenter.statuses.collectionMode) match {
-        case (true, View.GONE, NormalCollectionMode) => (titleContent <~~ animationEnterTitle) ~~ (selector <~ vVisible)
-        case (false, View.VISIBLE, NormalCollectionMode) => (selector <~ vGone) ~ (titleContent <~ animationOutTitle)
+        case (true, View.GONE, NormalCollectionMode) =>
+          (titleContent <~~ animationEnterTitle) ~~
+            (selector <~ (vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))))
+        case (false, View.VISIBLE, NormalCollectionMode) =>
+          (titleContent <~ animationOutTitle) ~
+            (selector <~~ applyAnimation(alpha = Some(0))) ~~
+            (selector <~ vGone <~ vAlpha(1))
         case _ => Ui.nop
       })
   }

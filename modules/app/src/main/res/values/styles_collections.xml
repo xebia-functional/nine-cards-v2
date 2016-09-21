@@ -64,8 +64,6 @@
     <style name="CollectionsSelectorParent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/stroke_large</item>
-        <item name="android:layout_marginLeft">@dimen/padding_large</item>
-        <item name="android:layout_marginRight">@dimen/padding_large</item>
         <item name="android:layout_marginTop">@dimen/margin_top_selector_collection_details</item>
     </style>
 
