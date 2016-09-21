@@ -41,15 +41,11 @@ trait Styles {
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
       vInvisible
 
-  def titleContentStyle(implicit theme: NineCardsTheme): Tweak[LinearLayout] =
-      vGone
-
   def titleNameStyle(implicit theme: NineCardsTheme): Tweak[TextView] =
     tvColor(theme.get(CollectionDetailTextTabSelectedColor))
 
   def selectorStyle(drawable: Drawable)(implicit theme: NineCardsTheme): Tweak[ImageView] =
-    ivSrc(drawable)+
-      vGone
+    ivSrc(drawable)
 
   def fabButtonApplicationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     fabButton(R.string.applications, R.drawable.fab_menu_icon_applications, 1)

@@ -129,9 +129,9 @@ trait CollectionsPagerUiActionsImpl
     } ~
       (root <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
       (tabs <~ tabsStyle) ~
-      (titleContent <~ titleContentStyle) ~
+      (titleContent <~ vGone) ~
       (titleName <~ titleNameStyle) ~
-      (selector <~ selectorStyle(selectorDrawable)) ~
+      (selector <~ vGone <~ selectorStyle(selectorDrawable)) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
