@@ -1,11 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.api.version2
 
-import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
-import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
@@ -380,6 +377,29 @@ class ApiServiceSpec
           headers = createHeaders(subscriptionsAuthToken),
           reads = None,
           emptyResponse = true)
+
+      }
+
+    }
+
+    "rank apps" should {
+
+      "return the status code and the response" in new ApiServiceScope {
+
+        mockedServiceClient.post[RankAppsRequest, RankAppsResponse](any, any, any, any, any)(any) returns
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(rankAppsResponse)))
+
+        apiService.rankApps(rankAppsRequest, serviceHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(rankAppsResponse)
+        }
+
+        there was one(mockedServiceClient).post(
+          path = "/applications/rank",
+          headers = createHeaders(rankAppsAuthToken),
+          body = rankAppsRequest,
+          reads = Some(rankAppsResponseReads),
+          emptyResponse = false)(rankAppsRequestWrites)
 
       }
 
