@@ -78,6 +78,10 @@ object Settings {
   lazy val commonsSettings = basicSettings ++ librarySettings ++
     Seq(libraryDependencies ++= commonsDependencies)
 
+  // Commons Tests Module
+  lazy val commonsTestsSettings = basicSettings ++ librarySettings ++
+    Seq(libraryDependencies ++= commonsTestsDependencies)
+
   // Android classes for Mock Module
   lazy val mockAndroidSettings = basicSettings ++ librarySettings ++
     Seq(libraryDependencies ++= mockAndroidDependencies)
@@ -164,6 +168,11 @@ object Settings {
     androidProvidedLib,
     specs2,
     mockito)
+
+  lazy val commonsTestsDependencies = Seq(
+    androidProvidedLib,
+    specs2Lib,
+    mockitoLib)
 
   lazy val mockAndroidDependencies = Seq(
     androidProvidedLib,
