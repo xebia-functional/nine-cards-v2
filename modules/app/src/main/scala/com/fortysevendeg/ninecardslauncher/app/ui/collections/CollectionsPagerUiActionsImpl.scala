@@ -307,7 +307,8 @@ trait CollectionsPagerUiActionsImpl
         case Some(ScrollDown) =>
           iconContent <~ applyAnimation(alpha = Some(0))
         case Some(ScrollUp) =>
-          titleContent <~ applyAnimation(alpha = Some(0))
+          (titleContent <~ applyAnimation(alpha = Some(0))) ~
+            (selector <~ applyAnimation(alpha = Some(0)))
         case _ => Ui.nop
       }) ~
       notifyDataSetChangedCollectionAdapter
@@ -324,9 +325,10 @@ trait CollectionsPagerUiActionsImpl
     (toolbarTitle <~ tvText("")) ~
       (getScrollType match {
         case Some(ScrollDown) =>
-          iconContent <~ (vVisible + vAlpha(0f) ++ applyAnimation(alpha = Some(1)))
+          iconContent <~ (vVisible + vScaleX(1) + vScaleY(1) + vAlpha(0f) ++ applyAnimation(alpha = Some(1)))
         case Some(ScrollUp) =>
-          titleContent <~ applyAnimation(alpha = Some(1))
+          (titleContent <~ applyAnimation(alpha = Some(1))) ~
+            (selector <~ applyAnimation(alpha = Some(1)))
         case _ => Ui.nop
       }) ~
       notifyDataSetChangedCollectionAdapter ~ invalidateOptionMenu()
