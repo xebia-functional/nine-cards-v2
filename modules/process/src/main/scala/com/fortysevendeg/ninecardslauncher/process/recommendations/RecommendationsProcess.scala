@@ -8,20 +8,22 @@ import com.fortysevendeg.ninecardslauncher.process.recommendations.models.Recomm
 trait RecommendationsProcess {
 
   /**
-   * Get recommended apps based on a category
+    * Get recommended apps based on a category
     *
     * @param category a valid category identification
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
-   * @throws RecommendedAppsException if there was an error fetching the recommended apps
-   */
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
+    * @throws RecommendedAppsConfigurationException if there was an error with the API configuration
+    * @throws RecommendedAppsException if there was an error fetching the recommended apps
+    */
   def getRecommendedAppsByCategory(category: NineCardCategory, excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport): TaskService[Seq[RecommendedApp]]
 
   /**
-   * Get recommended apps based on a category
+    * Get recommended apps based on a category
     *
     * @param packages a valid list of packages
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
-   * @throws RecommendedAppsException if there was an error fetching the recommended apps
-   */
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
+    * @throws RecommendedAppsConfigurationException if there was an error with the API configuration
+    * @throws RecommendedAppsException if there was an error fetching the recommended apps
+    */
   def getRecommendedAppsByPackages(packages: Seq[String], excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport): TaskService[Seq[RecommendedApp]]
 }

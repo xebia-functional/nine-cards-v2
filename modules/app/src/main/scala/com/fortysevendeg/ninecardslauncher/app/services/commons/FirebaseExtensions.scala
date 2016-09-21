@@ -11,7 +11,7 @@ object FirebaseExtensions {
   def readToken: Option[String] = Try(FirebaseInstanceId.getInstance()) match {
     case Success(instance) if instance != javaNull => Option(instance.getToken)
     case Success(_) =>
-      printErrorMessage(new NullPointerException("Firebase token null"))
+      printErrorMessage(new NullPointerException("Firebase instance null"))
       None
     case Failure(ex) =>
       printErrorMessage(ex)

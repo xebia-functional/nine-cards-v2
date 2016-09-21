@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api._
+import com.fortysevendeg.ninecardslauncher.api.version2.CollectionUpdateInfo
 import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
 
 import scala.util.Random
@@ -162,12 +163,15 @@ trait ApiServicesImplData {
 
   val packages = List("Package1", "Package2")
 
+  val excludedPackages = List("Package3", "Package4")
+
   val icon = "Icon"
 
   val community = true
 
   val collectionTypeTop = "top"
   val collectionTypeLatest = "latest"
+  val collectionTypeUnknown = "unknown"
 
   val user = generateUser
 
@@ -209,7 +213,13 @@ trait ApiServicesImplData {
 
   val sessionToken = Random.nextString(20)
 
+  val deviceId = "device-id"
+
   val deviceToken = Random.nextString(20)
+
+  val secretToken = Random.nextString(20)
+
+  val permissions = Seq("permission1", "permission2")
 
   val email = "email@dot.com"
 
@@ -221,7 +231,42 @@ trait ApiServicesImplData {
 
   val packageStats = version2.PackagesStats(1, None)
 
-  val originalSharedCollectionId = Random.nextString(30)
+  val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(sharedCollectionId))
 
-  val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(originalSharedCollectionId))
+  val createCollectionRequest = version2.CreateCollectionRequest(name, author, description, icon, category, community, packages)
+
+  val updateCollectionRequest = version2.UpdateCollectionRequest(Some(CollectionUpdateInfo(name, Some(description))), Some(packages))
+
+  val updateCollectionResponse = version2.UpdateCollectionResponse(sharedCollectionId, packageStats)
+
+  val recommendationsRequest = version2.RecommendationsRequest(None, excludedPackages, limit)
+
+  val recommendationsByAppsRequest = version2.RecommendationsByAppsRequest(packages, None, excludedPackages, limit)
+
+  val categorizeRequest = version2.CategorizeRequest(categorizeApps.map(_.packageName))
+
+  val categorizeOneRequest = version2.CategorizeRequest(categorizeApps.headOption.map(_.packageName).toSeq)
+
+  val installationRequest = version2.InstallationRequest(deviceToken)
+
+  val loginRequest = version2.ApiLoginRequest(email, androidId, tokenId)
+
+  val loginV1User = version1.User(
+    _id = None,
+    email = None,
+    sessionToken = None,
+    username = None,
+    password = None,
+    authData = Some(version1.AuthData(
+      google = Some(version1.AuthGoogle(
+        email = email,
+        devices = List(version1.AuthGoogleDevice(
+          name = name,
+          deviceId = deviceId,
+          secretToken = secretToken,
+          permissions = permissions))
+      )),
+      facebook = None,
+      twitter = None,
+      anonymous = None)))
 }

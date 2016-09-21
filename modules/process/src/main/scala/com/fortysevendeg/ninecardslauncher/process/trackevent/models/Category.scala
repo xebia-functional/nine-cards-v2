@@ -1,7 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.trackevent
+package com.fortysevendeg.ninecardslauncher.process.trackevent.models
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
-import com.fortysevendeg.ninecardslauncher.process.trackevent.Category._
 
 sealed trait Category {
   def name: String
@@ -18,7 +17,7 @@ case class MomentCategory(moment: NineCardsMoment) extends Category {
 }
 
 case object FreeCategory extends Category {
-  override def name: String = freeName
+  override def name: String = Category.freeName
 }
 
 object Category {

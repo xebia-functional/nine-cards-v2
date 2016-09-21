@@ -19,7 +19,7 @@ object AppBuild extends Build {
         packageRelease <<= packageRelease in Android in app,
         packageDebug <<= packageDebug in Android in app,
         install <<= install in Android in app,
-        run <<= (run in Android in app).dependsOn(setDebugTask(true)),
+        run <<= (run in Android in app),
         applicationId in Android := "com.fortysevendeg.ninecardslauncher"
       )
       .aggregate(app)

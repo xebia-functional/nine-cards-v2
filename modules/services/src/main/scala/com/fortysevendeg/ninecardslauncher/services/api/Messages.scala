@@ -11,6 +11,7 @@ case class RequestConfig(
   marketToken: Option[String] = None)
 
 case class LoginResponse(
+  statusCode: Int,
   apiKey: String,
   sessionToken: String)
 

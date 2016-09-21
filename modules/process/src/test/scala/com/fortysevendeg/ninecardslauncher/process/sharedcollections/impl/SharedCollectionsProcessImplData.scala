@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppsCollectionType, Communication}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreateSharedCollection
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, UpdateSharedCollection}
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection => CollectionPersistence}
 
@@ -39,9 +39,13 @@ trait SharedCollectionsProcessImplData {
       community = Random.nextBoolean())
   }
 
-  val shareCollectionList = SharedCollectionResponseList(
+  val sharedCollectionResponseList = SharedCollectionResponseList(
     statusCode = statusCodeOk,
     items = generateSharedCollectionSeq())
+
+  val sharedCollectionResponse = SharedCollectionResponse(
+    statusCode = statusCodeOk,
+    sharedCollection = sharedCollectionResponseList.items.head)
 
   val sharedCollectionId = "shared-collection-id"
 
@@ -61,6 +65,20 @@ trait SharedCollectionsProcessImplData {
     CreateSharedCollectionResponse(
       statusCode = statusCodeOk,
       sharedCollectionId = sharedCollectionId)
+
+  val updateSharedCollectionResponse =
+    UpdateSharedCollectionResponse(
+      statusCode = statusCodeOk,
+      sharedCollectionId = sharedCollectionId)
+
+  def generateUpdateSharedCollection =
+    UpdateSharedCollection(
+      sharedCollectionId,
+      description = Some(Random.nextString(10)),
+      name = Random.nextString(10),
+      packages = Seq.empty)
+
+  val updateSharedCollection = generateUpdateSharedCollection
 
   def generateSharedCollectionId() =
     sharedCollectionId + Random.nextInt(10)
@@ -133,7 +151,7 @@ trait SharedCollectionsProcessImplData {
     UnsubscribeResponse(
       statusCode = statusCodeOk)
 
-  def collectionPersistenceOwnedSeq = shareCollectionList.items.map { col =>
+  def collectionPersistenceOwnedSeq = sharedCollectionResponseList.items.map { col =>
     CollectionPersistence(
       id = Random.nextInt(),
       position = Random.nextInt(10),
@@ -149,7 +167,7 @@ trait SharedCollectionsProcessImplData {
       moment = None)
   }
 
-  def collectionPersistenceSubscribedSeq = shareCollectionList.items.map { col =>
+  def collectionPersistenceSubscribedSeq = sharedCollectionResponseList.items.map { col =>
     CollectionPersistence(
       id = Random.nextInt(),
       position = Random.nextInt(10),
