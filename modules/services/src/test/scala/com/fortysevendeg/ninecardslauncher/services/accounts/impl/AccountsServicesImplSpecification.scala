@@ -11,7 +11,6 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
 
 trait AccountsServicesImplSpecification
   extends Specification
@@ -70,6 +69,28 @@ class AccountsServicesImplSpec
 
         val result = accountsServices.getAccounts(None).value.run
         result shouldEqual Right(Seq(account1, account2))
+
+        there was one(accountManager).getAccounts
+      }
+
+    "returns an empty sequence and call with the right account type when account manager returns null" in
+      new AccountsServicesImplScope {
+
+        accountManager.getAccountsByType(any) returns javaNull
+
+        val result = accountsServices.getAccounts(Some(GoogleAccount)).value.run
+        result shouldEqual Right(Seq.empty)
+
+        there was one(accountManager).getAccountsByType(GoogleAccount.value)
+      }
+
+    "returns an empty sequence when call without account type when account manager returns null" in
+      new AccountsServicesImplScope {
+
+        accountManager.getAccounts returns javaNull
+
+        val result = accountsServices.getAccounts(None).value.run
+        result shouldEqual Right(Seq.empty)
 
         there was one(accountManager).getAccounts
       }

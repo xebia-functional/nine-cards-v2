@@ -15,10 +15,13 @@ trait MomentRepositoryTestData {
   val testHeadphone = Random.nextBoolean()
   val testMomentType= Random.nextString(10)
   val testCollectionIdOption = Option(testCollectionId)
+  val testMockWhere = "mock-where"
 
   val momentEntitySeq = createMomentEntitySeq(5)
   val momentEntity = momentEntitySeq(0)
   val momentSeq = createMomentSeq(5)
+  val momentIdSeq = momentSeq map (_.id)
+  val momentDataSeq = momentSeq map (_.data)
   val moment = momentSeq(0)
 
   def createMomentEntitySeq(num: Int) = List.tabulate(num)(

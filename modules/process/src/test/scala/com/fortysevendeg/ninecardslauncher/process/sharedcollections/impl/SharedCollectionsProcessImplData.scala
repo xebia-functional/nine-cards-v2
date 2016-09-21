@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppsCollectionType, Communication}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreateSharedCollection
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, UpdateSharedCollection}
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection => CollectionPersistence}
 
@@ -39,9 +39,13 @@ trait SharedCollectionsProcessImplData {
       community = Random.nextBoolean())
   }
 
-  val shareCollectionList = SharedCollectionResponseList(
+  val sharedCollectionResponseList = SharedCollectionResponseList(
     statusCode = statusCodeOk,
     items = generateSharedCollectionSeq())
+
+  val sharedCollectionResponse = SharedCollectionResponse(
+    statusCode = statusCodeOk,
+    sharedCollection = sharedCollectionResponseList.items.head)
 
   val sharedCollectionId = "shared-collection-id"
 
@@ -62,6 +66,20 @@ trait SharedCollectionsProcessImplData {
       statusCode = statusCodeOk,
       sharedCollectionId = sharedCollectionId)
 
+  val updateSharedCollectionResponse =
+    UpdateSharedCollectionResponse(
+      statusCode = statusCodeOk,
+      sharedCollectionId = sharedCollectionId)
+
+  def generateUpdateSharedCollection =
+    UpdateSharedCollection(
+      sharedCollectionId,
+      description = Some(Random.nextString(10)),
+      name = Random.nextString(10),
+      packages = Seq.empty)
+
+  val updateSharedCollection = generateUpdateSharedCollection
+
   def generateSharedCollectionId() =
     sharedCollectionId + Random.nextInt(10)
 
@@ -72,6 +90,29 @@ trait SharedCollectionsProcessImplData {
   val subscriptionList = SubscriptionResponseList(
     statusCode = statusCodeOk,
     items = generateSubscriptionResponse())
+
+  def generateSharedCollection() = 1 to 10 map { i =>
+    SharedCollection(
+      id = i.toString,
+      sharedCollectionId = generateSharedCollectionId(),
+      publishedOn = 0l,
+      description = Random.nextString(10),
+      author = Random.nextString(10),
+      name = Random.nextString(10),
+      packages = Seq.empty,
+      resolvedPackages = Seq.empty,
+      views = Random.nextInt(),
+      subscriptions = Some(Random.nextInt()),
+      category = Random.nextString(10),
+      icon = Random.nextString(10),
+      community = false)
+  }
+
+  val publicationList = SharedCollectionResponseList(
+    statusCode = statusCodeOk,
+    items = generateSharedCollection())
+
+  val publicationListIds = publicationList.items.map(_.sharedCollectionId)
 
   def generateOptionOriginalSharedCollectionId() =
     Random.nextBoolean() match {
@@ -97,7 +138,10 @@ trait SharedCollectionsProcessImplData {
 
   val collectionList = generateCollection()
 
-  val publicCollectionList = collectionList.filter(_.sharedCollectionId.isDefined)
+  val publicCollectionList =
+    collectionList.flatMap(collection => collection.originalSharedCollectionId.map((_, collection))).filter{
+      case (sharedCollectionId: String, _) => !publicationListIds.contains(sharedCollectionId)
+    }
 
   val subscribeResponse =
     SubscribeResponse(
@@ -107,7 +151,7 @@ trait SharedCollectionsProcessImplData {
     UnsubscribeResponse(
       statusCode = statusCodeOk)
 
-  def collectionPersistenceOwnedSeq = shareCollectionList.items.map { col =>
+  def collectionPersistenceOwnedSeq = sharedCollectionResponseList.items.map { col =>
     CollectionPersistence(
       id = Random.nextInt(),
       position = Random.nextInt(10),
@@ -123,7 +167,7 @@ trait SharedCollectionsProcessImplData {
       moment = None)
   }
 
-  def collectionPersistenceSubscribedSeq = shareCollectionList.items.map { col =>
+  def collectionPersistenceSubscribedSeq = sharedCollectionResponseList.items.map { col =>
     CollectionPersistence(
       id = Random.nextInt(),
       position = Random.nextInt(10),

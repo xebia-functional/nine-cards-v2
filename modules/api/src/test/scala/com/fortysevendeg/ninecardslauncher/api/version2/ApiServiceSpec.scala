@@ -37,12 +37,12 @@ class ApiServiceSpec
 
     "return the status code and the response" in new ApiServiceScope {
 
-      val response = LoginResponse(apiKey, sessionToken)
+      val response = ApiLoginResponse(apiKey, sessionToken)
 
-      mockedServiceClient.post[LoginRequest, LoginResponse](any, any, any, any, any)(any) returns
+      mockedServiceClient.post[ApiLoginRequest, ApiLoginResponse](any, any, any, any, any)(any) returns
         TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(response)))))
 
-      val request = LoginRequest(email, loginId, tokenId)
+      val request = ApiLoginRequest(email, loginId, tokenId)
 
       val serviceResponse = apiService.login(request).value.run
 

@@ -7,6 +7,8 @@ object AppLog {
 
   val tag = "9cards"
 
+  def invalidConfigurationV2 = info("Invalid configuration for backend V2")
+
   def info(message: String) = Log.i(tag, message)
 
   def printErrorMessage(ex: Throwable, message: Option[String] = None) = {

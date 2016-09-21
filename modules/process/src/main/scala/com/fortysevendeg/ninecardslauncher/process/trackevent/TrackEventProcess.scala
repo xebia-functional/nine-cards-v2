@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.trackevent
 
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.trackevent.models.{Category, MomentCategory}
 
 trait TrackEventProcess {
 
@@ -34,7 +35,7 @@ trait TrackEventProcess {
     * @param packageName package name of app
     * @param category category of event
     */
-  def removedInCollection(packageName: String, category: Category): TaskService[Unit]
+  def removeFromCollection(packageName: String, category: Category): TaskService[Unit]
 
   /**
     * Track when the user adds a widget in moment

@@ -11,6 +11,8 @@ import play.api.libs.json.{Reads, Writes}
 
 class ApiService(serviceClient: ServiceClient) {
 
+  def baseUrl: String = serviceClient.baseUrl
+
   type ApiException = HttpClientException with ServiceClientException
 
   private[this] val headerContentType = "Content-Type"
@@ -49,9 +51,9 @@ class ApiService(serviceClient: ServiceClient) {
 
   private[this] val recommendationsPath = "/recommendations"
 
-  def login(request: LoginRequest)(
-    implicit reads: Reads[LoginResponse], writes: Writes[LoginRequest]): TaskService[ServiceClientResponse[LoginResponse]] =
-    serviceClient.post[LoginRequest, LoginResponse](
+  def login(request: ApiLoginRequest)(
+    implicit reads: Reads[ApiLoginResponse], writes: Writes[ApiLoginRequest]): TaskService[ServiceClientResponse[ApiLoginResponse]] =
+    serviceClient.post[ApiLoginRequest, ApiLoginResponse](
       path = loginPath,
       headers = Seq((headerContentType, headerContentTypeValue)),
       body = request,

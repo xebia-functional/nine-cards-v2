@@ -4,6 +4,7 @@ import android.app.Service
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
 import com.fortysevendeg.ninecardslauncher.app.services.commons.FirebaseExtensions._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.google.firebase.iid.FirebaseInstanceIdService
 import macroid.Contexts
 
@@ -16,6 +17,8 @@ class NineCardsFirebaseInstanceIdService
 
   override def onTokenRefresh(): Unit = {
     super.onTokenRefresh()
-    readToken foreach di.userProcess.updateDeviceToken
+    readToken foreach { token =>
+      di.userProcess.updateDeviceToken(token).resolveAsync()
+    }
   }
 }

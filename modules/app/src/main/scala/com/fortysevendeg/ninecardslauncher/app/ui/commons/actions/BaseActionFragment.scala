@@ -111,7 +111,7 @@ trait BaseActionFragment
       (content <~ vgAddView(layout))  ~
       (loading <~ pbColor(colorPrimary)) ~
       (transitionView <~ vBackgroundColor(colorPrimary)) ~
-      (errorIcon <~ tivDefaultColor(colorPrimary)) ~
+      (errorIcon <~ tivColor(colorPrimary)) ~
       (rootContent <~ vInvisible) ~
       (errorContent <~ vGone) ~
       (errorMessage <~ tvColor(theme.get(DrawerTextColor).alpha(0.8f))) ~

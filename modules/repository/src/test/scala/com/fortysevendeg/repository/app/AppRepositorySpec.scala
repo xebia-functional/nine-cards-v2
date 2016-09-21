@@ -2,7 +2,9 @@ package com.fortysevendeg.repository.app
 
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{IterableCursor, ContentResolverWrapperImpl, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.App
@@ -102,6 +104,7 @@ trait EmptyAppMockCursor
 class AppRepositorySpec
   extends AppRepositorySpecification {
 
+
   "AppRepositoryClient component" should {
 
     "addApp" should {
@@ -126,6 +129,27 @@ class AppRepositorySpec
           val result = appRepository.addApp(data = createAppData).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
+    }
+
+
+    "addApps" should {
+
+      "return a sequence of addApp objects with a valid request" in
+        new AppRepositoryScope {
+
+          contentResolverWrapper.inserts(any, any, any, any) returns appIdSeq
+          val result = appRepository.addApps(datas = appDataSeq).value.run
+          result shouldEqual Right((): Unit)
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new AppRepositoryScope {
+
+          contentResolverWrapper.inserts(any, any, any, any) throws contentResolverException
+          val result = appRepository.addApps(datas = appDataSeq).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+
     }
 
     "fetchAlphabeticalAppsCounter" should {
@@ -245,26 +269,51 @@ class AppRepositorySpec
     "return all the apps stored in the database" in
       new AppRepositoryScope {
 
-        contentResolverWrapper.fetchAll(
-          uri = mockUri,
-          projection = allFields,
-          orderBy = "")(
-          f = getListFromCursor(appEntityFromCursor)) returns appEntitySeq
+        contentResolverWrapper.fetchAll[AppEntity](any, any, any, any, any)(any) returns appEntitySeq
 
         val result = appRepository.fetchApps().value.run
         result shouldEqual Right(appSeq)
+
       }
 
     "return a RepositoryException when a exception is thrown" in
       new AppRepositoryScope {
 
-        contentResolverWrapper.fetchAll(
-          uri = mockUri,
-          projection = allFields,
-          orderBy = "")(
-          f = getListFromCursor(appEntityFromCursor)) throws contentResolverException
+        contentResolverWrapper.fetchAll[AppEntity](any, any, any, any, any)(any) throws contentResolverException
 
         val result = appRepository.fetchApps().value.run
+        result must beAnInstanceOf[Left[RepositoryException, _]]
+      }
+  }
+
+  "fetchIterableApps" should {
+
+    "return an IterableCursor[App] " in
+      new AppMockCursor with AppRepositoryScope {
+
+        contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+
+        val result = appRepository.fetchIterableApps(where = testMockWhere).value.run
+
+        result must beLike {
+          case Right(iterator) =>
+            toSeq(iterator) shouldEqual appSeq
+        }
+
+        there was one(contentResolverWrapper).getCursor(
+          mockUri,
+          AppEntity.allFields,
+          testMockWhere,
+          Seq.empty,
+          "")
+      }
+
+    "return an a RepositoryException when a exception is thrown " in
+      new AppMockCursor with AppRepositoryScope {
+
+        contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+
+        val result = appRepository.fetchIterableApps(where = testMockWhere).value.run
         result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
@@ -307,12 +356,7 @@ class AppRepositorySpec
     "return an App object when a existent package name is given" in
       new AppRepositoryScope {
 
-        contentResolverWrapper.fetch(
-          uri = mockUri,
-          projection = allFields,
-          where = s"$packageName = ?",
-          whereParams = Seq(testPackageName))(
-          f = getEntityFromCursor(appEntityFromCursor)) returns Some(appEntity)
+        contentResolverWrapper.fetch[AppEntity](any, any, any, any, any) (any) returns Some(appEntity)
 
         val result = appRepository.fetchAppByPackage(packageName = testPackageName).value.run
 
@@ -328,12 +372,7 @@ class AppRepositorySpec
     "return None when a non-existent package name is given" in
       new AppRepositoryScope {
 
-        contentResolverWrapper.fetch(
-          uri = mockUri,
-          projection = allFields,
-          where = s"$packageName = ?",
-          whereParams = Seq(testNonExistingPackageName))(
-          f = getEntityFromCursor(appEntityFromCursor)) returns None
+        contentResolverWrapper.fetch[AppEntity](any, any, any, any, any) (any) returns None
 
         val result = appRepository.fetchAppByPackage(packageName = testNonExistingPackageName).value.run
         result shouldEqual Right(None)
@@ -342,29 +381,40 @@ class AppRepositorySpec
     "return a RepositoryException when a exception is thrown" in
       new AppRepositoryScope {
 
-        contentResolverWrapper.fetch(
-          uri = mockUri,
-          projection = allFields,
-          where = s"$packageName = ?",
-          whereParams = Seq(testPackageName))(
-          f = getEntityFromCursor(appEntityFromCursor)) throws contentResolverException
+        contentResolverWrapper.fetch[AppEntity](any, any, any, any, any) (any) throws contentResolverException
 
         val result = appRepository.fetchAppByPackage(packageName = testPackageName).value.run
         result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
 
+  "fecthAppByPackages" should {
+
+    "return a sequence of App when a existent" in
+      new AppRepositoryScope {
+
+        contentResolverWrapper.fetchAll[AppEntity](any, any, any, any, any) (any) returns appEntitySeq
+
+        val result: Either[NineCardException, Seq[App]] = appRepository.fetchAppByPackages(Seq(testPackageName)).value.run
+        result shouldEqual Right(appSeq)
+      }
+
+    "return a RepositoryException when a exception is thrown" in
+      new AppRepositoryScope {
+
+        contentResolverWrapper.fetchAll[AppEntity](any, any, any, any, any) (any) throws contentResolverException
+
+        val result: Either[NineCardException, Seq[App]] = appRepository.fetchAppByPackages(Seq(testPackageName)).value.run
+        result must beAnInstanceOf[Left[RepositoryException, _]]
+      }
+  }
+
   "fetchAppsByCategory" should {
+
     "return a sequence of Apps when a existent category is given" in
       new AppRepositoryScope {
 
-        contentResolverWrapper.fetchAll(
-          uri = mockUri,
-          projection = allFields,
-          where = s"$category = ?",
-          whereParams = Seq(testCategory),
-          orderBy = "")(
-          f = getListFromCursor(appEntityFromCursor)) returns appEntitySeq
+        contentResolverWrapper.fetchAll[AppEntity](any, any, any, any, any) (any) returns appEntitySeq
 
         val result = appRepository.fetchAppsByCategory(category = testCategory).value.run
         result shouldEqual Right(appSeq)
@@ -373,13 +423,7 @@ class AppRepositorySpec
     "return an empty sequence when a non-existent category is given" in
       new AppRepositoryScope {
 
-        contentResolverWrapper.fetchAll(
-          uri = mockUri,
-          projection = allFields,
-          where = s"$category = ?",
-          whereParams = Seq(testNonExistingCategory),
-          orderBy = "")(
-          f = getListFromCursor(appEntityFromCursor)) returns Seq.empty
+        contentResolverWrapper.fetchAll[AppEntity](any, any, any, any, any) (any) returns Seq.empty
 
         val result = appRepository.fetchAppsByCategory(category = testNonExistingCategory).value.run
         result shouldEqual Right(Seq.empty)
@@ -389,18 +433,64 @@ class AppRepositorySpec
     "return a RepositoryException when a exception is thrown" in
       new AppRepositoryScope {
 
-        contentResolverWrapper.fetchAll(
-          uri = mockUri,
-          projection = allFields,
-          where = s"$category = ?",
-          whereParams = Seq(testCategory),
-          orderBy = "")(
-          f = getListFromCursor(appEntityFromCursor)) throws contentResolverException
+        contentResolverWrapper.fetchAll[AppEntity](any, any, any, any, any) (any) throws contentResolverException
 
         val result = appRepository.fetchAppsByCategory(category = testCategory).value.run
         result must beAnInstanceOf[Left[RepositoryException, _]]
       }
   }
+
+  "fetchIterableAppsByCategory" should {
+
+    "return an IterableCursor of App when a existent category is given" in
+      new AppMockCursor with AppRepositoryScope {
+
+        contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+
+        val result = appRepository.fetchIterableAppsByCategory(category = testCategory).value.run
+
+        result must beLike {
+          case Right(iterator) =>
+            toSeq(iterator) shouldEqual appSeq
+        }
+
+        there was one(contentResolverWrapper).getCursor(
+          mockUri,
+          AppEntity.allFields,
+          s"$category = ?",
+          Seq(testCategory),
+          "")
+      }
+
+    "return an IterableCursor of App when a non-existent category is given" in
+      new EmptyAppMockCursor with AppRepositoryScope {
+
+        contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+
+        val result = appRepository.fetchIterableAppsByCategory(category = testNonExistingCategory).value.run
+        result must beLike {
+          case Right(iterator) =>
+            toSeq(iterator) shouldEqual Seq.empty
+        }
+
+        there was one(contentResolverWrapper).getCursor(
+          mockUri,
+          AppEntity.allFields,
+          s"$category = ?",
+          Seq(testNonExistingCategory),
+          "")
+      }
+
+    "return an a RepositoryException when a exception is thrown " in
+      new AppMockCursor with AppRepositoryScope {
+
+        contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+
+        val result = appRepository.fetchIterableAppsByCategory(category = testCategory).value.run
+        result must beAnInstanceOf[Left[RepositoryException, _]]
+      }
+  }
+
 
   "updateApp" should {
 

@@ -1,10 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.commons.contentresolver
 
 import android.database.Cursor
+import scala.annotation.tailrec
 
 trait IterableCursor[T] {
   def count(): Int
+
   def moveToPosition(pos: Int): T
+
   def close(): Unit
 }
 
@@ -28,4 +31,11 @@ object IterableCursor {
 
   }
 
+  @tailrec
+  def toSeq[T](iterator: IterableCursor[T], pos: Int = 0, seq: Seq[T] = Seq.empty): Seq[T] =
+    if (pos >= iterator.count()) {
+      seq
+    } else {
+      toSeq(iterator, pos + 1, seq :+ iterator.moveToPosition(pos))
+    }
 }

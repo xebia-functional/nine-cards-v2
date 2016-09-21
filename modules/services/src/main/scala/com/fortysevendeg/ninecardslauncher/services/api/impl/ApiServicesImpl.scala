@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
 import com.fortysevendeg.ninecardslauncher.api._
-import com.fortysevendeg.ninecardslauncher.api.version2.{CollectionUpdateInfo, CollectionsResponse}
+import com.fortysevendeg.ninecardslauncher.api.version2._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.api._
@@ -33,11 +33,6 @@ class ApiServicesImpl(
 
   val headerLocalization = "X-Android-Market-Localization"
 
-  val baseHeader: Seq[(String, String)] = Seq(
-    (headerAppId, apiServicesConfig.appId),
-    (headerAppKey, apiServicesConfig.appKey),
-    (headerLocalization, apiServicesConfig.localization))
-
   val userNotFoundMessage = "User not found"
 
   val userNotAuthenticatedMessage = "User not authenticated"
@@ -63,78 +58,96 @@ class ApiServicesImpl(
   override def loginV1(
     email: String,
     device: LoginV1Device) =
-    (for {
-      response <- apiServiceV1.login(toUser(email, device), baseHeader)
-      user <- readOption(response.data, userNotFoundMessage)
-    } yield toLoginResponseV1(response.statusCode, user)).resolve[ApiServiceException]
+    for {
+      baseHeader <- prepareV1Header
+      response <- apiServiceV1.login(toUser(email, device), baseHeader).readOption(userNotFoundMessage)
+    } yield toLoginResponseV1(response.statusCode, response.data)
+
+  override def getUserConfigV1()(implicit requestConfig: RequestConfigV1) =
+    for {
+      baseHeader <- prepareV1Header
+      header = baseHeader :+ ((headerDevice, requestConfig.deviceId)) :+ ((headerToken, requestConfig.token))
+      response <- apiServiceV1.getUserConfig(header).readOption(userConfigNotFoundMessage)
+    } yield GetUserV1Response(response.statusCode, toUserConfig(response.data))
 
   override def login(
     email: String,
     androidId: String,
     tokenId: String) =
-    (for {
-      serviceClientResponse <- apiService.login(version2.LoginRequest(email, androidId, tokenId))
-      loginResponse <- readOption(serviceClientResponse.data, userNotAuthenticatedMessage)
-    } yield LoginResponse(loginResponse.apiKey, loginResponse.sessionToken)).resolve[ApiServiceException]
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .login(ApiLoginRequest(email, androidId, tokenId))
+        .readOption(userNotAuthenticatedMessage)
+    }  yield LoginResponse(response.statusCode, response.data.apiKey, response.data.sessionToken)
 
-  override def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig) = {
-    (for {
-      response <- apiService.installations(version2.InstallationRequest(deviceToken getOrElse ""), requestConfig.toServiceHeader)
-      installation <- readOption(response.data, installationNotFoundMessage)
-    } yield UpdateInstallationResponse(response.statusCode)).resolve[ApiServiceException]
-  }
+  override def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig) =
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .installations(InstallationRequest(deviceToken getOrElse ""), requestConfig.toServiceHeader)
+        .readOption(installationNotFoundMessage)
+    } yield UpdateInstallationResponse(response.statusCode)
 
   override def googlePlayPackage(packageName: String)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiService.categorize(version2.CategorizeRequest(Seq(packageName)), requestConfig.toGooglePlayHeader)
-      categorizeResponse <- readOption(response.data, playAppNotFoundMessage)
-    } yield GooglePlayPackageResponse(response.statusCode, toCategorizedPackage(packageName, categorizeResponse))).resolve[ApiServiceException]
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .categorize(CategorizeRequest(Seq(packageName)), requestConfig.toGooglePlayHeader)
+        .readOption(playAppNotFoundMessage)
+    } yield GooglePlayPackageResponse(response.statusCode, toCategorizedPackage(packageName, response.data))
 
   override def googlePlayPackages(packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiService.categorize(version2.CategorizeRequest(packageNames), requestConfig.toGooglePlayHeader)
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .categorize(CategorizeRequest(packageNames), requestConfig.toGooglePlayHeader)
+        .resolve[ApiServiceException]
     } yield GooglePlayPackagesResponse(
-        statusCode = response.statusCode,
-        packages = response.data map toCategorizedPackages getOrElse Seq.empty)).resolve[ApiServiceException]
+      statusCode = response.statusCode,
+      packages = response.data map toCategorizedPackages getOrElse Seq.empty)
 
   override def googlePlayPackagesDetail(packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiService.categorizeDetail(version2.CategorizeRequest(packageNames), requestConfig.toGooglePlayHeader)
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .categorizeDetail(CategorizeRequest(packageNames), requestConfig.toGooglePlayHeader)
+        .resolve[ApiServiceException]
     } yield GooglePlayPackagesDetailResponse(
-        statusCode = response.statusCode,
-        packages = response.data map toCategorizedDetailPackages getOrElse Seq.empty)).resolve[ApiServiceException]
-
-  override def getUserConfigV1()(implicit requestConfig: RequestConfigV1) =
-    (for {
-      response <- apiServiceV1.getUserConfig(requestConfig.toHeader)
-      userConfig <- readOption(response.data, userConfigNotFoundMessage)
-    } yield GetUserV1Response(response.statusCode, toUserConfig(userConfig))).resolve[ApiServiceException]
+      statusCode = response.statusCode,
+      packages = response.data map toCategorizedDetailPackages getOrElse Seq.empty)
 
   override def getRecommendedApps(
     category: String,
     excludePackages: Seq[String],
     limit: Int)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiService.recommendations(category, version2.RecommendationsRequest(filter = None, excludePackages, limit), requestConfig.toGooglePlayHeader)
-      recommendation <- readOption(response.data, categoryNotFoundMessage)
-    } yield RecommendationResponse(response.statusCode, toRecommendationAppSeq(recommendation.apps))).resolve[ApiServiceException]
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .recommendations(category, RecommendationsRequest(None, excludePackages, limit), requestConfig.toGooglePlayHeader)
+        .readOption(categoryNotFoundMessage)
+    }  yield  RecommendationResponse(response.statusCode, toRecommendationAppSeq(response.data.apps))
 
   override def getRecommendedAppsByPackages(
     packages: Seq[String],
     excludePackages: Seq[String],
     limit: Int)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiService.recommendationsByApps(version2.RecommendationsByAppsRequest(packages, filter = None, excludePackages, limit), requestConfig.toGooglePlayHeader)
-      recommendation <- readOption(response.data, categoryNotFoundMessage)
-    } yield RecommendationResponse(response.statusCode, toRecommendationAppSeq(recommendation.apps))).resolve[ApiServiceException]
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .recommendationsByApps(RecommendationsByAppsRequest(packages, None, excludePackages, limit), requestConfig.toGooglePlayHeader)
+        .resolve[ApiServiceException]
+      apps = response.data.map(_.apps) getOrElse Seq.empty
+    } yield RecommendationResponse(response.statusCode, toRecommendationAppSeq(apps))
 
   override def getSharedCollection(
     sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
     for {
+      _ <- validateConfig
       response <- apiService
-        .getCollection(sharedCollectionId, requestConfig.toGooglePlayHeader).resolve[ApiServiceException]
-      collection <- readOption(response.data, publishedCollectionsNotFoundMessage)
-    } yield SharedCollectionResponse(response.statusCode, toSharedCollection(collection))
+        .getCollection(sharedCollectionId, requestConfig.toGooglePlayHeader)
+        .readOption(publishedCollectionsNotFoundMessage)
+    } yield SharedCollectionResponse(response.statusCode, toSharedCollection(response.data))
 
   override def getSharedCollectionsByCategory(
     category: String,
@@ -142,27 +155,30 @@ class ApiServicesImpl(
     offset: Int,
     limit: Int)(implicit requestConfig: RequestConfig) = {
 
-    def serviceCall: TaskService[ServiceClientResponse[CollectionsResponse]] =
+    def serviceCall(header: ServiceMarketHeader): TaskService[ServiceClientResponse[CollectionsResponse]] =
       collectionType.toLowerCase match {
         case "top" =>
-          apiService.topCollections(category, offset, limit, requestConfig.toGooglePlayHeader).resolve[ApiServiceException]
+          apiService.topCollections(category, offset, limit, header)
         case "latest" =>
-          apiService.latestCollections(category, offset, limit, requestConfig.toGooglePlayHeader).resolve[ApiServiceException]
+          apiService.latestCollections(category, offset, limit, header)
         case _ => TaskService(Task(Left(ApiServiceException(shareCollectionNotFoundMessage))))
 
       }
 
     for {
-      response <- serviceCall
-      sharedCollections <- readOption(response.data, shareCollectionNotFoundMessage)
-    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(sharedCollections.collections))
+      _ <- validateConfig
+      response <- serviceCall(requestConfig.toGooglePlayHeader)
+        .readOption(shareCollectionNotFoundMessage)
+    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(response.data.collections))
   }
 
   override def getPublishedCollections()(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiService.getCollections(header = requestConfig.toGooglePlayHeader)
-      publishedCollections <- readOption(response.data, publishedCollectionsNotFoundMessage)
-    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(publishedCollections.collections))).resolve[ApiServiceException]
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .getCollections(requestConfig.toGooglePlayHeader)
+        .readOption(publishedCollectionsNotFoundMessage)
+    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(response.data.collections))
 
   override def createSharedCollection(
     name: String,
@@ -171,18 +187,24 @@ class ApiServicesImpl(
     packages: Seq[String],
     category: String,
     icon: String,
-    community: Boolean)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiService.createCollection(version2.CreateCollectionRequest(
-        name = name,
-        author = author,
-        description = description,
-        icon = icon,
-        category = category,
-        community = community,
-        packages = packages), requestConfig.toServiceHeader)
-      createdCollection <- readOption(response.data, errorCreatingCollectionMessage)
-    } yield CreateSharedCollectionResponse(response.statusCode, createdCollection.publicIdentifier)).resolve[ApiServiceException]
+    community: Boolean)(implicit requestConfig: RequestConfig) = {
+
+    val request = version2.CreateCollectionRequest(
+      name = name,
+      author = author,
+      description = description,
+      icon = icon,
+      category = category,
+      community = community,
+      packages = packages)
+
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .createCollection(request, requestConfig.toServiceHeader)
+        .readOption(errorCreatingCollectionMessage)
+    } yield CreateSharedCollectionResponse(response.statusCode, response.data.publicIdentifier)
+  }
 
   override def updateSharedCollection(
     sharedCollectionId: String,
@@ -192,36 +214,77 @@ class ApiServicesImpl(
 
     def toUpdateInfo: Option[CollectionUpdateInfo] = maybeName map (name => CollectionUpdateInfo(name, maybeDescription))
 
-    (for {
-      response <- apiService.updateCollection(
-        publicIdentifier = sharedCollectionId,
-        request = version2.UpdateCollectionRequest(collectionInfo = toUpdateInfo, packages = Some(packages)),
-        header = requestConfig.toServiceHeader)
-      createdCollection <- readOption(response.data, errorCreatingCollectionMessage)
-    } yield UpdateSharedCollectionResponse(response.statusCode, createdCollection.publicIdentifier)).resolve[ApiServiceException]
+    val request = version2.UpdateCollectionRequest(collectionInfo = toUpdateInfo, packages = Some(packages))
+
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .updateCollection(sharedCollectionId, request, requestConfig.toServiceHeader)
+        .readOption(errorCreatingCollectionMessage)
+    } yield UpdateSharedCollectionResponse(response.statusCode, response.data.publicIdentifier)
   }
 
   override def getSubscriptions()(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiService.getSubscriptions(requestConfig.toServiceHeader)
-      subscriptionsResponse <- readOption(response.data, subscriptionsNotFoundMessage)
-    } yield SubscriptionResponseList(response.statusCode, toSubscriptionResponseSeq(subscriptionsResponse.subscriptions))).resolve[ApiServiceException]
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .getSubscriptions(requestConfig.toServiceHeader)
+        .readOption(subscriptionsNotFoundMessage)
+    } yield SubscriptionResponseList(response.statusCode, toSubscriptionResponseSeq(response.data.subscriptions))
 
   override def subscribe(
-    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiService.subscribe(originalSharedCollectionId, requestConfig.toServiceHeader)
-    } yield SubscribeResponse(response.statusCode)).resolve[ApiServiceException]
+    sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
+    for {
+      _ <- validateConfig
+      response <- apiService.subscribe(sharedCollectionId, requestConfig.toServiceHeader).resolve[ApiServiceException]
+    } yield SubscribeResponse(response.statusCode)
 
   override def unsubscribe(
-    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig) =
-    (for {
-      response <- apiService.unsubscribe(originalSharedCollectionId, requestConfig.toServiceHeader)
-    } yield UnsubscribeResponse(response.statusCode)).resolve[ApiServiceException]
+    sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
+    for {
+      _ <- validateConfig
+      response <- apiService.unsubscribe(sharedCollectionId, requestConfig.toServiceHeader).resolve[ApiServiceException]
+    } yield UnsubscribeResponse(response.statusCode)
 
-  implicit class RequestHeaderHeader(request: RequestConfigV1) {
-    def toHeader: Seq[(String, String)] =
-      baseHeader :+ ((headerDevice, request.deviceId)) :+ ((headerToken, request.token))
+  private[this] def prepareV1Header: TaskService[Seq[(String, String)]] = {
+
+    def isConfigValid: Boolean = apiServiceV1.baseUrl.nonEmpty &&
+      apiServicesConfig.appId.nonEmpty &&
+      apiServicesConfig.appKey.nonEmpty
+
+    TaskService {
+      Task {
+        if (isConfigValid) {
+          Right(Seq(
+            (headerAppId, apiServicesConfig.appId),
+            (headerAppKey, apiServicesConfig.appKey),
+            (headerLocalization, apiServicesConfig.localization)))
+        } else {
+          Left(ApiServiceV1ConfigurationException("Invalid configuration"))
+        }
+      }
+    }
+
+  }
+
+  case class ServiceResponse[T](statusCode: Int, data: T)
+
+  implicit class ServiceOptionExt[T](taskService: TaskService[ServiceClientResponse[T]]) {
+
+    def readOption(msg: String): TaskService[ServiceResponse[T]] =
+      taskService.resolveSides(
+        mapRight = {
+          case ServiceClientResponse(statusCode, Some(value)) => Right(ServiceResponse(statusCode, value))
+          case _ => Left(ApiServiceException(msg))
+        },
+        mapLeft = e => Left(ApiServiceException(e.getMessage, Some(e))))
+
+  }
+
+  private[this] def validateConfig: TaskService[Unit] = TaskService {
+    Task {
+      if (apiService.baseUrl.nonEmpty) Right((): Unit) else Left(ApiServiceConfigurationException("Invalid configuration"))
+    }
   }
 
   implicit class RequestConfigExt(request: RequestConfig) {
@@ -230,15 +293,6 @@ class ApiServicesImpl(
 
     def toGooglePlayHeader: version2.ServiceMarketHeader =
       version2.ServiceMarketHeader(request.apiKey, request.sessionToken, request.androidId, request.marketToken)
-  }
-
-  private[this] def readOption[T](maybe: Option[T], msg: String = ""): TaskService[T] = TaskService {
-    Task {
-      maybe match {
-        case Some(v) => Right(v)
-        case _ => Left(ApiServiceException(msg))
-      }
-    }
   }
 
 }
