@@ -8,83 +8,6 @@ import scala.util.Random
 
 trait ApiServicesImplData {
 
-  val offset = 0
-  val limit = 20
-  val category = "COMMUNICATION"
-  val name = "Name"
-  val author = "Author"
-  val packages = List("Package1", "Package2")
-  val excludedPackages = List("Package3", "Package4")
-  val icon = "Icon"
-  val community = true
-  val collectionTypeTop = "top"
-  val collectionTypeLatest = "latest"
-  val collectionTypeUnknown = "unknown"
-  val user = generateUser
-  val categorizeApps = generateCategorizedApps()
-  val categorizeAppsDetail = generateCategorizedAppsDetail()
-  val categorizedDetailPackages = categorizeAppsDetail map { app =>
-    CategorizedDetailPackage(
-      packageName = app.packageName,
-      title = app.title,
-      category = app.categories.headOption,
-      icon = app.icon,
-      free = app.free,
-      downloads = app.downloads,
-      stars = app.stars)
-  }
-  val recommendationApps = 1 to 10 map (_ => generateRecommendationApp)
-  val recommendationResponse = version2.RecommendationsResponse(recommendationApps)
-  val recommendationByAppsResponse = version2.RecommendationsByAppsResponse(recommendationApps)
-  val collectionApps1 = 1 to 5 map (_ => generateCollectionApp)
-  val collectionApps2 = 1 to 5 map (_ => generateCollectionApp)
-  val collectionApps3 = 1 to 5 map (_ => generateCollectionApp)
-  val collections = Seq(
-    generateCollection(collectionApps1),
-    generateCollection(collectionApps2),
-    generateCollection(collectionApps3))
-  val sharedCollection = generateCollection(collectionApps1)
-  val userConfig = generateUserConfig
-  val apiKey = Random.nextString(10)
-  val sessionToken = Random.nextString(20)
-  val deviceId = "device-id"
-  val deviceToken = Random.nextString(20)
-  val secretToken = Random.nextString(20)
-  val permissions = Seq("permission1", "permission2")
-  val email = "email@dot.com"
-  val androidId = Random.nextString(10)
-  val tokenId = Random.nextString(30)
-  val sharedCollectionId = Random.nextString(30)
-  val packageStats = version2.PackagesStats(1, None)
-  val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(sharedCollectionId))
-  val createCollectionRequest = version2.CreateCollectionRequest(name, author, icon, category, community, packages)
-  val updateCollectionRequest = version2.UpdateCollectionRequest(Some(CollectionUpdateInfo(name)), Some(packages))
-  val updateCollectionResponse = version2.UpdateCollectionResponse(sharedCollectionId, packageStats)
-  val recommendationsRequest = version2.RecommendationsRequest(None, excludedPackages, limit)
-  val recommendationsByAppsRequest = version2.RecommendationsByAppsRequest(packages, None, excludedPackages, limit)
-  val categorizeRequest = version2.CategorizeRequest(categorizeApps.map(_.packageName))
-  val categorizeOneRequest = version2.CategorizeRequest(categorizeApps.headOption.map(_.packageName).toSeq)
-  val installationRequest = version2.InstallationRequest(deviceToken)
-  val loginRequest = version2.ApiLoginRequest(email, androidId, tokenId)
-  val loginV1User = version1.User(
-    _id = None,
-    email = None,
-    sessionToken = None,
-    username = None,
-    password = None,
-    authData = Some(version1.AuthData(
-      google = Some(version1.AuthGoogle(
-        email = email,
-        devices = List(version1.AuthGoogleDevice(
-          name = name,
-          deviceId = deviceId,
-          secretToken = secretToken,
-          permissions = permissions))
-      )),
-      facebook = None,
-      twitter = None,
-      anonymous = None)))
-
   def generateUser =
     version1.User(
       _id = Some(Random.nextString(10)),
@@ -122,15 +45,15 @@ trait ApiServicesImplData {
       generateCategorizedApp
     }
 
-  def generateCategorizedApp =
-    version2.CategorizedApp(
-      packageName = Random.nextString(10),
-      category = "SOCIAL")
-
   def generateCategorizedAppsDetail(num: Int = 10) =
     1 to num map { _ =>
       generateCategorizedAppDetail
     }
+
+  def generateCategorizedApp =
+    version2.CategorizedApp(
+      packageName = Random.nextString(10),
+      category = "SOCIAL")
 
   def generateCategorizedAppDetail =
     version2.CategorizedAppDetail(
@@ -224,4 +147,125 @@ trait ApiServicesImplData {
       category = "SOCIAL",
       title = Random.nextString(10),
       free = Random.nextBoolean())
+
+  val offset = 0
+
+  val limit = 20
+
+  val category = "COMMUNICATION"
+
+  val name = "Name"
+
+  val description = "Description"
+
+  val author = "Author"
+
+  val packages = List("Package1", "Package2")
+
+  val excludedPackages = List("Package3", "Package4")
+
+  val icon = "Icon"
+
+  val community = true
+
+  val collectionTypeTop = "top"
+  val collectionTypeLatest = "latest"
+  val collectionTypeUnknown = "unknown"
+
+  val user = generateUser
+
+  val categorizeApps = generateCategorizedApps()
+
+  val categorizeAppsDetail = generateCategorizedAppsDetail()
+
+  val categorizedDetailPackages = categorizeAppsDetail map { app =>
+    CategorizedDetailPackage(
+      packageName = app.packageName,
+      title = app.title,
+      category = app.categories.headOption,
+      icon = app.icon,
+      free = app.free,
+      downloads = app.downloads,
+      stars = app.stars)
+  }
+
+  val recommendationApps = 1 to 10 map (_ => generateRecommendationApp)
+
+  val recommendationResponse = version2.RecommendationsResponse(recommendationApps)
+
+  val recommendationByAppsResponse = version2.RecommendationsByAppsResponse(recommendationApps)
+
+  val collectionApps1 = 1 to 5 map (_ => generateCollectionApp)
+  val collectionApps2 = 1 to 5 map (_ => generateCollectionApp)
+  val collectionApps3 = 1 to 5 map (_ => generateCollectionApp)
+
+  val collections = Seq(
+    generateCollection(collectionApps1),
+    generateCollection(collectionApps2),
+    generateCollection(collectionApps3))
+
+  val sharedCollection = generateCollection(collectionApps1)
+
+  val userConfig = generateUserConfig
+
+  val apiKey = Random.nextString(10)
+
+  val sessionToken = Random.nextString(20)
+
+  val deviceId = "device-id"
+
+  val deviceToken = Random.nextString(20)
+
+  val secretToken = Random.nextString(20)
+
+  val permissions = Seq("permission1", "permission2")
+
+  val email = "email@dot.com"
+
+  val androidId = Random.nextString(10)
+
+  val tokenId = Random.nextString(30)
+
+  val sharedCollectionId = Random.nextString(30)
+
+  val packageStats = version2.PackagesStats(1, None)
+
+  val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(sharedCollectionId))
+
+  val createCollectionRequest = version2.CreateCollectionRequest(name, author, icon, category, community, packages)
+
+  val updateCollectionRequest = version2.UpdateCollectionRequest(Some(CollectionUpdateInfo(name)), Some(packages))
+
+  val updateCollectionResponse = version2.UpdateCollectionResponse(sharedCollectionId, packageStats)
+
+  val recommendationsRequest = version2.RecommendationsRequest(None, excludedPackages, limit)
+
+  val recommendationsByAppsRequest = version2.RecommendationsByAppsRequest(packages, None, excludedPackages, limit)
+
+  val categorizeRequest = version2.CategorizeRequest(categorizeApps.map(_.packageName))
+
+  val categorizeOneRequest = version2.CategorizeRequest(categorizeApps.headOption.map(_.packageName).toSeq)
+
+  val installationRequest = version2.InstallationRequest(deviceToken)
+
+  val loginRequest = version2.ApiLoginRequest(email, androidId, tokenId)
+
+  val loginV1User = version1.User(
+    _id = None,
+    email = None,
+    sessionToken = None,
+    username = None,
+    password = None,
+    authData = Some(version1.AuthData(
+      google = Some(version1.AuthGoogle(
+        email = email,
+        devices = List(version1.AuthGoogleDevice(
+          name = name,
+          deviceId = deviceId,
+          secretToken = secretToken,
+          permissions = permissions))
+      )),
+      facebook = None,
+      twitter = None,
+      anonymous = None)))
 }
