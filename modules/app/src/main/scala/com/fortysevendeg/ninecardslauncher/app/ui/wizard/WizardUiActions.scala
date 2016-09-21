@@ -59,7 +59,7 @@ class WizardUiActions(dom: WizardDOM)(implicit val context: ActivityContextWrapp
         On.click {
           Ui {
             val termsAccept = dom.usersTerms.isChecked
-            jobs.connectAccount(termsAccept).resolveAsyncService()
+            jobs.connectAccount(termsAccept).resolveAsync()
           }
         }) ~
         (dom.deviceAction <~
@@ -89,7 +89,7 @@ class WizardUiActions(dom: WizardDOM)(implicit val context: ActivityContextWrapp
           })) ~
         (dom.stepsAction <~
           diveInActionStyle <~
-          On.click(Ui(jobs.finishWizard().resolveAsyncService()))) ~
+          On.click(Ui(jobs.finishWizard().resolveAsync()))) ~
         createPagers(steps)
 
     for {
@@ -119,8 +119,6 @@ class WizardUiActions(dom: WizardDOM)(implicit val context: ActivityContextWrapp
   def showErrorLoginUser(): TaskService[Unit] = backToUser(R.string.errorLoginUser)
 
   def showErrorConnectingGoogle(): TaskService[Unit] = backToUser(R.string.errorConnectingGoogle)
-
-  def showErrorGeneratingCollections(): TaskService[Unit] = backToUser(R.string.errorGeneratingCollections)
 
   private[this] def backToUser(errorMessage: Int): TaskService[Unit] =
     for {

@@ -59,7 +59,6 @@
 
     <string name="errorLoginUser">Error accessing to server. Please try again later</string>
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
-    <string name="errorGeneratingCollections">Error generating collections. Please try another device</string>
     <string name="goTo9Cards">Dive in!</string>
     <string name="workingNotificationTitle">Wait a moment…</string>
 

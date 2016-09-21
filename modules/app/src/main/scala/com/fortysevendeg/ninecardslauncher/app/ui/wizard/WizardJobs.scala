@@ -67,7 +67,6 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
   extends Jobs
   with GoogleDriveApiClientProvider
   with GooglePlusApiClientProvider
-  with ImplicitsWizardExceptions
   with ImplicitsUiExceptions {
 
   val accountType = "com.google"
@@ -196,13 +195,10 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
           _ <- invalidateToken()
           token <- di.userAccountsProcess
             .getAuthToken(account, resGetString(R.string.android_market_oauth_scopes))
-            .leftMap {
+            .resolveLeft {
               case ex: AccountsProcessOperationCancelledException =>
-                showErrorDialog(
-                  message = R.string.errorAndroidMarketPermissionNotAccepted,
-                  action = () => requestAndroidMarketPermission().resolveAsync(),
-                  negativeAction = () => actions.goToUser().resolveAsync())
-              case ex: Throwable => TaskService(Task(Left(ex)))
+                Left(WizardGoogleTokenRequestCancelledException(ex.getMessage, Some(ex)))
+              case ex: Throwable => Left(ex)
             }
           _ = storeAndroidMarketToken(token)
           _ <- requestGooglePermission()
@@ -219,13 +215,10 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
           _ <- actions.showLoading()
           _ <- di.userAccountsProcess
             .getAuthToken(account, resGetString(R.string.profile_and_drive_oauth_scopes))
-            .leftMap {
+            .resolveLeft {
               case ex: AccountsProcessOperationCancelledException =>
-                showErrorDialog(
-                  message = R.string.errorGooglePermissionNotAccepted,
-                  action = () => requestGooglePermission().resolveAsync(),
-                  negativeAction = () => actions.goToUser().resolveAsync())
-              case ex: Throwable => TaskService(Task(Left(ex)))
+                Left(WizardGoogleTokenRequestCancelledException(ex.getMessage, Some(ex)))
+              case ex: Throwable => Left(ex)
             }
           _ <- tryToConnectDriveApiClient()
         } yield ()
@@ -248,6 +241,18 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     } else {
       TaskService(Task(Right((): Unit)))
     }
+
+  def errorOperationMarketTokenCancelled(): TaskService[Unit] =
+    showErrorDialog(
+      message = R.string.errorAndroidMarketPermissionNotAccepted,
+      action = () => requestAndroidMarketPermission().resolveAsync(),
+      negativeAction = () => actions.goToUser().resolveAsync())
+
+  def errorOperationGoogleTokenCancelled(): TaskService[Unit] =
+    showErrorDialog(
+      message = R.string.errorGooglePermissionNotAccepted,
+      action = () => requestGooglePermission().resolveAsync(),
+      negativeAction = () => actions.goToUser().resolveAsync())
 
   override def onDriveConnectionSuspended(connectionSuspendedCause: ConnectionSuspendedCause): Unit = {}
 
@@ -313,10 +318,10 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
   private[this] def generateCollections(maybeKey: Option[String]): TaskService[Unit] = {
     val intent = activityContextSupport.createIntent(classOf[CreateCollectionService])
     intent.putExtra(CreateCollectionService.cloudIdKey, maybeKey.getOrElse(CreateCollectionService.newConfiguration))
-    (for {
-      _ <- uiStartIntent(intent).toService
+    for {
+      _ <- uiStartServiceIntent(intent).toService
       _ <- actions.goToWizard()
-    } yield ()).resolve[WizardGeneratingCollectionsException]
+    } yield ()
   }
 
   private[this] def tryToConnectDriveApiClient(): TaskService[Unit] =
@@ -327,7 +332,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
   private[this] def tryToConnectGoogleApiClient(): TaskService[Unit] =
     clientStatuses.plusApiClient match {
-      case Some(client) => TaskService(CatchAll[UiException](client.connect()))
+      case Some(client) => TaskService(CatchAll[UiException](client.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)))
       case None => googleSignIn()
     }
 
