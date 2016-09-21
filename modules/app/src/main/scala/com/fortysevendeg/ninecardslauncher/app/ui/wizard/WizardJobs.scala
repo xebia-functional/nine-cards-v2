@@ -1,0 +1,453 @@
+package com.fortysevendeg.ninecardslauncher.app.ui.wizard
+
+import android.accounts.AccountManager
+import android.app.Activity
+import android.content.Intent
+import android.os.{Build, Bundle}
+import android.support.v7.app.AppCompatActivity
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
+import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.ReadContacts
+import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider, GooglePlusApiClientProvider}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons._
+import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
+import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
+import com.fortysevendeg.ninecardslauncher.process.accounts.AccountsProcessOperationCancelledException
+import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, Conversions}
+import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
+import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
+import com.fortysevendeg.ninecardslauncher.process.user.UserException
+import com.fortysevendeg.ninecardslauncher.process.userv1.{UserV1ConfigurationException, UserV1Exception}
+import com.fortysevendeg.ninecardslauncher.process.userv1.models.UserV1Device
+import com.fortysevendeg.ninecardslauncher2.R
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}
+import com.google.android.gms.common.api.GoogleApiClient
+import macroid.ActivityContextWrapper
+import monix.eval.Task
+
+import scala.util.{Failure, Success, Try}
+
+/**
+  * This class manages all jobs over the Wizard. This is the ideal flow:
+  *  - Activity calls to 'Job.initialize'
+  *   + Job calls to 'UiAction.initialize'
+  *  - UiAction calls to 'Job.connectAccount'
+  *   + Job starts a new activity for getting the account
+  *  - Activity calls to 'Job.activityResult'
+  *   + Job calls to 'Job.requestAndroidMarketPermission' that fetches the Android Market token
+  *   + Job calls to 'Job.requestGooglePermission' that fetches the Google Profile token
+  *   + Job calls to 'Job.tryToConnectDriveApiClient' that connects the Drive client
+  *  - GoogleDriveApiClientProvider calls 'Job.onDriveConnected'
+  *   + Job execute 'Job.googleSignIn'
+  *   + Job starts a new activity for Google Profile sign in
+  *  - Activity calls to 'Job.activityResult'
+  *   + Job fetches the tokenId and calls to 'Job.tryToConnectGoogleApiClient'
+  *  - GooglePlusApiClientProvider calls to 'Job.onPlusConnected'
+  *   + Job update the user profile information and calls to 'Job.loadDevices'
+  *   + Job calls to 'UiAction.showDevices' with the loaded devices
+  *  - UiAction calls to 'Job.deviceSelected'
+  *   + Job asks for Contacts permissions and calls to 'Job.generateCollections'
+  *   + Job starts the service
+  *  - Activity calls to 'Job.serviceFinished'
+  *   + Job calls to 'UiAction.showDiveIn'
+  *  - UiAction calls to 'Job.finishWizard'
+  *   + Job set the result RESULT_OK and finish the activity
+  */
+class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
+  extends Jobs
+  with GoogleDriveApiClientProvider
+  with GooglePlusApiClientProvider
+  with ImplicitsWizardExceptions
+  with ImplicitsUiExceptions {
+
+  val accountType = "com.google"
+
+  val tagDialog = "wizard-dialog"
+
+  val permissionChecker = new PermissionChecker
+
+  var clientStatuses = WizardPresenterStatuses()
+
+  def initialize(): TaskService[Unit] = actions.initialize(this)
+
+  def stop(): TaskService[Unit] = {
+
+    def tryToClose(maybeClient: Option[GoogleApiClient]): Try[Unit] =
+      maybeClient map (c => Try(c.disconnect())) getOrElse Success((): Unit)
+
+    TaskService {
+      Task {
+        List(clientStatuses.driveApiClient, clientStatuses.plusApiClient) map tryToClose collect {
+          case Failure(e) => e
+        } match {
+          case Nil => Right((): Unit)
+          case list =>
+            val message = s"Error disconnecting clients:\n ${list.map(_.getMessage).mkString(" \n")}"
+            Left(UiException(message, cause = None))
+        }
+      }
+    }
+  }
+
+  def connectAccount(termsAccepted: Boolean): TaskService[Unit] =
+    if (termsAccepted) {
+      val intent = AccountManager
+        .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
+      uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
+    } else {
+      actions.showErrorAcceptTerms()
+    }
+
+  def deviceSelected(maybeKey: Option[String]): TaskService[Unit] = {
+    clientStatuses = clientStatuses.copy(deviceKey = maybeKey)
+    if (permissionChecker.havePermission(ReadContacts)) {
+      generateCollections(maybeKey)
+    } else {
+      TaskService {
+        CatchAll[UiException] {
+          permissionChecker.requestPermission(RequestCodes.contactsPermission, ReadContacts)
+        }
+      }
+    }
+  }
+
+  def finishWizard(): TaskService[Unit] = TaskService {
+    CatchAll[UiException] {
+      activityContextSupport.getActivity match {
+        case Some(activity) =>
+          activity.setResult(Activity.RESULT_OK)
+          activity.finish()
+        case None => throw new NullPointerException("Activity instance not found")
+      }
+    }
+  }
+
+  def serviceCreatingCollections(): TaskService[Unit] = actions.goToWizard()
+
+  def serviceUnknownError(): TaskService[Unit] = actions.goToUser()
+
+  def serviceCloudIdNotSentError(): TaskService[Unit] = actions.goToUser()
+
+  def serviceCloudIdAlreadySetError(): TaskService[Unit] =
+    for {
+      _ <- di.userProcess.unregister
+      _ <- actions.goToUser()
+    } yield ()
+
+  def serviceFinished(): TaskService[Unit] = actions.showDiveIn()
+
+  def activityResult(requestCode: Int, resultCode: Int, data: Intent): TaskService[Unit] =
+    (requestCode, resultCode) match {
+      case (RequestCodes.selectAccount, Activity.RESULT_OK) =>
+        clientStatuses = clientStatuses.copy(email = Option(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)))
+        requestAndroidMarketPermission()
+      case (RequestCodes.selectAccount, _) =>
+        showErrorDialog(
+          message = R.string.errorAccountsMessage,
+          action = () => connectAccount(true),
+          negativeAction = () => ())
+      case (`resolveGooglePlayConnection`, Activity.RESULT_OK) =>
+        tryToConnectDriveApiClient()
+      case (`resolveGooglePlayConnection`, _) =>
+        actions.showErrorConnectingGoogle()
+      case (`resolveConnectedUser`, Activity.RESULT_OK) =>
+        val mailTokenId = Option(Auth.GoogleSignInApi.getSignInResultFromIntent(data)) match {
+          case Some(result) if result.isSuccess =>
+            Option(result.getSignInAccount) flatMap (acct => Option(acct.getIdToken))
+          case _ => None
+        }
+        clientStatuses = clientStatuses.copy(mailTokenId = mailTokenId)
+        tryToConnectGoogleApiClient()
+      case (`resolveConnectedUser`, _) =>
+        actions.showErrorConnectingGoogle()
+      case _ => TaskService(Task(Right((): Unit)))
+    }
+
+  def requestAndroidMarketPermission(): TaskService[Unit] = {
+
+    def invalidateToken(): TaskService[Unit] =
+      clientStatuses.androidMarketToken match {
+        case Some(token) => di.userAccountsProcess.invalidateToken(token)
+        case None => TaskService(Task(Right((): Unit)))
+      }
+
+    def storeDriveApiClient(driveApiClient: GoogleApiClient): Unit =
+      clientStatuses = clientStatuses.copy(driveApiClient = Option(driveApiClient))
+
+    def storeAndroidMarketToken(token: String): Unit =
+      clientStatuses = clientStatuses.copy(androidMarketToken = Option(token))
+
+    clientStatuses.email match {
+      case Some(account) =>
+        val googleApiClient = createGoogleDriveClient(account)
+        storeDriveApiClient(googleApiClient)
+        for {
+          _ <- actions.showLoading()
+          _ <- invalidateToken()
+          token <- di.userAccountsProcess
+            .getAuthToken(account, resGetString(R.string.android_market_oauth_scopes))
+            .leftMap {
+              case ex: AccountsProcessOperationCancelledException =>
+                showErrorDialog(
+                  message = R.string.errorAndroidMarketPermissionNotAccepted,
+                  action = () => requestAndroidMarketPermission().resolveAsync(),
+                  negativeAction = () => actions.goToUser().resolveAsync())
+              case ex: Throwable => TaskService(Task(Left(ex)))
+            }
+          _ = storeAndroidMarketToken(token)
+          _ <- requestGooglePermission()
+        } yield ()
+      case None => actions.goToUser()
+    }
+
+  }
+
+  def requestGooglePermission(): TaskService[Unit] =
+    clientStatuses.email match {
+      case Some(account) =>
+        for {
+          _ <- actions.showLoading()
+          _ <- di.userAccountsProcess
+            .getAuthToken(account, resGetString(R.string.profile_and_drive_oauth_scopes))
+            .leftMap {
+              case ex: AccountsProcessOperationCancelledException =>
+                showErrorDialog(
+                  message = R.string.errorGooglePermissionNotAccepted,
+                  action = () => requestGooglePermission().resolveAsync(),
+                  negativeAction = () => actions.goToUser().resolveAsync())
+              case ex: Throwable => TaskService(Task(Left(ex)))
+            }
+          _ <- tryToConnectDriveApiClient()
+        } yield ()
+      case None => actions.goToUser()
+    }
+
+  def requestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): TaskService[Unit] =
+    if (requestCode == RequestCodes.contactsPermission) {
+      val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
+      if (result.exists(_.hasPermission(ReadContacts))) {
+        generateCollections(clientStatuses.deviceKey)
+      } else if (permissionChecker.shouldRequestPermission(ReadContacts)) {
+        showErrorDialog(
+          message = R.string.errorReadContactsMessage,
+          action = () => permissionChecker.requestPermission(RequestCodes.contactsPermission, ReadContacts),
+          negativeAction = () => generateCollections(clientStatuses.deviceKey))
+      } else {
+        generateCollections(clientStatuses.deviceKey)
+      }
+    } else {
+      TaskService(Task(Right((): Unit)))
+    }
+
+  override def onDriveConnectionSuspended(connectionSuspendedCause: ConnectionSuspendedCause): Unit = {}
+
+  override def onDriveConnected(bundle: Bundle): Unit = googleSignIn().resolveAsync()
+
+  override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit = onConnectionFailed(connectionResult)
+
+  override def onPlusConnectionSuspended(connectionSuspendedCause: ConnectionSuspendedCause): Unit = {}
+
+  override def onPlusConnected(bundle: Bundle): Unit = {
+
+    def error(throwable: Throwable): TaskService[Unit] = throwable match {
+      case ex: SocialProfileProcessException if ex.recoverable => googleSignIn()
+      case ex: UserException => actions.showErrorLoginUser()
+      case ex: UserV1Exception => actions.showErrorLoginUser()
+      case _ => actions.showErrorConnectingGoogle()
+    }
+
+    clientStatuses.plusApiClient match {
+      case Some(apiClient) =>
+        val socialProfileProcess = di.createSocialProfileProcess(apiClient)
+        (for {
+          _ <- actions.showLoading()
+          maybeProfileName <- socialProfileProcess.updateUserProfile()
+          _ <- loadDevices(maybeProfileName)
+        } yield ()).resolveAsync(onException = error(_).resolveAsync())
+      case None => actions.goToUser()
+    }
+  }
+
+  override def onPlusConnectionFailed(connectionResult: ConnectionResult): Unit = onConnectionFailed(connectionResult)
+
+  private[this] def onConnectionFailed(connectionResult: ConnectionResult): Unit = {
+
+    def withActivity(f: (AppCompatActivity => Unit)) =
+      contextWrapper.original.get match {
+        case Some(activity: AppCompatActivity) => f(activity)
+        case _ =>
+      }
+
+    if (connectionResult.hasResolution) {
+      withActivity { activity =>
+        Try(connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)) match {
+          case Failure(e) => actions.showErrorConnectingGoogle().resolveAsync()
+          case _ =>
+        }
+      }
+    } else if (
+      connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||
+        connectionResult.getErrorCode == ConnectionResult.SERVICE_MISSING ||
+        connectionResult.getErrorCode == ConnectionResult.SERVICE_DISABLED) {
+      actions.goToUser().resolveAsync()
+      withActivity { activity =>
+        GoogleApiAvailability.getInstance()
+          .getErrorDialog(activity, connectionResult.getErrorCode, resolveGooglePlayConnection)
+          .show()
+      }
+    } else {
+      actions.showErrorConnectingGoogle().resolveAsync()
+    }
+  }
+
+  private[this] def generateCollections(maybeKey: Option[String]): TaskService[Unit] = {
+    val intent = activityContextSupport.createIntent(classOf[CreateCollectionService])
+    intent.putExtra(CreateCollectionService.cloudIdKey, maybeKey.getOrElse(CreateCollectionService.newConfiguration))
+    (for {
+      _ <- uiStartIntent(intent).toService
+      _ <- actions.goToWizard()
+    } yield ()).resolve[WizardGeneratingCollectionsException]
+  }
+
+  private[this] def tryToConnectDriveApiClient(): TaskService[Unit] =
+    clientStatuses.driveApiClient match {
+      case Some(client) => TaskService(CatchAll[UiException](client.connect()))
+      case None => requestAndroidMarketPermission()
+    }
+
+  private[this] def tryToConnectGoogleApiClient(): TaskService[Unit] =
+    clientStatuses.plusApiClient match {
+      case Some(client) => TaskService(CatchAll[UiException](client.connect()))
+      case None => googleSignIn()
+    }
+
+  private[this] def showErrorDialog(message: Int, action: () => Unit, negativeAction: () => Unit): TaskService[Unit] =
+    TaskService[Unit] {
+      CatchAll[UiException] {
+        contextWrapper.original.get match {
+          case Some(activity: AppCompatActivity) =>
+            val fm = activity.getSupportFragmentManager
+            val ft = fm.beginTransaction()
+            Option(fm.findFragmentByTag(tagDialog)) foreach ft.remove
+            val dialog = new AlertDialogFragment(
+              message = message,
+              positiveAction = action,
+              negativeAction = negativeAction)
+            ft.add(dialog, tagDialog).addToBackStack(javaNull)
+            ft.commitAllowingStateLoss()
+          case _ =>
+        }
+      }
+    }
+
+  private[this] def googleSignIn(): TaskService[Unit] =
+    clientStatuses.email match {
+      case Some(email) =>
+        val client = createGooglePlusClient(email)
+        clientStatuses = clientStatuses.copy(plusApiClient = Some(client))
+        val signInIntent = Auth.GoogleSignInApi.getSignInIntent(client)
+        uiStartIntentForResult(signInIntent, resolveConnectedUser).toService
+      case None => actions.goToUser()
+    }
+
+  private[this] def loadDevices(maybeProfileName: Option[String]): TaskService[Unit] = {
+
+    def storeOnCloud(cloudStorageProcess: CloudStorageProcess, cloudStorageDevices: Seq[CloudStorageDeviceData]) =
+      TaskService {
+        val tasks = cloudStorageDevices map (d => cloudStorageProcess.createOrUpdateCloudStorageDevice(None, d).value)
+        Task.gatherUnordered(tasks) map { list =>
+          Right(list.collect {
+            case Right(r) => r
+          })
+        }
+      }
+
+    // If we found some error when connecting to Backend V1 we just return an empty collection of devices
+    def loadDevicesFromV1(): TaskService[Seq[UserV1Device]] =
+    di.userV1Process.getUserInfo(Build.MODEL, Seq(resGetString(R.string.android_market_oauth_scopes)))
+      .map(_.devices)
+      .resolveRight {
+        case e: UserV1ConfigurationException =>
+          AppLog.info("Invalid configuration for backend V1")
+          Right(Seq.empty)
+        case  e => Right(Seq.empty)
+      }
+
+    def verifyAndUpdate(
+      cloudStorageProcess: CloudStorageProcess,
+      email: String,
+      cloudStorageResources: Seq[CloudStorageDeviceSummary]) = {
+
+      import Conversions._
+
+      if (cloudStorageResources.isEmpty) {
+        for {
+          userInfoDevices <- loadDevicesFromV1()
+          cloudStorageDevices <- storeOnCloud(cloudStorageProcess, userInfoDevices map toCloudStorageDevice)
+          actualDevice <- cloudStorageProcess.prepareForActualDevice(cloudStorageDevices)
+          (maybeUserDevice, devices) = actualDevice
+        } yield {
+          UserCloudDevices(
+
+            name = maybeProfileName getOrElse email,
+            userDevice = maybeUserDevice map toUserCloudDevice,
+            devices = devices map toUserCloudDevice)
+        }
+      } else {
+        for {
+          actualDevice <- cloudStorageProcess.prepareForActualDevice(cloudStorageResources)
+          (maybeUserDevice, devices) = actualDevice
+        } yield {
+          UserCloudDevices(
+            name = maybeProfileName getOrElse email,
+            userDevice = maybeUserDevice map toUserCloudDevice,
+            devices = devices map toUserCloudDevice)
+        }
+      }
+    }
+
+    def loadCloudDevices(
+      client: GoogleApiClient,
+      email: String,
+      androidMarketToken: String,
+      emailTokenId: String) = {
+      val cloudStorageProcess = di.createCloudStorageProcess(client)
+      for {
+        _ <- di.userProcess.signIn(email, androidMarketToken, emailTokenId)
+        cloudStorageResources <- cloudStorageProcess.getCloudStorageDevices
+        userCloudDevices <- verifyAndUpdate(cloudStorageProcess, email, cloudStorageResources).resolveLeftTo(UserCloudDevices(email, None, Seq.empty))
+      } yield userCloudDevices
+
+    }
+
+    clientStatuses match {
+      case WizardPresenterStatuses(_, Some(client), _, Some(email), Some(androidMarketToken), Some(emailTokenId)) =>
+        for {
+          _ <- actions.showLoading()
+          devices <- loadCloudDevices(client, email, androidMarketToken, emailTokenId)
+          _ <- actions.showDevices(devices)
+        } yield ()
+      case _ => actions.showErrorConnectingGoogle()
+    }
+
+  }
+
+}
+
+case class WizardPresenterStatuses(
+  deviceKey: Option[String] = None,
+  driveApiClient: Option[GoogleApiClient] = None,
+  plusApiClient: Option[GoogleApiClient] = None,
+  email: Option[String] = None,
+  androidMarketToken: Option[String] = None,
+  mailTokenId: Option[String] = None)

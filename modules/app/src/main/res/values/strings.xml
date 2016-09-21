@@ -45,8 +45,6 @@
     <string name="termsAndConditions">Accept terms and conditions</string>
     <string name="welcome">A launcher craft if for\nAndroid Power Users</string>
 
-    <string name="errorSelectUser">You must select a user</string>
-
     <string name="messageAcceptTerms">You should accept terms and conditions</string>
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
@@ -61,6 +59,7 @@
 
     <string name="errorLoginUser">Error accessing to server. Please try again later</string>
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
+    <string name="errorGeneratingCollections">Error generating collections. Please try another device</string>
     <string name="goTo9Cards">Dive in!</string>
     <string name="workingNotificationTitle">Wait a moment…</string>
 

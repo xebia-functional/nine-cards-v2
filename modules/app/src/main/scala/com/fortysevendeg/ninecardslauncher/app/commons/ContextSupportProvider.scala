@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.commons
 
 import android.accounts.AccountManager
 import android.app.Activity
-import android.content.Context
+import android.content.{Context, Intent}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
 import macroid.{ActivityContextWrapper, ContextWrapper}
 
@@ -21,6 +21,8 @@ trait ContextSupportImpl extends ContextSupport {
   override def getPackageName = context.getPackageName
 
   override def getAccountManager: AccountManager = AccountManager.get(context)
+
+  override def createIntent(classOf: Class[_]): Intent = new Intent(context, classOf)
 }
 
 trait ContextSupportProvider {

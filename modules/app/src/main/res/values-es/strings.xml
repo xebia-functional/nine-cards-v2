@@ -40,8 +40,6 @@
     <string name="termsAndConditions">Aceptar terminos y condiciones</string>
     <string name="welcome">Un Launcher creado para\nAndroid Power Users</string>
 
-    <string name="errorSelectUser">Debes seleccionar un usuario</string>
-
     <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
 
     <string name="addDeviceTitle">¡Hola, %1$s!</string>
@@ -56,6 +54,7 @@
 
     <string name="errorLoginUser">Error al acceder al servidor. Por favor inténtelo más tarde</string>
     <string name="errorConnectingGoogle">Error conectando con Google. Por favor inténtelo más tarde</string>
+    <string name="errorGeneratingCollections">Error generando collections. Pro favor, pruebe con otro dispositivo</string>
     <string name="goTo9Cards">¡Entrar en 9 Cards!</string>
     <string name="workingNotificationTitle">Espera un momento…</string>
 
