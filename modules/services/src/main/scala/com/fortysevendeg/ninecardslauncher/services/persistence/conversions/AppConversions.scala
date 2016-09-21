@@ -6,8 +6,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, 
 
 trait AppConversions {
 
-  def toAppSeq(cache: Seq[RepositoryApp]): Seq[App] = cache map toApp
-
   def toApp(app: RepositoryApp): App =
     App(
       id = app.id,

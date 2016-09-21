@@ -15,8 +15,8 @@ import cats.syntax.either._
 
 trait CollectionPersistenceServicesDataSpecification
   extends Specification
-  with DisjunctionMatchers
-  with Mockito {
+    with DisjunctionMatchers
+    with Mockito {
 
   trait CollectionServicesResponses
     extends RepositoryServicesScope
@@ -25,6 +25,7 @@ trait CollectionPersistenceServicesDataSpecification
     val exception = RepositoryException("Irrelevant message")
 
   }
+
 }
 
 class CollectionPersistenceServicesImplSpec extends CollectionPersistenceServicesDataSpecification {
@@ -53,6 +54,30 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       val result = persistenceServices.addCollection(addCollectionRequest).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
+  }
+
+  "addCollections" should {
+
+    "return a Seq Collection value for a valid request" in new CollectionServicesResponses {
+
+      mockCollectionRepository.addCollections(any) returns TaskService(Task(Either.right(seqRepoCollection)))
+      mockCardRepository.addCards(any) returns TaskService(Task(Either.right(Seq(repoCard))))
+      mockMomentRepository.fetchMoments() returns TaskService(Task(Either.right(seqRepoMoment)))
+      mockMomentRepository.updateMoment(any) returns TaskService(Task(Either.right(item)))
+
+      val result = persistenceServices.addCollections(seqAddCollectionRequest).value.run
+      result must beLike {
+        case Right(collections) => collections.size shouldEqual seqAddCollectionRequest.size
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
+
+      mockCollectionRepository.addCollections(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.addCollections(seqAddCollectionRequest).value.run
+      result must beAnInstanceOf[Left[RepositoryException, _]]
+    }
+
   }
 
   "deleteAllCollections" should {
@@ -85,6 +110,16 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns TaskService(Task(Either.right(item)))
 
       val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).value.run
+      result shouldEqual Right(item)
+    }
+
+    "return Right of Unit if Moment in Request is None" in new CollectionServicesResponses {
+
+      mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Either.right(item)))
+      mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns TaskService(Task(Either.right(items)))
+      mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns TaskService(Task(Either.right(item)))
+
+      val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collectionWithoutMoment)).value.run
       result shouldEqual Right(item)
     }
 
@@ -262,6 +297,41 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     }
   }
 
+  "findCollectionByCategory" should {
+
+    "return a Collection for a valid request" in new CollectionServicesResponses {
+
+      mockCollectionRepository.fetchCollectionsByCategory(any) returns TaskService(Task(Either.right(seqRepoCollection)))
+      List.tabulate(5) { index =>
+        mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Either.right(seqRepoCard)))
+      }
+      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.right(seqRepoMoment)))
+
+      val result = persistenceServices.findCollectionByCategory(appsCategory).value.run
+      result must beLike {
+        case Right(maybeCollection) =>
+          maybeCollection must beSome[Collection].which { collection =>
+            collection.appsCategory shouldEqual Some(appsCategory)
+          }
+      }
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
+
+      mockCollectionRepository.fetchCollectionsByCategory(any) returns TaskService(Task(Either.right(Seq.empty)))
+      val result = persistenceServices.findCollectionByCategory(appsCategory).value.run
+      result shouldEqual Right(None)
+    }
+
+
+    "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
+
+      mockCollectionRepository.fetchCollectionsByCategory(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.findCollectionByCategory(appsCategory).value.run
+      result must beAnInstanceOf[Left[RepositoryException, _]]
+    }
+  }
+
   "updateCollection" should {
 
     "return the number of elements updated for a valid request" in new CollectionServicesResponses {
@@ -275,6 +345,23 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
       mockCollectionRepository.updateCollection(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).value.run
+      result must beAnInstanceOf[Left[RepositoryException, _]]
+    }
+  }
+
+  "updateCollections" should {
+
+    "return the number of elements updated for a valid request" in new CollectionServicesResponses {
+
+      mockCollectionRepository.updateCollections(any) returns TaskService(Task(Either.right(Seq(item))))
+      val result = persistenceServices.updateCollections(updateCollectionsRequest).value.run
+      result shouldEqual Right(Seq(item))
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
+
+      mockCollectionRepository.updateCollections(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.updateCollections(updateCollectionsRequest).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

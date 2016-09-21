@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import cats.data.EitherT
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._

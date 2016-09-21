@@ -104,6 +104,27 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     }
   }
 
+  "fetchAppByPackages" should {
+
+    "return a Seq App when a valid packageName is provided" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchAppByPackages(any) returns TaskService(Task(Either.right(seqRepoApp)))
+      val result = persistenceServices.fetchAppByPackages(Seq(packageName)).value.run
+
+      result must beLike {
+        case Right(seqApp) =>
+          seqApp.size shouldEqual seqRepoApp.size
+          }
+      }
+
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchAppByPackages(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.fetchAppByPackages(Seq(packageName)).value.run
+      result must beAnInstanceOf[Left[RepositoryException, _]]
+    }
+  }
+
   "addApp" should {
 
     "return a App value for a valid request" in new AppPersistenceServicesScope {
