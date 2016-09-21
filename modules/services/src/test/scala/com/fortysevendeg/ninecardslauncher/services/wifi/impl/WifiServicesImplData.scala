@@ -14,6 +14,10 @@ trait WifiServicesImplData {
 
   val ssidWithQuotes: String = "\"" + ssidWithQuotesResult + "\""
 
+  val ssidWithoutQuotes: String = ssidResult
+
+  val ssidWithError: String = "\"\""
+
   val networksUnsorted = Seq("znf", "Abc", "47 deg", "trn", "bcb", "BB", "ant")
 
   val wifiConfigurations = networksUnsorted map { network =>

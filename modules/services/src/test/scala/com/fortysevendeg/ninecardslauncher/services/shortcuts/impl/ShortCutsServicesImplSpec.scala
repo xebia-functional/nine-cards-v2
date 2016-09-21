@@ -25,8 +25,6 @@ trait ShortcutsImplSpecification
     val contextSupport = mock[ContextSupport]
     contextSupport.getPackageManager returns packageManager
 
-    val mockIntent = mock[Intent]
-
     def createMockResolveInfo(sampleShortcut: Shortcut) : ResolveInfo = {
       val sampleResolveInfo = mock[ResolveInfo]
       val mockActivityInfo = mock[ActivityInfo]
@@ -42,9 +40,7 @@ trait ShortcutsImplSpecification
 
     val mockShortcuts = List(createMockResolveInfo(sampleShortcut1), createMockResolveInfo(sampleShortcut2))
 
-    val shortcutsServicesImpl = new ShortcutsServicesImpl {
-      override protected def shortcutsIntent(): Intent = mockIntent
-    }
+    val shortcutsServicesImpl = new ShortcutsServicesImpl
   }
 }
 
@@ -54,7 +50,7 @@ class ShortcutsServicesImplSpec
   "returns the ordered list of shortcuts when they exist" in
     new ShortcutsImplScope {
 
-      packageManager.queryIntentActivities(mockIntent, 0) returns mockShortcuts
+      packageManager.queryIntentActivities(any, any) returns mockShortcuts
       val result = shortcutsServicesImpl.getShortcuts(contextSupport).value.run
       result shouldEqual Right(shotcutsList.sortBy(_.title))
     }
@@ -63,7 +59,7 @@ class ShortcutsServicesImplSpec
     new ShortcutsImplScope {
 
       val exception = ShortcutServicesException("")
-      packageManager.queryIntentActivities(mockIntent, 0) throws exception
+      packageManager.queryIntentActivities(any, any) throws exception
 
       val result = shortcutsServicesImpl.getShortcuts(contextSupport).value.run
       result must beAnInstanceOf[Left[ShortcutServicesException, _]]

@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.services.widgets.{ImplicitsWidgetsExc
 
 class WidgetsServicesImpl
   extends WidgetsServices
-  with ImplicitsWidgetsExceptions {
+    with ImplicitsWidgetsExceptions {
 
   override def getWidgets(implicit context: ContextSupport) =
     TaskService {
