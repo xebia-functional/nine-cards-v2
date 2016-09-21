@@ -7,14 +7,14 @@ import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
-import android.view.{MenuItem, View}
+import android.view.View
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
@@ -30,6 +30,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
@@ -40,7 +41,6 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -296,9 +296,6 @@ trait CollectionsPagerUiActionsImpl
   override def resetAction: Ui[Any] = turnOffFragmentContent
 
   override def destroyAction: Ui[Any] = Ui(removeActionFragment)
-
-  override def setAlreadyPublishedMenu(menuItem: MenuItem): Ui[Any] =
-    Ui(menuItem.setEnabled(false).setTitle(resGetString(R.string.alreadyPublishedCollection)))
 
   override def reloadSharedCollectionId(sharedCollectionId: Option[String]): Ui[Any] = Ui {
     for {

@@ -136,14 +136,7 @@ class CollectionsDetailsActivity
   }
 
   override def onPrepareOptionsMenu (menu: Menu): Boolean = {
-    getCurrentCollection foreach {
-      case collection
-        if collection.sharedCollectionId.isDefined &&
-          (collection.originalSharedCollectionId.isEmpty ||
-            (collection.sharedCollectionId != collection.originalSharedCollectionId)) =>
-        collectionsPagerPresenter.setAlreadyPublished(menu.findItem(R.id.action_make_public))
-      case _ =>
-    }
+    collectionsPagerPresenter.savePublishStatus()
     super.onPrepareOptionsMenu(menu)
   }
 
