@@ -8,6 +8,8 @@ import monix.eval.Task
 import cats.syntax.either._
 import monix.execution.Scheduler.Implicits.global
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
 import scala.util.{Either, Failure, Success}
 
 object TaskServiceOps {
@@ -52,6 +54,9 @@ object TaskServiceOps {
         }
       }
     }
+
+    // TODO - Do not use, it's only used in the `getTheme`. Remove as part of #808
+    def resolveNow: Either[NineCardException, A] = Await.result(t.value.runAsync, 10.seconds)
 
     def resolve2[E >: Throwable](
       onResult: A => Unit = a => (),
