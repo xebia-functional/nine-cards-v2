@@ -156,6 +156,7 @@ trait CollectionsPagerUiActionsImpl
   override def showCollections(collections: Seq[Collection], position: Int): Ui[Any] =
     activityContextWrapper.getOriginal match {
       case fragmentActivity: FragmentActivity =>
+        val maybeCollection = collections lift position
         val adapter = CollectionsPagerAdapter(fragmentActivity.getSupportFragmentManager, collections, position)
         selectorDrawable.setNumberOfItems(collections.length)
         (viewPager <~ vpAdapter(adapter)) ~
@@ -168,6 +169,11 @@ trait CollectionsPagerUiActionsImpl
           uiHandlerDelayed(Ui {
             getActivePresenter foreach (_.bindAnimatedAdapter())
           }, 100) ~
+          (maybeCollection match {
+            case Some(collection) =>
+              (titleName <~ tvText(collection.name)) ~ (titleIcon <~ ivSrc(collection.getIconDetail))
+            case _ => Ui.nop
+          }) ~
           (tabs <~ vVisible <~~ enterViews)
       case _ => Ui.nop
     }

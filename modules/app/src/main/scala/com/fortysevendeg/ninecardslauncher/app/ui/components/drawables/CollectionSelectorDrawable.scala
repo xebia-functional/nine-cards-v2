@@ -13,7 +13,7 @@ case class CollectionSelectorDrawable(
 
   val padding = resGetDimensionPixelSize(R.dimen.padding_selector_collection_details)
 
-  var selected = -1
+  var selected = 0
 
   var numberOfItems = 0
 
