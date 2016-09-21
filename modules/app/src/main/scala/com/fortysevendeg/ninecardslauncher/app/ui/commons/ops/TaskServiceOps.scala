@@ -55,6 +55,7 @@ object TaskServiceOps {
       }
     }
 
+    // TODO - Do not use, it's only used in the `getTheme`. Remove as part of #808
     def resolveNow: Either[NineCardException, A] = Await.result(t.value.runAsync, 10.seconds)
 
     def resolve2[E >: Throwable](
