@@ -9,3 +9,9 @@ case class ServiceClientException(message: String, cause : Option[Throwable] = N
 
   cause map initCause
 }
+
+trait ImplicitsServiceClientExceptions {
+
+  implicit def accountsServicesExceptionConverter =
+    (t: Throwable) => ServiceClientException(t.getMessage, Option(t))
+}

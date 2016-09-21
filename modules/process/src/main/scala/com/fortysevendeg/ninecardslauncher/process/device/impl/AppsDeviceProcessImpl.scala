@@ -3,7 +3,6 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Misc, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps
@@ -94,10 +93,11 @@ trait AppsDeviceProcessImpl
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {
       requestConfig <- apiUtils.getRequestConfig
-      appCategory = apiServices.googlePlayPackage(packageName)(requestConfig).value.run match {
-        case Right(g) => (g.app.category map (NineCardCategory(_))).getOrElse(Misc)
-        case _ => Misc
-      }
-    } yield appCategory
+      appCategory <- apiServices.googlePlayPackage(packageName)(requestConfig)
+        .map(_.app.category)
+        .resolveLeftTo(None)
+    } yield {
+      appCategory map (NineCardCategory(_)) getOrElse Misc
+    }
 
 }

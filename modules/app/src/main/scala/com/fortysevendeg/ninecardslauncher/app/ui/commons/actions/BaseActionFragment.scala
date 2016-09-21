@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.ActionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
@@ -25,7 +26,6 @@ import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
@@ -46,7 +46,7 @@ trait BaseActionFragment
   lazy val preferenceValues = new NineCardsPreferencesValue
 
   implicit lazy val theme: NineCardsTheme =
-    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).value.run match {
+    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).resolveNow match {
       case Right(t) => t
       case _ => getDefaultTheme
     }

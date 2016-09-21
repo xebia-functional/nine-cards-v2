@@ -6,6 +6,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCurso
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{IterableCursor, ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, LongDataType, MockCursor, StringDataType}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.App
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity.{allFields, imagePath, name, packageName, _}
