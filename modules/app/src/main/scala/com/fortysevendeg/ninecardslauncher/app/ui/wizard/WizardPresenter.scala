@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider, GooglePlusApiClientProvider}
@@ -50,10 +50,6 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
 
   val tagDialog = "dialog-not-accepted"
 
-  val requestAccount = 2001
-
-  val requestPermissionCode = 2002
-
   val permissionChecker = new PermissionChecker
 
   var clientStatuses = WizardPresenterStatuses()
@@ -69,7 +65,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
   def connectAccount(termsAccept: Boolean): Unit =
     if (termsAccept) {
       val intent = AccountManager.newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
-      uiStartIntentForResult(intent, requestAccount).run
+      uiStartIntentForResult(intent, RequestCodes.selectAccount).run
     } else {
       actions.showErrorAcceptTerms().run
     }
@@ -79,7 +75,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     if (permissionChecker.havePermission(ReadContacts)) {
       generateCollections(maybeKey)
     } else {
-      permissionChecker.requestPermission(requestPermissionCode, ReadContacts)
+      permissionChecker.requestPermission(RequestCodes.contactsPermission, ReadContacts)
     }
   }
 
@@ -106,11 +102,11 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     }
 
     (requestCode, resultCode) match {
-      case (`requestAccount`, Activity.RESULT_OK) =>
+      case (RequestCodes.selectAccount, Activity.RESULT_OK) =>
         val account = Option(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME))
         verifyAccountName(account)
         true
-      case (`requestAccount`, _) =>
+      case (RequestCodes.selectAccount, _) =>
         showErrorDialog(
           message = R.string.errorAccountsMessage,
           action = () => connectAccount(true),
@@ -149,14 +145,14 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     requestCode: Int,
     permissions: Array[String],
     grantResults: Array[Int]): Unit =
-    if (requestCode == requestPermissionCode) {
+    if (requestCode == RequestCodes.contactsPermission) {
       val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
       if (result.exists(_.hasPermission(ReadContacts))) {
         generateCollections(clientStatuses.deviceKey)
       } else if (permissionChecker.shouldRequestPermission(ReadContacts)) {
         showErrorDialog(
           message = R.string.errorReadContactsMessage,
-          action = () => permissionChecker.requestPermission(requestPermissionCode, ReadContacts),
+          action = () => permissionChecker.requestPermission(RequestCodes.contactsPermission, ReadContacts),
           negativeAction = () => generateCollections(clientStatuses.deviceKey))
       } else {
         generateCollections(clientStatuses.deviceKey)

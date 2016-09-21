@@ -60,6 +60,8 @@ object RequestCodes {
 
   val phoneCallPermission = 15
 
+  val selectAccount = 16
+
 }
 
 object ResultCodes {
