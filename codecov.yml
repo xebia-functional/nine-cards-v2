@@ -1,0 +1,10 @@
+codecov:
+  bot: 47degdev
+comment:
+  layout: header, changes, diff
+coverage:
+  ignore:
+    - modules/commons-tests/*
+    - modules/mock-android/*
+  status:
+    patch: false
