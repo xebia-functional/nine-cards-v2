@@ -47,6 +47,8 @@ class ApiService(serviceClient: ServiceClient) {
 
   private[this] val categorizePath = s"$applicationsPath/categorize"
 
+  private[this] val rankPath = s"$applicationsPath/rank"
+
   private[this] val categorizeDetailPath = s"$applicationsPath/details"
 
   private[this] val recommendationsPath = "/recommendations"
@@ -229,6 +231,20 @@ class ApiService(serviceClient: ServiceClient) {
       headers = createHeaders(path, header),
       reads = None,
       emptyResponse = true)
+  }
+
+  def rankApps(
+    request: RankAppsRequest,
+    header: ServiceHeader)(
+    implicit reads: Reads[RankAppsResponse], writes: Writes[RankAppsRequest]): TaskService[ServiceClientResponse[RankAppsResponse]] = {
+
+    val path = s"$rankPath"
+
+    serviceClient.post[RankAppsRequest, RankAppsResponse](
+      path = path,
+      headers = createHeaders(path, header),
+      body = request,
+      reads = Some(reads))
   }
 
   private[this] def createHeaders[T <: BaseServiceHeader](
