@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
+import com.fortysevendeg.ninecardslauncher.commons.test.repository.{MockCursor, StringDataType}
 import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.Fields
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
-import com.fortysevendeg.repository.{MockCursor, StringDataType}
 
 trait ContactsServicesImplData {
 

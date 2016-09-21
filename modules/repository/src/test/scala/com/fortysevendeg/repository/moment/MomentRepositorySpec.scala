@@ -3,7 +3,10 @@ package com.fortysevendeg.repository.moment
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.Moment
 import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity._
@@ -14,8 +17,6 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 
 trait MomentRepositorySpecification
   extends Specification
