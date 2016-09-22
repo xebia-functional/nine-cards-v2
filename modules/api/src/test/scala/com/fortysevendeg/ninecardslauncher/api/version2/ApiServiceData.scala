@@ -152,13 +152,13 @@ trait ApiServiceData {
 
   val subscriptions = Seq(publicIdentifier)
 
-  val packagesByCategory = PackagesByCategory(
-    category = category,
-    packages = Seq("com.package.sample.second", "com.package.sample.third", "com.package.sample.first"))
+  val packages = Seq("com.package.sample.second", "com.package.sample.third", "com.package.sample.first")
 
-  val packagesByCategoryOrdered = PackagesByCategory(
-    category = category,
-    packages = Seq("com.package.sample.first", "com.package.sample.second", "com.package.sample.third"))
+  val packagesOrdered = Seq("com.package.sample.first", "com.package.sample.second", "com.package.sample.third")
+
+  val items = Map (category -> packages)
+
+  val itemsOrdered = Map (category -> packagesOrdered)
 
   val location = Random.nextBoolean match{
     case false => None
@@ -166,10 +166,10 @@ trait ApiServiceData {
   }
 
   val rankAppsRequest = RankAppsRequest(
-    items = Seq(packagesByCategory),
+    items = items,
     location = location)
 
   val rankAppsResponse = RankAppsResponse(
-    items = Seq(packagesByCategoryOrdered))
+    items = itemsOrdered)
 
 }
