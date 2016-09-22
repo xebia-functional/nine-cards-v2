@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCard
 import com.fortysevendeg.ninecardslauncher.services.plus.GooglePlusServicesException
 
 
-case class SocialProfileProcessException(  message: String,  cause: Option[Throwable] = None,  recoverable: Boolean = false)
+case class SocialProfileProcessException(message: String, cause: Option[Throwable] = None, recoverable: Boolean = false)
   extends RuntimeException(message)
   with NineCardException{
 
