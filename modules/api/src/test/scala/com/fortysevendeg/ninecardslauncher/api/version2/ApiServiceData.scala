@@ -121,12 +121,11 @@ trait ApiServiceData {
 
   val recommendationApp = RecommendationApp(
     packageName = collectionApp.packageName,
-    name = collectionApp.title,
+    title = collectionApp.title,
     downloads = collectionApp.downloads,
     icon = collectionApp.icon,
     stars = collectionApp.stars,
     free = collectionApp.free,
-    description = "Application description",
     screenshots = Seq("screenshot1", "screenshot2", "screenshot3"))
 
   val recommendationsRequest = RecommendationsRequest(
@@ -138,7 +137,7 @@ trait ApiServiceData {
     excludePackages = Seq("com.package.sample"),
     limit = 10)
 
-  val recommendationsResponse = RecommendationsResponse(apps = Seq(recommendationApp))
+  val recommendationsResponse = RecommendationsResponse(items = Seq(recommendationApp))
 
   val recommendationsByAppsResponse = RecommendationsByAppsResponse(apps = Seq(recommendationApp))
 
