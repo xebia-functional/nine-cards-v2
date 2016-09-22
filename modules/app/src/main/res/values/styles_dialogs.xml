@@ -355,6 +355,7 @@
         <item name="android:layout_width">@dimen/publish_collection_message_width</item>
         <item name="android:layout_height">@dimen/publish_collection_message_height</item>
         <item name="android:gravity">center</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="PublishCollectionWizardStartMessage" parent="PublishCollectionWizardMessage">
@@ -406,45 +407,79 @@
         <item name="android:padding">@dimen/publish_collection_form_padding</item>
     </style>
 
+    <style name="PublishCollectionWizardInformationCollectionNameContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/padding_xlarge</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+
+    <style name="PublishCollectionWizardInformationCollectionNameTag">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:text">@string/collectionName</item>
+    </style>
+
     <style name="PublishCollectionWizardInformationInput">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">@dimen/publish_collection_input_margin_top</item>
+        <item name="android:layout_marginTop">@dimen/padding_xlarge</item>
     </style>
 
-    <style name="PublishCollectionWizardInformationInputMessage">
+    <style name="PublishCollectionWizardInformationCollectionNameInputMessage">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">@dimen/publish_collection_field_height</item>
         <item name="android:inputType">text</item>
-    </style>
-
-    <style name="PublishCollectionWizardInformationCollectionNameInputMessage" parent="PublishCollectionWizardInformationInputMessage">
         <item name="android:hint">@string/addInformationcollectionName</item>
-    </style>
-
-    <style name="PublishCollectionWizardInformationDescriptionInputMessage" parent="PublishCollectionWizardInformationInputMessage">
-        <item name="android:hint">@string/addInformationDescription</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:paddingLeft">@dimen/publish_collection_form_padding</item>
+        <item name="android:paddingRight">@dimen/publish_collection_form_padding</item>
     </style>
 
     <style name="PublishCollectionWizardInformationCategorySelectContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingLeft">@dimen/publish_collection_category_padding</item>
-        <item name="android:paddingRight">@dimen/publish_collection_category_padding</item>
+        <item name="android:layout_marginTop">@dimen/padding_xlarge</item>
         <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="PublishCollectionWizardInformationCategorySpinner">
+    <style name="PublishCollectionWizardInformationCategoryTag">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:text">@string/category</item>
+    </style>
+
+
+    <style name="PublishCollectionWizardInformationCategorySelect">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">bottom</item>
-        <item name="android:layout_marginTop">@dimen/publish_collection_input_category_margin_top</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="PublishCollectionWizardInformationCategorySpinner">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/publish_collection_field_height</item>
+        <item name="android:gravity">left|center_vertical</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:text">@string/addInformationCategory</item>
+    </style>
+
+    <style name="PublishCollectionWizardInformationCategoryIndicator">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/tab_menu_indicator</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">right|center_vertical</item>
     </style>
 
     <style name="PublishCollectionWizardInformationLineHorizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_wide</item>
-        <item name="android:background">@color/divider_category_color</item>
+        <item name="android:background">@android:color/white</item>
         <item name="android:layout_gravity">bottom</item>
     </style>
 
@@ -506,7 +541,6 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:textColor">@color/footer_text_color</item>
         <item name="android:text">@string/publishAction</item>
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
@@ -514,7 +548,7 @@
     <style name="PublishCollectionWizardEndLineHorizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
+        <item name="android:background">@android:color/white</item>
         <item name="android:layout_gravity">top</item>
     </style>
 

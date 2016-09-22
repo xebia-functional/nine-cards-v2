@@ -82,8 +82,7 @@ trait ApiServiceData {
     lat = 0,
     lng = 0,
     alt = 0,
-    category = Some("SOCIAL")
-  )
+    category = Some("SOCIAL"))
 
   val userConfigDevice = UserConfigDevice(
     deviceId,

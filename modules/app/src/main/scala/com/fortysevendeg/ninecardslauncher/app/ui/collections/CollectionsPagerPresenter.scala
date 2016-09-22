@@ -2,12 +2,14 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.content.Intent
 import android.graphics.Bitmap
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
@@ -16,8 +18,6 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, M
 import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
-import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
 
 class CollectionsPagerPresenter(
   actions: CollectionsPagerUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
@@ -112,6 +112,25 @@ class CollectionsPagerPresenter(
 
   def showMessageNotImplemented(): Unit = actions.showMessageNotImplemented.run
 
+  def savePublishStatus(): Unit =
+    actions.getCurrentCollection foreach { collection =>
+      (collection.sharedCollectionId, collection.originalSharedCollectionId) match {
+        case (Some(sharedCollectionId), Some(originalSharedCollectionId))
+          if sharedCollectionId != originalSharedCollectionId => statuses = statuses.copy(publishStatus = PublishedByMe)
+        case (Some(sharedCollectionId), None) => statuses = statuses.copy(publishStatus = PublishedByMe)
+        case (None, _) => statuses = statuses.copy(publishStatus = NoPublished)
+        case _ => statuses = statuses.copy(publishStatus = PublishedByOther)
+      }
+    }
+
+  def reloadSharedCollectionId() = actions.getCurrentCollection foreach { collection =>
+    di.collectionProcess.getCollectionById(collection.id).resolveAsync2(
+      onResult = (c) => c map (newCollection => if (newCollection.sharedCollectionId != collection.sharedCollectionId) {
+        actions.reloadSharedCollectionId(newCollection.sharedCollectionId).run
+      })
+    )
+  }
+
   def showPublishCollectionWizard(): Unit = {
     actions.getCurrentCollection map { collection =>
       if (collection.cards.exists(_.cardType == AppCardType)) {
@@ -135,7 +154,6 @@ class CollectionsPagerPresenter(
         }
       })
   }
-
 
   def performCard(card : Card, position: Int): Unit = {
     statuses.collectionMode match {
@@ -279,6 +297,8 @@ trait CollectionsPagerUiActions {
 
   def destroyAction: Ui[Any]
 
+  def reloadSharedCollectionId(sharedCollectionId: Option[String]): Ui[Any]
+
   def showPublishCollectionWizardDialog(collection: Collection): Ui[Any]
 
   def showMessagePublishContactsCollectionError: Ui[Any]
@@ -331,10 +351,19 @@ trait CollectionsPagerUiActions {
 case class CollectionsPagerStatuses(
   collectionMode: CollectionMode = NormalCollectionMode,
   positionsEditing: Set[Int] = Set.empty,
-  lastPhone: Option[String] = None)
+  lastPhone: Option[String] = None,
+  publishStatus: PublishStatus = NoPublished)
 
 sealed trait CollectionMode
 
 case object NormalCollectionMode extends CollectionMode
 
 case object EditingCollectionMode extends CollectionMode
+
+sealed trait PublishStatus
+
+case object NoPublished extends PublishStatus
+
+case object PublishedByMe extends PublishStatus
+
+case object PublishedByOther extends PublishStatus

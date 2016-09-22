@@ -15,7 +15,6 @@ trait Conversions {
       id = item.id,
       sharedCollectionId = item.sharedCollectionId,
       publishedOn = item.publishedOn,
-      description = item.description,
       author = item.author,
       name = item.name,
       packages = item.packages,
