@@ -286,11 +286,13 @@ trait CollectionsPagerUiActionsImpl
       ((isTop, titleContent.getVisibility, collectionsPagerPresenter.statuses.collectionMode) match {
         case (true, View.GONE, NormalCollectionMode) =>
           (titleContent <~~ animationEnterTitle) ~~
-            (selector <~ (vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1))))
+            (selector <~ (vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1)))) ~
+            (tabs <~ vGone)
         case (false, View.VISIBLE, NormalCollectionMode) =>
           (titleContent <~ animationOutTitle) ~
             (selector <~~ applyAnimation(alpha = Some(0))) ~~
-            (selector <~ vGone <~ vAlpha(1))
+            (selector <~ vGone <~ vAlpha(1)) ~
+            (tabs <~ vVisible)
         case _ => Ui.nop
       })
   }

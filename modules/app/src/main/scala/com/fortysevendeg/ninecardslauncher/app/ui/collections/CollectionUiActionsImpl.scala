@@ -139,10 +139,11 @@ trait CollectionUiActionsImpl
       rvAdapter(createAdapter(collection)) <~
       nrvScheduleLayoutAnimation).ifUi(animateCards)
 
-  override def moveToCollection(collections: Seq[Collection]): Ui[Any] =
-    Ui(new CollectionDialog(collections,
+  override def moveToCollection(collections: Seq[Collection]): Ui[Any] = {
+    Ui(new CollectionDialog(collections filterNot(c => getCurrentCollection.map(_.id).contains(c.id)),
       c => collectionsPagerPresenter.moveToCollection(c, collections.indexWhere(_.id == c)),
       () => ()).show())
+  }
 
   override def addCards(cards: Seq[Card]): Ui[Any] = getAdapter map { adapter =>
     adapter.addCards(cards)
