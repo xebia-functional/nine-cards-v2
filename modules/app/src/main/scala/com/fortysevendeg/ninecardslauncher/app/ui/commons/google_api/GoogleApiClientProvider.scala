@@ -72,11 +72,6 @@ trait GooglePlusApiClientProvider {
 
   def onPlusConnectionFailed(connectionResult: ConnectionResult): Unit
 
-  def signIn(apiClient: GoogleApiClient)(implicit activityContextWrapper: ActivityContextWrapper): Unit = {
-    val signInIntent = Auth.GoogleSignInApi.getSignInIntent(apiClient)
-    uiStartIntentForResult(signInIntent, resolveConnectedUser).run
-  }
-
 }
 
 sealed trait ConnectionSuspendedCause

@@ -75,7 +75,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
   val permissionChecker = new PermissionChecker
 
-  var clientStatuses = WizardPresenterStatuses()
+  var clientStatuses = WizardJobsStatuses()
 
   def initialize(): TaskService[Unit] = actions.initialize(this)
 
@@ -379,14 +379,14 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
     // If we found some error when connecting to Backend V1 we just return an empty collection of devices
     def loadDevicesFromV1(): TaskService[Seq[UserV1Device]] =
-    di.userV1Process.getUserInfo(Build.MODEL, Seq(resGetString(R.string.android_market_oauth_scopes)))
-      .map(_.devices)
-      .resolveRight {
-        case e: UserV1ConfigurationException =>
-          AppLog.info("Invalid configuration for backend V1")
-          Right(Seq.empty)
-        case  e => Right(Seq.empty)
-      }
+      di.userV1Process.getUserInfo(Build.MODEL, Seq(resGetString(R.string.android_market_oauth_scopes)))
+        .map(_.devices)
+        .resolveRight {
+          case e: UserV1ConfigurationException =>
+            AppLog.info("Invalid configuration for backend V1")
+            Right(Seq.empty)
+          case e => Right(Seq.empty)
+        }
 
     def verifyAndUpdate(
       cloudStorageProcess: CloudStorageProcess,
@@ -436,7 +436,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     }
 
     clientStatuses match {
-      case WizardPresenterStatuses(_, Some(client), _, Some(email), Some(androidMarketToken), Some(emailTokenId)) =>
+      case WizardJobsStatuses(_, Some(client), _, Some(email), Some(androidMarketToken), Some(emailTokenId)) =>
         for {
           _ <- actions.showLoading()
           devices <- loadCloudDevices(client, email, androidMarketToken, emailTokenId)
@@ -449,7 +449,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
 }
 
-case class WizardPresenterStatuses(
+case class WizardJobsStatuses(
   deviceKey: Option[String] = None,
   driveApiClient: Option[GoogleApiClient] = None,
   plusApiClient: Option[GoogleApiClient] = None,
