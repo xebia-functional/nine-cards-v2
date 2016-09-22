@@ -5,4 +5,20 @@
         <item name="android:elevation">@dimen/elevation_fab_button</item>
     </style>
 
+    <style name="CollectionsToolbar" parent="CollectionsToolbarParent">
+        <item name="android:elevation">@dimen/elevation_default</item>
+    </style>
+
+    <style name="CollectionsIconContent" parent="CollectionsIconContentParent">
+        <item name="android:elevation">@dimen/elevation_default</item>
+    </style>
+
+    <style name="CollectionsTabs" parent="CollectionsTabsParent">
+        <item name="android:elevation">@dimen/elevation_default</item>
+    </style>
+
+    <style name="CollectionsSelector" parent="CollectionsSelectorParent">
+        <item name="android:elevation">@dimen/elevation_default</item>
+    </style>
+
 </resources>

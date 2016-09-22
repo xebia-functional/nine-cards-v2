@@ -8,7 +8,6 @@ import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.View
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -32,8 +31,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{TranslationAnimator, TranslationY}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CollectionSelectorDrawable, IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.commons._
@@ -58,6 +57,19 @@ trait CollectionsPagerUiActionsImpl
 
   implicit lazy val theme: NineCardsTheme = collectionsPagerPresenter.getTheme
 
+  lazy val toolbarAnimation = new TranslationAnimator(
+    translation = TranslationY,
+    update = (translationY) => {
+      val move = math.min(0, math.max(translationY, -spaceMove))
+      val dy = if (statuses.lastScrollYInMovement == 0) 0 else -(translationY - statuses.lastScrollYInMovement)
+      statuses = statuses.copy(lastScrollYInMovement = translationY)
+      moveToolbar(move.toInt) ~
+        Ui(getActivePresenter foreach (_.updateScroll(dy.toInt)))
+    }
+  )
+
+  var statuses = CollectionsPagerUiActionsImplStatuses()
+
   val resistanceDisplacement = .2f
 
   val resistanceScale = .05f
@@ -78,6 +90,14 @@ trait CollectionsPagerUiActionsImpl
 
   lazy val toolbarTitle = findView(TR.collections_toolbar_title)
 
+  lazy val titleContent = findView(TR.collections_title_content)
+
+  lazy val titleName = findView(TR.collections_title_name)
+
+  lazy val titleIcon = findView(TR.collections_title_icon)
+
+  lazy val selector = findView(TR.collections_selector)
+
   lazy val root = findView(TR.collections_root)
 
   lazy val viewPager = findView(TR.collections_view_pager)
@@ -87,6 +107,8 @@ trait CollectionsPagerUiActionsImpl
   lazy val iconContent = findView(TR.collections_icon_content)
 
   lazy val icon = findView(TR.collections_icon)
+
+  lazy val selectorDrawable = CollectionSelectorDrawable()
 
   val tagDialog = "dialog"
 
@@ -107,6 +129,9 @@ trait CollectionsPagerUiActionsImpl
     } ~
       (root <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
       (tabs <~ tabsStyle) ~
+      (titleContent <~ vGone) ~
+      (titleName <~ titleNameStyle) ~
+      (selector <~ vGone <~ selectorStyle(selectorDrawable)) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
@@ -131,19 +156,25 @@ trait CollectionsPagerUiActionsImpl
   override def showCollections(collections: Seq[Collection], position: Int): Ui[Any] =
     activityContextWrapper.getOriginal match {
       case fragmentActivity: FragmentActivity =>
+        val maybeCollection = collections lift position
         val adapter = CollectionsPagerAdapter(fragmentActivity.getSupportFragmentManager, collections, position)
+        selectorDrawable.setNumberOfItems(collections.length)
         (viewPager <~ vpAdapter(adapter)) ~
           Ui(adapter.activateFragment(position)) ~
           (tabs <~
             stlViewPager(viewPager) <~
             stlOnPageChangeListener(
               new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
-          uiHandler(viewPager <~ Tweak[ViewPager](_.setCurrentItem(position, false))) ~
+          uiHandler(viewPager <~ vpCurrentItem(position, smoothScroll = false)) ~
           uiHandlerDelayed(Ui {
             getActivePresenter foreach (_.bindAnimatedAdapter())
           }, 100) ~
-          (tabs <~ vVisible <~~ enterViews) ~
-          elevationsDefault
+          (maybeCollection match {
+            case Some(collection) =>
+              (titleName <~ tvText(collection.name)) ~ (titleIcon <~ ivSrc(collection.getIconDetail))
+            case _ => Ui.nop
+          }) ~
+          (tabs <~ vVisible <~~ enterViews)
       case _ => Ui.nop
     }
 
@@ -219,6 +250,10 @@ trait CollectionsPagerUiActionsImpl
       case ScrollDown => vTranslationY(displacement)
       case _ => Tweak.blank
     })) ~
+      (toolbar <~ (scrollType match {
+        case ScrollDown => tbReduceLayout(-displacement.toInt)
+        case _ => Tweak.blank
+      }))
       (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
       Ui {
         val newIcon = if (close) IconTypes.CLOSE else IconTypes.BACK
@@ -229,33 +264,75 @@ trait CollectionsPagerUiActionsImpl
       }
   }
 
-  override def translationScrollY(scroll: Int): Ui[Any] = {
-    val move = math.min(scroll, spaceMove)
-    val ratio: Float = move.toFloat / spaceMove.toFloat
-    val isTop = ratio >= 1
-    val scale = 1 - (ratio / 2)
-    (tabs <~ vTranslationY(-move)) ~
-      (toolbar <~ tbReduceLayout(move * 2)) ~
-      (iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(1 - ratio)) ~
-      (if (isTop) elevationsUp else elevationsDefault)
+  override def translationScrollY(dy: Int): Ui[Any] = if (toolbarAnimation.isRunning) {
+    Ui.nop
+  } else {
+    val translationY = tabs.getTranslationY.toInt
+    val move = math.min(0, math.max(translationY - dy, -spaceMove))
+    (tabs <~ vTranslationY(move)) ~ moveToolbar(move)
   }
 
-  override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] =
-    hideFabButton ~
-      ((toolbar <~~
-        applyAnimation(onUpdate = (ratio) => current match {
-          case ScrollDown =>
-            (tabs <~ vTranslationY(-ratio * spaceMove)) ~
-              (toolbar <~ tbReduceLayout(calculateReduce(ratio, spaceMove, reversed = false)))
-          case _ => Ui.nop
-        })) ~
-        elevationsUp ~
-        (iconContent <~ vAlpha(0))).ifUi(canScroll)
+  private[this] def moveToolbar(move: Int) = {
+    val ratio: Float = move.toFloat / spaceMove.toFloat
+    val scale = 1 + (ratio / 2)
+    val isTop = ratio <= -1
+    val alpha = 1 + ratio
+    (tabs <~ vAlpha(alpha)) ~
+      (toolbar <~ tbReduceLayout(-move)) ~
+      (collectionsPagerPresenter.statuses.collectionMode match {
+        case EditingCollectionMode => Ui.nop
+        case _ => iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(alpha)
+      }) ~
+      ((isTop, titleContent.getVisibility, collectionsPagerPresenter.statuses.collectionMode) match {
+        case (true, View.GONE, NormalCollectionMode) =>
+          (titleContent <~~ animationEnterTitle) ~~
+            (selector <~ (vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1)))) ~
+            (tabs <~ vGone)
+        case (false, View.VISIBLE, NormalCollectionMode) =>
+          (titleContent <~ animationOutTitle) ~
+            (selector <~~ applyAnimation(alpha = Some(0))) ~~
+            (selector <~ vGone <~ vAlpha(1)) ~
+            (tabs <~ vVisible)
+        case _ => Ui.nop
+      })
+  }
+
+  override def scrollIdle(): Ui[Any] = {
+    val scrollY = tabs.getTranslationY.toInt
+    val sType = if (scrollY < -spaceMove / 2) ScrollUp else ScrollDown
+    val betweenUpAndDown = scrollY < 0 && scrollY > -spaceMove
+    ((betweenUpAndDown, getActivePresenter) match {
+      case (true, Some(presenter)) =>
+        statuses = statuses.reset()
+        val to = if (sType == ScrollUp) -spaceMove else 0
+        tabs <~ toolbarAnimation.move(scrollY, to, attachTarget = true)
+      case _ => Ui.nop
+    }) ~ notifyScroll(sType)
+  }
+
+  override def forceScrollType(scrollType: ScrollType): Ui[Any] = {
+    (scrollType match {
+      case ScrollDown =>
+        val scrollY = tabs.getTranslationY.toInt
+        tabs <~ toolbarAnimation.move(scrollY, 0, attachTarget = true)
+      case ScrollUp => Ui.nop
+    }) ~ notifyScroll(scrollType)
+  }
+
+  override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] = hideFabButton
 
   override def startEditing(): Ui[Any] = {
     val items = collectionsPagerPresenter.statuses.positionsEditing.toSeq.length
     invalidateOptionMenu() ~
       (toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
+      (getScrollType match {
+        case Some(ScrollDown) =>
+          iconContent <~ applyAnimation(alpha = Some(0))
+        case Some(ScrollUp) =>
+          (titleContent <~ applyAnimation(alpha = Some(0))) ~
+            (selector <~ applyAnimation(alpha = Some(0)))
+        case _ => Ui.nop
+      }) ~
       notifyDataSetChangedCollectionAdapter
   }
 
@@ -268,18 +345,21 @@ trait CollectionsPagerUiActionsImpl
 
   override def closeEditingModeUi(): Ui[Any] =
     (toolbarTitle <~ tvText("")) ~
+      (getScrollType match {
+        case Some(ScrollDown) =>
+          iconContent <~ (vVisible + vScaleX(1) + vScaleY(1) + vAlpha(0f) ++ applyAnimation(alpha = Some(1)))
+        case Some(ScrollUp) =>
+          (titleContent <~ applyAnimation(alpha = Some(1))) ~
+            (selector <~ applyAnimation(alpha = Some(1)))
+        case _ => Ui.nop
+      }) ~
       notifyDataSetChangedCollectionAdapter ~ invalidateOptionMenu()
-
-  override def notifyScroll(sType: ScrollType): Ui[Any] = (for {
-    adapter <- getAdapter
-  } yield {
-      adapter.setScrollType(sType)
-      adapter.notifyChanged(viewPager.getCurrentItem)
-    }) getOrElse Ui.nop
 
   override def exitTransition: Ui[Any] = {
     val activity = activityContextWrapper.getOriginal
-    ((toolbar <~ exitToolbar) ~
+    ((titleContent <~ applyAnimation(alpha = Some(0))) ~
+      (selector <~ applyAnimation(alpha = Some(0))) ~
+      (toolbar <~ exitToolbar) ~
       (tabs <~ exitViews) ~
       (iconContent <~ exitViews)) ~
       (viewPager <~~ exitViews) ~~
@@ -316,6 +396,15 @@ trait CollectionsPagerUiActionsImpl
 
   override def showMessageNotPublishedCollectionError: Ui[Any] = showError(R.string.notPublishedCollectionError)
 
+  private[this] def notifyScroll(sType: ScrollType): Ui[Any] = (for {
+    adapter <- getAdapter
+  } yield {
+    adapter.setScrollType(sType)
+    adapter.notifyChanged(viewPager.getCurrentItem)
+  }) getOrElse Ui.nop
+
+  private[this] def getScrollType: Option[ScrollType] = getAdapter map (_.statuses.scrollType)
+
   private[this] def invalidateOptionMenu(): Ui[Any] = Ui {
     activityContextWrapper.original.get match {
       case Some(activity: AppCompatActivity) => activity.supportInvalidateOptionsMenu()
@@ -336,25 +425,6 @@ trait CollectionsPagerUiActionsImpl
         dialog.show(ft, tagDialog)
       case _ =>
     }
-  }
-
-  private[this] def elevationsDefault: Ui[Any] = Lollipop.ifSupportedThen {
-    (viewPager <~ vElevation(elevation)) ~
-      (tabs <~ vElevation(elevation)) ~
-      (toolbar <~ vElevation(elevation)) ~
-      (iconContent <~ vElevation(elevation))
-  } getOrElse Ui.nop
-
-  private[this] def elevationsUp: Ui[Any] = Lollipop.ifSupportedThen {
-    (viewPager <~ vElevation(elevation)) ~
-      (tabs <~ vElevation(elevationUp)) ~
-      (toolbar <~ vElevation(elevationUp)) ~
-      (iconContent <~ vElevation(elevationUp))
-  } getOrElse Ui.nop
-
-  private[this] def calculateReduce(ratio: Float, spaceMove: Int, reversed: Boolean) = {
-    val newRatio = if (reversed) 1f - ratio else ratio
-    (newRatio * (spaceMove * 2)).toInt
   }
 
   private[this] def getItemsForFabMenu = Seq(
@@ -428,17 +498,61 @@ trait CollectionsPagerUiActionsImpl
       (getAdapter map {
         adapter =>
           val resIcon = collection.getIconDetail
-          (pageMovement match {
-            case Start | Idle => icon <~ ivSrc(resIcon)
-            case Left => icon <~ changeIcon(resIcon, fromLeft = true)
-            case Right | Jump => icon <~ changeIcon(resIcon, fromLeft = false)
+          val distance = resGetDimensionPixelSize(R.dimen.padding_large)
+          val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
+          ((pageMovement, adapter.statuses.scrollType) match {
+            case (Start | Idle, _) =>
+              (icon <~ ivSrc(resIcon)) ~
+                (titleName <~ tvText(collection.name)) ~
+                (titleIcon <~ ivSrc(resIcon))
+            case (Left, ScrollDown) =>
+              (icon <~ animationIcon(fromLeft = true, resIcon)) ~
+                (titleName <~ tvText(collection.name)) ~
+                (titleIcon <~ ivSrc(resIcon))
+            case (Left, ScrollUp) =>
+              (icon <~ ivSrc(resIcon)) ~
+                (titleContent <~~
+                  applyAnimation(
+                    duration = Option(duration),
+                    x = Option(distance),
+                    alpha = Option(0))) ~~
+                (titleContent <~ vTranslationX(-distance)) ~~
+                (titleName <~ tvText(collection.name)) ~~
+                (titleIcon <~ ivSrc(resIcon)) ~~
+                (titleContent <~~
+                  applyAnimation(
+                    duration = Option(duration),
+                    x = Option(0),
+                    alpha = Option(1)))
+            case (Right | Jump, ScrollDown) =>
+              (icon <~ animationIcon(fromLeft = false, resIcon)) ~
+                (titleName <~ tvText(collection.name)) ~
+                (titleIcon <~ ivSrc(resIcon))
+            case (Right | Jump, ScrollUp) =>
+              (icon <~ ivSrc(resIcon)) ~
+                (titleContent <~~
+                  applyAnimation(
+                    duration = Option(duration),
+                    x = Option(-distance),
+                    alpha = Option(0))) ~~
+                (titleContent <~ vTranslationX(distance)) ~~
+                (titleName <~ tvText(collection.name)) ~~
+                (titleIcon <~ ivSrc(resIcon)) ~~
+                (titleContent <~~
+                  applyAnimation(
+                    duration = Option(duration),
+                    x = Option(0),
+                    alpha = Option(1)))
             case _ => Ui.nop
-          }) ~ adapter.notifyChanged(position) ~ (if (collection.cards.isEmpty) {
-            val color = getIndexColor(collection.themedColorIndex)
-            showFabButton(color = color, autoHide = false)
-          } else {
-            hideFabButton
-          })
+          }) ~
+            Ui(selectorDrawable.setSelected(position)) ~
+            adapter.notifyChanged(position) ~
+            (if (collection.cards.isEmpty) {
+              val color = getIndexColor(collection.themedColorIndex)
+              showFabButton(color = color, autoHide = false)
+            } else {
+              hideFabButton
+            })
       } getOrElse Ui.nop)
 
   private[this] def updateToolbarColor(color: Int): Ui[Any] =
@@ -542,6 +656,11 @@ trait CollectionsPagerUiActionsImpl
 
   }
 
+}
+
+case class CollectionsPagerUiActionsImplStatuses(
+  lastScrollYInMovement: Float = 0) {
+  def reset() = copy(lastScrollYInMovement = 0)
 }
 
 sealed trait PageMovement

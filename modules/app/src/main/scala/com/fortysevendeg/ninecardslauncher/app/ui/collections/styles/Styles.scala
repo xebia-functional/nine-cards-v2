@@ -8,7 +8,7 @@ import android.support.v7.widget.CardView
 import android.view.View
 import android.view.ViewGroup.LayoutParams._
 import android.widget.ImageView.ScaleType
-import android.widget.{FrameLayout, TextView}
+import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
@@ -36,10 +36,16 @@ import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 
 trait Styles {
 
-  def tabsStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[SlidingTabLayout] =
+  def tabsStyle(implicit theme: NineCardsTheme): Tweak[SlidingTabLayout] =
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
       vInvisible
+
+  def titleNameStyle(implicit theme: NineCardsTheme): Tweak[TextView] =
+    tvColor(theme.get(CollectionDetailTextTabSelectedColor))
+
+  def selectorStyle(drawable: Drawable)(implicit theme: NineCardsTheme): Tweak[ImageView] =
+    ivSrc(drawable)
 
   def fabButtonApplicationsStyle(implicit context: ContextWrapper): Tweak[FabItemMenu] =
     fabButton(R.string.applications, R.drawable.fab_menu_icon_applications, 1)

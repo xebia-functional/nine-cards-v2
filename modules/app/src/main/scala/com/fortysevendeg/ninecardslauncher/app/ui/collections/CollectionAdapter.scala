@@ -52,7 +52,8 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
   }
 
   def removeCards(cards: Seq[Card]) = {
-    collection = collection.copy(cards = collection.cards.filterNot(c => cards.contains(c)))
+    val cardIds = cards map (_.id)
+    collection = collection.copy(cards = collection.cards.filterNot(c => cardIds.contains(c.id)))
     notifyDataSetChanged()
   }
 
