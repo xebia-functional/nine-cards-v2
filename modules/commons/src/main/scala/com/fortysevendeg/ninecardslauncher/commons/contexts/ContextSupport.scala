@@ -8,8 +8,11 @@ import android.content.{ContentResolver, Context, Intent, SharedPreferences}
 import android.content.pm.PackageManager
 import android.content.res.{AssetManager, Resources}
 
+import scala.ref.WeakReference
+
 trait ContextSupport {
   def context: Context
+  def getOriginal: WeakReference[Context]
   def getPackageManager: PackageManager
   def getResources: Resources
   def getContentResolver: ContentResolver

@@ -22,7 +22,7 @@ import macroid.FullDsl._
 import macroid._
 import org.ocpsoft.prettytime.PrettyTime
 
-class WizardUiActions(dom: WizardDOM)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
+class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
   extends WizardStyles {
 
   val newConfigurationKey = "new_configuration"
@@ -34,7 +34,7 @@ class WizardUiActions(dom: WizardDOM)(implicit val context: ActivityContextWrapp
     StepData(R.drawable.wizard_04, resGetString(R.string.wizard_step_4)),
     StepData(R.drawable.wizard_05, resGetString(R.string.wizard_step_5)))
 
-  def initialize(jobs: WizardJobs): TaskService[Unit] = {
+  def initialize(): TaskService[Unit] = {
 
     def pagination(position: Int) =
       (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
@@ -59,7 +59,7 @@ class WizardUiActions(dom: WizardDOM)(implicit val context: ActivityContextWrapp
         On.click {
           Ui {
             val termsAccept = dom.usersTerms.isChecked
-            jobs.connectAccount(termsAccept).resolveAsync()
+            dom.onClickAcceptTermsButton(termsAccept)
           }
         }) ~
         (dom.deviceAction <~
@@ -70,8 +70,10 @@ class WizardUiActions(dom: WizardDOM)(implicit val context: ActivityContextWrapp
                 Ui {
                   val tag = Option(i.getTag) map (_.toString)
                   tag match {
-                    case Some(`newConfigurationKey`) => jobs.deviceSelected(None).resolveAsyncServiceOr(_ => goToUser())
-                    case cloudId => jobs.deviceSelected(cloudId).resolveAsyncServiceOr(_ => goToUser())
+                    case Some(`newConfigurationKey`) =>
+                      dom.onClickSelectDeviceButton(None)
+                    case cloudId =>
+                      dom.onClickSelectDeviceButton(cloudId)
                   }
                 }
             }
@@ -89,7 +91,7 @@ class WizardUiActions(dom: WizardDOM)(implicit val context: ActivityContextWrapp
           })) ~
         (dom.stepsAction <~
           diveInActionStyle <~
-          On.click(Ui(jobs.finishWizard().resolveAsync()))) ~
+          On.click(Ui(dom.onClickFinishWizardButton()))) ~
         createPagers(steps)
 
     for {
@@ -214,4 +216,3 @@ class WizardUiActions(dom: WizardDOM)(implicit val context: ActivityContextWrapp
   def showDiveIn(): TaskService[Unit] = (dom.stepsAction <~ vEnabled(true)).toService
 
 }
-

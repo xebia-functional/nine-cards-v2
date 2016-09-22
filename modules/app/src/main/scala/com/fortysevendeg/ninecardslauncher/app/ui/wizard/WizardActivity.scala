@@ -10,7 +10,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageClientListener
+import com.fortysevendeg.ninecardslauncher.process.social.{SocialProfileClientListener, SocialProfileProcessException}
+import com.fortysevendeg.ninecardslauncher.process.user.UserException
+import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.google.android.gms.common.ConnectionResult
 import macroid.Contexts
 
 class WizardActivity
@@ -18,11 +23,15 @@ class WizardActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with TypedFindView
-  with BroadcastDispatcher { self =>
+  with BroadcastDispatcher
+  with SocialProfileClientListener
+  with CloudStorageClientListener
+  with WizardDOM
+  with WizardUiListener { self =>
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
-  lazy val actions = new WizardUiActions(WizardDOM(self))
+  lazy val actions = new WizardUiActions(self)
 
   lazy val jobs = new WizardJobs(actions)
 
@@ -75,14 +84,42 @@ class WizardActivity
     grantResults: Array[Int]): Unit =
     jobs.requestPermissionsResult(requestCode, permissions, grantResults).resolveAsyncServiceOr(onException)
 
+  override def onClickAcceptTermsButton(termsAccepted: Boolean): Unit =
+    jobs.connectAccount(termsAccepted).resolveAsync()
+
+  override def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit =
+    jobs.deviceSelected(maybeCloudId).resolveAsyncServiceOr(_ => actions.goToUser())
+
+  override def onClickFinishWizardButton(): Unit = jobs.finishWizard().resolveAsync()
+
+  override def onPlusConnectionSuspended(cause: Int): Unit = {}
+
+  override def onPlusConnected(): Unit = jobs.plusConnected().resolveAsyncServiceOr(onException)
+
+  override def onPlusConnectionFailed(connectionResult: ConnectionResult): Unit =
+    jobs.plusConnectionFailed(connectionResult).resolveAsync()
+
+  override def onDriveConnectionSuspended(cause: Int): Unit = {}
+
+  override def onDriveConnected(): Unit =
+    jobs.driveConnected().resolveAsync()
+
+  override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit =
+    jobs.driveConnectionFailed(connectionResult).resolveAsync()
+
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
+    case ex: SocialProfileProcessException if ex.recoverable => jobs.googleSignIn()
+    case _: UserException => actions.showErrorLoginUser()
+    case _: UserV1Exception => actions.showErrorLoginUser()
     case _: WizardMarketTokenRequestCancelledException => jobs.errorOperationMarketTokenCancelled()
     case _: WizardGoogleTokenRequestCancelledException => jobs.errorOperationGoogleTokenCancelled()
     case _ => actions.showErrorConnectingGoogle()
   }
 }
 
-case class WizardDOM(finder: TypedFindView) {
+trait WizardDOM {
+
+  finder: TypedFindView =>
 
   lazy val rootLayout = finder.findView(TR.wizard_root)
 
@@ -109,5 +146,21 @@ case class WizardDOM(finder: TypedFindView) {
   lazy val paginationPanel = finder.findView(TR.wizard_steps_pagination_panel)
 
   lazy val workspaces = finder.findView(TR.wizard_steps_workspace)
+
+}
+
+trait WizardUiListener {
+
+  // jobs.connectAccount(termsAccept).resolveAsync()
+  def onClickAcceptTermsButton(termsAccepted: Boolean): Unit
+
+  /*
+  jobs.deviceSelected(None).resolveAsyncServiceOr(_ => goToUser())
+  jobs.deviceSelected(cloudId).resolveAsyncServiceOr(_ => goToUser())
+   */
+  def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit
+
+  // jobs.finishWizard().resolveAsync()
+  def onClickFinishWizardButton(): Unit
 
 }
