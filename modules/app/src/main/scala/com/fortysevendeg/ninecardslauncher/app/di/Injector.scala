@@ -244,12 +244,12 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     persistenceServices = persistenceServices)
 
   def createCloudStorageProcess(client: GoogleApiClient): CloudStorageProcess = {
-    val services = new DriveServicesImpl(client)
+    val services = new DriveServicesImpl()
     new CloudStorageProcessImpl(services, persistenceServices)
   }
 
   override def createSocialProfileProcess(client: GoogleApiClient): SocialProfileProcess = {
-    val services = new GooglePlusServicesImpl(client)
+    val services = new GooglePlusServicesImpl()
     new SocialProfileProcessImpl(services, persistenceServices)
   }
 
