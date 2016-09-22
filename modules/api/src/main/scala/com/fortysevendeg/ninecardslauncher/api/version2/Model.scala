@@ -32,7 +32,6 @@ case class CollectionsResponse(collections: Seq[Collection])
 case class CreateCollectionRequest(
   name: String,
   author: String,
-  description: String,
   icon: String,
   category: String,
   community: Boolean,
@@ -67,7 +66,6 @@ case class PackagesStats(added: Int, removed: Option[Int] = None)
 case class Collection(
   name: String,
   author: String,
-  description: Option[String],
   icon: String,
   category: String,
   community: Boolean,
@@ -89,8 +87,7 @@ case class CollectionApp(
   free: Boolean)
 
 case class CollectionUpdateInfo(
-  title: String,
-  description: Option[String])
+  title: String)
 
 case class CategorizedApp(
   packageName: String,

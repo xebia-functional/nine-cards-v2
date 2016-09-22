@@ -306,7 +306,7 @@ class SharedCollectionsProcessImplSpec
     "successfully create a collection for a valid request" in
       new SharedCollectionsProcessProcessScope {
 
-        mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
+        mockApiServices.createSharedCollection(anyString, anyString, any, anyString, anyString, any)(any) returns
           TaskService(Task(Either.right(createSharedCollectionResponse)))
 
         val result = sharedCollectionsProcess.createSharedCollection(createSharedCollection)(contextSupport).value.run
@@ -317,7 +317,7 @@ class SharedCollectionsProcessImplSpec
     "return a SharedCollectionsException if the service throws an exception" in
       new SharedCollectionsProcessProcessScope {
 
-        mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
+        mockApiServices.createSharedCollection(anyString, anyString, any, anyString, anyString, any)(any) returns
           TaskService(Task(Either.left(apiException)))
 
         mustLeft[SharedCollectionsException](sharedCollectionsProcess.createSharedCollection(createSharedCollection)(contextSupport))
@@ -326,7 +326,7 @@ class SharedCollectionsProcessImplSpec
     "return a SharedCollectionsConfigurationException if the service throws a config exception" in
       new SharedCollectionsProcessProcessScope {
 
-        mockApiServices.createSharedCollection(anyString, anyString, anyString, any, anyString, anyString, any)(any) returns
+        mockApiServices.createSharedCollection(anyString, anyString, any, anyString, anyString, any)(any) returns
           TaskService(Task(Either.left(apiConfigException)))
 
         mustLeft[SharedCollectionsConfigurationException](
@@ -339,7 +339,7 @@ class SharedCollectionsProcessImplSpec
     "successfully create a collection for a valid request" in
       new SharedCollectionsProcessProcessScope {
 
-        mockApiServices.updateSharedCollection(any, any, any, any)(any) returns
+        mockApiServices.updateSharedCollection(any, any, any)(any) returns
           TaskService(Task(Either.right(updateSharedCollectionResponse)))
 
         val result = sharedCollectionsProcess.updateSharedCollection(updateSharedCollection)(contextSupport).value.run
@@ -350,7 +350,7 @@ class SharedCollectionsProcessImplSpec
     "return a SharedCollectionsException if the service throws an exception" in
       new SharedCollectionsProcessProcessScope {
 
-        mockApiServices.updateSharedCollection(any, any, any, any)(any) returns
+        mockApiServices.updateSharedCollection(any, any, any)(any) returns
           TaskService(Task(Either.left(apiException)))
 
         mustLeft[SharedCollectionsException](sharedCollectionsProcess.updateSharedCollection(updateSharedCollection)(contextSupport))
@@ -359,7 +359,7 @@ class SharedCollectionsProcessImplSpec
     "return a SharedCollectionsConfigurationException if the service throws a config exception" in
       new SharedCollectionsProcessProcessScope {
 
-        mockApiServices.updateSharedCollection(any, any, any, any)(any) returns
+        mockApiServices.updateSharedCollection(any, any, any)(any) returns
           TaskService(Task(Either.left(apiConfigException)))
 
         mustLeft[SharedCollectionsConfigurationException](

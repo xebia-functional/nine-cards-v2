@@ -182,7 +182,6 @@ class ApiServicesImpl(
 
   override def createSharedCollection(
     name: String,
-    description: String,
     author: String,
     packages: Seq[String],
     category: String,
@@ -192,7 +191,6 @@ class ApiServicesImpl(
     val request = version2.CreateCollectionRequest(
       name = name,
       author = author,
-      description = description,
       icon = icon,
       category = category,
       community = community,
@@ -209,10 +207,9 @@ class ApiServicesImpl(
   override def updateSharedCollection(
     sharedCollectionId: String,
     maybeName: Option[String],
-    maybeDescription: Option[String],
     packages: Seq[String])(implicit requestConfig: RequestConfig) = {
 
-    def toUpdateInfo: Option[CollectionUpdateInfo] = maybeName map (name => CollectionUpdateInfo(name, maybeDescription))
+    def toUpdateInfo: Option[CollectionUpdateInfo] = maybeName map (name => CollectionUpdateInfo(name))
 
     val request = version2.UpdateCollectionRequest(collectionInfo = toUpdateInfo, packages = Some(packages))
 

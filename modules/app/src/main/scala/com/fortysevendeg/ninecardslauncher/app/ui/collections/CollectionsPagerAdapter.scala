@@ -69,6 +69,12 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     collections = collections.patch(positionCollection, Seq(newCollection), 1)
   }
 
+  def updateShareCollectionIdFromCollection(positionCollection: Int, sharedCollectionId: Option[String]): Unit = {
+    val currentCollection = collections(positionCollection)
+    val newCollection = currentCollection.copy(sharedCollectionId = sharedCollectionId)
+    collections = collections.patch(positionCollection, Seq(newCollection), 1)
+  }
+
   def getCurrentFragmentPosition: Option[Int] = fragments collectFirst {
     case (id, fragment) if fragment.statuses.activeFragment => id
   }

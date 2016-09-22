@@ -112,7 +112,6 @@ class SynchronizeDeviceService
               UpdateSharedCollection(
                 sharedCollectionId = id,
                 name = collection.name,
-                description = None,
                 packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName))).map(Option(_))
           case _ => services.TaskService(Task(Either.right(None)))
         }
