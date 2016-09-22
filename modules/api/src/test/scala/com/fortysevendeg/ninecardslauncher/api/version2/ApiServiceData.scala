@@ -31,7 +31,7 @@ trait ApiServiceData {
   val collectionsIdAuthToken = "5fdf0285acf5b1f0223c903553558a7512c92aabac6e6c2dd1daa794682966f954438645ce6cd139036ace029e38c609a23aaeabcdd453d25a5349d8b5cf178c"
   val categorizeAuthToken = "4f129e296588493aab55e0192894ed95867546674844479f8dce0f0f506eed80991a1f09d459d476335acdf27e3f178d16f8df94c45a0e77d4f10935f8199493"
   val categorizeDetailAuthToken = "f6ccbb142c90bb3b527ee2d27867daf4324403255fe90f4f5e0b4b25f992fa7b0c4635a7161fc104f664ea7bea337afe1fffc3e12c4c597eeee56557d089d23b"
-  val recommendationsAuthToken = "eb8d8a575642e6d1b4b048d921a5b5ec9036a10542e424077ba261fd8a55aa47287f202691ef7c8a4ec19013affbc0c01cfa13e9a759734f2579a869a1842361"
+  val recommendationsAuthToken = "915f6db594dd9be2bc9cfb2a232c52bccee633afe97086cca7f468690ad8ca7bb87747b5ee13a35af0103091bf9b0d5a38f0cccd5179ca98b399c65f7afae6a2"
   val recommendationsByAppsAuthToken = "ee388db874ece41e4a446bb8c36f0967944d71d87239ae5d629ee6db074508e318eb70c134572d9a3d10192e07b11135360a539a302ca347f3bbdeec6970129b"
   val subscriptionsAuthToken = "b45ad90c3d18f43b7b921c2aeec3258a8a1adf11ad75e4c68928ac89855c5c019b921bc268bc3072a2735718479809a71810e684b11051619ed564392d5be3dd"
 
@@ -133,13 +133,11 @@ trait ApiServiceData {
     screenshots = Seq("screenshot1", "screenshot2", "screenshot3"))
 
   val recommendationsRequest = RecommendationsRequest(
-    filter = Some("FREE"),
     excludePackages = Seq("com.package.sample"),
     limit = 10)
 
   val recommendationsByAppsRequest = RecommendationsByAppsRequest(
     packages = Seq("com.fortysevendeg.ninecardslauncher"),
-    filter = Some("FREE"),
     excludePackages = Seq("com.package.sample"),
     limit = 10)
 

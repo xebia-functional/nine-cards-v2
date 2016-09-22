@@ -52,11 +52,11 @@ case class CategorizeResponse(errors: Seq[String], items: Seq[CategorizedApp])
 
 case class CategorizeDetailResponse(errors: Seq[String], items: Seq[CategorizedAppDetail])
 
-case class RecommendationsRequest(filter: Option[String], excludePackages: Seq[String], limit: Int)
+case class RecommendationsRequest(excludePackages: Seq[String], limit: Int)
 
 case class RecommendationsResponse(apps: Seq[RecommendationApp])
 
-case class RecommendationsByAppsRequest(packages: Seq[String], filter: Option[String], excludePackages: Seq[String], limit: Int)
+case class RecommendationsByAppsRequest(packages: Seq[String], excludePackages: Seq[String], limit: Int)
 
 case class RecommendationsByAppsResponse(apps: Seq[RecommendationApp])
 
