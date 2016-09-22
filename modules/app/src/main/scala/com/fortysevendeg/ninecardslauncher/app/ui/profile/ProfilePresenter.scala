@@ -25,6 +25,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
+import play.api.libs.json.Json
 
 import scala.util.{Failure, Try}
 
@@ -32,7 +33,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   extends Jobs
   with Conversions
   with CollectionJobs
-  with GoogleDriveApiClientProvider {
+  with GoogleDriveApiClientProvider { // TODO - Use the CloudStorageProcess.createCloudStorageClient in Jobs
 
   import Statuses._
 
@@ -218,16 +219,6 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def printDeviceInfo(cloudId: String): Unit = {
 
-    def splitString(string: String, seq: Seq[String] = Seq.empty): Seq[String] = {
-      val limit = 1000
-
-      if (string.length < limit) {
-        seq :+ string
-      } else {
-        splitString(string.substring(limit), seq :+ string.substring(0, limit))
-      }
-    }
-
     def printInfo(client: GoogleApiClient, cloudId: String) =
       di.cloudStorageProcess.getRawCloudStorageDevice(client , cloudId) map { device =>
         AppLog.info(s"----------------------------- Device Info -----------------------------")
@@ -238,9 +229,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         AppLog.info(s" Created date: ${device.createdDate}")
         AppLog.info(s" Modified date: ${device.modifiedDate}")
         AppLog.info(s" JSON")
-        splitString(device.json) foreach { line =>
-          AppLog.info(line)
-        }
+        AppLog.info(Json.prettyPrint(Json.parse(device.json)))
         AppLog.info(s"----------------------------- Device Info -----------------------------")
       }
 

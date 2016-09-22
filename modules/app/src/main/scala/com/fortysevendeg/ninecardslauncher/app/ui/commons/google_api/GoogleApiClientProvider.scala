@@ -12,6 +12,9 @@ import com.google.android.gms.drive._
 import com.google.android.gms.plus.Plus
 import macroid.{ActivityContextWrapper, ContextWrapper}
 
+/**
+  * @deprecated use the CloudStorageProcess.createCloudStorageClient instead
+  */
 trait GoogleDriveApiClientProvider {
 
   def createGoogleDriveClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient =
@@ -40,6 +43,9 @@ trait GoogleDriveApiClientProvider {
 
 }
 
+/**
+  * @deprecated use the SocialProfileProcess.createSocialProfileClient instead
+  */
 trait GooglePlusApiClientProvider {
 
   def createGooglePlusClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient = {

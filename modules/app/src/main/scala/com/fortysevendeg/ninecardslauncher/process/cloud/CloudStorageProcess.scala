@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.google.android.gms.common.ConnectionResult
