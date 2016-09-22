@@ -139,11 +139,15 @@
     <dimen name="size_icon_collection_detail">60dp</dimen>
     <dimen name="pivot_x_icon_collection_detail">30dp</dimen>
     <dimen name="margin_top_pagers_collection_details">74dp</dimen>
-    <dimen name="margin_top_tabs_collection_details">90dp</dimen>
+    <dimen name="margin_top_tabs_collection_details">86dp</dimen>
     <dimen name="height_tabs_collection_details">40dp</dimen>
-    <dimen name="height_toolbar_collection_details">186dp</dimen>
+    <dimen name="height_toolbar_collection_details">130dp</dimen>
     <dimen name="space_moving_collection_details">56dp</dimen>
     <integer name="anim_duration_icon_collection_detail">100</integer>
+
+    <dimen name="margin_top_selector_collection_details">68dp</dimen>
+    <dimen name="size_icon_title_collapse_collection_details">22dp</dimen>
+    <dimen name="padding_selector_collection_details">2dp</dimen>
 
     <dimen name="space_enter_views_collection_detail">128dp</dimen>
 

@@ -220,7 +220,11 @@ class CollectionsPagerPresenter(
     )
   }
 
-  def scrollY(scroll: Int, dy: Int): Unit = actions.translationScrollY(scroll).run
+  def scrollY(dy: Int): Unit = actions.translationScrollY(dy).run
+
+  def scrollIdle(): Unit = actions.scrollIdle().run
+
+  def forceScrollType(scrollType: ScrollType): Unit = actions.forceScrollType(scrollType).run
 
   def openReorderMode(current: ScrollType, canScroll: Boolean): Unit = {
     ((statuses.collectionMode match {
@@ -232,15 +236,13 @@ class CollectionsPagerPresenter(
 
   def closeReorderMode(position: Int): Unit = {
     statuses = statuses.copy(positionsEditing = Set(position))
-    actions.startEditing().run
+    (actions.scrollIdle() ~ actions.startEditing()).run
   }
 
   def closeEditingMode(): Unit = {
     statuses = statuses.copy(collectionMode = NormalCollectionMode, positionsEditing = Set.empty)
     actions.closeEditingModeUi().run
   }
-
-  def scrollType(sType: ScrollType): Unit = actions.notifyScroll(sType).run
 
   def emptyCollection(): Unit = actions.getCurrentCollection foreach { collection =>
     actions.showMenuButton(autoHide = false, collection).run
@@ -327,7 +329,11 @@ trait CollectionsPagerUiActions {
 
   def getCollection(position: Int): Option[Collection]
 
-  def translationScrollY(scroll: Int): Ui[Any]
+  def translationScrollY(dy: Int): Ui[Any]
+
+  def scrollIdle(): Ui[Any]
+
+  def forceScrollType(scrollType: ScrollType): Ui[Any]
 
   def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any]
 
@@ -336,8 +342,6 @@ trait CollectionsPagerUiActions {
   def reloadItemCollection(position: Int): Ui[Any]
 
   def closeEditingModeUi(): Ui[Any]
-
-  def notifyScroll(sType: ScrollType): Ui[Any]
 
   def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): Ui[Any]
 
