@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
@@ -30,7 +31,7 @@ class CollectionFragment
     maybeCollection = Option(getSerialize[Collection](Seq(getArguments), keyCollection, javaNull)),
     actions = self)
 
-  override lazy val collectionsPresenter: CollectionsPagerPresenter = getActivity match {
+  override lazy val collectionsPagerPresenter: CollectionsPagerPresenter = getActivity match {
     case activity: CollectionsDetailsActivity => activity.collectionsPagerPresenter
     case _ => throw new IllegalArgumentException(badActivityMessage)
   }
@@ -71,10 +72,16 @@ class CollectionFragment
 
   override def onPrepareOptionsMenu(menu: Menu): Unit = {
     super.onPrepareOptionsMenu(menu)
-    (collectionsPresenter.statuses.collectionMode, collectionsPresenter.statuses.positionsEditing.toSeq.length) match {
+    (collectionsPagerPresenter.statuses.collectionMode, collectionsPagerPresenter.statuses.positionsEditing.toSeq.length) match {
       case (NormalCollectionMode, _) =>
-        menu.findItem(R.id.action_make_public).setVisible(true)
-        menu.findItem(R.id.action_share).setVisible(true)
+        collectionsPagerPresenter.statuses.publishStatus match {
+          case PublishedByMe =>
+            menu.findItem(R.id.action_make_public).setEnabled(false).setTitle(resGetString(R.string.alreadyPublishedCollection))
+            menu.findItem(R.id.action_share).setVisible(true)
+          case _ =>
+            menu.findItem(R.id.action_make_public).setVisible(true)
+            menu.findItem(R.id.action_share).setVisible(false)
+        }
         menu.findItem(R.id.action_edit).setVisible(false)
         menu.findItem(R.id.action_move_to_collection).setVisible(false)
         menu.findItem(R.id.action_delete).setVisible(false)
@@ -95,13 +102,13 @@ class CollectionFragment
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case R.id.action_edit =>
-      collectionsPresenter.editCard()
+      collectionsPagerPresenter.editCard()
       true
     case R.id.action_move_to_collection =>
       presenter.moveToCollection()
       true
     case R.id.action_delete =>
-      collectionsPresenter.removeCards()
+      collectionsPagerPresenter.removeCards()
       true
     case _ => super.onOptionsItemSelected(item)
   }

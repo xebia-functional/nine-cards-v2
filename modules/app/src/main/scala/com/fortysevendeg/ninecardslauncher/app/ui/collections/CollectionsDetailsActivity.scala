@@ -135,6 +135,11 @@ class CollectionsDetailsActivity
     super.onCreateOptionsMenu(menu)
   }
 
+  override def onPrepareOptionsMenu (menu: Menu): Boolean = {
+    collectionsPagerPresenter.savePublishStatus()
+    super.onPrepareOptionsMenu(menu)
+  }
+
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case android.R.id.home =>
       collectionsPagerPresenter.close()

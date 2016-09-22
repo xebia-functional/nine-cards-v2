@@ -171,7 +171,6 @@ trait Conversions {
       id = collection.publicIdentifier,
       sharedCollectionId = collection.publicIdentifier,
       publishedOn = formatPublishedDate(collection.publishedOn),
-      description = collection.description getOrElse "",
       author = collection.author,
       name = collection.name,
       packages = collection.packages,

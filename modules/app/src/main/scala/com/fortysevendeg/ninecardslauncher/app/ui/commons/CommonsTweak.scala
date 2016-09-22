@@ -2,33 +2,37 @@ package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.Context
 import android.content.res.ColorStateList
-import android.graphics.{Paint, PorterDuff}
-import android.graphics.drawable.shapes.OvalShape
 import android.graphics.drawable._
+import android.graphics.drawable.shapes.OvalShape
+import android.graphics.{Paint, PorterDuff}
 import android.os.Vibrator
 import android.support.design.widget.{TabLayout, Snackbar}
 import android.view.{MotionEvent, View, ViewGroup}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import android.support.v4.view.{GravityCompat, ViewPager}
+import android.support.design.widget.Snackbar
+import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
-import android.support.v7.widget.ListPopupWindow
+import android.support.v7.widget.RecyclerView.OnScrollListener
+import android.support.v7.widget.{ListPopupWindow, RecyclerView}
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
-import android.view.View.{OnClickListener, OnTouchListener}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import android.view.View.OnClickListener
 import android.view.inputmethod.InputMethodManager
+import android.view.{View, ViewGroup}
 import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}
 import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.adapters.ThemeArrayAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerBackgroundDrawable
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.R
-import com.google.android.flexbox.FlexboxLayout
 import macroid._
 
 object CommonsTweak {
@@ -128,6 +132,23 @@ object ExtraTweaks {
 
   // TODO - Move to macroid extras
 
+  def vRotation(rotation: Float) = Tweak[View](_.setRotation(rotation))
+
+  def rvAddOnScrollListener(
+    scrolled: (Int, Int) => Unit,
+    scrollStateChanged: (Int) => Unit): Tweak[RecyclerView] =
+    Tweak[RecyclerView](_.addOnScrollListener(new OnScrollListener {
+      override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = scrolled(dx, dy)
+
+      override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = scrollStateChanged(newState)
+    }))
+
+  def rvSmoothScrollBy(dx: Int = 0, dy: Int = 0): Tweak[RecyclerView] =
+    Tweak[RecyclerView](_.smoothScrollBy(dx, dy))
+
+  def rvScrollBy(dx: Int = 0, dy: Int = 0): Tweak[RecyclerView] =
+    Tweak[RecyclerView](_.scrollBy(dx, dy))
+
   def uiShortToast2(msg: Int)(implicit c: ContextWrapper): Ui[Unit] =
     Ui(Toast.makeText(c.application, msg, Toast.LENGTH_SHORT).show())
 
@@ -140,13 +161,13 @@ object ExtraTweaks {
   def uiLongToast2(msg: String)(implicit c: ContextWrapper): Ui[Unit] =
     Ui(Toast.makeText(c.application, msg, Toast.LENGTH_LONG).show())
 
-  def vResize(size: Int): Tweak[View] = vResize(size, size)
+  def vResize(size: Int): Tweak[View] = vResize(Option(size), Option(size))
 
-  def vResize(width: Int, height: Int): Tweak[View] = Tweak[View] {
+  def vResize(width: Option[Int] = None, height: Option[Int] = None): Tweak[View] = Tweak[View] {
     view =>
       val params = view.getLayoutParams
-      params.height = width
-      params.width = height
+      height foreach (params.height = _)
+      width foreach (params.width = _)
       view.requestLayout()
   }
 
@@ -244,6 +265,8 @@ object ExtraTweaks {
 
   def sChangeProgressBarColor(color: Int) =
     Tweak[ProgressBar](_.getIndeterminateDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
+
+  def etHintColor(color: Int): Tweak[EditText] = Tweak[EditText](_.setHintTextColor(color))
 
 }
 

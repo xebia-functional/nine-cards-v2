@@ -59,7 +59,6 @@ trait ApiServiceData {
 
   val collectionName = "collection name"
   val collectionAuthor = "collection author"
-  val collectionDescription = "collection description"
   val collectionIcon = "collection icon"
 
   val collectionApp = CollectionApp(
@@ -74,7 +73,6 @@ trait ApiServiceData {
   val collection = Collection(
     name = collectionName,
     author = collectionAuthor,
-    description = Some(collectionDescription),
     icon = collectionIcon,
     category = category,
     community = true,
@@ -89,7 +87,6 @@ trait ApiServiceData {
   val createCollectionRequest = CreateCollectionRequest(
     name = collectionName,
     author = collectionAuthor,
-    description = collectionDescription,
     icon = collectionIcon,
     category = category,
     community = true,
@@ -100,7 +97,7 @@ trait ApiServiceData {
     packagesStats = PackagesStats(1))
 
   val updateCollectionRequest = UpdateCollectionRequest(
-    collectionInfo = Some(CollectionUpdateInfo(title = collectionName, description = Some(collectionDescription))),
+    collectionInfo = Some(CollectionUpdateInfo(title = collectionName)),
     packages = Some(Seq(collectionApp.packageName)))
 
   val updateCollectionResponse = UpdateCollectionResponse(

@@ -14,7 +14,6 @@ case class SharedCollection(
   id: String,
   sharedCollectionId: String,
   publishedOn: Long,
-  description: String,
   author: String,
   name: String,
   packages: Seq[String],
@@ -27,7 +26,6 @@ case class SharedCollection(
   subscriptionType: SubscriptionType)
 
 case class CreateSharedCollection(
-   description: String,
    author: String,
    name: String,
    packages: Seq[String],
@@ -38,7 +36,6 @@ case class CreateSharedCollection(
 case class UpdateSharedCollection(
    sharedCollectionId: String,
    name: String,
-   description: Option[String],
    packages: Seq[String])
 
 case class SharedCollectionPackage(
@@ -51,7 +48,6 @@ case class SharedCollectionPackage(
 
 case class CreatedCollection(
   name: String,
-  description: String,
   author: String,
   packages: Seq[String],
   category: NineCardCategory,

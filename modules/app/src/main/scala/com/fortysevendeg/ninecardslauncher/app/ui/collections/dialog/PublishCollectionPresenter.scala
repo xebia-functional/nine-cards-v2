@@ -1,20 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
+import cats.syntax.either._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs}
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{SharedCollectionsConfigurationException, SharedCollectionsException}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreateSharedCollection
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{SharedCollectionsConfigurationException, SharedCollectionsException}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
-import cats.syntax.either._
 import monix.eval.Task
 
-class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
+class PublishCollectionPresenter(actions: PublishCollectionActions)(implicit val collectionsPagerPresenter: CollectionsPagerPresenter, contextWrapper: ActivityContextWrapper)
   extends Jobs {
 
   var statuses = PublishCollectionStatuses()
@@ -31,18 +32,17 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit co
     }
   }
 
-  def publishCollection(maybeName: Option[String], maybeDescription: Option[String], maybeCategory: Option[NineCardCategory]): Unit = {
+  def publishCollection(maybeName: Option[String], maybeCategory: Option[NineCardCategory]): Unit = {
 
     def getCollection: TaskService[Collection] = statuses.collection map { col =>
       TaskService(Task(Either.right(col)))
     } getOrElse TaskService(Task(Either.left(SharedCollectionsException("", None))))
 
-    def createPublishedCollection(name: String, description: String, category: NineCardCategory): TaskService[String] =
+    def createPublishedCollection(name: String, category: NineCardCategory): TaskService[String] =
       for {
         user <- di.userProcess.getUser
         collection <- getCollection
         sharedCollection = CreateSharedCollection(
-          description = description,
           author = user.userProfile.name getOrElse (user.email getOrElse resGetString(R.string.defaultUser)),
           name = name,
           packages = collection.cards flatMap (_.packageName),
@@ -53,22 +53,21 @@ class PublishCollectionPresenter (actions: PublishCollectionActions)(implicit co
         _ <- di.collectionProcess.updateSharedCollection(collection.id, sharedCollectionId)
       } yield sharedCollectionId
 
-    def errorUi(name: String, description: String, category: NineCardCategory) =
-      actions.showMessagePublishingError ~ actions.goBackToPublishCollectionInformation(name, description, category)
+    def errorUi(name: String, category: NineCardCategory) =
+      actions.showMessagePublishingError ~ actions.goBackToPublishCollectionInformation(name, category)
 
     (for {
       name <- maybeName
-      description <- maybeDescription
       category <- maybeCategory
     } yield {
-      createPublishedCollection(name, description, category).resolveAsyncUi2(
+      createPublishedCollection(name, category).resolveAsyncUi2(
         onPreTask = () => actions.goToPublishCollectionPublishing(),
         onResult = (sharedCollectionId: String) => actions.goToPublishCollectionEnd(sharedCollectionId),
         onException = (e: Throwable) => e match {
           case e: SharedCollectionsConfigurationException =>
             AppLog.invalidConfigurationV2
-            errorUi(name, description, category)
-          case _ => errorUi(name, description, category)
+            errorUi(name, category)
+          case _ => errorUi(name, category)
         })
     }) getOrElse actions.showMessageFormFieldError.run
   }
@@ -89,7 +88,7 @@ trait PublishCollectionActions {
 
   def goToPublishCollectionInformation(collection: Collection): Ui[Any]
 
-  def goBackToPublishCollectionInformation(name: String, description: String, category: NineCardCategory): Ui[Any]
+  def goBackToPublishCollectionInformation(name: String, category: NineCardCategory): Ui[Any]
 
   def goToPublishCollectionPublishing(): Ui[Any]
 
