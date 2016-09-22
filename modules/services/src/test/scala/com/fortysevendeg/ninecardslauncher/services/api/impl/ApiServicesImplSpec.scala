@@ -966,4 +966,44 @@ class ApiServicesImplSpec
 
   }
 
+  "rankApps" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.rankApps(any, any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse[version2.RankAppsResponse](statusCode, Some(rankAppsResponse))))
+          }
+
+        val result = apiServices.rankApps(packagesByCategorySeq, Some(location)).value.run
+        result must beLike {
+          case Right(response) =>
+            response.statusCode shouldEqual statusCode
+            response.items.map(_.category) shouldEqual items.map(_._1)
+            response.items.map(_.packages) shouldEqual items.map(_._2)
+        }
+
+        there was one(apiService).rankApps(===(rankAppsRequest), ===(serviceHeader))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+
+        mustLeft[ApiServiceConfigurationException](apiServices.rankApps(packagesByCategorySeq, Some(location)))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.rankApps(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.rankApps(packagesByCategorySeq, Some(location)))
+      }
+
+  }
 }

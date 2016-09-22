@@ -236,5 +236,4 @@ trait ApiServices {
     packagesByCategorySeq: Seq[PackagesByCategory],
     location: Option[String])(implicit requestConfig: RequestConfig): TaskService[RankAppsResponseList]
 
-
 }
