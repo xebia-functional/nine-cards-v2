@@ -156,8 +156,6 @@ trait ApiServicesImplData {
 
   val name = "Name"
 
-  val description = "Description"
-
   val author = "Author"
 
   val packages = List("Package1", "Package2")
