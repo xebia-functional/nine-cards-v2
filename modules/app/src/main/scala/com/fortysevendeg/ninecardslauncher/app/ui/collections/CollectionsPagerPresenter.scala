@@ -224,6 +224,8 @@ class CollectionsPagerPresenter(
 
   def scrollIdle(): Unit = actions.scrollIdle().run
 
+  def forceScrollType(scrollType: ScrollType): Unit = actions.forceScrollType(scrollType).run
+
   def openReorderMode(current: ScrollType, canScroll: Boolean): Unit = {
     ((statuses.collectionMode match {
       case EditingCollectionMode => actions.closeEditingModeUi()
@@ -330,6 +332,8 @@ trait CollectionsPagerUiActions {
   def translationScrollY(dy: Int): Ui[Any]
 
   def scrollIdle(): Ui[Any]
+
+  def forceScrollType(scrollType: ScrollType): Ui[Any]
 
   def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any]
 

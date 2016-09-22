@@ -308,6 +308,15 @@ trait CollectionsPagerUiActionsImpl
     }) ~ notifyScroll(sType)
   }
 
+  override def forceScrollType(scrollType: ScrollType): Ui[Any] = {
+    (scrollType match {
+      case ScrollDown =>
+        val scrollY = tabs.getTranslationY.toInt
+        tabs <~ toolbarAnimation.move(scrollY, 0, attachTarget = true)
+      case ScrollUp => Ui.nop
+    }) ~ notifyScroll(scrollType)
+  }
+
   override def openReorderModeUi(current: ScrollType, canScroll: Boolean): Ui[Any] = hideFabButton
 
   override def startEditing(): Ui[Any] = {

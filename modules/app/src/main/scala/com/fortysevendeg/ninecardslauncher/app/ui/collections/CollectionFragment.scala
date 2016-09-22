@@ -74,7 +74,7 @@ class CollectionFragment
     super.onPrepareOptionsMenu(menu)
     (collectionsPagerPresenter.statuses.collectionMode, collectionsPagerPresenter.statuses.positionsEditing.toSeq.length) match {
       case (NormalCollectionMode, _) =>
-        collectionsPresenter.statuses.publishStatus match {
+        collectionsPagerPresenter.statuses.publishStatus match {
           case PublishedByMe =>
             menu.findItem(R.id.action_make_public).setEnabled(false).setTitle(resGetString(R.string.alreadyPublishedCollection))
             menu.findItem(R.id.action_share).setVisible(true)

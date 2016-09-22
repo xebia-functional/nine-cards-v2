@@ -154,9 +154,14 @@ trait CollectionUiActionsImpl
 
   override def removeCards(cards: Seq[Card]): Ui[Any] = getAdapter map { adapter =>
     adapter.removeCards(cards)
+    val couldScroll = statuses.canScroll
     updateScroll()
     val emptyCollection = adapter.collection.cards.isEmpty
     if (emptyCollection) collectionsPagerPresenter.emptyCollection()
+    if (couldScroll && !statuses.canScroll && statuses.scrollType == ScrollUp) {
+      statuses = statuses.copy(scrollType = ScrollDown)
+      collectionsPagerPresenter.forceScrollType(ScrollDown)
+    }
     showData(emptyCollection)
   } getOrElse Ui.nop
 
@@ -226,8 +231,8 @@ trait CollectionUiActionsImpl
     case _ => None
   }
 
-  def updateScroll(offset: Int = 0): Unit = getAdapter foreach { adapter =>
-    statuses = statuses.updateScroll(adapter.collection.cards.length + offset)
+  def updateScroll(): Unit = getAdapter foreach { adapter =>
+    statuses = statuses.updateScroll(adapter.collection.cards.length)
   }
 
   private[this] def loadCollection(collection: Collection, padding: Int, spaceMove: Int, animateCards: Boolean): Ui[_] = {
