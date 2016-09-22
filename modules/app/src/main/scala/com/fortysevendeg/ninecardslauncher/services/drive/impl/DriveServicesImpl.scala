@@ -19,9 +19,9 @@ import monix.execution.Cancelable
 import scala.collection.JavaConversions._
 import scala.util.{Failure, Success, Try}
 
-class DriveServicesImpl(client: GoogleApiClient)
+class DriveServicesImpl
   extends DriveServices
-    with Conversions {
+  with Conversions {
 
   private[this] val fileNotFoundError = (driveId: String) => s"File with id $driveId doesn't exists"
 
@@ -29,7 +29,9 @@ class DriveServicesImpl(client: GoogleApiClient)
     .addFilter(Filters.eq(propertyUUID, driveId))
     .build()
 
-  override def listFiles(maybeFileType: Option[String]) = {
+  override def listFiles(
+    client: GoogleApiClient,
+    maybeFileType: Option[String]) = {
     val sortOrder = new SortOrder.Builder()
       .addSortAscending(SortableField.MODIFIED_DATE)
       .build()
@@ -39,13 +41,17 @@ class DriveServicesImpl(client: GoogleApiClient)
         .setSortOrder(sortOrder)
         .build()
     }
-    searchFiles(maybeQuery)(seq => seq)
+    searchFiles(client, maybeQuery)(seq => seq)
   }
 
-  override def fileExists(driveId: String) =
-    searchFiles(Option(queryUUID(driveId)))(_.nonEmpty)
+  override def fileExists(
+    client: GoogleApiClient,
+    driveId: String) =
+    searchFiles(client, Option(queryUUID(driveId)))(_.nonEmpty)
 
-  override def readFile(driveId: String) = {
+  override def readFile(
+    client: GoogleApiClient,
+    driveId: String) = {
 
     def readFileContentsService(driveId: DriveId): TaskService[String] =
       driveId.asDriveFile
@@ -58,7 +64,7 @@ class DriveServicesImpl(client: GoogleApiClient)
         }
 
     for {
-      metadataResult <- fetchDriveFile(driveId)
+      metadataResult <- fetchDriveFile(client, driveId)
       content <- readFileContentsService(metadataResult.metadata.getDriveId)
     } yield {
       val summary = toGoogleDriveFileSummary(metadataResult.metadata)
@@ -68,21 +74,30 @@ class DriveServicesImpl(client: GoogleApiClient)
 
   }
 
-  override def createFile(title: String, content: String, deviceId: String, fileType: String, mimeType: String) =
-    createNewFile(newUUID, title, deviceId, fileType, mimeType, _.write(content))
+  override def createFile(
+    client: GoogleApiClient,
+    title: String, content: String, deviceId: String, fileType: String, mimeType: String) =
+    createNewFile(client, newUUID, title, deviceId, fileType, mimeType, _.write(content))
 
-  override def createFile(title: String, content: InputStream, deviceId: String, fileType: String, mimeType: String) =
-    createNewFile(newUUID, title, deviceId, fileType, mimeType,
+  override def createFile(
+    client: GoogleApiClient,
+    title: String, content: InputStream, deviceId: String, fileType: String, mimeType: String) =
+    createNewFile(client, newUUID, title, deviceId, fileType, mimeType,
       writer => Iterator
         .continually(content.read)
         .takeWhile(_ != -1)
         .foreach(writer.write))
 
-  override def updateFile(driveId: String, title: String, content: String) =
-    updateFileWith(driveId, title, _.write(content))
+  override def updateFile(
+    client: GoogleApiClient,
+    driveId: String, title: String, content: String) =
+    updateFileWith(client, driveId, title, _.write(content))
 
-  override def updateFile(driveId: String, title: String, content: InputStream) =
+  override def updateFile(
+    client: GoogleApiClient,
+    driveId: String, title: String, content: InputStream) =
     updateFileWith(
+      client,
       driveId,
       title,
       writer => Iterator
@@ -90,7 +105,9 @@ class DriveServicesImpl(client: GoogleApiClient)
         .takeWhile(_ != -1)
         .foreach(writer.write))
 
-  override def deleteFile(driveId: String) = {
+  override def deleteFile(
+    client: GoogleApiClient,
+    driveId: String) = {
 
     def deleteFileService(driveId: DriveId): TaskService[Unit] =
       driveId
@@ -99,7 +116,7 @@ class DriveServicesImpl(client: GoogleApiClient)
         .withResultAsync(_ => Right(Unit))
 
     for {
-      metadataResult <- fetchDriveFile(driveId)
+      metadataResult <- fetchDriveFile(client, driveId)
       _ <- deleteFileService(metadataResult.metadata.getDriveId)
       _ = tryToClose(metadataResult.buffer)
     } yield ()
@@ -107,12 +124,14 @@ class DriveServicesImpl(client: GoogleApiClient)
 
   private[this] def newUUID = com.gilt.timeuuid.TimeUuid().toString
 
-  private[this] def searchFiles[R](query: Option[Query])(f: (Seq[DriveServiceFileSummary]) => R) = {
+  private[this] def searchFiles[R](
+    client: GoogleApiClient,
+    query: Option[Query])(f: (Seq[DriveServiceFileSummary]) => R) = {
 
     def searchFiles: TaskService[MetadataBuffer] = {
       val request = query match {
-        case Some(q) => appFolder.queryChildren(client, q)
-        case _ => appFolder.listChildren(client)
+        case Some(q) => appFolder(client).queryChildren(client, q)
+        case _ => appFolder(client).listChildren(client)
       }
       request.withResultAsync { result =>
         Right(result.getMetadataBuffer)
@@ -163,9 +182,10 @@ class DriveServicesImpl(client: GoogleApiClient)
     }
   }
 
-  private[this] def appFolder = Drive.DriveApi.getAppFolder(client)
+  private[this] def appFolder(client: GoogleApiClient) = Drive.DriveApi.getAppFolder(client)
 
   private[this] def createNewFile(
+    client: GoogleApiClient,
     uuid: String,
     title: String,
     deviceId: String,
@@ -191,7 +211,7 @@ class DriveServicesImpl(client: GoogleApiClient)
       f(writer)
       writer.close()
 
-      appFolder
+      appFolder(client)
         .createFile(client, changeSet, contents)
         .withResultAsync { result =>
           val now = new java.util.Date
@@ -210,7 +230,9 @@ class DriveServicesImpl(client: GoogleApiClient)
     } yield summary
   }
 
-  private[this] def updateFileWith(driveId: String, title: String, f: (OutputStreamWriter) => Unit): TaskService[DriveServiceFileSummary] = {
+  private[this] def updateFileWith(
+    client: GoogleApiClient,
+    driveId: String, title: String, f: (OutputStreamWriter) => Unit): TaskService[DriveServiceFileSummary] = {
 
     def changeTitleService(driveId: DriveId): TaskService[Metadata] = {
       val changeSet = new MetadataChangeSet.Builder()
@@ -235,11 +257,11 @@ class DriveServicesImpl(client: GoogleApiClient)
         }
 
     for {
-      metadataResult <- fetchDriveFile(driveId)
+      metadataResult <- fetchDriveFile(client, driveId)
       newMetadata <- changeTitleService(metadataResult.metadata.getDriveId)
       summary = toGoogleDriveFileSummary(newMetadata)
       contents <- writeContentsService(newMetadata.getDriveId)
-      _ <- commitContentsService(contents)
+      _ <- commitContentsService(client, contents)
     } yield {
       tryToClose(metadataResult.buffer)
       summary
@@ -248,11 +270,15 @@ class DriveServicesImpl(client: GoogleApiClient)
 
   private[this] def tryToClose(metadata: MetadataBuffer): Unit = Try(metadata.release())
 
-  private[this] def commitContentsService(contents: DriveContents): TaskService[Unit] =
+  private[this] def commitContentsService(
+    client: GoogleApiClient,
+    contents: DriveContents): TaskService[Unit] =
     contents.commit(client, javaNull).withResultAsync(_ => Right((): Unit))
 
-  private[this] def fetchDriveFile(driveId: String): TaskService[MetadataResult] =
-    appFolder
+  private[this] def fetchDriveFile(
+    client: GoogleApiClient,
+    driveId: String): TaskService[MetadataResult] =
+    appFolder(client)
       .queryChildren(client, queryUUID(driveId))
       .withResultAsync { r =>
         val buffer = r.getMetadataBuffer
