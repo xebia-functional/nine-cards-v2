@@ -322,11 +322,18 @@ trait CollectionsPagerUiActionsImpl
 
   override def destroyAction: Ui[Any] = Ui(removeActionFragment)
 
+  override def reloadSharedCollectionId(sharedCollectionId: Option[String]): Ui[Any] = Ui {
+    for {
+      adapter <- getAdapter
+      currentPosition <- adapter.getCurrentFragmentPosition
+      _ = adapter.updateShareCollectionIdFromCollection(currentPosition, sharedCollectionId)
+      _ = invalidateOptionMenu()
+    } yield ()
+  }
+
   override def showPublishCollectionWizardDialog(collection: Collection): Ui[Any] =
     activityContextWrapper.getOriginal match {
-      case activity: AppCompatActivity => Ui {
-        showDialog(PublishCollectionFragment(collection))
-      }
+      case activity: AppCompatActivity => Ui(showDialog(PublishCollectionFragment(collection)))
       case _ => showContactUsError
     }
 

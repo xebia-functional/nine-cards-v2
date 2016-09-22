@@ -127,7 +127,6 @@ trait ApiServicesImplData {
     version2.Collection(
       name = Random.nextString(10),
       author = Random.nextString(10),
-      description = Some(Random.nextString(10)),
       icon = Random.nextString(10),
       category = "SOCIAL",
       community = Random.nextBoolean(),
@@ -156,8 +155,6 @@ trait ApiServicesImplData {
   val category = "COMMUNICATION"
 
   val name = "Name"
-
-  val description = "Description"
 
   val author = "Author"
 
@@ -233,9 +230,9 @@ trait ApiServicesImplData {
 
   val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(sharedCollectionId))
 
-  val createCollectionRequest = version2.CreateCollectionRequest(name, author, description, icon, category, community, packages)
+  val createCollectionRequest = version2.CreateCollectionRequest(name, author, icon, category, community, packages)
 
-  val updateCollectionRequest = version2.UpdateCollectionRequest(Some(CollectionUpdateInfo(name, Some(description))), Some(packages))
+  val updateCollectionRequest = version2.UpdateCollectionRequest(Some(CollectionUpdateInfo(name)), Some(packages))
 
   val updateCollectionResponse = version2.UpdateCollectionResponse(sharedCollectionId, packageStats)
 

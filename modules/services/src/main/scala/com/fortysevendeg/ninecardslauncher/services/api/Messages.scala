@@ -86,7 +86,6 @@ case class SharedCollection(
   id: String,
   sharedCollectionId: String,
   publishedOn: Long,
-  description: String,
   author: String,
   name: String,
   packages: Seq[String],
