@@ -56,7 +56,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     import sharedCollection._
     (for {
       userConfig <- apiUtils.getRequestConfig
-      result <- apiServices.createSharedCollection(name, description, author, packages, category.name, icon, community)(userConfig)
+      result <- apiServices.createSharedCollection(name, author, packages, category.name, icon, community)(userConfig)
     } yield result.sharedCollectionId).resolveLeft(mapLeft)
   }
 
@@ -64,7 +64,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     import sharedCollection._
     (for {
       userConfig <- apiUtils.getRequestConfig
-      result <- apiServices.updateSharedCollection(sharedCollectionId, Option(name), description, packages)(userConfig)
+      result <- apiServices.updateSharedCollection(sharedCollectionId, Option(name), packages)(userConfig)
     } yield result.sharedCollectionId).resolveLeft(mapLeft)
   }
 

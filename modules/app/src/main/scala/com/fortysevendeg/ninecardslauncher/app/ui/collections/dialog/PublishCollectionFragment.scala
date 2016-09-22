@@ -7,12 +7,13 @@ import android.support.v7.app.AlertDialog
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 import scala.language.postfixOps
 
-case class PublishCollectionFragment(collection: Collection)
+case class PublishCollectionFragment(collection: Collection)(implicit val collectionsPagerPresenter: CollectionsPagerPresenter)
   extends DialogFragment
   with PublishCollectionActionsImpl
   with TypedFindView

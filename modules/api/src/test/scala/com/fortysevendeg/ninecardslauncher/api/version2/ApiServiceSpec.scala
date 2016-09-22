@@ -2,16 +2,15 @@ package com.fortysevendeg.ninecardslauncher.api.version2
 
 import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import monix.eval.Task
 import org.specs2.mock.Mockito
-import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
 trait ApiServiceSpecification
-  extends Specification
+  extends TaskServiceSpecification
   with Mockito
   with ApiServiceData {
 
@@ -40,16 +39,13 @@ class ApiServiceSpec
       val response = ApiLoginResponse(apiKey, sessionToken)
 
       mockedServiceClient.post[ApiLoginRequest, ApiLoginResponse](any, any, any, any, any)(any) returns
-        TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(response)))))
+        serviceRight(ServiceClientResponse(statusCodeOk, Some(response)))
 
       val request = ApiLoginRequest(email, loginId, tokenId)
 
-      val serviceResponse = apiService.login(request).value.run
-
-      serviceResponse must beLike {
-        case Right(r) =>
-          r.statusCode shouldEqual statusCodeOk
-          r.data must beSome(response)
+      apiService.login(request) mustRight { r =>
+        r.statusCode shouldEqual statusCodeOk
+        r.data must beSome(response)
       }
 
       there was one(mockedServiceClient).post(
@@ -70,16 +66,13 @@ class ApiServiceSpec
       val response = InstallationResponse(androidId, deviceToken)
 
       mockedServiceClient.put[InstallationRequest, InstallationResponse](any, any, any, any, any)(any) returns
-        TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(response)))))
+        serviceRight(ServiceClientResponse(statusCodeOk, Some(response)))
 
       val request = InstallationRequest(deviceToken)
 
-      val serviceClientResponse = apiService.installations(request, serviceHeader).value.run
-
-      serviceClientResponse must beLike {
-        case Right(r) =>
-          r.statusCode shouldEqual statusCodeOk
-          r.data must beSome(response)
+      apiService.installations(request, serviceHeader) mustRight { r =>
+        r.statusCode shouldEqual statusCodeOk
+        r.data must beSome(response)
       }
 
       there was one(mockedServiceClient).put(
@@ -98,14 +91,11 @@ class ApiServiceSpec
         val response = CollectionsResponse(Seq(collection))
 
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(response)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(response)))
 
-        val serviceClientResponse = apiService.latestCollections(category, offset, limit, serviceMarketHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(response)
+        apiService.latestCollections(category, offset, limit, serviceMarketHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(response)
         }
 
         there was one(mockedServiceClient).get(
@@ -125,14 +115,11 @@ class ApiServiceSpec
         val response = CollectionsResponse(Seq(collection))
 
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(response)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(response)))
 
-        val serviceClientResponse = apiService.topCollections(category, offset, limit, serviceMarketHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(response)
+        apiService.topCollections(category, offset, limit, serviceMarketHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(response)
         }
 
         there was one(mockedServiceClient).get(
@@ -150,14 +137,11 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.post[CreateCollectionRequest, CreateCollectionResponse](any, any, any, any, any)(any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(createCollectionResponse)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(createCollectionResponse)))
 
-        val serviceClientResponse = apiService.createCollection(createCollectionRequest, serviceHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(createCollectionResponse)
+        apiService.createCollection(createCollectionRequest, serviceHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(createCollectionResponse)
         }
 
         there was one(mockedServiceClient).post(
@@ -176,14 +160,11 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.put[UpdateCollectionRequest, UpdateCollectionResponse](any, any, any, any, any)(any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(updateCollectionResponse)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(updateCollectionResponse)))
 
-        val serviceClientResponse = apiService.updateCollection(publicIdentifier, updateCollectionRequest, serviceHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(updateCollectionResponse)
+        apiService.updateCollection(publicIdentifier, updateCollectionRequest, serviceHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(updateCollectionResponse)
         }
 
         there was one(mockedServiceClient).put(
@@ -204,14 +185,11 @@ class ApiServiceSpec
         val response = collection
 
         mockedServiceClient.get[Collection](any, any, any, any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(response)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(response)))
 
-        val serviceClientResponse = apiService.getCollection(publicIdentifier, serviceMarketHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(response)
+        apiService.getCollection(publicIdentifier, serviceMarketHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(response)
         }
 
         there was one(mockedServiceClient).get(
@@ -231,14 +209,11 @@ class ApiServiceSpec
         val response = CollectionsResponse(Seq(collection))
 
         mockedServiceClient.get[CollectionsResponse](any, any, any, any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(response)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(response)))
 
-        val serviceClientResponse = apiService.getCollections(serviceMarketHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(response)
+        apiService.getCollections(serviceMarketHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(response)
         }
 
         there was one(mockedServiceClient).get(
@@ -256,14 +231,11 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.post[CategorizeRequest, CategorizeResponse](any, any, any, any, any)(any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(categorizeResponse)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(categorizeResponse)))
 
-        val serviceClientResponse = apiService.categorize(categorizeRequest, serviceMarketHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(categorizeResponse)
+        apiService.categorize(categorizeRequest, serviceMarketHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(categorizeResponse)
         }
 
         there was one(mockedServiceClient).post(
@@ -282,14 +254,11 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.post[CategorizeRequest, CategorizeDetailResponse](any, any, any, any, any)(any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(categorizeDetailResponse)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(categorizeDetailResponse)))
 
-        val serviceClientResponse = apiService.categorizeDetail(categorizeRequest, serviceMarketHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(categorizeDetailResponse)
+        apiService.categorizeDetail(categorizeRequest, serviceMarketHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(categorizeDetailResponse)
         }
 
         there was one(mockedServiceClient).post(
@@ -308,14 +277,11 @@ class ApiServiceSpec
       "return the status code and the response and call with the right category" in new ApiServiceScope {
 
         mockedServiceClient.post[RecommendationsRequest, RecommendationsResponse](any, any, any, any, any)(any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))
 
-        val serviceClientResponse = apiService.recommendations(category, recommendationsRequest, serviceMarketHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(recommendationsResponse)
+        apiService.recommendations(category, recommendationsRequest, serviceMarketHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(recommendationsResponse)
         }
 
         there was one(mockedServiceClient).post(
@@ -334,14 +300,11 @@ class ApiServiceSpec
       "return the status code and the response" in new ApiServiceScope {
 
         mockedServiceClient.post[RecommendationsByAppsRequest, RecommendationsByAppsResponse](any, any, any, any, any)(any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(recommendationsByAppsResponse)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(recommendationsByAppsResponse)))
 
-        val serviceClientResponse = apiService.recommendationsByApps(recommendationsByAppsRequest, serviceMarketHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(recommendationsByAppsResponse)
+        apiService.recommendationsByApps(recommendationsByAppsRequest, serviceMarketHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(recommendationsByAppsResponse)
         }
 
         there was one(mockedServiceClient).post(
@@ -362,14 +325,11 @@ class ApiServiceSpec
         val response = SubscriptionsResponse(subscriptions)
 
         mockedServiceClient.get[SubscriptionsResponse](any, any, any, any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, Some(response)))))
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(response)))
 
-        val serviceClientResponse = apiService.getSubscriptions(serviceHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beSome(response)
+        apiService.getSubscriptions(serviceHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(response)
         }
 
         there was one(mockedServiceClient).get(
@@ -386,14 +346,11 @@ class ApiServiceSpec
       "return the status code" in new ApiServiceScope {
 
         mockedServiceClient.emptyPut[Unit](any, any, any, any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, None))))
+          serviceRight(ServiceClientResponse(statusCodeOk, None))
 
-        val serviceClientResponse = apiService.subscribe(publicIdentifier, serviceHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beNone
+        apiService.subscribe(publicIdentifier, serviceHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beNone
         }
 
         there was one(mockedServiceClient).emptyPut(
@@ -411,14 +368,11 @@ class ApiServiceSpec
       "return the status code" in new ApiServiceScope {
 
         mockedServiceClient.delete[Unit](any, any, any, any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCodeOk, None))))
+          serviceRight(ServiceClientResponse(statusCodeOk, None))
 
-        val serviceClientResponse = apiService.unsubscribe(publicIdentifier, serviceHeader).value.run
-
-        serviceClientResponse must beLike {
-          case Right(r) =>
-            r.statusCode shouldEqual statusCodeOk
-            r.data must beNone
+        apiService.unsubscribe(publicIdentifier, serviceHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beNone
         }
 
         there was one(mockedServiceClient).delete(

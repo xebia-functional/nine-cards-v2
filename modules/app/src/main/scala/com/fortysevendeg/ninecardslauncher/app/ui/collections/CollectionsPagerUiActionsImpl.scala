@@ -12,9 +12,9 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
@@ -30,6 +30,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
@@ -40,7 +41,6 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -297,11 +297,18 @@ trait CollectionsPagerUiActionsImpl
 
   override def destroyAction: Ui[Any] = Ui(removeActionFragment)
 
+  override def reloadSharedCollectionId(sharedCollectionId: Option[String]): Ui[Any] = Ui {
+    for {
+      adapter <- getAdapter
+      currentPosition <- adapter.getCurrentFragmentPosition
+      _ = adapter.updateShareCollectionIdFromCollection(currentPosition, sharedCollectionId)
+      _ = invalidateOptionMenu()
+    } yield ()
+  }
+
   override def showPublishCollectionWizardDialog(collection: Collection): Ui[Any] =
     activityContextWrapper.getOriginal match {
-      case activity: AppCompatActivity => Ui {
-        showDialog(PublishCollectionFragment(collection))
-      }
+      case activity: AppCompatActivity => Ui(showDialog(PublishCollectionFragment(collection)))
       case _ => showContactUsError
     }
 
