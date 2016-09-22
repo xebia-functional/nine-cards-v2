@@ -62,11 +62,12 @@ trait AppsServicesImplSpecification
     packageManager.getInstallerPackageName(sampleApp2.packageName) returns androidFeedback
 
     val mockAppsServicesImpl = new AppsServicesImpl {
-      override def mainIntentByCategory(category: String): Intent = mockIntent
 
-      override def phoneIntent(): Intent = mockIntent
+//      override def mainIntentByCategory(category: String): Intent = mockIntent
 
-      override def cameraIntent(): Intent = mockIntent
+//      override def phoneIntent(): Intent = mockIntent
+
+//      override def cameraIntent(): Intent = mockIntent
     }
 
     val exception = AppsInstalledException("")
@@ -85,7 +86,7 @@ class AppsServicesImplSpec
       "returns the list of installed apps when they exist" in
         new AppsServicesImplScope {
 
-          packageManager.queryIntentActivities(mockIntent, 0) returns mockApps
+          packageManager.queryIntentActivities(any, any) returns mockApps
           val result = mockAppsServicesImpl.getInstalledApplications(contextSupport).value.run
           result shouldEqual Right(applicationList)
         }
@@ -93,7 +94,7 @@ class AppsServicesImplSpec
       "returns an AppsInstalledException when no apps exist" in
         new AppsServicesImplScope {
 
-          packageManager.queryIntentActivities(mockIntent, 0) throws exception
+          packageManager.queryIntentActivities(any, any) throws exception
           val result = mockAppsServicesImpl.getInstalledApplications(contextSupport).value.run
           result must beAnInstanceOf[Left[AppsInstalledException, _]]
         }
@@ -141,7 +142,7 @@ class AppsServicesImplSpec
       "returns the list of installed default apps when they exist" in
         new AppsServicesImplScope {
 
-          packageManager.queryIntentActivities(mockIntent, 0) returns mockApps
+          packageManager.queryIntentActivities(any, any) returns mockApps
           val result = mockAppsServicesImpl.getDefaultApps(contextSupport).value.run
           result shouldEqual Right(defaultApplicationList)
         }
@@ -149,7 +150,7 @@ class AppsServicesImplSpec
       "returns an AppsInstalledException when no default apps exist" in
         new AppsServicesImplScope {
 
-          packageManager.queryIntentActivities(mockIntent, 0) throws exception
+          packageManager.queryIntentActivities(any, any) throws exception
           val result = mockAppsServicesImpl.getDefaultApps(contextSupport).value.run
           result must beAnInstanceOf[Left[AppsInstalledException, _]]
         }
