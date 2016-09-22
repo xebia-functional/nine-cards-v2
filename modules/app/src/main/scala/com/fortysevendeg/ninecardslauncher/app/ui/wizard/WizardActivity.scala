@@ -20,9 +20,9 @@ class WizardActivity
   with TypedFindView
   with BroadcastDispatcher { self =>
 
-  implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
+  implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
-  lazy val actions = new WizardUiActions(WizardDOM(this))
+  lazy val actions = new WizardUiActions(WizardDOM(self))
 
   lazy val jobs = new WizardJobs(actions)
 
