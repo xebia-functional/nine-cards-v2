@@ -40,8 +40,6 @@
     <string name="termsAndConditions">Aceptar terminos y condiciones</string>
     <string name="welcome">Un Launcher creado para\nAndroid Power Users</string>
 
-    <string name="errorSelectUser">Debes seleccionar un usuario</string>
-
     <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
 
     <string name="addDeviceTitle">¡Hola, %1$s!</string>

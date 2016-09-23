@@ -14,7 +14,7 @@ import macroid.Contexts
 
 
 trait GoogleDriveApiClientService
-  extends GoogleDriveApiClientProvider {
+  extends GoogleDriveApiClientProvider { // TODO - Use the CloudStorageProcess.createCloudStorageClient in Jobs
 
   self: Service with Contexts[Service] =>
 
