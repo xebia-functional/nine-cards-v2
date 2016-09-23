@@ -1,8 +1,15 @@
 package com.fortysevendeg.ninecardslauncher.services.awareness.impl
 
+import android.location.{Address, Geocoder}
+import cats.data.EitherT
 import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.recognition.{RecognitionProcessException, Location}
 import com.fortysevendeg.ninecardslauncher.services.awareness._
+import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServiceException
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.awareness.snapshot.{DetectedActivityResult, HeadphoneStateResult, LocationResult, WeatherResult}
 import com.google.android.gms.awareness.state.{HeadphoneState, Weather}
@@ -11,7 +18,6 @@ import monix.eval.Task
 import monix.execution.Cancelable
 
 import scala.util.Success
-
 
 class GoogleAwarenessServicesImpl(client: GoogleApiClient)
   extends AwarenessServices {
@@ -62,7 +68,62 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
       }
     }
 
-  override def getLocation =
+  override def getLocation(implicit contextSupport: ContextSupport): TaskService[AwarenessLocation] = {
+
+    def loadAddress(locationState: LocationState) =
+      TaskService {
+        Task {
+          Either.catchNonFatal {
+            val address = new Geocoder(contextSupport.context)
+              .getFromLocation(locationState.latitude, locationState.longitude, 1)
+            Option(address) match {
+              case Some(list) if list.size() > 0 => toAwarenessLocation(list.get(0))
+              case None => throw new IllegalStateException("Geocoder doesn't return a valid address")
+            }
+          }.leftMap {
+            case e => AwarenessException(e.getMessage, Some(e))
+          }
+        }
+      }
+
+    for {
+      locationState <- getCurrentLocation
+      location <- loadAddress(locationState)
+    } yield location
+  }
+
+  override def getCountryLocation(implicit contextSupport: ContextSupport): TaskService[AwarenessLocation] = {
+
+    def loadCountryLocation(locationState: LocationState) =
+      TaskService {
+        Task {
+          Either.catchNonFatal {
+            val addressList = new Geocoder(contextSupport.context)
+              .getFromLocation(locationState.latitude, locationState.longitude, 1)
+            Option(addressList) match {
+              case Some(list) if list.size() > 0 => toAwarenessLocation(list.get(0))
+              case None => throw new IllegalStateException("Geocoder doesn't return a valid address")
+            }
+          }.leftMap {
+            case e => AwarenessException(e.getMessage, Some(e))
+          }
+        }
+      }
+
+    for {
+      locationState <- getCurrentLocation
+      location <- loadCountryLocation(locationState)
+    } yield location
+  }
+
+  private[this] def toAwarenessLocation(address: Address) =
+    AwarenessLocation(
+      latitude = address.getLatitude,
+      longitude = address.getLongitude,
+      countryCode = Option(address.getCountryCode),
+      countryName = Option(address.getCountryName))
+
+  private[this] def getCurrentLocation =
     TaskService {
       Task.async[AwarenessException Either LocationState] {(scheduler, callback)  =>
         Awareness.SnapshotApi.getLocation(client)
