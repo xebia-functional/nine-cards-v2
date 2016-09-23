@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.social
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 
 trait SocialProfileProcess {
@@ -23,5 +24,15 @@ trait SocialProfileProcess {
     * @return the profile name
     */
   def updateUserProfile(client: GoogleApiClient)(implicit context: ContextSupport): TaskService[Option[String]]
+
+}
+
+trait SocialProfileClientListener {
+
+  def onPlusConnectionSuspended(cause: Int): Unit
+
+  def onPlusConnected(): Unit
+
+  def onPlusConnectionFailed(connectionResult: ConnectionResult): Unit
 
 }

@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.plus.impl
 
-import android.os.Bundle
 import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
@@ -11,7 +10,6 @@ import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfil
 import com.fortysevendeg.ninecardslauncher.services.plus._
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.{GoogleSignInOptions, GoogleSignInStatusCodes}
-import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, ResultCallback}
 import com.google.android.gms.plus.People.LoadPeopleResult
 import com.google.android.gms.plus.Plus
@@ -43,7 +41,7 @@ class GooglePlusServicesImpl
 
   override def createGooglePlusClient(clientId: String, account: String)(implicit contextSupport: ContextSupport) =
     TaskService {
-      Task.async[NineCardException Either GoogleApiClient] { (scheduler, callback) =>
+      Task {
         Either.catchNonFatal {
           val gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestScopes(Plus.SCOPE_PLUS_PROFILE)
@@ -51,27 +49,13 @@ class GooglePlusServicesImpl
             .setAccountName(account)
             .build()
 
-          val googleApiClient: GoogleApiClient = new GoogleApiClient.Builder(contextSupport.context)
+          new GoogleApiClient.Builder(contextSupport.context)
             .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
             .addApi(Plus.API)
-            .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks {
-              override def onConnectionSuspended(cause: Int): Unit =
-                callback(Success(Left(GooglePlusConnectionSuspendedServicesException(
-                  message = "Connection suspended",
-                  googleCauseCode = cause))))
-
-              override def onConnected(bundle: Bundle): Unit =
-                callback(Success(Right(googleApiClient)))
-            })
-            .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener {
-              override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
-                callback(Success(Left(GooglePlusConnectionFailedServicesException("Connection failed", Option(connectionResult)))))
-            })
             .build()
         } leftMap {
           e: Throwable => GooglePlusServicesException(e.getMessage, Some(e))
         }
-        Cancelable.empty
       }
 
     }
