@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.support.v4.content.ContextCompat
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.fortysevendeg.ninecardslauncher.api._
+import com.fortysevendeg.ninecardslauncher.api.version2.ApiService
 import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
@@ -135,6 +136,14 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     apiService = new version2.ApiService(serviceClient),
     apiServiceV1 = new version1.ApiService(serviceClientV1))
 
+  private[this] lazy val awarenessServices = {
+    val client = new GoogleApiClient.Builder(contextSupport.context)
+      .addApi(Awareness.API)
+      .build()
+    client.connect()
+    new GoogleAwarenessServicesImpl(client)
+  }
+
   private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
     contextSupport.getContentResolver)
 
@@ -209,7 +218,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     persistenceServices = persistenceServices,
     contactsServices = contactsServices,
     appsServices = appsServices,
-    apiServices = apiServices)
+    apiServices = apiServices,
+    awarenessServices = awarenessServices)
 
   private[this] lazy val namesMoments: Map[NineCardsMoment, String] = (moments map {
     moment =>
