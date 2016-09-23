@@ -52,7 +52,7 @@ trait CloudStorageProcessImplSpecification
 
   }
 
-  trait MyListener extends Context with CloudStorageClientListener
+  abstract class MyListener extends Context with CloudStorageClientListener
 
   class JsonMatcher(json: String) extends TypeSafeMatcher[String] {
 
@@ -85,7 +85,7 @@ class CloudStorageProcessImplSpec
 
         mockContextSupport.getOriginal returns new WeakReference(mockContext)
         driveServices.createDriveClient(any)(any) returns TaskService(Task(Either.left(driveServicesException)))
-        cloudStorageProcess.getRawCloudStorageDevice(mockApiClient, cloudId).mustLeft[DriveServicesException]
+        cloudStorageProcess.createCloudStorageClient(account).mustLeft[CloudStorageProcessException]
       }
 
     "return a CloudStorageProcessException when the context doesn't exists" in
@@ -93,7 +93,7 @@ class CloudStorageProcessImplSpec
 
         mockContextSupport.getOriginal returns new WeakReference(null)
         driveServices.createDriveClient(any)(any) returns TaskService(Task(Either.left(driveServicesException)))
-        cloudStorageProcess.getRawCloudStorageDevice(mockApiClient, cloudId).mustLeft[DriveServicesException]
+        cloudStorageProcess.createCloudStorageClient(account).mustLeft[CloudStorageProcessException]
       }
 
     "return a CloudStorageProcessException when the service returns an exception" in
@@ -101,7 +101,7 @@ class CloudStorageProcessImplSpec
 
         mockContextSupport.getOriginal returns new WeakReference(mockContextListener)
         driveServices.createDriveClient(any)(any) returns TaskService(Task(Either.left(driveServicesException)))
-        cloudStorageProcess.getRawCloudStorageDevice(mockApiClient, cloudId).mustLeft[DriveServicesException]
+        cloudStorageProcess.createCloudStorageClient(account).mustLeft[CloudStorageProcessException]
       }
 
   }
