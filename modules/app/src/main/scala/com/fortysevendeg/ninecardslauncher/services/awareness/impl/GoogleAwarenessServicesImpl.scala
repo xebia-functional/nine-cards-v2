@@ -13,7 +13,7 @@ import monix.execution.Cancelable
 import scala.util.Success
 
 
-class AwarenessServicesImpl(client: GoogleApiClient)
+class GoogleAwarenessServicesImpl(client: GoogleApiClient)
   extends AwarenessServices {
 
   override def getTypeActivity =

@@ -45,7 +45,7 @@ import com.fortysevendeg.ninecardslauncher.services.accounts.impl.AccountsServic
 import com.fortysevendeg.ninecardslauncher.services.analytics.impl.AnalyticsTrackServices
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.awareness.impl.AwarenessServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.awareness.impl.GoogleAwarenessServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.calls.impl.CallsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.contacts.impl.ContactsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl
@@ -258,7 +258,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
       .addApi(Awareness.API)
       .build()
     client.connect()
-    new RecognitionProcessImpl(new AwarenessServicesImpl(client))
+    new RecognitionProcessImpl(new GoogleAwarenessServicesImpl(client))
   }
 
   override def trackEventProcess: TrackEventProcess = {
