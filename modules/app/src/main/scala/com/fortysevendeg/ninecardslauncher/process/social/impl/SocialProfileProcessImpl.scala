@@ -1,30 +1,23 @@
 package com.fortysevendeg.ninecardslauncher.process.social.impl
 
-import android.os.Bundle
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.commons.ConnectionSuspendedCause
 import com.fortysevendeg.ninecardslauncher.process.social._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
-import com.fortysevendeg.ninecardslauncher.services.plus.GooglePlusServices
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
-import monix.eval.Task
-import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher2.R
-import com.google.android.gms.auth.api.Auth
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.ConnectionResult
+import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusConnectionFailedServicesException, GooglePlusConnectionSuspendedServicesException, GooglePlusServices, GooglePlusServicesException}
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.plus.Plus
+import monix.eval.Task
 
 class SocialProfileProcessImpl(
   googlePlusServices: GooglePlusServices,
   persistenceServices: PersistenceServices)
   extends SocialProfileProcess
-  with ImplicitsSocialProfileProcessExceptions
   with Conversions {
 
   val me = "me"
@@ -32,37 +25,14 @@ class SocialProfileProcessImpl(
   private[this] val noActiveUserErrorMessage = "No active user"
 
   override def createSocialProfileClient(clientId: String, account: String)(implicit contextSupport: ContextSupport) =
-    TaskService {
-      contextSupport.getOriginal.get match {
-        case Some(activity: SocialProfileClientListener) =>
-          CatchAll[SocialProfileProcessException] {
-            val gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-              .requestScopes(Plus.SCOPE_PLUS_PROFILE)
-              .requestIdToken(clientId)
-              .setAccountName(account)
-              .build()
-
-            new GoogleApiClient.Builder(contextSupport.context)
-              .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-              .addApi(Plus.API)
-              .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks {
-                override def onConnectionSuspended(cause: Int): Unit =
-                  activity.onPlusConnectionSuspended(cause)
-
-                override def onConnected(bundle: Bundle): Unit =
-                  activity.onPlusConnected()
-              })
-              .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener {
-                override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
-                  activity.onPlusConnectionFailed(connectionResult)
-              })
-              .build()
-          }
-        case Some(_) =>
-          Task(Left(SocialProfileProcessException("The implicit activity is not a SocialProfileClientListener")))
-        case None =>
-          Task(Left(SocialProfileProcessException("The implicit activity is null")))
-      }
+    googlePlusServices.createGooglePlusClient(clientId, account).leftMap {
+      case gPlusException: GooglePlusServicesException =>
+        SocialProfileProcessException(gPlusException.getMessage, Option(gPlusException), gPlusException.recoverable)
+      case gPlusException: GooglePlusConnectionSuspendedServicesException =>
+        SocialProfileConnectionSuspendedServicesException(gPlusException.getMessage, ConnectionSuspendedCause(gPlusException.googleCauseCode), Option(gPlusException))
+      case gPlusException: GooglePlusConnectionFailedServicesException =>
+        SocialProfileConnectionFailedServicesException(gPlusException.getMessage, gPlusException.connectionResult, Option(gPlusException.copy(connectionResult = None)))
+      case t => SocialProfileProcessException(t.getMessage, Option(t))
     }
 
   override def updateUserProfile(client: GoogleApiClient)(implicit context: ContextSupport) = {
@@ -86,7 +56,11 @@ class SocialProfileProcessImpl(
     (for {
       googlePlusProfile <- googlePlusServices.loadUserProfile(client)
       _ <- findAndUpdateUserProfile(googlePlusProfile)
-    } yield googlePlusProfile.name).resolve[SocialProfileProcessException]
+    } yield googlePlusProfile.name).leftMap {
+      case gPlusException: GooglePlusServicesException =>
+        SocialProfileProcessException(gPlusException.getMessage, Option(gPlusException), gPlusException.recoverable)
+      case t => SocialProfileProcessException(t.getMessage, Option(t))
+    }
   }
 
 }

@@ -2,32 +2,28 @@ package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
 import java.util.Date
 
-import android.os.{Build, Bundle}
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
+import android.os.Build
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageImplicits._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.cloud._
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
-import com.fortysevendeg.ninecardslauncher.services.drive.DriveServices
+import com.fortysevendeg.ninecardslauncher.services.drive.{Conversions => _, _}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
 import monix.eval.Task
 import play.api.libs.json.Json
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.google.android.gms.common.ConnectionResult
+import com.fortysevendeg.ninecardslauncher.process.commons.ConnectionSuspendedCause
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.drive.Drive
 
 import scala.util.{Failure, Success, Try}
 
 class CloudStorageProcessImpl(
   driveServices: DriveServices,
   persistenceServices: PersistenceServices)
-  extends CloudStorageProcess
-  with ImplicitsCloudStorageProcessExceptions {
+  extends CloudStorageProcess {
 
   import Conversions._
 
@@ -40,33 +36,7 @@ class CloudStorageProcessImpl(
   private[this] val userNotFoundErrorMessage = (id: Int) => s"User with id $id not found in the database"
 
   override def createCloudStorageClient(account: String)(implicit contextSupport: ContextSupport) =
-    TaskService {
-      contextSupport.getOriginal.get match {
-        case Some(activity: CloudStorageClientListener) =>
-          CatchAll[CloudStorageProcessException] {
-            new GoogleApiClient.Builder(contextSupport.context)
-              .setAccountName(account)
-              .addApi(Drive.API)
-              .addScope(Drive.SCOPE_APPFOLDER)
-              .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks {
-                override def onConnectionSuspended(cause: Int): Unit =
-                  activity.onDriveConnectionSuspended(cause)
-
-                override def onConnected(bundle: Bundle): Unit =
-                  activity.onDriveConnected()
-              })
-              .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener {
-                override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
-                  activity.onDriveConnectionFailed(connectionResult)
-              })
-              .build()
-          }
-        case Some(_) =>
-          Task(Left(CloudStorageProcessException("The implicit activity is not a CloudStorageClientListener")))
-        case None =>
-          Task(Left(CloudStorageProcessException("The implicit activity is null")))
-      }
-    }
+    driveServices.createDriveClient(account).leftMap(mapException)
 
   override def prepareForActualDevice[T <: CloudStorageResource](
     client: GoogleApiClient,
@@ -89,15 +59,15 @@ class CloudStorageProcessImpl(
     (for {
       androidId <- persistenceServices.getAndroidId
       fixedDevices = fixAndSort(androidId, devices)
-    } yield fixedDevices).resolve[CloudStorageProcessException]
+    } yield fixedDevices).leftMap(mapException)
   }
 
-  override def getCloudStorageDevices(client: GoogleApiClient)(implicit context: ContextSupport) =
+  override def getCloudStorageDevices(client: GoogleApiClient)(implicit context: ContextSupport): TaskService[Seq[CloudStorageDeviceSummary]] =
     context.getActiveUserId map { id =>
       (for {
         driveServicesSeq <- driveServices.listFiles(client, Option(userDeviceType))
         maybeCloudId <- findUserDeviceCloudId(id)
-      } yield driveServicesSeq map (file => toCloudStorageDeviceSummary(file, maybeCloudId))).resolve[CloudStorageProcessException]
+      } yield driveServicesSeq map (file => toCloudStorageDeviceSummary(file, maybeCloudId))).leftMap(mapException)
     } getOrElse {
       TaskService(Task(Either.left(CloudStorageProcessException(noActiveUserErrorMessage))))
     }
@@ -122,7 +92,7 @@ class CloudStorageProcessImpl(
       cloudId = cloudId,
       createdDate = driveFile.summary.createdDate,
       modifiedDate = driveFile.summary.modifiedDate,
-      data = device)).resolve[CloudStorageProcessException]
+      data = device)).leftMap(mapException)
   }
 
   override def getRawCloudStorageDevice(
@@ -137,7 +107,7 @@ class CloudStorageProcessImpl(
         createdDate = driveFile.summary.createdDate,
         modifiedDate = driveFile.summary.modifiedDate,
         json = driveFile.content)
-    }.resolve[CloudStorageProcessException]
+    }.leftMap(mapException)
 
   override def createOrUpdateCloudStorageDevice(
     client: GoogleApiClient,
@@ -175,7 +145,7 @@ class CloudStorageProcessImpl(
           client = client,
           maybeCloudId = if (exists) maybeCloudId else None,
           cloudStorageDeviceData = cloudStorageDeviceData)
-      } yield device).resolve[CloudStorageProcessException]
+      } yield device).leftMap(mapException)
     } getOrElse {
       TaskService(Task(Either.left(CloudStorageProcessException(noActiveUserErrorMessage))))
     }
@@ -184,7 +154,7 @@ class CloudStorageProcessImpl(
   override def deleteCloudStorageDevice(
     client: GoogleApiClient,
     cloudId: String) =
-    driveServices.deleteFile(client, cloudId).resolve[CloudStorageProcessException]
+    driveServices.deleteFile(client, cloudId).leftMap(mapException)
 
   private[this] def createOrUpdate(
     client: GoogleApiClient,
@@ -219,7 +189,7 @@ class CloudStorageProcessImpl(
         createdDate = summary.createdDate,
         modifiedDate = summary.modifiedDate,
         data = cloudStorageDeviceData)
-    }).resolve[CloudStorageProcessException]
+    }).leftMap(mapException)
   }
 
   private[this] def findUserDeviceCloudId(userId: Int): TaskService[Option[String]] = TaskService {
@@ -229,5 +199,27 @@ class CloudStorageProcessImpl(
       case Left(e) => Either.left(CloudStorageProcessException(e.getMessage, Some(e)))
     }
   }
+  
+  private[this] def mapException: (Throwable) => NineCardException = {
+    case e: DriveServicesException =>
+      CloudStorageProcessException(
+        message = e.message,
+        cause = Option(e),
+        driveError = e.googleDriveError flatMap driveErrorToCloudStorageError)
+    case e: DriveConnectionSuspendedServicesException =>
+      CloudStorageConnectionSuspendedServicesException(e.getMessage, ConnectionSuspendedCause(e.googleCauseCode), Option(e))
+    case e: DriveConnectionFailedServicesException =>
+      CloudStorageConnectionFailedServicesException(e.getMessage, e.connectionResult, Option(e.copy(connectionResult = None)))
+    case e: CloudStorageProcessException => e
+    case t => CloudStorageProcessException(t.getMessage, Option(t))
+  }
+
+  private[this] def driveErrorToCloudStorageError(driveError: GoogleDriveError): Option[CloudStorageError] =
+    driveError match {
+      case DriveSigInRequired => Option(SigInRequired)
+      case DriveRateLimitExceeded => Option(RateLimitExceeded)
+      case DriveResourceNotAvailable => Option(ResourceNotAvailable)
+      case _ => None
+    }
 
 }
