@@ -41,7 +41,7 @@ trait SocialProfileProcessImplSpecification
 
   }
 
-  trait MyListener extends Context with SocialProfileClientListener
+  abstract class MyListener extends Context with SocialProfileClientListener
 
 }
 
