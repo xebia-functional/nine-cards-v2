@@ -3,12 +3,14 @@ package com.fortysevendeg.ninecardslauncher.process.cloud
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
+import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 
 trait CloudStorageProcess {
 
   /**
     * Creates the cloud storage API client
+    * The ContextSupport should have an original Context of type CloudStorageClientListener
     * @param account the email for the client
     * @return the GoogleAPIClient
     */
@@ -100,5 +102,15 @@ trait CloudStorageProcess {
 object CloudStorageProcess {
 
   val actualDocumentVersion = 1
+
+}
+
+trait CloudStorageClientListener {
+
+  def onDriveConnectionSuspended(cause: Int): Unit
+
+  def onDriveConnected(): Unit
+
+  def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit
 
 }
