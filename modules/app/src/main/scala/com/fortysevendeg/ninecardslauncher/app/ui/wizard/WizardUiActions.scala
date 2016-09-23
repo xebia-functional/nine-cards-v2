@@ -4,6 +4,7 @@ import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget._
+import cats.implicits._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -129,10 +130,7 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
   def showErrorConnectingGoogle(): TaskService[Unit] = backToUser(R.string.errorConnectingGoogle)
 
   private[this] def backToUser(errorMessage: Int): TaskService[Unit] =
-    for {
-      _ <- uiShortToast2(errorMessage).toService
-      _ <- goToUser()
-    } yield ()
+    uiShortToast2(errorMessage).toService *> goToUser()
 
   def showErrorAcceptTerms(): TaskService[Unit] =
     (dom.rootLayout <~ vSnackbarShort(R.string.messageAcceptTerms)).toService

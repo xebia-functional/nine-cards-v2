@@ -283,12 +283,6 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
   private[this] def onConnectionFailed(connectionResult: ConnectionResult): TaskService[Unit] = {
 
-    def withActivity(f: (AppCompatActivity => TaskService[Unit])) =
-      contextWrapper.original.get match {
-        case Some(activity: AppCompatActivity) => f(activity)
-        case _ => TaskService(Task(Right((): Unit)))
-      }
-
     def showErrorDialog(): TaskService[Unit] = withActivity { activity =>
       TaskService {
         CatchAll[UiException] {
