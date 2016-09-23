@@ -14,6 +14,10 @@ trait SocialProfileProcessImplData {
 
   val coverUrl = "coverUrl"
 
+  val account = "example@domain.com"
+
+  val clientId = "fake-client-id"
+
   val googlePlusProfile = GooglePlusProfile(
     name = Some(name),
     avatarUrl = Some(avatarUrl),
@@ -21,7 +25,7 @@ trait SocialProfileProcessImplData {
 
   val user = User(
     activeUserId,
-    email = Some("email"),
+    email = Some(account),
     apiKey = Some("api-key"),
     sessionToken = Some("session-token"),
     deviceToken = Some("device-token"),
