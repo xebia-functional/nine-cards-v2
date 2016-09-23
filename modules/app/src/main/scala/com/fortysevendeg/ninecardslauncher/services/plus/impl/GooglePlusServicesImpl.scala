@@ -1,12 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.services.plus.impl
 
+import android.os.Bundle
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
-import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServices, GooglePlusServicesException, ImplicitsGooglePlusProcessExceptions}
-import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
+import com.fortysevendeg.ninecardslauncher.services.plus._
+import com.google.android.gms.auth.api.Auth
+import com.google.android.gms.auth.api.signin.{GoogleSignInOptions, GoogleSignInStatusCodes}
+import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, ResultCallback}
 import com.google.android.gms.plus.People.LoadPeopleResult
 import com.google.android.gms.plus.Plus
@@ -18,7 +23,7 @@ import scala.util.{Failure, Success, Try}
 
 class GooglePlusServicesImpl
   extends GooglePlusServices
-    with ImplicitsGooglePlusProcessExceptions {
+  with ImplicitsGooglePlusProcessExceptions {
 
   val me = "me"
 
@@ -35,6 +40,41 @@ class GooglePlusServicesImpl
   val validCodes: Seq[Int] = Seq(
     CommonStatusCodes.SUCCESS,
     CommonStatusCodes.SUCCESS_CACHE)
+
+  override def createGooglePlusClient(clientId: String, account: String)(implicit contextSupport: ContextSupport) =
+    TaskService {
+      Task.async[NineCardException Either GoogleApiClient] { (scheduler, callback) =>
+        Either.catchNonFatal {
+          val gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestScopes(Plus.SCOPE_PLUS_PROFILE)
+            .requestIdToken(clientId)
+            .setAccountName(account)
+            .build()
+
+          val googleApiClient = new GoogleApiClient.Builder(contextSupport.context)
+            .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+            .addApi(Plus.API)
+            .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks {
+              override def onConnectionSuspended(cause: Int): Unit =
+                callback(Success(Left(GooglePlusConnectionSuspendedServicesException(
+                  message = "Connection suspended",
+                  googleCauseCode = cause))))
+
+              override def onConnected(bundle: Bundle): Unit =
+                callback(Success(Right(googleApiClient)))
+            })
+            .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener {
+              override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
+                callback(Success(Left(GooglePlusConnectionFailedServicesException("Connection failed", Option(connectionResult)))))
+            })
+            .build()
+        } leftMap {
+          e: Throwable => GooglePlusServicesException(e.getMessage, Some(e))
+        }
+        Cancelable.empty
+      }
+
+    }
 
   override def loadUserProfile(client: GoogleApiClient) = {
 

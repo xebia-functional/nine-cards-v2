@@ -2,11 +2,19 @@ package com.fortysevendeg.ninecardslauncher.services.drive
 
 import java.io.InputStream
 
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import com.google.android.gms.common.api.GoogleApiClient
 
 trait DriveServices {
+
+  /**
+    * Creates the Drive API client
+    * @param account the email for the client
+    * @return the GoogleAPIClient
+    */
+  def createDriveClient(account: String)(implicit contextSupport: ContextSupport): TaskService[GoogleApiClient]
 
   /**
     * Return a sequence of files in the user app space filtered by fileType key

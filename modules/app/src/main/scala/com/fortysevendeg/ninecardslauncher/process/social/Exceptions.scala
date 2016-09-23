@@ -1,7 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.social
 
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
-import com.fortysevendeg.ninecardslauncher.services.plus.GooglePlusServicesException
+import com.fortysevendeg.ninecardslauncher.process.commons.ConnectionSuspendedCause
+import com.google.android.gms.common.ConnectionResult
 
 
 case class SocialProfileProcessException(message: String, cause: Option[Throwable] = None, recoverable: Boolean = false)
@@ -12,14 +13,18 @@ case class SocialProfileProcessException(message: String, cause: Option[Throwabl
 
 }
 
-trait ImplicitsSocialProfileProcessExceptions {
+case class SocialProfileConnectionSuspendedServicesException(message: String, googleCauseCode: ConnectionSuspendedCause, cause: Option[Throwable] = None)
+  extends RuntimeException(message)
+    with NineCardException{
 
-  implicit def googlePlusExceptionConverter = (t: Throwable) => {
-    t match {
-      case gPlusException: GooglePlusServicesException =>
-        SocialProfileProcessException(gPlusException.getMessage, Option(gPlusException), gPlusException.recoverable)
-      case _ => SocialProfileProcessException(t.getMessage, Option(t))
-    }
-  }
+  cause foreach initCause
+
+}
+
+case class SocialProfileConnectionFailedServicesException(message: String, connectionResult: Option[ConnectionResult], cause: Option[Throwable] = None)
+  extends RuntimeException(message)
+    with NineCardException{
+
+  cause foreach initCause
 
 }
