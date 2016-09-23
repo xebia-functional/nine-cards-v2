@@ -51,7 +51,7 @@ class GooglePlusServicesImpl
             .setAccountName(account)
             .build()
 
-          val googleApiClient = new GoogleApiClient.Builder(contextSupport.context)
+          val googleApiClient: GoogleApiClient = new GoogleApiClient.Builder(contextSupport.context)
             .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
             .addApi(Plus.API)
             .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks {
