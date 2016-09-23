@@ -457,7 +457,7 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns baseUrl
-        apiService.recommendations(any, any, any)(any, any) returns
+        apiService.recommendations(any, any, any, any)(any, any) returns
           TaskService {
             Task(Either.right(ServiceClientResponse[version2.RecommendationsResponse](statusCode, Some(recommendationResponse))))
           }
@@ -469,7 +469,7 @@ class ApiServicesImplSpec
             response.seq.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
         }
 
-        there was one(apiService).recommendations(===(category), ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
+        there was one(apiService).recommendations(===(category), any, ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
       }
 
     "return an ApiServiceConfigurationException when the base url is empty" in
@@ -484,7 +484,7 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns baseUrl
-        apiService.recommendations(any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+        apiService.recommendations(any, any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceException](apiServices.getRecommendedApps(category, Seq.empty, limit))
       }
@@ -681,7 +681,7 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
           }
 
-        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
+        val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
         result must beLike {
           case Right(response) =>
             response.statusCode shouldEqual statusCode
@@ -696,7 +696,7 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns ""
 
-        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
+        val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
         result must beAnInstanceOf[Left[ApiServiceConfigurationException, _]]
       }
 
@@ -707,7 +707,7 @@ class ApiServicesImplSpec
         apiService.createCollection(any, any)(any, any) returns
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
-        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
+        val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
         result must beAnInstanceOf[Left[ApiServiceException,  _]]
       }
 
@@ -717,7 +717,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.createCollection(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.createSharedCollection(name, description, author, packages, category, icon, community).value.run
+        val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
         result must beAnInstanceOf[Left[ApiServiceException,  _]]
       }
 
@@ -732,7 +732,7 @@ class ApiServicesImplSpec
         apiService.updateCollection(any, any, any)(any, any) returns
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(updateCollectionResponse)))))
 
-        val result = apiServices.updateSharedCollection(sharedCollectionId, Some(name), Some(description), packages).value.run
+        val result = apiServices.updateSharedCollection(sharedCollectionId, Some(name), packages).value.run
         result must beLike {
           case Right(response) =>
             response.statusCode shouldEqual statusCode
@@ -749,7 +749,7 @@ class ApiServicesImplSpec
         apiService.updateCollection(any, any, any)(any, any) returns
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(updateCollectionResponse)))))
 
-        val result = apiServices.updateSharedCollection(sharedCollectionId, None, Some(description), packages).value.run
+        val result = apiServices.updateSharedCollection(sharedCollectionId, None, packages).value.run
         result must beLike {
           case Right(response) =>
             response.statusCode shouldEqual statusCode
@@ -765,7 +765,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns ""
 
         mustLeft[ApiServiceConfigurationException] {
-          apiServices.updateSharedCollection(sharedCollectionId, Some(name), Some(description), packages)
+          apiServices.updateSharedCollection(sharedCollectionId, Some(name), packages)
         }
       }
 
@@ -777,7 +777,7 @@ class ApiServicesImplSpec
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
         mustLeft[ApiServiceException] {
-          apiServices.updateSharedCollection(sharedCollectionId, Some(name), Some(description), packages)
+          apiServices.updateSharedCollection(sharedCollectionId, Some(name), packages)
         }
       }
 
@@ -788,7 +788,7 @@ class ApiServicesImplSpec
         apiService.updateCollection(any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceException] {
-          apiServices.updateSharedCollection(sharedCollectionId, Some(name), Some(description), packages)
+          apiServices.updateSharedCollection(sharedCollectionId, Some(name), packages)
         }
       }
 

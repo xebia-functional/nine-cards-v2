@@ -27,7 +27,6 @@ trait SharedCollectionsProcessImplData {
       id = Random.nextString(10),
       sharedCollectionId = Random.nextString(10),
       publishedOn = Random.nextLong(),
-      description = Random.nextString(10),
       icon = Random.nextString(10),
       author = Random.nextString(10),
       name = Random.nextString(10),
@@ -51,7 +50,6 @@ trait SharedCollectionsProcessImplData {
 
   def generateCreateSharedCollection =
     CreateSharedCollection(
-      description = Random.nextString(10),
       author = Random.nextString(10),
       name = Random.nextString(10),
       packages = Seq.empty,
@@ -74,7 +72,6 @@ trait SharedCollectionsProcessImplData {
   def generateUpdateSharedCollection =
     UpdateSharedCollection(
       sharedCollectionId,
-      description = Some(Random.nextString(10)),
       name = Random.nextString(10),
       packages = Seq.empty)
 
@@ -96,7 +93,6 @@ trait SharedCollectionsProcessImplData {
       id = i.toString,
       sharedCollectionId = generateSharedCollectionId(),
       publishedOn = 0l,
-      description = Random.nextString(10),
       author = Random.nextString(10),
       name = Random.nextString(10),
       packages = Seq.empty,

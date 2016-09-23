@@ -139,12 +139,11 @@ trait Conversions {
   def toRecommendationApp(app: version2.RecommendationApp): RecommendationApp =
     RecommendationApp(
       packageName = app.packageName,
-      name = app.name,
+      name = app.title,
       downloads = app.downloads,
       icon = app.icon,
       stars = app.stars,
       free = app.free,
-      description = app.description,
       screenshots = app.screenshots)
 
   def toSharedCollectionResponseSeq(collections: Seq[version2.Collection]): Seq[SharedCollection] =
@@ -170,7 +169,6 @@ trait Conversions {
       id = collection.publicIdentifier,
       sharedCollectionId = collection.publicIdentifier,
       publishedOn = formatPublishedDate(collection.publishedOn),
-      description = collection.description getOrElse "",
       author = collection.author,
       name = collection.name,
       packages = collection.packages,

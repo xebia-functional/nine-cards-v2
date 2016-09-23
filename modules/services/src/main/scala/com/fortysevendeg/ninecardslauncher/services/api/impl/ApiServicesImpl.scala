@@ -124,9 +124,9 @@ class ApiServicesImpl(
     for {
       _ <- validateConfig
       response <- apiService
-        .recommendations(category, RecommendationsRequest(None, excludePackages, limit), requestConfig.toGooglePlayHeader)
+        .recommendations(category, None, RecommendationsRequest(excludePackages, limit), requestConfig.toGooglePlayHeader)
         .readOption(categoryNotFoundMessage)
-    }  yield  RecommendationResponse(response.statusCode, toRecommendationAppSeq(response.data.apps))
+    }  yield  RecommendationResponse(response.statusCode, toRecommendationAppSeq(response.data.items))
 
   override def getRecommendedAppsByPackages(
     packages: Seq[String],
@@ -135,7 +135,7 @@ class ApiServicesImpl(
     for {
       _ <- validateConfig
       response <- apiService
-        .recommendationsByApps(RecommendationsByAppsRequest(packages, None, excludePackages, limit), requestConfig.toGooglePlayHeader)
+        .recommendationsByApps(RecommendationsByAppsRequest(packages, excludePackages, limit), requestConfig.toGooglePlayHeader)
         .resolve[ApiServiceException]
       apps = response.data.map(_.apps) getOrElse Seq.empty
     } yield RecommendationResponse(response.statusCode, toRecommendationAppSeq(apps))
@@ -182,7 +182,6 @@ class ApiServicesImpl(
 
   override def createSharedCollection(
     name: String,
-    description: String,
     author: String,
     packages: Seq[String],
     category: String,
@@ -192,7 +191,6 @@ class ApiServicesImpl(
     val request = version2.CreateCollectionRequest(
       name = name,
       author = author,
-      description = description,
       icon = icon,
       category = category,
       community = community,
@@ -209,10 +207,9 @@ class ApiServicesImpl(
   override def updateSharedCollection(
     sharedCollectionId: String,
     maybeName: Option[String],
-    maybeDescription: Option[String],
     packages: Seq[String])(implicit requestConfig: RequestConfig) = {
 
-    def toUpdateInfo: Option[CollectionUpdateInfo] = maybeName map (name => CollectionUpdateInfo(name, maybeDescription))
+    def toUpdateInfo: Option[CollectionUpdateInfo] = maybeName map (name => CollectionUpdateInfo(name))
 
     val request = version2.UpdateCollectionRequest(collectionInfo = toUpdateInfo, packages = Some(packages))
 

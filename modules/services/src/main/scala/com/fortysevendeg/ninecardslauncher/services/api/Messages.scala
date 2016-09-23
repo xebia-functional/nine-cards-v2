@@ -71,7 +71,6 @@ case class RecommendationApp(
   icon: String,
   stars: Double,
   free: Boolean,
-  description: String,
   screenshots: Seq[String])
 
 case class SharedCollectionResponseList(
@@ -86,7 +85,6 @@ case class SharedCollection(
   id: String,
   sharedCollectionId: String,
   publishedOn: Long,
-  description: String,
   author: String,
   name: String,
   packages: Seq[String],
