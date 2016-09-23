@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, Co
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NoInstalledAppCardType
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}
+import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -29,6 +29,8 @@ trait CollectionProcessImplSpecification
   val persistenceServiceException = PersistenceServiceException("")
 
   val appsInstalledException = AppsInstalledException("")
+
+  val apiServiceException = ApiServiceException("")
 
   trait CollectionProcessScope
     extends Scope
@@ -581,6 +583,37 @@ class CollectionProcessImplSpec
         there was one(mockPersistenceServices).addCards(Seq(AddCardWithCollectionIdRequest(collectionId, addCardRequestSeq)))
       }
 
+  }
+
+  "rankApps" should {
+
+    "returns a the ordered packages for a valid request" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(seqServicesApp)))
+        mockApiServices.rankApps(any, any)(any) returns TaskService(Task(Either.right(rankAppsResponseList)))
+
+        val result = collectionProcess.rankApps()(contextSupport).value.run
+        result shouldEqual Right(packagesByCategory)
+      }
+
+    "returns a CollectionException if the service throws a exception finding the collection by Id" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        val result = collectionProcess.rankApps()(contextSupport).value.run
+        result must beAnInstanceOf[Left[CollectionException, _]]
+      }
+
+    "returns a CollectionException if the service throws a exception updating the collection" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(seqServicesApp)))
+        mockApiServices.rankApps(any, any)(any) returns TaskService(Task(Either.left(apiServiceException)))
+
+        val result = collectionProcess.rankApps()(contextSupport).value.run
+        result must beAnInstanceOf[Left[CollectionException, _]]
+      }
   }
 
   "addCard" should {
