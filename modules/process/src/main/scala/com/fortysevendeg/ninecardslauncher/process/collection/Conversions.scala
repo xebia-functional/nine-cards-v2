@@ -48,9 +48,6 @@ trait Conversions extends CommonConversions {
   def toServicesUpdateCollectionsRequest(collections: Seq[Collection]): ServicesUpdateCollectionsRequest =
     ServicesUpdateCollectionsRequest(collections map toServicesUpdateCollectionRequest)
 
-  def toFetchCollectionByPositionRequest(pos: Int): FetchCollectionByPositionRequest = FetchCollectionByPositionRequest(
-    position = pos)
-
   def toCardSeq(servicesCardSeq: Seq[ServicesCard]): Seq[Card] = servicesCardSeq map toCard
 
   def toServicesCard(card: Card): ServicesCard = ServicesCard(
