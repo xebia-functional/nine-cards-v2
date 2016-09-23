@@ -21,3 +21,9 @@ case class LocationState(
   speed: Float,
   elapsedTime: Long,
   time: Long)
+
+case class AwarenessLocation(
+  latitude: Double,
+  longitude: Double,
+  countryCode: Option[String],
+  countryName: Option[String])
