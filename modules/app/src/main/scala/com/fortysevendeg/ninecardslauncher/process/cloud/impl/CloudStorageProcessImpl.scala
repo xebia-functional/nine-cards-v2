@@ -2,7 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
 import java.util.Date
 
-import android.os.Build
+import android.os.{Build, Bundle}
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -12,11 +13,11 @@ import com.fortysevendeg.ninecardslauncher.process.cloud._
 import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
 import com.fortysevendeg.ninecardslauncher.services.drive.{Conversions => _, _}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
+import com.google.android.gms.common.api.GoogleApiClient
 import monix.eval.Task
 import play.api.libs.json.Json
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.process.commons.ConnectionSuspendedCause
-import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.ConnectionResult
 
 import scala.util.{Failure, Success, Try}
 
@@ -36,7 +37,29 @@ class CloudStorageProcessImpl(
   private[this] val userNotFoundErrorMessage = (id: Int) => s"User with id $id not found in the database"
 
   override def createCloudStorageClient(account: String)(implicit contextSupport: ContextSupport) =
-    driveServices.createDriveClient(account).leftMap(mapException)
+    driveServices.createDriveClient(account).resolveSides(
+      mapRight = googleApiClient => {
+        contextSupport.getOriginal.get match {
+          case Some(listener: CloudStorageClientListener) =>
+            googleApiClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks {
+              override def onConnectionSuspended(cause: Int): Unit =
+                listener.onDriveConnectionSuspended(cause)
+
+              override def onConnected(bundle: Bundle): Unit =
+                listener.onDriveConnected()
+            })
+            googleApiClient.registerConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener {
+              override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
+                listener.onDriveConnectionFailed(connectionResult)
+            })
+            Right(googleApiClient)
+          case Some(_) =>
+            Left(CloudStorageProcessException("The implicit activity is not a CloudStorageClientListener"))
+          case None =>
+            Left(CloudStorageProcessException("The implicit activity is null"))
+        }
+      },
+      mapLeft = (e) => Left(CloudStorageProcessException(e.getMessage, Option(e))))
 
   override def prepareForActualDevice[T <: CloudStorageResource](
     client: GoogleApiClient,
@@ -206,10 +229,6 @@ class CloudStorageProcessImpl(
         message = e.message,
         cause = Option(e),
         driveError = e.googleDriveError flatMap driveErrorToCloudStorageError)
-    case e: DriveConnectionSuspendedServicesException =>
-      CloudStorageConnectionSuspendedServicesException(e.getMessage, ConnectionSuspendedCause(e.googleCauseCode), Option(e))
-    case e: DriveConnectionFailedServicesException =>
-      CloudStorageConnectionFailedServicesException(e.getMessage, e.connectionResult, Option(e.copy(connectionResult = None)))
     case e: CloudStorageProcessException => e
     case t => CloudStorageProcessException(t.getMessage, Option(t))
   }
