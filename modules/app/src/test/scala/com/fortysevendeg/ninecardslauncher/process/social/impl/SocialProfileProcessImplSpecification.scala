@@ -1,20 +1,19 @@
 package com.fortysevendeg.ninecardslauncher.process.social.impl
 
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
 import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
 import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServices, GooglePlusServicesException}
+import com.google.android.gms.common.api.GoogleApiClient
 import monix.eval.Task
 import org.specs2.mock.Mockito
-import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
-import com.google.android.gms.common.api.GoogleApiClient
 
 trait SocialProfileProcessImplSpecification
-  extends Specification
+  extends TaskServiceSpecification
   with Mockito
   with SocialProfileProcessImplData {
 
@@ -22,6 +21,8 @@ trait SocialProfileProcessImplSpecification
     extends Scope {
 
     implicit val context = mock[ContextSupport]
+    
+    val googlePlusServicesException = GooglePlusServicesException("Irrelevant message")
 
     val googlePlusServices = mock[GooglePlusServices]
 
@@ -38,6 +39,24 @@ trait SocialProfileProcessImplSpecification
 class SocialProfileProcessImplSpec
   extends SocialProfileProcessImplSpecification {
 
+  "createSocialProfileClient" should {
+
+    "return a valid response when the service returns a right response" in
+      new CloudStorageProcessImplScope {
+
+        googlePlusServices.createGooglePlusClient(any, any)(any) returns TaskService(Task(Right(mockApiClient)))
+        socialProfileProcess.createSocialProfileClient(clientId, account).run shouldEqual Right(mockApiClient)
+      }
+
+    "return a CloudStorageProcessException when the service returns an exception" in
+      new CloudStorageProcessImplScope  {
+
+        googlePlusServices.createGooglePlusClient(any, any)(any) returns TaskService(Task(Either.left(googlePlusServicesException)))
+        socialProfileProcess.createSocialProfileClient(clientId, account).mustLeft[SocialProfileProcessException]
+      }
+
+  }
+
   "updateUserProfile" should {
 
     "return an Answer and update profile in Persistence Service with the right params" in
@@ -48,7 +67,7 @@ class SocialProfileProcessImplSpec
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
         persistenceServices.updateUser(any) returns TaskService(Task(Either.right(1)))
 
-        val result = socialProfileProcess.updateUserProfile(mockApiClient).value.run
+        val result = socialProfileProcess.updateUserProfile(mockApiClient).run
         result should beAnInstanceOf[Right[_,Unit]]
 
         there was one(persistenceServices).findUserById(findUserByIdRequest)
@@ -64,7 +83,7 @@ class SocialProfileProcessImplSpec
         context.getActiveUserId returns Some(activeUserId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(None)))
 
-        val result = socialProfileProcess.updateUserProfile(mockApiClient).value.run
+        val result = socialProfileProcess.updateUserProfile(mockApiClient).run
         result must beAnInstanceOf[Left[SocialProfileProcessException, _]]
 
         there was one(persistenceServices).findUserById(findUserByIdRequest)
@@ -75,8 +94,7 @@ class SocialProfileProcessImplSpec
       new CloudStorageProcessImplScope {
 
         googlePlusServices.loadUserProfile(any) returns TaskService(Task(Either.left(GooglePlusServicesException("Irrelevant message"))))
-        val result = socialProfileProcess.updateUserProfile(mockApiClient).value.run
-        result must beAnInstanceOf[Left[SocialProfileProcessException, _]]
+        socialProfileProcess.updateUserProfile(mockApiClient).mustLeft[SocialProfileProcessException]
       }
 
     "return an Errata with the SocialProfileProcessException if there is not an active user" in
@@ -85,8 +103,7 @@ class SocialProfileProcessImplSpec
         googlePlusServices.loadUserProfile(any) returns TaskService(Task(Either.right(googlePlusProfile)))
         context.getActiveUserId returns None
 
-        val result = socialProfileProcess.updateUserProfile(mockApiClient).value.run
-        result must beAnInstanceOf[Left[SocialProfileProcessException, _]]
+        socialProfileProcess.updateUserProfile(mockApiClient).mustLeft[SocialProfileProcessException]
       }
 
     "return an Errata with the SocialProfileProcessException if the Persistence Service return an Errata in the findUserById method" in
@@ -96,8 +113,7 @@ class SocialProfileProcessImplSpec
         context.getActiveUserId returns Some(activeUserId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.left(PersistenceServiceException("Irrelevant message"))))
 
-        val result = socialProfileProcess.updateUserProfile(mockApiClient).value.run
-        result must beAnInstanceOf[Left[SocialProfileProcessException, _]]
+        socialProfileProcess.updateUserProfile(mockApiClient).mustLeft[SocialProfileProcessException]
 
         there was one(persistenceServices).findUserById(findUserByIdRequest)
       }
@@ -110,8 +126,7 @@ class SocialProfileProcessImplSpec
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
         persistenceServices.updateUser(any) returns TaskService(Task(Either.left(PersistenceServiceException("Irrelevant message"))))
 
-        val result = socialProfileProcess.updateUserProfile(mockApiClient).value.run
-        result must beAnInstanceOf[Left[SocialProfileProcessException, _]]
+        socialProfileProcess.updateUserProfile(mockApiClient).mustLeft[SocialProfileProcessException]
 
         there was one(persistenceServices).findUserById(findUserByIdRequest)
 
