@@ -1,12 +1,13 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
-
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
 import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, UnformedApp, UnformedContact}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
@@ -16,9 +17,9 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCatego
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
+import com.fortysevendeg.ninecardslauncher.services.persistence.OrderByCategory
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
 import monix.eval.Task
-import cats.syntax.either._
 
 
 trait CollectionsProcessImpl extends CollectionProcess {
@@ -177,6 +178,24 @@ trait CollectionsProcessImpl extends CollectionProcess {
       fetchedPackages <- categorizeNotInstalledPackages(installedApps, notAdded)
       _ <- addCards(actualCollectionSize, installedApps, fetchedPackages)
     } yield ()).resolve[CollectionException]
+  }
+
+  def rankApps()(implicit context: ContextSupport) = {
+
+    def mapValues(seq: Seq[(String, String)]): Seq[(String, Seq[String])] =
+      seq.groupBy(_._1).mapValues(_.map(_._2)).toSeq
+
+    def getPackagesByCategory: TaskService[Seq[(String, Seq[String])]] =
+      for {
+        appList <- persistenceServices.fetchApps(OrderByCategory)
+      } yield mapValues(appList map (app => (app.category, app.packageName)))
+
+      (for {
+        requestConfig <- apiUtils.getRequestConfig
+        packagesByCategory <- getPackagesByCategory
+        location = None
+        result <- apiServices.rankApps(packagesByCategory map toServicesPackagesByCategory, location)(requestConfig)
+      } yield result.items map toPackagesByCategory).resolve[CollectionException]
   }
 
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =
