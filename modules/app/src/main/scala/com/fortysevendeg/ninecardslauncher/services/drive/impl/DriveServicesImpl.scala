@@ -37,7 +37,7 @@ class DriveServicesImpl
     TaskService {
       Task.async[NineCardException Either GoogleApiClient] { (scheduler, callback) =>
         Either.catchNonFatal {
-          val googleApiClient = new GoogleApiClient.Builder(contextSupport.context)
+          val googleApiClient: GoogleApiClient = new GoogleApiClient.Builder(contextSupport.context)
             .setAccountName(account)
             .addApi(Drive.API)
             .addScope(Drive.SCOPE_APPFOLDER)
