@@ -1,5 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.api.version2
 
+import scala.util.Random
+
 trait ApiServiceData {
 
   val baseUrl = "http://localhost:8080"
@@ -34,6 +36,7 @@ trait ApiServiceData {
   val recommendationsAuthToken = "eb8d8a575642e6d1b4b048d921a5b5ec9036a10542e424077ba261fd8a55aa47287f202691ef7c8a4ec19013affbc0c01cfa13e9a759734f2579a869a1842361"
   val recommendationsByAppsAuthToken = "ee388db874ece41e4a446bb8c36f0967944d71d87239ae5d629ee6db074508e318eb70c134572d9a3d10192e07b11135360a539a302ca347f3bbdeec6970129b"
   val subscriptionsAuthToken = "b45ad90c3d18f43b7b921c2aeec3258a8a1adf11ad75e4c68928ac89855c5c019b921bc268bc3072a2735718479809a71810e684b11051619ed564392d5be3dd"
+  val rankAppsAuthToken = "b105db467bb6d9087471aeeba4337bb8c7b54a383ddbe711dd6b36536c053ec0520ab3fb99dbe03471dd5a6a09001b80dd784ee16684cb71ac6c063926e5d109"
 
   val serviceHeader = ServiceHeader(apiKey, sessionToken, androidId)
 
@@ -145,4 +148,25 @@ trait ApiServiceData {
   val recommendationsByAppsResponse = RecommendationsByAppsResponse(apps = Seq(recommendationApp))
 
   val subscriptions = Seq(publicIdentifier)
+
+  val packages = Seq("com.package.sample.second", "com.package.sample.third", "com.package.sample.first")
+
+  val packagesOrdered = Seq("com.package.sample.first", "com.package.sample.second", "com.package.sample.third")
+
+  val items = Map (category -> packages)
+
+  val itemsOrdered = Map (category -> packagesOrdered)
+
+  val location = Random.nextBoolean match{
+    case false => None
+    case true => Some("ES")
+  }
+
+  val rankAppsRequest = RankAppsRequest(
+    items = items,
+    location = location)
+
+  val rankAppsResponse = RankAppsResponse(
+    items = itemsOrdered)
+
 }

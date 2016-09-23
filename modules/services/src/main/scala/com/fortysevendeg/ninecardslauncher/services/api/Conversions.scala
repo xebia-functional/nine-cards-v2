@@ -4,6 +4,7 @@ import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import org.joda.time.format.DateTimeFormat
 
+import scala.collection.immutable.Iterable
 import scala.util.{Success, Try}
 
 trait Conversions {
@@ -198,5 +199,14 @@ trait Conversions {
   def toSubscriptionResponse(subscription: String) =
     SubscriptionResponse(
       sharedCollectionId = subscription)
+
+  def toItemsMap(packagesByCategorySeq: Seq[PackagesByCategory]) =
+    Map(packagesByCategorySeq map (
+      packagesByCategory => packagesByCategory.category -> packagesByCategory.packages): _*)
+
+  def toRankAppsResponse(items: Map[String, Seq[String]]) =
+    (items map {
+      case (category, packages) => RankAppsResponse(category = category, packages = packages)
+    }).toSeq
 
 }

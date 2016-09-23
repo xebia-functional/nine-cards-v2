@@ -55,6 +55,8 @@ class ApiServicesImpl(
 
   val publishedCollectionsNotFoundMessage = "Published Collections not found"
 
+  val errorRankingAppsMessage = "Unknown error ranking apps"
+
   override def loginV1(
     email: String,
     device: LoginV1Device) =
@@ -242,6 +244,15 @@ class ApiServicesImpl(
       _ <- validateConfig
       response <- apiService.unsubscribe(sharedCollectionId, requestConfig.toServiceHeader).resolve[ApiServiceException]
     } yield UnsubscribeResponse(response.statusCode)
+
+  override def rankApps(
+    packagesByCategorySeq: Seq[PackagesByCategory], location: Option[String])(implicit requestConfig: RequestConfig) =
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .rankApps(RankAppsRequest(toItemsMap(packagesByCategorySeq), location), requestConfig.toServiceHeader)
+        .readOption(errorRankingAppsMessage)
+    } yield RankAppsResponseList(response.statusCode, toRankAppsResponse(response.data.items))
 
   private[this] def prepareV1Header: TaskService[Seq[(String, String)]] = {
 

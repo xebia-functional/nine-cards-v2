@@ -61,6 +61,10 @@ case class RecommendationsByAppsResponse(apps: Seq[RecommendationApp])
 
 case class SubscriptionsResponse(subscriptions: Seq[String])
 
+case class RankAppsRequest(items: Map[String, Seq[String]], location: Option[String])
+
+case class RankAppsResponse(items: Map[String, Seq[String]])
+
 case class PackagesStats(added: Int, removed: Option[Int] = None)
 
 case class Collection(

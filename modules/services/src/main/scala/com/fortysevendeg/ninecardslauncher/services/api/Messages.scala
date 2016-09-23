@@ -122,3 +122,11 @@ case class CreateSharedCollectionResponse(
 case class UpdateSharedCollectionResponse(
   statusCode: Int,
   sharedCollectionId: String)
+
+case class RankAppsResponseList(
+  statusCode: Int,
+  items: Seq[RankAppsResponse])
+
+case class RankAppsResponse(
+  category: String,
+  packages: Seq[String])

@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.api.impl
 import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.api.version2.CollectionUpdateInfo
 import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
+import com.fortysevendeg.ninecardslauncher.services.api.models.PackagesByCategory
 
 import scala.util.Random
 
@@ -220,6 +221,10 @@ trait ApiServicesImplData {
 
   val email = "email@dot.com"
 
+  val packageName = Random.nextString(20)
+
+  val location = "ES"
+
   val androidId = Random.nextString(10)
 
   val tokenId = Random.nextString(30)
@@ -266,4 +271,21 @@ trait ApiServicesImplData {
       facebook = None,
       twitter = None,
       anonymous = None)))
+
+  def generatePackagesByCategorySeq(num: Int = 10) =
+    1 to num map { _ =>
+      PackagesByCategory(
+        category = category,
+        packages = packages
+      )
+    }
+
+  val packagesByCategorySeq = generatePackagesByCategorySeq()
+
+  val items = Map(packagesByCategorySeq map (
+    packagesByCategory => packagesByCategory.category -> packagesByCategory.packages): _*)
+
+  val rankAppsRequest = version2.RankAppsRequest(items, Some(location))
+
+  val rankAppsResponse = version2.RankAppsResponse(items)
 }
