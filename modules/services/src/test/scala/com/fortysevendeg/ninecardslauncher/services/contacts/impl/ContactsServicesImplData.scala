@@ -90,11 +90,10 @@ trait ContactsServicesImplData {
     extends MockCursor {
 
     val cursorData = Seq(
-      ("name", 0, contacts map (_.name), StringDataType),
-      ("lookupKey", 1, contacts map (_.lookupKey), StringDataType),
-      ("photoUri" , 2, contacts map (_.photoUri), StringDataType),
-      ("hasPhone", 3, contacts map (_.hasPhone), IntDataType),
-      ("favourite", 4, contacts map (_.favorite), IntDataType)
+      ("display_name", 0, contacts map (_.name), StringDataType),
+      ("lookup", 1, contacts map (_.lookupKey), StringDataType),
+      ("has_phone_number", 3, contacts map (c => booleanToInt(c.hasPhone)), IntDataType),
+      ("starred", 4, contacts map (c => booleanToInt(c.favorite)), IntDataType)
     )
 
     prepareCursor[Contact](contacts.size, cursorData)

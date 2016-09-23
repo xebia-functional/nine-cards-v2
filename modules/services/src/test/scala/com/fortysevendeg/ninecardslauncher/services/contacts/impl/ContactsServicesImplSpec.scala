@@ -5,8 +5,9 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
+import com.fortysevendeg.ninecardslauncher.commons.test.repository.{CursorList, IntDataType, StringDataType}
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{ContactPhone, ContactEmail, Contact}
+import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactPhone}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactNotFoundException, ContactsServiceException, ContactsServicePermissionException, Fields}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -98,7 +99,11 @@ class ContactsServicesImplSpec
         contentResolverWrapper.fetchAll[ContactEmail](any,any,any,any,any)(any) returns Seq.empty
         contentResolverWrapper.fetchAll[ContactPhone](any,any,any,any,any)(any) returns Seq.empty
         contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
-        uriCreator.withAppendedPath(any, any) returns mockUri
+        contacts.foreach { c =>
+          val uri = mock[Uri]
+          uriCreator.withAppendedPath(any, ===(c.lookupKey)) returns uri
+          uri.toString returns c.photoUri
+        }
         val result = contactsServices.getIterableContacts.run
 
         result must beLike {

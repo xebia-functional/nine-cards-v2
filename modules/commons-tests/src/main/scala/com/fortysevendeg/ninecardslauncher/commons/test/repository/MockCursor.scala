@@ -86,4 +86,6 @@ trait MockCursor extends Mockito {
     }
   }
 
+  def booleanToInt(b: Boolean): Int = if (b) 1 else 0
+
 }
