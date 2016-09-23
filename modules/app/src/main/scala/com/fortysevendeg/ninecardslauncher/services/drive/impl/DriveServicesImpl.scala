@@ -2,13 +2,17 @@ package com.fortysevendeg.ninecardslauncher.services.drive.impl
 
 import java.io.{InputStream, OutputStreamWriter}
 
+import android.os.Bundle
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.drive._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
 import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
+import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api._
 import com.google.android.gms.drive._
 import com.google.android.gms.drive.metadata.CustomPropertyKey
@@ -28,6 +32,38 @@ class DriveServicesImpl
   private[this] val queryUUID = (driveId: String) => new Query.Builder()
     .addFilter(Filters.eq(propertyUUID, driveId))
     .build()
+
+  override def createDriveClient(account: String)(implicit contextSupport: ContextSupport) =
+    TaskService {
+      Task.async[NineCardException Either GoogleApiClient] { (scheduler, callback) =>
+        Either.catchNonFatal {
+          val googleApiClient = new GoogleApiClient.Builder(contextSupport.context)
+            .setAccountName(account)
+            .addApi(Drive.API)
+            .addScope(Drive.SCOPE_APPFOLDER)
+            .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks {
+              override def onConnectionSuspended(cause: Int): Unit =
+                callback(Success(Left(DriveConnectionSuspendedServicesException(
+                  message = "Connection suspended",
+                  googleCauseCode = cause))))
+
+              override def onConnected(bundle: Bundle): Unit =
+                callback(Success(Right(googleApiClient)))
+            })
+            .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener {
+              override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
+                callback(Success(Left(DriveConnectionFailedServicesException(
+                  message = "Connection failed",
+                  connectionResult = Option(connectionResult)))))
+            })
+            .build()
+        } leftMap {
+          e: Throwable => DriveServicesException(message = e.getMessage, googleDriveError = None, cause = Some(e))
+        }
+        Cancelable.empty
+      }
+
+    }
 
   override def listFiles(
     client: GoogleApiClient,
