@@ -1,23 +1,24 @@
 package com.fortysevendeg.ninecardslauncher.services.plus.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
 import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServices, GooglePlusServicesException, ImplicitsGooglePlusProcessExceptions}
 import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes
-import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient}
+import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, ResultCallback}
 import com.google.android.gms.plus.People.LoadPeopleResult
 import com.google.android.gms.plus.Plus
 import com.google.android.gms.plus.model.people.Person
 import monix.eval.Task
+import monix.execution.Cancelable
 
 import scala.util.{Failure, Success, Try}
 
 class GooglePlusServicesImpl
   extends GooglePlusServices
-  with ImplicitsGooglePlusProcessExceptions {
+    with ImplicitsGooglePlusProcessExceptions {
 
   val me = "me"
 
@@ -37,17 +38,35 @@ class GooglePlusServicesImpl
 
   override def loadUserProfile(client: GoogleApiClient) = {
 
+    def resultCallback(result: LoadPeopleResult): Either[GooglePlusServicesException, LoadPeopleResult] =
+      Option(result) match {
+        case Some(r) if validCodes.contains(r.getStatus.getStatusCode) =>
+          Right(result)
+        case Some(r) =>
+          val message = Option(r.getStatus.getStatusMessage) getOrElse "Unknown error with Google API"
+          Left(GooglePlusServicesException(
+            message = message,
+            recoverable = recoverableStatusCodes.contains(r.getStatus.getStatusCode)))
+        case _ =>
+          Left(GooglePlusServicesException(
+            message = "Received null on the result",
+            recoverable = false))
+      }
+
     def loadPeopleApi: TaskService[LoadPeopleResult] = TaskService {
-      Task {
-        Try(Plus.PeopleApi.load(client, me).await()) match {
-          case Success(r) if validCodes.contains(r.getStatus.getStatusCode) => Right(r)
-          case Success(r) =>
-            val message = Option(r.getStatus.getStatusMessage) getOrElse "Unknown error with Google API"
-            Left(GooglePlusServicesException(
-              message = message,
-              recoverable = recoverableStatusCodes.contains(r.getStatus.getStatusCode)))
-          case Failure(e) => Left(GooglePlusServicesException(message = e.getMessage, cause = Some(e)))
+      Task.async[GooglePlusServicesException Either LoadPeopleResult] { (scheduler, callback) =>
+        Try(Plus.PeopleApi.load(client, me)) match {
+          case Success(pr) =>
+            pr.setResultCallback(new ResultCallback[LoadPeopleResult] {
+              override def onResult(r: LoadPeopleResult): Unit = callback(Success(resultCallback(r)))
+            })
+          case Failure(ex) =>
+            callback(Success(Left(GooglePlusServicesException(
+              message = Option(ex.getMessage) getOrElse "Error loading people API",
+              cause = Some(ex),
+              recoverable = false))))
         }
+        Cancelable.empty
       }
     }
 
