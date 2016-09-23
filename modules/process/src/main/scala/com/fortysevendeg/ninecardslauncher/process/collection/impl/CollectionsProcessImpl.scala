@@ -193,7 +193,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
       (for {
         requestConfig <- apiUtils.getRequestConfig
         packagesByCategory <- getPackagesByCategory
-        location = None
+        location = None //TODO get current country location once the awareness service is moved to services layer
         result <- apiServices.rankApps(packagesByCategory map toServicesPackagesByCategory, location)(requestConfig)
       } yield result.items map toPackagesByCategory).resolve[CollectionException]
   }
