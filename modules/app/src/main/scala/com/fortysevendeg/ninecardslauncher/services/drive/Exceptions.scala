@@ -18,23 +18,3 @@ case class DriveServicesException(message: String, googleDriveError: Option[Goog
   cause foreach initCause
 
 }
-
-case class DriveConnectionSuspendedServicesException(message: String, googleCauseCode: Int, cause: Option[Throwable] = None)
-  extends RuntimeException(message)
-    with NineCardException{
-
-  cause foreach initCause
-
-}
-
-case class DriveConnectionFailedServicesException(message: String, connectionResult: Option[ConnectionResult], cause: Option[Throwable] = None)
-  extends RuntimeException(message)
-    with NineCardException{
-
-  cause foreach initCause
-
-}
-
-trait ImplicitsDriveServicesExceptions {
-  implicit def driveServicesExceptionConverter = (t: Throwable) => DriveServicesException(t.getMessage, cause = Option(t))
-}
