@@ -27,7 +27,7 @@ class ContactsServicesImpl(
         uri = Fields.CONTENT_URI,
         projection = allFields,
         where = Fields.ALL_CONTACTS_SELECTION,
-        orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor(uriCreator, _)))
     }
 
   override def getAlphabeticalCounterContacts =
@@ -54,7 +54,7 @@ class ContactsServicesImpl(
         uri = Fields.CONTENT_URI,
         projection = allFields,
         where = Fields.ALL_CONTACTS_SELECTION,
-        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor(uriCreator, _))
     }
 
   override def getIterableContactsByKeyword(keyword: String) =
@@ -64,7 +64,7 @@ class ContactsServicesImpl(
         projection = allFields,
         where = Fields.CONTACTS_BY_KEYWORD_SELECTION,
         whereParams = Seq(s"%$keyword%"),
-        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor(uriCreator, _))
     }
 
   override def fetchContactByEmail(email: String) =
@@ -73,14 +73,14 @@ class ContactsServicesImpl(
         uri = Fields.EMAIL_CONTENT_URI,
         projection = allEmailContactFields,
         where = Fields.EMAIL_SELECTION,
-        whereParams = Seq(email))(getEntityFromCursor(contactFromEmailCursor))
+        whereParams = Seq(email))(getEntityFromCursor(contactFromEmailCursor(uriCreator, _)))
     }
 
   override def fetchContactByPhoneNumber(phoneNumber: String) =
     catchMapPermission {
       contentResolverWrapper.fetch(
         uri = uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, phoneNumber),
-        projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor))
+        projection = allPhoneContactFields)(getEntityFromCursor(contactFromPhoneCursor(uriCreator, _)))
     }
 
   override def findContactByLookupKey(lookupKey: String) = {
@@ -89,7 +89,7 @@ class ContactsServicesImpl(
       uri = Fields.CONTENT_URI,
       projection = allFields,
       where = Fields.LOOKUP_SELECTION,
-      whereParams = Seq(lookupKey))(getListFromCursor(contactFromCursor))
+      whereParams = Seq(lookupKey))(getListFromCursor(contactFromCursor(uriCreator, _)))
 
     populateContacts(fetchContacts).resolveRight {
       _.headOption match {
@@ -139,7 +139,7 @@ class ContactsServicesImpl(
         uri = Fields.CONTENT_URI,
         projection = allFields,
         where = Fields.STARRED_SELECTION,
-        orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor(uriCreator, _)))
     }
 
   override def getIterableFavoriteContacts =
@@ -148,7 +148,7 @@ class ContactsServicesImpl(
         uri = Fields.CONTENT_URI,
         projection = allFields,
         where = Fields.STARRED_SELECTION,
-        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor(uriCreator, _))
     }
 
   override def getContactsWithPhone =
@@ -157,7 +157,7 @@ class ContactsServicesImpl(
         uri = Fields.CONTENT_URI,
         projection = allFields,
         where = Fields.HAS_PHONE_NUMBER_SELECTION,
-        orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor))
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC)(getListFromCursor(contactFromCursor(uriCreator, _)))
     }
 
   override def getIterableContactsWithPhone =
@@ -166,7 +166,7 @@ class ContactsServicesImpl(
         uri = Fields.CONTENT_URI,
         projection = allFields,
         where = Fields.HAS_PHONE_NUMBER_SELECTION,
-        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor)
+        orderBy = Fields.CONTACTS_ORDER_BY_ASC).toIterator(contactFromCursor(uriCreator, _))
     }
 
   protected def getNamesAlphabetically: Seq[String] = {
