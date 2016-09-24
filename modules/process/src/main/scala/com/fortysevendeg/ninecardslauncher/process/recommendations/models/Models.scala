@@ -6,6 +6,5 @@ case class RecommendedApp(
   icon: Option[String],
   downloads: String,
   stars: Double,
-  description: Option[String],
   free: Boolean,
   screenshots: Seq[String])

@@ -124,9 +124,9 @@ class ApiServicesImpl(
     for {
       _ <- validateConfig
       response <- apiService
-        .recommendations(category, RecommendationsRequest(None, excludePackages, limit), requestConfig.toGooglePlayHeader)
+        .recommendations(category, None, RecommendationsRequest(excludePackages, limit), requestConfig.toGooglePlayHeader)
         .readOption(categoryNotFoundMessage)
-    }  yield  RecommendationResponse(response.statusCode, toRecommendationAppSeq(response.data.apps))
+    }  yield  RecommendationResponse(response.statusCode, toRecommendationAppSeq(response.data.items))
 
   override def getRecommendedAppsByPackages(
     packages: Seq[String],
@@ -135,7 +135,7 @@ class ApiServicesImpl(
     for {
       _ <- validateConfig
       response <- apiService
-        .recommendationsByApps(RecommendationsByAppsRequest(packages, None, excludePackages, limit), requestConfig.toGooglePlayHeader)
+        .recommendationsByApps(RecommendationsByAppsRequest(packages, excludePackages, limit), requestConfig.toGooglePlayHeader)
         .resolve[ApiServiceException]
       apps = response.data.map(_.apps) getOrElse Seq.empty
     } yield RecommendationResponse(response.statusCode, toRecommendationAppSeq(apps))
