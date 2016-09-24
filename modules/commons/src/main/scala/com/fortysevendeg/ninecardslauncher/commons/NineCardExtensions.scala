@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.commons
 import cats.data.EitherT
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import monix.eval.Task
+import cats.syntax.either._
 
 import scala.language.implicitConversions
 
@@ -13,6 +14,13 @@ object NineCardExtensions {
 
     def resolve[E <: NineCardException](implicit converter: Throwable => E): EitherT[Task, NineCardException, A] =
       resolveLeft(e => Left(converter(e)))
+
+    def resolveIf[E <: NineCardException](whileIf: Boolean, ifNot: A)(implicit converter: Throwable => E): EitherT[Task, NineCardException, A] =
+      if (whileIf) {
+        r
+      } else {
+        EitherT(Task(Either.right(ifNot)))
+      }
 
     def resolveLeftTo(result: A): EitherT[Task, NineCardException, A] =
       resolveLeft((_) => Right(result))

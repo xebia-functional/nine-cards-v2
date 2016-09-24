@@ -22,6 +22,7 @@ class Jobs(implicit contextWrapper: ContextWrapper)
 
   lazy val preferenceValues = new NineCardsPreferencesValue
 
+  @deprecated
   def getTheme: NineCardsTheme =
     di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).resolveNow match {
       case Right(t) => t
@@ -30,6 +31,7 @@ class Jobs(implicit contextWrapper: ContextWrapper)
         getDefaultTheme
     }
 
+  @deprecated
   def sendBroadCast(broadAction: BroadAction) = {
     val intent = new Intent(broadAction.action)
     intent.putExtra(keyType, commandType)
