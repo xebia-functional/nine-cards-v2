@@ -25,7 +25,6 @@ trait RecommendationsProcessData {
       icon = Random.nextString(10),
       stars = Random.nextDouble() * 5,
       free = Random.nextBoolean(),
-      description = Random.nextString(50),
       screenshots = Seq("screenshot1", "screenshot2", "screenshot3"))
   }
 

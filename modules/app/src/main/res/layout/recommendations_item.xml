@@ -60,10 +60,6 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/recommendation_item_description"
-            style="@style/RecommendationsItemDescription"/>
-
         <ImageView
             style="@style/RecommendationsItemLine"/>
 
