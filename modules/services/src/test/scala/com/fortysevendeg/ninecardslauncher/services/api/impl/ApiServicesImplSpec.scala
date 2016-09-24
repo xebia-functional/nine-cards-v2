@@ -457,7 +457,7 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns baseUrl
-        apiService.recommendations(any, any, any)(any, any) returns
+        apiService.recommendations(any, any, any, any)(any, any) returns
           TaskService {
             Task(Either.right(ServiceClientResponse[version2.RecommendationsResponse](statusCode, Some(recommendationResponse))))
           }
@@ -469,7 +469,7 @@ class ApiServicesImplSpec
             response.seq.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
         }
 
-        there was one(apiService).recommendations(===(category), ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
+        there was one(apiService).recommendations(===(category), any, ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
       }
 
     "return an ApiServiceConfigurationException when the base url is empty" in
@@ -484,7 +484,7 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns baseUrl
-        apiService.recommendations(any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+        apiService.recommendations(any, any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceException](apiServices.getRecommendedApps(category, Seq.empty, limit))
       }
