@@ -1,15 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.services.awareness.impl
 
 import android.location.{Address, Geocoder}
-import cats.data.EitherT
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.recognition.{RecognitionProcessException, Location}
 import com.fortysevendeg.ninecardslauncher.services.awareness._
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServiceException
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.awareness.snapshot.{DetectedActivityResult, HeadphoneStateResult, LocationResult, WeatherResult}
 import com.google.android.gms.awareness.state.{HeadphoneState, Weather}
@@ -32,7 +28,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
                 case Some(result) if result.getStatus.isSuccess =>
                   Option(result.getActivityRecognitionResult) match {
                     case Some(recognition) if Option(recognition.getMostProbableActivity).isDefined =>
-                      callback(Success(Either.right(TypeActivity(recognition.getMostProbableActivity.getType))))
+                      callback(Success(Either.right(TypeActivity(KindActivity(recognition.getMostProbableActivity.getType)))))
                     case _ => callback(Success(Either.left(AwarenessException("Most probable activity not found"))))
                   }
                 case _ =>
@@ -121,7 +117,12 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
       latitude = address.getLatitude,
       longitude = address.getLongitude,
       countryCode = Option(address.getCountryCode),
-      countryName = Option(address.getCountryName))
+      countryName = Option(address.getCountryName),
+      addressLines = toAddressLines(address))
+
+  private[this] def toAddressLines(address: Address) = 0 to address.getMaxAddressLineIndex flatMap { index =>
+    Option(address.getAddressLine(index))
+  }
 
   private[this] def getCurrentLocation =
     TaskService {
@@ -167,7 +168,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
                   Option(weatherResult.getWeather) match {
                     case Some(weather) =>
                       val weatherState = WeatherState(
-                        conditions = weather.getConditions,
+                        conditions = weather.getConditions map (ConditionWeather(_)),
                         humidity = weather.getHumidity,
                         dewPointCelsius = weather.getDewPoint(Weather.CELSIUS),
                         dewPointFahrenheit = weather.getDewPoint(Weather.FAHRENHEIT),

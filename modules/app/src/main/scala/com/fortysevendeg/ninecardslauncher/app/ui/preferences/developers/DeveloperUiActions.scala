@@ -89,8 +89,9 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
 
   def setLocationSummary(location: Location): TaskService[Unit] = Ui {
     val summary =
-      s"""(${location.latitude}, ${location.longitude})
-          |${location.countryName.getOrElse("<No country>")} (${location.countryCode.getOrElse("-")})""".stripMargin
+      s"""${location.addressLines.mkString(", ")}
+         |(${location.latitude}, ${location.longitude})
+         |${location.countryName.getOrElse("<No country>")} (${location.countryCode.getOrElse("-")})""".stripMargin
     dom.locationPreference.setSummary(summary)
   }.toService
 

@@ -8,8 +8,8 @@ import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessServices
 
 class RecognitionProcessImpl(awarenessServices: AwarenessServices)
   extends RecognitionProcess
-    with Conversions
-    with ImplicitsRecognitionProcessExceptions {
+  with Conversions
+  with ImplicitsRecognitionProcessExceptions {
 
   override def getMostProbableActivity: TaskService[ProbablyActivity] =
     (awarenessServices.getTypeActivity map toProbablyActivity).resolve[RecognitionProcessException]
