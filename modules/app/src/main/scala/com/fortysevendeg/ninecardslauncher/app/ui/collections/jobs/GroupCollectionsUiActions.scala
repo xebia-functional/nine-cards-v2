@@ -116,7 +116,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
           uiHandler(dom.viewPager <~ vpCurrentItem(position, smoothScroll = false)) ~
           uiHandlerDelayed(Ui {
             dom.getActivePresenter foreach (_.bindAnimatedAdapter())
-          }, 100) ~
+          }, delayMilis = 100) ~
           (maybeCollection match {
             case Some(collection) =>
               (dom.titleName <~ tvText(collection.name)) ~ (dom.titleIcon <~ ivSrc(collection.getIconDetail))
@@ -190,9 +190,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     } yield {
       adapter.addCardsToCollection(collectionPosition, cards)
       adapter.fragments.find(_._1 == collectionPosition).map(_._2).foreach { fragment =>
-        fragment.getAdapter foreach { adapter =>
-          adapter.addCards(cards)
-        }
+        fragment.getAdapter foreach (_.addCards(cards))
         fragment.presenter.showData()
       }
     }
@@ -475,7 +473,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       (dom.fragmentContent <~ colorContentDialog(paint = true) <~ vClickable(true)) ~
       fragmentBuilder.pass(args).framed(R.id.action_fragment_content, nameActionFragment)
 
-    // addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
+    // TODO addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
   }
 
   // Styles

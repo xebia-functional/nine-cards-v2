@@ -38,7 +38,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       _ <- actions.initialize(indexColor, icon, isStateChanged)
       collections <- di.collectionProcess.getCollections
       _ <- actions.showCollections(collections, position)
-    } yield (): Unit
+    } yield ()
   }
 
   def resume(): TaskService[Unit] = di.observerRegister.registerObserverTask()
@@ -59,9 +59,9 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       databaseCollection <- di.collectionProcess.getCollectionById(currentCollection.id).resolveOption()
       cardsAreDifferent = databaseCollection.cards != currentCollection.cards
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(cardsAreDifferent && currentIsMoment, (): Unit)
-      _ <- actions.reloadCards(databaseCollection.cards, reloadFragment).resolveIf(cardsAreDifferent, (): Unit)
-    } yield (): Unit
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(cardsAreDifferent && currentIsMoment, ())
+      _ <- actions.reloadCards(databaseCollection.cards, reloadFragment).resolveIf(cardsAreDifferent, ())
+    } yield ()
 
   def editCard(): TaskService[Unit] =
     for {
@@ -73,7 +73,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
           closeEditingMode() *> actions.editCard(currentCollectionId, head.id, head.term)
         case _ => TaskService.left[Unit](JobException("You only can edit one card"))
       }
-    } yield (): Unit
+    } yield ()
 
   def removeCards(): TaskService[Unit] =
     for {
@@ -83,9 +83,9 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
       _ <- closeEditingMode()
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, (): Unit)
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
       _ <- actions.removeCards(cards)
-    } yield (): Unit
+    } yield ()
 
   def moveToCollection(toCollectionId: Int, collectionPosition: Int): TaskService[Unit] =
     for {
@@ -96,12 +96,14 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
       otherIsMoment = toCollection.collectionType == MomentCollectionType
       _ <- closeEditingMode()
+      // TODO We must to create a new methods for moving cards to collection in #828
+      // We should change this calls when the method will be ready
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
       _ <- di.collectionProcess.addCards(toCollectionId, cards map toAddCardRequest)
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment || otherIsMoment, (): Unit)
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment || otherIsMoment, ())
       _ <- actions.removeCards(cards)
       _ <- actions.addCardsToCollection(collectionPosition, cards)
-    } yield (): Unit
+    } yield ()
 
   def savePublishStatus(): TaskService[Unit] =
     for {
@@ -132,7 +134,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
         }
       case NormalCollectionMode =>
         di.launcherExecutorProcess.execute(card.intent)
-        // TODO
+        // TODO we should include this error handling in the call
 //        throwable match {
 //          case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
 //            statuses = statuses.copy(lastPhone = card.intent.extractPhone())
@@ -157,7 +159,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
               actions.showNoPhoneCallPermissionError()
           case _ => TaskService.empty
         }
-      } yield (): Unit
+      } yield ()
     } else {
       TaskService.empty
     }
@@ -168,9 +170,9 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       currentCollectionId = currentCollection.id
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
       cards <- di.collectionProcess.addCards(currentCollectionId, cardsRequest)
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, (): Unit)
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
       _ <- actions.addCards(cards)
-    } yield (): Unit
+    } yield ()
 
   def addShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): TaskService[Unit] = {
 
@@ -189,9 +191,9 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       currentCollection <- actions.getCurrentCollection.resolveOption()
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
       cards <- createShortcut()
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, (): Unit)
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
       _ <- actions.addCards(cards)
-    } yield (): Unit
+    } yield ()
   }
 
   def openReorderMode(current: ScrollType, canScroll: Boolean): TaskService[Unit] =
@@ -201,12 +203,12 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
         case _ => TaskService.right(statuses = statuses.copy(collectionMode = EditingCollectionMode))
       }
       _ <- actions.openReorderModeUi(current, canScroll)
-    } yield (): Unit
+    } yield ()
 
 
   def closeReorderMode(position: Int): TaskService[Unit] = {
     statuses = statuses.copy(positionsEditing = Set(position))
-    // call to actions.scrollIdle() in ToolbarJobs
+    // TODO call to actions.scrollIdle() in ToolbarJobs
     actions.startEditing(statuses.getPositionsSelected)
   }
 
@@ -219,7 +221,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
     for {
       currentCollection <- actions.getCurrentCollection.resolveOption()
       _ <- actions.showMenuButton(autoHide = false, currentCollection.themedColorIndex)
-    } yield (): Unit
+    } yield ()
 
   def firstItemInCollection(): TaskService[Unit] = actions.hideMenuButton()
 
@@ -229,7 +231,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
     for {
       currentCollection <-  actions.getCurrentCollection.resolveOption()
       _ <- actions.showMenuButton(autoHide = true, currentCollection.themedColorIndex)
-    } yield (): Unit
+    } yield ()
 
   def showGenericError(): TaskService[Unit] = actions.showContactUsError
 
