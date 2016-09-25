@@ -120,7 +120,6 @@ trait ContactsServicesImplData {
     prepareCursor[ContactEmail](0, cursorEmail)
   }
 
-
   val contactCounters = Seq(
     ContactCounter("#", 5),
     ContactCounter("A", 3),

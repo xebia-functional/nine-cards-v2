@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
-import com.fortysevendeg.ninecardslauncher.commons.test.repository.{CursorList, IntDataType, StringDataType}
+import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, StringDataType}
 import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactPhone}
 import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactNotFoundException, ContactsServiceException, ContactsServicePermissionException, Fields}
@@ -120,29 +120,34 @@ class ContactsServicesImplSpec
         }
     }
 
-//    "getIterableContactsByKeyword" should {
-//
-//      "return an IterableCursor of Contacts" in
-//        new AlphabeticalMockCursor with ContactsServicesScope {
-//
-//          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
-//          uriCreator.withAppendedPath(any, any) returns mockUri
-//          val result = contactsServices.getIterableContactsByKeyword(keyword = testMockKeyword).run
-//
-//          result must beLike {
-//            case Right(iterator) =>
-//
-//              toSeq(iterator) shouldEqual contacts
-//          }
-//        }
-//      "return an a RepositoryException when a exception is thrown " in
-//        new AlphabeticalMockCursor with ContactsServicesScope {
-//
-//          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
-//          val result = contactsServices.getIterableContactsByKeyword(keyword = testMockKeyword).run
-//          result must beAnInstanceOf[Left[ContactsServiceException, _]]
-//        }
-//    }
+    "getIterableContactsByKeyword" should {
+
+      "return an IterableCursor of Contacts" in
+        new ContactsServicesScope with ContactsMockCursor {
+
+          contentResolverWrapper.fetchAll[ContactEmail](any,any,any,any,any)(any) returns Seq.empty
+          contentResolverWrapper.fetchAll[ContactPhone](any,any,any,any,any)(any) returns Seq.empty
+          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+          contacts.foreach { c =>
+            val uri = mock[Uri]
+            uriCreator.withAppendedPath(any, ===(c.lookupKey)) returns uri
+            uri.toString returns c.photoUri
+          }
+          val result = contactsServices.getIterableContactsByKeyword(keyword = testMockKeyword).run
+
+          result must beLike {
+            case Right(iterator) =>
+              toSeq(iterator) shouldEqual contacts
+          }
+        }
+      "return an a RepositoryException when a exception is thrown " in
+        new AlphabeticalMockCursor with ContactsServicesScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+          val result = contactsServices.getIterableContactsByKeyword(keyword = testMockKeyword).run
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
+        }
+    }
 
     "fetchContactByEmail" should {
 
@@ -291,6 +296,34 @@ class ContactsServicesImplSpec
         }
 
     }
+    "getIterableFavoriteContacts" should {
+
+      "return iterable favorite contacts" in
+        new ContactsServicesScope with ContactsMockCursor  {
+
+          contentResolverWrapper.fetchAll[ContactEmail](any,any,any,any,any)(any) returns Seq.empty
+          contentResolverWrapper.fetchAll[ContactPhone](any,any,any,any,any)(any) returns Seq.empty
+          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+          contacts.foreach { c =>
+            val uri = mock[Uri]
+            uriCreator.withAppendedPath(any, ===(c.lookupKey)) returns uri
+            uri.toString returns c.photoUri
+          }
+          val result = contactsServices.getIterableFavoriteContacts.run
+
+          result must beLike {
+            case Right(iterator) =>
+              toSeq(iterator) shouldEqual contacts
+          }
+        }
+      "return an a RepositoryException when a exception is thrown " in
+        new AlphabeticalMockCursor with ContactsServicesScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+          val result = contactsServices.getIterableFavoriteContacts.run
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
+        }
+    }
 
     "getContactsWithPhone" should {
 
@@ -310,6 +343,34 @@ class ContactsServicesImplSpec
           result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
 
+    }
+    "getIterableContactsWithPhone" should {
+
+      "return iterable contacts with phone number" in
+        new ContactsServicesScope with ContactsMockCursor  {
+
+          contentResolverWrapper.fetchAll[ContactEmail](any,any,any,any,any)(any) returns Seq.empty
+          contentResolverWrapper.fetchAll[ContactPhone](any,any,any,any,any)(any) returns Seq.empty
+          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+          contacts.foreach { c =>
+            val uri = mock[Uri]
+            uriCreator.withAppendedPath(any, ===(c.lookupKey)) returns uri
+            uri.toString returns c.photoUri
+          }
+          val result = contactsServices.getIterableContactsWithPhone.run
+
+          result must beLike {
+            case Right(iterator) =>
+              toSeq(iterator) shouldEqual contacts
+          }
+        }
+      "return an a RepositoryException when a exception is thrown " in
+        new AlphabeticalMockCursor with ContactsServicesScope {
+
+          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
+          val result = contactsServices.getIterableContactsWithPhone.run
+          result must beAnInstanceOf[Left[ContactsServiceException, _]]
+        }
     }
 
     "catchMapPermission" should {
