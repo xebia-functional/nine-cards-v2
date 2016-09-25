@@ -138,6 +138,7 @@ object AnimationsUtils {
 
 }
 
+@deprecated("We should use ViewOps")
 object PositionsUtils {
 
   def calculateAnchorViewPosition(view: View): (Int, Int) = {
