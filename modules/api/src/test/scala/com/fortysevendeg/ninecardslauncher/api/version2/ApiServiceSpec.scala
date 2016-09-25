@@ -276,16 +276,18 @@ class ApiServiceSpec
 
       "return the status code and the response and call with the right category" in new ApiServiceScope {
 
+        val typePay = "FREE"
+
         mockedServiceClient.post[RecommendationsRequest, RecommendationsResponse](any, any, any, any, any)(any) returns
           serviceRight(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))
 
-        apiService.recommendations(category, recommendationsRequest, serviceMarketHeader) mustRight { r =>
+        apiService.recommendations(category, Option(typePay), recommendationsRequest, serviceMarketHeader) mustRight { r =>
           r.statusCode shouldEqual statusCodeOk
           r.data must beSome(recommendationsResponse)
         }
 
         there was one(mockedServiceClient).post(
-          path = s"/recommendations/$category",
+          path = s"/recommendations/$category/$typePay",
           headers = createMarketHeaders(recommendationsAuthToken),
           body = recommendationsRequest,
           reads = Some(recommendationsResponseReads),

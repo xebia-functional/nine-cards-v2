@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams
@@ -19,31 +18,6 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   var statuses = CollectionRecyclerStatuses()
-
-  var scrollListener: Option[NineOnScrollListener] = None
-
-  def createScrollListener(
-    scrolled: (Int, Int, Int) => Int,
-    scrollStateChanged: (Int, RecyclerView, Int) => Unit) = {
-    val sl = new NineOnScrollListener {
-      var scrollY = scrollListener map (_.scrollY) getOrElse 0
-      override def onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int): Unit = {
-        super.onScrolled(recyclerView, dx, dy)
-        if (statuses.registerScroll) {
-          scrollY = scrolled(scrollY, dx, dy)
-        }
-      }
-      override def onScrollStateChanged(recyclerView: RecyclerView, newState: Int): Unit = {
-        super.onScrollStateChanged(recyclerView, newState)
-        if (statuses.registerScroll) {
-          scrollStateChanged(scrollY, recyclerView, newState)
-        }
-      }
-    }
-    clearOnScrollListeners()
-    addOnScrollListener(sl)
-    scrollListener = Option(sl)
-  }
 
   override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(statuses.disableScroll) {
     true
@@ -72,15 +46,9 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
       case _ => super.attachLayoutAnimationParameters(child, params, index, count)
     }
 
-  abstract class NineOnScrollListener
-    extends OnScrollListener {
-    var scrollY: Int
-  }
-
 }
 
 case class CollectionRecyclerStatuses(
-  registerScroll: Boolean = true,
   disableScroll: Boolean = false,
   enableAnimation: Boolean = false)
 
