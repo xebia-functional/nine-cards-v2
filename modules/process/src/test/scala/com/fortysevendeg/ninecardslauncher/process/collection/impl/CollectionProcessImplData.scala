@@ -11,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.services.api.{RankAppsResponse, RankAppsResponseList, CategorizedDetailPackage}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessLocation
 import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, AddCardRequest => ServicesAddCardRequest}
@@ -76,6 +77,9 @@ trait CollectionProcessImplData {
   val spanY: Int = Random.nextInt(8)
 
   val statusCodeOk = 200
+
+  val latitude: Double = Random.nextDouble()
+  val longitude: Double = Random.nextDouble()
 
   val application1 = Application(
     name = name1,
@@ -477,6 +481,13 @@ trait CollectionProcessImplData {
         packages = item._2)
     }
 
-
+  val awarenessLocation =
+    AwarenessLocation(
+      latitude = latitude,
+      longitude = longitude,
+      countryCode = Some("ES"),
+      countryName = Some("Spain"),
+      addressLines = Seq("street", "city", "postal code")
+    )
 
 }
