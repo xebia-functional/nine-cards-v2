@@ -112,6 +112,38 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
     } yield location
   }
 
+  override def getWeather =
+    TaskService {
+      Task.async[AwarenessException Either WeatherState] { (scheduler, callback) =>
+        Awareness.SnapshotApi.getWeather(client)
+          .setResultCallback(new ResultCallback[WeatherResult]() {
+            override def onResult(weatherResult: WeatherResult): Unit = {
+              Option(weatherResult) match {
+                case Some(result) if result.getStatus.isSuccess =>
+                  Option(weatherResult.getWeather) match {
+                    case Some(weather) =>
+                      val weatherState = WeatherState(
+                        conditions = weather.getConditions map (ConditionWeather(_)),
+                        humidity = weather.getHumidity,
+                        dewPointCelsius = weather.getDewPoint(Weather.CELSIUS),
+                        dewPointFahrenheit = weather.getDewPoint(Weather.FAHRENHEIT),
+                        temperatureCelsius = weather.getTemperature(Weather.CELSIUS),
+                        temperatureFahrenheit = weather.getTemperature(Weather.FAHRENHEIT)
+                      )
+                      callback(Success(Either.right(weatherState)))
+                    case _ =>
+                      callback(Success(Either.left(AwarenessException("Weather not found"))))
+                  }
+                case _ =>
+                  callback(Success(Either.left(AwarenessException("Weather result not found"))))
+              }
+            }
+          })
+        Cancelable.empty
+
+      }
+    }
+
   private[this] def toAwarenessLocation(address: Address) =
     AwarenessLocation(
       latitude = address.getLatitude,
@@ -154,38 +186,6 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
           })
         Cancelable.empty
-      }
-    }
-
-  override def getWeather =
-    TaskService {
-      Task.async[AwarenessException Either WeatherState] { (scheduler, callback) =>
-        Awareness.SnapshotApi.getWeather(client)
-          .setResultCallback(new ResultCallback[WeatherResult]() {
-            override def onResult(weatherResult: WeatherResult): Unit = {
-              Option(weatherResult) match {
-                case Some(result) if result.getStatus.isSuccess =>
-                  Option(weatherResult.getWeather) match {
-                    case Some(weather) =>
-                      val weatherState = WeatherState(
-                        conditions = weather.getConditions map (ConditionWeather(_)),
-                        humidity = weather.getHumidity,
-                        dewPointCelsius = weather.getDewPoint(Weather.CELSIUS),
-                        dewPointFahrenheit = weather.getDewPoint(Weather.FAHRENHEIT),
-                        temperatureCelsius = weather.getTemperature(Weather.CELSIUS),
-                        temperatureFahrenheit = weather.getTemperature(Weather.FAHRENHEIT)
-                      )
-                      callback(Success(Either.right(weatherState)))
-                    case _ =>
-                      callback(Success(Either.left(AwarenessException("Weather not found"))))
-                  }
-                case _ =>
-                  callback(Success(Either.left(AwarenessException("Weather result not found"))))
-              }
-            }
-          })
-        Cancelable.empty
-
       }
     }
 
