@@ -193,7 +193,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
       (for {
         requestConfig <- apiUtils.getRequestConfig
         packagesByCategory <- getPackagesByCategory
-        location <- awarenessServices.getCountryLocation.map(Option(_)).resolveLeftTo(None)
+        location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
         result <- apiServices.rankApps(
           packagesByCategory map toServicesPackagesByCategory,
           location flatMap (_.countryCode))(requestConfig)

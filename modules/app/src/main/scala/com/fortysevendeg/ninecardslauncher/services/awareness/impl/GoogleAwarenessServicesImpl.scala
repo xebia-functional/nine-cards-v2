@@ -66,31 +66,40 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
   override def getLocation(implicit contextSupport: ContextSupport): TaskService[AwarenessLocation] = {
 
-    def loadAddress(locationState: LocationState) =
+    def getCurrentLocation =
       TaskService {
-        Task {
-          Either.catchNonFatal {
-            val address = new Geocoder(contextSupport.context)
-              .getFromLocation(locationState.latitude, locationState.longitude, 1)
-            Option(address) match {
-              case Some(list) if list.size() > 0 => toAwarenessLocation(list.get(0))
-              case None => throw new IllegalStateException("Geocoder doesn't return a valid address")
-            }
-          }.leftMap {
-            case e => AwarenessException(e.getMessage, Some(e))
-          }
+        Task.async[AwarenessException Either LocationState] {(scheduler, callback)  =>
+          Awareness.SnapshotApi.getLocation(client)
+            .setResultCallback(new ResultCallback[LocationResult]() {
+              override def onResult(locationResult: LocationResult): Unit = {
+                Option(locationResult) match {
+                  case Some(result) if result.getStatus.isSuccess =>
+                    Option(locationResult.getLocation) match {
+                      case Some(location) =>
+                        val locationState = LocationState(
+                          accuracy = location.getAccuracy,
+                          altitude = location.getAltitude,
+                          bearing = location.getBearing,
+                          latitude = location.getLatitude,
+                          longitude = location.getLongitude,
+                          speed = location.getSpeed,
+                          elapsedTime = location.getElapsedRealtimeNanos,
+                          time = location.getTime)
+                        callback(Success(Either.right(locationState)))
+                      case _ =>
+                        callback(Success(Either.left(AwarenessException("Location not found"))))
+                    }
+                  case _ =>
+                    callback(Success(Either.left(AwarenessException("Location result not found"))))
+                }
+              }
+
+            })
+          Cancelable.empty
         }
       }
 
-    for {
-      locationState <- getCurrentLocation
-      location <- loadAddress(locationState)
-    } yield location
-  }
-
-  override def getCountryLocation(implicit contextSupport: ContextSupport): TaskService[AwarenessLocation] = {
-
-    def loadCountryLocation(locationState: LocationState) =
+    def loadAddress(locationState: LocationState) =
       TaskService {
         Task {
           Either.catchNonFatal {
@@ -108,7 +117,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
     for {
       locationState <- getCurrentLocation
-      location <- loadCountryLocation(locationState)
+      location <- loadAddress(locationState)
     } yield location
   }
 
@@ -155,38 +164,5 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
   private[this] def toAddressLines(address: Address) = 0 to address.getMaxAddressLineIndex flatMap { index =>
     Option(address.getAddressLine(index))
   }
-
-  private[this] def getCurrentLocation =
-    TaskService {
-      Task.async[AwarenessException Either LocationState] {(scheduler, callback)  =>
-        Awareness.SnapshotApi.getLocation(client)
-          .setResultCallback(new ResultCallback[LocationResult]() {
-            override def onResult(locationResult: LocationResult): Unit = {
-              Option(locationResult) match {
-                case Some(result) if result.getStatus.isSuccess =>
-                  Option(locationResult.getLocation) match {
-                    case Some(location) =>
-                      val locationState = LocationState(
-                        accuracy = location.getAccuracy,
-                        altitude = location.getAltitude,
-                        bearing = location.getBearing,
-                        latitude = location.getLatitude,
-                        longitude = location.getLongitude,
-                        speed = location.getSpeed,
-                        elapsedTime = location.getElapsedRealtimeNanos,
-                        time = location.getTime)
-                      callback(Success(Either.right(locationState)))
-                    case _ =>
-                      callback(Success(Either.left(AwarenessException("Location not found"))))
-                  }
-                case _ =>
-                  callback(Success(Either.left(AwarenessException("Location result not found"))))
-              }
-            }
-
-          })
-        Cancelable.empty
-      }
-    }
 
 }

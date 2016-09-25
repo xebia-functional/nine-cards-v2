@@ -595,7 +595,7 @@ class CollectionProcessImplSpec
       new CollectionProcessScope {
 
         mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(seqServicesApp)))
-        mockAwarenessServices.getCountryLocation(any) returns TaskService(Task(Either.right(awarenessLocation)))
+        mockAwarenessServices.getLocation(any) returns TaskService(Task(Either.right(awarenessLocation)))
         mockApiServices.rankApps(any, any)(any) returns TaskService(Task(Either.right(rankAppsResponseList)))
 
         val result = collectionProcess.rankApps()(contextSupport).value.run
@@ -614,7 +614,7 @@ class CollectionProcessImplSpec
       new CollectionProcessScope {
 
         mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(seqServicesApp)))
-        mockAwarenessServices.getCountryLocation(any) returns TaskService(Task(Either.left(apiServiceException)))
+        mockAwarenessServices.getLocation(any) returns TaskService(Task(Either.left(apiServiceException)))
         mockApiServices.rankApps(any, any)(any) returns TaskService(Task(Either.right(rankAppsResponseList)))
 
         val result = collectionProcess.rankApps()(contextSupport).value.run
@@ -625,7 +625,7 @@ class CollectionProcessImplSpec
       new CollectionProcessScope {
 
         mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(seqServicesApp)))
-        mockAwarenessServices.getCountryLocation(any) returns TaskService(Task(Either.right(awarenessLocation)))
+        mockAwarenessServices.getLocation(any) returns TaskService(Task(Either.right(awarenessLocation)))
         mockApiServices.rankApps(any, any)(any) returns TaskService(Task(Either.left(apiServiceException)))
 
         val result = collectionProcess.rankApps()(contextSupport).value.run

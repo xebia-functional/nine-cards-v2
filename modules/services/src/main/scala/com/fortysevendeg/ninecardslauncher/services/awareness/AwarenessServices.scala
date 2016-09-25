@@ -30,14 +30,6 @@ trait AwarenessServices {
   def getLocation(implicit contextSupport: ContextSupport): TaskService[AwarenessLocation]
 
   /**
-    * Return information about current country location
-    *
-    * @return current country location
-    * @throws AwarenessException if there was an error with the request GoogleDrive api
-    */
-  def getCountryLocation(implicit contextSupport: ContextSupport): TaskService[AwarenessLocation]
-
-  /**
     * Return information about current weather
     *
     * @return current weather
