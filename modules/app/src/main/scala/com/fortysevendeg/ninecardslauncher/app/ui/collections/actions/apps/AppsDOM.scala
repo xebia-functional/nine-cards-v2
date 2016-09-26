@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 
@@ -14,6 +15,11 @@ trait AppsDOM {
   lazy val pullToTabsView = findView(TR.actions_pull_to_tabs)
 
   lazy val tabs = findView(TR.actions_tabs)
+
+  def getAdapter: Option[AppsAdapter] = Option(recycler.getAdapter) match {
+    case Some(a: AppsAdapter) => Some(a)
+    case _ => None
+  }
 
 }
 
