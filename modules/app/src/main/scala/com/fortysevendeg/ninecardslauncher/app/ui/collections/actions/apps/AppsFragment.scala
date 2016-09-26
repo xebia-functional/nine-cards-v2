@@ -2,19 +2,26 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
 
 import android.os.Bundle
 import android.view.View
+import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AllAppsCategory, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.R
 
 class AppsFragment
   extends BaseActionFragment
-  with AppsIuActionsImpl
+  with AppsIuActions
+  with AppsDOM
+  with AppsUiListener
+  with Conversions
   with UiExtensions { self =>
 
   val allApps = AllAppsCategory
 
-  override lazy val presenter = AppsPresenter(
+  lazy val appsJobs = AppsJobs(
     category = NineCardCategory(getString(Seq(getArguments), AppsFragment.categoryKey, AllAppsCategory.name)),
     actions = self)
 
@@ -22,13 +29,27 @@ class AppsFragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    presenter.initialize()
+    appsJobs.initialize().resolveAsync()
   }
 
   override def onDestroy(): Unit = {
-    presenter.destroy()
+    appsJobs.destroy().resolveAsync()
     super.onDestroy()
   }
+
+  override def loadApps(filter: AppsFilter): Unit =
+    appsJobs.loadApps(filter).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps(filter))
+
+  override def addApp(app: App): Unit = {
+    getActivity match {
+      case activity: GroupCollectionsUiListener =>
+        activity.addCards(Seq(toAddCardRequest(app)))
+        appsJobs.close().resolveAsync()
+      case _ =>
+    }
+  }
+
+  override def swapFilter(): Unit = appsJobs.swapFilter().resolveAsync()
 }
 
 object AppsFragment {

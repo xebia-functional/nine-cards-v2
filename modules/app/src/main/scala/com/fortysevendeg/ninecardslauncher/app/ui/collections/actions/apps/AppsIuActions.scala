@@ -4,10 +4,10 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.NineCardsCategoryOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
@@ -17,40 +17,30 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Pull
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps, TermCounter}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
-trait AppsIuActionsImpl
-  extends AppsIuActions
-  with NineCardIntentConversions
+trait AppsIuActions
+  extends NineCardIntentConversions
   with Styles {
 
-  self: TypedFindView with BaseActionFragment =>
-
-  implicit val presenter: AppsPresenter
+  dom: BaseActionFragment with AppsDOM with AppsUiListener =>
 
   val resistance = 2.4f
 
-  lazy val recycler = findView(TR.actions_recycler)
-
-  lazy val scrollerLayout = findView(TR.action_scroller_layout)
-
-  lazy val pullToTabsView = findView(TR.actions_pull_to_tabs)
-
-  lazy val tabs = findView(TR.actions_tabs)
-
   lazy val preferences = new NineCardsPreferencesValue
 
-  override def initialize(onlyAllApps: Boolean, category: NineCardCategory): Ui[_] = {
+  def initialize(onlyAllApps: Boolean, category: NineCardCategory): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferences)
     val pullToTabsTweaks = if (onlyAllApps) {
       pdvEnable(false)
     } else {
       ptvLinkTabs(
-        tabs = Some(tabs),
+        tabs = Some(dom.tabs),
         start = Ui.nop,
         end = Ui.nop) +
         ptvAddTabsAndActivate(generateTabs(category), 0, Some(colorPrimary)) +
@@ -58,7 +48,7 @@ trait AppsIuActionsImpl
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
             val filter = if (pos == 0) AppsByCategory else AllApps
-            presenter.loadApps(filter)
+            dom.loadApps(filter)
           }
         ))
     }
@@ -68,56 +58,52 @@ trait AppsIuActionsImpl
       dtvInflateMenu(R.menu.contact_dialog_menu) +
         dtvOnMenuItemClickListener(onItem = {
           case R.id.action_filter =>
-            (if (isTabsOpened) closeTabs() else openTabs()).run
+            dom.swapFilter()
             true
           case _ => false
         })
     }
-    (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
+    ((dom.scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
         dtbInit(colorPrimary) <~
         dtbChangeText(R.string.applications) <~
         menuTweak <~
         dtbNavigationOnClickListener((_) => unreveal())) ~
-      (pullToTabsView <~ pullToTabsTweaks) ~
-      (recycler <~ recyclerStyle <~ (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank)) ~
-      (tabs <~ tvClose)
+      (dom.pullToTabsView <~ pullToTabsTweaks) ~
+      (dom.recycler <~ recyclerStyle <~ (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank)) ~
+      (dom.tabs <~ tvClose)).toService
   }
 
-  override def showLoading(): Ui[_] = (loading <~ vVisible) ~ (recycler <~ vGone)
+  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (dom.recycler <~ vGone)).toService
 
-  override def closeTabs(): Ui[_] = (tabs <~ tvClose <~ hideTabs) ~ (recycler <~ showList)
+  def openTabs(): TaskService[Unit] = ((dom.tabs <~ tvOpen <~ showTabs) ~ (dom.recycler <~ hideList)).toService
 
-  override def destroy(): Ui[Any] = Ui {
+  def closeTabs(): TaskService[Unit] = ((dom.tabs <~ tvClose <~ hideTabs) ~ (dom.recycler <~ showList)).toService
+
+  def destroy(): TaskService[Unit] = Ui {
     getAdapter foreach(_.close())
-  }
+  }.toService
 
-  override def showErrorLoadingAppsInScreen(filter: AppsFilter): Ui[Any] =
-    showMessageInScreen(R.string.errorLoadingApps, error = true, presenter.loadApps(filter))
+  def showErrorLoadingAppsInScreen(filter: AppsFilter): TaskService[Unit] =
+    showMessageInScreen(R.string.errorLoadingApps, error = true, dom.loadApps(filter)).toService
 
-  override def showApps(
+  def showApps(
     category: NineCardCategory,
     filter: AppsFilter,
     apps: IterableApps,
     counters: Seq[TermCounter],
     reload: Boolean
-  ): Ui[Any] = if (reload) {
+  ): TaskService[Unit] = (if (reload) {
     reloadAppsAdapter(apps, counters, filter, category)
   } else {
-    generateAppsAdapter(apps, counters, filter, category, presenter.addApp)
-  }
+    generateAppsAdapter(apps, counters, filter, category, dom.addApp)
+  }).toService
 
-  override def appAdded(card: AddCardRequest): Ui[Any] = {
-    getActivity match {
-      case activity: GroupCollectionsUiListener => activity.addCards(Seq(card))
-      case _ =>
-    }
-    unreveal()
-  }
+  def close(): TaskService[Unit] = unreveal().toService
 
-  override def isTabsOpened: Boolean = (tabs ~> isOpened).get
+  def isTabsOpened: TaskService[Boolean] = TaskService.right((dom.tabs ~> isOpened).get)
 
-  private[this] def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
+  private[this] def showData: Ui[_] = (loading <~ vGone) ~ (dom.recycler <~ vVisible)
 
   private[this] def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
@@ -133,14 +119,14 @@ trait AppsIuActionsImpl
       clickListener = clickListener,
       longClickListener = None)
     showData ~
-      (recycler <~
+      (dom.recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter)) ~
       (toolbar <~ dtbChangeText(filter match {
         case AppsByCategory => resGetString(R.string.appsByCategory, categoryName)
         case _ => resGetString(R.string.allApps)
       })) ~
-      (scrollerLayout <~ fslLinkRecycler(recycler) <~ fslCounters(counters))
+      (dom.scrollerLayout <~ fslLinkRecycler(dom.recycler) <~ fslCounters(counters))
   }
 
   private[this] def reloadAppsAdapter(
@@ -156,12 +142,12 @@ trait AppsIuActionsImpl
             case AppsByCategory => resGetString(R.string.appsByCategory, categoryName)
             case _ => resGetString(R.string.allApps)
           })) ~
-          (scrollerLayout <~ fslReset <~ fslCounters(counters)) ~
-          (recycler <~ rvScrollToTop)
+          (dom.scrollerLayout <~ fslReset <~ fslCounters(counters)) ~
+          (dom.recycler <~ rvScrollToTop)
       } getOrElse showGeneralError)
   }
 
-  private[this] def getAdapter: Option[AppsAdapter] = Option(recycler.getAdapter) match {
+  private[this] def getAdapter: Option[AppsAdapter] = Option(dom.recycler.getAdapter) match {
     case Some(a: AppsAdapter) => Some(a)
     case _ => None
   }
@@ -172,7 +158,5 @@ trait AppsIuActionsImpl
       resGetString(category.getStringResource) getOrElse getString(R.string.appsByCategory)),
     TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.all_apps))
   )
-
-  private[this] def openTabs(): Ui[_] = (tabs <~ tvOpen <~ showTabs) ~ (recycler <~ hideList)
 
 }
