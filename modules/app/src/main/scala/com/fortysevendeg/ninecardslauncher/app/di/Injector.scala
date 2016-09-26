@@ -7,6 +7,8 @@ import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
 import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.process.accounts.UserAccountsProcess
+import com.fortysevendeg.ninecardslauncher.process.accounts.impl.UserAccountsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
 import com.fortysevendeg.ninecardslauncher.process.cloud.impl.CloudStorageProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
@@ -16,14 +18,12 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.device.DeviceProcess
 import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.intents.impl.LauncherExecutorProcessImpl
+import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.moment.impl.MomentProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentProcess, MomentProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.recognition.RecognitionProcess
 import com.fortysevendeg.ninecardslauncher.process.recognition.impl.RecognitionProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.accounts.UserAccountsProcess
-import com.fortysevendeg.ninecardslauncher.process.accounts.impl.UserAccountsProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.intents.impl.LauncherExecutorProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendationsProcess
 import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsProcess
@@ -41,7 +41,6 @@ import com.fortysevendeg.ninecardslauncher.process.userv1.impl.UserV1ProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.widget.WidgetProcess
 import com.fortysevendeg.ninecardslauncher.process.widget.impl.WidgetProcessImpl
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
-import com.fortysevendeg.ninecardslauncher.services.accounts.impl.AccountsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.analytics.impl.AnalyticsTrackServices
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
@@ -280,10 +279,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   lazy val observerRegister = new ObserverRegister(uriCreator)
 
-  lazy val userAccountsProcess: UserAccountsProcess = {
-    val services = new AccountsServicesImpl
-    new UserAccountsProcessImpl(services)
-  }
+  lazy val userAccountsProcess: UserAccountsProcess = new UserAccountsProcessImpl
 
   lazy val launcherExecutorProcess: LauncherExecutorProcess = {
     val config = LauncherExecutorProcessConfig(

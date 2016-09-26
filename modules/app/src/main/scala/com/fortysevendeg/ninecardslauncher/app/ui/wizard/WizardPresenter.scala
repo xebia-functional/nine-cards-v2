@@ -19,7 +19,7 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.accounts.AccountsProcessOperationCancelledException
+import com.fortysevendeg.ninecardslauncher.process.accounts.UserAccountsProcessOperationCancelledException
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageProcess, ImplicitsCloudStorageProcessExceptions}
@@ -271,7 +271,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
         requestGooglePermission(account, client)
       },
       onException = (ex: Throwable) => ex match {
-        case ex: AccountsProcessOperationCancelledException =>
+        case ex: UserAccountsProcessOperationCancelledException =>
           showErrorDialog(
             message = R.string.errorAndroidMarketPermissionNotAccepted,
             action = () => requestAndroidMarketPermission(account, client),
@@ -288,7 +288,7 @@ class WizardPresenter(actions: WizardUiActions)(implicit contextWrapper: Activit
     di.userAccountsProcess.getAuthToken(account, scopes).resolveAsync2(
       onResult = (_) => clientStatuses.driveApiClient foreach (_.connect()),
       onException = (ex: Throwable) => ex match {
-        case ex: AccountsProcessOperationCancelledException =>
+        case ex: UserAccountsProcessOperationCancelledException =>
           showErrorDialog(
             message = R.string.errorGooglePermissionNotAccepted,
             action = () => requestGooglePermission(account, client),
