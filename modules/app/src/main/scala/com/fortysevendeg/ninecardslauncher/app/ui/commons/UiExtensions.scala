@@ -51,6 +51,14 @@ object SafeUi {
   def uiStartIntentForResult(intent: Intent, requestCode: Int)(implicit c: ActivityContextWrapper): Ui[Unit] =
     startIntent(_.startActivityForResult(intent, requestCode))
 
+  def uiStartServiceIntent(intent: Intent)(implicit c: ActivityContextWrapper): Ui[Unit] =
+    Ui {
+      Try(c.bestAvailable.startService(intent)) match {
+        case Failure(e) => AppLog.printErrorMessage(e)
+        case _ =>
+      }
+    }
+
   private[this] def startIntent(f: (Activity) => Unit)(implicit c: ActivityContextWrapper): Ui[Unit] =
     Ui {
       Try(c.original.get foreach f) match {

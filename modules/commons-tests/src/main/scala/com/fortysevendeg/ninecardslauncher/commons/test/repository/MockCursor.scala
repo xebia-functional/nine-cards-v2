@@ -22,6 +22,8 @@ case object ShortDataType extends CursorDataType
 
 case object StringDataType extends CursorDataType
 
+case object BooleanDataType extends CursorDataType
+
 trait MockCursor extends Mockito {
 
   val mockCursor = mock[Cursor]
@@ -76,12 +78,14 @@ trait MockCursor extends Mockito {
     mockMoveToNext(size = size)
 
     data foreach {
-      case (column, index, Nil, cursorDataType) =>
+      case (column, index, valueSeq, cursorDataType) if valueSeq.isEmpty =>
         mockGetColumnIndex(column, index)
       case (column, index, valueSeq, cursorDataType) =>
         mockGetColumnIndex(column, index)
         mockGetData(index, valueSeq, cursorDataType)
     }
   }
+
+  def booleanToInt(b: Boolean): Int = if (b) 1 else 0
 
 }
