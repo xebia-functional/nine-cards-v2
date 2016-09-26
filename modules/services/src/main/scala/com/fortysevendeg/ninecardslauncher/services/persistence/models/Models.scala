@@ -6,7 +6,6 @@ case class App(
   packageName: String,
   className: String,
   category: String,
-  imagePath: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
