@@ -42,8 +42,8 @@ class AppsFragment
 
   override def addApp(app: App): Unit = {
     getActivity match {
-      case activity: GroupCollectionsUiListener =>
-        activity.addCards(Seq(toAddCardRequest(app)))
+      case listener: GroupCollectionsUiListener =>
+        listener.addCards(Seq(toAddCardRequest(app)))
         appsJobs.close().resolveAsync()
       case _ =>
     }
