@@ -19,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Step
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -242,6 +243,12 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
       message = R.string.errorAccountsMessage,
       action = dom.onClickOkSelectAccountsDialog,
       negativeAction = dom.onClickCancelSelectAccountsDialog)
+
+  def registerUiDriveCallbacks(serviceClient: GoogleServiceClient): TaskService[Unit] =
+    Ui(serviceClient.registerCallbacks(dom.getDriveCallbacks)).toService
+
+  def registerUiGoogleCallbacks(serviceClient: GoogleServiceClient): TaskService[Unit] =
+    Ui(serviceClient.registerCallbacks(dom.getGoogleCallbacks)).toService
 
   private[this] def showErrorDialog(message: Int, action: () => Unit, negativeAction: () => Unit): TaskService[Unit] =
     TaskService[Unit] {

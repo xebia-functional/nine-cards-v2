@@ -4,7 +4,6 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.ReadContacts
@@ -16,6 +15,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.google._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.accounts.AccountsProcessOperationCancelledException
@@ -24,9 +24,6 @@ import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDev
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1ConfigurationException
 import com.fortysevendeg.ninecardslauncher.process.userv1.models.UserV1Device
 import com.fortysevendeg.ninecardslauncher2.R
-import com.google.android.gms.auth.api.Auth
-import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}
-import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 
@@ -74,7 +71,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
   def stop(): TaskService[Unit] = {
 
-    def tryToClose(maybeClient: Option[GoogleApiClient]): Try[Unit] =
+    def tryToClose(maybeClient: Option[GoogleServiceClient]): Try[Unit] =
       maybeClient map (c => Try(c.disconnect())) getOrElse Success((): Unit)
 
     TaskService {
@@ -156,11 +153,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
       case (`resolveGooglePlayConnection`, _) =>
         actions.showErrorConnectingGoogle()
       case (`resolveConnectedUser`, Activity.RESULT_OK) =>
-        val mailTokenId = Option(Auth.GoogleSignInApi.getSignInResultFromIntent(data)) match {
-          case Some(result) if result.isSuccess =>
-            Option(result.getSignInAccount) flatMap (acct => Option(acct.getIdToken))
-          case _ => None
-        }
+        val mailTokenId = clientStatuses.plusApiClient flatMap (_.readTokenIdFromSignIn(data))
         clientStatuses = clientStatuses.copy(mailTokenId = mailTokenId)
         tryToConnectGoogleApiClient()
       case (`resolveConnectedUser`, _) =>
@@ -176,7 +169,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
         case None => TaskService(Task(Right((): Unit)))
       }
 
-    def storeDriveApiClient(driveApiClient: GoogleApiClient): Unit =
+    def storeDriveApiClient(driveApiClient: GoogleServiceClient): Unit =
       clientStatuses = clientStatuses.copy(driveApiClient = Option(driveApiClient))
 
     def storeAndroidMarketToken(token: String): Unit =
@@ -241,7 +234,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
   def driveConnected(): TaskService[Unit] = googleSignIn()
 
-  def driveConnectionFailed(connectionResult: ConnectionResult): TaskService[Unit] =
+  def driveConnectionFailed(connectionResult: GoogleServiceClientError): TaskService[Unit] =
     onConnectionFailed(connectionResult)
 
   def plusConnected(): TaskService[Unit] =
@@ -255,18 +248,16 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
       case None => actions.goToUser()
     }
 
-  def plusConnectionFailed(connectionResult: ConnectionResult): TaskService[Unit] =
+  def plusConnectionFailed(connectionResult: GoogleServiceClientError): TaskService[Unit] =
     onConnectionFailed(connectionResult)
 
   def googleSignIn(): TaskService[Unit] = {
 
-    def storePlusApiClient(plusApiClient: GoogleApiClient): Unit =
+    def storePlusApiClient(plusApiClient: GoogleServiceClient): Unit =
       clientStatuses = clientStatuses.copy(plusApiClient = Option(plusApiClient))
 
-    def signInIntentService(plusApiClient: GoogleApiClient): TaskService[Unit] = {
-      val signInIntent = Auth.GoogleSignInApi.getSignInIntent(plusApiClient)
-      uiStartIntentForResult(signInIntent, resolveConnectedUser).toService
-    }
+    def signInIntentService(plusApiClient: GoogleServiceClient): TaskService[Unit] =
+      uiStartIntentForResult(plusApiClient.getSignInIntent, resolveConnectedUser).toService
 
     clientStatuses.email match {
       case Some(email) =>
@@ -281,14 +272,12 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     }
   }
 
-  private[this] def onConnectionFailed(connectionResult: ConnectionResult): TaskService[Unit] = {
+  private[this] def onConnectionFailed(connectionResult: GoogleServiceClientError): TaskService[Unit] = {
 
     def showErrorDialog(): TaskService[Unit] = withActivity { activity =>
       TaskService {
         CatchAll[UiException] {
-          GoogleApiAvailability.getInstance()
-            .getErrorDialog(activity, connectionResult.getErrorCode, resolveGooglePlayConnection)
-            .show()
+          connectionResult.getErrorDialog(activity, resolveGooglePlayConnection).show()
         }
       }
     }
@@ -297,14 +286,12 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
       withActivity { activity =>
         TaskService {
           CatchAll[UiException] {
-            connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)
+            val pendingIntent = connectionResult.getResolution
+            activity.startIntentSenderForResult(pendingIntent.getIntentSender, resolveGooglePlayConnection, javaNull, 0, 0, 0)
           }
         }
       }
-    } else if (
-      connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||
-        connectionResult.getErrorCode == ConnectionResult.SERVICE_MISSING ||
-        connectionResult.getErrorCode == ConnectionResult.SERVICE_DISABLED) {
+    } else if (connectionResult.shouldShowErrorDialog) {
       for {
         _ <- actions.goToUser()
         _ <- showErrorDialog()
@@ -331,13 +318,13 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
   private[this] def tryToConnectGoogleApiClient(): TaskService[Unit] =
     clientStatuses.plusApiClient match {
-      case Some(client) => TaskService(CatchAll[UiException](client.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)))
+      case Some(client) => TaskService(CatchAll[UiException](client.connectSignInModeOptional()))
       case None => googleSignIn()
     }
 
   private[this] def loadDevices(maybeProfileName: Option[String]): TaskService[Unit] = {
 
-    def storeOnCloud(client: GoogleApiClient, cloudStorageDevices: Seq[CloudStorageDeviceData]) =
+    def storeOnCloud(client: GoogleServiceClient, cloudStorageDevices: Seq[CloudStorageDeviceData]) =
       TaskService {
         val tasks = cloudStorageDevices map { deviceData =>
           di.cloudStorageProcess.createOrUpdateCloudStorageDevice(
@@ -364,7 +351,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
         }
 
     def verifyAndUpdate(
-      client: GoogleApiClient,
+      client: GoogleServiceClient,
       email: String,
       cloudStorageResources: Seq[CloudStorageDeviceSummary]) = {
 
@@ -397,7 +384,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     }
 
     def loadCloudDevices(
-      client: GoogleApiClient,
+      client: GoogleServiceClient,
       email: String,
       androidMarketToken: String,
       emailTokenId: String) = {
@@ -425,8 +412,8 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
 case class WizardJobsStatuses(
   deviceKey: Option[String] = None,
-  driveApiClient: Option[GoogleApiClient] = None,
-  plusApiClient: Option[GoogleApiClient] = None,
+  driveApiClient: Option[GoogleServiceClient] = None,
+  plusApiClient: Option[GoogleServiceClient] = None,
   email: Option[String] = None,
   androidMarketToken: Option[String] = None,
   mailTokenId: Option[String] = None)

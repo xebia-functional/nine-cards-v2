@@ -3,9 +3,9 @@ package com.fortysevendeg.ninecardslauncher.services.drive
 import java.io.InputStream
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
-import com.google.android.gms.common.api.GoogleApiClient
 
 trait DriveServices {
 
@@ -14,7 +14,7 @@ trait DriveServices {
     * @param account the email for the client
     * @return the GoogleAPIClient
     */
-  def createDriveClient(account: String)(implicit contextSupport: ContextSupport): TaskService[GoogleApiClient]
+  def createDriveClient(account: String)(implicit contextSupport: ContextSupport): TaskService[GoogleServiceClient]
 
   /**
     * Return a sequence of files in the user app space filtered by fileType key
@@ -24,7 +24,7 @@ trait DriveServices {
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
   def listFiles(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     maybeFileType: Option[String]): TaskService[Seq[DriveServiceFileSummary]]
 
   /**
@@ -35,7 +35,7 @@ trait DriveServices {
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
   def fileExists(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     driveId: String): TaskService[Boolean]
 
   /**
@@ -46,7 +46,7 @@ trait DriveServices {
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
   def readFile(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     driveId: String): TaskService[DriveServiceFile]
 
   /**
@@ -61,7 +61,7 @@ trait DriveServices {
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
   def createFile(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     title: String,
     content: String,
     deviceId: String,
@@ -79,7 +79,7 @@ trait DriveServices {
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
   def createFile(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     title: String,
     content: InputStream,
     deviceId: String,
@@ -95,7 +95,7 @@ trait DriveServices {
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
   def updateFile(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     driveId: String,
     title: String,
     content: String): TaskService[DriveServiceFileSummary]
@@ -109,7 +109,7 @@ trait DriveServices {
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
   def updateFile(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     driveId: String,
     title: String,
     content: InputStream): TaskService[DriveServiceFileSummary]
@@ -122,7 +122,7 @@ trait DriveServices {
     * @throws DriveServicesException if there was an error or there is no file with this identifier
     */
   def deleteFile(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     driveId: String): TaskService[Unit]
 
 }

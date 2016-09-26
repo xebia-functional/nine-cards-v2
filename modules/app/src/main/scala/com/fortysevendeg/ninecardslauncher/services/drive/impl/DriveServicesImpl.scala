@@ -5,8 +5,10 @@ import java.io.{InputStream, OutputStreamWriter}
 import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.google.impl.GoogleServiceClientImpl
 import com.fortysevendeg.ninecardslauncher.services.drive._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
 import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
@@ -35,11 +37,12 @@ class DriveServicesImpl
     TaskService {
       Task {
         Either.catchNonFatal {
-          new GoogleApiClient.Builder(contextSupport.context)
-            .setAccountName(account)
-            .addApi(Drive.API)
-            .addScope(Drive.SCOPE_APPFOLDER)
-            .build()
+          new GoogleServiceClientImpl(
+            new GoogleApiClient.Builder(contextSupport.context)
+              .setAccountName(account)
+              .addApi(Drive.API)
+              .addScope(Drive.SCOPE_APPFOLDER)
+              .build())
         } leftMap {
           e: Throwable => DriveServicesException(message = e.getMessage, googleDriveError = None, cause = Some(e))
         }
@@ -47,7 +50,7 @@ class DriveServicesImpl
     }
 
   override def listFiles(
-    client: GoogleApiClient,
+    serviceClient: GoogleServiceClient,
     maybeFileType: Option[String]) = {
     val sortOrder = new SortOrder.Builder()
       .addSortAscending(SortableField.MODIFIED_DATE)
@@ -58,19 +61,26 @@ class DriveServicesImpl
         .setSortOrder(sortOrder)
         .build()
     }
-    searchFiles(client, maybeQuery)(seq => seq)
+
+    for {
+      client <- readApiClient(serviceClient)
+      result <- searchFiles(client, maybeQuery)(seq => seq)
+    } yield result
   }
 
   override def fileExists(
-    client: GoogleApiClient,
+    serviceClient: GoogleServiceClient,
     driveId: String) =
-    searchFiles(client, Option(queryUUID(driveId)))(_.nonEmpty)
+    for {
+      client <- readApiClient(serviceClient)
+      result <- searchFiles(client, Option(queryUUID(driveId)))(_.nonEmpty)
+    } yield result
 
   override def readFile(
-    client: GoogleApiClient,
+    serviceClient: GoogleServiceClient,
     driveId: String) = {
 
-    def readFileContentsService(driveId: DriveId): TaskService[String] =
+    def readFileContentsService(client: GoogleApiClient, driveId: DriveId): TaskService[String] =
       driveId.asDriveFile
         .open(client, DriveFile.MODE_READ_ONLY, javaNull)
         .withResultAsync { result =>
@@ -81,8 +91,9 @@ class DriveServicesImpl
         }
 
     for {
+      client <- readApiClient(serviceClient)
       metadataResult <- fetchDriveFile(client, driveId)
-      content <- readFileContentsService(metadataResult.metadata.getDriveId)
+      content <- readFileContentsService(client, metadataResult.metadata.getDriveId)
     } yield {
       val summary = toGoogleDriveFileSummary(metadataResult.metadata)
       tryToClose(metadataResult.buffer)
@@ -92,52 +103,72 @@ class DriveServicesImpl
   }
 
   override def createFile(
-    client: GoogleApiClient,
+    serviceClient: GoogleServiceClient,
     title: String, content: String, deviceId: String, fileType: String, mimeType: String) =
-    createNewFile(client, newUUID, title, deviceId, fileType, mimeType, _.write(content))
+    for {
+      client <- readApiClient(serviceClient)
+      result <- createNewFile(client, newUUID, title, deviceId, fileType, mimeType, _.write(content))
+    } yield result
 
   override def createFile(
-    client: GoogleApiClient,
+    serviceClient: GoogleServiceClient,
     title: String, content: InputStream, deviceId: String, fileType: String, mimeType: String) =
-    createNewFile(client, newUUID, title, deviceId, fileType, mimeType,
-      writer => Iterator
-        .continually(content.read)
-        .takeWhile(_ != -1)
-        .foreach(writer.write))
+    for {
+      client <- readApiClient(serviceClient)
+      result <- createNewFile(client, newUUID, title, deviceId, fileType, mimeType,
+        writer => Iterator
+          .continually(content.read)
+          .takeWhile(_ != -1)
+          .foreach(writer.write))
+    } yield result
 
   override def updateFile(
-    client: GoogleApiClient,
+    serviceClient: GoogleServiceClient,
     driveId: String, title: String, content: String) =
-    updateFileWith(client, driveId, title, _.write(content))
+    for {
+      client <- readApiClient(serviceClient)
+      result <- updateFileWith(client, driveId, title, _.write(content))
+    } yield result
+
 
   override def updateFile(
-    client: GoogleApiClient,
+    serviceClient: GoogleServiceClient,
     driveId: String, title: String, content: InputStream) =
-    updateFileWith(
-      client,
-      driveId,
-      title,
-      writer => Iterator
-        .continually(content.read)
-        .takeWhile(_ != -1)
-        .foreach(writer.write))
+    for {
+      client <- readApiClient(serviceClient)
+      result <- updateFileWith(
+        client = client,
+        driveId = driveId,
+        title = title,
+        f = writer => Iterator
+          .continually(content.read)
+          .takeWhile(_ != -1)
+          .foreach(writer.write))
+    } yield result
 
   override def deleteFile(
-    client: GoogleApiClient,
+    serviceClient: GoogleServiceClient,
     driveId: String) = {
 
-    def deleteFileService(driveId: DriveId): TaskService[Unit] =
+    def deleteFileService(client: GoogleApiClient, driveId: DriveId): TaskService[Unit] =
       driveId
         .asDriveFile
         .delete(client)
         .withResultAsync(_ => Right(Unit))
 
     for {
+      client <- readApiClient(serviceClient)
       metadataResult <- fetchDriveFile(client, driveId)
-      _ <- deleteFileService(metadataResult.metadata.getDriveId)
+      _ <- deleteFileService(client, metadataResult.metadata.getDriveId)
       _ = tryToClose(metadataResult.buffer)
     } yield ()
   }
+
+  private[this] def readApiClient(client: GoogleServiceClient): TaskService[GoogleApiClient] =
+    client match {
+      case c: GoogleServiceClientImpl => TaskService(Task(Right(c.googleApiClient)))
+      case _ => TaskService(Task(Left(DriveServicesException(s"Can't read Google API client from $client"))))
+    }
 
   private[this] def newUUID = com.gilt.timeuuid.TimeUuid().toString
 

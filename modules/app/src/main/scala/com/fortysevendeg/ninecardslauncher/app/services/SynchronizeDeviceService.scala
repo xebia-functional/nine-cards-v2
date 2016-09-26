@@ -19,10 +19,10 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.UpdateSharedCollection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.R
-import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 import monix.eval.Task
 import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
 
 class SynchronizeDeviceService
   extends IntentService("synchronizeDeviceService")
@@ -62,9 +62,9 @@ class SynchronizeDeviceService
     case _ => None
   }
 
-  override def connected(client: GoogleApiClient): Unit = {
+  override def connected(client: GoogleServiceClient): Unit = {
 
-    def sync(client: GoogleApiClient): TaskService[Unit] = {
+    def sync: TaskService[Unit] = {
       for {
         collections <- di.collectionProcess.getCollections
         moments <- di.momentProcess.getMoments
@@ -86,7 +86,7 @@ class SynchronizeDeviceService
       } yield ()
     }
 
-    sync(client).resolveAsync2(
+    sync.resolveAsync2(
       _ => sendStateAndFinish(stateSuccess),
       throwable => {
         error(

@@ -16,13 +16,13 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{Connection
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 import play.api.libs.json.Json
@@ -219,7 +219,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def printDeviceInfo(cloudId: String): Unit = {
 
-    def printInfo(client: GoogleApiClient, cloudId: String) =
+    def printInfo(client: GoogleServiceClient, cloudId: String) =
       di.cloudStorageProcess.getRawCloudStorageDevice(client , cloudId) map { device =>
         AppLog.info(s"----------------------------- Device Info -----------------------------")
         AppLog.info(s" Cloud id: ${device.cloudId}")
@@ -239,7 +239,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   private[this] def copyOrRenameDevice(maybeName: Option[String], cloudId: String, actualName: String, copy: Boolean): Unit = {
 
-    def createOrUpdate(name: String, client: GoogleApiClient, cloudId: String) =
+    def createOrUpdate(name: String, client: GoogleServiceClient, cloudId: String) =
       for {
         device <- di.cloudStorageProcess.getCloudStorageDevice(client, cloudId)
         maybeCloudId = if (copy) None else Some(cloudId)
@@ -268,7 +268,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   private[this] def tryToConnect(): Unit = clientStatuses.apiClient foreach (_.connect())
 
   private[this] def loadUserAccounts(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     filterOutResourceIds: Seq[String] = Seq.empty): Unit = {
 
     def toAccountSync(d: CloudStorageDeviceSummary, current: Boolean = false): AccountSync =
@@ -292,9 +292,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
           currentDevicesWithHeader ++ otherDevices
       }
 
-    def loadAccounts(
-      client: GoogleApiClient,
-      filterOutResourceIds: Seq[String] = Seq.empty) = {
+    def loadAccounts(filterOutResourceIds: Seq[String] = Seq.empty) = {
       di.cloudStorageProcess.getCloudStorageDevices(client).map { devices =>
         val filteredDevices = if (filterOutResourceIds.isEmpty) {
           devices
@@ -305,7 +303,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
       }
     }
 
-    loadAccounts(client, filterOutResourceIds).resolveAsyncUi2(
+    loadAccounts(filterOutResourceIds).resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
       onResult = accountSyncs => {
         syncEnabled = true
@@ -320,7 +318,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     )
   }
 
-  private[this] def withConnectedClient[R](f: (GoogleApiClient) => R) = {
+  private[this] def withConnectedClient[R](f: (GoogleServiceClient) => R) = {
 
     def loadUserEmail() = di.userProcess.getUser.map(_.email)
 
@@ -349,7 +347,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
 object Statuses {
 
-  case class GoogleApiClientStatuses(apiClient: Option[GoogleApiClient] = None)
+  case class GoogleApiClientStatuses(apiClient: Option[GoogleServiceClient] = None)
 
 }
 

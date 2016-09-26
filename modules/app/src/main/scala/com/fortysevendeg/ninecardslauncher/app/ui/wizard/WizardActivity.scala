@@ -9,13 +9,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, Ui
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.commons.google.{ConnectionSuspendedCause, GoogleServiceClientCallback, GoogleServiceClientError}
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageClientListener
-import com.fortysevendeg.ninecardslauncher.process.social.{SocialProfileClientListener, SocialProfileProcessException}
+import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcessException
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
-import com.google.android.gms.common.ConnectionResult
 import macroid.Contexts
 
 class WizardActivity
@@ -24,8 +23,6 @@ class WizardActivity
   with ContextSupportProvider
   with TypedFindView
   with BroadcastDispatcher
-  with SocialProfileClientListener
-  with CloudStorageClientListener
   with WizardDOM
   with WizardUiListener { self =>
 
@@ -93,22 +90,6 @@ class WizardActivity
   override def onClickFinishWizardButton(): Unit =
     jobs.finishWizard().resolveAsync()
 
-  override def onPlusConnectionSuspended(cause: Int): Unit = {}
-
-  override def onPlusConnected(): Unit =
-    jobs.plusConnected().resolveAsyncServiceOr(onException)
-
-  override def onPlusConnectionFailed(connectionResult: ConnectionResult): Unit =
-    jobs.plusConnectionFailed(connectionResult).resolveAsync()
-
-  override def onDriveConnectionSuspended(cause: Int): Unit = {}
-
-  override def onDriveConnected(): Unit =
-    jobs.driveConnected().resolveAsyncServiceOr(onException)
-
-  override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit =
-    jobs.driveConnectionFailed(connectionResult).resolveAsync()
-
   override def onClickOkMarketPermissionDialog(): Unit =
     jobs.requestAndroidMarketPermission().resolveAsyncServiceOr(onException)
 
@@ -131,6 +112,28 @@ class WizardActivity
 
   override def onClickCancelContactsPermissionDialog(): Unit =
     jobs.contactsPermissionDenied().resolveAsync()
+
+  override def getDriveCallbacks: GoogleServiceClientCallback = new GoogleServiceClientCallback {
+
+    override def onConnectionSuspended(cause: ConnectionSuspendedCause): Unit = {}
+
+    override def onConnected(): Unit =
+      jobs.driveConnected().resolveAsyncServiceOr(onException)
+
+    override def onConnectionFailed(error: GoogleServiceClientError): Unit =
+      jobs.driveConnectionFailed(error).resolveAsync()
+  }
+
+  override def getGoogleCallbacks: GoogleServiceClientCallback = new GoogleServiceClientCallback {
+
+    override def onConnectionSuspended(cause: ConnectionSuspendedCause): Unit = {}
+
+    override def onConnected(): Unit =
+      jobs.plusConnected().resolveAsyncServiceOr(onException)
+
+    override def onConnectionFailed(error: GoogleServiceClientError): Unit =
+      jobs.plusConnectionFailed(error).resolveAsync()
+  }
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
     case ex: SocialProfileProcessException if ex.recoverable => jobs.googleSignIn()

@@ -2,11 +2,11 @@ package com.fortysevendeg.ninecardslauncher.app.services
 
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.{GetByName, ImplicitsDeviceException}
-import com.google.android.gms.common.api.GoogleApiClient
 
 trait CreateCollectionsTasks
   extends Conversions
@@ -18,7 +18,7 @@ trait CreateCollectionsTasks
   val dockAppsSize = 4
 
   def createNewConfiguration(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     deviceToken: Option[String]): TaskService[Seq[Collection]] = {
     for {
       _ <- di.deviceProcess.resetSavedItems()
@@ -42,7 +42,7 @@ trait CreateCollectionsTasks
   }
 
   def loadConfiguration(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     deviceToken: Option[String],
     cloudId: String): TaskService[Seq[Collection]] = {
     for {

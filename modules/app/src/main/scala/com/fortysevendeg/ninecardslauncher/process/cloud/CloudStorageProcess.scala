@@ -1,10 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud
 
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
 
 trait CloudStorageProcess {
 
@@ -14,7 +13,7 @@ trait CloudStorageProcess {
     * @param account the email for the client
     * @return the GoogleAPIClient
     */
-  def createCloudStorageClient(account: String)(implicit contextSupport: ContextSupport): TaskService[GoogleApiClient]
+  def createCloudStorageClient(account: String)(implicit contextSupport: ContextSupport): TaskService[GoogleServiceClient]
 
   /**
     * Transform a sequence of devices into a tuple containing a possible configuration for the actual device and a list
@@ -25,7 +24,7 @@ trait CloudStorageProcess {
     * @throws CloudStorageProcessException if the service throws an error
     */
   def prepareForActualDevice[T <: CloudStorageResource](
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     devices: Seq[T])(implicit context: ContextSupport): TaskService[(Option[T], Seq[T])]
 
   /**
@@ -35,7 +34,7 @@ trait CloudStorageProcess {
     * @throws CloudStorageProcessException if the service throws an error
     */
   def getCloudStorageDevices(
-    client: GoogleApiClient)(implicit context: ContextSupport): TaskService[Seq[CloudStorageDeviceSummary]]
+    client: GoogleServiceClient)(implicit context: ContextSupport): TaskService[Seq[CloudStorageDeviceSummary]]
 
   /**
     * Fetch a `CloudStorageDevice` by his id
@@ -44,7 +43,7 @@ trait CloudStorageProcess {
     * @throws CloudStorageProcessException if the device not exists or the service throws an error
     */
   def getCloudStorageDevice(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     cloudStorageResourceId: String): TaskService[CloudStorageDevice]
 
   /**
@@ -55,7 +54,7 @@ trait CloudStorageProcess {
     * @throws CloudStorageProcessException if the device not exists or the service throws an error
     */
   def getRawCloudStorageDevice(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     cloudStorageResourceId: String): TaskService[RawCloudStorageDevice]
 
   /**
@@ -67,7 +66,7 @@ trait CloudStorageProcess {
     * @throws CloudStorageProcessException if the services throws an error
     */
   def createOrUpdateCloudStorageDevice(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     maybeCloudId: Option[String],
     cloudStorageDevice: CloudStorageDeviceData): TaskService[CloudStorageDevice]
 
@@ -81,7 +80,7 @@ trait CloudStorageProcess {
     * @throws CloudStorageProcessException if the services throws an error
     */
   def createOrUpdateActualCloudStorageDevice(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     collections: Seq[CloudStorageCollection],
     moments: Seq[CloudStorageMoment],
     dockApps: Seq[CloudStorageDockApp])(implicit context: ContextSupport): TaskService[CloudStorageDevice]
@@ -94,7 +93,7 @@ trait CloudStorageProcess {
     * @throws CloudStorageProcessException if the device not exists or the service throws an error
     */
   def deleteCloudStorageDevice(
-    client: GoogleApiClient,
+    client: GoogleServiceClient,
     cloudId: String): TaskService[Unit]
 
 }
@@ -102,15 +101,5 @@ trait CloudStorageProcess {
 object CloudStorageProcess {
 
   val actualDocumentVersion = 1
-
-}
-
-trait CloudStorageClientListener {
-
-  def onDriveConnectionSuspended(cause: Int): Unit
-
-  def onDriveConnected(): Unit
-
-  def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit
 
 }

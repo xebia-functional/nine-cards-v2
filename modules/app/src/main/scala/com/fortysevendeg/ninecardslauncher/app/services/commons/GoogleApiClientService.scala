@@ -7,9 +7,9 @@ import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 
 
@@ -22,7 +22,7 @@ trait GoogleDriveApiClientService
 
   private[this] def tryToConnect(): Unit = statuses.apiClient foreach (_.connect())
 
-  def connected(client: GoogleApiClient): Unit
+  def connected(client: GoogleServiceClient): Unit
 
   def error(message: String, maybeException: Option[Throwable] = None): Unit
 
@@ -60,4 +60,4 @@ trait GoogleDriveApiClientService
 
 }
 
-case class GoogleApiClientStatuses(apiClient: Option[GoogleApiClient] = None)
+case class GoogleApiClientStatuses(apiClient: Option[GoogleServiceClient] = None)
