@@ -6,8 +6,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget
 
 trait WidgetConversions {
 
-  def toWidgetSeq(widget: Seq[RepositoryWidget]): Seq[Widget] = widget map toWidget
-
   def toAddWidgetRequestSeq(momentId: Int, widgetRequest: Seq[SaveWidgetRequest]) =
     widgetRequest map (widget => toAddWidgetRequest(momentId, widget))
 

@@ -55,37 +55,41 @@ class CreateCollectionService
 
   override def onStartCommand(intent: Intent, flags: Int, startId: Int): Int = {
 
+    def startProcess() = {
+      selectedCloudId = Option(intent) flatMap { i =>
+        if (i.hasExtra(cloudIdKey)) {
+          val key = i.getStringExtra(cloudIdKey)
+          if (key == newConfiguration) None else Some(key)
+        } else None
+      }
+
+      setState(stateCreatingCollections)
+
+      val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
+      val title: String = getString(R.string.workingNotificationTitle)
+      builder.
+        setContentTitle(title).
+        setTicker(title).
+        setContentText(getString(R.string.downloadingAppsInfoMessage)).
+        setSmallIcon(R.drawable.icon_notification_working).
+        setProgress(1, maxProgress, true).
+        setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
+
+      startForeground(notificationId, builder.build)
+
+      synchronizeDevice
+    }
+
     registerDispatchers
 
     val hasKey = Option(intent) exists (_.hasExtra(cloudIdKey))
 
     di.userProcess.getUser.resolveAsync2(
       onResult = (user: User) => {
-        if (hasKey && user.deviceCloudId.isEmpty) {
-          selectedCloudId = Option(intent) flatMap { i =>
-            if (i.hasExtra(cloudIdKey)) {
-              val key = i.getStringExtra(cloudIdKey)
-              if (key == newConfiguration) None else Some(key)
-            } else None
-          }
-
-          setState(stateCreatingCollections)
-
-          val notificationIntent: Intent = new Intent(this, classOf[WizardActivity])
-          val title: String = getString(R.string.workingNotificationTitle)
-          builder.
-            setContentTitle(title).
-            setTicker(title).
-            setContentText(getString(R.string.downloadingAppsInfoMessage)).
-            setSmallIcon(R.drawable.icon_notification_working).
-            setProgress(1, maxProgress, true).
-            setContentIntent(PendingIntent.getActivity(this, getUniqueId, notificationIntent, 0))
-
-          startForeground(notificationId, builder.build)
-
-          synchronizeDevice
-        } else {
-          closeService()
+        (hasKey, user.deviceCloudId.isEmpty) match {
+          case (true, true) => startProcess()
+          case (false, _ ) => setState(stateCloudIdNotSend, close = true)
+          case (_, false) => setState(stateUserCloudIdPresent, close = true)
         }
       },
       onException = (_) => closeService()

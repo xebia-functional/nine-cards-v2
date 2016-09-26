@@ -8,8 +8,6 @@ trait CollectionConversions
   extends CardConversions
   with MomentConversions {
 
-  def toCollectionSeq(collections: Seq[RepositoryCollection]): Seq[Collection] = collections map toCollection
-
   def toCollection(collection: RepositoryCollection): Collection =
     Collection(
       id = collection.id,
