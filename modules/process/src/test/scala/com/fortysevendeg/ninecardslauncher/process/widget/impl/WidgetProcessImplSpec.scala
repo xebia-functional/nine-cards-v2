@@ -269,6 +269,32 @@ class WidgetProcessImplSpec
       }
   }
 
+  "updateAppWidgetId"  should {
+
+    "returns a successful answer for a valid request" in
+      new WidgetProcessScope {
+
+        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(servicesWidgetOption)))
+        mockPersistenceServices.updateWidget(any) returns TaskService(Task(Either.right(widgetId)))
+
+        val result = widgetProcess.updateAppWidgetId(widgetId,appWidgetId).value.run
+        result must beLike {
+          case Right(appWidget) =>
+            appWidget.appWidgetId shouldEqual Some(appWidgetId)
+        }
+
+      }
+
+    "returns a WidgetException if the service throws a exception deleting the moments" in
+      new WidgetProcessScope {
+
+        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(servicesWidgetOption)))
+        mockPersistenceServices.updateWidget(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        val result = widgetProcess.updateAppWidgetId(widgetId,appWidgetId).value.run
+        result must beAnInstanceOf[Left[AppWidgetException, _]]
+      }
+  }
+
   "deleteAllWidgets" should {
 
     "returns a successful answer for a valid request" in
