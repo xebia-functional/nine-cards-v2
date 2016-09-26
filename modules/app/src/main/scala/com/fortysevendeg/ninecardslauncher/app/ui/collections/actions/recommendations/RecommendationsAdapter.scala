@@ -58,14 +58,11 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
     findView(TR.recommendation_item_screenshot2),
     findView(TR.recommendation_item_screenshot3))
 
-  lazy val description = findView(TR.recommendation_item_description)
-
   lazy val installNow = findView(TR.recommendation_item_install_now)
 
   ((root <~ cardRootStyle) ~
     (name <~ textStyle) ~
     (downloads <~ leftDrawableTextStyle(R.drawable.icon_download)) ~
-    (description <~ textStyle) ~
     (tag <~ textStyle) ~
     (installNow <~ buttonStyle)).run
 
@@ -77,7 +74,6 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
       (stars <~ ivSrc(tintDrawable(getStarDrawable(recommendedApp.stars)))) ~
       (name <~ tvText(recommendedApp.title)) ~
       (downloads <~ tvText(recommendedApp.downloads)) ~
-      (description <~ (recommendedApp.description map (d => tvText(d) + vVisible) getOrElse vGone)) ~
       (tag <~ tvText(if (recommendedApp.free) resGetString(R.string.free) else "")) ~
       (content <~ vTag(position)) ~
       Ui.sequence(screensUi: _*) ~

@@ -6,8 +6,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
 
 trait UserConversions {
 
-  def toUserSeq(user: Seq[RepositoryUser]): Seq[User] = user map toUser
-
   def toUser(user: RepositoryUser): User =
     User(
       id = user.id,

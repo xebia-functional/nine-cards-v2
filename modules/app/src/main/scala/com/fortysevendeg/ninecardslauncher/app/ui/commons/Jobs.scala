@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.content.Intent
+import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher._
 import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
@@ -12,6 +13,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.ContextWrapper
+import monix.eval.Task
 
 
 class Jobs(implicit contextWrapper: ContextWrapper)
@@ -40,5 +42,11 @@ class Jobs(implicit contextWrapper: ContextWrapper)
   def sendBroadCastTask(broadAction: BroadAction): TaskService[Unit] = TaskService {
       CatchAll[UiException](sendBroadCast(broadAction))
   }
+
+  def withActivity(f: (AppCompatActivity => TaskService[Unit])) =
+    contextWrapper.original.get match {
+      case Some(activity: AppCompatActivity) => f(activity)
+      case _ => TaskService(Task(Right((): Unit)))
+    }
 
 }

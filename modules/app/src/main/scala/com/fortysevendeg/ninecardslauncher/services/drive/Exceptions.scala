@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.drive
 
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import com.google.android.gms.common.ConnectionResult
 
 sealed trait GoogleDriveError
 
@@ -16,8 +17,4 @@ case class DriveServicesException(message: String, googleDriveError: Option[Goog
 
   cause foreach initCause
 
-}
-
-trait ImplicitsDriveServicesExceptions {
-  implicit def driveServicesExceptionConverter = (t: Throwable) => DriveServicesException(t.getMessage, cause = Option(t))
 }

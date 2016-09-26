@@ -1,7 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
-import java.util.Date
-
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
@@ -19,9 +17,11 @@ trait CloudStorageProcessImplData {
 
   val anotherCloudId = "drive-id-2"
 
+  val account = "example@domain.com"
+
   val user = User(
     activeUserId,
-    email = Some("email"),
+    email = Some(account),
     apiKey = Some("api-key"),
     sessionToken = Some("session-token"),
     deviceToken = Some("device-token"),

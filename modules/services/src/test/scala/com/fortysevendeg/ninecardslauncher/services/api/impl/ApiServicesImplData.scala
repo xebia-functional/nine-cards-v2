@@ -115,12 +115,11 @@ trait ApiServicesImplData {
   def generateRecommendationApp =
     version2.RecommendationApp(
       packageName = Random.nextString(10),
-      name = Random.nextString(10),
+      title = Random.nextString(10),
       downloads = "500,000,000+",
       icon = Random.nextString(10),
       stars = Random.nextDouble() * 5,
       free = Random.nextBoolean(),
-      description = Random.nextString(10),
       screenshots = Seq("screenshot1", "screenshot2", "screenshot3"))
 
   def generateCollection(collectionApps: Seq[version2.CollectionApp]) =
@@ -236,9 +235,9 @@ trait ApiServicesImplData {
 
   val updateCollectionResponse = version2.UpdateCollectionResponse(sharedCollectionId, packageStats)
 
-  val recommendationsRequest = version2.RecommendationsRequest(None, excludedPackages, limit)
+  val recommendationsRequest = version2.RecommendationsRequest(excludedPackages, limit)
 
-  val recommendationsByAppsRequest = version2.RecommendationsByAppsRequest(packages, None, excludedPackages, limit)
+  val recommendationsByAppsRequest = version2.RecommendationsByAppsRequest(packages, excludedPackages, limit)
 
   val categorizeRequest = version2.CategorizeRequest(categorizeApps.map(_.packageName))
 

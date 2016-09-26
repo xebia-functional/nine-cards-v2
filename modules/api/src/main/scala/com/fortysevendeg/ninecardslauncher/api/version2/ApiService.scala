@@ -166,11 +166,15 @@ class ApiService(serviceClient: ServiceClient) {
 
   def recommendations(
     category: String,
+    filter: Option[String],
     request: RecommendationsRequest,
     header: ServiceMarketHeader)(
     implicit reads: Reads[RecommendationsResponse], writes: Writes[RecommendationsRequest]): TaskService[ServiceClientResponse[RecommendationsResponse]] = {
 
-    val path = s"$recommendationsPath/$category"
+    val path = filter match {
+      case Some(f) => s"$recommendationsPath/$category/$f"
+      case _ => s"$recommendationsPath/$category"
+    }
 
     serviceClient.post[RecommendationsRequest, RecommendationsResponse](
       path = path,

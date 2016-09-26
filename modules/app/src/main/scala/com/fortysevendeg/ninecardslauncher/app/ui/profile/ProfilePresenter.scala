@@ -25,6 +25,7 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
+import play.api.libs.json.Json
 
 import scala.util.{Failure, Try}
 
@@ -32,7 +33,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
   extends Jobs
   with Conversions
   with CollectionJobs
-  with GoogleDriveApiClientProvider {
+  with GoogleDriveApiClientProvider { // TODO - Use the CloudStorageProcess.createCloudStorageClient in Jobs
 
   import Statuses._
 
@@ -202,20 +203,13 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     }
   }
 
-  def deleteDevice(cloudId: String): Unit = {
-
-    def deleteAccountDevice(client: GoogleApiClient, cloudId: String) =  {
-      val cloudStorageProcess = di.createCloudStorageProcess(client)
-      cloudStorageProcess.deleteCloudStorageDevice(cloudId)
-    }
-
+  def deleteDevice(cloudId: String): Unit =
     withConnectedClient { client =>
-      deleteAccountDevice(client, cloudId).resolveAsyncUi2(
+      di.cloudStorageProcess.deleteCloudStorageDevice(client, cloudId).resolveAsyncUi2(
         onResult = (_) => Ui(loadUserAccounts(client, Seq(cloudId))),
         onException = (_) => actions.showContactUsError(() => Ui(loadUserAccounts(client))),
         onPreTask = () => actions.showLoading())
     }
-  }
 
   def copyDevice(maybeName: Option[String], cloudId: String, actualName: String): Unit =
     copyOrRenameDevice(maybeName, cloudId, actualName, copy = true)
@@ -225,19 +219,8 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   def printDeviceInfo(cloudId: String): Unit = {
 
-    def splitString(string: String, seq: Seq[String] = Seq.empty): Seq[String] = {
-      val limit = 1000
-
-      if (string.length < limit) {
-        seq :+ string
-      } else {
-        splitString(string.substring(limit), seq :+ string.substring(0, limit))
-      }
-    }
-
-    def printInfo(client: GoogleApiClient, cloudId: String) = {
-      val cloudStorageProcess = di.createCloudStorageProcess(client)
-      cloudStorageProcess.getRawCloudStorageDevice(cloudId) map { device =>
+    def printInfo(client: GoogleApiClient, cloudId: String) =
+      di.cloudStorageProcess.getRawCloudStorageDevice(client , cloudId) map { device =>
         AppLog.info(s"----------------------------- Device Info -----------------------------")
         AppLog.info(s" Cloud id: ${device.cloudId}")
         AppLog.info(s" UUID: ${device.uuid}")
@@ -246,12 +229,9 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
         AppLog.info(s" Created date: ${device.createdDate}")
         AppLog.info(s" Modified date: ${device.modifiedDate}")
         AppLog.info(s" JSON")
-        splitString(device.json) foreach { line =>
-          AppLog.info(line)
-        }
+        AppLog.info(Json.prettyPrint(Json.parse(device.json)))
         AppLog.info(s"----------------------------- Device Info -----------------------------")
       }
-    }
 
     withConnectedClient(client => printInfo(client, cloudId).resolveAsyncUi2())
 
@@ -259,14 +239,13 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
 
   private[this] def copyOrRenameDevice(maybeName: Option[String], cloudId: String, actualName: String, copy: Boolean): Unit = {
 
-    def createOrUpdate(name: String, client: GoogleApiClient, cloudId: String) = {
-      val cloudStorageProcess = di.createCloudStorageProcess(client)
+    def createOrUpdate(name: String, client: GoogleApiClient, cloudId: String) =
       for {
-        device <- cloudStorageProcess.getCloudStorageDevice(cloudId)
+        device <- di.cloudStorageProcess.getCloudStorageDevice(client, cloudId)
         maybeCloudId = if (copy) None else Some(cloudId)
-        _ <- cloudStorageProcess.createOrUpdateCloudStorageDevice(maybeCloudId, device.data.copy(deviceName = name))
+        _ <- di.cloudStorageProcess.createOrUpdateCloudStorageDevice(client, maybeCloudId, device.data.copy(deviceName = name))
       } yield ()
-    }
+
 
     maybeName match {
       case Some(name) if name.nonEmpty =>
@@ -316,8 +295,7 @@ class ProfilePresenter(actions: ProfileUiActions)(implicit contextWrapper: Activ
     def loadAccounts(
       client: GoogleApiClient,
       filterOutResourceIds: Seq[String] = Seq.empty) = {
-      val cloudStorageProcess = di.createCloudStorageProcess(client)
-      cloudStorageProcess.getCloudStorageDevices.map { devices =>
+      di.cloudStorageProcess.getCloudStorageDevices(client).map { devices =>
         val filteredDevices = if (filterOutResourceIds.isEmpty) {
           devices
         } else {

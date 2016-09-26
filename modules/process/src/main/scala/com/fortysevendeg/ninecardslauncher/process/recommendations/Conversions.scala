@@ -12,7 +12,6 @@ trait Conversions {
       icon = Some(app.icon),
       downloads = app.downloads,
       stars = app.stars,
-      description = Some(app.description),
       free = app.free,
       screenshots = app.screenshots)
 
