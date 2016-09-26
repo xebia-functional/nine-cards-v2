@@ -1,15 +1,17 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
 
-import android.support.v4.app.{DialogFragment, FragmentActivity}
+import android.os.Bundle
+import android.support.v4.app.{DialogFragment, Fragment, FragmentActivity, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.{CollectionAdapter, CollectionPresenter, CollectionsPagerAdapter, ScrollType}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
-import macroid.ActivityContextWrapper
+import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import macroid.{ActivityContextWrapper, FragmentBuilder, FragmentManagerContext, Ui}
 
 trait GroupCollectionsDOM {
 
@@ -103,6 +105,11 @@ trait GroupCollectionsDOM {
     }
   }
 
+  def launchDialog[F <: BaseActionFragment]
+  (fragmentBuilder: FragmentBuilder[F], args: Bundle)(implicit fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[Any] = {
+    fragmentBuilder.pass(args).framed(R.id.action_fragment_content, ActionsBehaviours.nameActionFragment)
+  }
+
 }
 
 trait GroupCollectionsUiListener {
@@ -114,5 +121,13 @@ trait GroupCollectionsUiListener {
   def isEditingMode: Boolean
 
   def showPublicCollectionDialog(collection: Collection): Unit
+
+  def showAppsDialog(args: Bundle): Ui[Any]
+
+  def showContactsDialog(args: Bundle): Ui[Any]
+
+  def showShortcutsDialog(args: Bundle): Ui[Any]
+
+  def showRecommendationsDialog(args: Bundle): Ui[Any]
 
 }

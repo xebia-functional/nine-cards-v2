@@ -9,6 +9,10 @@ import android.support.v7.app.AppCompatActivity
 import android.view._
 import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.PublishCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
@@ -19,6 +23,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{CircleOpe
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import macroid.FullDsl._
 import macroid._
 
 import scala.util.Try
@@ -201,6 +206,14 @@ class CollectionsDetailsActivity
   override def isEditingMode: Boolean = groupCollectionsJobs.statuses.collectionMode == EditingCollectionMode
 
   override def showPublicCollectionDialog(collection: Collection): Unit = showDialog(PublishCollectionFragment(collection))
+
+  override def showAppsDialog(args: Bundle): Ui[Any] = launchDialog(f[AppsFragment], args)
+
+  override def showContactsDialog(args: Bundle): Ui[Any] = launchDialog(f[ContactsFragment], args)
+
+  override def showShortcutsDialog(args: Bundle): Ui[Any] = launchDialog(f[ShortcutFragment], args)
+
+  override def showRecommendationsDialog(args: Bundle): Ui[Any] = launchDialog(f[RecommendationsFragment], args)
 }
 
 trait ActionsScreenListener {

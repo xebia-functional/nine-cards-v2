@@ -3,17 +3,17 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommend
 import android.os.Bundle
 import android.view.View
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsJobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher2.R
 
-class RecommendationsFragment(implicit collectionsPagerPresenter: CollectionsPagerPresenter)
+class RecommendationsFragment(implicit gcj: GroupCollectionsJobs)
   extends BaseActionFragment
   with RecommendationsUiActionsImpl
   with NineCardIntentConversions { self =>
 
-  override val collectionsPresenter: CollectionsPagerPresenter = collectionsPagerPresenter
+  override val groupCollectionsJobs: GroupCollectionsJobs = gcj
 
   lazy val nineCardCategory = NineCardCategory(getString(Seq(getArguments), RecommendationsFragment.categoryKey, ""))
 

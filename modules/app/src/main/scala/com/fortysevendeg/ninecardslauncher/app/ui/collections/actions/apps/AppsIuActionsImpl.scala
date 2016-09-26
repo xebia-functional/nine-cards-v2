@@ -4,7 +4,7 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsJobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.NineCardsCategoryOps._
@@ -17,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Pull
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps, TermCounter}
@@ -32,7 +33,7 @@ trait AppsIuActionsImpl
 
   implicit val presenter: AppsPresenter
 
-  val collectionsPresenter: CollectionsPagerPresenter
+  val groupCollectionsJobs: GroupCollectionsJobs
 
   val resistance = 2.4f
 
@@ -110,7 +111,7 @@ trait AppsIuActionsImpl
   }
 
   override def appAdded(card: AddCardRequest): Ui[Any] = {
-    collectionsPresenter.addCards(Seq(card))
+    groupCollectionsJobs.addCards(Seq(card)).resolveAsync()
     unreveal()
   }
 

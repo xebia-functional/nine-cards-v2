@@ -387,7 +387,7 @@ trait CollectionsUiActions
       closeCollectionMenu() ~
       (actionFragmentContent <~ vBackgroundColor(Color.BLACK.alpha(maxBackgroundPercent))) ~
       (fragmentContent <~ vClickable(true)) ~
-      addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
+      addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(ActionsBehaviours.nameActionFragment))
   }
 
 }

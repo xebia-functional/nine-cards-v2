@@ -10,7 +10,7 @@ import macroid.{ContextWrapper, Ui}
 import scala.collection.mutable
 
 case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collections: Seq[Collection], startPosition: Int)
-  (implicit context: ContextWrapper, collectionsPresenter: CollectionsPagerPresenter, theme: NineCardsTheme)
+  (implicit context: ContextWrapper, theme: NineCardsTheme)
   extends FragmentStatePagerAdapter(fragmentManager) {
 
   val fragments: mutable.WeakHashMap[Int, CollectionFragment] = mutable.WeakHashMap.empty
