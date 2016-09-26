@@ -222,7 +222,7 @@ trait CollectionProcessImplData {
         packageName = Option(packageName),
         cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
-        imagePath = imagePath,
+        imagePath = Option(imagePath),
         notification = Option(notification)))
 
   def createSeqServicesCard() =
@@ -234,7 +234,7 @@ trait CollectionProcessImplData {
         packageName = Option(packageName + item),
         cardType = cardType.name,
         intent = intent,
-        imagePath = imagePath,
+        imagePath = Option(imagePath),
         notification = Option(notification)))
 
   def createSeqUnformedApps(num: Int = 150) =
@@ -264,7 +264,7 @@ trait CollectionProcessImplData {
     packageName = Option(packageName),
     cardType = cardType.name,
     intent = intent,
-    imagePath = imagePath,
+    imagePath = Option(imagePath),
     notification = Option(notification))
   val seqServicesCard = Seq(servicesCard) ++ createSeqServicesCard()
 
@@ -275,7 +275,7 @@ trait CollectionProcessImplData {
       packageName = card.packageName.getOrElse(""),
       className = "",
       category = appsCategoryName,
-      imagePath = card.imagePath,
+      imagePath = card.imagePath.getOrElse(""),
       dateInstalled = 0,
       dateUpdate = 0,
       version = "",
@@ -427,7 +427,7 @@ trait CollectionProcessImplData {
         packageName = Option(packageName),
         cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
-        imagePath = imagePath)
+        imagePath = Option(imagePath))
     }
 
   def createSeqCardResponse(
@@ -448,7 +448,7 @@ trait CollectionProcessImplData {
         packageName = Option(packageName),
         cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
-        imagePath = imagePath,
+        imagePath = Option(imagePath),
         notification = Option(notification)))
 
   def updatedCard = Card(

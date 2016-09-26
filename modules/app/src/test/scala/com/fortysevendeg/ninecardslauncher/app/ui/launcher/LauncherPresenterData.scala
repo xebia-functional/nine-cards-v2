@@ -36,7 +36,7 @@ trait LauncherPresenterData {
       packageName = Some("package.name"),
       cardType = AppCardType,
       intent = NineCardIntent(NineCardIntentExtras()),
-      imagePath = "imagePath",
+      imagePath = Some("imagePath"),
       notification = Some("notification")
     )
   )

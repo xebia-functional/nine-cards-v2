@@ -171,7 +171,7 @@ trait MomentProcessImplData {
         packageName = Option(packageName),
         cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
-        imagePath = imagePath,
+        imagePath = Option(imagePath),
         notification = Option(notification)))
 
   def createSeqServicesCard(
@@ -192,7 +192,7 @@ trait MomentProcessImplData {
         packageName = Option(packageName),
         cardType = cardType.name,
         intent = intent,
-        imagePath = imagePath,
+        imagePath = Option(imagePath),
         notification = Option(notification)))
 
   def createSeqServicesApp(
