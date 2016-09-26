@@ -3,47 +3,45 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.process.theme.models.DrawerBackgroundColor
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
 import scala.math.Ordering.Implicits._
 
-trait ShortcutUiActionsImpl
-  extends ShortcutUiActions
-  with Styles {
+trait ShortcutUiActions
+  extends Styles {
 
-  self: TypedFindView with BaseActionFragment =>
+  self: BaseActionFragment with ShortcutsDOM with ShortcutsUiListener =>
 
-  implicit val presenter: ShortcutPresenter
-
-  lazy val recycler = findView(TR.actions_recycler)
-
-  override def initialize(): Ui[Any] =
-    (toolbar <~
+  def initialize(): TaskService[Unit] =
+    ((toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.shortcuts) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~
         recyclerStyle <~
-        vBackgroundColor(theme.get(DrawerBackgroundColor)))
+        vBackgroundColor(theme.get(DrawerBackgroundColor)))).toService
 
-  override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone)
+  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
 
-  override def close(): Ui[Any] = unreveal()
+  def close(): TaskService[Unit] = unreveal().toService
 
-  override def showErrorLoadingShortcutsInScreen(): Ui[Any] = showMessageInScreen(R.string.errorLoadingShortcuts, error = true, presenter.loadShortcuts())
+  def showErrorLoadingShortcutsInScreen(): TaskService[Unit] =
+    showMessageInScreen(R.string.errorLoadingShortcuts, error = true, loadShortcuts()).toService
 
-  override def loadShortcuts(shortcuts: Seq[Shortcut]): Ui[Any] = {
+  def loadShortcuts(shortcuts: Seq[Shortcut]): TaskService[Unit] = {
     val sortedShortcuts = shortcuts sortBy sortByTitle
-    val adapter = ShortcutAdapter(sortedShortcuts)
-    (recycler <~
+    val adapter = ShortcutAdapter(sortedShortcuts, onConfigure)
+    ((recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
-      (loading <~ vGone)
+      (loading <~ vGone)).toService
   }
 
   private[this] def sortByTitle(shortcut: Shortcut) = shortcut.title map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
