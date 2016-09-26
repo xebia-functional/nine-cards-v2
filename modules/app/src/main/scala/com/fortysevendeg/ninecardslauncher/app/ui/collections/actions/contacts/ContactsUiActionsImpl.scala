@@ -3,23 +3,22 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.ReadContacts
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsJobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
@@ -31,8 +30,6 @@ trait ContactsUiActionsImpl
   self: TypedFindView with BaseActionFragment =>
 
   implicit val contactsPresenter: ContactsPresenter
-
-  val groupCollectionsJobs: GroupCollectionsJobs
 
   val tagDialog = "dialog"
 
@@ -128,7 +125,10 @@ trait ContactsUiActionsImpl
   }
 
   override def contactAdded(card: AddCardRequest): Ui[Any] = {
-    groupCollectionsJobs.addCards(Seq(card)).resolveAsync()
+    getActivity match {
+      case activity: GroupCollectionsUiListener => activity.addCards(Seq(card))
+      case _ =>
+    }
     unreveal()
   }
 

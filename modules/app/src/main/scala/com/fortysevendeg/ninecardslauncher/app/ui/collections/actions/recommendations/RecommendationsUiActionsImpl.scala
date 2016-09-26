@@ -1,13 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations
 
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsJobs
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -18,8 +17,6 @@ trait RecommendationsUiActionsImpl
   with Styles {
 
   self: TypedFindView with BaseActionFragment =>
-
-  val groupCollectionsJobs: GroupCollectionsJobs
 
   implicit val presenter: RecommendationsPresenter
 
@@ -49,7 +46,10 @@ trait RecommendationsUiActionsImpl
   }
 
   override def recommendationAdded(card: AddCardRequest): Ui[Any] = {
-    groupCollectionsJobs.addCards(Seq(card)).resolveAsync()
+    getActivity match {
+      case activity: GroupCollectionsUiListener => activity.addCards(Seq(card))
+      case _ =>
+    }
     unreveal()
   }
 

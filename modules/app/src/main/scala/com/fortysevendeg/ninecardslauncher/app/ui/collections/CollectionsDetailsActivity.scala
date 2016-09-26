@@ -16,11 +16,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.PublishCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
@@ -214,6 +215,8 @@ class CollectionsDetailsActivity
   override def showShortcutsDialog(args: Bundle): Ui[Any] = launchDialog(f[ShortcutFragment], args)
 
   override def showRecommendationsDialog(args: Bundle): Ui[Any] = launchDialog(f[RecommendationsFragment], args)
+
+  override def addCards(cards: Seq[AddCardRequest]): Unit = groupCollectionsJobs.addCards(cards).resolveAsync()
 }
 
 trait ActionsScreenListener {
@@ -228,6 +231,8 @@ object CollectionsDetailsActivity {
   val iconToolbar = "icon_toolbar"
   val stateChanged = "state_changed"
   val snapshotName = "snapshot"
+
+  val cardAdded = "cardAdded"
 
   def getContentTransitionName(position: Int) = s"icon_$position"
 }

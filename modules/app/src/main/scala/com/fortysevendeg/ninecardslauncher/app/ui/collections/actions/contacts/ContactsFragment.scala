@@ -5,20 +5,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.view._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsJobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher2.R
 
-class ContactsFragment(implicit gcj: GroupCollectionsJobs)
+class ContactsFragment
   extends BaseActionFragment
   with ContactsUiActionsImpl
   with NineCardIntentConversions { self =>
 
   override lazy val contactsPresenter = new ContactsPresenter(self)
-
-  override val groupCollectionsJobs: GroupCollectionsJobs = gcj
 
   override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment
 

@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.{ActivityContextWrapper, FragmentBuilder, FragmentManagerContext, Ui}
@@ -94,6 +95,7 @@ trait GroupCollectionsDOM {
     }
   }
 
+  // TODO We should move this call to NavigationProcess #826
   def showDialog(dialog: DialogFragment)(implicit activityContextWrapper: ActivityContextWrapper): Unit = {
     activityContextWrapper.original.get match {
       case Some(activity: AppCompatActivity) =>
@@ -105,6 +107,7 @@ trait GroupCollectionsDOM {
     }
   }
 
+  // TODO We should move this call to NavigationProcess #826
   def launchDialog[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], args: Bundle)(implicit fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[Any] = {
     fragmentBuilder.pass(args).framed(R.id.action_fragment_content, ActionsBehaviours.nameActionFragment)
@@ -121,6 +124,8 @@ trait GroupCollectionsUiListener {
   def isEditingMode: Boolean
 
   def showPublicCollectionDialog(collection: Collection): Unit
+
+  def addCards(cards: Seq[AddCardRequest]): Unit
 
   def showAppsDialog(args: Bundle): Ui[Any]
 
