@@ -23,7 +23,7 @@ case class AddCardRequest(
   packageName: Option[String],
   cardType: CardType,
   intent: NineCardIntent,
-  imagePath: String) extends Serializable
+  imagePath: Option[String]) extends Serializable
 
 case class EditCollectionRequest(
   name: String,

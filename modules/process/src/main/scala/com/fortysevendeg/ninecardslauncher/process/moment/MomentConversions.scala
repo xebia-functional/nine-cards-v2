@@ -33,7 +33,7 @@ trait MomentConversions extends CommonConversions {
     packageName = Option(item.packageName),
     cardType = AppCardType.name,
     intent = nineCardIntentToJson(toNineCardIntent(item)),
-    imagePath = item.imagePath)
+    imagePath = Option(item.imagePath))
 
   def toPrivateCard(app: App): PrivateCard =
     PrivateCard(
@@ -41,7 +41,7 @@ trait MomentConversions extends CommonConversions {
       packageName = Some(app.packageName),
       cardType = AppCardType,
       intent = toNineCardIntent(app),
-      imagePath = app.imagePath)
+      imagePath = Option(app.imagePath))
 
   def toMomentWithCollection(moment: Moment, collection: Collection): MomentWithCollection =
     MomentWithCollection(

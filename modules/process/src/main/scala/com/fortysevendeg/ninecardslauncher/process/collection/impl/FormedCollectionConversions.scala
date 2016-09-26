@@ -53,7 +53,7 @@ trait FormedCollectionConversions
       packageName = nineCardIntent.extractPackageName(),
       cardType = item.itemType,
       intent = item.intent,
-      imagePath = item.uriImage getOrElse "" // UI will create the default image
+      imagePath = item.uriImage // UI will create the default image
     )
   }
 

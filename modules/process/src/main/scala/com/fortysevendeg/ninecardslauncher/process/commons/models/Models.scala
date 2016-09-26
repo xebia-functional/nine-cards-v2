@@ -23,7 +23,7 @@ case class Card(
   packageName: Option[String],
   cardType: CardType,
   intent: NineCardIntent,
-  imagePath: String,
+  imagePath: Option[String],
   notification: Option[String] = None) extends Serializable
 
 case class PrivateCollection(
@@ -40,7 +40,7 @@ case class PrivateCard(
   packageName: Option[String],
   cardType: CardType,
   intent: NineCardIntent,
-  imagePath: String)
+  imagePath: Option[String])
 
 case class Moment(
   id: Int,
