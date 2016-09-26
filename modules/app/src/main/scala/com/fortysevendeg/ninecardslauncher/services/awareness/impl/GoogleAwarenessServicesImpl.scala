@@ -1,7 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.services.awareness.impl
 
+import android.location.{Address, Geocoder}
 import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.awareness._
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.awareness.snapshot.{DetectedActivityResult, HeadphoneStateResult, LocationResult, WeatherResult}
@@ -12,8 +15,7 @@ import monix.execution.Cancelable
 
 import scala.util.Success
 
-
-class AwarenessServicesImpl(client: GoogleApiClient)
+class GoogleAwarenessServicesImpl(client: GoogleApiClient)
   extends AwarenessServices {
 
   override def getTypeActivity =
@@ -26,7 +28,7 @@ class AwarenessServicesImpl(client: GoogleApiClient)
                 case Some(result) if result.getStatus.isSuccess =>
                   Option(result.getActivityRecognitionResult) match {
                     case Some(recognition) if Option(recognition.getMostProbableActivity).isDefined =>
-                      callback(Success(Either.right(TypeActivity(recognition.getMostProbableActivity.getType))))
+                      callback(Success(Either.right(TypeActivity(KindActivity(recognition.getMostProbableActivity.getType)))))
                     case _ => callback(Success(Either.left(AwarenessException("Most probable activity not found"))))
                   }
                 case _ =>
@@ -62,38 +64,62 @@ class AwarenessServicesImpl(client: GoogleApiClient)
       }
     }
 
-  override def getLocation =
-    TaskService {
-      Task.async[AwarenessException Either LocationState] {(scheduler, callback)  =>
-        Awareness.SnapshotApi.getLocation(client)
-          .setResultCallback(new ResultCallback[LocationResult]() {
-            override def onResult(locationResult: LocationResult): Unit = {
-              Option(locationResult) match {
-                case Some(result) if result.getStatus.isSuccess =>
-                  Option(locationResult.getLocation) match {
-                    case Some(location) =>
-                      val locationState = LocationState(
-                        accuracy = location.getAccuracy,
-                        altitude = location.getAltitude,
-                        bearing = location.getBearing,
-                        latitude = location.getLatitude,
-                        longitude = location.getLongitude,
-                        speed = location.getSpeed,
-                        elapsedTime = location.getElapsedRealtimeNanos,
-                        time = location.getTime)
-                      callback(Success(Either.right(locationState)))
-                    case _ =>
-                      callback(Success(Either.left(AwarenessException("Location not found"))))
-                  }
-                case _ =>
-                  callback(Success(Either.left(AwarenessException("Location result not found"))))
-              }
-            }
+  override def getLocation(implicit contextSupport: ContextSupport): TaskService[AwarenessLocation] = {
 
-          })
-        Cancelable.empty
+    def getCurrentLocation =
+      TaskService {
+        Task.async[AwarenessException Either LocationState] {(scheduler, callback)  =>
+          Awareness.SnapshotApi.getLocation(client)
+            .setResultCallback(new ResultCallback[LocationResult]() {
+              override def onResult(locationResult: LocationResult): Unit = {
+                Option(locationResult) match {
+                  case Some(result) if result.getStatus.isSuccess =>
+                    Option(locationResult.getLocation) match {
+                      case Some(location) =>
+                        val locationState = LocationState(
+                          accuracy = location.getAccuracy,
+                          altitude = location.getAltitude,
+                          bearing = location.getBearing,
+                          latitude = location.getLatitude,
+                          longitude = location.getLongitude,
+                          speed = location.getSpeed,
+                          elapsedTime = location.getElapsedRealtimeNanos,
+                          time = location.getTime)
+                        callback(Success(Either.right(locationState)))
+                      case _ =>
+                        callback(Success(Either.left(AwarenessException("Location not found"))))
+                    }
+                  case _ =>
+                    callback(Success(Either.left(AwarenessException("Location result not found"))))
+                }
+              }
+
+            })
+          Cancelable.empty
+        }
       }
-    }
+
+    def loadAddress(locationState: LocationState) =
+      TaskService {
+        Task {
+          Either.catchNonFatal {
+            val addressList = new Geocoder(contextSupport.context)
+              .getFromLocation(locationState.latitude, locationState.longitude, 1)
+            Option(addressList) match {
+              case Some(list) if list.size() > 0 => toAwarenessLocation(list.get(0))
+              case None => throw new IllegalStateException("Geocoder doesn't return a valid address")
+            }
+          }.leftMap {
+            case e => AwarenessException(e.getMessage, Some(e))
+          }
+        }
+      }
+
+    for {
+      locationState <- getCurrentLocation
+      location <- loadAddress(locationState)
+    } yield location
+  }
 
   override def getWeather =
     TaskService {
@@ -106,7 +132,7 @@ class AwarenessServicesImpl(client: GoogleApiClient)
                   Option(weatherResult.getWeather) match {
                     case Some(weather) =>
                       val weatherState = WeatherState(
-                        conditions = weather.getConditions,
+                        conditions = weather.getConditions map (ConditionWeather(_)),
                         humidity = weather.getHumidity,
                         dewPointCelsius = weather.getDewPoint(Weather.CELSIUS),
                         dewPointFahrenheit = weather.getDewPoint(Weather.FAHRENHEIT),
@@ -126,5 +152,17 @@ class AwarenessServicesImpl(client: GoogleApiClient)
 
       }
     }
+
+  private[this] def toAwarenessLocation(address: Address) =
+    AwarenessLocation(
+      latitude = address.getLatitude,
+      longitude = address.getLongitude,
+      countryCode = Option(address.getCountryCode),
+      countryName = Option(address.getCountryName),
+      addressLines = toAddressLines(address))
+
+  private[this] def toAddressLines(address: Address) = 0 to address.getMaxAddressLineIndex flatMap { index =>
+    Option(address.getAddressLine(index))
+  }
 
 }

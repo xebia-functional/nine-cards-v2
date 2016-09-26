@@ -52,3 +52,7 @@ case class FormedMoment(
   headphone: Boolean,
   momentType: Option[NineCardsMoment],
   widgets: Option[Seq[FormedWidget]])
+
+case class PackagesByCategory(
+  category: String,
+  packages: Seq[String])
