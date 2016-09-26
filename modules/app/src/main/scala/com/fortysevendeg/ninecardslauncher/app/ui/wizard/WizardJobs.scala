@@ -63,8 +63,6 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
   val tagDialog = "wizard-dialog"
 
-//  val permissionChecker = new PermissionChecker
-
   var clientStatuses = WizardJobsStatuses()
 
   def initialize(): TaskService[Unit] = actions.initialize()
