@@ -61,14 +61,7 @@ trait AppsServicesImplSpecification
     packageManager.getInstallerPackageName(sampleApp1.packageName) returns androidFeedback
     packageManager.getInstallerPackageName(sampleApp2.packageName) returns androidFeedback
 
-    val mockAppsServicesImpl = new AppsServicesImpl {
-
-//      override def mainIntentByCategory(category: String): Intent = mockIntent
-
-//      override def phoneIntent(): Intent = mockIntent
-
-//      override def cameraIntent(): Intent = mockIntent
-    }
+    val mockAppsServicesImpl = new AppsServicesImpl
 
     val exception = AppsInstalledException("")
 

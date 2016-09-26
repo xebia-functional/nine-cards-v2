@@ -15,12 +15,12 @@ import cats.syntax.either._
 
 trait CollectionPersistenceServicesDataSpecification
   extends Specification
-    with DisjunctionMatchers
-    with Mockito {
+  with DisjunctionMatchers
+  with Mockito {
 
   trait CollectionServicesResponses
     extends RepositoryServicesScope
-      with PersistenceServicesData {
+    with PersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 

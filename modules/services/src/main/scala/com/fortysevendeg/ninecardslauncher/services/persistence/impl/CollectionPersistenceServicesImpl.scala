@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
-import cats.data.EitherT
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -27,7 +26,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       _ <- createOrUpdateMoments(Seq(request.moment map (_.copy(collectionId = Option(collection.id)))).flatten)
     } yield toCollection(collection).copy(cards = addedCards)).resolve[PersistenceServiceException]
 
-  def addCollections(requests: Seq[AddCollectionRequest])= {
+  def addCollections(requests: Seq[AddCollectionRequest]) = {
     val collectionsData = requests map toRepositoryCollectionData
     val cardsData = requests map (_.cards)
     val momentsData = requests map (_.moment)
