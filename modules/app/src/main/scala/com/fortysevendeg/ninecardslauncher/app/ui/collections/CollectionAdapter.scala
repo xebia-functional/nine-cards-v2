@@ -6,8 +6,10 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.{EditingCollectionMode, GroupCollectionsJobs}
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.CollectionAdapterStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{BackgroundSelectedDrawable, IconTypes, PathMorphDrawable}
@@ -15,6 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize,
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -26,7 +29,7 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     uiContext: UiContext[_],
     theme: NineCardsTheme,
     collectionPresenter: CollectionPresenter,
-    collectionsPagerPresenter: CollectionsPagerPresenter)
+    groupCollectionsJobs: GroupCollectionsJobs)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with ReorderItemTouchListener { self =>
 
@@ -81,7 +84,7 @@ case class ViewHolderCollectionAdapter(
   (implicit context: ActivityContextWrapper,
     theme: NineCardsTheme,
     collectionPresenter: CollectionPresenter,
-    collectionsPagerPresenter: CollectionsPagerPresenter)
+    groupCollectionsJobs: GroupCollectionsJobs)
   extends RecyclerView.ViewHolder(content)
   with CollectionAdapterStyles
   with TypedFindView {
@@ -115,13 +118,19 @@ case class ViewHolderCollectionAdapter(
     (iconContent <~ iconContentStyle(heightCard))).run
 
   def bind(card: Card)(implicit uiContext: UiContext[_]): Ui[_] = {
-    val selectedViewUi = collectionsPagerPresenter.statuses.collectionMode match {
-      case EditingCollectionMode => selectCard(collectionsPagerPresenter.statuses.positionsEditing.contains(getAdapterPosition))
+    val selectedViewUi = groupCollectionsJobs.statuses.collectionMode match {
+      case EditingCollectionMode => selectCard(groupCollectionsJobs.statuses.positionsEditing.contains(getAdapterPosition))
       case _ => if (selectedIcon.getVisibility == View.VISIBLE) clearSelectedCard() else Ui.nop
     }
     val text = if (showPositions) s"${card.position} - ${card.term}" else card.term
     (content <~ On.click {
-      Ui(collectionsPagerPresenter.performCard(card, getAdapterPosition))
+      Ui(groupCollectionsJobs.performCard(card, getAdapterPosition).resolveAsyncServiceOr { (e: Throwable) =>
+        e match {
+          case _: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
+            groupCollectionsJobs.requestCallPhonePermission(card.intent.extractPhone())
+          case _ => groupCollectionsJobs.showGenericError()
+        }
+      })
     }) ~
       (icon <~ vResize(IconsSize.getIconApp) <~ iconCardTransform(card)) ~
       (name <~ tvText(text) <~ tvSizeResource(FontSize.getSizeResource) <~ nameStyle(card.cardType)) ~

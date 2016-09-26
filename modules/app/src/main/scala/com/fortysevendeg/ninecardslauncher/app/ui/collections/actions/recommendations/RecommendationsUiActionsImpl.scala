@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations
 
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
@@ -17,8 +17,6 @@ trait RecommendationsUiActionsImpl
   with Styles {
 
   self: TypedFindView with BaseActionFragment =>
-
-  val collectionsPresenter: CollectionsPagerPresenter
 
   implicit val presenter: RecommendationsPresenter
 
@@ -48,7 +46,10 @@ trait RecommendationsUiActionsImpl
   }
 
   override def recommendationAdded(card: AddCardRequest): Ui[Any] = {
-    collectionsPresenter.addCards(Seq(card))
+    getActivity match {
+      case activity: GroupCollectionsUiListener => activity.addCards(Seq(card))
+      case _ =>
+    }
     unreveal()
   }
 

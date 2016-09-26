@@ -11,7 +11,11 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.{GroupCollectionsJobs, ToolbarJobs}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
@@ -42,7 +46,9 @@ trait CollectionUiActionsImpl
 
   implicit val uiContext: UiContext[_]
 
-  implicit val collectionsPagerPresenter: CollectionsPagerPresenter
+  implicit val groupCollectionsJobs: GroupCollectionsJobs
+
+  implicit val toolbarJobs: ToolbarJobs
 
   var statuses = CollectionStatuses()
 
@@ -97,31 +103,31 @@ trait CollectionUiActionsImpl
       }) <~
       rvAddOnScrollListener(
         scrolled = (dx, dy) => {
-          collectionsPagerPresenter.scrollY(dy)
+          toolbarJobs.scrollY(dy).resolveAsync()
         },
         scrollStateChanged = (newState) => {
-          if (newState == RecyclerView.SCROLL_STATE_DRAGGING) collectionsPagerPresenter.startScroll()
-          if (statuses.activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && !isPulling) {
-            collectionsPagerPresenter.scrollIdle()
-          }
+          val isDragging = newState == RecyclerView.SCROLL_STATE_DRAGGING
+          val isIdle = statuses.activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && !isPulling
+          (for {
+            _ <- groupCollectionsJobs.startScroll().resolveIf(isDragging, ())
+            _ <- toolbarJobs.scrollIdle().resolveIf(isIdle, ())
+          } yield ()).resolveAsync()
         }) <~
       (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)) ~
       (pullToCloseView <~
         pcvListener(PullToCloseListener(
-          close = () => collectionsPagerPresenter.close()
+          close = () => groupCollectionsJobs.close().resolveAsync()
         )) <~
         pdvPullingListener(PullingListener(
           start = () => (recyclerView <~ nrvDisableScroll(true)).run,
           end = () => (recyclerView <~ nrvDisableScroll(false)).run,
-          scroll = (scroll: Int, close: Boolean) => collectionsPagerPresenter.pullToClose(scroll, statuses.scrollType, close)
+          scroll = (scroll: Int, close: Boolean) => toolbarJobs.pullToClose(scroll, statuses.scrollType, close).resolveAsync()
         )))
   }
 
   override def reloadCards(): Ui[Any] = Ui {
-    collectionsPagerPresenter.reloadCards(false)
+    groupCollectionsJobs.reloadCards(false).resolveAsync()
   }
-
-  override def showMessageNotImplemented(): Ui[Any] = Ui(collectionsPagerPresenter.showMessageNotImplemented())
 
   override def showContactUsError(): Ui[Any] = showMessage(R.string.contactUsError)
 
@@ -141,7 +147,7 @@ trait CollectionUiActionsImpl
 
   override def moveToCollection(collections: Seq[Collection]): Ui[Any] = {
     Ui(new CollectionDialog(collections filterNot(c => getCurrentCollection.map(_.id).contains(c.id)),
-      c => collectionsPagerPresenter.moveToCollection(c, collections.indexWhere(_.id == c)),
+      c => groupCollectionsJobs.moveToCollection(c, collections.indexWhere(_.id == c)).resolveAsync(),
       () => ()).show())
   }
 
@@ -149,7 +155,7 @@ trait CollectionUiActionsImpl
     adapter.addCards(cards)
     updateScroll()
     val emptyCollection = adapter.collection.cards.isEmpty
-    if (!emptyCollection) collectionsPagerPresenter.firstItemInCollection()
+    if (!emptyCollection) groupCollectionsJobs.firstItemInCollection().resolveAsync()
     showData(emptyCollection)
   } getOrElse Ui.nop
 
@@ -158,10 +164,10 @@ trait CollectionUiActionsImpl
     val couldScroll = statuses.canScroll
     updateScroll()
     val emptyCollection = adapter.collection.cards.isEmpty
-    if (emptyCollection) collectionsPagerPresenter.emptyCollection()
+    if (emptyCollection) groupCollectionsJobs.emptyCollection().resolveAsync()
     if (couldScroll && !statuses.canScroll && statuses.scrollType == ScrollUp) {
       statuses = statuses.copy(scrollType = ScrollDown)
-      collectionsPagerPresenter.forceScrollType(ScrollDown)
+      toolbarJobs.forceScrollType(ScrollDown).resolveAsync()
     }
     showData(emptyCollection)
   } getOrElse Ui.nop
@@ -196,12 +202,12 @@ trait CollectionUiActionsImpl
       (emptyCollectionView <~ vGone)
 
   private[this] def openReorderMode: Ui[_] = {
-    collectionsPagerPresenter.openReorderMode(statuses.scrollType, statuses.canScroll)
+    groupCollectionsJobs.openReorderMode(statuses.scrollType, statuses.canScroll).resolveAsync()
     pullToCloseView <~ pdvEnable(false)
   }
 
   private[this] def closeReorderMode(position: Int): Ui[_] = {
-    collectionsPagerPresenter.closeReorderMode(position)
+    groupCollectionsJobs.closeReorderMode(position).resolveAsync()
     pullToCloseView <~ pdvEnable(true)
   }
 
@@ -243,7 +249,7 @@ trait CollectionUiActionsImpl
     } else Tweak.blank
 
     if (statuses.activeFragment && collection.position == 0 && collection.cards.isEmpty)
-      collectionsPagerPresenter.emptyCollection()
+      groupCollectionsJobs.emptyCollection().resolveAsync()
 
     recyclerView <~
       rvLayoutManager(new GridLayoutManager(fragmentContextWrapper.application, numInLine)) <~

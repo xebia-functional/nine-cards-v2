@@ -4,7 +4,7 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.NineCardsCategoryOps._
@@ -31,8 +31,6 @@ trait AppsIuActionsImpl
   self: TypedFindView with BaseActionFragment =>
 
   implicit val presenter: AppsPresenter
-
-  val collectionsPresenter: CollectionsPagerPresenter
 
   val resistance = 2.4f
 
@@ -110,7 +108,10 @@ trait AppsIuActionsImpl
   }
 
   override def appAdded(card: AddCardRequest): Ui[Any] = {
-    collectionsPresenter.addCards(Seq(card))
+    getActivity match {
+      case activity: GroupCollectionsUiListener => activity.addCards(Seq(card))
+      case _ =>
+    }
     unreveal()
   }
 

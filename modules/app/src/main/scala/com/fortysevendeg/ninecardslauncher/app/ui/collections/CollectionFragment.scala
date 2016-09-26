@@ -6,6 +6,8 @@ import android.view._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -31,15 +33,17 @@ class CollectionFragment
     maybeCollection = Option(getSerialize[Collection](Seq(getArguments), keyCollection, javaNull)),
     actions = self)
 
-  override lazy val collectionsPagerPresenter: CollectionsPagerPresenter = getActivity match {
-    case activity: CollectionsDetailsActivity => activity.collectionsPagerPresenter
+  override lazy val groupCollectionsJobs: GroupCollectionsJobs = getActivity match {
+    case activity: CollectionsDetailsActivity => activity.groupCollectionsJobs
     case _ => throw new IllegalArgumentException(badActivityMessage)
   }
 
-  override lazy val theme: NineCardsTheme = getActivity match {
-    case activity: CollectionsDetailsActivity => activity.theme
+  override lazy val toolbarJobs: ToolbarJobs = getActivity match {
+    case activity: CollectionsDetailsActivity => activity.toolbarJobs
     case _ => throw new IllegalArgumentException(badActivityMessage)
   }
+
+  override lazy val theme: NineCardsTheme = presenter.getTheme
 
   override lazy val uiContext: UiContext[Fragment] = FragmentUiContext(self)
 
@@ -72,9 +76,9 @@ class CollectionFragment
 
   override def onPrepareOptionsMenu(menu: Menu): Unit = {
     super.onPrepareOptionsMenu(menu)
-    (collectionsPagerPresenter.statuses.collectionMode, collectionsPagerPresenter.statuses.positionsEditing.toSeq.length) match {
+    (groupCollectionsJobs.statuses.collectionMode, groupCollectionsJobs.statuses.positionsEditing.toSeq.length) match {
       case (NormalCollectionMode, _) =>
-        collectionsPagerPresenter.statuses.publishStatus match {
+        groupCollectionsJobs.statuses.publishStatus match {
           case PublishedByMe =>
             menu.findItem(R.id.action_make_public).setEnabled(false).setTitle(resGetString(R.string.alreadyPublishedCollection))
             menu.findItem(R.id.action_share).setVisible(true)
@@ -102,13 +106,13 @@ class CollectionFragment
 
   override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
     case R.id.action_edit =>
-      collectionsPagerPresenter.editCard()
+      groupCollectionsJobs.editCard().resolveAsync()
       true
     case R.id.action_move_to_collection =>
       presenter.moveToCollection()
       true
     case R.id.action_delete =>
-      collectionsPagerPresenter.removeCards()
+      groupCollectionsJobs.removeCards().resolveAsync()
       true
     case _ => super.onOptionsItemSelected(item)
   }

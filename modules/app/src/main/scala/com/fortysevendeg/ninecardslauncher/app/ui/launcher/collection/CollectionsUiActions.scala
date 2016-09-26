@@ -19,15 +19,15 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
@@ -56,7 +56,7 @@ trait CollectionsUiActions
   extends Styles
   with ActionsBehaviours {
 
-  self: TypedFindView with SystemBarsTint with Contexts[AppCompatActivity] with LauncherUiActionsImpl =>
+  self: TypedFindView with Contexts[AppCompatActivity] with LauncherUiActionsImpl =>
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
@@ -190,7 +190,7 @@ trait CollectionsUiActions
       val snackbar = Snackbar.make(view, activityContextWrapper.application.getString(message, args:_*), Snackbar.LENGTH_SHORT)
       snackbar.getView.getLayoutParams match {
         case params : FrameLayout.LayoutParams =>
-          val bottom = KitKat.ifSupportedThen (getNavigationBarHeight) getOrElse 0
+          val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0
           params.setMargins(0, 0, 0, bottom)
           snackbar.getView.setLayoutParams(params)
         case _ =>
@@ -319,7 +319,7 @@ trait CollectionsUiActions
   }) flatMap (_.icon)
 
   private[this] def startOpenCollectionMenu(): Ui[Any] = {
-    val height = (menuLauncherContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
+    val height = (menuLauncherContent map (_.getHeight) getOrElse 0) + systemBarsTint.getNavigationBarHeight
     val isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get getOrElse false
     val workspaceType = if (isCollectionWorkspace) CollectionsWorkSpace else MomentWorkSpace
     (menuCollectionRoot <~ vVisible <~ vClearClick) ~
@@ -333,7 +333,7 @@ trait CollectionsUiActions
   private[this] def updateOpenCollectionMenu(percent: Float): Ui[Any] = {
     val backgroundPercent = maxBackgroundPercent * percent
     val colorBackground = Color.BLACK.alpha(backgroundPercent)
-    val height = (menuLauncherContent map (_.getHeight) getOrElse 0) + getNavigationBarHeight
+    val height = (menuLauncherContent map (_.getHeight) getOrElse 0) + systemBarsTint.getNavigationBarHeight
     val translate = height - (height * percent)
     (menuCollectionRoot <~ vBackgroundColor(colorBackground)) ~
       (menuLauncherContent <~ vTranslationY(translate)) ~
@@ -387,7 +387,7 @@ trait CollectionsUiActions
       closeCollectionMenu() ~
       (actionFragmentContent <~ vBackgroundColor(Color.BLACK.alpha(maxBackgroundPercent))) ~
       (fragmentContent <~ vClickable(true)) ~
-      addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
+      addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(ActionsBehaviours.nameActionFragment))
   }
 
 }

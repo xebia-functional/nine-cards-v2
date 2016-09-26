@@ -19,10 +19,8 @@ import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.{EditCardDialogFragment, PublishCollectionFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.{CollectionsPagerAdapter, ScrollDown, ScrollType, ScrollUp}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -61,9 +59,9 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   extends ActionsBehaviours
   with ImplicitsUiExceptions {
 
-  self : SystemBarsTint =>
-
   var statuses = GroupCollectionsStatuses()
+
+  lazy val systemBarsTint = new SystemBarsTint
 
   lazy val iconIndicatorDrawable = PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
@@ -98,7 +96,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (dom.icon <~ ivSrc(iconCollection.getIconDetail)) ~
-      Ui(initSystemStatusBarTint) ~
+      systemBarsTint.initSystemStatusBarTint() ~
       (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
 
   def showCollections(collections: Seq[Collection], position: Int): TaskService[Unit] =
@@ -254,7 +252,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   // FabButtonBehaviour
 
   def updateBarsInFabMenuHide(): Ui[Any] =
-    dom.getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
+    dom.getCurrentCollection map (c => systemBarsTint.updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
   var runnableHideFabButton: Option[RunnableWrapper] = None
 
@@ -309,7 +307,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   private[this] def updateBars(opened: Boolean): Ui[_] = if (opened) {
     updateBarsInFabMenuHide()
   } else {
-    updateStatusToBlack
+    systemBarsTint.updateStatusToBlack()
   }
 
   private[this] def animFabButton(open: Boolean) = Transformer {
@@ -357,7 +355,8 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       view: View =>
         val category = dom.getCurrentCollection flatMap (_.appsCategory)
         val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
-        showAction(f[AppsFragment], view, map)
+        val args = createBundle(view, map)
+        startDialog() ~ dom.showAppsDialog(args)
     }).get,
     (w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
       view: View =>
@@ -368,14 +367,21 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
         if (category.isEmpty && packages.isEmpty) {
           showError(R.string.recommendationError)
         } else {
-          showAction(f[RecommendationsFragment], view, map, packages)
+          val args = createBundle(view, map)
+          startDialog() ~ dom.showRecommendationsDialog(args)
         }
     }).get,
     (w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
-      view: View => showAction(f[ContactsFragment], view)
+      view: View => {
+        val args = createBundle(view)
+        startDialog() ~ dom.showContactsDialog(args)
+      }
     }).get,
     (w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
-      view: View => showAction(f[ShortcutFragment], view)
+      view: View => {
+        val args = createBundle(view)
+        startDialog() ~ dom.showShortcutsDialog(args)
+      }
     }).get
   )
 
@@ -385,7 +391,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
 
   private[this] def updateToolbarColor(color: Int): Ui[Any] =
     (dom.toolbar <~ vBackgroundColor(color)) ~
-      updateStatusColor(color)
+      systemBarsTint.updateStatusColor(color)
 
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] =
     Ui (dom.closeEditingMode()) ~
@@ -449,8 +455,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
             })
       } getOrElse Ui.nop)
 
-  private[this] def showAction[F <: BaseActionFragment]
-  (fragmentBuilder: FragmentBuilder[F], view: View, map: Map[String, NineCardCategory] = Map.empty, packages: Seq[String] = Seq.empty): Ui[Any] = {
+  private[this] def createBundle(view: View, map: Map[String, NineCardCategory] = Map.empty, packages: Seq[String] = Seq.empty): Bundle = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = dom.fabButton.getWidth
     val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map (_.calculateAnchorViewPosition) getOrElse(0, 0)
@@ -468,12 +473,12 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     })
     dom.getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
+    args
+  }
 
+  private[this] def startDialog(): Ui[Any] = {
     swapFabMenu(doUpdateBars = false) ~
-      (dom.fragmentContent <~ colorContentDialog(paint = true) <~ vClickable(true)) ~
-      fragmentBuilder.pass(args).framed(R.id.action_fragment_content, nameActionFragment)
-
-    // TODO addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(nameActionFragment))
+      (dom.fragmentContent <~ colorContentDialog(paint = true) <~ vClickable(true))
   }
 
   // Styles
