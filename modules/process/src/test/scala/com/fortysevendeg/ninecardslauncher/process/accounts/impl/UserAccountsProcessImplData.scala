@@ -16,4 +16,6 @@ trait UserAccountsProcessImplData {
 
   val authToken = "fake-auth-token"
 
+  val permissionCode= 100
+
 }

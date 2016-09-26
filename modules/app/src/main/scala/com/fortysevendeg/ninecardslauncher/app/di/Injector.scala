@@ -51,6 +51,7 @@ import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
 import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.intents.impl.LauncherIntentServicesImpl
+import com.fortysevendeg.ninecardslauncher.services.permissions.impl.AndroidSupportPermissionsServices
 import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.plus.impl.GooglePlusServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
@@ -279,7 +280,10 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   lazy val observerRegister = new ObserverRegister(uriCreator)
 
-  lazy val userAccountsProcess: UserAccountsProcess = new UserAccountsProcessImpl
+  lazy val userAccountsProcess: UserAccountsProcess = {
+    val permissionsServices = new AndroidSupportPermissionsServices
+    new UserAccountsProcessImpl(permissionsServices)
+  }
 
   lazy val launcherExecutorProcess: LauncherExecutorProcess = {
     val config = LauncherExecutorProcessConfig(
