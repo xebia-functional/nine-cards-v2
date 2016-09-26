@@ -7,7 +7,6 @@ case class UnformedApp(
   name: String,
   packageName: String,
   className: String,
-  imagePath: String,
   category: NineCardCategory)
 
 case class UnformedContact(

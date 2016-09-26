@@ -73,7 +73,7 @@ trait Conversions extends CommonConversions {
     packageName = Option(item.packageName),
     cardType = AppCardType.name,
     intent = nineCardIntentToJson(toNineCardIntent(item)),
-    imagePath = Option(item.imagePath))
+    imagePath = None)
 
   def toFetchCardsByCollectionRequest(collectionRequestId: Int): FetchCardsByCollectionRequest = FetchCardsByCollectionRequest(
     collectionId = collectionRequestId)
@@ -159,7 +159,7 @@ trait Conversions extends CommonConversions {
       packageName = Some(unformedApp.packageName),
       cardType = AppCardType,
       intent = toNineCardIntent(unformedApp),
-      imagePath = Option(unformedApp.imagePath))
+      imagePath = None)
 
   def toServicesPackagesByCategory(packagesByCategory: (String, Seq[String])) = {
     val (category, packages) = packagesByCategory

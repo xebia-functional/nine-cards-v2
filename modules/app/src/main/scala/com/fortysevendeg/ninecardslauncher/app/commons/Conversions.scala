@@ -24,7 +24,6 @@ trait Conversions
     name = app.name,
     packageName = app.packageName,
     className = app.className,
-    imagePath = "",
     category = app.category)
 
   def toSeqUnformedContact(contacts: Seq[Contact]): Seq[UnformedContact] = contacts map toUnformedContact
