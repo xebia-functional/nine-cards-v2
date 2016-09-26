@@ -2,6 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.contacts
 
 import android.database.Cursor
 import android.net.Uri
+import com.fortysevendeg.ninecardslauncher.commons.contentresolver.UriCreator
 import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._
 
@@ -16,8 +17,9 @@ object ContactsContentProvider {
   def nameFromCursor(cursor: Cursor): String =
     cursor.getString(cursor.getColumnIndex(Fields.DISPLAY_NAME))
 
-  def contactFromCursor(cursor: Cursor) =
+  def contactFromCursor(uriCreator: UriCreator, cursor: Cursor) =
     readContact(
+      uriCreator = uriCreator,
       cursor = cursor,
       lookupKeyColumn = Fields.LOOKUP_KEY,
       nameColumn = Fields.DISPLAY_NAME,
@@ -35,8 +37,9 @@ object ContactsContentProvider {
     Fields.EMAIL_TYPE,
     Fields.EMAIL_ADDRESS)
 
-  def contactFromEmailCursor(cursor: Cursor) =
+  def contactFromEmailCursor(uriCreator: UriCreator, cursor: Cursor) =
     readContact(
+      uriCreator = uriCreator,
       cursor = cursor,
       lookupKeyColumn = Fields.EMAIL_LOOKUP_KEY,
       nameColumn = Fields.EMAIL_DISPLAY_NAME,
@@ -73,8 +76,9 @@ object ContactsContentProvider {
     Fields.PHONE_NUMBER,
     Fields.PHONE_CUSTOM_RINGTONE)
 
-  def contactFromPhoneCursor(cursor: Cursor) =
+  def contactFromPhoneCursor(uriCreator: UriCreator, cursor: Cursor) =
     readContact(
+      uriCreator = uriCreator,
       cursor = cursor,
       lookupKeyColumn = Fields.PHONE_LOOKUP_KEY,
       nameColumn = Fields.PHONE_DISPLAY_NAME,
@@ -104,8 +108,8 @@ object ContactsContentProvider {
       case _ => PhoneOther
     }
 
-
   private[this] def readContact(
+    uriCreator: UriCreator,
     cursor: Cursor,
     lookupKeyColumn: String,
     nameColumn: String,
@@ -114,7 +118,7 @@ object ContactsContentProvider {
     val lookupKey = cursor.getString(cursor.getColumnIndex(lookupKeyColumn))
     Contact(
       lookupKey = lookupKey,
-      photoUri = Uri.withAppendedPath(Fields.PHOTO_URI, lookupKey).toString,
+      photoUri = uriCreator.withAppendedPath(Fields.PHOTO_URI, lookupKey).toString,
       name = cursor.getString(cursor.getColumnIndex(nameColumn)),
       hasPhone = cursor.getInt(cursor.getColumnIndex(hasPhoneColumn)) > 0,
       favorite = cursor.getInt(cursor.getColumnIndex(starredColumn)) > 0)

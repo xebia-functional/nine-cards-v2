@@ -42,6 +42,7 @@ trait ImageServicesImplSpecification
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
     val saveBitmap = SaveBitmap(bitmap = mock[Bitmap], bitmapResize = None)
+    val saveBitmapWithResize = SaveBitmap(bitmap = mock[Bitmap], bitmapResize = Option(BitmapResize(width = 10, height = 10)))
 
     val saveBitmapTask = TaskService(Task {
       Either.catchOnly[FileException] {
@@ -73,6 +74,19 @@ class ImageServicesImplSpec
         mockTasks.getPathByName(any)(any) returns saveBitmapTask
 
         val result = mockImageService.saveBitmap(saveBitmap)(contextSupport).value.run
+        result must beLike {
+          case Right(resultSaveBitmapPath) =>
+            resultSaveBitmapPath.path shouldEqual saveBitmapPath.path
+        }
+      }
+
+    "returns filename when the file exists with resize" in
+      new ImageServicesScope {
+
+        mockTasks.saveBitmap(any[File], any[Bitmap]) returns TaskService(Task(Either.catchOnly[FileException](())))
+        mockTasks.getPathByName(any)(any) returns saveBitmapTask
+
+        val result = mockImageService.saveBitmap(saveBitmapWithResize)(contextSupport).value.run
         result must beLike {
           case Right(resultSaveBitmapPath) =>
             resultSaveBitmapPath.path shouldEqual saveBitmapPath.path

@@ -248,7 +248,9 @@ trait PersistenceServicesData extends Conversions {
   val repoCard: RepositoryCard = seqRepoCard(0)
 
   val seqCollection: Seq[Collection] = createSeqCollection()
+  val seqCollectionWithoutMoment: Seq[Collection] = createSeqCollection(moment = None)
   val collection: Collection = seqCollection(0)
+  val collectionWithoutMoment: Collection = seqCollectionWithoutMoment(0)
   val repoCollectionData: RepositoryCollectionData = createRepoCollectionData()
   val seqRepoCollection: Seq[RepositoryCollection] = createSeqRepoCollection(data = repoCollectionData)
   val repoCollection: RepositoryCollection = seqRepoCollection(0)
@@ -266,6 +268,16 @@ trait PersistenceServicesData extends Conversions {
     notification: String = notification): AddCardRequest =
     AddCardRequest(
       collectionId = Option(collectionId),
+      position = position,
+      term = term,
+      packageName = Option(packageName),
+      cardType = cardType,
+      intent = intent,
+      imagePath = imagePath,
+      notification = Option(notification))
+
+  def createAddCardRequestWithoutCollectionId =
+    AddCardRequest(
       position = position,
       term = term,
       packageName = Option(packageName),
@@ -328,6 +340,10 @@ trait PersistenceServicesData extends Conversions {
       cards = createSeqAddCardRequest(),
       moment = Option(createAddMomentRequest()))
 
+  def createSeqaddCollectionRequest(
+    num: Int = 5) :Seq[AddCollectionRequest]  =
+    List.tabulate(num)(item => createAddCollectionRequest())
+
   def createDeleteCollectionRequest(collection: Collection): DeleteCollectionRequest =
     DeleteCollectionRequest(collection = collection)
 
@@ -360,6 +376,12 @@ trait PersistenceServicesData extends Conversions {
       sharedCollectionId = Option(sharedCollectionId),
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
       cards = seqCard)
+
+  def createUpdateCollectionsRequest(
+    num: Int = 5 ): UpdateCollectionsRequest = UpdateCollectionsRequest(
+    List.tabulate(num)(item => createUpdateCollectionRequest()))
+
+  val updateCollectionsRequest = createUpdateCollectionsRequest()
 
   def createSeqRepoWidget(
     num: Int = 5,
@@ -442,6 +464,10 @@ trait PersistenceServicesData extends Conversions {
       momentType = momentType,
       widgets = saveWidgetRequest)
 
+  def createSeqAddMomentRequest(
+    num: Int = 5) :Seq[AddMomentRequest]  =
+    List.tabulate(num)(item => createAddMomentRequest())
+
   def createDeleteMomentRequest(moment: Moment): DeleteMomentRequest =
     DeleteMomentRequest(moment = moment)
 
@@ -464,6 +490,8 @@ trait PersistenceServicesData extends Conversions {
       momentType = momentType)
 
   val addCollectionRequest = createAddCollectionRequest()
+
+  val seqAddCollectionRequest = createSeqaddCollectionRequest()
 
   val seqAddCardWithCollectionIdRequest = Seq(CardsWithCollectionId(collection.id, Seq.empty))
 

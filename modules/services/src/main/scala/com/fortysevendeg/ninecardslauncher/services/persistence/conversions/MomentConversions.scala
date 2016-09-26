@@ -10,8 +10,6 @@ trait MomentConversions {
 
   import MomentImplicits._
 
-  def toMomentSeq(moment: Seq[RepositoryMoment]): Seq[Moment] = moment map toMoment
-
   def toMoment(moment: RepositoryMoment): Moment =
     Moment(
       id = moment.id,

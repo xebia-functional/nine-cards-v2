@@ -90,19 +90,19 @@ class AppsServicesImpl
     }
   }
 
-  protected def mainIntentByCategory(category: String): Intent = {
+   def mainIntentByCategory(category: String): Intent = {
     val mainIntent: Intent = new Intent(Intent.ACTION_MAIN, javaNull)
     mainIntent.addCategory(category)
     mainIntent
   }
 
-  protected def phoneIntent(): Intent = {
+   def phoneIntent(): Intent = {
     val intent: Intent = new Intent(Intent.ACTION_DIAL, javaNull)
     intent.addCategory(Intent.CATEGORY_DEFAULT)
     intent
   }
 
-  protected def cameraIntent(): Intent = {
+   def cameraIntent(): Intent = {
     val intent: Intent = new Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA, javaNull)
     intent.addCategory(Intent.CATEGORY_DEFAULT)
     intent
