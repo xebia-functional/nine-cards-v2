@@ -124,7 +124,7 @@ case class ViewHolderCollectionAdapter(
     }
     val text = if (showPositions) s"${card.position} - ${card.term}" else card.term
     (content <~ On.click {
-      Ui(groupCollectionsJobs.performCard(card, getAdapterPosition).resolveAsyncServiceOr { (e) =>
+      Ui(groupCollectionsJobs.performCard(card, getAdapterPosition).resolveAsyncServiceOr { (e: Throwable) =>
         e match {
           case _: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
             groupCollectionsJobs.requestCallPhonePermission(card.intent.extractPhone())
