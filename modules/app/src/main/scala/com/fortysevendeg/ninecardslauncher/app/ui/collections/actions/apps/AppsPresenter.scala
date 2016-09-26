@@ -49,8 +49,7 @@ case class AppsPresenter(
       packageName = Option(app.packageName),
       cardType = AppCardType,
       intent = toNineCardIntent(app),
-      imagePath = Option(app.imagePath)
-    )
+      imagePath = None)
     actions.appAdded(card).run
   }
 

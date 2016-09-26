@@ -24,7 +24,7 @@ trait Conversions
     name = app.name,
     packageName = app.packageName,
     className = app.className,
-    imagePath = app.imagePath,
+    imagePath = "",
     category = app.category)
 
   def toSeqUnformedContact(contacts: Seq[Contact]): Seq[UnformedContact] = contacts map toUnformedContact
@@ -125,7 +125,7 @@ trait Conversions
       packageName = Option(app.packageName),
       cardType = AppCardType,
       intent = toNineCardIntent(app),
-      imagePath = Option(app.imagePath))
+      imagePath = None)
 
   def toSaveDockAppRequest(cloudStorageDockApp: CloudStorageDockApp): SaveDockAppRequest =
     SaveDockAppRequest(
