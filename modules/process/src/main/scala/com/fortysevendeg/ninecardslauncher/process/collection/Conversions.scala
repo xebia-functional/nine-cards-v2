@@ -103,7 +103,7 @@ trait Conversions extends CommonConversions {
     packageName = Option(app.packageName),
     cardType = AppCardType.name,
     intent = nineCardIntentToJson(toNineCardIntent(app)),
-    imagePath = Option(app.imagePath))
+    imagePath = None)
 
   def toAddCardRequest(collectionId: Int, categorizedPackage: CategorizedDetailPackage, cardType: CardType, position: Int): ServicesAddCardRequest = ServicesAddCardRequest (
     collectionId = Option(collectionId),
