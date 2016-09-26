@@ -214,7 +214,6 @@ trait MomentProcessImplData {
         packageName = packageName,
         className = className,
         category = category,
-        imagePath = imagePath,
         dateInstalled = dateInstalled,
         dateUpdate = dateUpdate,
         version = version,
@@ -305,29 +304,25 @@ trait MomentProcessImplData {
     App(
       name = name,
       packageName = homeAppPackageName,
-      className = className1,
-      imagePath = imagePath)
+      className = className1)
 
   val workApp =
     App(
       name = name,
       packageName = workAppPackageName,
-      className = className1,
-      imagePath = imagePath)
+      className = className1)
 
   val nightApp =
     App(
       name = name,
       packageName = nightAppPackageName,
-      className = className1,
-      imagePath = imagePath)
+      className = className1)
 
   val transitApp =
     App(
       name = name,
       packageName = transitAppPackageName,
-      className = className1,
-      imagePath = imagePath)
+      className = className1)
 
   val seqCard = createSeqCard()
   val seqServicesCard = createSeqServicesCard()

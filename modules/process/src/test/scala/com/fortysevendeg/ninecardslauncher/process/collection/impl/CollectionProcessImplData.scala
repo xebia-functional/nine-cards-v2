@@ -40,7 +40,6 @@ trait CollectionProcessImplData {
   val className1 = "ScalaAndroidActivity"
   val path1 = "/example/path1"
   val category1 = "category1"
-  val imagePath1 = "imagePath1"
   val dateInstalled1 = 1L
   val dateUpdate1 = 1L
   val version1 = "22"
@@ -243,7 +242,6 @@ trait CollectionProcessImplData {
         name = name,
         packageName = generatePackageName,
         className = className,
-        imagePath = imagePath,
         category = appsCategory)
     }
 
@@ -275,7 +273,6 @@ trait CollectionProcessImplData {
       packageName = card.packageName.getOrElse(""),
       className = "",
       category = appsCategoryName,
-      imagePath = card.imagePath.getOrElse(""),
       dateInstalled = 0,
       dateUpdate = 0,
       version = "",
