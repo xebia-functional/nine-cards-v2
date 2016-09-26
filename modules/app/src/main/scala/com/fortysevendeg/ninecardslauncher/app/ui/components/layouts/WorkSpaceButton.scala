@@ -64,7 +64,7 @@ class WorkSpaceButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
         (card.cardType match {
           case cardType if cardType.isContact => ivUriContactFromLookup(card.intent.extractLookup(), card.term, circular = true)
           case AppCardType => ivSrcByPackageName(card.packageName, card.term)
-          case _ => ivCardUri(card.imagePath, card.term, circular = true)
+          case _ => ivCardUri(card.imagePath getOrElse "", card.term, circular = true)
         }))
 
   def populateIcon(resIcon: Int, resTitle: Int, resColor: Int): Ui[Any] = {

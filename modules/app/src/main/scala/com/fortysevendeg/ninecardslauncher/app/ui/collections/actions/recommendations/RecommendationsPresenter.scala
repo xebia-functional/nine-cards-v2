@@ -30,7 +30,7 @@ class RecommendationsPresenter(
       packageName = Option(app.packageName),
       cardType = NoInstalledAppCardType,
       intent = toNineCardIntent(app),
-      imagePath = "")
+      imagePath = None)
     actions.recommendationAdded(card).run
   }
 

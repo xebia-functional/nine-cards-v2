@@ -273,7 +273,7 @@ class CollectionsPagerPresenter(
       packageName = None,
       cardType = ShortcutCardType,
       intent = toNineCardIntent(shortcutIntent),
-      imagePath = path)
+      imagePath = Option(path))
     cards <- di.collectionProcess.addCards(collectionId, Seq(addCardRequest))
   } yield cards
 

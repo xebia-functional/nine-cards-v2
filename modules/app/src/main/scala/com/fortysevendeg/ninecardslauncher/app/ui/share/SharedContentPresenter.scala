@@ -83,7 +83,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
         packageName = None,
         cardType = ShortcutCardType,
         intent = nineCardIntent,
-        imagePath = imagePath)
+        imagePath = Option(imagePath))
     }
 
     def saveBitmap(maybeUri: Option[Uri]): TaskService[String] = {
