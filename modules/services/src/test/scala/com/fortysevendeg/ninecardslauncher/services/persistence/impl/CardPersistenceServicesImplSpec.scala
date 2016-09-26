@@ -41,6 +41,13 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
           card.cardType shouldEqual cardType
       }
     }
+    "return a PersistenceServiceException id collectionId is empty" in new CardServicesScope {
+
+      mockCardRepository.addCard(any, any) returns TaskService(Task(Either.right(repoCard)))
+      val result = persistenceServices.addCard(createAddCardRequestWithoutCollectionId).value.run
+      result must beAnInstanceOf[Left[RepositoryException, _]]
+
+    }
 
     "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
 
@@ -86,6 +93,24 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
       }
 
       val result = persistenceServices.deleteCard(collectionId, card.id).value.run
+      result must beAnInstanceOf[Left[RepositoryException, _]]
+    }
+  }
+
+  "deleteCards" should {
+
+    "return the number of elements deleted for a valid request" in new CardServicesScope {
+
+      mockCardRepository.deleteCards(any) returns TaskService(Task(Either.right(items)))
+      val result = persistenceServices.deleteCards(collectionId, Seq(card.id)).value.run
+      result shouldEqual Right(items)
+
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
+
+      mockCardRepository.deleteCards(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.deleteCards(collectionId, Seq(card.id)).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

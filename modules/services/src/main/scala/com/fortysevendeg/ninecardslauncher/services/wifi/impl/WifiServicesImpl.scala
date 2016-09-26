@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.services.wifi.{ImplicitsWifiException
 
 class WifiServicesImpl
   extends WifiServices
-    with ImplicitsWifiExceptions {
+  with ImplicitsWifiExceptions {
 
   override def getCurrentSSID(implicit contextSupport: ContextSupport) =
     TaskService {
@@ -19,12 +19,18 @@ class WifiServicesImpl
         val connManager = getConnectivityManager
         val networkInfo = connManager flatMap (manager => Option(manager.getActiveNetworkInfo))
 
+        def nonEmpty(s: String): Boolean = Option(s) match {
+          case Some(string) if string.nonEmpty => true
+          case _ => false
+        }
+
         networkInfo match {
           case Some(n) if n.isConnected &&
             n.getType == ConnectivityManager.TYPE_WIFI =>
-            val regex = "\"?(.+?)\"?".r
+            val regex = "((\"(.*)\")|(.*))".r
             Option(n.getExtraInfo) find(_.nonEmpty) flatMap {
-              case regex(name) => Some(name)
+              case regex(_, _, g1, g2) if nonEmpty(g1) => Some(g1)
+              case regex(_, _, g1, g2) if nonEmpty(g2) => Some(g2)
               case _ => None
             }
           case _ => None

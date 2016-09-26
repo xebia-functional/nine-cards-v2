@@ -6,8 +6,6 @@ import com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp
 
 trait DockAppConversions {
 
-  def toDockAppSeq(dockApp: Seq[RepositoryDockApp]): Seq[DockApp] = dockApp map toDockApp
-
   def toDockApp(dockApp: RepositoryDockApp): DockApp =
     DockApp(
       id = dockApp.id,

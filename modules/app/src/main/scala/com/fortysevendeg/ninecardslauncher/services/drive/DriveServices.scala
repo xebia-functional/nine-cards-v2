@@ -2,37 +2,56 @@ package com.fortysevendeg.ninecardslauncher.services.drive
 
 import java.io.InputStream
 
+import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
+import com.google.android.gms.common.api.GoogleApiClient
 
 trait DriveServices {
 
   /**
+    * Creates the Drive API client
+    * @param account the email for the client
+    * @return the GoogleAPIClient
+    */
+  def createDriveClient(account: String)(implicit contextSupport: ContextSupport): TaskService[GoogleApiClient]
+
+  /**
     * Return a sequence of files in the user app space filtered by fileType key
+    * @param client the google API client
     * @param maybeFileType any String or `None` to list all files
     * @return Sequence of `DriveServiceFile`
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def listFiles(maybeFileType: Option[String]): TaskService[Seq[DriveServiceFileSummary]]
+  def listFiles(
+    client: GoogleApiClient,
+    maybeFileType: Option[String]): TaskService[Seq[DriveServiceFileSummary]]
 
   /**
     * Verify if a specific file exists
+    * @param client the google API client
     * @param driveId file identifier
     * @return boolean indicating if the file exists
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def fileExists(driveId: String): TaskService[Boolean]
+  def fileExists(
+    client: GoogleApiClient,
+    driveId: String): TaskService[Boolean]
 
   /**
     * Returns the content of a file
+    * @param client the google API client
     * @param driveId that identifies the file to be read
     * @return the file content as String
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def readFile(driveId: String): TaskService[DriveServiceFile]
+  def readFile(
+    client: GoogleApiClient,
+    driveId: String): TaskService[DriveServiceFile]
 
   /**
     * Creates a new text file
+    * @param client the google API client
     * @param title the file title
     * @param content the content as String
     * @param deviceId custom device identifier
@@ -41,10 +60,17 @@ trait DriveServices {
     * @return the file identifier
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def createFile(title: String, content: String, deviceId: String, fileType: String, mimeType: String): TaskService[DriveServiceFileSummary]
+  def createFile(
+    client: GoogleApiClient,
+    title: String,
+    content: String,
+    deviceId: String,
+    fileType: String,
+    mimeType: String): TaskService[DriveServiceFileSummary]
 
   /**
     * Creates a new file
+    * @param client the google API client
     * @param title the file title
     * @param content the content as InputStream (won't be closed after finish)
     * @param deviceId custom device identifier
@@ -52,32 +78,51 @@ trait DriveServices {
     * @param mimeType the file mimeType
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def createFile(title: String, content: InputStream, deviceId: String, fileType: String, mimeType: String): TaskService[DriveServiceFileSummary]
+  def createFile(
+    client: GoogleApiClient,
+    title: String,
+    content: InputStream,
+    deviceId: String,
+    fileType: String,
+    mimeType: String): TaskService[DriveServiceFileSummary]
 
   /**
     * Updates the content of an existing text file
+    * @param client the google API client
     * @param driveId that identifies the file to be updated
     * @param title the new title
     * @param content the content as String
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def updateFile(driveId: String, title: String, content: String): TaskService[DriveServiceFileSummary]
+  def updateFile(
+    client: GoogleApiClient,
+    driveId: String,
+    title: String,
+    content: String): TaskService[DriveServiceFileSummary]
 
   /**
     * Updates the content of an existing file
+    * @param client the google API client
     * @param driveId that identifies the file to be updated
     * @param title the new title
     * @param content the content as InputStream (won't be closed after finish)
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
-  def updateFile(driveId: String, title: String, content: InputStream): TaskService[DriveServiceFileSummary]
+  def updateFile(
+    client: GoogleApiClient,
+    driveId: String,
+    title: String,
+    content: InputStream): TaskService[DriveServiceFileSummary]
 
   /**
     * Try to delete the file
+    * @param client the google API client
     * @param driveId that identifies the file to be updated
     * @return Unit
     * @throws DriveServicesException if there was an error or there is no file with this identifier
     */
-  def deleteFile(driveId: String): TaskService[Unit]
+  def deleteFile(
+    client: GoogleApiClient,
+    driveId: String): TaskService[Unit]
 
 }

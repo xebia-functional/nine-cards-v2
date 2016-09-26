@@ -23,20 +23,6 @@ trait CardConversions {
       notification = card.data.notification)
   }
 
-  def toRepositoryCard(card: Card): RepositoryCard =
-    RepositoryCard(
-      id = card.id,
-      data = RepositoryCardData(
-        position = card.position,
-        term = card.term,
-        packageName = card.packageName,
-        cardType = card.cardType,
-        intent = card.intent,
-        imagePath = card.imagePath,
-        notification = card.notification
-      )
-    )
-
   def toRepositoryCard(request: UpdateCardRequest): RepositoryCard =
     RepositoryCard(
       id = request.id,
@@ -50,16 +36,6 @@ trait CardConversions {
         notification = request.notification
       )
     )
-
-  def toRepositoryCardData(card: Card): RepositoryCardData =
-    RepositoryCardData(
-      position = card.position,
-      term = card.term,
-      cardType = card.cardType,
-      packageName = card.packageName,
-      intent = card.intent,
-      imagePath = card.imagePath,
-      notification = card.notification)
 
   def toRepositoryCardData(request: AddCardRequest): RepositoryCardData =
     RepositoryCardData(

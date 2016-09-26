@@ -64,9 +64,7 @@ class SynchronizeDeviceService
 
   override def connected(client: GoogleApiClient): Unit = {
 
-    def sync(
-      client: GoogleApiClient): TaskService[Unit] = {
-      val cloudStorageProcess = di.createCloudStorageProcess(client)
+    def sync(client: GoogleApiClient): TaskService[Unit] = {
       for {
         collections <- di.collectionProcess.getCollections
         moments <- di.momentProcess.getMoments
@@ -79,7 +77,8 @@ class SynchronizeDeviceService
           }
           toCloudStorageMoment(moment, widgetSeq)
         }
-        savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+        savedDevice <- di.cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+          client = client,
           collections = collections map (collection => toCloudStorageCollection(collection, collection.moment map (moment => widgets.filter(_.momentId == moment.id)))),
           moments = cloudStorageMoments,
           dockApps = dockApps map toCloudStorageDockApp)

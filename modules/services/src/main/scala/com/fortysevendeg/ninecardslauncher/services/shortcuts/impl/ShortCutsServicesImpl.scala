@@ -18,7 +18,7 @@ class ShortcutsServicesImpl
       CatchAll[ShortcutServicesException] {
         val packageManager = context.getPackageManager
 
-        val shortcuts = packageManager.queryIntentActivities(shortcutsIntent(), 0).toSeq
+        val shortcuts = packageManager.queryIntentActivities(new Intent(Intent.ACTION_CREATE_SHORTCUT), 0).toSeq
 
         shortcuts map { resolveInfo =>
           val activityInfo = resolveInfo.activityInfo
@@ -30,7 +30,4 @@ class ShortcutsServicesImpl
         } sortBy (_.title)
       }
     }
-
-  protected def shortcutsIntent(): Intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
-
 }
