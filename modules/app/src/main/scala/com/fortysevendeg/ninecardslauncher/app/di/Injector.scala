@@ -91,9 +91,9 @@ trait Injector {
 
   def trackEventProcess: TrackEventProcess
 
-  def createCloudStorageProcess(client: GoogleApiClient): CloudStorageProcess
+  def cloudStorageProcess: CloudStorageProcess
 
-  def createSocialProfileProcess(client: GoogleApiClient): SocialProfileProcess
+  def socialProfileProcess: SocialProfileProcess
 
   def observerRegister: ObserverRegister
 
@@ -243,15 +243,9 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     apiServices = apiServices,
     persistenceServices = persistenceServices)
 
-  def createCloudStorageProcess(client: GoogleApiClient): CloudStorageProcess = {
-    val services = new DriveServicesImpl(client)
-    new CloudStorageProcessImpl(services, persistenceServices)
-  }
+  lazy val cloudStorageProcess = new CloudStorageProcessImpl(new DriveServicesImpl, persistenceServices)
 
-  override def createSocialProfileProcess(client: GoogleApiClient): SocialProfileProcess = {
-    val services = new GooglePlusServicesImpl(client)
-    new SocialProfileProcessImpl(services, persistenceServices)
-  }
+  lazy val socialProfileProcess = new SocialProfileProcessImpl(new GooglePlusServicesImpl, persistenceServices)
 
   override def recognitionProcess: RecognitionProcess = {
     val client = new GoogleApiClient.Builder(contextSupport.context)

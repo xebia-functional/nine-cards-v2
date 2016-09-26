@@ -7,8 +7,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 
 
 class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageServicesTasks = ImageServicesTasks)
-  extends ImageServices
-  with Conversions {
+  extends ImageServices {
 
   implicit val implicitConfig: ImageServicesConfig = config
 

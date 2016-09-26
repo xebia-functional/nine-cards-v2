@@ -2,9 +2,11 @@ package com.fortysevendeg.ninecardslauncher.app.commons
 
 import android.accounts.AccountManager
 import android.app.Activity
-import android.content.Context
+import android.content.{Context, Intent}
 import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
 import macroid.{ActivityContextWrapper, ContextWrapper}
+
+import scala.ref.WeakReference
 
 trait ContextSupportImpl extends ContextSupport {
 
@@ -21,6 +23,8 @@ trait ContextSupportImpl extends ContextSupport {
   override def getPackageName = context.getPackageName
 
   override def getAccountManager: AccountManager = AccountManager.get(context)
+
+  override def createIntent(classOf: Class[_]): Intent = new Intent(context, classOf)
 }
 
 trait ContextSupportProvider {
@@ -29,6 +33,8 @@ trait ContextSupportProvider {
     new ContextSupportImpl with ContextSupportPreferences {
 
       override def context: Context = ctx.bestAvailable
+
+      override def getOriginal: WeakReference[Context] = ctx.original
     }
 
   implicit def activityContextSupport(implicit ctx: ActivityContextWrapper): ActivityContextSupport =
@@ -37,6 +43,8 @@ trait ContextSupportProvider {
       override def context: Context = ctx.bestAvailable
 
       override def getActivity: Option[Activity] = ctx.original.get
+
+      override def getOriginal: WeakReference[Context] = ctx.original
     }
 
 }

@@ -20,7 +20,6 @@ trait CreateCollectionsTasks
   def createNewConfiguration(
     client: GoogleApiClient,
     deviceToken: Option[String]): TaskService[Seq[Collection]] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps
@@ -33,7 +32,8 @@ trait CreateCollectionsTasks
       collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
       momentCollections <- di.momentProcess.createMoments
       storedCollections <- di.collectionProcess.getCollections
-      savedDevice <- cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+      savedDevice <- di.cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+        client = client,
         collections = storedCollections map (collection => toCloudStorageCollection(collection, None)),
         moments = Seq.empty,
         dockApps = dockApps map toCloudStorageDockApp)
@@ -45,13 +45,12 @@ trait CreateCollectionsTasks
     client: GoogleApiClient,
     deviceToken: Option[String],
     cloudId: String): TaskService[Seq[Collection]] = {
-    val cloudStorageProcess = di.createCloudStorageProcess(client)
     for {
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ = setProcess(GettingAppsProcess)
-      device <- cloudStorageProcess.getCloudStorageDevice(cloudId)
+      device <- di.cloudStorageProcess.getCloudStorageDevice(client, cloudId)
       _ = setProcess(LoadingConfigProcess)
       _ = setProcess(CreatingCollectionsProcess)
       collections <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))

@@ -34,10 +34,3 @@ class AppBroadcastReceiver
     intent.getData.toString.replace("package:", "")
   }
 }
-
-class ContextSupportReceiverImpl(ctx: Context)
-  extends ContextSupportImpl
-  with ContextSupportPreferences {
-
-  override def context: Context = ctx
-}
