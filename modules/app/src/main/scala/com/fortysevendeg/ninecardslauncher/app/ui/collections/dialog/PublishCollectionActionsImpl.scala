@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
 
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -13,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.Styles
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
@@ -168,7 +168,7 @@ trait PublishCollectionActionsImpl
       (publishingLayout <~ applyFadeOut()) ~
       (paginationPanel <~ vInvisible)~
       (endLayout <~ applyFadeIn()) ~
-      Ui(collectionsPagerPresenter.reloadSharedCollectionId()) ~
+      Ui(sharedCollectionJobs.reloadSharedCollectionId().resolveAsync()) ~
       (endButton <~ On.click(Ui(publishCollectionPresenter.launchShareCollection(sharedCollectionId)) ~ Ui(dismiss())))
 
   override def showMessageCollectionError: Ui[Any] = showMessage(R.string.collectionError)

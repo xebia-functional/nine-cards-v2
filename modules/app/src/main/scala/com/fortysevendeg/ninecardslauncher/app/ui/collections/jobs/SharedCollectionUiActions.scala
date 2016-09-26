@@ -2,10 +2,9 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.PublishCollectionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, UiContext, UiException}
 import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
@@ -28,7 +27,7 @@ class SharedCollectionUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   }.toService
 
   def showPublishCollectionWizardDialog(collection: Collection): TaskService[Unit]  =
-    Ui(dom.showDialog(PublishCollectionFragment(collection))).toService
+    Ui(dom.showPublicCollectionDialog(collection)).toService
 
   def showMessagePublishContactsCollectionError: TaskService[Unit] = showError(R.string.publishCollectionError).toService
 

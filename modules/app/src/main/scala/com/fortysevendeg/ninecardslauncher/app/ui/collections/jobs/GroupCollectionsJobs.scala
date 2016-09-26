@@ -132,16 +132,13 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
         } else {
           actions.reloadItemCollection(statuses.getPositionsSelected, position)
         }
-      case NormalCollectionMode =>
-        di.launcherExecutorProcess.execute(card.intent)
-        // TODO we should include this error handling in the call
-//        throwable match {
-//          case e: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
-//            statuses = statuses.copy(lastPhone = card.intent.extractPhone())
-//            Ui(permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone))
-//          case _ => actions.showContactUsError
-//        }
+      case NormalCollectionMode => di.launcherExecutorProcess.execute(card.intent)
     }
+  }
+
+  def requestCallPhonePermission(phone: Option[String]): TaskService[Unit] =  {
+    statuses = statuses.copy(lastPhone = phone)
+    permissionChecker.requestPermissionTask(RequestCodes.phoneCallPermission, CallPhone)
   }
 
   def requestPermissionsResult(
@@ -159,6 +156,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
               actions.showNoPhoneCallPermissionError()
           case _ => TaskService.empty
         }
+        _ <- TaskService.right(statuses = statuses.copy(lastPhone = None))
       } yield ()
     } else {
       TaskService.empty
@@ -174,9 +172,9 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       _ <- actions.addCards(cards)
     } yield ()
 
-  def addShortcut(collectionId: Int, name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): TaskService[Unit] = {
+  def addShortcut(name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): TaskService[Unit] = {
 
-    def createShortcut(): TaskService[Seq[Card]] = for {
+    def createShortcut(collectionId: Int): TaskService[Seq[Card]] = for {
       path <- bitmap map (di.deviceProcess.saveShortcutIcon(_)) getOrElse TaskService.right("") // We use a empty string because the UI will generate an image
       addCardRequest = AddCardRequest(
         term = name,
@@ -190,7 +188,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
     for {
       currentCollection <- actions.getCurrentCollection.resolveOption()
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
-      cards <- createShortcut()
+      cards <- createShortcut(currentCollection.id)
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
       _ <- actions.addCards(cards)
     } yield ()

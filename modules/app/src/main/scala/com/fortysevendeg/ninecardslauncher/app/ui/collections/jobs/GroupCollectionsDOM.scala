@@ -8,13 +8,12 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher2.TR
-import com.fortysevendeg.ninecardslauncher2.TypedResource.TypedView
-import macroid.{ActivityContextWrapper, Ui}
+import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import macroid.ActivityContextWrapper
 
 trait GroupCollectionsDOM {
 
-  finder: TypedView =>
+  finder: TypedFindView =>
 
   lazy val toolbar = findView(TR.collections_toolbar)
 
@@ -53,6 +52,8 @@ trait GroupCollectionsDOM {
   def isAutoHide: Boolean = fabButton.getField[Boolean](autoHideKey) getOrElse false
 
   def isMenuOpened: Boolean = fabButton.getField[Boolean](opened) getOrElse false
+
+  def getCurrentPosition: Option[Int] = getAdapter flatMap ( _.getCurrentFragmentPosition )
 
   def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
     adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
@@ -107,14 +108,11 @@ trait GroupCollectionsDOM {
 trait GroupCollectionsUiListener {
 
   def closeEditingMode(): Unit
-//    collectionsPagerPresenter.statuses.collectionMode match {
-//      case EditingCollectionMode => collectionsPagerPresenter.closeEditingMode()
-//      case _ =>
-//    }
 
   def isNormalMode: Boolean
 
   def isEditingMode: Boolean
-// collectionsPagerPresenter.statuses.collectionMode == EditingCollectionMode
+
+  def showPublicCollectionDialog(collection: Collection): Unit
 
 }

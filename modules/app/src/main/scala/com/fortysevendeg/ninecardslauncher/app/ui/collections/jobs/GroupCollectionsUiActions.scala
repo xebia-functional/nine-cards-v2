@@ -22,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsF
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.{EditCardDialogFragment, PublishCollectionFragment}
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.{CollectionsPagerAdapter, ScrollDown, ScrollType, ScrollUp}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
@@ -61,9 +61,9 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   extends ActionsBehaviours
   with ImplicitsUiExceptions {
 
-  self : SystemBarsTint =>
-
   var statuses = GroupCollectionsStatuses()
+
+  lazy val systemBarsTint = new SystemBarsTint
 
   lazy val iconIndicatorDrawable = PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
@@ -98,7 +98,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       loadMenuItems(getItemsForFabMenu) ~
       updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
       (dom.icon <~ ivSrc(iconCollection.getIconDetail)) ~
-      Ui(initSystemStatusBarTint) ~
+      systemBarsTint.initSystemStatusBarTint() ~
       (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
 
   def showCollections(collections: Seq[Collection], position: Int): TaskService[Unit] =
@@ -254,7 +254,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   // FabButtonBehaviour
 
   def updateBarsInFabMenuHide(): Ui[Any] =
-    dom.getCurrentCollection map (c => updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
+    dom.getCurrentCollection map (c => systemBarsTint.updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
 
   var runnableHideFabButton: Option[RunnableWrapper] = None
 
@@ -309,7 +309,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   private[this] def updateBars(opened: Boolean): Ui[_] = if (opened) {
     updateBarsInFabMenuHide()
   } else {
-    updateStatusToBlack
+    systemBarsTint.updateStatusToBlack()
   }
 
   private[this] def animFabButton(open: Boolean) = Transformer {
@@ -385,7 +385,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
 
   private[this] def updateToolbarColor(color: Int): Ui[Any] =
     (dom.toolbar <~ vBackgroundColor(color)) ~
-      updateStatusColor(color)
+      systemBarsTint.updateStatusColor(color)
 
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] =
     Ui (dom.closeEditingMode()) ~

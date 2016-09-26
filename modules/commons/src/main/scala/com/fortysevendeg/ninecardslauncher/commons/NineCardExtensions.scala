@@ -15,7 +15,7 @@ object NineCardExtensions {
     def resolve[E <: NineCardException](implicit converter: Throwable => E): EitherT[Task, NineCardException, A] =
       resolveLeft(e => Left(converter(e)))
 
-    def resolveIf[E <: NineCardException](condition: Boolean, ifNot: A)(implicit converter: Throwable => E): EitherT[Task, NineCardException, A] =
+    def resolveIf[E <: NineCardException](condition: Boolean, ifNot: A): EitherT[Task, NineCardException, A] =
       if (condition) {
         r
       } else {

@@ -110,8 +110,6 @@ trait CollectionUiActions {
 
   def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): Ui[Any]
 
-  def showMessageNotImplemented(): Ui[Any]
-
   def showContactUsError(): Ui[Any]
 
   def showMessageFormFieldError: Ui[Any]
