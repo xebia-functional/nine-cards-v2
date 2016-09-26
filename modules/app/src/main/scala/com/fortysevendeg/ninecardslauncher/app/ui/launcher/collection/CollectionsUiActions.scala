@@ -121,6 +121,8 @@ trait CollectionsUiActions
 
   lazy val menuLauncherSettings = Option(findView(TR.menu_launcher_settings))
 
+  lazy val fragmentContent = Option(findView(TR.action_fragment_content))
+
   def initCollectionsUi: Ui[Any] = {
 
     def goToSettings(): Ui[Any] = {

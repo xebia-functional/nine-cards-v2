@@ -23,6 +23,7 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
+@deprecated
 trait FabButtonBehaviour
   extends FabButtonStyle {
 

@@ -108,6 +108,8 @@ trait CollectionsPagerUiActionsImpl
 
   lazy val icon = findView(TR.collections_icon)
 
+  lazy val fragmentContent = findView(TR.action_fragment_content)
+
   lazy val selectorDrawable = CollectionSelectorDrawable()
 
   val tagDialog = "dialog"
@@ -483,7 +485,7 @@ trait CollectionsPagerUiActionsImpl
     collectionAdapter <- fragment.getAdapter
   } yield collectionAdapter
 
-  override def turnOffFragmentContent: Ui[Any] =
+  def turnOffFragmentContent: Ui[Any] =
     (fragmentContent <~
       colorContentDialog(paint = false) <~
       vClickable(false)) ~ updateBarsInFabMenuHide
