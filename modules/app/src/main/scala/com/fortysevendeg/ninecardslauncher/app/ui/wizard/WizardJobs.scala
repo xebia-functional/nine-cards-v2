@@ -4,10 +4,8 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.ReadContacts
+import com.fortysevendeg.ninecardslauncher.process.accounts.{ReadContacts, UserAccountsProcessOperationCancelledException}
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
@@ -18,7 +16,6 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.accounts.AccountsProcessOperationCancelledException
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1ConfigurationException
@@ -66,7 +63,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
   val tagDialog = "wizard-dialog"
 
-  val permissionChecker = new PermissionChecker
+//  val permissionChecker = new PermissionChecker
 
   var clientStatuses = WizardJobsStatuses()
 
@@ -101,20 +98,22 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     }
 
   def deviceSelected(maybeKey: Option[String]): TaskService[Unit] = {
-    clientStatuses = clientStatuses.copy(deviceKey = maybeKey)
-    if (permissionChecker.havePermission(ReadContacts)) {
+
+    def generateOrRequest(condition: Boolean): TaskService[Unit] = if (condition) {
       generateCollections(maybeKey)
     } else {
       requestContactsPermission()
     }
+
+    for {
+      _ <- TaskService(Task(Right(clientStatuses = clientStatuses.copy(deviceKey = maybeKey))))
+      havePermission <- di.userAccountsProcess.havePermission(ReadContacts)
+      _ <- generateOrRequest(havePermission.result)
+    } yield ()
   }
 
   def requestContactsPermission(): TaskService[Unit] =
-    TaskService {
-      CatchAll[UiException] {
-        permissionChecker.requestPermission(RequestCodes.contactsPermission, ReadContacts)
-      }
-    }
+    di.userAccountsProcess.requestPermission(RequestCodes.contactsPermission, ReadContacts)
 
   def contactsPermissionDenied(): TaskService[Unit] =
     generateCollections(clientStatuses.deviceKey)
@@ -192,7 +191,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
           token <- di.userAccountsProcess
             .getAuthToken(account, resGetString(R.string.android_market_oauth_scopes))
             .resolveLeft {
-              case ex: AccountsProcessOperationCancelledException =>
+              case ex: UserAccountsProcessOperationCancelledException =>
                 Left(WizardMarketTokenRequestCancelledException(ex.getMessage, Some(ex)))
               case ex: Throwable => Left(ex)
             }
@@ -212,7 +211,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
           _ <- di.userAccountsProcess
             .getAuthToken(account, resGetString(R.string.profile_and_drive_oauth_scopes))
             .resolveLeft {
-              case ex: AccountsProcessOperationCancelledException =>
+              case ex: UserAccountsProcessOperationCancelledException =>
                 Left(WizardGoogleTokenRequestCancelledException(ex.getMessage, Some(ex)))
               case ex: Throwable => Left(ex)
             }
@@ -221,19 +220,25 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
       case None => actions.goToUser()
     }
 
-  def requestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): TaskService[Unit] =
-    if (requestCode == RequestCodes.contactsPermission) {
-      val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
-      if (result.exists(_.hasPermission(ReadContacts))) {
+  def requestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): TaskService[Unit] = {
+
+    def generateOrRequest(hasPermission: Boolean, shouldRequest: Boolean): TaskService[Unit] =
+      if (hasPermission || !shouldRequest) {
         generateCollections(clientStatuses.deviceKey)
-      } else if (permissionChecker.shouldRequestPermission(ReadContacts)) {
-        actions.showRequestContactsPermissionDialog()
       } else {
-        generateCollections(clientStatuses.deviceKey)
+        actions.showRequestContactsPermissionDialog()
       }
+
+    if (requestCode == RequestCodes.contactsPermission) {
+      for {
+        result <- di.userAccountsProcess.parsePermissionsRequestResult(permissions, grantResults)
+        shouldRequest <- di.userAccountsProcess.shouldRequestPermission(ReadContacts)
+        _ <- generateOrRequest(result.exists(_.hasPermission(ReadContacts)), shouldRequest.result)
+      } yield ()
     } else {
       TaskService(Task(Right((): Unit)))
     }
+  }
 
   def errorOperationMarketTokenCancelled(): TaskService[Unit] = actions.showMarketPermissionDialog()
 
