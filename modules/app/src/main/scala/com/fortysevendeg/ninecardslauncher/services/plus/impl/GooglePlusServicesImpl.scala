@@ -4,8 +4,10 @@ import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.commons.CatchAll
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.google.impl.GoogleServiceClientImpl
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
 import com.fortysevendeg.ninecardslauncher.services.plus._
 import com.google.android.gms.auth.api.Auth
@@ -49,10 +51,11 @@ class GooglePlusServicesImpl
             .setAccountName(account)
             .build()
 
-          new GoogleApiClient.Builder(contextSupport.context)
-            .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
-            .addApi(Plus.API)
-            .build()
+          new GoogleServiceClientImpl(
+            new GoogleApiClient.Builder(contextSupport.context)
+              .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
+              .addApi(Plus.API)
+              .build())
         } leftMap {
           e: Throwable => GooglePlusServicesException(e.getMessage, Some(e))
         }
@@ -60,7 +63,13 @@ class GooglePlusServicesImpl
 
     }
 
-  override def loadUserProfile(client: GoogleApiClient) = {
+  override def loadUserProfile(serviceClient: GoogleServiceClient) = {
+
+    def readApiClient(serviceClient: GoogleServiceClient): TaskService[GoogleApiClient] =
+      serviceClient match {
+        case c: GoogleServiceClientImpl => TaskService(Task(Right(c.googleApiClient)))
+        case _ => TaskService(Task(Left(GooglePlusServicesException(s"Can't read Google API client from $serviceClient"))))
+      }
 
     def resultCallback(result: LoadPeopleResult): Either[GooglePlusServicesException, LoadPeopleResult] =
       Option(result) match {
@@ -77,7 +86,7 @@ class GooglePlusServicesImpl
             recoverable = false))
       }
 
-    def loadPeopleApi: TaskService[LoadPeopleResult] = TaskService {
+    def loadPeopleApi(client: GoogleApiClient): TaskService[LoadPeopleResult] = TaskService {
       Task.async[GooglePlusServicesException Either LoadPeopleResult] { (scheduler, callback) =>
         Try(Plus.PeopleApi.load(client, me)) match {
           case Success(pr) =>
@@ -140,7 +149,8 @@ class GooglePlusServicesImpl
       } yield coverUrl
 
     (for {
-      loadPeopleResult <- loadPeopleApi
+      client <- readApiClient(serviceClient)
+      loadPeopleResult <- loadPeopleApi(client)
       person <- fetchPerson(loadPeopleResult)
       name = fetchName(person)
       avatarUrl = fetchAvatarUrl(person)

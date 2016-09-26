@@ -1,24 +1,24 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api
 
 import android.os.Bundle
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
+import com.fortysevendeg.ninecardslauncher.google.impl.GoogleServiceClientImpl
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.{GoogleApiClient, Scope}
+import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.drive._
 import com.google.android.gms.plus.Plus
-import macroid.{ActivityContextWrapper, ContextWrapper}
+import macroid.ContextWrapper
 
 /**
   * @deprecated use the CloudStorageProcess.createCloudStorageClient instead
   */
 trait GoogleDriveApiClientProvider {
 
-  def createGoogleDriveClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient =
-    new GoogleApiClient.Builder(contextWrapper.bestAvailable)
+  def createGoogleDriveClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleServiceClient =
+    new GoogleServiceClientImpl(new GoogleApiClient.Builder(contextWrapper.bestAvailable)
       .setAccountName(account)
       .addApi(Drive.API)
       .addScope(Drive.SCOPE_APPFOLDER)
@@ -33,7 +33,7 @@ trait GoogleDriveApiClientProvider {
         override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
           onDriveConnectionFailed(connectionResult)
       })
-      .build()
+      .build())
 
   def onDriveConnectionSuspended(connectionSuspendedCause: ConnectionSuspendedCause): Unit
 
@@ -48,14 +48,14 @@ trait GoogleDriveApiClientProvider {
   */
 trait GooglePlusApiClientProvider {
 
-  def createGooglePlusClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient = {
+  def createGooglePlusClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleServiceClient = {
     val gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
       .requestScopes(Plus.SCOPE_PLUS_PROFILE)
       .requestIdToken(contextWrapper.bestAvailable.getString(R.string.api_v2_client_id))
       .setAccountName(account)
       .build()
 
-    new GoogleApiClient.Builder(contextWrapper.bestAvailable)
+    new GoogleServiceClientImpl(new GoogleApiClient.Builder(contextWrapper.bestAvailable)
       .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
       .addApi(Plus.API)
       .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks {
@@ -69,7 +69,7 @@ trait GooglePlusApiClientProvider {
         override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
           onPlusConnectionFailed(connectionResult)
       })
-      .build()
+      .build())
   }
 
   def onPlusConnectionSuspended(connectionSuspendedCause: ConnectionSuspendedCause): Unit

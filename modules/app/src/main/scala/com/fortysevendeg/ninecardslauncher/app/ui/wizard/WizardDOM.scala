@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.wizard
 
+import com.fortysevendeg.ninecardslauncher.commons.google.{GoogleServiceClient, GoogleServiceClientCallback}
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 
 trait WizardDOM {
@@ -57,5 +58,9 @@ trait WizardUiListener {
   def onClickOkContactsPermissionDialog(): Unit
 
   def onClickCancelContactsPermissionDialog(): Unit
+
+  def getDriveCallbacks: GoogleServiceClientCallback
+
+  def getGoogleCallbacks: GoogleServiceClientCallback
 
 }

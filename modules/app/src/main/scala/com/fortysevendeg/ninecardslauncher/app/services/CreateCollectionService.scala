@@ -17,11 +17,11 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
+import com.fortysevendeg.ninecardslauncher.commons.google.GoogleServiceClient
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.device.ImplicitsDeviceException
 import com.fortysevendeg.ninecardslauncher.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
-import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 
 
@@ -129,7 +129,7 @@ class CreateCollectionService
 
   override def onBind(intent: Intent): IBinder = javaNull
 
-  override def connected(client: GoogleApiClient): Unit = {
+  override def connected(client: GoogleServiceClient): Unit = {
 
     val service = selectedCloudId match {
       case Some(cloudId) => loadConfiguration(client, readToken, cloudId)
