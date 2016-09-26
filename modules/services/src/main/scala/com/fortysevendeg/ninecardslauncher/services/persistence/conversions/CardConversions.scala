@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{CardsWithCollectionId, Card => RepositoryCard, CardData => RepositoryCardData}
+import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
 
@@ -19,7 +20,7 @@ trait CardConversions {
       packageName = card.data.packageName,
       cardType = card.data.cardType,
       intent = card.data.intent,
-      imagePath = card.data.imagePath,
+      imagePath = Option(card.data.imagePath),
       notification = card.data.notification)
   }
 
@@ -32,7 +33,7 @@ trait CardConversions {
         packageName = request.packageName,
         cardType = request.cardType,
         intent = request.intent,
-        imagePath = request.imagePath,
+        imagePath = request.imagePath getOrElse javaNull,
         notification = request.notification
       )
     )
@@ -44,6 +45,6 @@ trait CardConversions {
       packageName = request.packageName,
       cardType = request.cardType,
       intent = request.intent,
-      imagePath = request.imagePath,
+      imagePath = request.imagePath getOrElse javaNull,
       notification = request.notification)
 }
