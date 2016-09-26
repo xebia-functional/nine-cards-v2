@@ -3,10 +3,10 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.ReadContacts
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, UiContext}
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
@@ -16,48 +16,35 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Pull
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
-trait ContactsUiActionsImpl
-  extends ContactsUiActions
-  with Styles {
+trait ContactsUiActions
+  extends Styles {
 
-  self: TypedFindView with BaseActionFragment =>
-
-  implicit val contactsPresenter: ContactsPresenter
-
-  val tagDialog = "dialog"
+  self: BaseActionFragment with ContactsDOM with ContactsUiListener =>
 
   val resistance = 2.4f
-
-  lazy val recycler = findView(TR.actions_recycler)
-
-  lazy val scrollerLayout = findView(TR.action_scroller_layout)
-
-  lazy val pullToTabsView = findView(TR.actions_pull_to_tabs)
-
-  lazy val tabs = findView(TR.actions_tabs)
-
+  
   lazy val contactsTabs = Seq(
     TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.contacts_alphabetical)),
     TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites)))
 
   lazy val preferences = new NineCardsPreferencesValue
 
-  override def initialize(): Ui[Any] = {
+  def initialize(): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferences)
-    (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
+    ((scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
         dtbInit(colorPrimary) <~
         dtvInflateMenu(R.menu.contact_dialog_menu) <~
         dtvOnMenuItemClickListener(onItem = {
           case R.id.action_filter if (pullToTabsView ~> pdvIsEnabled()).get =>
-            (if (isTabsOpened) closeTabs() else openTabs()).run
+            swapFilter()
             true
           case _ => false
         }) <~
@@ -72,67 +59,63 @@ trait ContactsUiActionsImpl
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
-            contactsPresenter.loadContacts(if (pos == 0) AllContacts else FavoriteContacts)
+            loadContacts(if (pos == 0) AllContacts else FavoriteContacts)
           }
         ))) ~
       (recycler <~ recyclerStyle <~ (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank)) ~
-      (tabs <~ tvClose)
+      (tabs <~ tvClose)).toService
   }
 
-  override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone) ~ (pullToTabsView <~ pdvEnable(false)) ~ hideError
+  def showLoading(): TaskService[Unit] =
+    ((loading <~ vVisible) ~ (recycler <~ vGone) ~ (pullToTabsView <~ pdvEnable(false)) ~ hideError).toService
 
-  override def closeTabs(): Ui[Any] = (tabs <~ tvClose <~ hideTabs) ~ (recycler <~ showList)
+  def openTabs(): TaskService[Unit] = ((tabs <~ tvOpen <~ showTabs) ~ (recycler <~ hideList)).toService
 
-  override def destroy(): Ui[Any] = Ui {
+  def closeTabs(): TaskService[Unit] =((tabs <~ tvClose <~ hideTabs) ~ (recycler <~ showList)).toService
+
+  def destroy(): TaskService[Unit] = Ui {
     getAdapter foreach(_.close())
-  }
+  }.toService
 
-  override def showContacts(
+  def showContacts(
     filter: ContactsFilter,
     contacts: IterableContacts,
     counters: Seq[TermCounter],
-    reload: Boolean): Ui[Any] = {
-    if (reload) {
+    reload: Boolean): TaskService[Unit] = {
+    (if (reload) {
       reloadContactsAdapter(contacts, counters, filter)
     } else {
-      generateContactsAdapter(contacts, counters, contact => contactsPresenter.showContact(contact.lookupKey))
-    }
+      generateContactsAdapter(contacts, counters, contact => showContact(contact.lookupKey))
+    }).toService
   }
 
-  override def askForContactsPermission(requestCode: Int): Ui[Any] = Ui {
+  def askForContactsPermission(requestCode: Int): TaskService[Unit] = Ui {
     requestPermissions(Array(ReadContacts.value), requestCode)
-  }
+  }.toService
 
-  override def showGeneralError(): Ui[Any] = rootContent <~ vSnackbarShort(R.string.contactUsError)
+  def showError(): TaskService[Unit] = showGeneralError().toService
 
-  override def showErrorContactsPermission(): Ui[Any] =
-    (recycler <~ vGone) ~
+  def showErrorContactsPermission(): TaskService[Unit] =
+    ((recycler <~ vGone) ~
       (pullToTabsView <~ pdvEnable(false)) ~
-      showMessageInScreen(R.string.errorContactsPermission, error = true, action = contactsPresenter.loadContacts(filter = AllContacts))
+      showMessageInScreen(R.string.errorContactsPermission, error = true, action = loadContacts(filter = AllContacts))).toService
 
-  override def showErrorLoadingContactsInScreen(filter: ContactsFilter): Ui[Any] =
-    (recycler <~ vGone) ~
+  def showErrorLoadingContactsInScreen(filter: ContactsFilter): TaskService[Unit] =
+    ((recycler <~ vGone) ~
       (pullToTabsView <~ pdvEnable(false)) ~
-      showMessageInScreen(R.string.errorLoadingContacts, error = true, action = contactsPresenter.loadContacts(filter))
+      showMessageInScreen(R.string.errorLoadingContacts, error = true, action = loadContacts(filter))).toService
 
-  override def showDialog(contact: Contact): Ui[Any] = Ui {
-    val ft = getFragmentManager.beginTransaction()
-    Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-    ft.addToBackStack(javaNull)
+  def showSelectContactDialog(contact: Contact): TaskService[Unit] = {
     val dialog = SelectInfoContactDialogFragment(contact)
     dialog.setTargetFragment(this, RequestCodes.selectInfoContact)
-    dialog.show(ft, tagDialog)
+    Ui(showDialog(dialog)).toService
   }
 
-  override def contactAdded(card: AddCardRequest): Ui[Any] = {
-    getActivity match {
-      case activity: GroupCollectionsUiListener => activity.addCards(Seq(card))
-      case _ =>
-    }
-    unreveal()
-  }
+  def close(): TaskService[Unit] = unreveal().toService
 
-  override def isTabsOpened: Boolean = (tabs ~> isOpened).get
+  def isTabsOpened: TaskService[Boolean] = TaskService.right((tabs ~> isOpened).get)
+
+  private[this] def showGeneralError(): Ui[Any] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
   private[this] def showData: Ui[Any] = (loading <~ vGone) ~ (recycler <~ vVisible) ~ (pullToTabsView <~ pdvEnable(true))
 
@@ -160,13 +143,5 @@ trait ContactsUiActionsImpl
           (recycler <~ rvScrollToTop)
       } getOrElse showGeneralError)
   }
-
-  private[this] def getAdapter: Option[ContactsAdapter] =
-    Option(recycler.getAdapter) match {
-      case Some(a: ContactsAdapter) => Some(a)
-      case _ => None
-    }
-
-  protected def openTabs(): Ui[Any] = (tabs <~ tvOpen <~ showTabs) ~ (recycler <~ hideList)
 
 }
