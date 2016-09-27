@@ -14,7 +14,8 @@ case class Collection(
   moment: Option[Moment] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
-  sharedCollectionSubscribed: Boolean) extends Serializable
+  sharedCollectionSubscribed: Boolean,
+  publicCollectionStatus: PublicCollectionStatus) extends Serializable
 
 case class Card(
   id: Int,
