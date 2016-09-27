@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.sharedcollections
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, AppCardType, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
 import com.fortysevendeg.ninecardslauncher.services.api.{SharedCollectionPackageResponse, SharedCollection => SharedCollectionService}
+import com.fortysevendeg.ninecardslauncher.services.persistence.UpdateCollectionRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 
 trait Conversions {
@@ -34,6 +35,20 @@ trait Conversions {
       stars = item.stars,
       downloads = item.downloads,
       free = item.free)
+
+  def toUpdateCollectionRequest(collection: Collection, sharedCollectionSubscribed: Boolean): UpdateCollectionRequest =
+    UpdateCollectionRequest(
+      id = collection.id,
+      position = collection.position,
+      name = collection.name,
+      collectionType = collection.collectionType,
+      icon = collection.icon,
+      themedColorIndex = collection.themedColorIndex,
+      appsCategory = collection.appsCategory,
+      originalSharedCollectionId = collection.originalSharedCollectionId,
+      sharedCollectionId = collection.sharedCollectionId,
+      sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
+      cards = collection.cards)
 
   def toSubscription(subscriptions: (String, Collection, Boolean)): Subscription = {
     val (sharedCollectionId, collection, subscribed) = subscriptions

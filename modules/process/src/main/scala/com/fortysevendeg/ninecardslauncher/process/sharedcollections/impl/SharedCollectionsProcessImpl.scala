@@ -95,13 +95,26 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     (for {
       userConfig <- apiUtils.getRequestConfig
       _ <- apiServices.subscribe(sharedCollectionId)(userConfig)
+      collection <- getCollectionBySharedCollectionId(sharedCollectionId)
+      _ <- persistenceServices.updateCollection(toUpdateCollectionRequest(collection, sharedCollectionSubscribed= true))
     } yield ()).resolveLeft(mapLeft)
 
   override def unsubscribe(sharedCollectionId: String)(implicit context: ContextSupport) =
     (for {
       userConfig <- apiUtils.getRequestConfig
       _ <- apiServices.unsubscribe(sharedCollectionId)(userConfig)
+      collection <- getCollectionBySharedCollectionId(sharedCollectionId)
+      _ <- persistenceServices.updateCollection(toUpdateCollectionRequest(collection, sharedCollectionSubscribed = false))
     } yield ()).resolveLeft(mapLeft)
+
+  private[this] def getCollectionBySharedCollectionId(sharedCollectionId: String) =
+    persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId).resolveSides(
+      mapRight = {
+        case Some(collection) => Right(collection)
+        case None => Left(SharedCollectionsException("There is no collection with this sharedCollectionId"))
+      },
+      mapLeft = (e: Throwable) => Left(SharedCollectionsException(e.getMessage, Some(e)))
+    )
 
   private[this] def mapLeft[T]: (NineCardException) => Either[NineCardException, T] = {
     case e: ApiServiceConfigurationException => Left(SharedCollectionsConfigurationException(e.message, Some(e)))
