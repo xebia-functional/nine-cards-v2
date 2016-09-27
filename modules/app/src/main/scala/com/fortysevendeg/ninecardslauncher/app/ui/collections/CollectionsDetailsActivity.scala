@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsF
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.PublishCollectionFragment
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.publishcollection.PublishCollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
