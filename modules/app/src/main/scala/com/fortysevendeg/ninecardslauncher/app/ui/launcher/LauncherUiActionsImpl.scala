@@ -52,6 +52,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, M
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NineCardsMoment}
 import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
 import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
+import com.fortysevendeg.ninecardslauncher.process.recognition.ConditionWeather
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
@@ -64,8 +65,8 @@ import scala.concurrent.Future
 
 trait LauncherUiActionsImpl
   extends LauncherUiActions
-    with CollectionsUiActions
-    with DrawerUiActions {
+  with CollectionsUiActions
+  with DrawerUiActions {
 
   self: TypedFindView with SystemBarsTint with Contexts[AppCompatActivity] =>
 
@@ -537,6 +538,8 @@ trait LauncherUiActionsImpl
   override def reloadDrawerContacts(): Ui[Any] = reloadContacts
 
   override def showBottomError(message: Int, action: () => Unit): Ui[Any] = showBottomDrawerError(message, action)
+
+  override def showWeather(condition: ConditionWeather): Ui[Any] = topBarPanel <~ tblWeather(condition)
 
   def reloadPager(currentPage: Int) = Transformer {
     case imageView: ImageView if imageView.isPosition(currentPage) =>

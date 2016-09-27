@@ -6,13 +6,15 @@ import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import macroid.ContextWrapper
 import org.joda.time.DateTime
 
-class PersistMoment(implicit contextWrapper: ContextWrapper) {
+class MomentPreferences(implicit contextWrapper: ContextWrapper) {
 
   private[this] val name = "persist-moment-preferences"
 
   private[this] val timeMomentChangedKey = "time-moment-changed"
 
   private[this] val momentPersistKey = "moment-persist"
+
+  private[this] val timeWeatherLoadedKey = "time-weather-loaded"
 
   private[this] lazy val persistMomentPreferences = contextWrapper.bestAvailable.getSharedPreferences(name, Context.MODE_PRIVATE)
 
@@ -29,6 +31,18 @@ class PersistMoment(implicit contextWrapper: ContextWrapper) {
     val timeChanged = new DateTime(persistMomentPreferences.getLong(timeMomentChangedKey, defaultDate.getMillis))
     timeChanged.plusHours(1).isBeforeNow
   }
+
+  def loadWeather: Boolean = {
+    val defaultDate = new DateTime().minusDays(1)
+    val timeChanged = new DateTime(persistMomentPreferences.getLong(timeWeatherLoadedKey, defaultDate.getMillis))
+    timeChanged.plusHours(2).isBeforeNow
+  }
+
+  def weatherLoaded(): Unit =
+    persistMomentPreferences
+      .edit()
+      .putLong(timeWeatherLoadedKey, new DateTime().getMillis)
+      .apply()
 
   def getPersistMoment: Option[NineCardsMoment] = if (nonPersist) {
     None

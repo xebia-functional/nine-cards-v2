@@ -5,12 +5,11 @@ import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.{CallPhone, ReadCallLog, ReadContacts}
-import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
+import com.fortysevendeg.ninecardslauncher.app.ui.MomentPreferences
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
@@ -27,6 +26,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.accounts._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, _}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
@@ -34,6 +34,7 @@ import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models._
 import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
+import com.fortysevendeg.ninecardslauncher.process.recognition.{ConditionWeather, UnknownCondition}
 import com.fortysevendeg.ninecardslauncher.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
@@ -45,19 +46,16 @@ import scala.language.postfixOps
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-    with Conversions
-    with NineCardIntentConversions {
-  self =>
+  with Conversions
+  with NineCardIntentConversions {
 
   val tagDialog = "dialog"
 
   val defaultPage = 1
 
-  lazy val persistMoment = new PersistMoment
+  lazy val momentPreferences = new MomentPreferences
 
   var statuses = LauncherPresenterStatuses()
-
-  val permissionChecker = new PermissionChecker
 
   def initialize(): Unit = {
     di.userProcess.register.resolveAsync2()
@@ -66,12 +64,22 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def resume(): Unit = {
     di.observerRegister.registerObserver()
+    if (momentPreferences.loadWeather) {
+      updateWeather().resolveAsync()
+    }
     if (actions.isEmptyCollectionsInWorkspace) {
       loadLauncherInfo()
-    } else if (persistMoment.nonPersist) {
+    } else if (momentPreferences.nonPersist) {
       changeMomentIfIsAvailable()
     }
   }
+
+  private[this] def updateWeather(): TaskService[Unit] =
+    for {
+      maybeCondition <- di.recognitionProcess.getWeather.map(_.conditions.headOption).resolveLeftTo(None)
+      _ = momentPreferences.weatherLoaded()
+      _ <- actions.showWeather(maybeCondition.getOrElse(UnknownCondition)).toService
+    } yield ()
 
   def pause(): Unit = di.observerRegister.unregisterObserver()
 
@@ -277,7 +285,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def launchVoiceSearch(): Unit = launcherService(di.launcherExecutorProcess.launchVoiceSearch)
 
-  def launchGoogleWeather(): Unit = launcherService(di.launcherExecutorProcess.launchGoogleWeather)
+  def launchGoogleWeather(): Unit = launcherService {
+    for {
+      result <- di.userAccountsProcess.havePermission(FineLocation)
+      _ <- if (result.hasPermission(FineLocation)) {
+        di.launcherExecutorProcess.launchGoogleWeather
+      } else {
+        di.userAccountsProcess.requestPermission(RequestCodes.locationPermission, FineLocation)
+      }
+    } yield ()
+  }
 
   def launchPlayStore(): Unit = launcherService(di.launcherExecutorProcess.launchPlayStore)
 
@@ -474,7 +491,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def goToChangeMoment(): Unit = actions.showSelectMomentDialog().run
 
   def changeMoment(momentType: NineCardsMoment): Unit = {
-    persistMoment.persist(momentType)
+    momentPreferences.persist(momentType)
 
     def getMoment = for {
       maybeMoment <- di.momentProcess.fetchMomentByType(momentType)
@@ -528,7 +545,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def loadLauncherInfo(): Unit = {
 
-    def getMoment = persistMoment.getPersistMoment match {
+    def getMoment = momentPreferences.getPersistMoment match {
       case Some(moment) => di.momentProcess.fetchMomentByType(moment)
       case _ => di.momentProcess.getBestAvailableMoment
     }
@@ -785,7 +802,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   }
 
   def cleanPersistedMoment() = {
-    persistMoment.clean()
+    momentPreferences.clean()
     momentForceBestAvailable()
   }
 
@@ -835,30 +852,49 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     requestCode: Int,
     permissions: Array[String],
     grantResults: Array[Int]): Unit = {
-    val result = permissionChecker.readPermissionRequestResult(permissions, grantResults)
-    requestCode match {
+
+    def serviceAction(result: Seq[PermissionResult]): TaskService[Unit] = requestCode match {
       case RequestCodes.contactsPermission if result.exists(_.hasPermission(ReadContacts)) =>
-        actions.reloadDrawerContacts().run
+        actions.reloadDrawerContacts().toService
       case RequestCodes.callLogPermission if result.exists(_.hasPermission(ReadCallLog)) =>
-        actions.reloadDrawerContacts().run
+        actions.reloadDrawerContacts().toService
       case RequestCodes.phoneCallPermission if result.exists(_.hasPermission(CallPhone)) =>
-        statuses.lastPhone foreach { phone =>
-          statuses = statuses.copy(lastPhone = None)
-          launcherService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, phone)))
+        statuses.lastPhone match {
+          case Some(phone) =>
+            statuses = statuses.copy(lastPhone = None)
+            di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, phone))
+          case _ => TaskService(Task(Right((): Unit)))
         }
       case RequestCodes.contactsPermission =>
         (actions.reloadDrawerApps() ~
-          actions.showBottomError(R.string.errorContactsPermission, requestReadContacts)).run
+          actions.showBottomError(R.string.errorContactsPermission, requestReadContacts)).toService
       case RequestCodes.callLogPermission =>
         (actions.reloadDrawerApps() ~
-          actions.showBottomError(R.string.errorCallsPermission, requestReadCallLog)).run
+          actions.showBottomError(R.string.errorCallsPermission, requestReadCallLog)).toService
       case RequestCodes.phoneCallPermission =>
-        statuses.lastPhone foreach { phone =>
-          statuses = statuses.copy(lastPhone = None)
-          launcherService(di.launcherExecutorProcess.launchDial(Some(phone)))
+        statuses.lastPhone match {
+          case Some(phone) =>
+            statuses = statuses.copy(lastPhone = None)
+            for {
+              _ <- di.launcherExecutorProcess.launchDial(Some(phone))
+              _ <- actions.showNoPhoneCallPermissionError().toService
+            } yield ()
+          case _ => TaskService(Task(Right((): Unit)))
         }
-        actions.showNoPhoneCallPermissionError().run
+      case RequestCodes.locationPermission if result.exists(_.hasPermission(FineLocation)) =>
+        for {
+          _ <- updateWeather()
+          _ <- di.launcherExecutorProcess.launchGoogleWeather
+        } yield ()
       case _ =>
+        TaskService(Task(Right((): Unit)))
+    }
+
+    launcherService {
+      for {
+        result <- di.userAccountsProcess.parsePermissionsRequestResult(permissions, grantResults)
+        _ <- serviceAction(result)
+      } yield ()
     }
   }
 
@@ -866,19 +902,21 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     service.resolveAsyncUi2(onException = _ => actions.showContactUsError())
 
   private[this] def launcherCallService(service: TaskService[Unit], maybePhone: Option[String]) =
-    service.resolveAsyncUi2(
-      onException = (throwable: Throwable) => throwable match {
+    service.resolveAsyncServiceOr(
+      exception = (throwable: Throwable) => throwable match {
         case e: LauncherExecutorProcessPermissionException =>
           statuses = statuses.copy(lastPhone = maybePhone)
-          Ui(permissionChecker.requestPermission(RequestCodes.phoneCallPermission, CallPhone))
-        case _ => actions.showContactUsError()
+          di.userAccountsProcess.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
+        case _ => actions.showContactUsError().toService
       })
 
-  private[this] def requestReadContacts() =
-    permissionChecker.requestPermission(RequestCodes.contactsPermission, ReadContacts)
+  private[this] def requestReadContacts() = launcherService {
+    di.userAccountsProcess.requestPermission(RequestCodes.contactsPermission, ReadContacts)
+  }
 
-  private[this] def requestReadCallLog() =
-    permissionChecker.requestPermission(RequestCodes.callLogPermission, ReadCallLog)
+  private[this] def requestReadCallLog() = launcherService {
+    di.userAccountsProcess.requestPermission(RequestCodes.callLogPermission, ReadCallLog)
+  }
 
   protected def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
@@ -1160,6 +1198,8 @@ trait LauncherUiActions {
   def getData: Seq[LauncherData]
 
   def getCurrentPage: Option[Int]
+
+  def showWeather(condition: ConditionWeather): Ui[Any]
 
 }
 

@@ -56,9 +56,11 @@ object RequestCodes {
 
   val phoneCallPermission = 15
 
-  val wizardPermissions = 16
+  val locationPermission = 16
 
-  val selectAccount = 17
+  val wizardPermissions = 17
+
+  val selectAccount = 18
 
 }
 
