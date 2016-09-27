@@ -63,7 +63,7 @@ class CollectionFragment
   def setActiveFragmentAndScrollType(activeFragment: Boolean, scrollType: ScrollType) =
     actions.statuses = actions.statuses.copy(activeFragment = activeFragment, scrollType = scrollType)
 
-  def setScrollType(scrollType: ScrollType) = actions.scrollType(scrollType).resolveAsync()
+  def setScrollType(scrollType: ScrollType) = singleCollectionJobs.setScrollType(scrollType).resolveAsync()
 
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
 

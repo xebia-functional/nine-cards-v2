@@ -287,20 +287,17 @@ case object ScrollUp extends ScrollType
 
 case object ScrollDown extends ScrollType
 
-case object ScrollNo extends ScrollType
-
 object ScrollType {
   def apply(name: String): ScrollType = name match {
     case n if n == ScrollUp.toString => ScrollUp
-    case n if n == ScrollDown.toString => ScrollDown
-    case _ => ScrollNo
+    case _ => ScrollDown
   }
 }
 
 case class SingleCollectionStatuses(
   theme: NineCardsTheme = AppUtils.getDefaultTheme,
   touchHelper: Option[ItemTouchHelper] = None,
-  scrollType: ScrollType = ScrollNo,
+  scrollType: ScrollType = ScrollDown,
   canScroll: Boolean = false,
   activeFragment: Boolean = false) {
 

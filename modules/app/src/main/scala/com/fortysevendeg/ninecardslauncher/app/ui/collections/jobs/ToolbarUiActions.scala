@@ -24,7 +24,7 @@ class ToolbarUiActions(dom: GroupCollectionsDOM with GroupCollectionsUiListener)
     uiContext: UiContext[_])
   extends ImplicitsUiExceptions {
 
-  var statuses = ToolbarUiActionsStatuses()
+  private[this] var statuses = ToolbarUiActionsStatuses()
 
   val resistanceDisplacement = .2f
 

@@ -59,7 +59,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   extends ActionsBehaviours
   with ImplicitsUiExceptions {
 
-  var statuses = GroupCollectionsStatuses()
+  private[this] var statuses = GroupCollectionsStatuses()
 
   lazy val systemBarsTint = new SystemBarsTint
 
