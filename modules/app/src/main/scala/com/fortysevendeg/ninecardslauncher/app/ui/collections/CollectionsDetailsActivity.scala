@@ -6,7 +6,6 @@ import android.content.Intent._
 import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view._
 import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
@@ -214,16 +213,16 @@ class CollectionsDetailsActivity
   }
 
   override def closeEditingMode(): Unit =
-    groupCollectionsJobs.statuses.collectionMode match {
+    statuses.collectionMode match {
       case EditingCollectionMode => groupCollectionsJobs.closeEditingMode()
       case _ =>
     }
 
   def updateScroll(dy: Int): Unit = getSingleCollectionJobs foreach(_.updateScroll(dy).resolveAsync())
 
-  override def isNormalMode: Boolean = groupCollectionsJobs.statuses.collectionMode == NormalCollectionMode
+  override def isNormalMode: Boolean = statuses.collectionMode == NormalCollectionMode
 
-  override def isEditingMode: Boolean = groupCollectionsJobs.statuses.collectionMode == EditingCollectionMode
+  override def isEditingMode: Boolean = statuses.collectionMode == EditingCollectionMode
 
   override def showPublicCollectionDialog(collection: Collection): Unit = showDialog(PublishCollectionFragment(collection))
 
@@ -241,7 +240,9 @@ class CollectionsDetailsActivity
   override def reloadCards(cards: Seq[Card]): Unit = getSingleCollectionJobs foreach(_.reloadCards(cards).resolveAsync())
 
   override def saveEditedCard(collectionId: Int, cardId: Int, cardName: Option[String]): Unit =
-    getSingleCollectionJobs foreach(_.saveEditedCard(collectionId, cardId, cardName).resolveAsync())
+    getSingleCollectionJobs foreach { job =>
+      job.saveEditedCard(collectionId, cardId, cardName).resolveAsyncServiceOr(_ => job.showGenericError())
+    }
 
   override def showDataInPosition(position: Int): Unit =
     getSingleCollectionJobsByPosition(position) foreach(_.showData().resolveAsync())
@@ -262,6 +263,9 @@ trait ActionsScreenListener {
 }
 
 object CollectionsDetailsActivity {
+
+  var statuses = CollectionsDetailsStatuses()
+
   val startPosition = "start_position"
   val indexColorToolbar = "color_toolbar"
   val iconToolbar = "icon_toolbar"
@@ -271,4 +275,14 @@ object CollectionsDetailsActivity {
   val cardAdded = "cardAdded"
 
   def getContentTransitionName(position: Int) = s"icon_$position"
+}
+
+case class CollectionsDetailsStatuses(
+  collectionMode: CollectionMode = NormalCollectionMode,
+  positionsEditing: Set[Int] = Set.empty,
+  lastPhone: Option[String] = None,
+  publishStatus: PublishStatus = NoPublished) {
+
+  def getPositionsSelected: Int = positionsEditing.toSeq.length
+
 }

@@ -99,7 +99,10 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
         case `currentPosition` =>
           Ui(fragment.setActiveFragmentAndScrollType(activeFragment = true, statuses.scrollType))
         case _ =>
-          Ui(fragment.setActiveFragmentAndScrollType(activeFragment = false, statuses.scrollType))
+          Ui {
+            fragment.setActiveFragment(activeFragment = false)
+            fragment.setScrollType(statuses.scrollType)
+          }
       }
     }
     Ui.sequence(uis.toSeq: _*)

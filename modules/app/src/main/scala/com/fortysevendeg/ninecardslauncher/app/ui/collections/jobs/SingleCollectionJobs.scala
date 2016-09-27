@@ -12,6 +12,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collect
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.trackevent.models._
 import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.Theme
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 
@@ -26,6 +27,8 @@ class SingleCollectionJobs(
   def initialize(sType: ScrollType): TaskService[Unit] = {
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
     for {
+      theme <- di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues))
+      _ <- actions.loadTheme(theme)
       _ <- actions.updateStatus(canScroll, sType)
       _ <- maybeCollection match {
         case Some(collection) => actions.initialize(animateCards, collection)
@@ -51,7 +54,6 @@ class SingleCollectionJobs(
       collections <- di.collectionProcess.getCollections
       _ <- actions.moveToCollection(collections)
     } yield ()
-    // actions.showContactUsError())
 
   def addCards(cards: Seq[Card]): TaskService[Unit] =
     for {
@@ -72,7 +74,7 @@ class SingleCollectionJobs(
     case _ => TaskService.left(JobException("Collection not found"))
   }
 
-  def saveEditedCard(collectionId: Int, cardId: Int, cardName: Option[String]): TaskService[Unit] = {
+  def saveEditedCard(collectionId: Int, cardId: Int, cardName: Option[String]): TaskService[Unit] =
     cardName match {
       case Some(name) if name.length > 0 =>
         for {
@@ -82,15 +84,14 @@ class SingleCollectionJobs(
       case _ => actions.showMessageFormFieldError
     }
 
-    // actions.showContactUsError())
-  }
-
   def showData(): TaskService[Unit] = maybeCollection match  {
     case Some(collection) => actions.showData(collection.cards.isEmpty)
     case _ => TaskService.left(JobException("Collection not found"))
   }
 
   def updateScroll(scrollY: Int): TaskService[Unit] = actions.updateVerticalScroll(scrollY)
+
+  def showGenericError(): TaskService[Unit] = actions.showContactUsError()
 
   private[this] def trackCards(cards: Seq[Card], action: Action): TaskService[Unit] = TaskService {
     val tasks = cards map { card =>

@@ -6,6 +6,7 @@ import cats.implicits._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{JobException, Jobs, RequestCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.Theme
@@ -27,8 +28,6 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
   val permissionChecker = new PermissionChecker
 
   var collections: Seq[Collection] = Seq.empty
-
-  var statuses = GroupCollectionsUiStatuses()
 
   def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): TaskService[Unit] = {
     for {
@@ -86,7 +85,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       _ <- actions.removeCards(cards)
     } yield cards
 
-  def moveToCollection(toCollectionId: Int, collectionPosition: Int): TaskService[Unit] =
+  def moveToCollection(toCollectionId: Int, collectionPosition: Int): TaskService[Seq[Card]] =
     for {
       currentCollection <- actions.getCurrentCollection.resolveOption()
       toCollection <- actions.getCollection(collectionPosition).resolveOption()
@@ -102,7 +101,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment || otherIsMoment, ())
       _ <- actions.removeCards(cards)
       _ <- actions.addCardsToCollection(collectionPosition, cards)
-    } yield ()
+    } yield cards
 
   def savePublishStatus(): TaskService[Unit] =
     for {
@@ -236,16 +235,6 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
     case (card, index) if statuses.positionsEditing.contains(index) => Option(card)
     case _ => None
   }
-
-}
-
-case class GroupCollectionsUiStatuses(
-  collectionMode: CollectionMode = NormalCollectionMode,
-  positionsEditing: Set[Int] = Set.empty,
-  lastPhone: Option[String] = None,
-  publishStatus: PublishStatus = NoPublished) {
-
-  def getPositionsSelected: Int = positionsEditing.toSeq.length
 
 }
 

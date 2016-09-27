@@ -65,24 +65,25 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
   def initialize(
     animateCards: Boolean,
     collection: Collection): TaskService[Unit] = {
-    val itemTouchCallback = new ReorderItemTouchHelperCallback(
-      onChanged = {
-        case (ActionStateReordering, position) =>
-          openReorderMode.run
-        case (ActionStateIdle, position) =>
-          for {
-            adapter <- dom.getAdapter
-            collection = adapter.collection
-            card <- collection.cards.lift(position)
-          } yield dom.reorderCard(collection.id, card.id, position)
-          closeReorderMode(position).run
-      })
-    val itemTouchHelper = new ItemTouchHelper(itemTouchCallback)
-    itemTouchHelper.attachToRecyclerView(dom.recyclerView)
+    (Ui {
+      val itemTouchCallback = new ReorderItemTouchHelperCallback(
+        onChanged = {
+          case (ActionStateReordering, position) =>
+            openReorderMode.run
+          case (ActionStateIdle, position) =>
+            for {
+              adapter <- dom.getAdapter
+              collection = adapter.collection
+              card <- collection.cards.lift(position)
+            } yield dom.reorderCard(collection.id, card.id, position)
+            closeReorderMode(position).run
+        })
+      val itemTouchHelper = new ItemTouchHelper(itemTouchCallback)
+      itemTouchHelper.attachToRecyclerView(dom.recyclerView)
 
-    statuses = statuses.copy(touchHelper= Some(itemTouchHelper))
-
-    ((dom.recyclerView <~
+      statuses = statuses.copy(touchHelper = Some(itemTouchHelper))
+    } ~
+      (dom.recyclerView <~
       vGlobalLayoutListener(view => {
         loadCollection(collection, paddingSmall, spaceMove, animateCards) ~
           uiHandler(startScroll())
@@ -108,9 +109,7 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
         )))).toService
   }
 
-  def reloadCards(): TaskService[Unit] = TaskService.right {
-    dom.reloadCards()
-  }
+  def reloadCards(): TaskService[Unit] = Ui(dom.reloadCards()).toService
 
   def isToolbarPulling: TaskService[Boolean] = TaskService.right(dom.isPulling)
 
@@ -132,53 +131,53 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
       rvAdapter(createAdapter(collection)) <~
       nrvScheduleLayoutAnimation).ifUi(animateCards).toService
 
-  def moveToCollection(collections: Seq[Collection]): TaskService[Unit] = TaskService.right {
+  def moveToCollection(collections: Seq[Collection]): TaskService[Unit] = Ui {
     implicit val theme: NineCardsTheme = statuses.theme
     dom.showCollectionDialog(
       moments = collections filterNot(c => dom.getCurrentCollection.map(_.id).contains(c.id)),
       onCollection = c => dom.moveToCollection(c, collections.indexWhere(_.id == c)))
-  }
+  }.toService
 
-  def addCards(cards: Seq[Card]): TaskService[Unit] = dom.getAdapter map { adapter =>
-    adapter.addCards(cards)
-    updateScroll()
+  def addCards(cards: Seq[Card]): TaskService[Unit] = (dom.getAdapter map { adapter =>
     val emptyCollection = adapter.collection.cards.isEmpty
-    if (!emptyCollection) dom.firstItemInCollection()
-    showData(emptyCollection)
-  } getOrElse TaskService.empty
+    Ui {
+      adapter.addCards(cards)
+      updateScroll()
+      if (!emptyCollection) dom.firstItemInCollection()
+    } ~
+      showDataUi(emptyCollection)
+  } getOrElse Ui.nop).toService
 
-  def removeCards(cards: Seq[Card]): TaskService[Unit] = dom.getAdapter map { adapter =>
-    adapter.removeCards(cards)
-    val couldScroll = statuses.canScroll
-    updateScroll()
+  def removeCards(cards: Seq[Card]): TaskService[Unit] = (dom.getAdapter map { adapter =>
     val emptyCollection = adapter.collection.cards.isEmpty
-    if (emptyCollection) dom.emptyCollection()
-    if (couldScroll && !statuses.canScroll && statuses.scrollType == ScrollUp) {
-      statuses = statuses.copy(scrollType = ScrollDown)
-      dom.forceScrollType(ScrollDown)
-    }
-    showData(emptyCollection)
-  } getOrElse TaskService.empty
+    Ui {
+      adapter.removeCards(cards)
+      val couldScroll = statuses.canScroll
+      updateScroll()
+      if (emptyCollection) dom.emptyCollection()
+      if (couldScroll && !statuses.canScroll && statuses.scrollType == ScrollUp) {
+        statuses = statuses.copy(scrollType = ScrollDown)
+        dom.forceScrollType(ScrollDown)
+      }
+    } ~
+      showDataUi(emptyCollection)
+  } getOrElse Ui.nop).toService
 
-  def reloadCard(card: Card): TaskService[Unit] = TaskService.right {
+  def reloadCard(card: Card): TaskService[Unit] = Ui {
     dom.getAdapter foreach { adapter =>
       adapter.updateCard(card)
       updateScroll()
     }
-  }
+  }.toService
 
-  def reloadCards(cards: Seq[Card]): TaskService[Unit] = TaskService.right {
+  def reloadCards(cards: Seq[Card]): TaskService[Unit] = Ui {
     dom.getAdapter foreach { adapter =>
       adapter.updateCards(cards)
       updateScroll()
     }
-  }
+  }.toService
 
-  def showData(emptyCollection: Boolean): TaskService[Unit] =
-    if (emptyCollection) showEmptyCollection()
-    else
-      ((dom.recyclerView <~ vVisible) ~
-        (dom.emptyCollectionView <~ vGone)).toService
+  def showData(emptyCollection: Boolean): TaskService[Unit] = showDataUi(emptyCollection).toService
 
   def updateVerticalScroll(scrollY: Int): TaskService[Unit] =
     (dom.recyclerView <~ rvScrollBy(dy = scrollY)).toService
@@ -203,6 +202,19 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
           (dom.emptyCollectionView <~ vMargin(paddingDefault, marginTop, paddingDefault, paddingDefault))
       case _ => Ui.nop
     }).toService
+
+  private[this] def showEmptyCollectionUi(): Ui[Any] =
+    (dom.emptyCollectionMessage <~
+      tvText(messageText) <~
+      tvColor(statuses.theme.get(DrawerTextColor).alpha(0.8f))) ~
+      (dom.emptyCollectionView <~ vVisible <~ cvCardBackgroundColor(statuses.theme.get(CardBackgroundColor))) ~
+      (dom.recyclerView <~ vGone)
+
+  private[this] def showDataUi(emptyCollection: Boolean): Ui[Any] = if (emptyCollection)
+    showEmptyCollectionUi()
+  else
+    (dom.recyclerView <~ vVisible) ~
+      (dom.emptyCollectionView <~ vGone)
 
   private[this] def updateScroll(): Unit = dom.getAdapter foreach { adapter =>
     statuses = statuses.updateScroll(adapter.collection.cards.length)
@@ -256,7 +268,7 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
       (dom.recyclerView.getHeight - allPadding - (dom.recyclerView.getPaddingBottom + dom.recyclerView.getPaddingTop)) / numInLine
     }
     implicit val theme: NineCardsTheme = statuses.theme
-    CollectionAdapter(collection, heightCard, dom.startReorderCards)
+    CollectionAdapter(collection, heightCard, dom.performCard, dom.startReorderCards)
   }
 
 }

@@ -7,13 +7,16 @@ import android.view._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.{ScrollType, _}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.PhoneCardType
+import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}
 import macroid.Contexts
@@ -60,6 +63,8 @@ class CollectionFragment
   def setActiveFragmentAndScrollType(activeFragment: Boolean, scrollType: ScrollType) =
     actions.statuses = actions.statuses.copy(activeFragment = activeFragment, scrollType = scrollType)
 
+  def setScrollType(scrollType: ScrollType) = actions.scrollType(scrollType).resolveAsync()
+
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
@@ -89,9 +94,9 @@ class CollectionFragment
 
   override def onPrepareOptionsMenu(menu: Menu): Unit = {
     super.onPrepareOptionsMenu(menu)
-    (groupCollectionsJobs.statuses.collectionMode, groupCollectionsJobs.statuses.positionsEditing.toSeq.length) match {
+    (statuses.collectionMode, statuses.positionsEditing.toSeq.length) match {
       case (NormalCollectionMode, _) =>
-        groupCollectionsJobs.statuses.publishStatus match {
+        statuses.publishStatus match {
           case PublishedByMe =>
             menu.findItem(R.id.action_make_public).setEnabled(false).setTitle(resGetString(R.string.alreadyPublishedCollection))
             menu.findItem(R.id.action_share).setVisible(true)
@@ -122,7 +127,7 @@ class CollectionFragment
       groupCollectionsJobs.editCard().resolveAsync()
       true
     case R.id.action_move_to_collection =>
-//      presenter.moveToCollection()
+      singleCollectionJobs.moveToCollection().resolveAsyncServiceOr(_ => singleCollectionJobs.showGenericError())
       true
     case R.id.action_delete =>
       (for {
@@ -152,7 +157,10 @@ class CollectionFragment
   override def reloadCards(): Unit = groupCollectionsJobs.reloadCards().resolveAsync()
 
   override def moveToCollection(toCollectionId: Int, collectionPosition: Int): Unit =
-    groupCollectionsJobs.moveToCollection(toCollectionId, collectionPosition).resolveAsync()
+    (for {
+      cards <- groupCollectionsJobs.moveToCollection(toCollectionId, collectionPosition)
+      _ <- singleCollectionJobs.removeCards(cards)
+    } yield ()).resolveAsync()
 
   override def firstItemInCollection(): Unit = groupCollectionsJobs.firstItemInCollection().resolveAsync()
 
@@ -168,6 +176,15 @@ class CollectionFragment
 
   def startReorderCards(holder: ViewHolder): Unit =
     singleCollectionJobs.startReorderCards(holder).resolveAsync()
+
+  override def performCard(card: Card, position: Int): Unit =
+    groupCollectionsJobs.performCard(card, position).resolveAsyncServiceOr { (e: Throwable) =>
+      e match {
+        case _: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
+          groupCollectionsJobs.requestCallPhonePermission(card.intent.extractPhone())
+        case _ => groupCollectionsJobs.showGenericError()
+      }
+    }
 }
 
 object CollectionFragment {
