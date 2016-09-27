@@ -9,8 +9,9 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
+import com.fortysevendeg.ninecardslauncher.services.api.{RankAppsResponse, RankAppsResponseList, CategorizedDetailPackage}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessLocation
 import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, AddCardRequest => ServicesAddCardRequest}
@@ -74,6 +75,11 @@ trait CollectionProcessImplData {
   val startY: Int = Random.nextInt(8)
   val spanX: Int = Random.nextInt(8)
   val spanY: Int = Random.nextInt(8)
+
+  val statusCodeOk = 200
+
+  val latitude: Double = Random.nextDouble()
+  val longitude: Double = Random.nextDouble()
 
   val application1 = Application(
     name = name1,
@@ -454,4 +460,34 @@ trait CollectionProcessImplData {
     intent = Json.parse(servicesCard.intent).as[NineCardIntent],
     imagePath = servicesCard.imagePath,
     notification = servicesCard.notification)
+
+  val seqCategoryAndPackages =
+    (seqServicesApp map (app => (app.category, app.packageName))).groupBy(_._1).mapValues(_.map(_._2)).toSeq
+
+  def generateRankAppsResponse() = seqCategoryAndPackages map { item =>
+    RankAppsResponse(
+      category = item._1,
+      packages = item._2)
+  }
+
+  val rankAppsResponseList = RankAppsResponseList(
+    statusCode = statusCodeOk,
+    items = generateRankAppsResponse())
+
+  val packagesByCategory =
+    seqCategoryAndPackages map { item =>
+      PackagesByCategory(
+        category = item._1,
+        packages = item._2)
+    }
+
+  val awarenessLocation =
+    AwarenessLocation(
+      latitude = latitude,
+      longitude = longitude,
+      countryCode = Some("ES"),
+      countryName = Some("Spain"),
+      addressLines = Seq("street", "city", "postal code")
+    )
+
 }

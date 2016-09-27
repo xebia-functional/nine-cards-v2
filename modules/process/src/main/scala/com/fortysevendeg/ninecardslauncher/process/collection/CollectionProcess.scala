@@ -134,6 +134,14 @@ trait CollectionProcess {
   def addPackages(collectionId: Int, packages: Seq[String])(implicit context: ContextSupport): TaskService[Unit]
 
   /**
+    * Rank all the packages grouped by its category
+    *
+    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.PackagesByCategory] with the packages already ordered
+    * @throws CollectionException if there was an error getting the existing collections or getting the packages ordered
+    */
+  def rankApps()(implicit context: ContextSupport): TaskService[Seq[PackagesByCategory]]
+
+  /**
    * Adds some new Cards after the last existing one in a given Collection
    *
    * @param collectionId the Id of the Collection
@@ -198,4 +206,5 @@ trait CollectionProcess {
     * @throws CardException if there was an error finding the card or updating it
     */
   def updateNoInstalledCardsInCollections(packageName: String)(implicit contextSupport: ContextSupport): TaskService[Unit]
+
 }
