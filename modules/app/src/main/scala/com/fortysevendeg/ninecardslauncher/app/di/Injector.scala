@@ -285,8 +285,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   lazy val observerRegister = new ObserverRegister(uriCreator)
 
   lazy val userAccountsProcess: UserAccountsProcess = {
-    val permissionsServices = new AndroidSupportPermissionsServices
-    new UserAccountsProcessImpl(permissionsServices)
+    val services = new AndroidSupportPermissionsServices
+    new UserAccountsProcessImpl(services)
   }
 
   lazy val launcherExecutorProcess: LauncherExecutorProcess = {
