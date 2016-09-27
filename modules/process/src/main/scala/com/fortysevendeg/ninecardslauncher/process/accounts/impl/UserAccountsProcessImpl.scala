@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.accounts.impl
 
-import android.accounts.{AccountManager, AccountManagerCallback, AccountManagerFuture, OperationCanceledException}
+import android.accounts.{Account, AccountManager, AccountManagerCallback, AccountManagerFuture, OperationCanceledException}
 import android.app.Activity
 import android.os.Bundle
 import cats.syntax.either._
@@ -26,7 +26,7 @@ class UserAccountsProcessImpl(permissionsServices: PermissionsServices)
 
     def safeNullArrayToSeq[T](array: Array[T]): Seq[T] = Option(array) map (_.toSeq) getOrElse Seq.empty
 
-    def getAccounts: Seq[android.accounts.Account] =
+    def getAccounts: Seq[Account] =
       safeNullArrayToSeq(contextSupport.getAccountManager.getAccountsByType(googleAccountType))
 
     TaskService {
@@ -41,8 +41,8 @@ class UserAccountsProcessImpl(permissionsServices: PermissionsServices)
 
   override def getAuthToken(accountName: String, scope: String)(implicit contextSupport: ActivityContextSupport) = {
 
-    def getAuthToken(callback: Callback[Either[UserAccountsProcessException, String]], activity: Activity): Unit = {
-      val androidAccount = new android.accounts.Account(accountName, googleAccountType)
+    def readAuthToken(callback: Callback[Either[UserAccountsProcessException, String]], activity: Activity): Unit = {
+      val androidAccount = new Account(accountName, googleAccountType)
       contextSupport.getAccountManager.getAuthToken(androidAccount, scope, javaNull, activity, new AccountManagerCallback[Bundle] {
         override def run(future: AccountManagerFuture[Bundle]): Unit = {
           Try {
@@ -65,7 +65,7 @@ class UserAccountsProcessImpl(permissionsServices: PermissionsServices)
     TaskService {
       Task.async[UserAccountsProcessException Either String] { (scheduler, callback) =>
         contextSupport.getActivity match {
-          case Some(activity) => getAuthToken(callback, activity)
+          case Some(activity) => readAuthToken(callback, activity)
           case None => callback(Success(Left(UserAccountsProcessExceptionImpl("Activity instance is null", None))))
         }
         Cancelable.empty
