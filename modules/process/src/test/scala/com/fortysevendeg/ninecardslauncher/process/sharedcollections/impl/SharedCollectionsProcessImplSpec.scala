@@ -8,8 +8,8 @@ import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{SharedCollectionsConfigurationException, SharedCollectionsException}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{NotSubscribed, Owned, Subscribed, SubscriptionType}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
 import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices}
 import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
@@ -77,23 +77,55 @@ class SharedCollectionsProcessImplSpec
         result must beLike {
           case Right(shareCollection) =>
             shareCollection.name shouldEqual sharedCollectionResponseList.items.head.name
-            shareCollection.publicCollectionStatus shouldEqual NotSubscribed
+            shareCollection.publicCollectionStatus shouldEqual NotPublished
         }
       }
 
-    "returns a collection marked as Owned" in
+    "returns a collection marked as PublishedByMe" in
       new SharedCollectionsProcessProcessScope {
 
         mockApiServices.getSharedCollection(anyString)(any) returns
           TaskService(Task(Either.right(sharedCollectionResponse)))
         mockPersistenceServices.fetchCollectionBySharedCollectionId(any) returns
-          TaskService(Task(Either.right(collectionPersistenceOwnedSeq.headOption)))
+          TaskService(Task(Either.right(collectionPersistencePublishedByMeSeq.headOption)))
 
         val result = sharedCollectionsProcess.getSharedCollection(sharedCollectionId)(contextSupport).value.run
         result must beLike {
           case Right(shareCollection) =>
             shareCollection.name shouldEqual sharedCollectionResponseList.items.head.name
-            shareCollection.publicCollectionStatus shouldEqual Owned
+            shareCollection.publicCollectionStatus shouldEqual PublishedByMe
+        }
+      }
+
+    "returns a sequence of shared collections for a valid request where the first one is marked as PublishedByOther" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.getSharedCollection(anyString)(any) returns
+          TaskService(Task(Either.right(sharedCollectionResponse)))
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(any) returns
+          TaskService(Task(Either.right(collectionPersistencePublishedByOtherSeq.headOption)))
+
+        val result = sharedCollectionsProcess.getSharedCollection(sharedCollectionId)(contextSupport).value.run
+        result must beLike {
+          case Right(shareCollection) =>
+            shareCollection.name shouldEqual sharedCollectionResponseList.items.head.name
+            shareCollection.publicCollectionStatus shouldEqual PublishedByOther
+        }
+      }
+
+    "returns a sequence of shared collections for a valid request where the first one is marked as NotPublished" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.getSharedCollection(anyString)(any) returns
+          TaskService(Task(Either.right(sharedCollectionResponse)))
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(any) returns
+          TaskService(Task(Either.right(collectionPersistenceNotPublishedSeq.headOption)))
+
+        val result = sharedCollectionsProcess.getSharedCollection(sharedCollectionId)(contextSupport).value.run
+        result must beLike {
+          case Right(shareCollection) =>
+            shareCollection.name shouldEqual sharedCollectionResponseList.items.head.name
+            shareCollection.publicCollectionStatus shouldEqual NotPublished
         }
       }
 
@@ -153,7 +185,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual NotSubscribed)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual NotPublished)
         }
       }
 
@@ -163,7 +195,7 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
           TaskService(Task(Either.right(sharedCollectionResponseList)))
         mockPersistenceServices.fetchCollectionsBySharedCollectionIds(any) returns
-          TaskService(Task(Either.right(collectionPersistenceOwnedSeq)))
+          TaskService(Task(Either.right(collectionPersistencePublishedByMeSeq)))
 
         val result = sharedCollectionsProcess.getSharedCollectionsByCategory(
           category,
@@ -174,7 +206,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual Owned)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual PublishedByMe)
         }
       }
 
@@ -184,7 +216,7 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.getSharedCollectionsByCategory(anyString, anyString, anyInt, anyInt)(any) returns
           TaskService(Task(Either.right(sharedCollectionResponseList)))
         mockPersistenceServices.fetchCollectionsBySharedCollectionIds(any) returns
-          TaskService(Task(Either.right(collectionPersistenceSubscribedSeq)))
+          TaskService(Task(Either.right(collectionPersistencePublishedByOtherSeq)))
 
         val result = sharedCollectionsProcess.getSharedCollectionsByCategory(
           category,
@@ -195,7 +227,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual Subscribed)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual PublishedByOther)
         }
       }
 
@@ -243,7 +275,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual NotSubscribed)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual NotPublished)
         }
       }
 
@@ -253,14 +285,14 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.getPublishedCollections()(any) returns
           TaskService(Task(Either.right(sharedCollectionResponseList)))
         mockPersistenceServices.fetchCollectionsBySharedCollectionIds(any) returns
-          TaskService(Task(Either.right(collectionPersistenceOwnedSeq)))
+          TaskService(Task(Either.right(collectionPersistencePublishedByMeSeq)))
 
         val result = sharedCollectionsProcess.getPublishedCollections()(contextSupport).value.run
         result must beLike {
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual Owned)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual PublishedByMe)
         }
       }
 
@@ -270,14 +302,14 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.getPublishedCollections()(any) returns
           TaskService(Task(Either.right(sharedCollectionResponseList)))
         mockPersistenceServices.fetchCollectionsBySharedCollectionIds(any) returns
-          TaskService(Task(Either.right(collectionPersistenceSubscribedSeq)))
+          TaskService(Task(Either.right(collectionPersistencePublishedByOtherSeq)))
 
         val result = sharedCollectionsProcess.getPublishedCollections()(contextSupport).value.run
         result must beLike {
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual Subscribed)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual PublishedByOther)
         }
       }
 
@@ -371,12 +403,6 @@ class SharedCollectionsProcessImplSpec
 
     "returns a sequence of the subscriptions for a valid request" in
       new SharedCollectionsProcessProcessScope {
-        mockApiServices.getSubscriptions()(any) returns
-          TaskService(Task(Either.right(subscriptionList)))
-
-        mockApiServices.getPublishedCollections()(any) returns
-          TaskService(Task(Either.right(publicationList)))
-
         mockPersistenceServices.fetchCollections returns
           TaskService(Task(Either.right(collectionList)))
 
@@ -389,41 +415,8 @@ class SharedCollectionsProcessImplSpec
         }
       }
 
-    "returns a SharedCollectionsException if the service throws an exception getting the subscriptions" in
-      new SharedCollectionsProcessProcessScope {
-        mockApiServices.getSubscriptions()(any) returns
-          TaskService(Task(Either.left(apiException)))
-
-        mustLeft[SharedCollectionsException](sharedCollectionsProcess.getSubscriptions()(contextSupport))
-      }
-
-    "returns a SharedCollectionsExceptions if the service throws a exception getting the published collections" in
-      new SharedCollectionsProcessProcessScope {
-        mockApiServices.getSubscriptions()(any) returns
-          TaskService(Task(Either.right(subscriptionList)))
-
-        mockApiServices.getPublishedCollections()(any) returns
-          TaskService(Task(Either.left(apiException)))
-
-        mustLeft[SharedCollectionsException](sharedCollectionsProcess.getSubscriptions()(contextSupport))
-      }
-
-    "returns a SharedCollectionsConfigurationException if the service throws a config exception" in
-      new SharedCollectionsProcessProcessScope {
-        mockApiServices.getSubscriptions()(any) returns
-          TaskService(Task(Either.left(apiConfigException)))
-
-        mustLeft[SharedCollectionsConfigurationException](sharedCollectionsProcess.getSubscriptions()(contextSupport))
-      }
-
     "returns a SharedCollectionsException if the service throws an exception getting the collections" in
       new SharedCollectionsProcessProcessScope {
-        mockApiServices.getSubscriptions()(any) returns
-          TaskService(Task(Either.right(subscriptionList)))
-
-        mockApiServices.getPublishedCollections()(any) returns
-          TaskService(Task(Either.right(publicationList)))
-
         mockPersistenceServices.fetchCollections returns
           TaskService(Task(Either.left(apiException)))
 
@@ -437,6 +430,10 @@ class SharedCollectionsProcessImplSpec
       new SharedCollectionsProcessProcessScope {
         mockApiServices.subscribe(any)(any) returns
           TaskService(Task(Either.right(subscribeResponse)))
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(any) returns
+          TaskService(Task(Either.right(Option(collection))))
+        mockPersistenceServices.updateCollection(any) returns
+          TaskService(Task(Either.right(1)))
 
         val result = sharedCollectionsProcess.subscribe(sharedCollectionId)(contextSupport).value.run
         result mustEqual Right(())
@@ -445,6 +442,28 @@ class SharedCollectionsProcessImplSpec
     "returns a SharedCollectionsException if the service throws an exception" in
       new SharedCollectionsProcessProcessScope {
         mockApiServices.subscribe(any)(any) returns
+          TaskService(Task(Either.left(apiException)))
+
+        mustLeft[SharedCollectionsException](sharedCollectionsProcess.subscribe(sharedCollectionId)(contextSupport))
+      }
+
+    "returns a SharedCollectionsException if the service throws an exception fetching the collections" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.subscribe(any)(any) returns
+          TaskService(Task(Either.right(subscribeResponse)))
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(any) returns
+          TaskService(Task(Either.left(apiException)))
+
+        mustLeft[SharedCollectionsException](sharedCollectionsProcess.subscribe(sharedCollectionId)(contextSupport))
+      }
+
+    "returns a SharedCollectionsException if the service throws an exception updating the collection" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.subscribe(any)(any) returns
+          TaskService(Task(Either.right(subscribeResponse)))
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(any) returns
+          TaskService(Task(Either.right(Option(collection))))
+        mockPersistenceServices.updateCollection(any) returns
           TaskService(Task(Either.left(apiException)))
 
         mustLeft[SharedCollectionsException](sharedCollectionsProcess.subscribe(sharedCollectionId)(contextSupport))
@@ -465,6 +484,10 @@ class SharedCollectionsProcessImplSpec
       new SharedCollectionsProcessProcessScope {
         mockApiServices.unsubscribe(any)(any) returns
           TaskService(Task(Either.right(unsubscribeResponse)))
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(any) returns
+          TaskService(Task(Either.right(Option(collection))))
+        mockPersistenceServices.updateCollection(any) returns
+          TaskService(Task(Either.right(1)))
 
         val result = sharedCollectionsProcess.unsubscribe(sharedCollectionId)(contextSupport).value.run
         result mustEqual Right(())
@@ -473,6 +496,28 @@ class SharedCollectionsProcessImplSpec
     "returns a SharedCollectionsException if the service throws an exception" in
       new SharedCollectionsProcessProcessScope {
         mockApiServices.unsubscribe(any)(any) returns
+          TaskService(Task(Either.left(apiException)))
+
+        mustLeft[SharedCollectionsException](sharedCollectionsProcess.unsubscribe(sharedCollectionId)(contextSupport))
+      }
+
+    "returns a SharedCollectionsException if the service throws an exception fetching the collections" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.unsubscribe(any)(any) returns
+          TaskService(Task(Either.right(unsubscribeResponse)))
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(any) returns
+          TaskService(Task(Either.left(apiException)))
+
+        mustLeft[SharedCollectionsException](sharedCollectionsProcess.unsubscribe(sharedCollectionId)(contextSupport))
+      }
+
+    "returns a SharedCollectionsException if the service throws an exception updating the collection" in
+      new SharedCollectionsProcessProcessScope {
+        mockApiServices.unsubscribe(any)(any) returns
+          TaskService(Task(Either.right(unsubscribeResponse)))
+        mockPersistenceServices.fetchCollectionBySharedCollectionId(any) returns
+          TaskService(Task(Either.right(Option(collection))))
+        mockPersistenceServices.updateCollection(any) returns
           TaskService(Task(Either.left(apiException)))
 
         mustLeft[SharedCollectionsException](sharedCollectionsProcess.unsubscribe(sharedCollectionId)(contextSupport))

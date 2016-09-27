@@ -133,6 +133,7 @@ trait SharedCollectionsProcessImplData {
   }
 
   val collectionList = generateCollection()
+  val collection = collectionList(0)
 
   val publicCollectionList =
     collectionList.flatMap(collection => collection.originalSharedCollectionId.map((_, collection))).filter{
@@ -147,7 +148,7 @@ trait SharedCollectionsProcessImplData {
     UnsubscribeResponse(
       statusCode = statusCodeOk)
 
-  def collectionPersistenceOwnedSeq = sharedCollectionResponseList.items.map { col =>
+  def collectionPersistencePublishedByMeSeq = sharedCollectionResponseList.items.map { col =>
     CollectionPersistence(
       id = Random.nextInt(),
       position = Random.nextInt(10),
@@ -158,6 +159,38 @@ trait SharedCollectionsProcessImplData {
       appsCategory = Some(col.category),
       originalSharedCollectionId = None,
       sharedCollectionId = Some(col.sharedCollectionId),
+      sharedCollectionSubscribed = false,
+      cards = Seq.empty,
+      moment = None)
+  }
+
+  def collectionPersistencePublishedByOtherSeq = sharedCollectionResponseList.items.map { col =>
+    CollectionPersistence(
+      id = Random.nextInt(),
+      position = Random.nextInt(10),
+      name = col.name,
+      collectionType = AppsCollectionType.name,
+      icon = col.icon,
+      themedColorIndex = 0,
+      appsCategory = Some(col.category),
+      originalSharedCollectionId = Some(col.sharedCollectionId),
+      sharedCollectionId = Some(col.sharedCollectionId),
+      sharedCollectionSubscribed = false,
+      cards = Seq.empty,
+      moment = None)
+  }
+
+  def collectionPersistenceNotPublishedSeq = sharedCollectionResponseList.items.map { col =>
+    CollectionPersistence(
+      id = Random.nextInt(),
+      position = Random.nextInt(10),
+      name = col.name,
+      collectionType = AppsCollectionType.name,
+      icon = col.icon,
+      themedColorIndex = 0,
+      appsCategory = Some(col.category),
+      originalSharedCollectionId = None,
+      sharedCollectionId = None,
       sharedCollectionSubscribed = false,
       cards = Seq.empty,
       moment = None)
@@ -174,7 +207,7 @@ trait SharedCollectionsProcessImplData {
       appsCategory = Some(col.category),
       originalSharedCollectionId = Some(col.sharedCollectionId),
       sharedCollectionId = Some(col.sharedCollectionId),
-      sharedCollectionSubscribed = false,
+      sharedCollectionSubscribed = true,
       cards = Seq.empty,
       moment = None)
   }

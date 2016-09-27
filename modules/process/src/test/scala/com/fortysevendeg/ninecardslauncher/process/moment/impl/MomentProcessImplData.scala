@@ -25,6 +25,8 @@ trait MomentProcessImplData {
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
   val sharedCollectionSubscribed: Boolean = Random.nextBoolean()
+  val publicCollectionStatusSeq = Seq(NotPublished, PublishedByMe, PublishedByOther, Subscribed)
+  val publicCollectionStatus = publicCollectionStatusSeq(Random.nextInt(publicCollectionStatusSeq.size))
 
   val name1 = "Scala Android"
   val packageName1 = "com.fortysevendeg.scala.android"
@@ -78,7 +80,8 @@ trait MomentProcessImplData {
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    cards: Seq[Card] = seqCard) =
+    cards: Seq[Card] = seqCard,
+    publicCollectionStatus: PublicCollectionStatus = publicCollectionStatus) =
     (0 until num) map (
       item =>
         Collection(
@@ -92,7 +95,8 @@ trait MomentProcessImplData {
           originalSharedCollectionId = Option(originalSharedCollectionId),
           sharedCollectionId = Option(sharedCollectionId),
           sharedCollectionSubscribed = sharedCollectionSubscribed,
-          cards = cards))
+          cards = cards,
+          publicCollectionStatus = publicCollectionStatus))
 
   def createSeqMomentCollection(
      num: Int = 4,
@@ -107,7 +111,8 @@ trait MomentProcessImplData {
      moment: Option[Moment] = Option(processMoment),
      originalSharedCollectionId: String = originalSharedCollectionId,
      sharedCollectionId: String = sharedCollectionId,
-     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
+     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
+     publicCollectionStatus: PublicCollectionStatus = publicCollectionStatus) =
     (0 until num) map (
       item =>
         Collection(
@@ -122,7 +127,8 @@ trait MomentProcessImplData {
           moment = moment,
           originalSharedCollectionId = Option(originalSharedCollectionId),
           sharedCollectionId = Option(sharedCollectionId),
-          sharedCollectionSubscribed = sharedCollectionSubscribed))
+          sharedCollectionSubscribed = sharedCollectionSubscribed,
+          publicCollectionStatus = publicCollectionStatus))
 
   def createSeqServicesCollection(
     num: Int = 5,
