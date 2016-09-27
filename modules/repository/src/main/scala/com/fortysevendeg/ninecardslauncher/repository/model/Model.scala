@@ -9,7 +9,6 @@ case class AppData(
   packageName: String,
   className: String,
   category: String,
-  imagePath: String, // Deprecated. Keeping it for compatibility reasons
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,

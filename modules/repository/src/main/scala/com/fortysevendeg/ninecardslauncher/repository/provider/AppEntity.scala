@@ -11,19 +11,17 @@ case class AppEntityData(
   packageName: String,
   className: String,
   category: String,
-  imagePath: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 
 object AppEntity {
-  val table = "app"
+  val table = "App"
   val name = "name"
   val packageName = "packageName"
   val className = "className"
   val category = "category"
-  val imagePath = "imagePath"
   val dateInstalled = "dateInstalled"
   val dateUpdate = "dateUpdate"
   val version = "version"
@@ -35,7 +33,6 @@ object AppEntity {
     packageName,
     className,
     category,
-    imagePath,
     dateInstalled,
     dateUpdate,
     version,
@@ -58,7 +55,6 @@ object AppEntity {
         packageName = cursor.getString(cursor.getColumnIndex(packageName)),
         className = cursor.getString(cursor.getColumnIndex(className)),
         category = cursor.getString(cursor.getColumnIndex(category)),
-        imagePath = cursor.getString(cursor.getColumnIndex(imagePath)),
         dateInstalled = cursor.getLong(cursor.getColumnIndex(dateInstalled)),
         dateUpdate = cursor.getLong(cursor.getColumnIndex(dateUpdate)),
         version = cursor.getString(cursor.getColumnIndex(version)),
@@ -73,7 +69,6 @@ object AppEntity {
        |${AppEntity.packageName} TEXT not null,
        |${AppEntity.className} TEXT not null,
        |${AppEntity.category} TEXT not null,
-       |${AppEntity.imagePath} TEXT not null,
        |${AppEntity.dateInstalled} INTEGER,
        |${AppEntity.dateUpdate} INTEGER,
        |${AppEntity.version} TEXT not null,

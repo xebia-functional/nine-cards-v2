@@ -12,7 +12,6 @@ object Conversions {
       packageName = app.data.packageName,
       className = app.data.className,
       category = app.data.category,
-      imagePath = app.data.imagePath,
       dateInstalled = app.data.dateInstalled,
       dateUpdate = app.data.dateUpdate,
       version = app.data.version,
