@@ -1,10 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{TaskService, _}
 import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
 import macroid.ActivityContextWrapper
 
@@ -26,9 +23,7 @@ class ShortcutJobs(actions: ShortcutUiActions)(implicit activityContextWrapper: 
   def configureShortcut(shortcut: Shortcut): TaskService[Unit] =
     for {
       _ <- actions.close()
-      _ <- TaskService.right {
-        activityContextWrapper.getOriginal.startActivityForResult(shortcut.intent, shortcutAdded)
-      }
+      _ <- actions.configureShortcut(shortcut)
     } yield ()
 
   def showErrorLoadingShortcuts(): TaskService[Unit] = actions.showErrorLoadingShortcutsInScreen()

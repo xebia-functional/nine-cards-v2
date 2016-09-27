@@ -31,6 +31,8 @@ trait ShortcutUiActions
 
   def close(): TaskService[Unit] = unreveal().toService
 
+  def configureShortcut(shortcut: Shortcut): TaskService[Unit] = goToConfigureShortcut(shortcut).toService
+
   def showErrorLoadingShortcutsInScreen(): TaskService[Unit] =
     showMessageInScreen(R.string.errorLoadingShortcuts, error = true, loadShortcuts()).toService
 
