@@ -23,7 +23,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdap
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{EditAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscribed, Subscription}
+import com.fortysevendeg.ninecardslauncher.process.commons.types.PublishedByOther
+import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
@@ -90,7 +91,7 @@ trait ProfileUiActionsImpl
     val adapter = recyclerView.getAdapter match {
       case sharedCollectionsAdapter: SharedCollectionsAdapter =>
         val newCollections = sharedCollectionsAdapter.sharedCollections map {
-          case col if col.sharedCollectionId == sharedCollectionId => col.copy(subscriptionType = Subscribed)
+          case col if col.sharedCollectionId == sharedCollectionId => col.copy(publicCollectionStatus = PublishedByOther)
           case col => col
         }
         sharedCollectionsAdapter.copy(sharedCollections = newCollections)

@@ -16,6 +16,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.styles.{CommonStyles, CollectionCardsStyles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.SharedCollectionOps._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{PublishedByOther, Subscribed, NotPublished, PublishedByMe}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
@@ -71,14 +72,14 @@ trait SharedCollectionItem
     onAddCollection: => Unit,
     onShareCollection: => Unit)(implicit theme: NineCardsTheme): Ui[Any] = {
 
-    def addCollectionTweak() = collection.subscriptionType match {
-      case NotSubscribed =>
+    def addCollectionTweak() = collection.publicCollectionStatus match {
+      case NotPublished =>
         tvText(R.string.addMyCollection) +
           tvAllCaps2(true) + tvNormalMedium + On.click(Ui(onAddCollection)) + vEnabled(true)
-      case Subscribed =>
+      case Subscribed | PublishedByOther =>
         tvText(R.string.alreadyAddedCollection) +
           tvAllCaps2(false) + tvItalicLight + vEnabled(false)
-      case Owned =>
+      case PublishedByMe =>
         tvText(R.string.ownedCollection) +
           tvAllCaps2(false) + tvItalicLight + vEnabled(false)
     }

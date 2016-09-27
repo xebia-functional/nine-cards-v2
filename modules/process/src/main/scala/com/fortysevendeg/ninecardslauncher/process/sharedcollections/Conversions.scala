@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.sharedcollections
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, AppCardType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
 import com.fortysevendeg.ninecardslauncher.services.api.{SharedCollectionPackageResponse, SharedCollection => SharedCollectionService}
 import com.fortysevendeg.ninecardslauncher.services.persistence.UpdateCollectionRequest
@@ -25,7 +25,7 @@ trait Conversions {
       category = NineCardCategory(item.category),
       icon = item.icon,
       community = item.community,
-      subscriptionType = determineSubscription(maybeLocalCollection))
+      publicCollectionStatus = determineSubscription(maybeLocalCollection))
 
   def toSharedCollectionPackage(item: SharedCollectionPackageResponse): SharedCollectionPackage =
     SharedCollectionPackage(
@@ -62,12 +62,13 @@ trait Conversions {
       subscribed = subscribed)
   }
 
-  private[this] def determineSubscription(maybeLocalCollection: Option[Collection]): SubscriptionType =
+  private[this] def determineSubscription(maybeLocalCollection: Option[Collection]): PublicCollectionStatus =
     maybeLocalCollection match {
+      case Some(c) if c.sharedCollectionId.isDefined && c.sharedCollectionSubscribed => Subscribed
       case Some(c) if c.sharedCollectionId.isDefined && c.originalSharedCollectionId == c.sharedCollectionId =>
-        Subscribed
+        PublishedByOther
       case Some(c) if c.sharedCollectionId.isDefined =>
-        Owned
-      case _ => NotSubscribed
+        PublishedByMe
+      case _ => NotPublished
     }
 }

@@ -77,7 +77,7 @@ class SharedCollectionsProcessImplSpec
         result must beLike {
           case Right(shareCollection) =>
             shareCollection.name shouldEqual sharedCollectionResponseList.items.head.name
-            shareCollection.subscriptionType shouldEqual NotSubscribed
+            shareCollection.publicCollectionStatus shouldEqual NotSubscribed
         }
       }
 
@@ -93,7 +93,7 @@ class SharedCollectionsProcessImplSpec
         result must beLike {
           case Right(shareCollection) =>
             shareCollection.name shouldEqual sharedCollectionResponseList.items.head.name
-            shareCollection.subscriptionType shouldEqual Owned
+            shareCollection.publicCollectionStatus shouldEqual Owned
         }
       }
 
@@ -109,7 +109,7 @@ class SharedCollectionsProcessImplSpec
         result must beLike {
           case Right(shareCollection) =>
             shareCollection.name shouldEqual sharedCollectionResponseList.items.head.name
-            shareCollection.subscriptionType shouldEqual Subscribed
+            shareCollection.publicCollectionStatus shouldEqual Subscribed
         }
       }
 
@@ -153,7 +153,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual NotSubscribed)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual NotSubscribed)
         }
       }
 
@@ -174,7 +174,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual Owned)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual Owned)
         }
       }
 
@@ -195,7 +195,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual Subscribed)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual Subscribed)
         }
       }
 
@@ -243,7 +243,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual NotSubscribed)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual NotSubscribed)
         }
       }
 
@@ -260,7 +260,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual Owned)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual Owned)
         }
       }
 
@@ -277,7 +277,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual sharedCollectionResponseList.items.size
             shareCollections map (_.name) shouldEqual sharedCollectionResponseList.items.map(_.name)
-            forall(shareCollections map (_.subscriptionType)) ((_: SubscriptionType) shouldEqual Subscribed)
+            forall(shareCollections map (_.publicCollectionStatus)) ((_: SubscriptionType) shouldEqual Subscribed)
         }
       }
 
