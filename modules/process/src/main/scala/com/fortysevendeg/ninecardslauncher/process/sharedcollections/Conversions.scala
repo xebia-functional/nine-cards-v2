@@ -50,8 +50,8 @@ trait Conversions {
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
       cards = collection.cards)
 
-  def toSubscription(subscriptions: (String, Collection, Boolean)): Subscription = {
-    val (sharedCollectionId, collection, subscribed) = subscriptions
+  def toSubscription(subscriptions: (String, Collection)): Subscription = {
+    val (sharedCollectionId, collection) = subscriptions
     Subscription(
       id = collection.id,
       sharedCollectionId = sharedCollectionId,
@@ -59,7 +59,7 @@ trait Conversions {
       apps = collection.cards.count(card => CardType(card.cardType) == AppCardType),
       icon = collection.icon,
       themedColorIndex = collection.themedColorIndex,
-      subscribed = subscribed)
+      subscribed = collection.sharedCollectionSubscribed)
   }
 
   private[this] def determineSubscription(maybeLocalCollection: Option[Collection]): PublicCollectionStatus =

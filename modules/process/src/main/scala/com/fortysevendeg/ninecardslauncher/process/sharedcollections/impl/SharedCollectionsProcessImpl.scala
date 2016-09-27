@@ -70,14 +70,13 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
 
   override def getSubscriptions()(implicit context: ContextSupport) =
     (for {
-      userConfig <- apiUtils.getRequestConfig
-      subscriptions <- apiServices.getSubscriptions()(userConfig)
-      publications <- apiServices.getPublishedCollections()(userConfig)
       collections <- persistenceServices.fetchCollections
     } yield {
 
-      val subscriptionsIds = subscriptions.items map (_.sharedCollectionId)
-      val publicationsIds = publications.items map (_.sharedCollectionId)
+      val publicationsIds = collections filter {
+        case collection =>
+          collection.sharedCollectionId.isDefined & collection.originalSharedCollectionId != collection.sharedCollectionId
+      } flatMap (_.sharedCollectionId)
 
       val collectionsWithOriginalSharedCollectionId: Seq[(String, Collection)] =
         collections.flatMap(collection => collection.originalSharedCollectionId.map((_, collection))).filter{
@@ -86,7 +85,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
 
       (collectionsWithOriginalSharedCollectionId map {
         case (sharedCollectionId: String, collection: Collection) =>
-          (sharedCollectionId, collection, subscriptionsIds.contains(sharedCollectionId))
+          (sharedCollectionId, collection)
       }) map toSubscription
 
     }).resolveLeft(mapLeft)
