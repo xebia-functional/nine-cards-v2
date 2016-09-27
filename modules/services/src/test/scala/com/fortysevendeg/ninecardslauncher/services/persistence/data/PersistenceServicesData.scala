@@ -202,7 +202,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification))
 
   def createSeqMoment(

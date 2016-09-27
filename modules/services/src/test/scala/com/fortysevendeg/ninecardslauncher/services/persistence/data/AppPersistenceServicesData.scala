@@ -54,7 +54,6 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
       packageName = packageName,
       className = className,
       category = category,
-      imagePath = imagePath,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,
