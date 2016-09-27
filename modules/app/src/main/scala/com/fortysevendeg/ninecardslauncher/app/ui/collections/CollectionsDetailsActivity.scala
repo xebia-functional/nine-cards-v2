@@ -6,6 +6,7 @@ import android.content.Intent._
 import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view._
 import com.fortysevendeg.ninecardslauncher.app.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
@@ -21,8 +22,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -60,10 +63,24 @@ class CollectionsDetailsActivity
 
   implicit lazy val sharedCollectionJobs = new SharedCollectionJobs(new SharedCollectionUiActions(self))
 
+  def getSingleCollectionJobs: Option[SingleCollectionJobs] =
+    getAdapter flatMap (_.getActiveFragment) map (_.singleCollectionJobs)
+
+  def getSingleCollectionJobsByPosition(position: Int): Option[SingleCollectionJobs] =
+    getAdapter flatMap (_.getFragmentByPosition(position)) map (_.singleCollectionJobs)
+
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (AppsActionFilter(action), data) match {
-    case (Some(AppInstalledActionFilter), _) => groupCollectionsJobs.reloadCards(true).resolveAsync()
+    case (Some(AppInstalledActionFilter), _) =>
+      for {
+        cards <- groupCollectionsJobs.reloadCards()
+        _ <- getSingleCollectionJobs match {
+          case Some(singleCollectionJobs) => singleCollectionJobs.reloadCards(cards)
+          case _ => TaskService.empty
+        }
+      } yield ()
+      groupCollectionsJobs.reloadCards().resolveAsync()
     case _ =>
   }
 
@@ -202,11 +219,32 @@ class CollectionsDetailsActivity
       case _ =>
     }
 
+  def updateScroll(dy: Int): Unit = getSingleCollectionJobs foreach(_.updateScroll(dy).resolveAsync())
+
   override def isNormalMode: Boolean = groupCollectionsJobs.statuses.collectionMode == NormalCollectionMode
 
   override def isEditingMode: Boolean = groupCollectionsJobs.statuses.collectionMode == EditingCollectionMode
 
   override def showPublicCollectionDialog(collection: Collection): Unit = showDialog(PublishCollectionFragment(collection))
+
+  override def addCards(cardsRequest: Seq[AddCardRequest]): Unit =
+    (for {
+      cards <- groupCollectionsJobs.addCards(cardsRequest)
+      _ <- getSingleCollectionJobs match {
+        case Some(singleCollectionJobs) => singleCollectionJobs.addCards(cards)
+        case _ => TaskService.empty
+      }
+    } yield ()).resolveAsync()
+
+  override def bindAnimatedAdapter(): Unit = getSingleCollectionJobs foreach(_.bindAnimatedAdapter().resolveAsync())
+
+  override def reloadCards(cards: Seq[Card]): Unit = getSingleCollectionJobs foreach(_.reloadCards(cards).resolveAsync())
+
+  override def saveEditedCard(collectionId: Int, cardId: Int, cardName: Option[String]): Unit =
+    getSingleCollectionJobs foreach(_.saveEditedCard(collectionId, cardId, cardName).resolveAsync())
+
+  override def showDataInPosition(position: Int): Unit =
+    getSingleCollectionJobsByPosition(position) foreach(_.showData().resolveAsync())
 
   override def showAppsDialog(args: Bundle): Ui[Any] = launchDialog(f[AppsFragment], args)
 
@@ -215,8 +253,6 @@ class CollectionsDetailsActivity
   override def showShortcutsDialog(args: Bundle): Ui[Any] = launchDialog(f[ShortcutFragment], args)
 
   override def showRecommendationsDialog(args: Bundle): Ui[Any] = launchDialog(f[RecommendationsFragment], args)
-
-  override def addCards(cards: Seq[AddCardRequest]): Unit = groupCollectionsJobs.addCards(cards).resolveAsync()
 }
 
 trait ActionsScreenListener {

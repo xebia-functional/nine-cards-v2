@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
+import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.{CardView, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -24,11 +25,13 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui, _}
 
-case class CollectionAdapter(var collection: Collection, heightCard: Int)
+case class CollectionAdapter(
+  var collection: Collection,
+  heightCard: Int,
+  startReorderCards: (ViewHolder) => Unit)
   (implicit activityContext: ActivityContextWrapper,
     uiContext: UiContext[_],
     theme: NineCardsTheme,
-    collectionPresenter: CollectionPresenter,
     groupCollectionsJobs: GroupCollectionsJobs)
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with ReorderItemTouchListener { self =>
@@ -40,7 +43,8 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
     ViewHolderCollectionAdapter(
       content = view,
       heightCard = heightCard,
-      showPositions = showPositions)
+      showPositions = showPositions,
+      startReorderCards = startReorderCards)
   }
 
   override def getItemCount: Int = collection.cards.size
@@ -80,10 +84,10 @@ case class CollectionAdapter(var collection: Collection, heightCard: Int)
 case class ViewHolderCollectionAdapter(
   content: CardView,
   heightCard: Int,
-  showPositions: Boolean)
+  showPositions: Boolean,
+  startReorderCards: (ViewHolder) => Unit)
   (implicit context: ActivityContextWrapper,
     theme: NineCardsTheme,
-    collectionPresenter: CollectionPresenter,
     groupCollectionsJobs: GroupCollectionsJobs)
   extends RecyclerView.ViewHolder(content)
   with CollectionAdapterStyles
@@ -110,7 +114,7 @@ case class ViewHolderCollectionAdapter(
     rootStyle(heightCard) <~
     On.longClick {
       Ui {
-        collectionPresenter.startReorderCards(this)
+        startReorderCards(this)
         true
       }
     }) ~

@@ -2,16 +2,18 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.{ScrollType, _}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
+import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}
 import macroid.Contexts
@@ -24,30 +26,39 @@ class CollectionFragment
   with ContextSupportProvider
   with UiExtensions
   with TypedFindView
-  with CollectionUiActionsImpl { self =>
+  with SingleCollectionDOM
+  with SingleCollectionUiListener { self =>
 
   val badActivityMessage = "CollectionFragment only can be loaded in CollectionsDetailsActivity"
 
-  override lazy val presenter = CollectionPresenter(
+  implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(self)
+
+  lazy val actions = new SingleCollectionUiActions(self)
+
+  lazy val singleCollectionJobs = new SingleCollectionJobs(
     animateCards = getBoolean(Seq(getArguments), keyAnimateCards, default = false),
     maybeCollection = Option(getSerialize[Collection](Seq(getArguments), keyCollection, javaNull)),
-    actions = self)
+    actions = actions)
 
-  override lazy val groupCollectionsJobs: GroupCollectionsJobs = getActivity match {
+  lazy val groupCollectionsJobs: GroupCollectionsJobs = getActivity match {
     case activity: CollectionsDetailsActivity => activity.groupCollectionsJobs
     case _ => throw new IllegalArgumentException(badActivityMessage)
   }
 
-  override lazy val toolbarJobs: ToolbarJobs = getActivity match {
+  lazy val toolbarJobs: ToolbarJobs = getActivity match {
     case activity: CollectionsDetailsActivity => activity.toolbarJobs
     case _ => throw new IllegalArgumentException(badActivityMessage)
   }
 
-  override lazy val theme: NineCardsTheme = presenter.getTheme
-
-  override lazy val uiContext: UiContext[Fragment] = FragmentUiContext(self)
-
   protected var rootView: Option[View] = None
+
+  def isActiveFragment: Boolean = actions.statuses.activeFragment
+
+  def setActiveFragment(activeFragment: Boolean) =
+    actions.statuses = actions.statuses.copy(activeFragment = activeFragment)
+
+  def setActiveFragmentAndScrollType(activeFragment: Boolean, scrollType: ScrollType) =
+    actions.statuses = actions.statuses.copy(activeFragment = activeFragment, scrollType = scrollType)
 
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
 
@@ -64,8 +75,10 @@ class CollectionFragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     val sType = ScrollType(getArguments.getString(keyScrollType, ScrollDown.toString))
-    presenter.initialize(sType)
-    presenter.showData()
+    (for {
+      _ <- singleCollectionJobs.initialize(sType)
+      _ <- singleCollectionJobs.showData()
+    } yield ()).resolveAsync()
     super.onViewCreated(view, savedInstanceState)
   }
 
@@ -109,14 +122,52 @@ class CollectionFragment
       groupCollectionsJobs.editCard().resolveAsync()
       true
     case R.id.action_move_to_collection =>
-      presenter.moveToCollection()
+//      presenter.moveToCollection()
       true
     case R.id.action_delete =>
-      groupCollectionsJobs.removeCards().resolveAsync()
+      (for {
+        cards <- groupCollectionsJobs.removeCards()
+        _ <- singleCollectionJobs.removeCards(cards)
+      } yield ()).resolveAsync()
       true
     case _ => super.onOptionsItemSelected(item)
   }
 
+  override def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit =
+    singleCollectionJobs.reorderCard(collectionId, cardId, position).resolveAsync()
+
+  override def scrollY(dy: Int): Unit = toolbarJobs.scrollY(dy).resolveAsync()
+
+  override def scrollStateChanged(idDragging: Boolean, isIdle: Boolean): Unit =
+    (for {
+      _ <- groupCollectionsJobs.startScroll().resolveIf(idDragging, ())
+      _ <- toolbarJobs.scrollIdle().resolveIf(isIdle, ())
+    } yield ()).resolveAsync()
+
+  override def close(): Unit = groupCollectionsJobs.close().resolveAsync()
+
+  override def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
+    toolbarJobs.pullToClose(scroll, scrollType, close).resolveAsync()
+
+  override def reloadCards(): Unit = groupCollectionsJobs.reloadCards().resolveAsync()
+
+  override def moveToCollection(toCollectionId: Int, collectionPosition: Int): Unit =
+    groupCollectionsJobs.moveToCollection(toCollectionId, collectionPosition).resolveAsync()
+
+  override def firstItemInCollection(): Unit = groupCollectionsJobs.firstItemInCollection().resolveAsync()
+
+  override def emptyCollection(): Unit = groupCollectionsJobs.emptyCollection().resolveAsync()
+
+  override def forceScrollType(scrollType: ScrollType): Unit = toolbarJobs.forceScrollType(scrollType).resolveAsync()
+
+  def openReorderMode(scrollType: ScrollType, canScroll: Boolean): Unit =
+    groupCollectionsJobs.openReorderMode(scrollType, canScroll).resolveAsync()
+
+  def closeReorderMode(position: Int): Unit =
+    groupCollectionsJobs.closeReorderMode(position).resolveAsync()
+
+  def startReorderCards(holder: ViewHolder): Unit =
+    singleCollectionJobs.startReorderCards(holder).resolveAsync()
 }
 
 object CollectionFragment {

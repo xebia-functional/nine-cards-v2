@@ -5,10 +5,9 @@ import android.support.v7.widget.Toolbar
 import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections._
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{TranslationAnimator, TranslationY}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
@@ -46,7 +45,7 @@ class ToolbarUiActions(dom: GroupCollectionsDOM with GroupCollectionsUiListener)
       val dy = if (statuses.lastScrollYInMovement == 0) 0 else -(translationY - statuses.lastScrollYInMovement)
       statuses = statuses.copy(lastScrollYInMovement = translationY)
       moveToolbar(move.toInt) ~
-        Ui(dom.getActivePresenter foreach (_.updateScroll(dy.toInt)))
+        Ui(dom.updateScroll(dy.toInt))
     }
   )
 
@@ -62,8 +61,8 @@ class ToolbarUiActions(dom: GroupCollectionsDOM with GroupCollectionsUiListener)
     val scrollY = dom.tabs.getTranslationY.toInt
     val sType = if (scrollY < -spaceMove / 2) ScrollUp else ScrollDown
     val betweenUpAndDown = scrollY < 0 && scrollY > -spaceMove
-    (((betweenUpAndDown, dom.getActivePresenter) match {
-      case (true, Some(presenter)) =>
+    ((betweenUpAndDown match {
+      case true =>
         statuses = statuses.reset()
         val to = if (sType == ScrollUp) -spaceMove else 0
         dom.tabs <~ toolbarAnimation.move(scrollY, to, attachTarget = true)
