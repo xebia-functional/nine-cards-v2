@@ -9,6 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.types.PublishedByMe
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}
@@ -74,7 +75,7 @@ class CollectionFragment
     super.onPrepareOptionsMenu(menu)
     (collectionsPagerPresenter.statuses.collectionMode, collectionsPagerPresenter.statuses.positionsEditing.toSeq.length) match {
       case (NormalCollectionMode, _) =>
-        collectionsPagerPresenter.statuses.publishStatus match {
+        collectionsPagerPresenter.statuses.publicCollectionStatus match {
           case PublishedByMe =>
             menu.findItem(R.id.action_make_public).setEnabled(false).setTitle(resGetString(R.string.alreadyPublishedCollection))
             menu.findItem(R.id.action_share).setVisible(true)

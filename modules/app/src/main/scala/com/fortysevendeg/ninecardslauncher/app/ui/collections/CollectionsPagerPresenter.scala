@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, MomentCollectionType, PhoneCardType, ShortcutCardType}
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
@@ -116,10 +116,10 @@ class CollectionsPagerPresenter(
     actions.getCurrentCollection foreach { collection =>
       (collection.sharedCollectionId, collection.originalSharedCollectionId) match {
         case (Some(sharedCollectionId), Some(originalSharedCollectionId))
-          if sharedCollectionId != originalSharedCollectionId => statuses = statuses.copy(publishStatus = PublishedByMe)
-        case (Some(sharedCollectionId), None) => statuses = statuses.copy(publishStatus = PublishedByMe)
-        case (None, _) => statuses = statuses.copy(publishStatus = NoPublished)
-        case _ => statuses = statuses.copy(publishStatus = PublishedByOther)
+          if sharedCollectionId != originalSharedCollectionId => statuses = statuses.copy(publicCollectionStatus = PublishedByMe)
+        case (Some(sharedCollectionId), None) => statuses = statuses.copy(publicCollectionStatus = PublishedByMe)
+        case (None, _) => statuses = statuses.copy(publicCollectionStatus = NotPublished)
+        case _ => statuses = statuses.copy(publicCollectionStatus = PublishedByOther)
       }
     }
 
@@ -356,18 +356,10 @@ case class CollectionsPagerStatuses(
   collectionMode: CollectionMode = NormalCollectionMode,
   positionsEditing: Set[Int] = Set.empty,
   lastPhone: Option[String] = None,
-  publishStatus: PublishStatus = NoPublished)
+  publicCollectionStatus: PublicCollectionStatus = NotPublished)
 
 sealed trait CollectionMode
 
 case object NormalCollectionMode extends CollectionMode
 
 case object EditingCollectionMode extends CollectionMode
-
-sealed trait PublishStatus
-
-case object NoPublished extends PublishStatus
-
-case object PublishedByMe extends PublishStatus
-
-case object PublishedByOther extends PublishStatus
