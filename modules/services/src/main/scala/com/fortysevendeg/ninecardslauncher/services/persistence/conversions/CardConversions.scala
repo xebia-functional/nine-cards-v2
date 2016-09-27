@@ -20,7 +20,7 @@ trait CardConversions {
       packageName = card.data.packageName,
       cardType = card.data.cardType,
       intent = card.data.intent,
-      imagePath = Option(card.data.imagePath),
+      imagePath = card.data.imagePath,
       notification = card.data.notification)
   }
 
@@ -33,7 +33,7 @@ trait CardConversions {
         packageName = request.packageName,
         cardType = request.cardType,
         intent = request.intent,
-        imagePath = request.imagePath getOrElse javaNull,
+        imagePath = request.imagePath,
         notification = request.notification
       )
     )
@@ -45,6 +45,6 @@ trait CardConversions {
       packageName = request.packageName,
       cardType = request.cardType,
       intent = request.intent,
-      imagePath = request.imagePath getOrElse javaNull,
+      imagePath = request.imagePath,
       notification = request.notification)
 }

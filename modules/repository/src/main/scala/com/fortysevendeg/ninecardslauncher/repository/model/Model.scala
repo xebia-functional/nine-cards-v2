@@ -44,7 +44,7 @@ case class CardData(
   packageName: Option[String],
   cardType: String,
   intent: String,
-  imagePath: String,
+  imagePath: Option[String],
   notification: Option[String] = None)
 
 case class DockApp(
