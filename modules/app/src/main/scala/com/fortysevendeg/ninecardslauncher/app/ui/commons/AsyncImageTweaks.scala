@@ -88,13 +88,13 @@ object AsyncImageTweaks {
     }
   )
 
-  def ivCardUri(uri: String, name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivCardUri(uri: Option[String], name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
         loadCardUri(
           imageView = imageView,
           request = glide.load(uri),
-          uri = uri,
+          maybeUri = uri,
           char = name.substring(0, 1),
           circular = circular)
       }
@@ -149,17 +149,13 @@ object AsyncImageTweaks {
   private[this] def loadCardUri(
     imageView: ImageView,
     request: DrawableTypeRequest[_],
-    uri: String,
+    maybeUri: Option[String],
     char: String,
     circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]) = {
-    if (new File(uri).exists()) {
-      makeRequest(
-        request = request,
-        imageView = imageView,
-        char = char,
-        circular = circular)
-    } else {
-      (imageView <~ ivSrc(new CharDrawable(char, circle = circular))).run
+    maybeUri match {
+      case Some(uri) if new File(uri).exists() =>
+        makeRequest(request = request, imageView = imageView, char = char, circular = circular)
+      case _ => (imageView <~ ivSrc(new CharDrawable(char, circle = circular))).run
     }
   }
 

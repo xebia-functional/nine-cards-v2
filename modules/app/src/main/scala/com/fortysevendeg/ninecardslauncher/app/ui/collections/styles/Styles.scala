@@ -129,7 +129,7 @@ trait CollectionAdapterStyles {
           reduceLayout +
           ivScaleType(ScaleType.CENTER_INSIDE)
       case _ =>
-        ivCardUri(card.imagePath getOrElse "", card.term, circular = true) +
+        ivCardUri(card.imagePath, card.term, circular = true) +
           vBackground(javaNull) +
           reduceLayout +
           ivScaleType(ScaleType.FIT_CENTER)
