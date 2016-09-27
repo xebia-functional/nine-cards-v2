@@ -15,7 +15,6 @@ case class AddAppRequest(
   packageName: String,
   className: String,
   category: String,
-  imagePath: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
@@ -29,7 +28,6 @@ case class UpdateAppRequest(
   packageName: String,
   className: String,
   category: String,
-  imagePath: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
@@ -42,7 +40,7 @@ case class AddCardRequest(
   packageName: Option[String],
   cardType: String,
   intent: String,
-  imagePath: String,
+  imagePath: Option[String],
   notification: Option[String] = None)
 
 case class AddCardWithCollectionIdRequest(
@@ -64,16 +62,7 @@ case class UpdateCardRequest(
   packageName: Option[String],
   cardType: String,
   intent: String,
-  imagePath: String,
-  notification: Option[String] = None)
-
-case class CardItem(
-  position: Int,
-  term: String,
-  packageName: Option[String],
-  cardType: String,
-  intent: String,
-  imagePath: String,
+  imagePath: Option[String],
   notification: Option[String] = None)
 
 case class AddCollectionRequest(

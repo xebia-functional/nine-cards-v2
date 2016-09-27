@@ -21,7 +21,7 @@ trait DockAppsDeviceProcessImpl extends DeviceProcess {
     (for {
       allDefaultApps <- appsServices.getDefaultApps
       defaultApps <- persistenceServices.fetchAppByPackages(allDefaultApps map (_.packageName))
-      images = defaultApps map (app => (app.packageName, app.imagePath))
+      images = defaultApps map (app => (app.packageName, ""))
       apps = matchAppsWithImages(allDefaultApps, images).take(size)
       requests = apps map (app => toCreateOrUpdateDockAppRequest(app.name, AppDockType, app.intent, app.imagePath, app.position))
       dockApps <- persistenceServices.createOrUpdateDockApp(requests)

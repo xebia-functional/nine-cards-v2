@@ -178,7 +178,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       packageName = None,
       cardType = lastCardType,
       intent = intent,
-      imagePath = contact.photoUri)
+      imagePath = Option(contact.photoUri))
     val responseIntent = new Intent
     responseIntent.putExtra(ContactsFragment.addCardRequest, card)
     getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)

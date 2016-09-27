@@ -168,6 +168,6 @@ class CardRepository(
       packageName -> flatOrNull(data.packageName),
       cardType -> data.cardType,
       intent -> data.intent,
-      imagePath -> data.imagePath,
+      imagePath -> flatOrNull(data.imagePath),
       notification -> flatOrNull(data.notification))
 }

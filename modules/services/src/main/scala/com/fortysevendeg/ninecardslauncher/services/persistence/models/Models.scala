@@ -6,7 +6,6 @@ case class App(
   packageName: String,
   className: String,
   category: String,
-  imagePath: String,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
@@ -33,7 +32,7 @@ case class Card(
   packageName: Option[String],
   cardType: String,
   intent: String,
-  imagePath: String,
+  imagePath: Option[String],
   notification: Option[String] = None)
 
 case class User(

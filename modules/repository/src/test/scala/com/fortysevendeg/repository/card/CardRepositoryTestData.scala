@@ -21,6 +21,7 @@ trait CardRepositoryTestData {
   val testNumDownloads = Random.nextString(10)
   val testNotification = Random.nextString(10)
   val testPackageNameOption = Option(testPackageName)
+  val testImagePathOption = Option(testImagePath)
   val testNotificationOption = Option(testNotification)
   val testMockWhere = "mocked-where"
 
@@ -54,7 +55,7 @@ trait CardRepositoryTestData {
         packageName = testPackageNameOption,
         cardType = testType,
         intent = testIntent,
-        imagePath = testImagePath,
+        imagePath = testImagePathOption,
         notification = testNotificationOption)))
 
   def createInsertCardValues = Map[String, Any](
@@ -64,7 +65,7 @@ trait CardRepositoryTestData {
     CardEntity.packageName -> (testPackageNameOption orNull),
     CardEntity.cardType -> testType,
     CardEntity.intent -> testIntent,
-    CardEntity.imagePath -> testImagePath,
+    CardEntity.imagePath -> (testImagePathOption orNull),
     CardEntity.notification -> (testNotificationOption orNull))
 
   def createUpdateCardValues = Map[String, Any](
@@ -73,7 +74,7 @@ trait CardRepositoryTestData {
     CardEntity.packageName -> (testPackageNameOption orNull),
     CardEntity.cardType -> testType,
     CardEntity.intent -> testIntent,
-    CardEntity.imagePath -> testImagePath,
+    CardEntity.imagePath -> (testImagePathOption orNull),
     CardEntity.notification -> (testNotificationOption orNull))
 
   def createCardData = CardData(
@@ -82,7 +83,7 @@ trait CardRepositoryTestData {
     packageName = testPackageNameOption,
     cardType = testType,
     intent = testIntent,
-    imagePath = testImagePath,
+    imagePath = testImagePathOption,
     notification = testNotificationOption)
 
   def createCardWithCollectionIdSeq(num: Int) = List.tabulate(num){

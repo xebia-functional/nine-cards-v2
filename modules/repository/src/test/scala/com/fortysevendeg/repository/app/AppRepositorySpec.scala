@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, LongDataType, MockCursor, StringDataType}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.App
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity.{allFields, imagePath, name, packageName, _}
+import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity.{allFields, name, packageName, _}
 import com.fortysevendeg.ninecardslauncher.repository.provider._
 import com.fortysevendeg.ninecardslauncher.repository.repositories._
 import com.fortysevendeg.repository._
@@ -74,7 +74,6 @@ trait AppMockCursor
     (packageName, 2, appSeq map (_.data.packageName), StringDataType),
     (className, 3, appSeq map (_.data.className), StringDataType),
     (category, 4, appSeq map (_.data.category), StringDataType),
-    (imagePath, 5, appSeq map (_.data.imagePath), StringDataType),
     (dateInstalled, 7, appSeq map (_.data.dateInstalled), LongDataType),
     (dateUpdate, 8, appSeq map (_.data.dateUpdate), LongDataType),
     (version, 9, appSeq map (_.data.version), StringDataType),
@@ -93,7 +92,6 @@ trait EmptyAppMockCursor
     (packageName, 2, Seq.empty, StringDataType),
     (className, 3, Seq.empty, StringDataType),
     (category, 4, Seq.empty, StringDataType),
-    (imagePath, 5, Seq.empty, StringDataType),
     (dateInstalled, 7, Seq.empty, LongDataType),
     (dateUpdate, 8, Seq.empty, LongDataType),
     (version, 9, Seq.empty, StringDataType),

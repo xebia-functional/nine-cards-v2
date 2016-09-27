@@ -73,7 +73,7 @@ trait Conversions extends CommonConversions {
     packageName = Option(item.packageName),
     cardType = AppCardType.name,
     intent = nineCardIntentToJson(toNineCardIntent(item)),
-    imagePath = item.imagePath)
+    imagePath = None)
 
   def toFetchCardsByCollectionRequest(collectionRequestId: Int): FetchCardsByCollectionRequest = FetchCardsByCollectionRequest(
     collectionId = collectionRequestId)
@@ -103,7 +103,7 @@ trait Conversions extends CommonConversions {
     packageName = Option(app.packageName),
     cardType = AppCardType.name,
     intent = nineCardIntentToJson(toNineCardIntent(app)),
-    imagePath = app.imagePath)
+    imagePath = None)
 
   def toAddCardRequest(collectionId: Int, categorizedPackage: CategorizedDetailPackage, cardType: CardType, position: Int): ServicesAddCardRequest = ServicesAddCardRequest (
     collectionId = Option(collectionId),
@@ -112,7 +112,7 @@ trait Conversions extends CommonConversions {
     packageName = Option(categorizedPackage.packageName),
     cardType = cardType.name,
     intent = nineCardIntentToJson(packageToNineCardIntent(categorizedPackage.packageName)),
-    imagePath = "")
+    imagePath = None)
 
   def toFindCardByIdRequest(cardId: Int): FindCardByIdRequest = FindCardByIdRequest(
     id = cardId)
@@ -150,7 +150,7 @@ trait Conversions extends CommonConversions {
       packageName = None,
       cardType = cardType,
       intent = nineCardIntentToJson(intent),
-      imagePath = item.photoUri)
+      imagePath = Option(item.photoUri))
   }
 
   def toPrivateCard(unformedApp: UnformedApp): PrivateCard =
@@ -159,7 +159,7 @@ trait Conversions extends CommonConversions {
       packageName = Some(unformedApp.packageName),
       cardType = AppCardType,
       intent = toNineCardIntent(unformedApp),
-      imagePath = unformedApp.imagePath)
+      imagePath = None)
 
   def toServicesPackagesByCategory(packagesByCategory: (String, Seq[String])) = {
     val (category, packages) = packagesByCategory
