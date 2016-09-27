@@ -118,7 +118,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
     }
 
   def updateSharedCollection(collectionId: Int, sharedCollectionId: String) =
-    editCollectionWith(collectionId)(_.copy(sharedCollectionId = Some(sharedCollectionId)))
+    editCollectionWith(collectionId)(_.copy(sharedCollectionId = Some(sharedCollectionId), sharedCollectionSubscribed = false))
 
   def addPackages(collectionId: Int, packages: Seq[String])(implicit context: ContextSupport) = {
 
