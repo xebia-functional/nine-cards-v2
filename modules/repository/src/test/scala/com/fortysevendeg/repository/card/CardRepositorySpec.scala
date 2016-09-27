@@ -64,7 +64,7 @@ trait CardMockCursor
     (packageName, 4, cardSeq map (_.data.packageName orNull), StringDataType),
     (cardType, 5, cardSeq map (_.data.cardType), StringDataType),
     (intent, 6, cardSeq map (_.data.intent), StringDataType),
-    (imagePath, 7, cardSeq map (_.data.imagePath), StringDataType),
+    (imagePath, 7, cardSeq map (_.data.imagePath orNull), StringDataType),
     (notification, 11, cardSeq map (_.data.notification orNull), StringDataType)
   )
 
