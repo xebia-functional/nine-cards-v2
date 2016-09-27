@@ -72,14 +72,13 @@ class CollectionsDetailsActivity
 
   override def manageCommand(action: String, data: Option[String]): Unit = (AppsActionFilter(action), data) match {
     case (Some(AppInstalledActionFilter), _) =>
-      for {
+      (for {
         cards <- groupCollectionsJobs.reloadCards()
         _ <- getSingleCollectionJobs match {
           case Some(singleCollectionJobs) => singleCollectionJobs.reloadCards(cards)
           case _ => TaskService.empty
         }
-      } yield ()
-      groupCollectionsJobs.reloadCards().resolveAsync()
+      } yield ()).resolveAsync()
     case _ =>
   }
 
@@ -157,9 +156,13 @@ class CollectionsDetailsActivity
           val shortcutName = b.getString(EXTRA_SHORTCUT_NAME)
           val shortcutIntent = b.getParcelable[Intent](EXTRA_SHORTCUT_INTENT)
           val maybeBitmap = getBitmapFromShortcutIntent(b)
-          groupCollectionsJobs.addShortcut(shortcutName, shortcutIntent, maybeBitmap).
-            resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
-        case _ =>
+          (for {
+            cards <- groupCollectionsJobs.addShortcut(shortcutName, shortcutIntent, maybeBitmap)
+            _ <- getSingleCollectionJobs match {
+              case Some(singleCollectionJobs) => singleCollectionJobs.addCards(cards)
+              case _ => TaskService.empty
+            }
+          } yield ()).resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
       }
     }
   }
@@ -179,10 +182,12 @@ class CollectionsDetailsActivity
       groupCollectionsJobs.close().resolveAsync()
       false
     case R.id.action_make_public =>
-      sharedCollectionJobs.showPublishCollectionWizard().resolveAsync() // TODO Review error
+      sharedCollectionJobs.showPublishCollectionWizard().
+        resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
       true
     case R.id.action_share =>
-      sharedCollectionJobs.shareCollection().resolveAsync() // TODO Review error
+      sharedCollectionJobs.shareCollection().
+        resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
       true
     case _ => super.onOptionsItemSelected(item)
   }

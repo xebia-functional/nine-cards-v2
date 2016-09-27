@@ -170,7 +170,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       _ <- actions.addCards(cards)
     } yield cards
 
-  def addShortcut(name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): TaskService[Unit] = {
+  def addShortcut(name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): TaskService[Seq[Card]] = {
 
     def createShortcut(collectionId: Int): TaskService[Seq[Card]] = for {
       path <- bitmap map (di.deviceProcess.saveShortcutIcon(_)) getOrElse TaskService.right("") // We use a empty string because the UI will generate an image
@@ -189,7 +189,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       cards <- createShortcut(currentCollection.id)
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
       _ <- actions.addCards(cards)
-    } yield ()
+    } yield cards
   }
 
   def openReorderMode(current: ScrollType, canScroll: Boolean): TaskService[Unit] =

@@ -138,30 +138,37 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
       onCollection = c => dom.moveToCollection(c, collections.indexWhere(_.id == c)))
   }.toService
 
-  def addCards(cards: Seq[Card]): TaskService[Unit] = (dom.getAdapter map { adapter =>
-    val emptyCollection = adapter.collection.cards.isEmpty
-    Ui {
-      adapter.addCards(cards)
-      updateScroll()
-      if (!emptyCollection) dom.firstItemInCollection()
-    } ~
-      showDataUi(emptyCollection)
-  } getOrElse Ui.nop).toService
-
-  def removeCards(cards: Seq[Card]): TaskService[Unit] = (dom.getAdapter map { adapter =>
-    val emptyCollection = adapter.collection.cards.isEmpty
-    Ui {
-      adapter.removeCards(cards)
-      val couldScroll = statuses.canScroll
-      updateScroll()
-      if (emptyCollection) dom.emptyCollection()
-      if (couldScroll && !statuses.canScroll && statuses.scrollType == ScrollUp) {
-        statuses = statuses.copy(scrollType = ScrollDown)
-        dom.forceScrollType(ScrollDown)
+  def addCards(cards: Seq[Card]): TaskService[Unit] =
+    (Ui {
+      dom.getAdapter foreach { adapter =>
+        adapter.addCards(cards)
+        updateScroll()
       }
     } ~
-      showDataUi(emptyCollection)
-  } getOrElse Ui.nop).toService
+      showList() ~
+      Ui(dom.firstItemInCollection())).toService
+
+  def removeCards(cards: Seq[Card]): TaskService[Unit] =
+    (Ui {
+      dom.getAdapter foreach { adapter =>
+        adapter.removeCards(cards)
+        val couldScroll = statuses.canScroll
+        updateScroll()
+        if (couldScroll && !statuses.canScroll && statuses.scrollType == ScrollUp) {
+          statuses = statuses.copy(scrollType = ScrollDown)
+          dom.forceScrollType(ScrollDown)
+        }
+      }
+    } ~
+      {
+        val emptyCollection = dom.getAdapter exists(_.collection.cards.isEmpty)
+        if (emptyCollection) {
+          dom.emptyCollection()
+          showEmptyMessage()
+        } else {
+          Ui.nop
+        }
+      }).toService
 
   def reloadCard(card: Card): TaskService[Unit] = Ui {
     dom.getAdapter foreach { adapter =>
@@ -177,7 +184,10 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
     }
   }.toService
 
-  def showData(emptyCollection: Boolean): TaskService[Unit] = showDataUi(emptyCollection).toService
+  def showData(emptyCollection: Boolean): TaskService[Unit] = (if (emptyCollection)
+    showEmptyMessage()
+  else
+    showList()).toService
 
   def updateVerticalScroll(scrollY: Int): TaskService[Unit] =
     (dom.recyclerView <~ rvScrollBy(dy = scrollY)).toService
@@ -203,16 +213,14 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
       case _ => Ui.nop
     }).toService
 
-  private[this] def showEmptyCollectionUi(): Ui[Any] =
+  private[this] def showEmptyMessage(): Ui[Any] =
     (dom.emptyCollectionMessage <~
       tvText(messageText) <~
       tvColor(statuses.theme.get(DrawerTextColor).alpha(0.8f))) ~
       (dom.emptyCollectionView <~ vVisible <~ cvCardBackgroundColor(statuses.theme.get(CardBackgroundColor))) ~
       (dom.recyclerView <~ vGone)
 
-  private[this] def showDataUi(emptyCollection: Boolean): Ui[Any] = if (emptyCollection)
-    showEmptyCollectionUi()
-  else
+  private[this] def showList(): Ui[Any] =
     (dom.recyclerView <~ vVisible) ~
       (dom.emptyCollectionView <~ vGone)
 
