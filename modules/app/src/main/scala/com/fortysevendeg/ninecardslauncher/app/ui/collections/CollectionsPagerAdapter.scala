@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager, FragmentStatePagerAdapter}
 import android.view.ViewGroup
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.{ScrollDown, ScrollType}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import macroid.{ContextWrapper, Ui}
@@ -76,15 +77,17 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
   }
 
   def getCurrentFragmentPosition: Option[Int] = fragments collectFirst {
-    case (id, fragment) if fragment.statuses.activeFragment => id
+    case (id, fragment) if fragment.isActiveFragment => id
   }
 
   def getActiveFragment: Option[CollectionFragment] = fragments collectFirst {
-    case (_, fragment) if fragment.statuses.activeFragment => fragment
+    case (_, fragment) if fragment.isActiveFragment => fragment
   }
 
+  def getFragmentByPosition(position: Int): Option[CollectionFragment] = fragments.find(_._1 == position).map(_._2)
+
   def activateFragment(pos: Int): Unit = fragments foreach {
-    case (id, fragment) if id == pos => fragment.statuses = fragment.statuses.copy(activeFragment = true)
+    case (id, fragment) if id == pos => fragment.setActiveFragment(true)
     case _ =>
   }
 
@@ -94,12 +97,12 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     val uis = fragments map {
       case (id, fragment) => id match {
         case `currentPosition` =>
-          Ui {
-            fragment.statuses = fragment.statuses.copy(activeFragment = true, scrollType = statuses.scrollType)
-          }
+          Ui(fragment.setActiveFragmentAndScrollType(activeFragment = true, statuses.scrollType))
         case _ =>
-          fragment.statuses = fragment.statuses.copy(activeFragment = false)
-          fragment.scrollType(statuses.scrollType)
+          Ui {
+            fragment.setActiveFragment(activeFragment = false)
+            fragment.setScrollType(statuses.scrollType)
+          }
       }
     }
     Ui.sequence(uis.toSeq: _*)

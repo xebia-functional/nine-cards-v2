@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
 
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.ScrollType
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import macroid.ActivityContextWrapper

@@ -21,8 +21,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, UiContext, UiExtensions}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
 import com.fortysevendeg.ninecardslauncher.commons._
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -60,10 +62,23 @@ class CollectionsDetailsActivity
 
   implicit lazy val sharedCollectionJobs = new SharedCollectionJobs(new SharedCollectionUiActions(self))
 
+  def getSingleCollectionJobs: Option[SingleCollectionJobs] =
+    getAdapter flatMap (_.getActiveFragment) map (_.singleCollectionJobs)
+
+  def getSingleCollectionJobsByPosition(position: Int): Option[SingleCollectionJobs] =
+    getAdapter flatMap (_.getFragmentByPosition(position)) map (_.singleCollectionJobs)
+
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (AppsActionFilter(action), data) match {
-    case (Some(AppInstalledActionFilter), _) => groupCollectionsJobs.reloadCards(true).resolveAsync()
+    case (Some(AppInstalledActionFilter), _) =>
+      (for {
+        cards <- groupCollectionsJobs.reloadCards()
+        _ <- getSingleCollectionJobs match {
+          case Some(singleCollectionJobs) => singleCollectionJobs.reloadCards(cards)
+          case _ => TaskService.empty
+        }
+      } yield ()).resolveAsync()
     case _ =>
   }
 
@@ -141,9 +156,13 @@ class CollectionsDetailsActivity
           val shortcutName = b.getString(EXTRA_SHORTCUT_NAME)
           val shortcutIntent = b.getParcelable[Intent](EXTRA_SHORTCUT_INTENT)
           val maybeBitmap = getBitmapFromShortcutIntent(b)
-          groupCollectionsJobs.addShortcut(shortcutName, shortcutIntent, maybeBitmap).
-            resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
-        case _ =>
+          (for {
+            cards <- groupCollectionsJobs.addShortcut(shortcutName, shortcutIntent, maybeBitmap)
+            _ <- getSingleCollectionJobs match {
+              case Some(singleCollectionJobs) => singleCollectionJobs.addCards(cards)
+              case _ => TaskService.empty
+            }
+          } yield ()).resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
       }
     }
   }
@@ -163,10 +182,12 @@ class CollectionsDetailsActivity
       groupCollectionsJobs.close().resolveAsync()
       false
     case R.id.action_make_public =>
-      sharedCollectionJobs.showPublishCollectionWizard().resolveAsync() // TODO Review error
+      sharedCollectionJobs.showPublishCollectionWizard().
+        resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
       true
     case R.id.action_share =>
-      sharedCollectionJobs.shareCollection().resolveAsync() // TODO Review error
+      sharedCollectionJobs.shareCollection().
+        resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
       true
     case _ => super.onOptionsItemSelected(item)
   }
@@ -197,16 +218,39 @@ class CollectionsDetailsActivity
   }
 
   override def closeEditingMode(): Unit =
-    groupCollectionsJobs.statuses.collectionMode match {
+    statuses.collectionMode match {
       case EditingCollectionMode => groupCollectionsJobs.closeEditingMode()
       case _ =>
     }
 
-  override def isNormalMode: Boolean = groupCollectionsJobs.statuses.collectionMode == NormalCollectionMode
+  def updateScroll(dy: Int): Unit = getSingleCollectionJobs foreach(_.updateScroll(dy).resolveAsync())
 
-  override def isEditingMode: Boolean = groupCollectionsJobs.statuses.collectionMode == EditingCollectionMode
+  override def isNormalMode: Boolean = statuses.collectionMode == NormalCollectionMode
+
+  override def isEditingMode: Boolean = statuses.collectionMode == EditingCollectionMode
 
   override def showPublicCollectionDialog(collection: Collection): Unit = showDialog(PublishCollectionFragment(collection))
+
+  override def addCards(cardsRequest: Seq[AddCardRequest]): Unit =
+    (for {
+      cards <- groupCollectionsJobs.addCards(cardsRequest)
+      _ <- getSingleCollectionJobs match {
+        case Some(singleCollectionJobs) => singleCollectionJobs.addCards(cards)
+        case _ => TaskService.empty
+      }
+    } yield ()).resolveAsync()
+
+  override def bindAnimatedAdapter(): Unit = getSingleCollectionJobs foreach(_.bindAnimatedAdapter().resolveAsync())
+
+  override def reloadCards(cards: Seq[Card]): Unit = getSingleCollectionJobs foreach(_.reloadCards(cards).resolveAsync())
+
+  override def saveEditedCard(collectionId: Int, cardId: Int, cardName: Option[String]): Unit =
+    getSingleCollectionJobs foreach { job =>
+      job.saveEditedCard(collectionId, cardId, cardName).resolveAsyncServiceOr(_ => job.showGenericError())
+    }
+
+  override def showDataInPosition(position: Int): Unit =
+    getSingleCollectionJobsByPosition(position) foreach(_.showData().resolveAsync())
 
   override def showAppsDialog(args: Bundle): Ui[Any] = launchDialog(f[AppsFragment], args)
 
@@ -215,8 +259,6 @@ class CollectionsDetailsActivity
   override def showShortcutsDialog(args: Bundle): Ui[Any] = launchDialog(f[ShortcutFragment], args)
 
   override def showRecommendationsDialog(args: Bundle): Ui[Any] = launchDialog(f[RecommendationsFragment], args)
-
-  override def addCards(cards: Seq[AddCardRequest]): Unit = groupCollectionsJobs.addCards(cards).resolveAsync()
 }
 
 trait ActionsScreenListener {
@@ -226,6 +268,9 @@ trait ActionsScreenListener {
 }
 
 object CollectionsDetailsActivity {
+
+  var statuses = CollectionsDetailsStatuses()
+
   val startPosition = "start_position"
   val indexColorToolbar = "color_toolbar"
   val iconToolbar = "icon_toolbar"
@@ -235,4 +280,14 @@ object CollectionsDetailsActivity {
   val cardAdded = "cardAdded"
 
   def getContentTransitionName(position: Int) = s"icon_$position"
+}
+
+case class CollectionsDetailsStatuses(
+  collectionMode: CollectionMode = NormalCollectionMode,
+  positionsEditing: Set[Int] = Set.empty,
+  lastPhone: Option[String] = None,
+  publishStatus: PublishStatus = NoPublished) {
+
+  def getPositionsSelected: Int = positionsEditing.toSeq.length
+
 }

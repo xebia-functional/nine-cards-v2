@@ -18,11 +18,11 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.{CollectionsPagerAdapter, ScrollDown, ScrollType, ScrollUp}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
@@ -59,7 +59,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   extends ActionsBehaviours
   with ImplicitsUiExceptions {
 
-  var statuses = GroupCollectionsStatuses()
+  private[this] var statuses = GroupCollectionsStatuses()
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -113,7 +113,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
               new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
           uiHandler(dom.viewPager <~ vpCurrentItem(position, smoothScroll = false)) ~
           uiHandlerDelayed(Ui {
-            dom.getActivePresenter foreach (_.bindAnimatedAdapter())
+            dom.bindAnimatedAdapter()
           }, delayMilis = 100) ~
           (maybeCollection match {
             case Some(collection) =>
@@ -154,31 +154,27 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     CatchAll[UiException](dom.getCollection(position))
   }
 
-  def reloadCards(cards: Seq[Card], reloadFragments: Boolean): TaskService[Unit] = Ui {
+  def reloadCards(cards: Seq[Card]): TaskService[Unit] = Ui {
     for {
       adapter <- dom.getAdapter
-      presenter <- dom.getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
       adapter.updateCardFromCollection(currentPosition, cards)
-      if (reloadFragments) presenter.reloadCards(cards)
     }
   }.toService
 
   def editCard(collectionId: Int, cardId: Int, cardName: String): TaskService[Unit] = Ui {
     dom.showDialog(new EditCardDialogFragment(cardName, (maybeNewName) => {
-      dom.getActivePresenter foreach (_.saveEditedCard(collectionId, cardId, maybeNewName))
+      dom.saveEditedCard(collectionId, cardId, maybeNewName)
     }))
   }.toService
 
   def removeCards(cards: Seq[Card]): TaskService[Unit] = Ui {
     for {
       adapter <- dom.getAdapter
-      presenter <- dom.getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
       adapter.removeCardFromCollection(currentPosition, cards)
-      presenter.removeCards(cards)
     }
   }.toService
 
@@ -187,9 +183,9 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       adapter <- dom.getAdapter
     } yield {
       adapter.addCardsToCollection(collectionPosition, cards)
-      adapter.fragments.find(_._1 == collectionPosition).map(_._2).foreach { fragment =>
+      adapter.getFragmentByPosition(collectionPosition).foreach { fragment =>
         fragment.getAdapter foreach (_.addCards(cards))
-        fragment.presenter.showData()
+        dom.showDataInPosition(collectionPosition)
       }
     }
   }.toService
@@ -204,11 +200,9 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   def addCards(cards: Seq[Card]): TaskService[Unit] = Ui {
     for {
       adapter <- dom.getAdapter
-      presenter <- dom.getActivePresenter
       currentPosition <- adapter.getCurrentFragmentPosition
     } yield {
       adapter.addCardsToCollection(currentPosition, cards)
-      presenter.addCards(cards)
     }
   }.toService
 

@@ -3,14 +3,15 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
 import android.os.Bundle
 import android.support.v4.app.{DialogFragment, Fragment, FragmentActivity, FragmentManager}
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.{CollectionAdapter, CollectionPresenter, CollectionsPagerAdapter, ScrollType}
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.{CollectionAdapter, CollectionsPagerAdapter}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.{ActivityContextWrapper, FragmentBuilder, FragmentManagerContext, Ui}
 
@@ -71,11 +72,6 @@ trait GroupCollectionsDOM {
 
   def getScrollType: Option[ScrollType] = getAdapter map (_.statuses.scrollType)
 
-  def getActivePresenter: Option[CollectionPresenter] = for {
-    adapter <- getAdapter
-    fragment <- adapter.getActiveFragment
-  } yield fragment.presenter
-
   def getActiveCollectionAdapter: Option[CollectionAdapter] = for {
     adapter <- getAdapter
     fragment <- adapter.getActiveFragment
@@ -119,6 +115,8 @@ trait GroupCollectionsUiListener {
 
   def closeEditingMode(): Unit
 
+  def updateScroll(dy: Int): Unit
+
   def isNormalMode: Boolean
 
   def isEditingMode: Boolean
@@ -126,6 +124,14 @@ trait GroupCollectionsUiListener {
   def showPublicCollectionDialog(collection: Collection): Unit
 
   def addCards(cards: Seq[AddCardRequest]): Unit
+
+  def bindAnimatedAdapter(): Unit
+
+  def reloadCards(cards: Seq[Card]): Unit
+
+  def saveEditedCard(collectionId: Int, cardId: Int, cardName: Option[String]): Unit
+
+  def showDataInPosition(position: Int): Unit
 
   def showAppsDialog(args: Bundle): Ui[Any]
 
