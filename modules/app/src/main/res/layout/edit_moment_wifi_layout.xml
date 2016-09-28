@@ -10,7 +10,7 @@
             android:id="@+id/edit_wifi_name"
             style="@style/EditWifiMomentWifiText"/>
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             android:id="@+id/edit_wifi_action_delete"
             style="@style/ActionsActionDelete"/>
 

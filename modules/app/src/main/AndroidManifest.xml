@@ -10,7 +10,7 @@
     <application
         android:label="@string/app_name"
         android:icon="@drawable/ic_launcher"
-        android:name="com.fortysevendeg.ninecardslauncher.app.NineCardsApplication">
+        android:name="cards.nine.app.NineCardsApplication">
 
         <meta-data
             android:name="com.google.android.awareness.API_KEY"
@@ -30,7 +30,7 @@
             android:stateNotNeeded="true"
             android:windowSoftInputMode="adjustPan"
             android:screenOrientation="portrait"
-            android:name="com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherActivity">
+            android:name="cards.nine.app.ui.launcher.LauncherActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
@@ -45,33 +45,33 @@
             android:clearTaskOnLaunch="true"
             android:screenOrientation="portrait"
             android:label=""
-            android:name="com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity"/>
+            android:name="cards.nine.app.ui.collections.CollectionsDetailsActivity"/>
 
         <activity
             android:theme="@style/AppTheme"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:label=""
-            android:name="com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity" />
+            android:name="cards.nine.app.ui.wizard.WizardActivity" />
 
         <activity
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait"
             android:label=""
-            android:name="com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity"/>
+            android:name="cards.nine.app.ui.profile.ProfileActivity"/>
 
         <activity
             android:theme="@style/AppThemePreferences"
             android:screenOrientation="portrait"
             android:label="@string/nineCardsSettingsTitle"
-            android:name="com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity"/>
+            android:name="cards.nine.app.ui.preferences.NineCardsPreferencesActivity"/>
 
         <activity
             android:theme="@style/AppThemeSharedContent"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:label=""
-            android:name="com.fortysevendeg.ninecardslauncher.app.ui.share.SharedContentActivity" >
+            android:name="cards.nine.app.ui.share.SharedContentActivity" >
             <intent-filter
                 android:label="@string/sharedIntentLabel">
                 <action android:name="android.intent.action.SEND" />
@@ -83,7 +83,7 @@
         <activity
             android:theme="@style/AppCompatDialog"
             android:launchMode="singleTask"
-            android:name="com.fortysevendeg.ninecardslauncher.app.ui.applinks.AppLinksReceiverActivity">
+            android:name="cards.nine.app.ui.applinks.AppLinksReceiverActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -95,17 +95,17 @@
         </activity>
 
         <service
-            android:name="com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService"/>
+            android:name="cards.nine.app.services.CreateCollectionService"/>
 
         <service
-            android:name="com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService"/>
+            android:name="cards.nine.app.services.SynchronizeDeviceService"/>
 
         <provider
             android:authorities="com.fortysevendeg.ninecardslauncher2"
-            android:name="com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsContentProvider"
+            android:name="cards.nine.repository.provider.NineCardsContentProvider"
             android:exported="false"/>
 
-        <receiver android:name="com.fortysevendeg.ninecardslauncher.app.receivers.AppBroadcastReceiver">
+        <receiver android:name="cards.nine.app.receivers.AppBroadcastReceiver">
             <intent-filter android:priority="999">
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
@@ -139,21 +139,21 @@
             android:name="com.google.android.gms.analytics.CampaignTrackingService" />
 
         <service
-            android:name="com.fortysevendeg.ninecardslauncher.app.services.NineCardsFirebaseInstanceIdService">
+            android:name="cards.nine.app.services.NineCardsFirebaseInstanceIdService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
 
         <service
-            android:name="com.fortysevendeg.ninecardslauncher.app.services.NineCardsFirebaseMessagingService">
+            android:name="cards.nine.app.services.NineCardsFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
         <service
-            android:name="com.fortysevendeg.ninecardslauncher.app.services.UpdateSharedCollectionService"
+            android:name="cards.nine.app.services.UpdateSharedCollectionService"
             android:exported="false"/>
 
     </application>

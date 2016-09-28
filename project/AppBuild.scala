@@ -20,7 +20,7 @@ object AppBuild extends Build {
         packageDebug <<= packageDebug in Android in app,
         install <<= install in Android in app,
         run <<= (run in Android in app),
-        applicationId in Android := "com.fortysevendeg.ninecardslauncher"
+        applicationId in Android := "com.fortysevendeg.ninecardslauncher2"
       )
       .aggregate(app)
 

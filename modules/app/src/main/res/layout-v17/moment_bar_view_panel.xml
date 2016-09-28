@@ -12,7 +12,7 @@
             android:id="@+id/launcher_moment_icon_content"
             style="@style/LauncherMomentIconContent">
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                 style="@style/LauncherMomentIcon"
                 android:id="@+id/launcher_moment_icon"/>
 
@@ -28,15 +28,15 @@
 
     </LinearLayout>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
         style="@style/LauncherMomentWeather"
         android:id="@+id/launcher_moment_weather"/>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
             style="@style/LauncherMomentGoogleButton"
             android:id="@+id/launcher_moment_google_icon"/>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
             style="@style/LauncherMomentMicButton"
             android:id="@+id/launcher_moment_mic_icon"/>
 

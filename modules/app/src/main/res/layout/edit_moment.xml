@@ -9,7 +9,7 @@
         <LinearLayout
             style="@style/EditMomentHeaderContent">
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                 android:id="@+id/edit_moment_icon_link_collection"
                 style="@style/EditMomentHeaderIconCollection"/>
 
@@ -17,7 +17,7 @@
                 android:id="@+id/edit_moment_name_link_collection"
                 style="@style/EditMomentHeaderCollectionName"/>
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                 android:id="@+id/edit_moment_collection_info"
                 style="@style/EditMomentHeaderActionInfo"/>
 
@@ -33,7 +33,7 @@
         <LinearLayout
             style="@style/EditMomentHeaderContent">
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                 android:id="@+id/edit_moment_icon_hour"
                 style="@style/EditMomentHeaderIconHours"/>
 
@@ -41,7 +41,7 @@
                 android:id="@+id/edit_moment_name_hour"
                 style="@style/EditMomentHeaderHoursName"/>
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                 android:id="@+id/edit_moment_add_hour"
                 style="@style/EditMomentHeaderActionAdd"/>
 
@@ -57,7 +57,7 @@
         <LinearLayout
             style="@style/EditMomentHeaderContent">
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                 android:id="@+id/edit_moment_icon_wifi"
                 style="@style/EditMomentHeaderIconWifi"/>
 
@@ -65,7 +65,7 @@
                 android:id="@+id/edit_moment_name_wifi"
                 style="@style/EditMomentHeaderWifiName"/>
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                 android:id="@+id/edit_moment_add_wifi"
                 style="@style/EditMomentHeaderActionAdd"/>
 
