@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
+package cards.nine.app.ui.launcher.collection
 
 import android.content.Intent
 import android.graphics.Color
@@ -17,34 +17,34 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherUiActionsImpl
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.IsDeveloper
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.PositionsUtils._
+import cards.nine.app.ui.commons.RequestCodes._
+import cards.nine.app.ui.commons.SafeUi._
+import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
+import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
+import cards.nine.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
+import cards.nine.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
+import cards.nine.app.ui.launcher.LauncherUiActionsImpl
+import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
+import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
+import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
+import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
+import cards.nine.app.ui.launcher.snails.LauncherSnails._
+import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
+import cards.nine.app.ui.preferences.commons.IsDeveloper
+import cards.nine.app.ui.profile.ProfileActivity
+import cards.nine.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

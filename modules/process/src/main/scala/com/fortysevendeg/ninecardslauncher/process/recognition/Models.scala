@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.recognition
+package cards.nine.process.recognition
 
 case class ProbablyActivity(activity: KindActivity)
 

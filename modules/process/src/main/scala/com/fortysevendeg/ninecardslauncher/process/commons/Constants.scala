@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.commons
+package cards.nine.process.commons
 
 object NineCardCategories {
   val allApps: String = "ALL_APPS"

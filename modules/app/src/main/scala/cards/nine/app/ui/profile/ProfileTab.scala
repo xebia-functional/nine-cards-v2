@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.profile
+package cards.nine.app.ui.profile
 
 sealed trait ProfileTab
 

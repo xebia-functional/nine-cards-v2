@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.observers
+package cards.nine.app.observers
 
 import android.content.ContentResolver
 import android.database.ContentObserver
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.UriCreator
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contentresolver.UriCreator
+import cards.nine.commons.contexts.ContextSupport
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

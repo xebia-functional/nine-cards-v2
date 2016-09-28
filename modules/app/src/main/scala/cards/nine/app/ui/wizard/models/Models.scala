@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.wizard.models
+package cards.nine.app.ui.wizard.models
 
 import java.util.Date
 

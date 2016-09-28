@@ -1,13 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.adapters
+package cards.nine.app.ui.components.adapters
 
 import android.view.{Gravity, View, ViewGroup}
 import android.widget.{ArrayAdapter, TextView}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
+import cards.nine.commons.javaNull
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._

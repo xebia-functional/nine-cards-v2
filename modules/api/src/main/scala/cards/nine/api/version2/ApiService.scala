@@ -1,12 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.api.version2
+package cards.nine.api.version2
 
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.api.rest.client.http.HttpClientException
-import com.fortysevendeg.ninecardslauncher.api.rest.client.messages.ServiceClientResponse
-import com.fortysevendeg.ninecardslauncher.api.rest.client.{ServiceClient, ServiceClientException}
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.api.rest.client.http.HttpClientException
+import cards.nine.api.rest.client.messages.ServiceClientResponse
+import cards.nine.api.rest.client.{ServiceClient, ServiceClientException}
 import play.api.libs.json.{Reads, Writes}
 
 class ApiService(serviceClient: ServiceClient) {

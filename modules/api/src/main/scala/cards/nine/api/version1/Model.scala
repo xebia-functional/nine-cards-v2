@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.api.version1
+package cards.nine.api.version1
 
 import play.api.libs.json._
 

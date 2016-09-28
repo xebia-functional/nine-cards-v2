@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.repository.provider
+package cards.nine.repository.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.repository.model.DockApp
-import com.fortysevendeg.ninecardslauncher.repository.Conversions._
+import cards.nine.repository.model.DockApp
+import cards.nine.repository.Conversions._
 
 case class DockAppEntity(id: Int, data: DockAppEntityData)
 

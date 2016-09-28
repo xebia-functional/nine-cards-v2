@@ -6,7 +6,7 @@
     <FrameLayout
         style="@style/LauncherCollectionActionLayout">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableButton
+        <cards.nine.app.ui.components.widgets.TintableButton
             style="@style/LauncherCollectionAction"
             android:id="@+id/launcher_collections_action_1"/>
 
@@ -15,7 +15,7 @@
     <FrameLayout
         style="@style/LauncherCollectionActionLayout">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableButton
+        <cards.nine.app.ui.components.widgets.TintableButton
             style="@style/LauncherCollectionAction"
             android:id="@+id/launcher_collections_action_2"/>
 

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.recommendations.models
+package cards.nine.process.recommendations.models
 
 case class RecommendedApp(
   packageName: String,

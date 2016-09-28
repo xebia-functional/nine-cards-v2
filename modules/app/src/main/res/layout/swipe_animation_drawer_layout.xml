@@ -8,7 +8,7 @@
         android:id="@+id/swipe_animation_content"
         style="@style/LauncherDrawerAnimatedRipple"/>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
         android:id="@+id/swipe_animation_icon"
         style="@style/LauncherDrawerAnimatedIcon"/>
 

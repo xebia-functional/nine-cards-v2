@@ -1,12 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.applinks
+package cards.nine.app.ui.applinks
 
 import android.app.Activity
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, AppLog, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.app.commons.ContextSupportProvider
+import cards.nine.app.ui.commons.{ActivityUiContext, AppLog, UiContext}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.Contexts
 

@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.commons.utils
+package cards.nine.commons.utils
 
 import java.io._
 import java.util.zip.{GZIPOutputStream, GZIPInputStream}
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contexts.ContextSupport
 
 trait StreamWrapper {
 

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.actions
+package cards.nine.app.ui.commons.actions
 
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.widget.RecyclerView
@@ -6,10 +6,10 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTabsBackgroundColor, NineCardsTheme, PrimaryColor}
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
+import cards.nine.process.theme.models.{DrawerTabsBackgroundColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
 

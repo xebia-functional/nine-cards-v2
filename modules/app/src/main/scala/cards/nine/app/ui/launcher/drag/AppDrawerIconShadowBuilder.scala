@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag
+package cards.nine.app.ui.launcher.drag
 
 import android.graphics.{Canvas, Point}
 import android.view.View

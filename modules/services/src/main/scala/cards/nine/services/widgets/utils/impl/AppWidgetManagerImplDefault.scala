@@ -1,14 +1,14 @@
-package com.fortysevendeg.ninecardslauncher.services.widgets.utils.impl
+package cards.nine.services.widgets.utils.impl
 
 import android.app.ActivityManager
 import android.appwidget.{AppWidgetManager, AppWidgetProviderInfo}
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
-import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.javaNull
+import cards.nine.services.widgets.models.Conversions
+import cards.nine.services.widgets.utils.AppWidgetManagerCompat
 
 import scala.collection.JavaConversions._
 

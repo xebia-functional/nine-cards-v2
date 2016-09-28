@@ -1,19 +1,19 @@
-package com.fortysevendeg.ninecardslauncher.repository.repositories
+package cards.nine.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.repository.Conversions.toCard
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card, CardData, CardsWithCollectionId}
-import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
-import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
-import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, NineCardsUri}
-import com.fortysevendeg.ninecardslauncher.repository.repositories.RepositoryUtils._
-import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import cards.nine.commons.CatchAll
+import cards.nine.commons.contentresolver.Conversions._
+import cards.nine.commons.contentresolver.IterableCursor._
+import cards.nine.commons.contentresolver.NotificationUri._
+import cards.nine.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.repository.Conversions.toCard
+import cards.nine.repository.model.{Card, CardData, CardsWithCollectionId}
+import cards.nine.repository.provider.CardEntity._
+import cards.nine.repository.provider.NineCardsUri._
+import cards.nine.repository.provider.{CardEntity, NineCardsUri}
+import cards.nine.repository.repositories.RepositoryUtils._
+import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scala.language.postfixOps
 

@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.process.accounts
+package cards.nine.process.accounts
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
+import cards.nine.commons.services.TaskService.TaskService
 
 trait UserAccountsProcess {
 

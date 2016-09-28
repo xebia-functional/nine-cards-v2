@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,13 +6,13 @@ import android.view.DragEvent._
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableButton
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableButtonTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, PrimaryColor}
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.widgets.TintableButton
+import cards.nine.app.ui.components.widgets.tweaks.TintableButtonTweaks._
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.commons.javaNull
+import cards.nine.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 

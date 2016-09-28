@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.app.ui
+package cards.nine.app.ui
 
 import android.content.Context
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.commons.javaNull
 import macroid.ContextWrapper
 import org.joda.time.DateTime
 

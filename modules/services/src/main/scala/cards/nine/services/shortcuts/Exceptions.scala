@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.shortcuts
+package cards.nine.services.shortcuts
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class ShortcutServicesException(message: String, cause : Option[Throwable] = None)
   extends RuntimeException(message)

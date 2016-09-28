@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.sharedcollections
+package cards.nine.process.sharedcollections
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class SharedCollectionsException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)

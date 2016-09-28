@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.image.impl
+package cards.nine.services.image.impl
 
 import android.media.ThumbnailUtils
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.services.image._
+import cards.nine.commons.services.TaskService._
 
 
 class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageServicesTasks = ImageServicesTasks)

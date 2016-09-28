@@ -1,17 +1,17 @@
 package com.fortysevendeg.repository.widget
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, MockCursor, StringDataType}
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.model.Widget
-import com.fortysevendeg.ninecardslauncher.repository.provider.WidgetEntity._
-import com.fortysevendeg.ninecardslauncher.repository.provider._
-import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import cards.nine.commons._
+import cards.nine.commons.contentresolver.Conversions._
+import cards.nine.commons.contentresolver.IterableCursor._
+import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
+import cards.nine.repository.RepositoryException
+import cards.nine.repository.model.Widget
+import cards.nine.repository.provider.WidgetEntity._
+import cards.nine.repository.provider._
+import cards.nine.repository.repositories._
 import com.fortysevendeg.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito

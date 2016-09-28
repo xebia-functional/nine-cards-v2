@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.commons.types
+package cards.nine.process.commons.types
 
-import com.fortysevendeg.ninecardslauncher.services.commons.{
+import cards.nine.services.commons.{
   PhoneCategory => ServicesPhoneCategory,
   PhoneHome => ServicesPhoneHome,
   PhoneWork => ServicesPhoneWork,

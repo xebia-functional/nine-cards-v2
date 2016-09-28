@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.process.sharedcollections
+package cards.nine.process.sharedcollections
 
-import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
-import com.fortysevendeg.ninecardslauncher.services.api.{SharedCollectionPackageResponse, SharedCollection => SharedCollectionService}
-import com.fortysevendeg.ninecardslauncher.services.persistence.UpdateCollectionRequest
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
+import cards.nine.process.commons.CommonConversions
+import cards.nine.process.commons.types._
+import cards.nine.process.sharedcollections.models._
+import cards.nine.services.api.{SharedCollectionPackageResponse, SharedCollection => SharedCollectionService}
+import cards.nine.services.persistence.UpdateCollectionRequest
+import cards.nine.services.persistence.models.Collection
 
 trait Conversions
   extends CommonConversions {

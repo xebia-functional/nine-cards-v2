@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.repository.provider
+package cards.nine.repository.provider
 
 object NineCardsUri {
 

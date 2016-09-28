@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
@@ -9,8 +9,8 @@ import android.view.MotionEvent._
 import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
 import android.view._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{SwipeController, Swiping}
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.app.ui.components.commons.{SwipeController, Swiping}
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
 

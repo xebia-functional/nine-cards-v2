@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.api.rest.client.http
+package cards.nine.api.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 
 case class HttpClientException(message: String, cause : Option[Throwable] = None)

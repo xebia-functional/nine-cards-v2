@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.api.rest.client
+package cards.nine.api.rest.client
 
 case class SampleRequest(message: String)
 

@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
+package cards.nine.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId}
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Card
+import cards.nine.commons._
+import cards.nine.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId}
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.models.Card
 
 trait CardConversions {
 

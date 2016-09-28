@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.api.models
+package cards.nine.services.api.models
 
 case class PackagesByCategory(
   category: String,

@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.process.sharedcollections
+package cards.nine.process.sharedcollections
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.sharedcollections.models._
 
 trait SharedCollectionsProcess {
 
@@ -25,7 +25,7 @@ trait SharedCollectionsProcess {
     * @param typeShareCollection type of shared collection
     * @param offset offset of query
     * @param limit limit of query
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]
+    * @return the Seq[cards.nine.process.sharedcollections.models.SharedCollection]
     * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
     * @throws SharedCollectionsException if there was an error fetching the collections
     */
@@ -38,7 +38,7 @@ trait SharedCollectionsProcess {
   /**
     * Get published collections
     *
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection]
+    * @return the Seq[cards.nine.process.sharedcollections.models.SharedCollection]
     * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
     * @throws SharedCollectionsException if there was an error fetching the published collections
     */
@@ -71,7 +71,7 @@ trait SharedCollectionsProcess {
   /**
     * Gets all the subscriptions of the current user
     *
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.Subscription]
+    * @return the Seq[cards.nine.process.sharedcollections.models.Subscription]
     * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
     * @throws SharedCollectionsException if the service cannot get the subscriptions or the collections
     */

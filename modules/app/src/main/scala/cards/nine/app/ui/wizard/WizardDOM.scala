@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.wizard
+package cards.nine.app.ui.wizard
 
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 

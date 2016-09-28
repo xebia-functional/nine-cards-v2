@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/SelectMomentItemContent">
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
         android:id="@+id/select_moment_item_icon"
         style="@style/SelectMomentItemIcon"/>
 

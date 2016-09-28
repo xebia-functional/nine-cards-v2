@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.sharedcollections
+package cards.nine.process.sharedcollections
 
 sealed trait TypeSharedCollection {
   val name: String

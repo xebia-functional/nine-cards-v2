@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.widgets.models
+package cards.nine.services.widgets.models
 
 case class Widget (
   userHashCode: Option[Int],

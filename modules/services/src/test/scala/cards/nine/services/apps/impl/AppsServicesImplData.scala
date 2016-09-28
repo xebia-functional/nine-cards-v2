@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.apps.impl
+package cards.nine.services.apps.impl
 
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import cards.nine.services.apps.models.Application
 
 import scala.util.Random
 
@@ -27,7 +27,7 @@ trait AppsServicesImplData {
 
   val validPackageName = sampleApp1.packageName
 
-  val invalidPackageName = "com.fortysevendeg.ninecardslauncher.test.sampleapp3"
+  val invalidPackageName = "cards.nine.test.sampleapp3"
 
   def createSeqApplication(
     num: Int = 2,

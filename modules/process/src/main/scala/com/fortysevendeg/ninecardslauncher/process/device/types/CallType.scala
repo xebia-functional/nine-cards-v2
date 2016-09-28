@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.device.types
+package cards.nine.process.device.types
 
 import android.provider.CallLog
 

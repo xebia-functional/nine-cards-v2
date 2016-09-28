@@ -1,14 +1,14 @@
-package com.fortysevendeg.ninecardslauncher.services.contacts.impl
+package cards.nine.services.contacts.impl
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
-import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, StringDataType}
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsContentProvider._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactPhone}
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactNotFoundException, ContactsServiceException, ContactsServicePermissionException, Fields}
+import cards.nine.commons.contentresolver.Conversions._
+import cards.nine.commons.contentresolver.IterableCursor._
+import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.commons.test.repository.{IntDataType, StringDataType}
+import cards.nine.services.contacts.ContactsContentProvider._
+import cards.nine.services.contacts.models.{Contact, ContactEmail, ContactPhone}
+import cards.nine.services.contacts.{ContactNotFoundException, ContactsServiceException, ContactsServicePermissionException, Fields}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

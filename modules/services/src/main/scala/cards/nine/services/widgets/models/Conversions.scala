@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.widgets.models
+package cards.nine.services.widgets.models
 
 import android.appwidget.{AppWidgetProviderInfo => AndroidAppWidgetProviderInfo}
 

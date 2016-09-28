@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.widget.models
+package cards.nine.process.widget.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
+import cards.nine.process.commons.types.WidgetType
 
 case class AppWidget(
   id: Int,

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.publishcollection
+package cards.nine.app.ui.collections.dialog.publishcollection
 
 import android.app.Dialog
 import android.os.Bundle
@@ -6,13 +6,13 @@ import android.support.v4.app.{DialogFragment, Fragment}
 import android.support.v7.app.AlertDialog
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.SharedCollectionJobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.ui.collections.jobs.SharedCollectionJobs
+import cards.nine.app.ui.commons.AppLog
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 

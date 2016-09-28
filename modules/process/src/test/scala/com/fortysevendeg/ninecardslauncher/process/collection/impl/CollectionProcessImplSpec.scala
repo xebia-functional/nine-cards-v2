@@ -1,27 +1,27 @@
-package com.fortysevendeg.ninecardslauncher.process.collection.impl
+package cards.nine.process.collection.impl
 
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException, CollectionProcessConfig}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NoInstalledAppCardType
-import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}
-import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
-import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessServices
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.process.collection.{CardException, CollectionException, CollectionProcessConfig}
+import cards.nine.process.commons.models.NineCardIntent
+import cards.nine.process.commons.types.NoInstalledAppCardType
+import cards.nine.process.utils.ApiUtils
+import cards.nine.services.api.{ApiServiceException, ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}
+import cards.nine.services.apps.{AppsInstalledException, AppsServices}
+import cards.nine.services.awareness.AwarenessServices
+import cards.nine.services.contacts.ContactsServices
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.models.Collection
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 
 trait CollectionProcessImplSpecification
   extends Specification

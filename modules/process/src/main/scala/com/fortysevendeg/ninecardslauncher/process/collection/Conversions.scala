@@ -1,15 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.process.collection
+package cards.nine.process.collection
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, NineCardIntent, PrivateCard}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType}
-import com.fortysevendeg.ninecardslauncher.services.api.{RankAppsResponse, CategorizedDetailPackage}
-import com.fortysevendeg.ninecardslauncher.services.api.models.{PackagesByCategory => ServicesPackagesByCategory}
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, UpdateCollectionsRequest => ServicesUpdateCollectionsRequest, _}
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.process.collection.models._
+import cards.nine.process.commons.CommonConversions
+import cards.nine.process.commons.models.{Card, Collection, NineCardIntent, PrivateCard}
+import cards.nine.process.commons.types.{AppCardType, CardType}
+import cards.nine.services.api.{RankAppsResponse, CategorizedDetailPackage}
+import cards.nine.services.api.models.{PackagesByCategory => ServicesPackagesByCategory}
+import cards.nine.services.apps.models.Application
+import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
+import cards.nine.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, UpdateCollectionsRequest => ServicesUpdateCollectionsRequest, _}
 
 trait Conversions extends CommonConversions {
 

@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations
+package cards.nine.app.ui.collections.decorations
 
 import android.graphics.Rect
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.State
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.CardPadding
+import cards.nine.app.ui.preferences.commons.CardPadding
 import macroid.ContextWrapper
 
 class CollectionItemDecoration (implicit contextWrapper: ContextWrapper)

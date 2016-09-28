@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.drawables
+package cards.nine.app.ui.components.drawables
 
 import android.graphics._
 import android.graphics.drawable.Drawable

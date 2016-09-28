@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.content.Context
 import android.util.AttributeSet
@@ -7,16 +7,16 @@ import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.IconTypes._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.PathMorphDrawable
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders._
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.components.drawables.IconTypes._
+import cards.nine.app.ui.components.drawables.PathMorphDrawable
+import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
+import cards.nine.app.ui.launcher.holders._
+import cards.nine.commons.javaNull
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders
+package cards.nine.app.ui.launcher.holders
 
 import android.content.{ClipData, Context}
 import android.graphics.Point
@@ -11,23 +11,23 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{DragObject, PositionsUtils}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DropBackgroundDrawable
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder, LauncherWorkSpaces}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.CollectionShadowBuilder
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.ReorderCollection
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
-import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.Constants._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.commons.{DragObject, PositionsUtils}
+import cards.nine.app.ui.components.drawables.DropBackgroundDrawable
+import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder, LauncherWorkSpaces}
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.drag.CollectionShadowBuilder
+import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
+import cards.nine.app.ui.launcher.types.ReorderCollection
+import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
+import cards.nine.commons.ops.SeqOps._
+import cards.nine.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._

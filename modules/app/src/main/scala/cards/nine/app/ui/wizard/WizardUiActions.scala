@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.wizard
+package cards.nine.app.ui.wizard
 
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
@@ -9,18 +9,18 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, UiContext, UiException}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.StepData
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext, UiException}
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.components.dialogs.AlertDialogFragment
+import cards.nine.app.ui.components.layouts.StepData
+import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
+import cards.nine.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
+import cards.nine.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
+import cards.nine.commons._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._

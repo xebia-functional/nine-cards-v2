@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.trackevent.models
+package cards.nine.process.trackevent.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
+import cards.nine.process.commons.types.{NineCardCategory, NineCardsMoment}
 
 sealed trait Category {
   def name: String

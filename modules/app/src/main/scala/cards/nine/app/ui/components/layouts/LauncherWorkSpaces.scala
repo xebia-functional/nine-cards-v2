@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.appwidget.AppWidgetHostView
 import android.content.Context
@@ -8,18 +8,18 @@ import android.view.MotionEvent._
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.TranslationAnimator
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import cards.nine.app.ui.commons.AnimationsUtils._
+import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
+import cards.nine.app.ui.components.commons.TranslationAnimator
+import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
+import cards.nine.commons.javaNull
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
+import cards.nine.process.widget.models.AppWidget
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global

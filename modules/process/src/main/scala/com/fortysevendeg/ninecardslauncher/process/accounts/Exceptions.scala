@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.accounts
+package cards.nine.process.accounts
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 trait UserAccountsProcessException extends NineCardException
 

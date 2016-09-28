@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.commons
+package cards.nine.app.ui.components.commons
 
 import android.graphics.Canvas
 import android.graphics.drawable.ShapeDrawable
@@ -7,10 +7,10 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.{ItemDecoration, State}
 import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerView
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardTextColor, NineCardsTheme, SearchBackgroundColor}
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.layouts.FastScrollerView
+import cards.nine.process.theme.models.{CardTextColor, NineCardsTheme, SearchBackgroundColor}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 

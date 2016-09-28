@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.commons.types.json
+package cards.nine.process.commons.types.json
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
+import cards.nine.process.commons.types.WidgetType
 import play.api.libs.json._
 
 object WidgetTypeImplicits {

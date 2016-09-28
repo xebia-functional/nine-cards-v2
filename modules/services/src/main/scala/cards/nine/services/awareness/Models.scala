@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.awareness
+package cards.nine.services.awareness
 
 case class TypeActivity(activityType: KindActivity)
 

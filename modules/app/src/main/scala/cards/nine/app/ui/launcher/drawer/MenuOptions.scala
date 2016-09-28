@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
+package cards.nine.app.ui.launcher.drawer
 
 import AppsAlphabeticalNames._
 import ContactsMenuOptionNames._

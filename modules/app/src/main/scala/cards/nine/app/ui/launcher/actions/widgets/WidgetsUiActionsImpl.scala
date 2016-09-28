@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets
+package cards.nine.app.ui.launcher.actions.widgets
 
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
@@ -9,14 +9,14 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.device.models.{AppsWithWidgets, Widget}
+import cards.nine.app.ui.commons.ops.WidgetsOps._
+import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
+import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.process.device.models.{AppsWithWidgets, Widget}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.UiContext
 import macroid._
 import macroid.FullDsl._
 

@@ -1,12 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.app.services.commons
+package cards.nine.app.services.commons
 
 import android.app.Service
 import android.os.Bundle
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.di.Injector
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.app.di.Injector
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
+import cards.nine.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.commons.types
+package cards.nine.process.commons.types
 
 sealed trait PublicCollectionStatus
 

@@ -1,15 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package cards.nine.app.ui.commons
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
 import android.view.View
 import android.view.animation.{AccelerateDecelerateInterpolator, AccelerateInterpolator, DecelerateInterpolator}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.SpeedAnimations
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.preferences.commons.SpeedAnimations
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Snail, Ui}
 

@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.process.collection.impl
+package cards.nine.process.collection.impl
 
-import com.fortysevendeg.ninecardslauncher.process.collection.CollectionProcessConfig
-import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
-import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
-import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessServices
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
+import cards.nine.process.collection.CollectionProcessConfig
+import cards.nine.services.api.ApiServices
+import cards.nine.services.apps.AppsServices
+import cards.nine.services.awareness.AwarenessServices
+import cards.nine.services.contacts.ContactsServices
+import cards.nine.services.persistence.PersistenceServices
 
 trait CollectionProcessDependencies {
 

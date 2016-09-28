@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.api.version1
+package cards.nine.api.version1
 
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
-import com.fortysevendeg.ninecardslauncher.api.rest.client.ServiceClient
-import com.fortysevendeg.ninecardslauncher.api.rest.client.messages.ServiceClientResponse
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.api.rest.client.ServiceClient
+import cards.nine.api.rest.client.messages.ServiceClientResponse
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope

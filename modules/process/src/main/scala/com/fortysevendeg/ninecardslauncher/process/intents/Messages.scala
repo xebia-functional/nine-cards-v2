@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.intents
+package cards.nine.process.intents
 
 case class LauncherExecutorProcessConfig(
   googlePlayUrl: String,

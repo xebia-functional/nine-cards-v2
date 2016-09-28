@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.commons.contentresolver
+package cards.nine.commons.contentresolver
 
 import android.database.Cursor
 import scala.annotation.tailrec

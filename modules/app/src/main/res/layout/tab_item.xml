@@ -6,7 +6,7 @@
     <LinearLayout
         style="@style/TabItemContent">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             android:id="@+id/tab_item_icon"
             style="@style/TabItemIcon"/>
 

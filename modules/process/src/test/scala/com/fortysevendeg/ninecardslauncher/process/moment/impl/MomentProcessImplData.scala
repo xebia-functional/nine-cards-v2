@@ -1,14 +1,14 @@
-package com.fortysevendeg.ninecardslauncher.process.moment.impl
+package cards.nine.process.moment.impl
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.commons.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.CardType._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.moment.models.App
-import com.fortysevendeg.ninecardslauncher.process.moment.{SaveMomentRequest, UpdateMomentRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import cards.nine.process.commons.models.NineCardIntentImplicits._
+import cards.nine.process.commons.models._
+import cards.nine.process.commons.types.CardType._
+import cards.nine.process.commons.types.CollectionType._
+import cards.nine.process.commons.types.NineCardCategory._
+import cards.nine.process.commons.types._
+import cards.nine.process.moment.models.App
+import cards.nine.process.moment.{SaveMomentRequest, UpdateMomentRequest}
+import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 

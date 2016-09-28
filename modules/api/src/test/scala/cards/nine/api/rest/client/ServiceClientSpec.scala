@@ -1,16 +1,16 @@
-package com.fortysevendeg.ninecardslauncher.api.rest.client
+package cards.nine.api.rest.client
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.api.rest.client.http.{HttpClient, HttpClientException, HttpClientResponse}
+import cards.nine.commons.services.TaskService
+import cards.nine.api.rest.client.http.{HttpClient, HttpClientException, HttpClientResponse}
 import org.hamcrest.core.IsEqual
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import play.api.libs.json.Json
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 import monix.eval.Task
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
+import cards.nine.commons.test.TaskServiceSpecification
 
 trait ServiceClientSpecification
   extends TaskServiceSpecification

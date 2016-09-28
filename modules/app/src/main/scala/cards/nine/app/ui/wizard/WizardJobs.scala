@@ -1,25 +1,25 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.wizard
+package cards.nine.app.ui.wizard
 
 import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.process.accounts.{FineLocation, ReadContacts, UserAccountsProcessOperationCancelledException}
-import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevices
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
-import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1ConfigurationException
-import com.fortysevendeg.ninecardslauncher.process.userv1.models.UserV1Device
+import cards.nine.process.accounts.{FineLocation, ReadContacts, UserAccountsProcessOperationCancelledException}
+import cards.nine.app.services.CreateCollectionService
+import cards.nine.app.ui.commons.RequestCodes._
+import cards.nine.app.ui.commons.SafeUi._
+import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.wizard.models.UserCloudDevices
+import cards.nine.commons._
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.cloud.Conversions
+import cards.nine.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
+import cards.nine.process.userv1.UserV1ConfigurationException
+import cards.nine.process.userv1.models.UserV1Device
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}

@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.impl
+package cards.nine.services.persistence.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntity, NineCardsSqlHelper}
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.repository.provider.{CardEntity, NineCardsSqlHelper}
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.conversions.Conversions
 import monix.eval.Task
 
 

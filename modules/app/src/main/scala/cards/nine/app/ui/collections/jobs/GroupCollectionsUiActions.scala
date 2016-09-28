@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
+package cards.nine.app.ui.collections.jobs
 
 import android.animation.ValueAnimator
 import android.graphics.drawable.Drawable
@@ -18,33 +18,33 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.EditCardDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CollectionSelectorDrawable, IconTypes, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor, NineCardsTheme}
+import cards.nine.app.ui.collections.CollectionsPagerAdapter
+import cards.nine.app.ui.collections.actions.apps.AppsFragment
+import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
+import cards.nine.app.ui.collections.dialog.EditCardDialogFragment
+import cards.nine.app.ui.collections.snails.CollectionsSnails._
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.FabButtonTags._
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
+import cards.nine.app.ui.components.drawables.{CollectionSelectorDrawable, IconTypes, PathMorphDrawable}
+import cards.nine.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
+import cards.nine.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
+import cards.nine.commons._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.theme.models.{CardLayoutBackgroundColor, CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._

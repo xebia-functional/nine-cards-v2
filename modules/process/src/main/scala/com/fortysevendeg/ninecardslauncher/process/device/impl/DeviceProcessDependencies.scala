@@ -1,13 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.process.device.impl
+package cards.nine.process.device.impl
 
-import com.fortysevendeg.ninecardslauncher.services.api.ApiServices
-import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
-import com.fortysevendeg.ninecardslauncher.services.calls.CallsServices
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
-import com.fortysevendeg.ninecardslauncher.services.image.ImageServices
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
-import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetsServices
+import cards.nine.services.api.ApiServices
+import cards.nine.services.apps.AppsServices
+import cards.nine.services.calls.CallsServices
+import cards.nine.services.contacts.ContactsServices
+import cards.nine.services.image.ImageServices
+import cards.nine.services.persistence.PersistenceServices
+import cards.nine.services.shortcuts.ShortcutsServices
+import cards.nine.services.widgets.WidgetsServices
 
 trait DeviceProcessDependencies {
 

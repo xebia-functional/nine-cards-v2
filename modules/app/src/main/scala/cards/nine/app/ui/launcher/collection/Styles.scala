@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection
+package cards.nine.app.ui.launcher.collection
 
 import android.content.res.ColorStateList
 import android.support.design.widget.NavigationView
@@ -8,9 +8,9 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkspaceItemMenu
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.app.ui.components.layouts.WorkspaceItemMenu
+import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
 

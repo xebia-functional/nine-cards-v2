@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.device.utils
+package cards.nine.process.device.utils
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import cards.nine.process.commons.types._
 
 trait KnownCategoriesUtil {
 

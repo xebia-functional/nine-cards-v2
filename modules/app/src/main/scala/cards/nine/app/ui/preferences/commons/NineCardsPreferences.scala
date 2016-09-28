@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons
+package cards.nine.app.ui.preferences.commons
 
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.PreferencesKeys._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.PreferencesValuesKeys._
+import cards.nine.app.ui.preferences.commons.PreferencesKeys._
+import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 

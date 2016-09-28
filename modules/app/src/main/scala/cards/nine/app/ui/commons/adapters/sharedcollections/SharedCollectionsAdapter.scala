@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections
+package cards.nine.app.ui.commons.adapters.sharedcollections
 
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, ViewGroup}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.process.sharedcollections.models.SharedCollection
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TR
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import macroid.ActivityContextWrapper

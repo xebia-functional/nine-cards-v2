@@ -1,12 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.impl
+package cards.nine.services.persistence.impl
 
 import android.database.Cursor
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, PersistenceServices}
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.javaNull
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.services.persistence.{AndroidIdNotFoundException, PersistenceServices}
 import monix.eval.Task
 
 trait AndroidPersistenceServicesImpl extends PersistenceServices {

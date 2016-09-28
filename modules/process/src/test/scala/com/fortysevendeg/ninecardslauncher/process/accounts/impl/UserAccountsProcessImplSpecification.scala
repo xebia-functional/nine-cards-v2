@@ -1,13 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.process.accounts.impl
+package cards.nine.process.accounts.impl
 
 import android.accounts._
 import android.app.Activity
 import android.os.Bundle
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
-import com.fortysevendeg.ninecardslauncher.process.accounts._
-import com.fortysevendeg.ninecardslauncher.services.permissions.{PermissionDenied, PermissionGranted, PermissionsServices}
+import cards.nine.commons._
+import cards.nine.commons.contexts.ActivityContextSupport
+import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.process.accounts._
+import cards.nine.services.permissions.{PermissionDenied, PermissionGranted, PermissionsServices}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 

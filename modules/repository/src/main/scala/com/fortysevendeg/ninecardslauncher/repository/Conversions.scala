@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.repository
+package cards.nine.repository
 
-import com.fortysevendeg.ninecardslauncher.repository.model._
-import com.fortysevendeg.ninecardslauncher.repository.provider._
+import cards.nine.repository.model._
+import cards.nine.repository.provider._
 
 object Conversions {
 

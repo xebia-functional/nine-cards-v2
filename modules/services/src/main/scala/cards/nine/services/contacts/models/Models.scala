@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.contacts.models
+package cards.nine.services.contacts.models
 
-import com.fortysevendeg.ninecardslauncher.services.commons.{EmailCategory, PhoneCategory}
+import cards.nine.services.commons.{EmailCategory, PhoneCategory}
 
 case class Contact(
   name: String,

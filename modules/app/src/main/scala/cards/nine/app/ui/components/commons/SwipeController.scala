@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.commons
+package cards.nine.app.ui.components.commons
 
 import android.content.Context
 import android.support.v4.view.MotionEventCompat
 import android.view.MotionEvent._
 import android.view.{MotionEvent, VelocityTracker, ViewConfiguration}
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import cards.nine.commons.javaNull
 
 trait SwipeController {
 

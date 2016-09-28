@@ -1,13 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
+package cards.nine.app.ui.collections.actions.shortcuts
 
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
-import com.fortysevendeg.ninecardslauncher.process.theme.models.DrawerBackgroundColor
+import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.device.models.Shortcut
+import cards.nine.process.theme.models.DrawerBackgroundColor
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

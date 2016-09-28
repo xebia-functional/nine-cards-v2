@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.api.rest.client
+package cards.nine.api.rest.client
 
-import com.fortysevendeg.ninecardslauncher.api.rest.client.http.{HttpClientException, HttpClientResponse}
+import cards.nine.api.rest.client.http.{HttpClientException, HttpClientResponse}
 import play.api.libs.json.Json
 
 trait ServiceClientData {

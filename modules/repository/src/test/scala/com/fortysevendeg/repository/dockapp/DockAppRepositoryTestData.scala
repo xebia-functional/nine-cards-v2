@@ -1,7 +1,7 @@
 package com.fortysevendeg.repository.dockapp
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{DockApp, DockAppData}
-import com.fortysevendeg.ninecardslauncher.repository.provider.{DockAppEntity, DockAppEntityData}
+import cards.nine.repository.model.{DockApp, DockAppData}
+import cards.nine.repository.provider.{DockAppEntity, DockAppEntityData}
 
 import scala.util.Random
 

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.intents.models
+package cards.nine.services.intents.models
 
 sealed trait IntentAction
 

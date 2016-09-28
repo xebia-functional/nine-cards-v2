@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.drawables
+package cards.nine.app.ui.components.drawables
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
@@ -6,7 +6,7 @@ import android.graphics.Paint.Style
 import android.graphics._
 import android.graphics.drawable.{Animatable, Drawable}
 import android.view.animation.DecelerateInterpolator
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.IconTypes._
+import cards.nine.app.ui.components.drawables.IconTypes._
 import macroid.ContextWrapper
 
 case class PathMorphDrawable(

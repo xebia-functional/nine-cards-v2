@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections
+package cards.nine.app.ui.launcher.actions.publicollections
 
 import android.os.Bundle
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
+import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.ui.commons.actions.BaseActionFragment
+import cards.nine.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher2.R
 
 class PublicCollectionsFragment(implicit lPresenter: LauncherPresenter)

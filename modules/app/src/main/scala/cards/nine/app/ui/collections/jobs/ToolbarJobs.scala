@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
+package cards.nine.app.ui.collections.jobs
 
-import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.app.commons.{Conversions, NineCardIntentConversions}
+import cards.nine.app.ui.commons.Jobs
+import cards.nine.commons.services.TaskService.TaskService
 import macroid.ActivityContextWrapper
 
 class ToolbarJobs(actions: ToolbarUiActions)(implicit activityContextWrapper: ActivityContextWrapper)

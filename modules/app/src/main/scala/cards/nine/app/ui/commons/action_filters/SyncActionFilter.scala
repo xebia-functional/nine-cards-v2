@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters
+package cards.nine.app.ui.commons.action_filters
 
 sealed trait SyncActionFilter {
   val action: String

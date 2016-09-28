@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs
+package cards.nine.app.ui.components.dialogs
 
 import android.app.Dialog
 import android.content.DialogInterface

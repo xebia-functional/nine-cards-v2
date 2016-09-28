@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.process.recognition.impl
+package cards.nine.process.recognition.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{TaskService, _}
-import com.fortysevendeg.ninecardslauncher.process.recognition._
-import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessServices
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.process.recognition._
+import cards.nine.services.awareness.AwarenessServices
 
 class RecognitionProcessImpl(awarenessServices: AwarenessServices)
   extends RecognitionProcess

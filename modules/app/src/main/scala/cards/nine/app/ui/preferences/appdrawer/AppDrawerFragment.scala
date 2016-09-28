@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.appdrawer
+package cards.nine.app.ui.preferences.appdrawer
 
 import android.app.Fragment
 import android.os.Bundle
 import android.preference.ListPreference
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.preferences.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
 

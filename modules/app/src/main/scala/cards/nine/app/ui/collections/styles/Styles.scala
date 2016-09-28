@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.styles
+package cards.nine.app.ui.collections.styles
 
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -16,21 +16,21 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.IconsSize
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.FabButtonTags._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
+import cards.nine.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
+import cards.nine.app.ui.preferences.commons.IconsSize
+import cards.nine.commons._
+import cards.nine.process.commons.models.Card
+import cards.nine.process.commons.types._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 

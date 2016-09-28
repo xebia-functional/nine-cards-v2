@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.api.version1
+package cards.nine.api.version1
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.api.rest.client.ServiceClient
-import com.fortysevendeg.ninecardslauncher.api.rest.client.messages.ServiceClientResponse
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.api.rest.client.ServiceClient
+import cards.nine.api.rest.client.messages.ServiceClientResponse
 import play.api.libs.json.{Reads, Writes}
 
 class ApiService(serviceClient: ServiceClient) {

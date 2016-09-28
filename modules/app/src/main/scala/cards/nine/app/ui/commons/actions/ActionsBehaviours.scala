@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.actions
+package cards.nine.app.ui.commons.actions
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import com.fortysevendeg.macroid.extras.FragmentExtras._

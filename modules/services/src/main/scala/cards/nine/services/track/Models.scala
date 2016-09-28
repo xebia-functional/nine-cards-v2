@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.track
+package cards.nine.services.track
 
 case class TrackEvent(
   screen: String,

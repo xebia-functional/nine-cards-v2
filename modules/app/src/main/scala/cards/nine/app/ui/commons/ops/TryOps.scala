@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
+package cards.nine.app.ui.commons.ops
 
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
+import cards.nine.app.ui.commons.AppLog
 
 import scala.util.{Failure, Try}
 

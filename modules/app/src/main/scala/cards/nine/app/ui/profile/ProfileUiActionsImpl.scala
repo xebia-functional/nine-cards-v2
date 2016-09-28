@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.profile
+package cards.nine.app.ui.profile
 
 import android.app.Activity
 import android.support.design.widget.TabLayout
@@ -13,19 +13,19 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TabLayoutTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.AccountOptions._
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, EmptyProfileAdapter, SubscriptionsAdapter}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{EditAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.PublishedByOther
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, PrimaryColor}
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
+import cards.nine.app.ui.commons.{SnailsCommons, SystemBarsTint, UiContext}
+import cards.nine.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
+import cards.nine.app.ui.profile.adapters.AccountOptions._
+import cards.nine.app.ui.profile.adapters.{AccountsAdapter, EmptyProfileAdapter, SubscriptionsAdapter}
+import cards.nine.app.ui.profile.dialog.{EditAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
+import cards.nine.app.ui.profile.models.AccountSync
+import cards.nine.commons._
+import cards.nine.process.commons.types.PublishedByOther
+import cards.nine.process.sharedcollections.models.{SharedCollection, Subscription}
+import cards.nine.process.theme.models.{CardLayoutBackgroundColor, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 

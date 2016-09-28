@@ -1,19 +1,19 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
+package cards.nine.app.ui.components.widgets
 
 import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.ColorOps._
 import android.widget.{FrameLayout, ImageView}
 import android.widget.FrameLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GenericUiContext, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import cards.nine.app.ui.commons.{GenericUiContext, UiContext}
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 import macroid.FullDsl._

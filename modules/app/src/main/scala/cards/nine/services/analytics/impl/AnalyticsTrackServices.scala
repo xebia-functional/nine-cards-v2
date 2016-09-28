@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.services.analytics.impl
+package cards.nine.services.analytics.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.services.track.{TrackEvent, TrackServicesException, ImplicitsTrackServicesException, TrackServices}
+import cards.nine.commons.CatchAll
+import cards.nine.commons.services.TaskService
+import cards.nine.services.track.{TrackEvent, TrackServicesException, ImplicitsTrackServicesException, TrackServices}
 import com.google.android.gms.analytics.{HitBuilders, Tracker}
 
 class AnalyticsTrackServices(tracker: Tracker)

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
+package cards.nine.app.ui.components.widgets
 
 import android.graphics.PointF
 import android.support.v7.widget.LinearLayoutManager._

@@ -1,16 +1,16 @@
-package com.fortysevendeg.ninecardslauncher.app.services
+package cards.nine.app.services
 
 import android.app.{Notification, NotificationManager, PendingIntent, Service}
 import android.content.{Context, Intent}
 import android.support.v4.app.NotificationCompat
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
-import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
-import com.fortysevendeg.ninecardslauncher.app.services.payloads.SharedCollectionPayload
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{PublishedByOther, Subscribed}
+import cards.nine.app.commons.ContextSupportProvider
+import cards.nine.app.di.InjectorImpl
+import cards.nine.app.services.payloads.SharedCollectionPayload
+import cards.nine.app.ui.commons.AppLog
+import cards.nine.app.ui.commons.CommonsResourcesExtras._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.process.commons.types.{PublishedByOther, Subscribed}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.messaging.{FirebaseMessagingService, RemoteMessage}
 import macroid.Contexts

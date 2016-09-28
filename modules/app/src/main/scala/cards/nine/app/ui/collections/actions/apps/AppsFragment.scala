@@ -1,14 +1,14 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
+package cards.nine.app.ui.collections.actions.apps
 
 import android.os.Bundle
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AllAppsCategory, NineCardCategory}
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import cards.nine.app.commons.Conversions
+import cards.nine.app.ui.collections.jobs.GroupCollectionsUiListener
+import cards.nine.app.ui.commons.UiExtensions
+import cards.nine.app.ui.commons.actions.BaseActionFragment
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.process.commons.types.{AllAppsCategory, NineCardCategory}
+import cards.nine.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.R
 
 class AppsFragment

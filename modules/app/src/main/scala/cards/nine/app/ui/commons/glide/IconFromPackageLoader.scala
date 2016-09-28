@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.glide
+package cards.nine.app.ui.commons.glide
 
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.data.DataFetcher

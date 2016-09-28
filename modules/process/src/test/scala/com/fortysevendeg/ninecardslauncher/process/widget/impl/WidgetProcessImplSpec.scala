@@ -1,14 +1,14 @@
-package com.fortysevendeg.ninecardslauncher.process.widget.impl
+package cards.nine.process.widget.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.process.widget.AppWidgetException
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget
-import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
+import cards.nine.commons.services.TaskService
+import cards.nine.process.widget.AppWidgetException
+import cards.nine.services.persistence.models.Widget
+import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 import cats.syntax.either._
 
 trait WidgetProcessImplSpecification

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.commons
+package cards.nine.services.commons
 
 sealed trait PhoneCategory
 

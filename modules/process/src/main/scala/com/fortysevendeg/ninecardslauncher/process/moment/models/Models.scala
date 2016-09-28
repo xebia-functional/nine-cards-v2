@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.moment.models
+package cards.nine.process.moment.models
 
 case class App(
   name: String,

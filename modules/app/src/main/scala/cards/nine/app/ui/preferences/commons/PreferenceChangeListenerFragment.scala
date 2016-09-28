@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons
+package cards.nine.app.ui.preferences.commons
 
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.preference.PreferenceFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity
+import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 
 trait PreferenceChangeListenerFragment
   extends PreferenceFragment

@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.api.version2
+package cards.nine.api.version2
 
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
-import com.fortysevendeg.ninecardslauncher.api.rest.client.ServiceClient
-import com.fortysevendeg.ninecardslauncher.api.rest.client.messages.ServiceClientResponse
+import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.api.rest.client.ServiceClient
+import cards.nine.api.rest.client.messages.ServiceClientResponse
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 

@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.services
+package cards.nine.app.services
 
 import android.app.Service
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
-import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
-import com.fortysevendeg.ninecardslauncher.app.services.commons.FirebaseExtensions._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.commons.ContextSupportProvider
+import cards.nine.app.di.InjectorImpl
+import cards.nine.app.services.commons.FirebaseExtensions._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import com.google.firebase.iid.FirebaseInstanceIdService
 import macroid.Contexts
 

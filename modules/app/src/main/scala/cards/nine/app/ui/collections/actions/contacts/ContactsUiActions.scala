@@ -1,25 +1,25 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
+package cards.nine.app.ui.collections.actions.contacts
 
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.ReadContacts
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{RequestCodes, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.ContactsAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabsListener, TabInfo}
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
-import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
+import cards.nine.app.permissions.PermissionChecker.ReadContacts
+import cards.nine.app.ui.commons.{RequestCodes, UiContext}
+import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
+import cards.nine.app.ui.commons.adapters.contacts.ContactsAdapter
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.components.commons.SelectedItemDecoration
+import cards.nine.app.ui.components.layouts.snails.TabsSnails._
+import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
+import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
+import cards.nine.app.ui.components.layouts.{PullToTabsListener, TabInfo}
+import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.device.models.{Contact, IterableContacts, TermCounter}
+import cards.nine.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

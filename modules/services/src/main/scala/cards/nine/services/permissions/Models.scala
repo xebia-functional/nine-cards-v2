@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.permissions
+package cards.nine.services.permissions
 
 sealed trait PermissionStatus
 

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
+package cards.nine.app.ui.launcher.drawer
 
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.annotation.TargetApi
@@ -6,9 +6,9 @@ import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.SnailsUtils
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue, SpeedAnimations}
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.app.ui.commons.PositionsUtils._
+import cards.nine.app.ui.preferences.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue, SpeedAnimations}
+import cards.nine.commons._
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise

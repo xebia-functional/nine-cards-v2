@@ -1,19 +1,19 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.wizard
+package cards.nine.app.ui.wizard
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageClientListener
-import com.fortysevendeg.ninecardslauncher.process.social.{SocialProfileClientListener, SocialProfileProcessException}
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
+import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
+import cards.nine.app.ui.commons.{ActivityUiContext, UiContext}
+import cards.nine.app.ui.commons.WizardState._
+import cards.nine.app.ui.commons.action_filters._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.cloud.CloudStorageClientListener
+import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
+import cards.nine.process.user.UserException
+import cards.nine.process.userv1.UserV1Exception
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult
 import macroid.Contexts

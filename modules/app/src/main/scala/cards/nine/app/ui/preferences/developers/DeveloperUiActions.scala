@@ -1,16 +1,16 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers
+package cards.nine.app.ui.preferences.developers
 
 import android.content.{ClipData, ClipboardManager, Context}
 import android.preference.Preference
 import android.preference.Preference.OnPreferenceClickListener
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.Misc
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
-import com.fortysevendeg.ninecardslauncher.process.recognition.{Location, Weather}
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.commons.types.Misc
+import cards.nine.process.device.models.App
+import cards.nine.process.recognition.{Location, Weather}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Ui}
 

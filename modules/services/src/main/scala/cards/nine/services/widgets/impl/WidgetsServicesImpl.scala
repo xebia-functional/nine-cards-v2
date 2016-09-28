@@ -1,13 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.services.widgets.impl
+package cards.nine.services.widgets.impl
 
 import android.os.Build
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
-import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
-import com.fortysevendeg.ninecardslauncher.services.widgets.utils.impl.{AppWidgetManagerImplDefault, AppWidgetManagerImplLollipop}
-import com.fortysevendeg.ninecardslauncher.services.widgets.{ImplicitsWidgetsExceptions, WidgetServicesException, WidgetsServices}
+import cards.nine.commons.CatchAll
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.services.widgets.models.Conversions
+import cards.nine.services.widgets.utils.AppWidgetManagerCompat
+import cards.nine.services.widgets.utils.impl.{AppWidgetManagerImplDefault, AppWidgetManagerImplLollipop}
+import cards.nine.services.widgets.{ImplicitsWidgetsExceptions, WidgetServicesException, WidgetsServices}
 
 class WidgetsServicesImpl
   extends WidgetsServices

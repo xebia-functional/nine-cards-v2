@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences.about
+package cards.nine.app.ui.preferences.about
 
 import android.os.Bundle
 import android.preference.PreferenceFragment

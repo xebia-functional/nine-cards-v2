@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.api.rest.client
+package cards.nine.api.rest.client
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.api.rest.client.http.{HttpClient, HttpClientResponse}
-import com.fortysevendeg.ninecardslauncher.api.rest.client.messages.ServiceClientResponse
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.api.rest.client.http.{HttpClient, HttpClientResponse}
+import cards.nine.api.rest.client.messages.ServiceClientResponse
 import monix.eval.Task
 import play.api.libs.json.{Json, Reads, Writes}
 

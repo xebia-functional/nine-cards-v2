@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
+package cards.nine.app.ui.commons.ops
 
 import android.view.View
 import com.fortysevendeg.ninecardslauncher2.R

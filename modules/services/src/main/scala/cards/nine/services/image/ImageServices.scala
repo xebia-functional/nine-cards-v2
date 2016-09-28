@@ -1,13 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.services.image
+package cards.nine.services.image
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.TaskService
 
 trait ImageServices {
 
   /**
    * Write a compressed version of the bitmap pass by parameter and return the path
-   * @return the com.fortysevendeg.ninecardslauncher.services.image.SaveBitmapPath contains
+   * @return the cards.nine.services.image.SaveBitmapPath contains
    *         path where the file was stored
    * @throws FileException if exist some problem storing bitmap
    */

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.share.models
+package cards.nine.app.ui.share.models
 
 import android.net.Uri
 

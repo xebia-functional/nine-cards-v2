@@ -1,12 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.app.services
+package cards.nine.app.services
 
 import android.app.{IntentService, NotificationManager, Service}
 import android.content.{Context, Intent}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
-import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.commons.ContextSupportProvider
+import cards.nine.app.di.InjectorImpl
+import cards.nine.app.ui.commons.AppLog._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import macroid.Contexts
 
 import UpdateSharedCollectionService._

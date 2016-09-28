@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
+package cards.nine.app.ui.components.widgets
 
 import android.content.Context
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.view.ViewGroup.LayoutParams
 import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.commons._
 import macroid.Contexts
 
 class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)

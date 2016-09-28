@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.commons.utils
+package cards.nine.commons.utils
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class AssetException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)

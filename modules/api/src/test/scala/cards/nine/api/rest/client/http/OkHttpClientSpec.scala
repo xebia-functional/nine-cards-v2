@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.api.rest.client.http
+package cards.nine.api.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
-import com.fortysevendeg.ninecardslauncher.api.rest.client.SampleRequest
+import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.api.rest.client.SampleRequest
 import okhttp3.Request
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito

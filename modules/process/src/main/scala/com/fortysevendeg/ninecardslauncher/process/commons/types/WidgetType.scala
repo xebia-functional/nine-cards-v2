@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.commons.types
+package cards.nine.process.commons.types
 
-import com.fortysevendeg.ninecardslauncher.process.commons.WidgetTypes._
+import cards.nine.process.commons.WidgetTypes._
 
 sealed trait WidgetType {
   val name: String

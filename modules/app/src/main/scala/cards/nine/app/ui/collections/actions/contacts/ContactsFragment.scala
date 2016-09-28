@@ -1,16 +1,16 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
+package cards.nine.app.ui.collections.actions.contacts
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view._
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactPermissionException, ContactsFilter}
+import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.ui.collections.jobs.GroupCollectionsUiListener
+import cards.nine.app.ui.commons.RequestCodes
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.actions.BaseActionFragment
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.device.{AllContacts, ContactPermissionException, ContactsFilter}
 import com.fortysevendeg.ninecardslauncher2.R
 
 class ContactsFragment

@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.process.device.impl
+package cards.nine.process.device.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.device.{DeviceConversions, DeviceProcess, ImplicitsDeviceException, WidgetException}
-import com.fortysevendeg.ninecardslauncher.services.persistence.OrderByName
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.process.device.{DeviceConversions, DeviceProcess, ImplicitsDeviceException, WidgetException}
+import cards.nine.services.persistence.OrderByName
+import cards.nine.commons.services.TaskService._
 
 
 trait WidgetsDeviceProcessImpl extends DeviceProcess {

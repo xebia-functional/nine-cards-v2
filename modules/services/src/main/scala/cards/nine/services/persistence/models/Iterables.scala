@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.models
+package cards.nine.services.persistence.models
 
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, DockApp => RepositoryDockApp}
-import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.{AppConversions, DockAppConversions}
+import cards.nine.commons.contentresolver.IterableCursor
+import cards.nine.repository.model.{App => RepositoryApp, DockApp => RepositoryDockApp}
+import cards.nine.services.persistence.conversions.{AppConversions, DockAppConversions}
 
 class IterableApps(cursor: IterableCursor[RepositoryApp])
   extends IterableCursor[App]

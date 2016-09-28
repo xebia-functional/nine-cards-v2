@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
+package cards.nine.app.ui.collections.jobs
 
-import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import cards.nine.app.commons.{Conversions, NineCardIntentConversions}
+import cards.nine.app.ui.commons.Jobs
+import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.commons.services.TaskService._
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.process.commons.types.AppCardType
 import macroid.ActivityContextWrapper
 
 class SharedCollectionJobs(actions: SharedCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)

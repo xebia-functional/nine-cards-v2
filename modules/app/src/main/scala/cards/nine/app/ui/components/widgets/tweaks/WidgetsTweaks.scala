@@ -1,12 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks
+package cards.nine.app.ui.components.widgets.tweaks
 
 import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.animation.AnimationUtils
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.snails.RippleBackgroundSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.components.widgets._
+import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
+import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global

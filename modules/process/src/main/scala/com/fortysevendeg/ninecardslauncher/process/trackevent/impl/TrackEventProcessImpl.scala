@@ -1,14 +1,14 @@
-package com.fortysevendeg.ninecardslauncher.process.trackevent.impl
+package cards.nine.process.trackevent.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.process.commons.types.Game
-import com.fortysevendeg.ninecardslauncher.process.trackevent._
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService._
+import cards.nine.commons.services.TaskService
+import cards.nine.process.commons.types.Game
+import cards.nine.process.trackevent._
 import monix.eval.Task
 import cats.implicits._
-import com.fortysevendeg.ninecardslauncher.process.trackevent.models._
-import com.fortysevendeg.ninecardslauncher.services.track.{TrackEvent, TrackServices}
+import cards.nine.process.trackevent.models._
+import cards.nine.services.track.{TrackEvent, TrackServices}
 
 class TrackEventProcessImpl(trackServices: TrackServices)
   extends TrackEventProcess

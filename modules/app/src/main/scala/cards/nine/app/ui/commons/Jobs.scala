@@ -1,17 +1,17 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package cards.nine.app.ui.commons
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
-import com.fortysevendeg.ninecardslauncher.app.commons.BroadcastDispatcher._
-import com.fortysevendeg.ninecardslauncher.app.commons._
-import com.fortysevendeg.ninecardslauncher.app.di.{Injector, InjectorImpl}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.app.commons.BroadcastDispatcher._
+import cards.nine.app.commons._
+import cards.nine.app.di.{Injector, InjectorImpl}
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
+import cards.nine.commons.CatchAll
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.theme.models.NineCardsTheme
 import macroid.ContextWrapper
 import monix.eval.Task
 

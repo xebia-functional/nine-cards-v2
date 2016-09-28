@@ -1,7 +1,7 @@
 package com.fortysevendeg.repository.card
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{CardsWithCollectionId, CardData, Card}
-import com.fortysevendeg.ninecardslauncher.repository.provider.{CardEntityData, CardEntity}
+import cards.nine.repository.model.{CardsWithCollectionId, CardData, Card}
+import cards.nine.repository.provider.{CardEntityData, CardEntity}
 
 import scala.util.Random
 

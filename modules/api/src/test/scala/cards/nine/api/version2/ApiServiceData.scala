@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.api.version2
+package cards.nine.api.version2
 
 import scala.util.Random
 

@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.drive
+package cards.nine.services.drive
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 import com.google.android.gms.common.ConnectionResult
 
 sealed trait GoogleDriveError

@@ -1,15 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.services.image.impl
+package cards.nine.services.image.impl
 
 import java.io.{File, FileOutputStream, InputStream}
 import java.net.URL
 
 import android.graphics._
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
+import cards.nine.commons.CatchAll
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.services.image._
+import cards.nine.services.utils.ResourceUtils
 
 
 trait ImageServicesTasks

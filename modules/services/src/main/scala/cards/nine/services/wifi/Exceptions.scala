@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.wifi
+package cards.nine.services.wifi
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class WifiServicesException(message: String, cause : Option[Throwable] = None)
   extends RuntimeException(message)

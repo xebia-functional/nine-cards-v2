@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.services.wifi
+package cards.nine.services.wifi
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.TaskService
 
 trait WifiServices {
 

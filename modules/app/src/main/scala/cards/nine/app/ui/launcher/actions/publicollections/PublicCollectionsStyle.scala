@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections
+package cards.nine.app.ui.launcher.actions.publicollections
 
 import android.view.Gravity
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

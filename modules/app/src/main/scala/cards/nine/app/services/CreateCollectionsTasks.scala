@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.app.services
+package cards.nine.app.services
 
-import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.{GetByName, ImplicitsDeviceException}
+import cards.nine.app.commons.{Conversions, NineCardIntentConversions}
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.cloud.Conversions._
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.device.{GetByName, ImplicitsDeviceException}
 import com.google.android.gms.common.api.GoogleApiClient
 
 trait CreateCollectionsTasks

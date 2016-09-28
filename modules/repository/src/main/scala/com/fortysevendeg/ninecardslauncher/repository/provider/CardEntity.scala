@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.repository.provider
+package cards.nine.repository.provider
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.repository.Conversions._
-import com.fortysevendeg.ninecardslauncher.repository.model.Card
+import cards.nine.repository.Conversions._
+import cards.nine.repository.model.Card
 
 case class CardEntity(id: Int, data: CardEntityData)
 

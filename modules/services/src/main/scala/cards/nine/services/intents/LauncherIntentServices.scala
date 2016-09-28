@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.intents
+package cards.nine.services.intents
 
 import android.content.Intent
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.services.intents.models.IntentAction
+import cards.nine.commons.contexts.ActivityContextSupport
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.services.intents.models.IntentAction
 
 trait LauncherIntentServices {
 

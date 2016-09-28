@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
+package cards.nine.app.ui.launcher.actions.privatecollections
 
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, ViewGroup}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollection
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.process.commons.models.PrivateCollection
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TR
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import macroid.ActivityContextWrapper

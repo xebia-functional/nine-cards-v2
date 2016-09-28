@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.commons.types
+package cards.nine.process.commons.types
 
-import com.fortysevendeg.ninecardslauncher.process.commons.CardTypes._
+import cards.nine.process.commons.CardTypes._
 
 sealed trait CardType {
   val name: String

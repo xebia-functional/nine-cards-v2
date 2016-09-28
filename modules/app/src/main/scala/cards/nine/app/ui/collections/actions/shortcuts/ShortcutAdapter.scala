@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
+package cards.nine.app.ui.collections.actions.shortcuts
 
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import cards.nine.process.device.models.Shortcut
+import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._

@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.contacts
+package cards.nine.services.contacts
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class ContactsServiceException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)

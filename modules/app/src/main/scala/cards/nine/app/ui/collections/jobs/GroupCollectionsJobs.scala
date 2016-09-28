@@ -1,20 +1,20 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
+package cards.nine.app.ui.collections.jobs
 
 import android.content.Intent
 import android.graphics.Bitmap
 import cats.implicits._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{JobException, Jobs, RequestCodes}
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.Theme
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{TaskService, _}
-import com.fortysevendeg.ninecardslauncher.process.accounts.CallPhone
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{MomentCollectionType, ShortcutCardType}
+import cards.nine.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
+import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
+import cards.nine.app.ui.commons.{JobException, Jobs, RequestCodes}
+import cards.nine.app.ui.preferences.commons.Theme
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.process.accounts.CallPhone
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types.{MomentCollectionType, ShortcutCardType}
 import macroid.ActivityContextWrapper
 
 class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)

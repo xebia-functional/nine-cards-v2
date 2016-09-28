@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.process.recommendations
+package cards.nine.process.recommendations
 
-import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.services.api.RecommendationApp
+import cards.nine.process.recommendations.models.RecommendedApp
+import cards.nine.services.api.RecommendationApp
 
 trait Conversions {
 

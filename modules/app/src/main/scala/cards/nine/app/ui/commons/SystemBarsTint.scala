@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package cards.nine.app.ui.commons
 
 import android.graphics.Color
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.ninecardslauncher.utils.SystemBarTintManager
+import cards.nine.utils.SystemBarTintManager
 import macroid.{ActivityContextWrapper, Ui}
 
 class SystemBarsTint(implicit activityContextWrapper: ActivityContextWrapper) {

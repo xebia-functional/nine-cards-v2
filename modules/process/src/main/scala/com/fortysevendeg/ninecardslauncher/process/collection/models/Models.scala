@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.process.collection.models
+package cards.nine.process.collection.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{FormedWidget, MomentTimeSlot}
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import cards.nine.process.commons.models.{FormedWidget, MomentTimeSlot}
+import cards.nine.process.commons.types._
 
 case class UnformedApp(
   name: String,

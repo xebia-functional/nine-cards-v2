@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.theme.models
+package cards.nine.process.theme.models
 
 import android.graphics.Color
 import play.api.libs.json._

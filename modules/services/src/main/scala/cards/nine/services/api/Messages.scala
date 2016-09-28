@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.api
+package cards.nine.services.api
 
-import com.fortysevendeg.ninecardslauncher.services.api.models._
+import cards.nine.services.api.models._
 
 case class RequestConfigV1(deviceId: String, token: String, marketToken: Option[String])
 

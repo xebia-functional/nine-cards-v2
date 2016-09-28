@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.process.trackevent
+package cards.nine.process.trackevent
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.trackevent.models.{Category, MomentCategory}
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.trackevent.models.{Category, MomentCategory}
 
 trait TrackEventProcess {
 

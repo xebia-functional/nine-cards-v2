@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.commons.utils.impl
+package cards.nine.commons.utils.impl
 
 import java.io._
 import java.util.zip.{GZIPOutputStream, GZIPInputStream}
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.utils.StreamWrapper
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.utils.StreamWrapper
 
 import scala.io.Source
 

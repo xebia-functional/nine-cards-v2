@@ -1,67 +1,67 @@
-package com.fortysevendeg.ninecardslauncher.app.di
+package cards.nine.app.di
 
 import android.content.res.Resources
 import android.support.v4.content.ContextCompat
 import com.facebook.stetho.okhttp3.StethoInterceptor
-import com.fortysevendeg.ninecardslauncher.api._
-import com.fortysevendeg.ninecardslauncher.api.version2.ApiService
-import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.accounts.UserAccountsProcess
-import com.fortysevendeg.ninecardslauncher.process.accounts.impl.UserAccountsProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
-import com.fortysevendeg.ninecardslauncher.process.cloud.impl.CloudStorageProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.collection.impl.CollectionProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcess, CollectionProcessConfig}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NineCardsMoment}
-import com.fortysevendeg.ninecardslauncher.process.device.DeviceProcess
-import com.fortysevendeg.ninecardslauncher.process.device.impl.DeviceProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.intents.impl.LauncherExecutorProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig}
-import com.fortysevendeg.ninecardslauncher.process.moment.impl.MomentProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.moment.{MomentProcess, MomentProcessConfig}
-import com.fortysevendeg.ninecardslauncher.process.recognition.RecognitionProcess
-import com.fortysevendeg.ninecardslauncher.process.recognition.impl.RecognitionProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendationsProcess
-import com.fortysevendeg.ninecardslauncher.process.recommendations.impl.RecommendationsProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsProcess
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl.SharedCollectionsProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.social.SocialProfileProcess
-import com.fortysevendeg.ninecardslauncher.process.social.impl.SocialProfileProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.theme.ThemeProcess
-import com.fortysevendeg.ninecardslauncher.process.theme.impl.ThemeProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.trackevent.TrackEventProcess
-import com.fortysevendeg.ninecardslauncher.process.trackevent.impl.TrackEventProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.user.UserProcess
-import com.fortysevendeg.ninecardslauncher.process.user.impl.UserProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Process
-import com.fortysevendeg.ninecardslauncher.process.userv1.impl.UserV1ProcessImpl
-import com.fortysevendeg.ninecardslauncher.process.widget.WidgetProcess
-import com.fortysevendeg.ninecardslauncher.process.widget.impl.WidgetProcessImpl
-import com.fortysevendeg.ninecardslauncher.repository.repositories._
-import com.fortysevendeg.ninecardslauncher.services.analytics.impl.AnalyticsTrackServices
-import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
-import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.awareness.impl.GoogleAwarenessServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.calls.impl.CallsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.contacts.impl.ContactsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.image.ImageServicesConfig
-import com.fortysevendeg.ninecardslauncher.services.image.impl.ImageServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.intents.impl.LauncherIntentServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.permissions.impl.AndroidSupportPermissionsServices
-import com.fortysevendeg.ninecardslauncher.services.persistence.impl.PersistenceServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.plus.impl.GooglePlusServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.impl.ShortcutsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.track.impl.ConsoleTrackServices
-import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
-import com.fortysevendeg.ninecardslauncher.services.wifi.impl.WifiServicesImpl
+import cards.nine.api._
+import cards.nine.api.version2.ApiService
+import cards.nine.app.observers.ObserverRegister
+import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.process.accounts.UserAccountsProcess
+import cards.nine.process.accounts.impl.UserAccountsProcessImpl
+import cards.nine.process.cloud.CloudStorageProcess
+import cards.nine.process.cloud.impl.CloudStorageProcessImpl
+import cards.nine.process.collection.impl.CollectionProcessImpl
+import cards.nine.process.collection.{CollectionProcess, CollectionProcessConfig}
+import cards.nine.process.commons.types.NineCardCategory._
+import cards.nine.process.commons.types.NineCardsMoment._
+import cards.nine.process.commons.types.{NineCardCategory, NineCardsMoment}
+import cards.nine.process.device.DeviceProcess
+import cards.nine.process.device.impl.DeviceProcessImpl
+import cards.nine.process.intents.impl.LauncherExecutorProcessImpl
+import cards.nine.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig}
+import cards.nine.process.moment.impl.MomentProcessImpl
+import cards.nine.process.moment.{MomentProcess, MomentProcessConfig}
+import cards.nine.process.recognition.RecognitionProcess
+import cards.nine.process.recognition.impl.RecognitionProcessImpl
+import cards.nine.process.recommendations.RecommendationsProcess
+import cards.nine.process.recommendations.impl.RecommendationsProcessImpl
+import cards.nine.process.sharedcollections.SharedCollectionsProcess
+import cards.nine.process.sharedcollections.impl.SharedCollectionsProcessImpl
+import cards.nine.process.social.SocialProfileProcess
+import cards.nine.process.social.impl.SocialProfileProcessImpl
+import cards.nine.process.theme.ThemeProcess
+import cards.nine.process.theme.impl.ThemeProcessImpl
+import cards.nine.process.trackevent.TrackEventProcess
+import cards.nine.process.trackevent.impl.TrackEventProcessImpl
+import cards.nine.process.user.UserProcess
+import cards.nine.process.user.impl.UserProcessImpl
+import cards.nine.process.userv1.UserV1Process
+import cards.nine.process.userv1.impl.UserV1ProcessImpl
+import cards.nine.process.widget.WidgetProcess
+import cards.nine.process.widget.impl.WidgetProcessImpl
+import cards.nine.repository.repositories._
+import cards.nine.services.analytics.impl.AnalyticsTrackServices
+import cards.nine.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
+import cards.nine.services.apps.impl.AppsServicesImpl
+import cards.nine.services.awareness.impl.GoogleAwarenessServicesImpl
+import cards.nine.services.calls.impl.CallsServicesImpl
+import cards.nine.services.contacts.impl.ContactsServicesImpl
+import cards.nine.services.drive.impl.DriveServicesImpl
+import cards.nine.services.image.ImageServicesConfig
+import cards.nine.services.image.impl.ImageServicesImpl
+import cards.nine.services.intents.impl.LauncherIntentServicesImpl
+import cards.nine.services.permissions.impl.AndroidSupportPermissionsServices
+import cards.nine.services.persistence.impl.PersistenceServicesImpl
+import cards.nine.services.plus.impl.GooglePlusServicesImpl
+import cards.nine.services.shortcuts.impl.ShortcutsServicesImpl
+import cards.nine.services.track.impl.ConsoleTrackServices
+import cards.nine.services.widgets.impl.WidgetsServicesImpl
+import cards.nine.services.wifi.impl.WifiServicesImpl
 import com.fortysevendeg.ninecardslauncher2.R
-import com.fortysevendeg.ninecardslauncher.api.rest.client.ServiceClient
-import com.fortysevendeg.ninecardslauncher.api.rest.client.http.OkHttpClient
+import cards.nine.api.rest.client.ServiceClient
+import cards.nine.api.rest.client.http.OkHttpClient
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.common.api.GoogleApiClient

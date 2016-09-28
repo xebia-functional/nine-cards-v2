@@ -1,19 +1,19 @@
-package com.fortysevendeg.ninecardslauncher.process.collection
+package cards.nine.process.collection
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, PrivateCollection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.collection.models._
+import cards.nine.process.commons.models.{Card, Collection, PrivateCollection}
+import cards.nine.process.commons.types.NineCardCategory
 
 trait CollectionProcess {
 
   /**
     * Creates Collections with the apps installed in the device and their categories, finally it adds a Collection with the favourite contacts if it's possible
  *
-   * @param apps the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedApp] with the apps' data
-   * @param contacts the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedContact] with the contacts' data
-   * @return the List[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+   * @param apps the Seq[cards.nine.process.collection.models.UnformedApp] with the apps' data
+   * @param contacts the Seq[cards.nine.process.collection.models.UnformedContact] with the contacts' data
+   * @return the List[cards.nine.process.collection.models.Collection]
    * @throws CollectionException if there was an error creating the existing collections
    */
   def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport): TaskService[Seq[Collection]]
@@ -21,8 +21,8 @@ trait CollectionProcess {
   /**
     * Generate Private Collections with the apps installed in the device and their categories
  *
-    * @param apps the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedApp] with the apps' data
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.PrivateCollection]
+    * @param apps the Seq[cards.nine.process.collection.models.UnformedApp] with the apps' data
+    * @return the Seq[cards.nine.process.collection.PrivateCollection]
     * @throws CollectionException if there was an error creating the existing collections
     */
   def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport): TaskService[Seq[PrivateCollection]]
@@ -30,8 +30,8 @@ trait CollectionProcess {
   /**
    * Creates Collections from some already formed and given Collections
    *
-   * @param items the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.FormedCollection] of Collections
-   * @return the List[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+   * @param items the Seq[cards.nine.process.collection.models.FormedCollection] of Collections
+   * @return the List[cards.nine.process.collection.models.Collection]
    * @throws CollectionException if there was an error creating the collections
    */
   def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport): TaskService[Seq[Collection]]
@@ -39,7 +39,7 @@ trait CollectionProcess {
   /**
    * Gets the existing collections
    *
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+   * @return the Seq[cards.nine.process.collection.models.Collection]
    * @throws CollectionException if there was an error getting the existing collections
    */
   def getCollections: TaskService[Seq[Collection]]
@@ -47,7 +47,7 @@ trait CollectionProcess {
   /**
     * Get collection by collection id if exists
     *
-    * @return the Option[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+    * @return the Option[cards.nine.process.collection.models.Collection]
     * @throws CollectionException if there was an error getting the existing collections
     */
   def getCollectionById(id: Int): TaskService[Option[Collection]]
@@ -56,7 +56,7 @@ trait CollectionProcess {
     * Get collection by category if exists
     *
     * @param category category of collection
-    * @return the Option[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+    * @return the Option[cards.nine.process.collection.models.Collection]
     * @throws CollectionException if there was an error getting the existing collections
     */
   def getCollectionByCategory(category: NineCardCategory): TaskService[Option[Collection]]
@@ -65,7 +65,7 @@ trait CollectionProcess {
     * Get collection by his shared collection id if exists
     *
     * @param sharedCollectionId the shared collection id
-    * @return the Option[com.fortysevendeg.ninecardslauncher.process.collection.models.Collection]
+    * @return the Option[cards.nine.process.collection.models.Collection]
     * @throws CollectionException if there was an error getting the existing collections
     */
   def getCollectionBySharedCollectionId(sharedCollectionId: String): TaskService[Option[Collection]]
@@ -128,7 +128,7 @@ trait CollectionProcess {
     *
     * @param collectionId the Id of the Collection
     * @param packages the packages to be added to this collection
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Card] of the new cards
+    * @return the Seq[cards.nine.process.collection.models.Card] of the new cards
     * @throws CardException if there was an error getting the existing cards or adding the new one
     */
   def addPackages(collectionId: Int, packages: Seq[String])(implicit context: ContextSupport): TaskService[Unit]
@@ -136,7 +136,7 @@ trait CollectionProcess {
   /**
     * Rank all the packages grouped by its category
     *
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.PackagesByCategory] with the packages already ordered
+    * @return the Seq[cards.nine.process.collection.models.PackagesByCategory] with the packages already ordered
     * @throws CollectionException if there was an error getting the existing collections or getting the packages ordered
     */
   def rankApps()(implicit context: ContextSupport): TaskService[Seq[PackagesByCategory]]
@@ -145,8 +145,8 @@ trait CollectionProcess {
    * Adds some new Cards after the last existing one in a given Collection
    *
    * @param collectionId the Id of the Collection
-   * @param addCardListRequest the Seq[com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest] includes the necessary data to create a new Card (term, packageName, intent and imagePath)
-   * @return the Seq[com.fortysevendeg.ninecardslauncher.process.collection.models.Card] of the new cards
+   * @param addCardListRequest the Seq[cards.nine.process.collection.AddCardRequest] includes the necessary data to create a new Card (term, packageName, intent and imagePath)
+   * @return the Seq[cards.nine.process.collection.models.Card] of the new cards
    * @throws CardException if there was an error getting the existing cards or adding the new one
    */
   def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]): TaskService[Seq[Card]]

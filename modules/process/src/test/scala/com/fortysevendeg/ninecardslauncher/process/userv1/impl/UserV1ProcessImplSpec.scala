@@ -1,19 +1,19 @@
-package com.fortysevendeg.ninecardslauncher.process.userv1.impl
+package cards.nine.process.userv1.impl
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.process.userv1.UserV1Exception
+import cards.nine.services.api.{ApiServiceException, ApiServices}
+import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServices}
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import cats.syntax.either._
-import  com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import  cards.nine.commons.test.TaskServiceTestOps._
 
 
 trait UserV1ProcessSpecification
