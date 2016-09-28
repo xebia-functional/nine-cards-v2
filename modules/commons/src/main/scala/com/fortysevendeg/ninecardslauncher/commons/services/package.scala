@@ -3,6 +3,7 @@ package com.fortysevendeg.ninecardslauncher.commons
 import cats.data.EitherT
 import cats.{Functor, Monad}
 import monix.eval.Task
+import cats.syntax.either._
 
 import scala.language.{higherKinds, implicitConversions}
 
@@ -30,6 +31,12 @@ package object services {
     def apply[A](f: Task[NineCardException Either A]): TaskService[A] = {
       EitherT[Task, NineCardException, A](f)
     }
+
+    def empty: TaskService[Unit] = EitherT(Task(Either.right((): Unit)))
+
+    def left[A](ex: NineCardException): TaskService[A] = EitherT(Task(Either.left(ex)))
+
+    def right[A](value: A): TaskService[A] = EitherT(Task(Either.right(value)))
 
   }
 

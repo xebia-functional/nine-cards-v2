@@ -126,6 +126,14 @@ trait Conversions
       intent = toNineCardIntent(app),
       imagePath = None)
 
+  def toAddCardRequest(app: RecommendedApp): AddCardRequest =
+    AddCardRequest(
+      term = app.title,
+      packageName = Option(app.packageName),
+      cardType = AppCardType,
+      intent = toNineCardIntent(app),
+      imagePath = None)
+
   def toSaveDockAppRequest(cloudStorageDockApp: CloudStorageDockApp): SaveDockAppRequest =
     SaveDockAppRequest(
       name = cloudStorageDockApp.name,

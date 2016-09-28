@@ -64,12 +64,14 @@ import scala.concurrent.Future
 
 trait LauncherUiActionsImpl
   extends LauncherUiActions
-    with CollectionsUiActions
-    with DrawerUiActions {
+  with CollectionsUiActions
+  with DrawerUiActions {
 
-  self: TypedFindView with SystemBarsTint with Contexts[AppCompatActivity] =>
+  self: TypedFindView with Contexts[AppCompatActivity] =>
 
   lazy val preferenceValues = new NineCardsPreferencesValue
+
+  lazy val systemBarsTint = new SystemBarsTint
 
   implicit val uiContext: UiContext[Activity]
 
@@ -98,10 +100,8 @@ trait LauncherUiActionsImpl
   val tagDialog = "dialog"
 
   override def initialize: Ui[Any] =
-    Ui {
-      appWidgetHost.startListening()
-      initAllSystemBarsTint
-    } ~
+    Ui (appWidgetHost.startListening()) ~
+      systemBarsTint.initAllSystemBarsTint() ~
       prepareBars ~
       initCollectionsUi ~
       initDrawerUi ~
@@ -193,7 +193,7 @@ trait LauncherUiActionsImpl
 
     def rippleToCollection: Ui[Future[Any]] = {
       val color = resGetColor(getIndexColor(collection.themedColorIndex))
-      val y = KitKat.ifSupportedThen(point.y - getStatusBarHeight) getOrElse point.y
+      val y = KitKat.ifSupportedThen(point.y - systemBarsTint.getStatusBarHeight) getOrElse point.y
       val background = new RippleCollectionDrawable(point.x, y, color)
       (foreground <~
         vVisible <~
@@ -526,12 +526,6 @@ trait LauncherUiActionsImpl
 
   override def isEmptyCollectionsInWorkspace: Boolean = isEmptyCollections
 
-  override def turnOffFragmentContent: Ui[Any] = {
-    val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
-    (fragmentContent <~ vClickable(false)) ~
-      (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))
-  }
-
   override def reloadDrawerApps(): Ui[Any] = loadAppsAlphabetical
 
   override def reloadDrawerContacts(): Ui[Any] = reloadContacts
@@ -543,6 +537,12 @@ trait LauncherUiActionsImpl
       imageView <~ vActivated(true) <~~ pagerAppear
     case imageView: ImageView =>
       imageView <~ vActivated(false)
+  }
+
+  private[this] def turnOffFragmentContent: Ui[Any] = {
+    val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
+    (fragmentContent <~ vClickable(false)) ~
+      (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))
   }
 
   private[this] def reloadEdges(): Ui[Any] = {
@@ -560,8 +560,8 @@ trait LauncherUiActionsImpl
     KitKat.ifSupportedThen {
       val activity = activityContextWrapper.getOriginal
       val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
-      val sbHeight = getStatusBarHeight
-      val nbHeight = getNavigationBarHeight
+      val sbHeight = systemBarsTint.getStatusBarHeight
+      val nbHeight = systemBarsTint.getNavigationBarHeight
       val elevation = resGetDimensionPixelSize(R.dimen.elevation_fab_button)
       Ui(activity.getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
         (content <~ vPadding(0, sbHeight, 0, nbHeight)) ~
@@ -585,8 +585,8 @@ trait LauncherUiActionsImpl
         val dragArea = v.getField[DragArea](dragAreaKey) getOrElse NoDragArea
         (event.getAction, (topBarPanel ~> height).get, (dockAppsPanel ~> height).get) match {
           case (_, Some(topBar), Some(bottomBar)) =>
-            val height = KitKat.ifSupportedThen(view.getHeight - getStatusBarHeight) getOrElse view.getHeight
-            val top = KitKat.ifSupportedThen(topBar + getStatusBarHeight) getOrElse topBar
+            val height = KitKat.ifSupportedThen(view.getHeight - systemBarsTint.getStatusBarHeight) getOrElse view.getHeight
+            val top = KitKat.ifSupportedThen(topBar + systemBarsTint.getStatusBarHeight) getOrElse topBar
             // Project location to views
             val x = event.getX
             val y = event.getY
