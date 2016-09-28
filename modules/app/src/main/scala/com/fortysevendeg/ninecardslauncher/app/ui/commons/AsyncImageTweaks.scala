@@ -91,10 +91,9 @@ object AsyncImageTweaks {
   def ivCardUri(uri: Option[String], name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
-        loadCardUri(
+        loadCardRequest(
           imageView = imageView,
-          request = glide.load(uri),
-          maybeUri = uri,
+          maybeRequest = uri map glide.load,
           char = name.substring(0, 1),
           circular = circular)
       }
@@ -146,16 +145,15 @@ object AsyncImageTweaks {
       }
     }.toOption
 
-  private[this] def loadCardUri(
+  private[this] def loadCardRequest(
     imageView: ImageView,
-    request: DrawableTypeRequest[_],
-    maybeUri: Option[String],
+    maybeRequest: Option[DrawableTypeRequest[_]],
     char: String,
     circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]) = {
-    maybeUri match {
-      case Some(uri) if new File(uri).exists() =>
+    maybeRequest match {
+      case Some(request)  =>
         makeRequest(request = request, imageView = imageView, char = char, circular = circular)
-      case _ => (imageView <~ ivSrc(new CharDrawable(char, circle = circular))).run
+      case _ => (imageView <~ ivSrc(CharDrawable(char, circle = circular))).run
     }
   }
 
@@ -171,7 +169,7 @@ object AsyncImageTweaks {
         override def onLoadStarted(placeholder: Drawable): Unit =
           view.setImageDrawable(javaNull)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-          (view <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
+          (view <~ ivSrc(CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
           view.setImageDrawable(resource.getCurrent)
       })
