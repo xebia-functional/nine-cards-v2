@@ -1,19 +1,19 @@
-package com.fortysevendeg.ninecardslauncher.repository.repositories
+package cards.nine.repository.repositories
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.repository.Conversions.toWidget
-import com.fortysevendeg.ninecardslauncher.repository.model.{Widget, WidgetData}
-import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
-import com.fortysevendeg.ninecardslauncher.repository.provider.WidgetEntity._
-import com.fortysevendeg.ninecardslauncher.repository.provider.{NineCardsUri, WidgetEntity}
-import com.fortysevendeg.ninecardslauncher.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import cards.nine.commons.CatchAll
+import cards.nine.commons.contentresolver.Conversions._
+import cards.nine.commons.contentresolver.IterableCursor._
+import cards.nine.commons.contentresolver.NotificationUri._
+import cards.nine.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.repository.Conversions.toWidget
+import cards.nine.repository.model.{Widget, WidgetData}
+import cards.nine.repository.provider.NineCardsUri._
+import cards.nine.repository.provider.WidgetEntity._
+import cards.nine.repository.provider.{NineCardsUri, WidgetEntity}
+import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scala.language.postfixOps
 

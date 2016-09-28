@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.accounts
+package cards.nine.process.accounts
 
 sealed trait AppPermission {
   val value: String

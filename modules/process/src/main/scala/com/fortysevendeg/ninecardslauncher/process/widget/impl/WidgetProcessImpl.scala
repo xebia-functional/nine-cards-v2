@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.process.widget.impl
+package cards.nine.process.widget.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, _}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
-import com.fortysevendeg.ninecardslauncher.services.persistence.{DeleteWidgetRequest => ServicesDeleteWidgetRequest, _}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.process.widget.{AddWidgetRequest, _}
+import cards.nine.process.widget.models.AppWidget
+import cards.nine.services.persistence.{DeleteWidgetRequest => ServicesDeleteWidgetRequest, _}
+import cards.nine.commons.services.TaskService._
 
 
 class WidgetProcessImpl(

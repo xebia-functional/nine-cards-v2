@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.services.wifi.impl
+package cards.nine.services.wifi.impl
 
 import android.content.Context
 import android.net.wifi.{WifiConfiguration, WifiInfo, WifiManager}
 import android.net.{ConnectivityManager, NetworkInfo}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.javaNull
+import cards.nine.commons.test.TaskServiceTestOps._
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

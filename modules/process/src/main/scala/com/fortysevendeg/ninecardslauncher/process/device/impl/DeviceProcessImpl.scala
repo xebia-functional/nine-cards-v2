@@ -1,17 +1,17 @@
-package com.fortysevendeg.ninecardslauncher.process.device.impl
+package cards.nine.process.device.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.apps.AppsServices
-import com.fortysevendeg.ninecardslauncher.services.calls.CallsServices
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
-import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, PersistenceServices}
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutsServices
-import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetsServices
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.process.device._
+import cards.nine.services.api._
+import cards.nine.services.apps.AppsServices
+import cards.nine.services.calls.CallsServices
+import cards.nine.services.contacts.ContactsServices
+import cards.nine.services.image._
+import cards.nine.services.persistence.{ImplicitsPersistenceServiceExceptions, PersistenceServices}
+import cards.nine.services.shortcuts.ShortcutsServices
+import cards.nine.services.widgets.WidgetsServices
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.services.wifi.WifiServices
 
 class DeviceProcessImpl(
   val appsServices: AppsServices,

@@ -1,23 +1,23 @@
-package com.fortysevendeg.ninecardslauncher.app.services
+package cards.nine.app.services
 
 import android.app.{IntentService, Service}
 import android.content.{Context, Intent}
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, BroadcastDispatcher, ContextSupportProvider}
-import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
-import com.fortysevendeg.ninecardslauncher.app.observers.NineCardsObserver._
-import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, SyncDeviceState}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{PublishedByMe, AppCardType}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.UpdateSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.app.commons.{BroadAction, BroadcastDispatcher, ContextSupportProvider}
+import cards.nine.app.di.InjectorImpl
+import cards.nine.app.observers.NineCardsObserver._
+import cards.nine.app.services.commons.GoogleDriveApiClientService
+import cards.nine.app.ui.commons.AppLog._
+import cards.nine.app.ui.commons.{AppLog, SyncDeviceState}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.action_filters._
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons._
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.cloud.Conversions._
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.{PublishedByMe, AppCardType}
+import cards.nine.process.sharedcollections.models.UpdateSharedCollection
+import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts

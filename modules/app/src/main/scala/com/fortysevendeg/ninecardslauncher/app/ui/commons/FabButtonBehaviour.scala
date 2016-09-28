@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package cards.nine.app.ui.commons
 
 import android.os.Handler
 import android.support.design.widget.FloatingActionButton
@@ -11,14 +11,14 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FabItemMenu
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.FabButtonTags._
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
+import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import cards.nine.app.ui.components.layouts.FabItemMenu
+import cards.nine.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

@@ -1,13 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.services.apps.impl
+package cards.nine.services.apps.impl
 
 import android.content.Intent
 import android.content.pm.{PackageManager, ResolveInfo}
 import android.provider.MediaStore
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.{CatchAll, javaNull}
-import com.fortysevendeg.ninecardslauncher.services.apps._
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.{CatchAll, javaNull}
+import cards.nine.services.apps._
+import cards.nine.services.apps.models.Application
 
 import scala.collection.JavaConversions._
 

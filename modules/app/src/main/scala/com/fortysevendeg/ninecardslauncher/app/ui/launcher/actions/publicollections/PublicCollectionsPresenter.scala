@@ -1,15 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.publicollections
+package cards.nine.app.ui.launcher.actions.publicollections
 
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
+import cards.nine.app.commons.Conversions
+import cards.nine.app.ui.collections.tasks.CollectionJobs
+import cards.nine.app.ui.commons.{AppLog, Jobs}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.{Communication, NineCardCategory}
+import cards.nine.process.sharedcollections.models.SharedCollection
+import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 

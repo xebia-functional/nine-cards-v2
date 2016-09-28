@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.widgets.utils
+package cards.nine.services.widgets.utils
 
-import com.fortysevendeg.ninecardslauncher.services.widgets.models.Widget
+import cards.nine.services.widgets.models.Widget
 
 trait AppWidgetManagerCompat {
 

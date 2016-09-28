@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.tweaks
+package cards.nine.app.ui.components.drawables.tweaks
 
 import android.widget.ImageView
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.PathMorphDrawable
+import cards.nine.app.ui.components.drawables.PathMorphDrawable
 import macroid.Tweak
 
 import scala.util.Try

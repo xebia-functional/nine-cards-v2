@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.awareness.impl
+package cards.nine.services.awareness.impl
 
-import com.fortysevendeg.ninecardslauncher.services.awareness._
+import cards.nine.services.awareness._
 import com.google.android.gms.awareness.state.Weather._
 import com.google.android.gms.location.DetectedActivity._
 

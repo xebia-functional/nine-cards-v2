@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package cards.nine.app.ui.commons
 
 import android.content.Context
 import android.content.res.ColorStateList
@@ -8,7 +8,7 @@ import android.graphics.{Paint, PorterDuff}
 import android.os.Vibrator
 import android.support.design.widget.{TabLayout, Snackbar}
 import android.view.{MotionEvent, View, ViewGroup}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.ColorOps._
 import android.support.v4.view.{GravityCompat, ViewPager}
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
@@ -25,13 +25,13 @@ import android.widget._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.adapters.ThemeArrayAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerBackgroundDrawable
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, NineCardsTheme}
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
+import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
+import cards.nine.commons._
+import cards.nine.process.theme.models.{DrawerIconColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.process.collection
+package cards.nine.process.collection
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, CollectionType, NineCardCategory, NineCardsMoment}
+import cards.nine.process.commons.models.NineCardIntent
+import cards.nine.process.commons.types.{CardType, CollectionType, NineCardCategory, NineCardsMoment}
 
 case class CollectionProcessConfig(
   namesCategories: Map[NineCardCategory, String])

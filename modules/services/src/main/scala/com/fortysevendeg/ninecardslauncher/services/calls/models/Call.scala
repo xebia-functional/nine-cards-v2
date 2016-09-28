@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.calls.models
+package cards.nine.services.calls.models
 
-import com.fortysevendeg.ninecardslauncher.services.commons.PhoneCategory
+import cards.nine.services.commons.PhoneCategory
 
 case class Call(
   number: String,

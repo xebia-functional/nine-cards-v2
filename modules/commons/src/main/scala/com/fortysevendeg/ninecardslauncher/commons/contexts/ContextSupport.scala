@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.commons.contexts
+package cards.nine.commons.contexts
 
 import java.io.File
 

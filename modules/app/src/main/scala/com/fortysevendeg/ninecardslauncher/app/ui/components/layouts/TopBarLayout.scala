@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.content.Context
 import android.util.AttributeSet
@@ -9,19 +9,19 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ConditionWeatherOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.NineCardsMomentOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher.process.recognition._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
+import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
+import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.preferences.commons._
+import cards.nine.commons._
+import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.process.recognition._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

@@ -1,15 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.services.image.impl
+package cards.nine.services.image.impl
 
 import java.io.{File, FileOutputStream, InputStream}
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.services.image.{BitmapTransformationException, FileException}
-import com.fortysevendeg.ninecardslauncher.services.utils.ResourceUtils
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.javaNull
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.services.image.{BitmapTransformationException, FileException}
+import cards.nine.services.utils.ResourceUtils
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

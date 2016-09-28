@@ -1,14 +1,14 @@
-package com.fortysevendeg.ninecardslauncher.app.receivers.jobs
+package cards.nine.app.receivers.jobs
 
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppUninstalledActionFilter, AppUpdatedActionFilter}
+import cards.nine.app.commons.{BroadAction, Conversions}
+import cards.nine.app.ui.commons.Jobs
+import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppUninstalledActionFilter, AppUpdatedActionFilter}
 import macroid.ContextWrapper
 import cats.implicits._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.device.models.App
 import monix.eval.Task
 
 class AppBroadcastJobs(implicit contextWrapper: ContextWrapper)

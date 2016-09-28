@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.publishcollection
+package cards.nine.app.ui.collections.dialog.publishcollection
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
+import cards.nine.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 
 trait PublishCollectionDOM {

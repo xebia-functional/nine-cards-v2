@@ -1,17 +1,17 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
+package cards.nine.app.ui.collections.jobs
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.widget.Toolbar
 import android.view.View
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.snails.CollectionsSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{TranslationAnimator, TranslationY}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.app.ui.collections.snails.CollectionsSnails._
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext}
+import cards.nine.app.ui.components.commons.{TranslationAnimator, TranslationY}
+import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

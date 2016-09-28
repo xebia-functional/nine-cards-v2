@@ -1,21 +1,21 @@
-package com.fortysevendeg.ninecardslauncher.process.collection.impl
+package cards.nine.process.collection.impl
 
-import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, AddCardRequest, AddCollectionRequest, EditCollectionRequest}
-import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.commons.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.CardType._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.services.api.{RankAppsResponse, RankAppsResponseList, CategorizedDetailPackage}
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessLocation
-import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
+import cards.nine.process.collection.models._
+import cards.nine.process.collection.{CollectionProcessConfig, AddCardRequest, AddCollectionRequest, EditCollectionRequest}
+import cards.nine.process.commons.Spaces._
+import cards.nine.process.commons.models.NineCardIntentImplicits._
+import cards.nine.process.commons.models._
+import cards.nine.process.commons.types.CardType._
+import cards.nine.process.commons.types.CollectionType._
+import cards.nine.process.commons.types.NineCardCategory._
+import cards.nine.process.commons.types._
+import cards.nine.services.api.{RankAppsResponse, RankAppsResponseList, CategorizedDetailPackage}
+import cards.nine.services.apps.models.Application
+import cards.nine.services.awareness.AwarenessLocation
+import cards.nine.services.commons.PhoneHome
+import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
+import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
+import cards.nine.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -560,13 +560,11 @@ trait CollectionProcessImplData {
         name = "nameUnformed0",
         packageName = "package.name.0",
         className = "classNameUnformed0",
-        imagePath = "imagePathUnformed0",
         category = appsCategories(0)),
       UnformedApp(
         name = "nameUnformed1",
         packageName = "package.name.1",
         className = "classNameUnformed1",
-        imagePath = "imagePathUnformed1",
         category = appsCategories(1)))
 
   val appsByCategory0: Seq[UnformedApp] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
@@ -590,7 +588,7 @@ trait CollectionProcessImplData {
             intent = NineCardIntent(NineCardIntentExtras(
               package_name = Option("package.name.0"),
               class_name = Option("classNameUnformed0"))),
-            imagePath = "imagePathUnformed0"
+            imagePath = Some("imagePathUnformed0")
           )),
         moment = None),
       PrivateCollection(
@@ -607,7 +605,7 @@ trait CollectionProcessImplData {
             intent = NineCardIntent(NineCardIntentExtras(
               package_name = Option("package.name.1"),
               class_name = Option("classNameUnformed1"))),
-            imagePath = "imagePathUnformed1"
+            imagePath = Some("imagePathUnformed1")
           )),
         moment = None)
     )

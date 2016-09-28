@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.services.api
+package cards.nine.services.api
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.services.api.models._
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.services.api.models._
 
 trait ApiServices {
 
@@ -9,7 +9,7 @@ trait ApiServices {
    * Tries to login with the email and the device against backend V1
    * @param email user email
    * @param device user device
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponseV1]]
+   * @return the [[cards.nine.services.api.LoginResponseV1]]
    * @throws ApiServiceV1ConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if the user is not found or the request throws an Exception
    */
@@ -18,9 +18,9 @@ trait ApiServices {
     device: LoginV1Device): TaskService[LoginResponseV1]
 
   /**
-    * Fetches the user configuration associated to the user identified by the data in [[com.fortysevendeg.ninecardslauncher.services.api.RequestConfigV1]]
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GetUserV1Response]] with the HTTP Code
-    *         of the response and the [[com.fortysevendeg.ninecardslauncher.services.api.models.UserV1]]
+    * Fetches the user configuration associated to the user identified by the data in [[cards.nine.services.api.RequestConfigV1]]
+    * @return the [[cards.nine.services.api.GetUserV1Response]] with the HTTP Code
+    *         of the response and the [[cards.nine.services.api.models.UserV1]]
     * @throws ApiServiceV1ConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
@@ -31,7 +31,7 @@ trait ApiServices {
     * @param email user email
     * @param androidId device identifier
     * @param tokenId token id obtained in the email authentication
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.LoginResponse]]
+    * @return the [[cards.nine.services.api.LoginResponse]]
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user is not found or the request throws an Exception
     */
@@ -44,7 +44,7 @@ trait ApiServices {
    * Updates an existing user installation
    * @param deviceToken the token used for push notification
    * @param requestConfig necessary info for the headers
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UpdateInstallationResponse]] with the HTTP Code
+   * @return the [[cards.nine.services.api.UpdateInstallationResponse]] with the HTTP Code
    *         of the response
    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if there was an error in the request
@@ -53,10 +53,10 @@ trait ApiServices {
 
   /**
    * Fetches the package info from Google Play given a package name
-   * @param packageName the package identifier. For example `com.fortysevendeg.ninecardslauncher`
+   * @param packageName the package identifier. For example `cards.nine`
    * @param requestConfig necessary info for the headers
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackageResponse]] with the HTTP Code
-   *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
+   * @return the [[cards.nine.services.api.GooglePlayPackageResponse]] with the HTTP Code
+   *         of the response and a sequence of [[cards.nine.services.api.CategorizedPackage]]
    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if there was an error in the request
    */
@@ -67,8 +67,8 @@ trait ApiServices {
    * {@link #googlePlayPackage(String)(RequestConfig) googlePlayPackage} but allow to fetch a list of packages with one operation.
    * @param packageNames a sequence of package identifiers
    * @param requestConfig necessary info for the headers
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesResponse]] with the HTTP Code
-   *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
+   * @return the [[cards.nine.services.api.GooglePlayPackagesResponse]] with the HTTP Code
+   *         of the response and a sequence of [[cards.nine.services.api.CategorizedPackage]]
    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if there was an error in the request
    */
@@ -79,8 +79,8 @@ trait ApiServices {
    * Differs from googlePlayPackages by providing more information
    * @param packageNames a sequence of package identifiers
    * @param requestConfig necessary info for the headers
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesDetailResponse]] with the HTTP Code
-   *         of the response and a sequence of [[com.fortysevendeg.ninecardslauncher.services.api.CategorizedPackage]]
+   * @return the [[cards.nine.services.api.GooglePlayPackagesDetailResponse]] with the HTTP Code
+   *         of the response and a sequence of [[cards.nine.services.api.CategorizedPackage]]
    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if there was an error in the request
    */
@@ -91,7 +91,7 @@ trait ApiServices {
    * @param category the category
    * @param excludePackages sequence of exclude packages
    * @param limit the maximum number of apps returned
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
+   * @return the [[cards.nine.services.api.RecommendationResponse]] with the HTTP Code
    *         of the response and the sequence of recommended apps
    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
@@ -106,7 +106,7 @@ trait ApiServices {
    * @param packages the liked packages
    * @param excludePackages sequence of exclude packages
    * @param limit the maximum number of apps returned
-   * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RecommendationResponse]] with the HTTP Code
+   * @return the [[cards.nine.services.api.RecommendationResponse]] with the HTTP Code
    *         of the response and the sequence of recommended apps
    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
@@ -133,7 +133,7 @@ trait ApiServices {
     * @param collectionType type [top or latest]
     * @param offset offset of list
     * @param limit the maximum number of collection returned
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SharedCollectionResponseList]] with the HTTP Code
+    * @return the [[cards.nine.services.api.SharedCollectionResponseList]] with the HTTP Code
     *         of the response and the sequence of recommended collections
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
@@ -146,7 +146,7 @@ trait ApiServices {
 
   /**
     * Fetches the published collections
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SharedCollectionResponseList]] with the HTTP Code
+    * @return the [[cards.nine.services.api.SharedCollectionResponseList]] with the HTTP Code
     *         of the response and the sequence of recommended collections
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
@@ -160,7 +160,7 @@ trait ApiServices {
     * @param packages The list of packages in the collection
     * @param icon The collection's icon
     * @param community A flag for whether this is a community collection
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.CreateSharedCollectionResponse]] with the HTTP Code
+    * @return the [[cards.nine.services.api.CreateSharedCollectionResponse]] with the HTTP Code
     *         of the response and the sharedCollectionId
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the service is unable to create the shared collection
@@ -178,7 +178,7 @@ trait ApiServices {
     * @param sharedCollectionId The collection identifier
     * @param name The name of the collection
     * @param packages The list of packages in the collection
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UpdateSharedCollectionResponse]] with the HTTP Code
+    * @return the [[cards.nine.services.api.UpdateSharedCollectionResponse]] with the HTTP Code
     *         of the response and the sharedCollectionId
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the service is unable to create the shared collection
@@ -190,7 +190,7 @@ trait ApiServices {
 
   /**
     * Fetches the subscriptions
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SubscriptionResponseList]] with the HTTP Code
+    * @return the [[cards.nine.services.api.SubscriptionResponseList]] with the HTTP Code
     *         of the response and the sequence subscriptions
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
@@ -200,7 +200,7 @@ trait ApiServices {
   /**
     * Subscribes to a public collection
     * @param originalSharedCollectionId the public id of the collection to subscribe on
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.SubscribeResponse]] with the HTTP Code
+    * @return the [[cards.nine.services.api.SubscribeResponse]] with the HTTP Code
     *         of the response
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
@@ -211,7 +211,7 @@ trait ApiServices {
   /**
     * Unsubscribes from a public collection
     * @param originalSharedCollectionId the public id of the collection to unsubscribe from
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.UnsubscribeResponse]] with the HTTP Code
+    * @return the [[cards.nine.services.api.UnsubscribeResponse]] with the HTTP Code
     *         of the response
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
@@ -223,7 +223,7 @@ trait ApiServices {
     * Rank the packages by importance inside their category
     * @param packagesByCategorySeq a Sequence with the packages of the apps to rank ordered by its category
     * @param location the current country location of the device if it can be obtained
-    * @return the [[com.fortysevendeg.ninecardslauncher.services.api.RankAppsResponse]] with the HTTP Code
+    * @return the [[cards.nine.services.api.RankAppsResponse]] with the HTTP Code
     *         of the response
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request

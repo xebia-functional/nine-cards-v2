@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.privatecollections
+package cards.nine.app.ui.launcher.actions.privatecollections
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -13,17 +13,17 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.styles.{CommonStyles, CollectionCardsStyles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.PrivateCollectionOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCard, PrivateCollection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
+import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
+import cards.nine.app.ui.commons.styles.{CommonStyles, CollectionCardsStyles}
+import cards.nine.app.ui.commons.ops.PrivateCollectionOps._
+import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.process.commons.models.{Collection, PrivateCard, PrivateCollection}
+import cards.nine.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._

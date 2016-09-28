@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
+package cards.nine.app.ui.launcher.actions.createoreditcollection
 
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCollectionRequest, EditCollectionRequest}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.FreeCollectionType
+import cards.nine.app.ui.commons.Jobs
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.process.collection.{AddCollectionRequest, EditCollectionRequest}
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.FreeCollectionType
 import macroid.{ActivityContextWrapper, Ui}
 
 

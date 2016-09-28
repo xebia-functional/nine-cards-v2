@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.moment
+package cards.nine.process.moment
 
 object DefaultApps {
 

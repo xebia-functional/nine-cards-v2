@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package cards.nine.app.ui.commons
 
 import android.graphics.Color
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.app.ui.commons.Constants._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 
 import scala.util.Random

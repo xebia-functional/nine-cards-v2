@@ -1,16 +1,16 @@
-package com.fortysevendeg.ninecardslauncher.process.collection.impl
+package cards.nine.process.collection.impl
 
 import cats.data.EitherT
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException, CollectionProcess}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, ImplicitsPersistenceServiceExceptions}
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.ops.SeqOps._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.collection.{AddCardRequest, CardException, CollectionProcess}
+import cards.nine.process.commons.models.Card
+import cards.nine.process.commons.types.{CardType, NoInstalledAppCardType}
+import cards.nine.services.persistence.models.{Card => ServicesCard, Collection}
+import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, ImplicitsPersistenceServiceExceptions}
 import monix.eval.Task
 
 trait CardsProcessImpl extends CollectionProcess {

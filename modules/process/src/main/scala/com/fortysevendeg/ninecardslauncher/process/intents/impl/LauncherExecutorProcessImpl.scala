@@ -1,14 +1,14 @@
-package com.fortysevendeg.ninecardslauncher.process.intents.impl
+package cards.nine.process.intents.impl
 
 import cats.data.EitherT
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentExtras._
-import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig, LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
-import com.fortysevendeg.ninecardslauncher.services.intents.models._
-import com.fortysevendeg.ninecardslauncher.services.intents.{IntentLauncherServicesPermissionException, LauncherIntentServices}
+import cards.nine.commons.contexts.ActivityContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.commons.models.NineCardIntent
+import cards.nine.process.commons.models.NineCardIntentExtras._
+import cards.nine.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig, LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
+import cards.nine.services.intents.models._
+import cards.nine.services.intents.{IntentLauncherServicesPermissionException, LauncherIntentServices}
 import monix.eval.Task
 import cats.syntax.either._
 

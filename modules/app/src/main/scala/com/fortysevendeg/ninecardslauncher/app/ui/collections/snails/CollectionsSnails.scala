@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.snails
+package cards.nine.app.ui.collections.snails
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
@@ -8,10 +8,10 @@ import android.view.animation.{AccelerateDecelerateInterpolator, DecelerateInter
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.SpeedAnimations
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.preferences.commons.SpeedAnimations
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

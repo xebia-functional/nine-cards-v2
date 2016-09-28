@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.process.device
+package cards.nine.process.device
 
 import android.graphics.Bitmap
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.commons.types.DockType
-import com.fortysevendeg.ninecardslauncher.process.device.models._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.commons.models.NineCardIntent
+import cards.nine.process.commons.types.DockType
+import cards.nine.process.device.models._
 
 trait DeviceProcess {
 
@@ -18,7 +18,7 @@ trait DeviceProcess {
   /**
     * Get the saved apps from the database
     * @param orderBy indicates the order to fetch the apps
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.App]
+    * @return the Seq[cards.nine.process.device.models.App]
     * @throws AppException if exist some problem getting the apps
     */
   def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[Seq[App]]
@@ -26,7 +26,7 @@ trait DeviceProcess {
   /**
     * Get iterable of saved apps from the database
     * @param orderBy indicates the order to fetch the apps
-    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
+    * @return the cards.nine.process.device.models.IterableApps contains
     *         information about the app
     * @throws AppException if exist some problem getting the apps
     */
@@ -35,7 +35,7 @@ trait DeviceProcess {
   /**
     * Get iterable by category of saved apps from the database
     * @param category indicates the category
-    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
+    * @return the cards.nine.process.device.models.IterableApps contains
     *         information about the app
     * @throws AppException if exist some problem getting the apps
     */
@@ -45,7 +45,7 @@ trait DeviceProcess {
     * Returns a sequence that contains all the distinct apps' first letter and the number of apps whose name 
     * starts with this letter
     * @param orderBy indicates the order to fetch the apps
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter] contains
+    * @return the Seq[cards.nine.process.device.models.TermCounter] contains
     *         information about the times is repeated an apps
     * @throws AppException if exist some problem getting the contacts
     */
@@ -55,7 +55,7 @@ trait DeviceProcess {
     * Get the iterable apps by keyword.
     * @param keyword the filter for the query
     * @param orderBy indicates the order to fetch the apps
-    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps contains
+    * @return the cards.nine.process.device.models.IterableApps contains
     *         information about the app
     * @throws AppException if exist some problem getting the contacts
     */
@@ -63,7 +63,7 @@ trait DeviceProcess {
 
   /**
     * Get the available applications that contain shortcuts creating Intents and Drawables necessaries for UI actions
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut] contains
+    * @return the Seq[cards.nine.process.device.models.Shortcut] contains
     *         information about shortcut with the Intents and Drawables for UI actions
     * @throws ShortcutException if exist some problem getting the shortcuts in the cell phone
     */
@@ -80,7 +80,7 @@ trait DeviceProcess {
 
   /**
     * Get the favorite contacts if they exist and fill all their data
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
+    * @return the Seq[cards.nine.process.device.models.Contact] contains
     *         information about the contact including its ContactInfo (if it exists)
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
     * @throws ContactException if exist some problem getting the favorite contacts
@@ -91,7 +91,7 @@ trait DeviceProcess {
     * Get the contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
     * and contacts with phone number
     * @param filter specify the filter in the query
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Contact] contains
+    * @return the Seq[cards.nine.process.device.models.Contact] contains
     *         information about the contact
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
     * @throws ContactException if exist some problem getting the contacts
@@ -102,7 +102,7 @@ trait DeviceProcess {
     * Returns a sequence that contains all the distinct contacts' first letter and the number of contacts whose name 
     * starts with this letter
     * @param filter specify the filter in the query
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter]
+    * @return the Seq[cards.nine.process.device.models.TermCounter]
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
     * @throws ContactException if exist some problem getting the contacts
     */
@@ -112,7 +112,7 @@ trait DeviceProcess {
     * Get the iterable contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
     * and contacts with phone number
     * @param filter specify the filter in the query
-    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
+    * @return the cards.nine.process.device.models.IterableContacts contains
     *         information about the contact
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
     * @throws ContactException if exist some problem getting the contacts
@@ -122,7 +122,7 @@ trait DeviceProcess {
   /**
     * Get the contact and fill all their data
     * @param lookupKey the contact lookup key
-    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.Contact contains
+    * @return the cards.nine.process.device.models.Contact contains
     *         information about the contact
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
     * @throws ContactException if exist some problem getting the contacts
@@ -132,7 +132,7 @@ trait DeviceProcess {
   /**
     * Get the iterable contacts by keyword.
     * @param keyword the filter for the query
-    * @return the com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts contains
+    * @return the cards.nine.process.device.models.IterableContacts contains
     *         information about the contact
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
     * @throws ContactException if exist some problem getting the contacts
@@ -168,14 +168,14 @@ trait DeviceProcess {
 
   /**
     * Get the widgets available on the phone
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.AppsWithWidgets]
+    * @return the Seq[cards.nine.process.device.models.AppsWithWidgets]
     * @throws WidgetException if exist some problem getting the widgets
     */
   def getWidgets(implicit context: ContextSupport): TaskService[Seq[AppsWithWidgets]]
 
   /**
     * Get the last calls available on the phone
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.Call]
+    * @return the Seq[cards.nine.process.device.models.Call]
     * @throws CallPermissionException if the permission to read calls hasn't been granted
     * @throws CallException if exist some problem getting the last calls
     */
@@ -184,7 +184,7 @@ trait DeviceProcess {
   /**
     * Generate the docks apps available for user
     * @param size of the dock apps needed
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.DockApp]
+    * @return the Seq[cards.nine.process.device.models.DockApp]
     * @throws DockAppException if exist some problem getting the app or storing it
     */
   def generateDockApps(size: Int)(implicit context: ContextSupport): TaskService[Seq[DockApp]]
@@ -203,8 +203,8 @@ trait DeviceProcess {
   /**
     * Creates DockApps from some already formed and given DockApps
     *
-    * @param items the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.DockApp] of DockApps
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest]
+    * @param items the Seq[cards.nine.process.device.models.DockApp] of DockApps
+    * @return the Seq[cards.nine.process.device.SaveDockAppRequest]
     * @throws DockAppException if there was an error creating the moments' collections
     */
   def saveDockApps(items: Seq[SaveDockAppRequest]): TaskService[Seq[DockApp]]
@@ -212,7 +212,7 @@ trait DeviceProcess {
   /**
     * Get the docks apps available for user
     *
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.device.models.DockApp]
+    * @return the Seq[cards.nine.process.device.models.DockApp]
     * @throws DockAppException if exist some problem getting the app or storing it
     */
   def getDockApps: TaskService[Seq[DockApp]]

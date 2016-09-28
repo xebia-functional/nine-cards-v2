@@ -1,16 +1,16 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations
+package cards.nine.app.ui.collections.actions.recommendations
 
 import android.os.Bundle
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendedAppsConfigurationException
+import cards.nine.app.commons.{Conversions, NineCardIntentConversions}
+import cards.nine.app.ui.collections.jobs.GroupCollectionsUiListener
+import cards.nine.app.ui.commons.AppLog
+import cards.nine.app.ui.commons.actions.BaseActionFragment
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.recommendations.models.RecommendedApp
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.recommendations.RecommendedAppsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.R
 
 class RecommendationsFragment

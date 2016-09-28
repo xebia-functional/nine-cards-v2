@@ -1,14 +1,14 @@
-package com.fortysevendeg.ninecardslauncher.process.cloud
+package cards.nine.process.cloud
 
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.models.UserCloudDevice
-import com.fortysevendeg.ninecardslauncher.process.cloud.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
-import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
-import com.fortysevendeg.ninecardslauncher.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.{WidgetArea, AppWidget}
-import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
+import cards.nine.app.ui.wizard.models.UserCloudDevice
+import cards.nine.process.cloud.models._
+import cards.nine.process.commons.models.NineCardIntentImplicits._
+import cards.nine.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
+import cards.nine.process.commons.types.WidgetType
+import cards.nine.process.device.models.DockApp
+import cards.nine.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
+import cards.nine.process.widget.models.{WidgetArea, AppWidget}
+import cards.nine.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
 
 object Conversions {

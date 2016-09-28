@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections
+package cards.nine.app.ui.collections
 
 import android.app.Activity
 import android.content.Intent
@@ -7,25 +7,25 @@ import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
-import com.fortysevendeg.ninecardslauncher.app.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps.AppsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts.ContactsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.recommendations.RecommendationsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts.ShortcutFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.publishcollection.PublishCollectionFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, UiContext, UiExtensions}
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NotPublished, PublicCollectionStatus}
+import cards.nine.app.commons._
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
+import cards.nine.app.ui.collections.actions.apps.AppsFragment
+import cards.nine.app.ui.collections.actions.contacts.ContactsFragment
+import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
+import cards.nine.app.ui.collections.actions.shortcuts.ShortcutFragment
+import cards.nine.app.ui.collections.dialog.publishcollection.PublishCollectionFragment
+import cards.nine.app.ui.collections.jobs._
+import cards.nine.app.ui.commons.RequestCodes._
+import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.{ActivityUiContext, UiContext, UiExtensions}
+import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
+import cards.nine.commons._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types.{NotPublished, PublicCollectionStatus}
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._

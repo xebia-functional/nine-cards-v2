@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.profile
+package cards.nine.app.ui.profile
 
 import java.util.Date
 
@@ -7,19 +7,19 @@ import android.content.Intent
 import android.os.Bundle
 import cats.data.EitherT
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
-import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs, ResultCodes}
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
+import cards.nine.app.commons.{BroadAction, Conversions}
+import cards.nine.app.services.SynchronizeDeviceService
+import cards.nine.app.ui.collections.tasks.CollectionJobs
+import cards.nine.app.ui.commons.RequestCodes._
+import cards.nine.app.ui.commons.action_filters.CollectionAddedActionFilter
+import cards.nine.app.ui.commons.google_api.{ConnectionSuspendedCause, GoogleDriveApiClientProvider}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.{AppLog, Jobs, ResultCodes}
+import cards.nine.app.ui.profile.models.AccountSync
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.cloud.models.CloudStorageDeviceSummary
+import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.process.sharedcollections.models.{SharedCollection, Subscription}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient

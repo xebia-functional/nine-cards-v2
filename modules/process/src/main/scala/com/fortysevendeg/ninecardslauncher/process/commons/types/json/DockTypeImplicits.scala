@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.commons.types.json
+package cards.nine.process.commons.types.json
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.DockType
+import cards.nine.process.commons.types.DockType
 import play.api.libs.json._
 
 object DockTypeImplicits {

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer
+package cards.nine.app.ui.launcher.drawer
 
 import java.io.Closeable
 
@@ -11,29 +11,29 @@ import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.SelectedItemDecoration
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.TabsSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SearchBoxesViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.SwipeAnimatedDrawerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TabsViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherUiActions, LauncherUiActionsImpl}
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
-import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models._
+import cards.nine.app.commons._
+import cards.nine.app.ui.commons.AppLog._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
+import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.commons.SelectedItemDecoration
+import cards.nine.app.ui.components.layouts._
+import cards.nine.app.ui.components.layouts.snails.TabsSnails._
+import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
+import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.SearchBoxesViewTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.SwipeAnimatedDrawerViewTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
+import cards.nine.app.ui.components.widgets._
+import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
+import cards.nine.app.ui.launcher.drawer.DrawerSnails._
+import cards.nine.app.ui.launcher.{LauncherUiActions, LauncherUiActionsImpl}
+import cards.nine.app.ui.preferences.commons._
+import cards.nine.process.device._
+import cards.nine.process.device.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

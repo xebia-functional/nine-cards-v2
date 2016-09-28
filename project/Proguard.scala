@@ -43,7 +43,7 @@ object Proguard {
 
   object Packages {
 
-    val pgApplication = "com.fortysevendeg.ninecardslauncher"
+    val pgApplication = "cards.nine"
     val pgMacroid = "macroid"
     val pgMacroidExtras = "com.fortysevendeg.macroid.extras"
 

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.commons
+package cards.nine.app.ui.components.commons
 
 sealed trait ViewState
 

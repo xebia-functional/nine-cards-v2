@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.commons
+package cards.nine.commons
 
 import cats.data.EitherT
 import cats.{Functor, Monad}

@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.commons
+package cards.nine.commons
 
 import cats.data.EitherT
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.services.TaskService._
 import monix.eval.Task
 import cats.syntax.either._
 

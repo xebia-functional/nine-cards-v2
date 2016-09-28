@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.userv1.models
+package cards.nine.process.userv1.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory}
+import cards.nine.process.commons.types.{CollectionType, NineCardCategory}
 
 case class Device(
   name: String,

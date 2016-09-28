@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.services.utils
+package cards.nine.services.utils
 
-import com.fortysevendeg.ninecardslauncher.services.image._
+import cards.nine.services.image._
 
 trait ResourceUtilsData {
 
   val appPackage = AppPackage(
-    "com.fortysevendeg.ninecardslauncher.test",
+    "cards.nine.test",
     "ClassNameExample",
     "Sample Name")
 

@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
+package cards.nine.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Moment => RepositoryMoment, MomentData => RepositoryMomentData}
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{MomentTimeSlot, Moment}
-import com.fortysevendeg.ninecardslauncher.services.persistence.reads.MomentImplicits
+import cards.nine.repository.model.{Moment => RepositoryMoment, MomentData => RepositoryMomentData}
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.models.{MomentTimeSlot, Moment}
+import cards.nine.services.persistence.reads.MomentImplicits
 import play.api.libs.json.Json
 
 trait MomentConversions {

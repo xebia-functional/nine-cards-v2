@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
+package cards.nine.app.ui.commons.ops
 
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, UiException}
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiException}
+import cards.nine.commons.CatchAll
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import macroid.Ui
 
 import scala.concurrent.Future

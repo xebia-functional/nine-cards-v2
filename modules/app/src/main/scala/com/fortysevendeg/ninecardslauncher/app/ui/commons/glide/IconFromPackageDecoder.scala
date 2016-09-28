@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.glide
+package cards.nine.app.ui.commons.glide
 
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable

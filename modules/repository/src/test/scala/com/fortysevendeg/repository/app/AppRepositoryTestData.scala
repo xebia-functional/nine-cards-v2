@@ -1,7 +1,7 @@
 package com.fortysevendeg.repository.app
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{App, AppData, DataCounter}
-import com.fortysevendeg.ninecardslauncher.repository.provider.{AppEntity, AppEntityData}
+import cards.nine.repository.model.{App, AppData, DataCounter}
+import cards.nine.repository.provider.{AppEntity, AppEntityData}
 import org.joda.time.DateTime
 
 import scala.util.Random

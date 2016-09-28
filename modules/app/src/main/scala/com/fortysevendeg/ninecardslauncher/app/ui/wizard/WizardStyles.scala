@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.wizard
+package cards.nine.app.ui.wizard
 
 import android.view.{Gravity, ViewGroup}
 import android.widget.{Button, ImageView, RadioButton, TextView}

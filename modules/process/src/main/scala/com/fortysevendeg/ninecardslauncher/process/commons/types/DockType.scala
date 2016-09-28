@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.commons.types
+package cards.nine.process.commons.types
 
-import com.fortysevendeg.ninecardslauncher.process.commons.DockAppTypes._
+import cards.nine.process.commons.DockAppTypes._
 
 sealed trait DockType {
   val name: String

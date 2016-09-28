@@ -1,17 +1,17 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
+package cards.nine.app.ui.collections.jobs
 
 import android.os.Bundle
 import android.support.v4.app.{DialogFragment, Fragment, FragmentActivity, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.{CollectionAdapter, CollectionsPagerAdapter}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
+import cards.nine.app.ui.collections.{CollectionAdapter, CollectionsPagerAdapter}
+import cards.nine.app.ui.commons.FabButtonTags._
+import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.commons._
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.{ActivityContextWrapper, FragmentBuilder, FragmentManagerContext, Ui}
 

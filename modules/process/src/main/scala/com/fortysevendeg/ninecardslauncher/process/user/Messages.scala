@@ -1,3 +1,3 @@
-package com.fortysevendeg.ninecardslauncher.process.user
+package cards.nine.process.user
 
 case class SignInResponse(statusCode: Int)

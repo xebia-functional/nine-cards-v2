@@ -1,15 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.applinks
+package cards.nine.app.ui.applinks
 
 import android.net.Uri
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, Jobs}
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.app.commons.{BroadAction, Conversions}
+import cards.nine.app.ui.collections.tasks.CollectionJobs
+import cards.nine.app.ui.commons.action_filters.CollectionAddedActionFilter
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, Jobs}
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.sharedcollections.models.SharedCollection
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 

@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.repository.repositories
+package cards.nine.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import cards.nine.commons.javaNull
 
 object RepositoryUtils {
 

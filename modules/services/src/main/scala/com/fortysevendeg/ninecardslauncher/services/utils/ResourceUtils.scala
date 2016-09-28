@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.utils
+package cards.nine.services.utils
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contexts.ContextSupport
 
 class ResourceUtils {
 

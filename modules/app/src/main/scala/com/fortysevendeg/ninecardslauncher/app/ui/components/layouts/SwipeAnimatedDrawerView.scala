@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.content.Context
 import android.util.AttributeSet
@@ -6,13 +6,13 @@ import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerAnimationBackgroundDrawable
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.snails.SwipeAnimatedDrawerViewSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{AppsView, ContactView, ContentView}
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{NineCardsTheme, SearchBackgroundColor, SearchIconsColor}
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.components.drawables.DrawerAnimationBackgroundDrawable
+import cards.nine.app.ui.components.layouts.snails.SwipeAnimatedDrawerViewSnails._
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.app.ui.components.widgets.{AppsView, ContactView, ContentView}
+import cards.nine.commons.javaNull
+import cards.nine.process.theme.models.{NineCardsTheme, SearchBackgroundColor, SearchIconsColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 

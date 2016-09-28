@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.user.models
+package cards.nine.process.user.models
 
 case class User(
   id: Int,

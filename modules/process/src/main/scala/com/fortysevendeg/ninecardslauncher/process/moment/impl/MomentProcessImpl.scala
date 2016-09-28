@@ -1,19 +1,19 @@
-package com.fortysevendeg.ninecardslauncher.process.moment.impl
+package cards.nine.process.moment.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot, PrivateCollection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.moment.DefaultApps._
-import com.fortysevendeg.ninecardslauncher.process.moment.{UpdateMomentRequest, _}
-import com.fortysevendeg.ninecardslauncher.process.moment.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.CatchAll
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.commons.Spaces._
+import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot, PrivateCollection}
+import cards.nine.process.commons.types.NineCardsMoment._
+import cards.nine.process.commons.types._
+import cards.nine.process.moment.DefaultApps._
+import cards.nine.process.moment.{UpdateMomentRequest, _}
+import cards.nine.process.moment.models.App
+import cards.nine.services.persistence._
+import cards.nine.services.wifi.WifiServices
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat

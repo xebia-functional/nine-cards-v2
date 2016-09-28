@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.commons.models
+package cards.nine.process.commons.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import cards.nine.process.commons.types._
 
 case class Collection(
   id: Int,

@@ -1,13 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.process.device.impl
+package cards.nine.process.device.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactCounter
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServicePermissionException
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.device._
+import cards.nine.process.device.models.IterableContacts
+import cards.nine.services.contacts.models.ContactCounter
+import cards.nine.services.contacts.ContactsServicePermissionException
 import monix.eval.Task
 import cats.syntax.either._
 

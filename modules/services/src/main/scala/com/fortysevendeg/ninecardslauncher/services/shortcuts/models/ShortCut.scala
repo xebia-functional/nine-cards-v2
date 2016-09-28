@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.shortcuts.models
+package cards.nine.services.shortcuts.models
 
 case class Shortcut (
   title: String,

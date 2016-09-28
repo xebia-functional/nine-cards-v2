@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps
+package cards.nine.app.ui.commons.adapters.apps
 
 import java.io.Closeable
 
@@ -6,14 +6,14 @@ import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize, IconsSize}
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, EmptyIterableApps, IterableApps}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.components.layouts.FastScrollerListener
+import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
+import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
+import cards.nine.process.device.models.{App, EmptyIterableApps, IterableApps}
+import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._

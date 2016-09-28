@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.sharedcollections.models
+package cards.nine.process.sharedcollections.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{PublicCollectionStatus, NineCardCategory}
+import cards.nine.process.commons.types.{PublicCollectionStatus, NineCardCategory}
 
 case class SharedCollection(
   id: String,

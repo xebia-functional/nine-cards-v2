@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
+package cards.nine.app.ui.collections.dialog
 
 import android.app.Dialog
 import android.content.DialogInterface
@@ -9,9 +9,9 @@ import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.app.ui.commons.CommonsExcerpt._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 

@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
+package cards.nine.app.ui.commons.ops
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, TaskService}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.{NineCardException, TaskService}
+import cards.nine.app.ui.commons.AppLog._
 import macroid.Ui
 import monix.eval.Task
 import cats.syntax.either._

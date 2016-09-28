@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.content.Context
 import android.util.AttributeSet
@@ -7,14 +7,14 @@ import android.widget.{EditText, FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.EditTextTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{AppsView, ContactView, ContentView, TintableImageView}
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.app.ui.components.widgets.{AppsView, ContactView, ContentView, TintableImageView}
+import cards.nine.commons._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._

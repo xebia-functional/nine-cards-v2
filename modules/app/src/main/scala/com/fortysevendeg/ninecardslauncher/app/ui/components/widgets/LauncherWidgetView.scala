@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
+package cards.nine.app.ui.components.widgets
 
 import android.appwidget.AppWidgetHostView
 import android.view.MotionEvent._
@@ -9,12 +9,12 @@ import android.widget.FrameLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.EditWidgetsMode
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.Statuses.EditWidgetsMode
+import cards.nine.commons._
+import cards.nine.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._

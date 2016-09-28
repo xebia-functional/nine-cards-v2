@@ -1,7 +1,7 @@
 package com.fortysevendeg.repository.moment
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Moment, MomentData}
-import com.fortysevendeg.ninecardslauncher.repository.provider.{MomentEntity, MomentEntityData}
+import cards.nine.repository.model.{Moment, MomentData}
+import cards.nine.repository.provider.{MomentEntity, MomentEntityData}
 
 import scala.util.Random
 

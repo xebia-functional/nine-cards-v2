@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.actions
+package cards.nine.app.ui.commons.actions
 
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.annotation.TargetApi
@@ -8,9 +8,9 @@ import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SnailsUtils
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.SpeedAnimations
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.preferences.commons.SpeedAnimations
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Snail}
 

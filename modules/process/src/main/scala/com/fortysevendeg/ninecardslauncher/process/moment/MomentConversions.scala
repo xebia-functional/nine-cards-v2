@@ -1,12 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.process.moment
+package cards.nine.process.moment
 
-import com.fortysevendeg.ninecardslauncher.process.collection.models.UnformedApp
-import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCard}
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.moment.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import cards.nine.process.collection.models.UnformedApp
+import cards.nine.process.commons.CommonConversions
+import cards.nine.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCard}
+import cards.nine.process.commons.types._
+import cards.nine.process.moment.models.App
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.models.{App => ServicesApp, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 
 trait MomentConversions extends CommonConversions {
 

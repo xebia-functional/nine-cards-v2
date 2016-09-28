@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.api.version2
+package cards.nine.api.version2
 
 import scala.util.Random
 
@@ -136,7 +136,7 @@ trait ApiServiceData {
     limit = 10)
 
   val recommendationsByAppsRequest = RecommendationsByAppsRequest(
-    packages = Seq("com.fortysevendeg.ninecardslauncher"),
+    packages = Seq("cards.nine"),
     excludePackages = Seq("com.package.sample"),
     limit = 10)
 

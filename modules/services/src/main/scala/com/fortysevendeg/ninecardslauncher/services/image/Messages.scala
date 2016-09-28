@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.image
+package cards.nine.services.image
 
 import android.graphics.Bitmap
 

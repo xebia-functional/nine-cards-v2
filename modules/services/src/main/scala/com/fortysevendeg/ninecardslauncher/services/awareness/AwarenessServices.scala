@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.services.awareness
+package cards.nine.services.awareness
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService._
 
 trait AwarenessServices {
 

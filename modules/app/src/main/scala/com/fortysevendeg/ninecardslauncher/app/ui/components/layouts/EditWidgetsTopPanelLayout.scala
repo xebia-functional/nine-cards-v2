@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.content.Context
 import android.util.AttributeSet
@@ -7,9 +7,9 @@ import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.PathMorphDrawable
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import cards.nine.app.ui.components.drawables.PathMorphDrawable
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.commons.javaNull
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._

@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.content.Context
 import android.graphics.drawable.Drawable
@@ -10,16 +10,16 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
+import cards.nine.app.ui.components.models.LauncherMoment
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.commons.javaNull
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._
 import macroid._
 

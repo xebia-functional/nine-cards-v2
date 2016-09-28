@@ -1,18 +1,18 @@
-package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
+package cards.nine.process.sharedcollections.impl
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{SharedCollectionsConfigurationException, SharedCollectionsException}
-import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices}
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.process.commons.types._
+import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, SharedCollectionsException}
+import cards.nine.process.utils.ApiUtils
+import cards.nine.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices}
+import cards.nine.services.persistence.PersistenceServices
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

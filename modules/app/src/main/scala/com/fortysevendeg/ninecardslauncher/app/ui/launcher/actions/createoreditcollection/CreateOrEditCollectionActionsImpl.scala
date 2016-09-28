@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.createoreditcollection
+package cards.nine.app.ui.launcher.actions.createoreditcollection
 
 import android.graphics.Paint.Style
 import android.graphics.drawable.ShapeDrawable
@@ -9,18 +9,18 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor}
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.RequestCodes
+import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
+import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.commons._
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.Communication
+import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

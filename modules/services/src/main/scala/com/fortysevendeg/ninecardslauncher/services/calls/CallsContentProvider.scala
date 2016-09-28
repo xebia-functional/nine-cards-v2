@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.calls
+package cards.nine.services.calls
 
 import android.database.Cursor
-import com.fortysevendeg.ninecardslauncher.services.calls.models._
-import com.fortysevendeg.ninecardslauncher.services.commons._
-import com.fortysevendeg.ninecardslauncher.services.contacts.Fields
+import cards.nine.services.calls.models._
+import cards.nine.services.commons._
+import cards.nine.services.contacts.Fields
 
 object CallsContentProvider {
 

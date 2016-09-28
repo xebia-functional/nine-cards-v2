@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package cards.nine.app.ui.commons
 
 import java.io.{File, InputStream}
 
@@ -20,9 +20,9 @@ import com.bumptech.glide.load.resource.bitmap.{BitmapEncoder, StreamBitmapDecod
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder
 import com.bumptech.glide.signature.StringSignature
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder, IconFromPackageDecoder, IconFromPackageLoader}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder, IconFromPackageDecoder, IconFromPackageLoader}
+import cards.nine.app.ui.components.drawables.CharDrawable
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._

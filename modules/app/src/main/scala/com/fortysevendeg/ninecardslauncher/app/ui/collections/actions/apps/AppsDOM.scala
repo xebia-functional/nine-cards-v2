@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.apps
+package cards.nine.app.ui.collections.actions.apps
 
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.apps.AppsAdapter
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
+import cards.nine.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 
 trait AppsDOM {

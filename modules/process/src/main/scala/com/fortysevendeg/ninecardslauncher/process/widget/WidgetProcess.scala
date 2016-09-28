@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.process.widget
+package cards.nine.process.widget
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.widget.models._
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.widget.models._
 
 trait WidgetProcess {
 

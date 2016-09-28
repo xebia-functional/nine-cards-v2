@@ -1,7 +1,7 @@
 package com.fortysevendeg.repository.widget
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Widget, WidgetData}
-import com.fortysevendeg.ninecardslauncher.repository.provider.{WidgetEntity, WidgetEntityData}
+import cards.nine.repository.model.{Widget, WidgetData}
+import cards.nine.repository.provider.{WidgetEntity, WidgetEntityData}
 
 import scala.util.Random
 

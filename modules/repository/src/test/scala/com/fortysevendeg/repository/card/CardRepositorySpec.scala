@@ -1,16 +1,16 @@
 package com.fortysevendeg.repository.card
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.model.Card
-import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
-import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity.allFields
-import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity.position
-import com.fortysevendeg.ninecardslauncher.repository.provider.CollectionEntity._
-import com.fortysevendeg.ninecardslauncher.repository.provider._
-import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import cards.nine.commons.contentresolver.Conversions._
+import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import cards.nine.repository.RepositoryException
+import cards.nine.repository.model.Card
+import cards.nine.repository.provider.CardEntity._
+import cards.nine.repository.provider.CardEntity.allFields
+import cards.nine.repository.provider.CardEntity.position
+import cards.nine.repository.provider.CollectionEntity._
+import cards.nine.repository.provider._
+import cards.nine.repository.repositories._
 import com.fortysevendeg.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
@@ -18,9 +18,9 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
 import scala.language.postfixOps
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
-import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, MockCursor, StringDataType}
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.contentresolver.IterableCursor._
+import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 
 trait CardRepositorySpecification
   extends Specification

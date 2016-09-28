@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.process.user
+package cards.nine.process.user
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.user.models.User
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.user.models.User
 
 trait UserProcess {
 

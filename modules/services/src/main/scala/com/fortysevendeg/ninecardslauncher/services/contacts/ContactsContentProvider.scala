@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.services.contacts
+package cards.nine.services.contacts
 
 import android.database.Cursor
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.UriCreator
-import com.fortysevendeg.ninecardslauncher.services.commons._
-import com.fortysevendeg.ninecardslauncher.services.contacts.models._
+import cards.nine.commons.contentresolver.UriCreator
+import cards.nine.services.commons._
+import cards.nine.services.contacts.models._
 
 object ContactsContentProvider {
 

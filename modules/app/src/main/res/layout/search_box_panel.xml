@@ -4,7 +4,7 @@
     style="@style/LauncherSearchDrawerPanel"
     android:id="@+id/launcher_search_box_panel">
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
         android:id="@+id/launcher_header_icon"
         style="@style/LauncherSearchHeader" />
 
@@ -14,7 +14,7 @@
         style="@style/LauncherSearchEditText"
         android:id="@+id/launcher_search_box_text"/>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
         style="@style/LauncherSearchIcon"
         android:id="@+id/launcher_search_box_icon"/>
 

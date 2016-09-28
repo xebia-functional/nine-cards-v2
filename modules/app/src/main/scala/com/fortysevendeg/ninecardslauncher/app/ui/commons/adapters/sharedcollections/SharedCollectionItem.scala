@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollections
+package cards.nine.app.ui.commons.adapters.sharedcollections
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -10,15 +10,15 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.styles.{CommonStyles, CollectionCardsStyles}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.SharedCollectionOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{PublishedByOther, Subscribed, NotPublished, PublishedByMe}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.styles.{CommonStyles, CollectionCardsStyles}
+import cards.nine.app.ui.commons.ops.SharedCollectionOps._
+import cards.nine.process.commons.types.{PublishedByOther, Subscribed, NotPublished, PublishedByMe}
+import cards.nine.process.sharedcollections.models._
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._

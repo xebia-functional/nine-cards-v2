@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.app.receivers
+package cards.nine.app.receivers
 
 import android.content.Intent._
 import android.content.{BroadcastReceiver, Context, Intent}
-import com.fortysevendeg.ninecardslauncher.app.commons.{ContextSupportImpl, ContextSupportPreferences}
-import com.fortysevendeg.ninecardslauncher.app.receivers.jobs.AppBroadcastJobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.commons.{ContextSupportImpl, ContextSupportPreferences}
+import cards.nine.app.receivers.jobs.AppBroadcastJobs
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import macroid.ContextWrapper
 
 class AppBroadcastReceiver

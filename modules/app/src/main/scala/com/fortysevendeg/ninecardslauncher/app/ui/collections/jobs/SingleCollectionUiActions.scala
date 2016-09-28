@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
+package cards.nine.app.ui.collections.jobs
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.widget.RecyclerView.ViewHolder
@@ -11,23 +11,23 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionAdapter
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.decorations.CollectionItemDecoration
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppUtils, ImplicitsUiExceptions, UiContext}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToCloseListener, PullingListener}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.CardPadding
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardBackgroundColor, DrawerTextColor, NineCardsTheme}
+import cards.nine.app.ui.collections.CollectionAdapter
+import cards.nine.app.ui.collections.decorations.CollectionItemDecoration
+import cards.nine.app.ui.commons.Constants._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.{AppUtils, ImplicitsUiExceptions, UiContext}
+import cards.nine.app.ui.components.commons._
+import cards.nine.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
+import cards.nine.app.ui.components.layouts.{PullToCloseListener, PullingListener}
+import cards.nine.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
+import cards.nine.app.ui.preferences.commons.CardPadding
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.theme.models.{CardBackgroundColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

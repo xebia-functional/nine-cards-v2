@@ -1,12 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
+package cards.nine.app.ui.collections.actions.shortcuts
 
 import android.os.Bundle
 import android.view.View
-import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
+import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher2.R
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.process.device.models.Shortcut
 
 class ShortcutFragment
   extends BaseActionFragment

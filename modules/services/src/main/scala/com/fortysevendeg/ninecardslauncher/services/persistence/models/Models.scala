@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.models
+package cards.nine.services.persistence.models
 
 case class App(
   id: Int,

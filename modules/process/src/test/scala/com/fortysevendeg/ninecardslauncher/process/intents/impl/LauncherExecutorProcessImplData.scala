@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.process.intents.impl
+package cards.nine.process.intents.impl
 
-import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessConfig
-import com.fortysevendeg.ninecardslauncher.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException}
-import com.fortysevendeg.ninecardslauncher.services.intents.models._
+import cards.nine.process.intents.LauncherExecutorProcessConfig
+import cards.nine.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException}
+import cards.nine.services.intents.models._
 
 trait LauncherExecutorProcessImplData {
 

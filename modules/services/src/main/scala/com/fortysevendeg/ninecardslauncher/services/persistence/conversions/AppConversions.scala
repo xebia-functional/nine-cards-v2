@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
+package cards.nine.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, AppData => RepositoryAppData}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddAppRequest, UpdateAppRequest}
+import cards.nine.repository.model.{App => RepositoryApp, AppData => RepositoryAppData}
+import cards.nine.services.persistence.models.App
+import cards.nine.services.persistence.{AddAppRequest, UpdateAppRequest}
 
 trait AppConversions {
 

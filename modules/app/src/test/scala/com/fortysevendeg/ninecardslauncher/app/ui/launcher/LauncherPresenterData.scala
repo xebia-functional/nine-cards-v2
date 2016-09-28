@@ -1,12 +1,12 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher
+package cards.nine.app.ui.launcher
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
-import com.fortysevendeg.ninecardslauncher.process.commons.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
-import com.fortysevendeg.ninecardslauncher.process.user.models.{User, UserProfile}
+import cards.nine.process.commons.models.NineCardIntentImplicits._
+import cards.nine.process.commons.models._
+import cards.nine.process.commons.types.CollectionType._
+import cards.nine.process.commons.types.NineCardCategory._
+import cards.nine.process.commons.types._
+import cards.nine.process.device.models.DockApp
+import cards.nine.process.user.models.{User, UserProfile}
 import play.api.libs.json.Json
 
 import scala.util.Random

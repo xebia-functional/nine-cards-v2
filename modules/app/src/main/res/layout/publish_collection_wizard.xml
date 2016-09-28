@@ -30,7 +30,7 @@
                 android:id="@+id/publish_collection_wizard_start_footer"
                 style="@style/PublishCollectionWizardStartFooter">
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                     android:id="@+id/publish_collection_wizard_arrow"
                     style="@style/PublishCollectionWizardStartArrow"/>
         </LinearLayout>
@@ -72,7 +72,7 @@
                                     android:id="@+id/collection_name"
                                     style="@style/PublishCollectionWizardInformationCollectionNameInputMessage"/>
 
-                            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                            <cards.nine.app.ui.components.widgets.TintableImageView
                                     android:id="@+id/collection_name_line"
                                     style="@style/PublishCollectionWizardInformationLineHorizontal"/>
 
@@ -93,13 +93,13 @@
                                         android:id="@+id/category"
                                         style="@style/PublishCollectionWizardInformationCategorySpinner"/>
 
-                                <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                                <cards.nine.app.ui.components.widgets.TintableImageView
                                         android:id="@+id/category_indicator"
                                         style="@style/PublishCollectionWizardInformationCategoryIndicator"/>
 
                             </LinearLayout>
 
-                            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+                            <cards.nine.app.ui.components.widgets.TintableImageView
                                     android:id="@+id/category_line"
                                     style="@style/PublishCollectionWizardInformationLineHorizontal"/>
 
@@ -180,7 +180,7 @@
                 android:id="@+id/publish_collection_wizard_end_footer"
                 style="@style/PublishCollectionWizardEndFooter">
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                     android:id="@+id/end_line"
                     style="@style/PublishCollectionWizardEndLineHorizontal"/>
 

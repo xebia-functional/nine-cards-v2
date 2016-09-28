@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.wifi.impl
+package cards.nine.services.wifi.impl
 
 import android.net.wifi.WifiConfiguration
 

@@ -1,43 +1,43 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher
+package cards.nine.app.ui.launcher
 
 import android.content.{ComponentName, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.app.ui.MomentPreferences
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.AlertDialogFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.exceptions.SpaceException
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.PreferencesValuesKeys
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.accounts._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, _}
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
-import com.fortysevendeg.ninecardslauncher.process.recognition.{ConditionWeather, UnknownCondition}
-import com.fortysevendeg.ninecardslauncher.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
-import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
+import cards.nine.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
+import cards.nine.app.ui.MomentPreferences
+import cards.nine.app.ui.commons.Constants._
+import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.ops.WidgetsOps
+import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
+import cards.nine.app.ui.commons.{Jobs, RequestCodes}
+import cards.nine.app.ui.components.dialogs.AlertDialogFragment
+import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
+import cards.nine.app.ui.launcher.Statuses._
+import cards.nine.app.ui.launcher.drawer._
+import cards.nine.app.ui.launcher.exceptions.SpaceException
+import cards.nine.app.ui.launcher.holders._
+import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
+import cards.nine.app.ui.wizard.WizardActivity
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons._
+import cards.nine.commons.ops.SeqOps._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.accounts._
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.commons.models.{Card, Collection, Moment, _}
+import cards.nine.process.commons.types._
+import cards.nine.process.device._
+import cards.nine.process.device.models._
+import cards.nine.process.intents.LauncherExecutorProcessPermissionException
+import cards.nine.process.moment.MomentException
+import cards.nine.process.recognition.{ConditionWeather, UnknownCondition}
+import cards.nine.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
+import cards.nine.process.widget.models.{AppWidget, WidgetArea}
+import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task

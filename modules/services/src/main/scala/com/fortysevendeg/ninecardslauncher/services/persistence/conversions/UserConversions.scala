@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
+package cards.nine.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{User => RepositoryUser, UserData => RepositoryUserData}
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
+import cards.nine.repository.model.{User => RepositoryUser, UserData => RepositoryUserData}
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.models.User
 
 trait UserConversions {
 

@@ -1,7 +1,7 @@
 package com.fortysevendeg.repository.user
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{User, UserData}
-import com.fortysevendeg.ninecardslauncher.repository.provider.{UserEntity, UserEntityData}
+import cards.nine.repository.model.{User, UserData}
+import cards.nine.repository.provider.{UserEntity, UserEntityData}
 
 import scala.util.Random
 

@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.commons.utils
+package cards.nine.commons.utils
 
 import java.io._
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.utils.impl.StreamWrapperImpl
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.utils.impl.StreamWrapperImpl
 
 import scala.util.Try
 import scala.util.control.Exception._

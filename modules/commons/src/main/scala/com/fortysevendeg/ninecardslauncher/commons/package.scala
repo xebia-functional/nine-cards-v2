@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher
+package cards.nine
 
 package object commons {
 

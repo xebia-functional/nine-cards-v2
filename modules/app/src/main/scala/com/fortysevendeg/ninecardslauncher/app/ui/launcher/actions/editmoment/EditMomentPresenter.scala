@@ -1,13 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment
+package cards.nine.app.ui.launcher.actions.editmoment
 
-import com.fortysevendeg.ninecardslauncher.app.commons.BroadAction
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentConstrainsChangedActionFilter
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher.process.moment.UpdateMomentRequest
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.app.commons.BroadAction
+import cards.nine.app.ui.commons.Jobs
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.action_filters.MomentConstrainsChangedActionFilter
+import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}
+import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.process.moment.UpdateMomentRequest
+import cards.nine.commons.services.TaskService._
 import macroid._
 
 class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: ActivityContextWrapper)

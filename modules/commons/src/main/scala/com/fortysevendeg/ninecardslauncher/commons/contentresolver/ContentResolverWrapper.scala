@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.commons.contentresolver
+package cards.nine.commons.contentresolver
 
 import java.util
 
@@ -6,7 +6,7 @@ import android.content.{ContentProviderOperation, ContentResolver, ContentValues
 import android.database.Cursor
 import android.net.Uri
 import android.net.Uri._
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import cards.nine.commons.javaNull
 
 trait ContentResolverWrapper {
 

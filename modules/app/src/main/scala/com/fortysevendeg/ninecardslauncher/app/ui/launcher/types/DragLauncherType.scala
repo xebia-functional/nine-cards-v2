@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher.types
+package cards.nine.app.ui.launcher.types
 
 import DragLauncherNames._
 

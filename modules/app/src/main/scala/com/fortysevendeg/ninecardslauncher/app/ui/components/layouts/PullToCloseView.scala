@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.content.Context
 import android.util.AttributeSet
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.commons._
 import macroid.ContextWrapper
 
 class PullToCloseView(context: Context, attr: AttributeSet, defStyleAttr: Int)

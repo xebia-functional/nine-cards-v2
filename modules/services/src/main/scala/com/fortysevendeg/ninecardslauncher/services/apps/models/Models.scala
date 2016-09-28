@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.apps.models
+package cards.nine.services.apps.models
 
 case class Application(
   name: String,

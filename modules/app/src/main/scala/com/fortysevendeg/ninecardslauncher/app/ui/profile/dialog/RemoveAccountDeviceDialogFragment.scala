@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog
+package cards.nine.app.ui.profile.dialog
 
 import android.app.Dialog
 import android.content.DialogInterface
@@ -6,8 +6,8 @@ import android.content.DialogInterface.OnClickListener
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfilePresenter
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.app.ui.profile.ProfilePresenter
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 

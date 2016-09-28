@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts
+package cards.nine.app.ui.components.layouts
 
 import android.content.Context
 import android.support.v4.view.{MotionEventCompat, ViewConfigurationCompat}
@@ -11,13 +11,13 @@ import android.widget.FrameLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.AnimatedWorkSpaces._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, NineCardsPreferencesValue, WorkspaceAnimations}
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.app.ui.commons.AnimationsUtils._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.commons._
+import cards.nine.app.ui.components.layouts.AnimatedWorkSpaces._
+import cards.nine.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, NineCardsPreferencesValue, WorkspaceAnimations}
+import cards.nine.commons._
 import macroid.FullDsl._
 import macroid._
 

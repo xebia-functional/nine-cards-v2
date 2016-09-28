@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence
+package cards.nine.services.persistence
 
-import com.fortysevendeg.ninecardslauncher.services.persistence.models._
+import cards.nine.services.persistence.models._
 
 sealed trait FetchAppOrder
 

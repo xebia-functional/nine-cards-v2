@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package cards.nine.app.ui.commons
 
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout

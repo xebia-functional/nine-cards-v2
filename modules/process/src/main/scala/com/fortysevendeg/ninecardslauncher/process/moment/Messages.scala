@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.process.moment
+package cards.nine.process.moment
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{FormedWidget, MomentTimeSlot}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
+import cards.nine.process.commons.models.{FormedWidget, MomentTimeSlot}
+import cards.nine.process.commons.types.NineCardsMoment
 
 case class MomentProcessConfig(
   namesMoments: Map[NineCardsMoment, String])

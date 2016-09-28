@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher
+package cards.nine.app.ui.launcher
 
 import android.app.Activity
 import android.appwidget.AppWidgetManager
@@ -7,11 +7,11 @@ import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.ActionsScreenListener
-import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.AppsAlphabetical
+import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
+import cards.nine.app.ui.collections.ActionsScreenListener
+import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.action_filters._
+import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 

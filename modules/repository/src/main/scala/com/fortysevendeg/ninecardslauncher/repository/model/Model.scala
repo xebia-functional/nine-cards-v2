@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.repository.model
+package cards.nine.repository.model
 
 case class App(
   id: Int,

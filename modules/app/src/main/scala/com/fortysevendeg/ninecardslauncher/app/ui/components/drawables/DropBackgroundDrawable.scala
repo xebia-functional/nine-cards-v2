@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.drawables
+package cards.nine.app.ui.components.drawables
 
 import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
 import android.graphics._
@@ -6,7 +6,7 @@ import android.graphics.drawable.Drawable
 import android.view.animation.DecelerateInterpolator
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SnailsUtils
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.SpeedAnimations
+import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

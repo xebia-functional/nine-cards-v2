@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.reads
+package cards.nine.services.persistence.reads
 
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.MomentTimeSlot
+import cards.nine.services.persistence.models.MomentTimeSlot
 
 object MomentImplicits {
 

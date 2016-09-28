@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.accounts.impl
+package cards.nine.process.accounts.impl
 
 trait UserAccountsProcessImplData {
 

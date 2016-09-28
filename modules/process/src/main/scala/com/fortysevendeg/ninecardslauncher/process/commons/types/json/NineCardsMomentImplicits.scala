@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.commons.types.json
+package cards.nine.process.commons.types.json
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
+import cards.nine.process.commons.types.NineCardsMoment
 import play.api.libs.json._
 
 object NineCardsMomentImplicits {

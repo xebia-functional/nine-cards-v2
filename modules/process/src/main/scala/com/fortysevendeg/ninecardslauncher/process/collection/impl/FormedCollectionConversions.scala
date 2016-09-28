@@ -1,16 +1,16 @@
-package com.fortysevendeg.ninecardslauncher.process.collection.impl
+package cards.nine.process.collection.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
-import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory, _}
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService._
+import cards.nine.process.collection.models._
+import cards.nine.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
+import cards.nine.process.commons.Spaces._
+import cards.nine.process.commons.models.PrivateCollection
+import cards.nine.process.commons.types.{ContactsCategory, NineCardCategory, _}
+import cards.nine.services.apps.models.Application
+import cards.nine.services.contacts.ContactsServices
+import cards.nine.services.contacts.models.Contact
+import cards.nine.services.persistence.{AddCardRequest, AddCollectionRequest}
 import monix.eval.Task
 
 import scala.annotation.tailrec

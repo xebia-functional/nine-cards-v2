@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.process.cloud.models
+package cards.nine.process.cloud.models
 
 import java.util.Date
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
+import cards.nine.process.commons.types._
 
 trait CloudStorageResource {
   def cloudId: String

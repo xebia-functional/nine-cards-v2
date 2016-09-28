@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections
+package cards.nine.app.ui.collections
 
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.{CardView, RecyclerView}
@@ -7,18 +7,18 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.EditingCollectionMode
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.styles.CollectionAdapterStyles
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.ReorderItemTouchListener
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{BackgroundSelectedDrawable, IconTypes, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize, IconsSize, NineCardsPreferencesValue, ShowPositionInCards}
-import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
+import cards.nine.app.ui.collections.jobs.EditingCollectionMode
+import cards.nine.app.ui.collections.styles.CollectionAdapterStyles
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.components.commons.ReorderItemTouchListener
+import cards.nine.app.ui.components.drawables.{BackgroundSelectedDrawable, IconTypes, PathMorphDrawable}
+import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, NineCardsPreferencesValue, ShowPositionInCards}
+import cards.nine.commons.ops.SeqOps._
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types._
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._

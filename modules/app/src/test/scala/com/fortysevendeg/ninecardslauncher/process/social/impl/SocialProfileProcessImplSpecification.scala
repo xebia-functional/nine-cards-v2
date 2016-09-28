@@ -1,13 +1,13 @@
-package com.fortysevendeg.ninecardslauncher.process.social.impl
+package cards.nine.process.social.impl
 
 import android.content.Context
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
-import com.fortysevendeg.ninecardslauncher.process.social.{SocialProfileClientListener, SocialProfileProcessException}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{PersistenceServiceException, PersistenceServices}
-import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServices, GooglePlusServicesException}
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
+import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
+import cards.nine.services.plus.{GooglePlusServices, GooglePlusServicesException}
 import com.google.android.gms.common.api.GoogleApiClient
 import monix.eval.Task
 import org.specs2.mock.Mockito

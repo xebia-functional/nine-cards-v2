@@ -1,19 +1,19 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences
+package cards.nine.app.ui.preferences
 
 import android.app.{ActionBar, Activity}
 import android.os.Bundle
 import android.preference.Preference.OnPreferenceClickListener
 import android.preference.{Preference, PreferenceActivity, PreferenceFragment}
 import android.view.MenuItem
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.about.AboutFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.animations.AnimationsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.appdrawer.AppDrawerFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers.DeveloperFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.help.HelpFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.lookandfeel.LookFeelFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.moments.MomentsFragment
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.preferences.about.AboutFragment
+import cards.nine.app.ui.preferences.animations.AnimationsFragment
+import cards.nine.app.ui.preferences.appdrawer.AppDrawerFragment
+import cards.nine.app.ui.preferences.commons._
+import cards.nine.app.ui.preferences.developers.DeveloperFragment
+import cards.nine.app.ui.preferences.help.HelpFragment
+import cards.nine.app.ui.preferences.lookandfeel.LookFeelFragment
+import cards.nine.app.ui.preferences.moments.MomentsFragment
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
 

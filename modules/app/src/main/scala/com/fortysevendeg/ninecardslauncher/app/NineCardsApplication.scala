@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app
+package cards.nine.app
 
 import android.app.Application
 import android.content.Context
@@ -6,7 +6,7 @@ import android.os.StrictMode
 import android.support.multidex.MultiDex
 import com.crashlytics.android.Crashlytics
 import com.facebook.stetho.Stetho
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
+import cards.nine.app.ui.commons.AppLog
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.fabric.sdk.android.Fabric

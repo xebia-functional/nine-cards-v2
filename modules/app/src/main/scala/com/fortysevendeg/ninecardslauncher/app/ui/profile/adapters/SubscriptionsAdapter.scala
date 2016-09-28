@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters
+package cards.nine.app.ui.profile.adapters
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -8,13 +8,13 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.SubscriptionsAdapterStyles
-import com.fortysevendeg.ninecardslauncher.app.ui.profile.ops.SubscriptionOps._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.Subscription
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.profile.SubscriptionsAdapterStyles
+import cards.nine.app.ui.profile.ops.SubscriptionOps._
+import cards.nine.process.sharedcollections.models.Subscription
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

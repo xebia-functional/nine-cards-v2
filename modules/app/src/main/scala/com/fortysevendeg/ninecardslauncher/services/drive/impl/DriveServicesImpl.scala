@@ -1,16 +1,16 @@
-package com.fortysevendeg.ninecardslauncher.services.drive.impl
+package cards.nine.services.drive.impl
 
 import java.io.{InputStream, OutputStreamWriter}
 
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.services.drive._
-import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
-import com.fortysevendeg.ninecardslauncher.services.drive.impl.Extensions._
-import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
+import cards.nine.commons._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.services.drive._
+import cards.nine.services.drive.impl.DriveServicesImpl._
+import cards.nine.services.drive.impl.Extensions._
+import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import com.google.android.gms.common.api._
 import com.google.android.gms.drive._
 import com.google.android.gms.drive.metadata.CustomPropertyKey

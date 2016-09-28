@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.launcher
+package cards.nine.app.ui.launcher
 
 import android.app.Activity
 import android.appwidget.{AppWidgetHost, AppWidgetManager}
@@ -14,48 +14,48 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsExcerpt._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SnailsCommons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.RippleCollectionDrawable
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{LauncherData, LauncherMoment}
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.EditWidgetsMode
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets.WidgetsFragment
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.collection.CollectionsUiActions
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.AppDrawerIconShadowBuilder
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerUiActions
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails._
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NineCardsMoment}
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
-import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
-import com.fortysevendeg.ninecardslauncher.process.recognition.ConditionWeather
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
-import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
+import cards.nine.app.ui.collections.CollectionsDetailsActivity
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.CommonsExcerpt._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.Constants._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.SafeUi._
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.commons.ops.WidgetsOps._
+import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
+import cards.nine.app.ui.components.drawables.RippleCollectionDrawable
+import cards.nine.app.ui.components.layouts._
+import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
+import cards.nine.app.ui.components.models.{LauncherData, LauncherMoment}
+import cards.nine.app.ui.launcher.Statuses.EditWidgetsMode
+import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
+import cards.nine.app.ui.launcher.collection.CollectionsUiActions
+import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
+import cards.nine.app.ui.launcher.drawer.DrawerUiActions
+import cards.nine.app.ui.launcher.snails.LauncherSnails._
+import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
+import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
+import cards.nine.commons._
+import cards.nine.process.commons.models.{Collection, Moment}
+import cards.nine.process.commons.types.{AppCardType, CardType, NineCardsMoment}
+import cards.nine.process.device.models.{Contact, LastCallsContact, _}
+import cards.nine.process.device.{GetAppOrder, GetByName}
+import cards.nine.process.recognition.ConditionWeather
+import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.process.widget.models.AppWidget
+import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

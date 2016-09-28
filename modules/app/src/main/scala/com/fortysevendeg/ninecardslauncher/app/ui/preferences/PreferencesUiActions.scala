@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.preferences
+package cards.nine.app.ui.preferences
 
 import android.content.Intent
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 

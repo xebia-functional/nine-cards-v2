@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.utils
+package cards.nine.process.utils
 
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
+import cards.nine.services.persistence.models.User
 
 trait ApiUtilsData {
 

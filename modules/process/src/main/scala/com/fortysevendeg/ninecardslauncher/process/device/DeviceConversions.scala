@@ -1,20 +1,20 @@
-package com.fortysevendeg.ninecardslauncher.process.device
+package cards.nine.process.device
 
 import android.content.{ComponentName, Intent}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.process.device.types.{CallType, WidgetResizeMode}
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => ServicesCall}
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{ContactCounter, Contact => ServicesContact, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import com.fortysevendeg.ninecardslauncher.services.image.{AppPackage, BitmapResize}
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.{Shortcut => ServicesShortcut}
-import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => ServicesWidget}
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.process.commons.NineCardIntentConversions
+import cards.nine.process.commons.models.NineCardIntent
+import cards.nine.process.commons.types._
+import cards.nine.process.device.models._
+import cards.nine.process.device.types.{CallType, WidgetResizeMode}
+import cards.nine.services.apps.models.Application
+import cards.nine.services.calls.models.{Call => ServicesCall}
+import cards.nine.services.contacts.models.{ContactCounter, Contact => ServicesContact, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
+import cards.nine.services.image.{AppPackage, BitmapResize}
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
+import cards.nine.services.shortcuts.models.{Shortcut => ServicesShortcut}
+import cards.nine.services.widgets.models.{Widget => ServicesWidget}
 
 import scala.util.Try
 

@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
+package cards.nine.app.ui.commons.ops
 
 import android.appwidget.AppWidgetProviderInfo
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.process.device.models.Widget
+import cards.nine.process.device.models.Widget
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 

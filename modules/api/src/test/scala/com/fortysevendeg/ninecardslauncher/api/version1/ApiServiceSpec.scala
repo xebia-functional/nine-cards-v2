@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.api.version1
+package cards.nine.api.version1
 
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceSpecification
 import com.fortysevendeg.rest.client.ServiceClient
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import monix.eval.Task

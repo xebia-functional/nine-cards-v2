@@ -1,6 +1,6 @@
 package com.fortysevendeg.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
+import cards.nine.commons.test.TaskServiceSpecification
 import com.fortysevendeg.rest.client.SampleRequest
 import okhttp3.Request
 import org.specs2.matcher.DisjunctionMatchers

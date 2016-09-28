@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.widgets
+package cards.nine.app.ui.components.widgets
 
 import android.content.Context
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
@@ -8,10 +8,10 @@ import android.view.animation.GridLayoutAnimationController.AnimationParameters
 import android.view.{MotionEvent, View}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AnimationsUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.app.ui.commons.AnimationsUtils._
+import cards.nine.app.ui.components.commons._
+import cards.nine.app.ui.components.layouts._
+import cards.nine.commons._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global

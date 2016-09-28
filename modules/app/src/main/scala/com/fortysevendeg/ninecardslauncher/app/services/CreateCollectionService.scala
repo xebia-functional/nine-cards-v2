@@ -1,25 +1,25 @@
-package com.fortysevendeg.ninecardslauncher.app.services
+package cards.nine.app.services
 
 import android.app.{NotificationManager, PendingIntent, Service}
 import android.content.{Context, Intent}
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, BroadcastDispatcher, ContextSupportProvider}
-import com.fortysevendeg.ninecardslauncher.app.di.InjectorImpl
-import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService._
-import com.fortysevendeg.ninecardslauncher.app.services.commons.FirebaseExtensions._
-import com.fortysevendeg.ninecardslauncher.app.services.commons.GoogleDriveApiClientService
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppUtils._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.SyncDeviceState.{stateFailure => _, stateSuccess => _}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
-import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.device.ImplicitsDeviceException
-import com.fortysevendeg.ninecardslauncher.process.user.models.User
+import cards.nine.app.commons.{BroadAction, BroadcastDispatcher, ContextSupportProvider}
+import cards.nine.app.di.InjectorImpl
+import cards.nine.app.services.CreateCollectionService._
+import cards.nine.app.services.commons.FirebaseExtensions._
+import cards.nine.app.services.commons.GoogleDriveApiClientService
+import cards.nine.app.ui.commons.AppLog._
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.SyncDeviceState.{stateFailure => _, stateSuccess => _}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.WizardState._
+import cards.nine.app.ui.commons.action_filters._
+import cards.nine.app.ui.wizard.WizardActivity
+import cards.nine.commons.javaNull
+import cards.nine.process.device.ImplicitsDeviceException
+import cards.nine.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts

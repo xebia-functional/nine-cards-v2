@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.process.recommendations
+package cards.nine.process.recommendations
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.recommendations.models.RecommendedApp
 
 trait RecommendationsProcess {
 
@@ -11,7 +11,7 @@ trait RecommendationsProcess {
     * Get recommended apps based on a category
     *
     * @param category a valid category identification
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
+    * @return the Seq[cards.nine.process.recommendations.models.RecommendedApp]
     * @throws RecommendedAppsConfigurationException if there was an error with the API configuration
     * @throws RecommendedAppsException if there was an error fetching the recommended apps
     */
@@ -21,7 +21,7 @@ trait RecommendationsProcess {
     * Get recommended apps based on a category
     *
     * @param packages a valid list of packages
-    * @return the Seq[com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp]
+    * @return the Seq[cards.nine.process.recommendations.models.RecommendedApp]
     * @throws RecommendedAppsConfigurationException if there was an error with the API configuration
     * @throws RecommendedAppsException if there was an error fetching the recommended apps
     */

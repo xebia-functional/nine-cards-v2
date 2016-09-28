@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.commons
+package cards.nine.app.ui.components.commons
 
 import android.animation.{Animator, AnimatorListenerAdapter, ObjectAnimator, ValueAnimator}
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.SpeedAnimations
+import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import macroid.{ContextWrapper, Snail, Ui}
 
 import scala.concurrent.Promise

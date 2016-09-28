@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.commons
+package cards.nine.app.commons
 
 import android.content._
 import BroadcastDispatcher._

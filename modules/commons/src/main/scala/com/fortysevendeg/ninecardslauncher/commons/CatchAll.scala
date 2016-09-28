@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.commons
+package cards.nine.commons
 
 import cats.syntax.either._
 import monix.eval.Task

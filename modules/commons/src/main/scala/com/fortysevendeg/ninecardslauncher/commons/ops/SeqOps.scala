@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.commons.ops
+package cards.nine.commons.ops
 
 object SeqOps {
 

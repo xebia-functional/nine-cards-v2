@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.profile
+package cards.nine.app.ui.profile
 
 import android.app.Activity
 import android.content.Intent
@@ -6,9 +6,9 @@ import android.os.Bundle
 import android.support.design.widget.AppBarLayout
 import android.support.v7.app.AppCompatActivity
 import android.view.{Menu, MenuItem}
-import com.fortysevendeg.ninecardslauncher.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import com.fortysevendeg.ninecardslauncher.app.ui.commons._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
+import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
+import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.Contexts
 

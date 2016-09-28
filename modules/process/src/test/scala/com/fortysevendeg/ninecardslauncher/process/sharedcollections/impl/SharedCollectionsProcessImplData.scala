@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.process.sharedcollections.impl
+package cards.nine.process.sharedcollections.impl
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppsCollectionType, Communication}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.TopSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{CreateSharedCollection, UpdateSharedCollection}
-import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection => CollectionPersistence}
+import cards.nine.process.commons.types.{AppsCollectionType, Communication}
+import cards.nine.process.sharedcollections.TopSharedCollection
+import cards.nine.process.sharedcollections.models.{CreateSharedCollection, UpdateSharedCollection}
+import cards.nine.services.api._
+import cards.nine.services.persistence.models.{Collection => CollectionPersistence}
 
 import scala.util.Random
 

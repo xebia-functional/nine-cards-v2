@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.device
+package cards.nine.process.device
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.DockType
+import cards.nine.process.commons.types.DockType
 
 sealed trait ContactsFilter
 

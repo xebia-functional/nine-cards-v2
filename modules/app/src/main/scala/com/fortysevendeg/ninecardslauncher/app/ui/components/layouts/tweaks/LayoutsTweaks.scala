@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks
+package cards.nine.app.ui.components.layouts.tweaks
 
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
@@ -6,26 +6,26 @@ import android.support.v7.widget.Toolbar.OnMenuItemClickListener
 import android.view.{MenuItem, View}
 import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts._
-import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
-import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ContentView
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, MomentTimeSlot}
-import com.fortysevendeg.ninecardslauncher.process.device.models.{DockApp, TermCounter}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.layouts._
+import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
+import cards.nine.app.ui.components.widgets.ContentView
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
+import cards.nine.process.commons.models.{Card, Collection, MomentTimeSlot}
+import cards.nine.process.device.models.{DockApp, TermCounter}
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R
 import AnimatedWorkSpaces._
 import android.appwidget.AppWidgetHostView
-import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
-import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentPresenter
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher.process.recognition.ConditionWeather
-import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
+import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
+import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.process.recognition.ConditionWeather
+import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
+import cards.nine.process.widget.models.AppWidget
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global

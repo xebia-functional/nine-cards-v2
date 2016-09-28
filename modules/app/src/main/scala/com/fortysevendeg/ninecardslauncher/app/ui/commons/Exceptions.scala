@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.commons
+package cards.nine.app.ui.commons
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class UiException(message: String, cause: Option[Throwable] = None, recoverable: Boolean = false)
   extends RuntimeException(message)

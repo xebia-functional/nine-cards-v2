@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.contacts;
+package cards.nine.services.contacts;
 
 import android.annotation.TargetApi;
 import android.net.Uri;

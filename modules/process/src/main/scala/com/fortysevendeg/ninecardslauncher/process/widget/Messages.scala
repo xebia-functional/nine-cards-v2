@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.widget
+package cards.nine.process.widget
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppWidgetType, WidgetType}
+import cards.nine.process.commons.types.{AppWidgetType, WidgetType}
 
 case class AddWidgetRequest(
   momentId: Int,

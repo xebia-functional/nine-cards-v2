@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.fortysevendeg.ninecardslauncher.utils;
+package cards.nine.utils;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;

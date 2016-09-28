@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.commons.utils.impl
+package cards.nine.commons.utils.impl
 
 import java.io.{ByteArrayInputStream, InputStream}
 
 import android.content.res.AssetManager
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.utils.{FileUtilsData, StreamWrapper}
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.utils.{FileUtilsData, StreamWrapper}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
