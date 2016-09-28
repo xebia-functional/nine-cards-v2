@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.api
 
-import com.fortysevendeg.ninecardslauncher.api._
+import cards.nine.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
 import org.joda.time.format.DateTimeFormat
 
@@ -12,7 +12,7 @@ trait Conversions {
   def toUser(
     email: String,
     device: LoginV1Device
-    ): version1.User =
+    ): cards.nine.api.version1.User =
     version1.User(
       _id = None,
       email = None,
@@ -28,14 +28,14 @@ trait Conversions {
         twitter = None,
         anonymous = None)))
 
-  def fromGoogleDevice(device: LoginV1Device): version1.AuthGoogleDevice =
+  def fromGoogleDevice(device: LoginV1Device): cards.nine.api.version1.AuthGoogleDevice =
     version1.AuthGoogleDevice(
       name = device.name,
       deviceId = device.deviceId,
       secretToken = device.secretToken,
       permissions = device.permissions)
 
-  def toLoginResponseV1(statusCode: Int, user: version1.User): LoginResponseV1 =
+  def toLoginResponseV1(statusCode: Int, user: cards.nine.api.version1.User): LoginResponseV1 =
     LoginResponseV1(
       statusCode,
       userId = user._id,
@@ -46,22 +46,22 @@ trait Conversions {
         google <- data.google
       } yield toGoogleDeviceSeq(google.devices)) getOrElse Seq.empty)
 
-  def toGoogleDeviceSeq(devices: Seq[version1.AuthGoogleDevice]): Seq[LoginV1Device] = devices map toGoogleDevice
+  def toGoogleDeviceSeq(devices: Seq[cards.nine.api.version1.AuthGoogleDevice]): Seq[LoginV1Device] = devices map toGoogleDevice
 
-  def toGoogleDevice(device: version1.AuthGoogleDevice): LoginV1Device =
+  def toGoogleDevice(device: cards.nine.api.version1.AuthGoogleDevice): LoginV1Device =
     LoginV1Device(
       name = device.name,
       deviceId = device.deviceId,
       secretToken = device.secretToken,
       permissions = device.permissions)
 
-  def toCategorizedPackage(packageName: String, categorizeResponse: version2.CategorizeResponse): CategorizedPackage =
+  def toCategorizedPackage(packageName: String, categorizeResponse: cards.nine.api.version2.CategorizeResponse): CategorizedPackage =
     CategorizedPackage(packageName, categorizeResponse.items.find(_.packageName == packageName).map(_.category))
 
-  def toCategorizedPackages(categorizeResponse: version2.CategorizeResponse): Seq[CategorizedPackage] =
+  def toCategorizedPackages(categorizeResponse: cards.nine.api.version2.CategorizeResponse): Seq[CategorizedPackage] =
     categorizeResponse.items.map(app => CategorizedPackage(app.packageName, Some(app.category)))
 
-  def toCategorizedDetailPackages(categorizeResponse: version2.CategorizeDetailResponse): Seq[CategorizedDetailPackage] =
+  def toCategorizedDetailPackages(categorizeResponse: cards.nine.api.version2.CategorizeDetailResponse): Seq[CategorizedDetailPackage] =
     categorizeResponse.items.map { app =>
       CategorizedDetailPackage(
         packageName = app.packageName,
@@ -73,7 +73,7 @@ trait Conversions {
         stars = app.stars)
     }
 
-  def toUserConfig(apiUserConfig: version1.UserConfig): UserV1 =
+  def toUserConfig(apiUserConfig: cards.nine.api.version1.UserConfig): UserV1 =
     UserV1(
       _id = apiUserConfig._id,
       email = apiUserConfig.email,
@@ -81,23 +81,23 @@ trait Conversions {
       devices = apiUserConfig.devices map toUserConfigDevice,
       status = toUserConfigStatusInfo(apiUserConfig.status))
 
-  def toUserConfigPlusProfile(apiPlusProfile: version1.UserConfigPlusProfile): UserV1PlusProfile =
+  def toUserConfigPlusProfile(apiPlusProfile: cards.nine.api.version1.UserConfigPlusProfile): UserV1PlusProfile =
     UserV1PlusProfile(
       displayName = apiPlusProfile.displayName,
       profileImage = toUserConfigProfileImage(apiPlusProfile.profileImage))
 
-  def toUserConfigProfileImage(apiProfileImage: version1.UserConfigProfileImage): UserV1ProfileImage =
+  def toUserConfigProfileImage(apiProfileImage: cards.nine.api.version1.UserConfigProfileImage): UserV1ProfileImage =
     UserV1ProfileImage(
       imageType = apiProfileImage.imageType,
       imageUrl = apiProfileImage.imageUrl)
 
-  def toUserConfigDevice(apiDevice: version1.UserConfigDevice): UserV1Device =
+  def toUserConfigDevice(apiDevice: cards.nine.api.version1.UserConfigDevice): UserV1Device =
     UserV1Device(
       deviceId = apiDevice.deviceId,
       deviceName = apiDevice.deviceName,
       collections = apiDevice.collections map toUserConfigCollection)
 
-  def toUserConfigCollection(apiCollection: version1.UserConfigCollection): UserV1Collection =
+  def toUserConfigCollection(apiCollection: cards.nine.api.version1.UserConfigCollection): UserV1Collection =
     UserV1Collection(
       name = apiCollection.name,
       originalSharedCollectionId = apiCollection.originalSharedCollectionId,
@@ -115,14 +115,14 @@ trait Conversions {
       alt = apiCollection.alt,
       category = apiCollection.category)
 
-  def toUserConfigCollectionItem(apiCollectionItem: version1.UserConfigCollectionItem): UserV1CollectionItem =
+  def toUserConfigCollectionItem(apiCollectionItem: cards.nine.api.version1.UserConfigCollectionItem): UserV1CollectionItem =
     UserV1CollectionItem(
       itemType = apiCollectionItem.itemType,
       title = apiCollectionItem.title,
       metadata = apiCollectionItem.metadata,
       categories = apiCollectionItem.categories)
 
-  def toUserConfigStatusInfo(apiStatusInfo: version1.UserConfigStatusInfo): UserV1StatusInfo =
+  def toUserConfigStatusInfo(apiStatusInfo: cards.nine.api.version1.UserConfigStatusInfo): UserV1StatusInfo =
     UserV1StatusInfo(
       products = apiStatusInfo.products,
       friendsReferred = apiStatusInfo.friendsReferred,
@@ -134,10 +134,10 @@ trait Conversions {
       joinedThrough = apiStatusInfo.joinedThrough,
       tester = apiStatusInfo.tester)
 
-  def toRecommendationAppSeq(apps: Seq[version2.RecommendationApp]): Seq[RecommendationApp] =
+  def toRecommendationAppSeq(apps: Seq[cards.nine.api.version2.RecommendationApp]): Seq[RecommendationApp] =
     apps map toRecommendationApp
 
-  def toRecommendationApp(app: version2.RecommendationApp): RecommendationApp =
+  def toRecommendationApp(app: cards.nine.api.version2.RecommendationApp): RecommendationApp =
     RecommendationApp(
       packageName = app.packageName,
       name = app.title,
@@ -147,7 +147,7 @@ trait Conversions {
       free = app.free,
       screenshots = app.screenshots)
 
-  def toSharedCollectionResponseSeq(collections: Seq[version2.Collection]): Seq[SharedCollection] =
+  def toSharedCollectionResponseSeq(collections: Seq[cards.nine.api.version2.Collection]): Seq[SharedCollection] =
     collections map toSharedCollection
 
   def formatPublishedDate(date: String): Long = {
@@ -165,7 +165,7 @@ trait Conversions {
     }
   }
 
-  def toSharedCollection(collection: version2.Collection) =
+  def toSharedCollection(collection: cards.nine.api.version2.Collection) =
     SharedCollection(
       id = collection.publicIdentifier,
       sharedCollectionId = collection.publicIdentifier,
@@ -180,10 +180,10 @@ trait Conversions {
       icon = collection.icon,
       community = collection.community)
 
-  def toSharedCollectionPackageResponseSeq(packages: Seq[version2.CollectionApp]): Seq[SharedCollectionPackageResponse] =
+  def toSharedCollectionPackageResponseSeq(packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackageResponse] =
     packages map toSharedCollectionPackageResponse
 
-  def toSharedCollectionPackageResponse(item: version2.CollectionApp): SharedCollectionPackageResponse =
+  def toSharedCollectionPackageResponse(item: cards.nine.api.version2.CollectionApp): SharedCollectionPackageResponse =
     SharedCollectionPackageResponse(
       packageName = item.packageName,
       title = item.title,

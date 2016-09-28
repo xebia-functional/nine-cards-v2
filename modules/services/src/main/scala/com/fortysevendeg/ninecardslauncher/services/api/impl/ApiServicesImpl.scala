@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api._
-import com.fortysevendeg.ninecardslauncher.api.version2._
+import cards.nine.api._
+import cards.nine.api.version2._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
-import com.fortysevendeg.rest.client.messages.ServiceClientResponse
+import cards.nine.api.rest.client.messages.ServiceClientResponse
 import cards.nine.commons.services.TaskService._
 import monix.eval.Task
 
@@ -14,14 +14,14 @@ case class ApiServicesConfig(appId: String, appKey: String, localization: String
 
 class ApiServicesImpl(
   apiServicesConfig: ApiServicesConfig,
-  apiService: version2.ApiService,
-  apiServiceV1: version1.ApiService)
+  apiService: cards.nine.api.version2.ApiService,
+  apiServiceV1: cards.nine.api.version1.ApiService)
   extends ApiServices
   with Conversions
   with ImplicitsApiServiceExceptions {
 
-  import version1.JsonImplicits._
-  import version2.JsonImplicits._
+  import cards.nine.api.version1.JsonImplicits._
+  import cards.nine.api.version2.JsonImplicits._
 
   val headerAppId = "X-Appsly-Application-Id"
 
@@ -296,10 +296,10 @@ class ApiServicesImpl(
   }
 
   implicit class RequestConfigExt(request: RequestConfig) {
-    def toServiceHeader: version2.ServiceHeader =
+    def toServiceHeader: cards.nine.api.version2.ServiceHeader =
       version2.ServiceHeader(request.apiKey, request.sessionToken, request.androidId)
 
-    def toGooglePlayHeader: version2.ServiceMarketHeader =
+    def toGooglePlayHeader: cards.nine.api.version2.ServiceMarketHeader =
       version2.ServiceMarketHeader(request.apiKey, request.sessionToken, request.androidId, request.marketToken)
   }
 
