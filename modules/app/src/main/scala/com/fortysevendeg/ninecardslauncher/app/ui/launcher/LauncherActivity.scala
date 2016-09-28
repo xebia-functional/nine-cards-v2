@@ -22,7 +22,6 @@ class LauncherActivity
   with TypedFindView
   with ActionsScreenListener
   with LauncherUiActionsImpl
-  with SystemBarsTint
   with BroadcastDispatcher {
   self =>
 
