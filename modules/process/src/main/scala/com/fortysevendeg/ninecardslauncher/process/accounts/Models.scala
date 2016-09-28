@@ -20,9 +20,13 @@ case object CallPhone extends AppPermission {
   override val value: String = android.Manifest.permission.CALL_PHONE
 }
 
+case object FineLocation extends AppPermission {
+  override val value: String = android.Manifest.permission.ACCESS_FINE_LOCATION
+}
+
 object AppPermission {
 
-  def values = Seq(GetAccounts, ReadContacts, ReadCallLog, CallPhone)
+  def values = Seq(GetAccounts, ReadContacts, ReadCallLog, CallPhone, FineLocation)
 
 }
 

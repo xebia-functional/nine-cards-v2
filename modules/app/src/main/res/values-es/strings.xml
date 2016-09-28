@@ -46,7 +46,7 @@
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
 
     <string name="errorAccountsMessage">Necesitas una cuenta de Google para utilizar 9Cards. Sólo tendremos acceso al nombre de la cuenta y se le pedirá para futuros accesos</string>
-    <string name="errorReadContactsMessage">Con el acceso a los contactos podremos mejorar tus colecciones basadas en contactos y podrás acceder a los contactos desde el drawer.</string>
+    <string name="errorFineLocationMessage">Usaremos la localización para mostrarte el tiempo en la pantalla de momentos.</string>
 
     <string name="deviceDetectedNoProUser">Hemos detectado una configuración guardada para tu %1$s. Si eres usuario Pro puedes cargar previas configuraciones (colecciones y temas). ¿Quieres convertirte en Pro ahora?</string>
 

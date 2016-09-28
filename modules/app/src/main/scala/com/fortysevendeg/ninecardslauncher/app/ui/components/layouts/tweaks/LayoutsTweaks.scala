@@ -23,6 +23,7 @@ import android.appwidget.AppWidgetHostView
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
+import com.fortysevendeg.ninecardslauncher.process.recognition.ConditionWeather
 import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import macroid._
@@ -415,6 +416,9 @@ object TopBarLayoutTweaks {
 
   def tblReloadByType(workSpaceType: WorkSpaceType)(implicit contextWrapper: ContextWrapper) =
     Tweak[W] (_.reloadByType(workSpaceType).run)
+
+  def tblWeather(condition: ConditionWeather) =
+    Tweak[W] (_.setWeather(condition).run)
 
 }
 

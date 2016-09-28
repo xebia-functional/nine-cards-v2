@@ -1,14 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.View
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
-import macroid.ContextWrapper
 
 import scala.util.Random
 
@@ -60,7 +56,11 @@ object RequestCodes {
 
   val phoneCallPermission = 15
 
-  val selectAccount = 16
+  val locationPermission = 16
+
+  val wizardPermissions = 17
+
+  val selectAccount = 18
 
 }
 
