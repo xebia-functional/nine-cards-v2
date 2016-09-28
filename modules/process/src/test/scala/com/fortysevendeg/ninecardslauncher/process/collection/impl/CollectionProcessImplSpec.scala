@@ -761,7 +761,6 @@ class CollectionProcessImplSpec
         val result = collectionProcess.deleteCards(collectionId, seqCardIds).value.run
         result shouldEqual Right((): Unit)
 
-        there was one(mockPersistenceServices).updateCards(seqProcessCardReload)
       }
 
     "returns a successful when return sequence empty of cards" in
