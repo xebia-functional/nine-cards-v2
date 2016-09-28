@@ -99,9 +99,7 @@ class SingleCollectionJobs(
     val tasks = cards map { card =>
       trackCard(card, action).value
     }
-    Task.gatherUnordered(tasks) map { list =>
-      Either.right(())
-    }
+    Task.gatherUnordered(tasks) map (_ => Either.right(()))
   }
 
   private[this] def trackCard(card: Card, action: Action): TaskService[Unit] = card.cardType match {

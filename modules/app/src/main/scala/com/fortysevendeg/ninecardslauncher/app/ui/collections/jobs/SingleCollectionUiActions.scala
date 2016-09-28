@@ -58,9 +58,10 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
     statuses = statuses.copy(scrollType = sType, canScroll = canScroll)
   }
 
-  def startReorder(holder: ViewHolder): TaskService[Unit] = (statuses.touchHelper map { th =>
-    uiVibrate() ~ Ui(th.startDrag(holder))
-  } getOrElse Ui.nop).toService
+  def startReorder(holder: ViewHolder): TaskService[Unit] = (statuses.touchHelper match {
+    case Some(th) => uiVibrate() ~ Ui(th.startDrag(holder))
+    case _ => Ui.nop
+  }).toService
 
   def initialize(
     animateCards: Boolean,
