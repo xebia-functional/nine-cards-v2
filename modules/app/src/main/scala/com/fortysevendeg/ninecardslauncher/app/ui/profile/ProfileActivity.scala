@@ -17,7 +17,6 @@ class ProfileActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with TypedFindView
-  with SystemBarsTint
   with ProfileUiActionsImpl
   with AppBarLayout.OnOffsetChangedListener
   with BroadcastDispatcher { self =>

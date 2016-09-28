@@ -111,6 +111,7 @@
         <item name="android:layout_marginLeft">@dimen/padding_default</item>
         <item name="android:layout_marginRight">@dimen/padding_default</item>
         <item name="android:layout_marginBottom">@dimen/padding_default</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="CollectionDetailEmptyContent">

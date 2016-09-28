@@ -38,6 +38,18 @@ object ViewOps {
 
     def hasLayerHardware: Boolean = Option(view.getTag(useLayerHardwareId)).isDefined
 
+    def calculateAnchorViewPosition: (Int, Int) = {
+      val loc = new Array[Int](2)
+      view.getLocationOnScreen(loc)
+      (loc(0), loc(1))
+    }
+
+    def projectionScreenPositionInView(x: Int, y: Int): (Int, Int) = {
+      val loc = new Array[Int](2)
+      view.getLocationOnScreen(loc)
+      (x - loc(0), y - loc(1))
+    }
+
   }
 
 }
