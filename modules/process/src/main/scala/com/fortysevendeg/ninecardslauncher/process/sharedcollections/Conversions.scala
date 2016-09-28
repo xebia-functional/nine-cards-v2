@@ -1,11 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.process.sharedcollections
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, AppCardType, NineCardCategory}
+import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
+import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
 import com.fortysevendeg.ninecardslauncher.services.api.{SharedCollectionPackageResponse, SharedCollection => SharedCollectionService}
+import com.fortysevendeg.ninecardslauncher.services.persistence.UpdateCollectionRequest
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 
-trait Conversions {
+trait Conversions
+  extends CommonConversions {
 
   def toSharedCollections(items: Seq[SharedCollectionService], localCollectionMap: Map[String, Collection]): Seq[SharedCollection] =
     items map (col => toSharedCollection(col, localCollectionMap.get(col.sharedCollectionId)))
@@ -24,7 +27,7 @@ trait Conversions {
       category = NineCardCategory(item.category),
       icon = item.icon,
       community = item.community,
-      subscriptionType = determineSubscription(maybeLocalCollection))
+      publicCollectionStatus = determinePublicCollectionStatus(maybeLocalCollection))
 
   def toSharedCollectionPackage(item: SharedCollectionPackageResponse): SharedCollectionPackage =
     SharedCollectionPackage(
@@ -35,8 +38,22 @@ trait Conversions {
       downloads = item.downloads,
       free = item.free)
 
-  def toSubscription(subscriptions: (String, Collection, Boolean)): Subscription = {
-    val (sharedCollectionId, collection, subscribed) = subscriptions
+  def toUpdateCollectionRequest(collection: Collection, sharedCollectionSubscribed: Boolean): UpdateCollectionRequest =
+    UpdateCollectionRequest(
+      id = collection.id,
+      position = collection.position,
+      name = collection.name,
+      collectionType = collection.collectionType,
+      icon = collection.icon,
+      themedColorIndex = collection.themedColorIndex,
+      appsCategory = collection.appsCategory,
+      originalSharedCollectionId = collection.originalSharedCollectionId,
+      sharedCollectionId = collection.sharedCollectionId,
+      sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
+      cards = collection.cards)
+
+  def toSubscription(subscriptions: (String, Collection)): Subscription = {
+    val (sharedCollectionId, collection) = subscriptions
     Subscription(
       id = collection.id,
       sharedCollectionId = sharedCollectionId,
@@ -44,15 +61,7 @@ trait Conversions {
       apps = collection.cards.count(card => CardType(card.cardType) == AppCardType),
       icon = collection.icon,
       themedColorIndex = collection.themedColorIndex,
-      subscribed = subscribed)
+      subscribed = collection.sharedCollectionSubscribed)
   }
 
-  private[this] def determineSubscription(maybeLocalCollection: Option[Collection]): SubscriptionType =
-    maybeLocalCollection match {
-      case Some(c) if c.sharedCollectionId.isDefined && c.originalSharedCollectionId == c.sharedCollectionId =>
-        Subscribed
-      case Some(c) if c.sharedCollectionId.isDefined =>
-        Owned
-      case _ => NotSubscribed
-    }
 }

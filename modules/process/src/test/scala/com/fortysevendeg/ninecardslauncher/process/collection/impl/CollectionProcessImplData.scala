@@ -32,8 +32,6 @@ trait CollectionProcessImplData {
   val appsCategoryName = appsCategory.name
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
-  val nonExistentSharedCollectionId: String = Random.nextString(5)
-  val sharedCollectionSubscribed: Boolean = Random.nextBoolean()
 
   val name1 = "Scala Android"
   val packageName1 = "com.fortysevendeg.scala.android"
@@ -80,6 +78,26 @@ trait CollectionProcessImplData {
   val latitude: Double = Random.nextDouble()
   val longitude: Double = Random.nextDouble()
 
+  def generateOptionId(id: String) =
+    Random.nextBoolean() match {
+      case true => None
+      case false => Some(id)
+    }
+
+  val sharedCollectionIdOption = generateOptionId(sharedCollectionId)
+  val originalSharedCollectionIdOption = generateOptionId(originalSharedCollectionId)
+  val sharedCollectionSubscribed: Boolean =
+    if (sharedCollectionId == originalSharedCollectionId) Random.nextBoolean()
+    else false
+
+  def determinePublicCollectionStatus(): PublicCollectionStatus =
+    if (sharedCollectionIdOption.isDefined && sharedCollectionSubscribed) Subscribed
+    else if (sharedCollectionIdOption.isDefined && originalSharedCollectionIdOption == sharedCollectionIdOption) PublishedByOther
+    else if (sharedCollectionIdOption.isDefined) PublishedByMe
+    else NotPublished
+
+  val publicCollectionStatus = determinePublicCollectionStatus()
+
   val application1 = Application(
     name = name1,
     packageName = packageName1,
@@ -103,8 +121,8 @@ trait CollectionProcessImplData {
     cards = Seq.empty,
     moment = None,
     appsCategory = Option(appsCategory.name),
-    originalSharedCollectionId = Option(originalSharedCollectionId),
-    sharedCollectionId = Option(sharedCollectionId),
+    originalSharedCollectionId = originalSharedCollectionIdOption,
+    sharedCollectionId = sharedCollectionIdOption,
     sharedCollectionSubscribed = sharedCollectionSubscribed)
 
   val momentTimeSlot = MomentTimeSlot(
@@ -157,10 +175,11 @@ trait CollectionProcessImplData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: NineCardCategory = appsCategory,
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
+    originalSharedCollectionId: Option[String] = originalSharedCollectionIdOption,
+    sharedCollectionId: Option[String] = sharedCollectionIdOption,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    cards: Seq[Card] = seqCard) =
+    cards: Seq[Card] = seqCard,
+    publicCollectionStatus: PublicCollectionStatus = publicCollectionStatus) =
     (0 until 5) map (
       item =>
         Collection(
@@ -171,10 +190,11 @@ trait CollectionProcessImplData {
           icon = icon,
           themedColorIndex = themedColorIndex,
           appsCategory = Option(appsCategory),
-          originalSharedCollectionId = Option(originalSharedCollectionId),
-          sharedCollectionId = Option(sharedCollectionId),
+          originalSharedCollectionId = originalSharedCollectionId,
+          sharedCollectionId = sharedCollectionId,
           sharedCollectionSubscribed = sharedCollectionSubscribed,
-          cards = cards))
+          cards = cards,
+          publicCollectionStatus = publicCollectionStatus))
 
   def createSeqServicesCollection(
     num: Int = 5,
@@ -185,8 +205,8 @@ trait CollectionProcessImplData {
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
     appsCategory: NineCardCategory = appsCategory,
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
+    originalSharedCollectionId: Option[String] = originalSharedCollectionIdOption,
+    sharedCollectionId: Option[String] = sharedCollectionIdOption,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
     (0 until 5) map (item =>
       ServicesCollection(
@@ -199,8 +219,8 @@ trait CollectionProcessImplData {
         appsCategory = Option(appsCategory.name),
         cards = Seq.empty,
         moment = None,
-        originalSharedCollectionId = Option(originalSharedCollectionId),
-        sharedCollectionId = Option(sharedCollectionId),
+        originalSharedCollectionId = originalSharedCollectionId,
+        sharedCollectionId = sharedCollectionId,
         sharedCollectionSubscribed = sharedCollectionSubscribed))
 
   def createSeqCard(
@@ -358,16 +378,16 @@ trait CollectionProcessImplData {
     appsCategory = Option(appsCategory.name),
     cards = Seq.empty,
     moment = None,
-    originalSharedCollectionId = Option(originalSharedCollectionId),
-    sharedCollectionId = Option(sharedCollectionId),
+    originalSharedCollectionId = originalSharedCollectionIdOption,
+    sharedCollectionId = sharedCollectionIdOption,
     sharedCollectionSubscribed = sharedCollectionSubscribed)
 
   def createSeqFormedCollection(num: Int = 150) =
     (0 until num) map { item =>
       FormedCollection(
         name = name,
-        originalSharedCollectionId = Option(originalSharedCollectionId),
-        sharedCollectionId = Option(sharedCollectionId),
+        originalSharedCollectionId = originalSharedCollectionIdOption,
+        sharedCollectionId = sharedCollectionIdOption,
         sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
         items = Seq.empty,
         collectionType = collectionType,
@@ -412,8 +432,8 @@ trait CollectionProcessImplData {
     appsCategory = Option(appsCategoryName),
     cards = Seq.empty,
     moment = None,
-    originalSharedCollectionId = Option(originalSharedCollectionId),
-    sharedCollectionId = Option(sharedCollectionId),
+    originalSharedCollectionId = originalSharedCollectionIdOption,
+    sharedCollectionId = sharedCollectionIdOption,
     sharedCollectionSubscribed = sharedCollectionSubscribed)
 
   val collectionAdded = Collection(
@@ -424,15 +444,29 @@ trait CollectionProcessImplData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory),
-    originalSharedCollectionId = Option(originalSharedCollectionId),
-    sharedCollectionId = Option(sharedCollectionId),
-    sharedCollectionSubscribed = sharedCollectionSubscribed)
+    originalSharedCollectionId = originalSharedCollectionIdOption,
+    sharedCollectionId = sharedCollectionIdOption,
+    sharedCollectionSubscribed = sharedCollectionSubscribed,
+    publicCollectionStatus = publicCollectionStatus)
 
   val editCollectionRequest = EditCollectionRequest(
     name = name,
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory))
+
+  val editedCollection = Collection(
+    id = collectionId,
+    position = position,
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    originalSharedCollectionId = originalSharedCollectionIdOption,
+    sharedCollectionId = sharedCollectionIdOption,
+    sharedCollectionSubscribed = sharedCollectionSubscribed,
+    publicCollectionStatus = publicCollectionStatus)
 
   val updatedCollection = Collection(
     id = collectionId,
@@ -442,9 +476,10 @@ trait CollectionProcessImplData {
     icon = icon,
     themedColorIndex = themedColorIndex,
     appsCategory = Option(appsCategory),
-    originalSharedCollectionId = Option(originalSharedCollectionId),
+    originalSharedCollectionId = originalSharedCollectionIdOption,
     sharedCollectionId = Option(sharedCollectionId),
-    sharedCollectionSubscribed = sharedCollectionSubscribed)
+    sharedCollectionSubscribed = sharedCollectionSubscribed,
+    publicCollectionStatus = publicCollectionStatus)
 
   val seqAddCardResponse = createSeqCardResponse()
 

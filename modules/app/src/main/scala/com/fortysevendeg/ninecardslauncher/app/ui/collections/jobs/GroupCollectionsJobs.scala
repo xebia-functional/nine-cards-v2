@@ -103,15 +103,8 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
   def savePublishStatus(): TaskService[Unit] =
     for {
       currentCollection <- actions.getCurrentCollection.resolveOption()
-    } yield {
-      (currentCollection.sharedCollectionId, currentCollection.originalSharedCollectionId) match {
-        case (Some(sharedCollectionId), Some(originalSharedCollectionId))
-          if sharedCollectionId != originalSharedCollectionId => statuses = statuses.copy(publishStatus = PublishedByMe)
-        case (Some(sharedCollectionId), None) => statuses = statuses.copy(publishStatus = PublishedByMe)
-        case (None, _) => statuses = statuses.copy(publishStatus = NoPublished)
-        case _ => statuses = statuses.copy(publishStatus = PublishedByOther)
-      }
-    }
+      _ <- TaskService.right(statuses = statuses.copy(publishStatus = currentCollection.publicCollectionStatus))
+    } yield ()
 
   def performCard(card : Card, position: Int): TaskService[Unit] = {
     statuses.collectionMode match {
@@ -240,11 +233,3 @@ sealed trait CollectionMode
 case object NormalCollectionMode extends CollectionMode
 
 case object EditingCollectionMode extends CollectionMode
-
-sealed trait PublishStatus
-
-case object NoPublished extends PublishStatus
-
-case object PublishedByMe extends PublishStatus
-
-case object PublishedByOther extends PublishStatus

@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.PhoneCardType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{PhoneCardType, PublishedByMe}
 import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}
@@ -101,7 +101,7 @@ class CollectionFragment
             menu.findItem(R.id.action_make_public).setEnabled(false).setTitle(resGetString(R.string.alreadyPublishedCollection))
             menu.findItem(R.id.action_share).setVisible(true)
           case _ =>
-            menu.findItem(R.id.action_make_public).setVisible(true)
+            menu.findItem(R.id.action_make_public).setEnabled(true).setTitle(resGetString(R.string.make_public))
             menu.findItem(R.id.action_share).setVisible(false)
         }
         menu.findItem(R.id.action_edit).setVisible(false)

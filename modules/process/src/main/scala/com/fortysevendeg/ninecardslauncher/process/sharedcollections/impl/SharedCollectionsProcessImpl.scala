@@ -70,14 +70,13 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
 
   override def getSubscriptions()(implicit context: ContextSupport) =
     (for {
-      userConfig <- apiUtils.getRequestConfig
-      subscriptions <- apiServices.getSubscriptions()(userConfig)
-      publications <- apiServices.getPublishedCollections()(userConfig)
       collections <- persistenceServices.fetchCollections
     } yield {
 
-      val subscriptionsIds = subscriptions.items map (_.sharedCollectionId)
-      val publicationsIds = publications.items map (_.sharedCollectionId)
+      val publicationsIds = collections filter {
+        case collection =>
+          collection.sharedCollectionId.isDefined & collection.originalSharedCollectionId != collection.sharedCollectionId
+      } flatMap (_.sharedCollectionId)
 
       val collectionsWithOriginalSharedCollectionId: Seq[(String, Collection)] =
         collections.flatMap(collection => collection.originalSharedCollectionId.map((_, collection))).filter{
@@ -86,7 +85,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
 
       (collectionsWithOriginalSharedCollectionId map {
         case (sharedCollectionId: String, collection: Collection) =>
-          (sharedCollectionId, collection, subscriptionsIds.contains(sharedCollectionId))
+          (sharedCollectionId, collection)
       }) map toSubscription
 
     }).resolveLeft(mapLeft)
@@ -95,13 +94,26 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     (for {
       userConfig <- apiUtils.getRequestConfig
       _ <- apiServices.subscribe(sharedCollectionId)(userConfig)
+      collection <- getCollectionBySharedCollectionId(sharedCollectionId)
+      _ <- persistenceServices.updateCollection(toUpdateCollectionRequest(collection, sharedCollectionSubscribed= true))
     } yield ()).resolveLeft(mapLeft)
 
   override def unsubscribe(sharedCollectionId: String)(implicit context: ContextSupport) =
     (for {
       userConfig <- apiUtils.getRequestConfig
       _ <- apiServices.unsubscribe(sharedCollectionId)(userConfig)
+      collection <- getCollectionBySharedCollectionId(sharedCollectionId)
+      _ <- persistenceServices.updateCollection(toUpdateCollectionRequest(collection, sharedCollectionSubscribed = false))
     } yield ()).resolveLeft(mapLeft)
+
+  private[this] def getCollectionBySharedCollectionId(sharedCollectionId: String) =
+    persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId).resolveSides(
+      mapRight = {
+        case Some(collection) => Right(collection)
+        case None => Left(SharedCollectionsException("There is no collection with this sharedCollectionId"))
+      },
+      mapLeft = (e: Throwable) => Left(SharedCollectionsException(e.getMessage, Some(e)))
+    )
 
   private[this] def mapLeft[T]: (NineCardException) => Either[NineCardException, T] = {
     case e: ApiServiceConfigurationException => Left(SharedCollectionsConfigurationException(e.message, Some(e)))

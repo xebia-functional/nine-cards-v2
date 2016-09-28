@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.commons._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{PublishedByMe, AppCardType}
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.UpdateSharedCollection
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.R
@@ -105,11 +105,11 @@ class SynchronizeDeviceService
     def updateCollection(collectionId: Int) = {
 
       def updateSharedCollection(collection: Collection): TaskService[Option[String]] =
-        collection.sharedCollectionId match {
-          case Some(id) =>
+        (collection.publicCollectionStatus, collection.sharedCollectionId) match {
+          case (PublishedByMe, Some(sharedCollectionId)) =>
             di.sharedCollectionsProcess.updateSharedCollection(
               UpdateSharedCollection(
-                sharedCollectionId = id,
+                sharedCollectionId = sharedCollectionId,
                 name = collection.name,
                 packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName))).map(Option(_))
           case _ => services.TaskService(Task(Either.right(None)))

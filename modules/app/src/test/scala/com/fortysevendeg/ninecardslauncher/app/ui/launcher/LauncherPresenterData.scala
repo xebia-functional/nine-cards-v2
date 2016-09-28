@@ -26,7 +26,26 @@ trait LauncherPresenterData {
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
   val nonExistentSharedCollectionId: String = Random.nextString(5)
-  val sharedCollectionSubscribed: Boolean = Random.nextBoolean()
+
+  def generateOptionId(id: String) =
+    Random.nextBoolean() match {
+      case true => None
+      case false => Some(id)
+    }
+
+  val sharedCollectionIdOption = generateOptionId(sharedCollectionId)
+  val originalSharedCollectionIdOption = generateOptionId(originalSharedCollectionId)
+  val sharedCollectionSubscribed: Boolean =
+    if (sharedCollectionId == originalSharedCollectionId) Random.nextBoolean()
+    else false
+
+  def determinePublicCollectionStatus(): PublicCollectionStatus =
+    if (sharedCollectionIdOption.isDefined && sharedCollectionSubscribed) Subscribed
+    else if (sharedCollectionIdOption.isDefined && originalSharedCollectionIdOption == sharedCollectionIdOption) PublishedByOther
+    else if (sharedCollectionIdOption.isDefined) PublishedByMe
+    else NotPublished
+
+  val publicCollectionStatus = determinePublicCollectionStatus()
 
   val cards = Seq(
     Card(
@@ -61,9 +80,10 @@ trait LauncherPresenterData {
     appsCategory = Option(appsCategory),
     cards = cards,
     moment = Option(moment),
-    originalSharedCollectionId = Option(originalSharedCollectionId),
-    sharedCollectionId = Option(sharedCollectionId),
-    sharedCollectionSubscribed = sharedCollectionSubscribed)
+    originalSharedCollectionId = originalSharedCollectionIdOption,
+    sharedCollectionId = sharedCollectionIdOption,
+    sharedCollectionSubscribed = sharedCollectionSubscribed,
+    publicCollectionStatus = publicCollectionStatus)
 
   val packageName = "com.fortysevendeg.scala.android"
   val imagePath = "imagePath1"

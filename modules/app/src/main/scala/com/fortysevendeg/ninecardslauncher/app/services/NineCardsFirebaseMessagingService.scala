@@ -10,6 +10,7 @@ import com.fortysevendeg.ninecardslauncher.app.services.payloads.SharedCollectio
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
+import com.fortysevendeg.ninecardslauncher.process.commons.types.{PublishedByOther, Subscribed}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.messaging.{FirebaseMessagingService, RemoteMessage}
 import macroid.Contexts
@@ -52,8 +53,11 @@ class NineCardsFirebaseMessagingService
   def sharedCollectionNotification(payload: SharedCollectionPayload): Unit = {
     di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier).resolveAsync2(
       onResult = {
-        case None => di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync2()
-        case Some(col) =>
+        case None =>
+          di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync2()
+        case Some(col) if col.publicCollectionStatus == PublishedByOther =>
+          di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync2()
+        case Some(col) if col.publicCollectionStatus == Subscribed =>
           val collectionName = col.name
           val collectionId = col.id
 

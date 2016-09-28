@@ -461,7 +461,7 @@ class CollectionProcessImplSpec
         mockPersistenceServices.updateCollection(any) returns TaskService(Task(Either.right(collectionId)))
 
         val result = collectionProcess.editCollection(collectionId, editCollectionRequest).value.run
-        result shouldEqual Right(updatedCollection)
+        result shouldEqual Right(editedCollection)
       }
 
     "returns a CollectionException if the service throws an exception finding the collection by Id" in
