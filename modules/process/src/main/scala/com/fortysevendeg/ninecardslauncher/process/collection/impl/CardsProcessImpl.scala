@@ -114,7 +114,4 @@ trait CardsProcessImpl extends CollectionProcess {
       _ <- persistenceServices.updateCards(toServicesUpdateCardsRequest(cardList))
     } yield ()).resolve[CardException]
 
-//  private[this] def getCardsByCollectionId(collectionId: Int) = (
-//    persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq).resolve[CardException]
-
 }
