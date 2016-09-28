@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.moment
+package cards.nine.repository.moment
 
 import android.net.Uri
 import cards.nine.commons.contentresolver.Conversions._
@@ -12,7 +12,7 @@ import cards.nine.repository.model.Moment
 import cards.nine.repository.provider.MomentEntity._
 import cards.nine.repository.provider._
 import cards.nine.repository.repositories.MomentRepository
-import com.fortysevendeg.repository._
+import cards.nine.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

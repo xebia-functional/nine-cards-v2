@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.card
+package cards.nine.repository.card
 
 import cards.nine.repository.model.{CardsWithCollectionId, CardData, Card}
 import cards.nine.repository.provider.{CardEntityData, CardEntity}

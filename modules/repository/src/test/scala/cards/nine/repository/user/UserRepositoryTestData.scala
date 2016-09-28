@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.user
+package cards.nine.repository.user
 
 import cards.nine.repository.model.{User, UserData}
 import cards.nine.repository.provider.{UserEntity, UserEntityData}

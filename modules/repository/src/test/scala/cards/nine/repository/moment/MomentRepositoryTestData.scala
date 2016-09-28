@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.moment
+package cards.nine.repository.moment
 
 import cards.nine.repository.model.{Moment, MomentData}
 import cards.nine.repository.provider.{MomentEntity, MomentEntityData}

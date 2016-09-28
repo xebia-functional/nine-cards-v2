@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.widget
+package cards.nine.repository.widget
 
 import android.net.Uri
 import cards.nine.commons._
@@ -12,7 +12,7 @@ import cards.nine.repository.model.Widget
 import cards.nine.repository.provider.WidgetEntity._
 import cards.nine.repository.provider._
 import cards.nine.repository.repositories._
-import com.fortysevendeg.repository._
+import cards.nine.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

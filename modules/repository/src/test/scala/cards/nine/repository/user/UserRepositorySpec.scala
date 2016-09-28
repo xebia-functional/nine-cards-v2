@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.user
+package cards.nine.repository.user
 
 import android.net.Uri
 import cards.nine.commons.contentresolver.Conversions._
@@ -11,7 +11,7 @@ import cards.nine.repository.model.User
 import cards.nine.repository.provider.UserEntity._
 import cards.nine.repository.provider._
 import cards.nine.repository.repositories.UserRepository
-import com.fortysevendeg.repository._
+import cards.nine.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

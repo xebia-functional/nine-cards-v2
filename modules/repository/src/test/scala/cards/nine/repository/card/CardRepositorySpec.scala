@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.card
+package cards.nine.repository.card
 
 import android.net.Uri
 import cards.nine.commons.contentresolver.Conversions._
@@ -11,7 +11,7 @@ import cards.nine.repository.provider.CardEntity.position
 import cards.nine.repository.provider.CollectionEntity._
 import cards.nine.repository.provider._
 import cards.nine.repository.repositories._
-import com.fortysevendeg.repository._
+import cards.nine.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

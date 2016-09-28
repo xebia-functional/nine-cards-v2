@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.widget
+package cards.nine.repository.widget
 
 import cards.nine.repository.model.{Widget, WidgetData}
 import cards.nine.repository.provider.{WidgetEntity, WidgetEntityData}

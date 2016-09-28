@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.dockapp
+package cards.nine.repository.dockapp
 
 import cards.nine.repository.model.{DockApp, DockAppData}
 import cards.nine.repository.provider.{DockAppEntity, DockAppEntityData}

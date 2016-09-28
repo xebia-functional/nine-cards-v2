@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.app
+package cards.nine.repository.app
 
 import cards.nine.repository.model.{App, AppData, DataCounter}
 import cards.nine.repository.provider.{AppEntity, AppEntityData}

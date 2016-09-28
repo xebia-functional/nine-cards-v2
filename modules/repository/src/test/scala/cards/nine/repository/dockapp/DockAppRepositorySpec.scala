@@ -1,4 +1,4 @@
-package com.fortysevendeg.repository.dockapp
+package cards.nine.repository.dockapp
 
 import android.net.Uri
 import cards.nine.commons.contentresolver.Conversions._
@@ -8,7 +8,7 @@ import cards.nine.repository.model.DockApp
 import cards.nine.repository.provider.DockAppEntity._
 import cards.nine.repository.provider._
 import cards.nine.repository.repositories.DockAppRepository
-import com.fortysevendeg.repository._
+import cards.nine.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
