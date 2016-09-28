@@ -3,9 +3,12 @@ package com.fortysevendeg.ninecardslauncher.app.permissions
 import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import com.fortysevendeg.ninecardslauncher.commons.CatchAll
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
 import macroid.ActivityContextWrapper
 
-class PermissionChecker {
+class PermissionChecker extends ImplicitsPermissionCheckerException {
 
   import PermissionChecker._
 
@@ -35,6 +38,7 @@ class PermissionChecker {
   def shouldRequestPermissions(permissions: Seq[AppPermission])(implicit contextWrapper: ActivityContextWrapper): Seq[PermissionResult] =
     permissions map (permission => PermissionResult(permission, havePermission(permission)))
 
+  @deprecated
   def requestPermission(permissionRequestCode: Int, permission: AppPermission)(implicit contextWrapper: ActivityContextWrapper): Unit =
     requestPermissions(permissionRequestCode, Array(permission))
 
@@ -43,10 +47,28 @@ class PermissionChecker {
       ActivityCompat.requestPermissions(activity, (permissions map (_.value)).toArray, permissionRequestCode)
     }
 
+  @deprecated
   def readPermissionRequestResult(permissions: Array[String], grantResults: Array[Int]): Seq[PermissionResult] =
     (permissions zip grantResults) flatMap {
       case (permission, grantResult) =>
         parsePermission(permission) map (PermissionResult(_, grantResult == PackageManager.PERMISSION_GRANTED))
+    }
+
+  def requestPermissionTask(permissionRequestCode: Int, permission: AppPermission)(implicit contextWrapper: ActivityContextWrapper): TaskService[Unit] =
+    TaskService {
+      CatchAll[PermissionCheckerException] {
+        requestPermissions(permissionRequestCode, Array(permission))
+      }
+    }
+
+  def readPermissionRequestResultTask(permissions: Array[String], grantResults: Array[Int]): TaskService[Seq[PermissionResult]] =
+    TaskService {
+      CatchAll[PermissionCheckerException] {
+        (permissions zip grantResults) flatMap {
+          case (permission, grantResult) =>
+            parsePermission(permission) map (PermissionResult(_, grantResult == PackageManager.PERMISSION_GRANTED))
+        }
+      }
     }
 
 }

@@ -5,18 +5,17 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.styles.CollectionCardsStyles
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import macroid._
 import macroid.FullDsl._
+import macroid._
 
-case class RecommendationsAdapter(recommendations: Seq[RecommendedApp])
-  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], presenter: RecommendationsPresenter, theme: NineCardsTheme)
+case class RecommendationsAdapter(recommendations: Seq[RecommendedApp], onInstall: (RecommendedApp) => Unit)
+  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderRecommendationsLayoutAdapter] {
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderRecommendationsLayoutAdapter = {
@@ -28,7 +27,7 @@ case class RecommendationsAdapter(recommendations: Seq[RecommendedApp])
 
   override def onBindViewHolder(viewHolder: ViewHolderRecommendationsLayoutAdapter, position: Int): Unit = {
     val recommendation = recommendations(position)
-    viewHolder.bind(recommendation, position).run
+    viewHolder.bind(recommendation, onInstall).run
   }
 
   def getLayoutManager = new LinearLayoutManager(activityContext.application)
@@ -36,7 +35,7 @@ case class RecommendationsAdapter(recommendations: Seq[RecommendedApp])
 }
 
 case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
-  (implicit context: ActivityContextWrapper, presenter: RecommendationsPresenter, val theme: NineCardsTheme)
+  (implicit context: ActivityContextWrapper, val theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView
   with CollectionCardsStyles {
@@ -66,7 +65,7 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
     (tag <~ textStyle) ~
     (installNow <~ buttonStyle)).run
 
-  def bind(recommendedApp: RecommendedApp, position: Int)(implicit uiContext: UiContext[_]): Ui[_] = {
+  def bind(recommendedApp: RecommendedApp, onInstall: (RecommendedApp) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
     val screensUi: Seq[Ui[_]] = (screenshots zip recommendedApp.screenshots) map {
       case (view, screenshot) => view <~ ivUri(screenshot)
     }
@@ -75,9 +74,8 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
       (name <~ tvText(recommendedApp.title)) ~
       (downloads <~ tvText(recommendedApp.downloads)) ~
       (tag <~ tvText(if (recommendedApp.free) resGetString(R.string.free) else "")) ~
-      (content <~ vTag(position)) ~
       Ui.sequence(screensUi: _*) ~
-      (installNow <~ On.click(Ui(presenter.installNow(recommendedApp))))
+      (installNow <~ On.click(Ui(onInstall(recommendedApp))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

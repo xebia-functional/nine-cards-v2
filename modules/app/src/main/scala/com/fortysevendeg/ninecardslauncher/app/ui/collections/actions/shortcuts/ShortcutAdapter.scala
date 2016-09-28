@@ -10,8 +10,8 @@ import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
 
-case class ShortcutAdapter(shortcuts: Seq[Shortcut])
-  (implicit activityContext: ActivityContextWrapper, presenter: ShortcutPresenter, theme: NineCardsTheme)
+case class ShortcutAdapter(shortcuts: Seq[Shortcut], onConfigure: (Shortcut) => Unit)
+  (implicit activityContext: ActivityContextWrapper, theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderShortcutLayoutAdapter] {
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderShortcutLayoutAdapter = {
@@ -23,14 +23,14 @@ case class ShortcutAdapter(shortcuts: Seq[Shortcut])
 
   override def onBindViewHolder(viewHolder: ViewHolderShortcutLayoutAdapter, position: Int): Unit = {
     val shortcut = shortcuts(position)
-    viewHolder.bind(shortcut, position).run
+    viewHolder.bind(shortcut, onConfigure).run
   }
 
   def getLayoutManager = new LinearLayoutManager(activityContext.application)
 
 }
 
-case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, presenter: ShortcutPresenter, theme: NineCardsTheme)
+case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
     with TypedFindView {
 
@@ -40,8 +40,8 @@ case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context:
 
   (name <~ tvColor(theme.get(DrawerTextColor))).run
 
-  def bind(shortcut: Shortcut, position: Int): Ui[_] =
-    (content <~ On.click(Ui(presenter.configureShortcut(shortcut)))) ~
+  def bind(shortcut: Shortcut, onConfigure: (Shortcut) => Unit): Ui[_] =
+    (content <~ On.click(Ui(onConfigure(shortcut)))) ~
       (icon <~ (shortcut.icon map ivSrc getOrElse Tweak.blank)) ~
       (name <~ tvText(shortcut.title))
 

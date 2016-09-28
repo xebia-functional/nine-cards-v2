@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog
+package com.fortysevendeg.ninecardslauncher.app.ui.collections.dialog.publishcollection
 
 import android.view.{View, ViewGroup}
 import android.widget.TextView
