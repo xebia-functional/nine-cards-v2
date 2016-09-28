@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import com.fortysevendeg.ninecardslauncher.process.commons.NineCardsMoments
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcessConfig}
@@ -77,12 +78,85 @@ trait MomentProcessImplSpecification
 class MomentProcessImplSpec
   extends MomentProcessImplSpecification {
 
+  "getMoments" should {
+
+    "return the existing moments" in
+     new MomentProcessScope {
+
+       mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(servicesMomentSeq)))
+       val result = momentProcess.getMoments.value.run
+       result shouldEqual Right(processMomentSeq)
+     }
+
+    "returns MomentException when persistence services fails" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.left(persistenceServiceException)))
+        val result = momentProcess.getMoments.value.run
+        result must beAnInstanceOf[Left[MomentException, _]]
+      }
+  }
+
+  "getMomentByType" should {
+
+    "return a moment by type" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.getMomentByType(any) returns TaskService(Task(Either.right(servicesMoment)))
+        val result = momentProcess.getMomentByType(mockNineCardMoment).value.run
+        result shouldEqual Right(processMomentByType)
+      }
+
+    "returns MomentException when persistence services fails" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.getMomentByType(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        val result = momentProcess.getMomentByType(mockNineCardMoment).value.run
+        result must beAnInstanceOf[Left[MomentException, _]]
+      }
+  }
+
+  "fetchMomentByType" should {
+
+    "return a moment by type" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.fetchMomentByType(any) returns TaskService(Task(Either.right(Option(servicesMoment))))
+        val result = momentProcess.fetchMomentByType(mockNineCardMoment).value.run
+        result shouldEqual Right(Option(processMomentByType))
+      }
+
+    "returns MomentException when persistence services fails" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.fetchMomentByType(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        val result = momentProcess.fetchMomentByType(mockNineCardMoment).value.run
+        result must beAnInstanceOf[Left[MomentException, _]]
+      }
+  }
+
   "createMoments" should {
 
     "return the MomentCollectionType of the three collections associated with the moments created" in
       new MomentProcessScope {
 
         mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
+        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Either.right(seqServicesApps)))
+        mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.right(moments map (_ => servicesCollection))))
+        mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right(servicesMoment)))
+
+        val result = momentProcess.createMoments(contextSupport).value.run
+        result must beLike {
+          case Right(resultSeqMoment) =>
+            resultSeqMoment.size shouldEqual moments.size
+            resultSeqMoment map (_.name) shouldEqual seqCollection.map(_.name)
+        }
+      }
+
+    "return the MomentCollectionType of the three collections associated with the moments created" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection10)))
         mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Either.right(seqServicesApps)))
         mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.right(moments map (_ => servicesCollection))))
         mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right(servicesMoment)))
@@ -123,6 +197,46 @@ class MomentProcessImplSpec
         val result = momentProcess.createMoments(contextSupport).value.run
         result must beAnInstanceOf[Left[MomentException, _]]
       }
+  }
+
+  "createMomentWithoutCollection" should {
+
+    "return a new Moment without collection by type" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right(servicesMomentWihoutCollection)))
+        val result = momentProcess.createMomentWithoutCollection(mockNineCardMoment)(contextSupport).value.run
+        result shouldEqual Right(processMomentWithoutCollection)
+
+      }
+
+    "returns MomentException when persistence services fails" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        val result = momentProcess.createMomentWithoutCollection(mockNineCardMoment)(contextSupport).value.run
+        result must beAnInstanceOf[Left[MomentException, _]]
+      }
+  }
+
+  "updateMoments" should {
+
+    "return Unit for a valid request" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.updateMoment(any) returns TaskService(Task(Either.right(item)))
+        val result = momentProcess.updateMoment(updateMomentRequest)(contextSupport).value.run
+        result shouldEqual Right(():Unit)
+      }
+
+    "returns MomentException when persistence services fails" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.updateMoment(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        val result = momentProcess.updateMoment(updateMomentRequest)(contextSupport).value.run
+        result must beAnInstanceOf[Left[MomentException, _]]
+      }
+
   }
 
   "saveMoments" should {
@@ -320,11 +434,41 @@ class MomentProcessImplSpec
         }
       }
 
+    "return Seq.empty for moments without collectionId" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollectionForMoments)))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqServicesMomentsWithoutCollection)))
+
+        val result = momentProcess.getAvailableMoments(contextSupport).value.run
+        result shouldEqual Right(Seq.empty)
+      }
+
+    "return Seq.empty if collectionId of Moments it's different id of Collections" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollectionForMomentsWithoutId)))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(servicesMomentSeq)))
+
+        val result = momentProcess.getAvailableMoments(contextSupport).value.run
+        result shouldEqual Right(Seq.empty)
+      }
+
     "returns a MomentException if the service throws a exception" in
       new MomentProcessScope  {
 
         mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollectionForMoments)))
         mockPersistenceServices.fetchMoments returns TaskService(Task(Either.left(persistenceServiceException)))
+
+        val result = momentProcess.getAvailableMoments(contextSupport).value.run
+        result must beAnInstanceOf[Left[MomentException, _]]
+      }
+
+    "returns a MomentException if the service throws a exception" in
+      new MomentProcessScope  {
+
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(servicesMomentSeq)))
 
         val result = momentProcess.getAvailableMoments(contextSupport).value.run
         result must beAnInstanceOf[Left[MomentException, _]]

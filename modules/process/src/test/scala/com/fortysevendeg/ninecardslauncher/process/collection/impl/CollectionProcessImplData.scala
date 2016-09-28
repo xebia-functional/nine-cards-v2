@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest, EditCollectionRequest}
+import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcessConfig, AddCardRequest, AddCollectionRequest, EditCollectionRequest}
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._
 import com.fortysevendeg.ninecardslauncher.process.commons.models._
@@ -14,8 +14,8 @@ import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessLocation
 import com.fortysevendeg.ninecardslauncher.services.commons.PhoneHome
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, AddCardRequest => ServicesAddCardRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
+import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -229,7 +229,7 @@ trait CollectionProcessImplData {
     (1 until 5) map (item =>
       ServicesCard(
         id = cardId + item,
-        position = position,
+        position = position + item,
         term = term,
         packageName = Option(packageName + item),
         cardType = cardType.name,
@@ -256,6 +256,7 @@ trait CollectionProcessImplData {
         info = Option(ContactInfo(Seq.empty, Seq(ContactPhone(phoneNumber, PhoneHome.toString)))))
     }
 
+  val seqCardIds = (0 until 5) map (item => cardId + item)
   val seqCard = createSeqCard()
   val servicesCard = ServicesCard(
     id = cardId,
@@ -267,6 +268,36 @@ trait CollectionProcessImplData {
     imagePath = imagePath,
     notification = Option(notification))
   val seqServicesCard = Seq(servicesCard) ++ createSeqServicesCard()
+
+  val seqProcessCard: Seq[Card] = seqServicesCard map {
+    case (card) =>
+      Card(
+        id = card.id,
+        position = card.position,
+        term = card.term,
+        packageName = card.packageName,
+        cardType = CardType(card.cardType),
+        intent = Json.parse(card.intent).as[NineCardIntent],
+        imagePath = card.imagePath,
+        notification = card.notification)
+  }
+
+  val seqCardPositions = (0 until seqProcessCard.size) map (item => 0 + item)
+  val seqProcessCardReload = ServicesUpdateCardsRequest(createSeqServicesUpdateCardsRequest(seqProcessCard = seqProcessCard))
+
+  def createSeqServicesUpdateCardsRequest(seqProcessCard: Seq[Card]): Seq[ServicesUpdateCardRequest] =
+    seqProcessCard.zip(seqCardPositions) map {
+      case (card, position) => ServicesUpdateCardRequest(
+        id = card.id,
+        position = position,
+        term = card.term,
+        packageName = card.packageName,
+        cardType = card.cardType.name,
+        intent = Json.toJson(card.intent).toString(),
+        imagePath = card.imagePath,
+        notification = card.notification)
+    }
+
 
   val seqServicesApp = seqServicesCard map { card =>
     ServicesApp(
@@ -488,6 +519,65 @@ trait CollectionProcessImplData {
       countryCode = Some("ES"),
       countryName = Some("Spain"),
       addressLines = Seq("street", "city", "postal code")
+    )
+
+
+  val seqUnformedAppsForPrivateCollections: Seq[UnformedApp] =
+    Seq(
+      UnformedApp(
+        name = "nameUnformed0",
+        packageName = "package.name.0",
+        className = "classNameUnformed0",
+        imagePath = "imagePathUnformed0",
+        category = appsCategories(0)),
+      UnformedApp(
+        name = "nameUnformed1",
+        packageName = "package.name.1",
+        className = "classNameUnformed1",
+        imagePath = "imagePathUnformed1",
+        category = appsCategories(1)))
+
+  val appsByCategory0: Seq[UnformedApp] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
+  val appsByCategory1: Seq[UnformedApp] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(1)).take(numSpaces)
+
+  val collectionProcessConfig: CollectionProcessConfig
+
+  val seqPrivateCollection =
+    Seq(
+      PrivateCollection(
+        name = appsCategories(0).getStringResource,
+        collectionType = AppsCollectionType,
+        icon = appsCategories(0).getStringResource,
+        themedColorIndex = 0,
+        appsCategory = Some(appsCategories(0)),
+        cards = Seq(
+          PrivateCard(
+            term = "nameUnformed0",
+            packageName = Some("package.name.0"),
+            cardType = AppCardType,
+            intent = NineCardIntent(NineCardIntentExtras(
+              package_name = Option("package.name.0"),
+              class_name = Option("classNameUnformed0"))),
+            imagePath = "imagePathUnformed0"
+          )),
+        moment = None),
+      PrivateCollection(
+        name = appsCategories(1).getStringResource,
+        collectionType = AppsCollectionType,
+        icon = appsCategories(1).getStringResource,
+        themedColorIndex = 1,
+        appsCategory = Some(appsCategories(1)),
+        cards = Seq(
+          PrivateCard(
+            term = "nameUnformed1",
+            packageName = Some("package.name.1"),
+            cardType = AppCardType,
+            intent = NineCardIntent(NineCardIntentExtras(
+              package_name = Option("package.name.1"),
+              class_name = Option("classNameUnformed1"))),
+            imagePath = "imagePathUnformed1"
+          )),
+        moment = None)
     )
 
 }

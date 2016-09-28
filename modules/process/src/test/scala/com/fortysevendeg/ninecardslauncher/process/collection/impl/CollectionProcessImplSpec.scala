@@ -25,7 +25,7 @@ import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
 
 trait CollectionProcessImplSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   val persistenceServiceException = PersistenceServiceException("")
 
@@ -261,6 +261,18 @@ class CollectionProcessImplSpec
       }
 
   }
+
+  "generatePrivateCollections" should {
+
+    "return a seq empty if number of cards by category is < minAppsToAdd" in
+      new CollectionProcessScope {
+
+        val result = collectionProcess.generatePrivateCollections(seqUnformedAppsForPrivateCollections)(contextSupport).value.run
+        result shouldEqual Right(Seq.empty)
+      }
+
+  }
+
 
   "addCollection" should {
 
@@ -672,24 +684,115 @@ class CollectionProcessImplSpec
     "returns a successful answer for a valid request" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCardById(any) returns TaskService(Task(Either.right(Option(servicesCard))))
-        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Either.right(seqServicesCard)))
         mockPersistenceServices.deleteCard(any, any) returns TaskService(Task(Either.right(cardId)))
+        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Either.right(seqServicesCard)))
         mockPersistenceServices.updateCards(any) returns TaskService(Task(Either.right(Seq(1))))
 
         val result = collectionProcess.deleteCard(collectionId, cardId).value.run
         result shouldEqual Right((): Unit)
+
+        there was one(mockPersistenceServices).updateCards(seqProcessCardReload)
+      }
+
+    "returns a successful when return sequence empty" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.deleteCard(any, any) returns TaskService(Task(Either.right(cardId)))
+        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Either.right(Seq.empty)))
+        mockPersistenceServices.updateCards(any) returns TaskService(Task(Either.right(Seq(1))))
+
+        val result = collectionProcess.deleteCard(collectionId, cardId).value.run
+        result shouldEqual Right((): Unit)
+
+        there was one(mockPersistenceServices).updateCards(UpdateCardsRequest(Seq.empty))
       }
 
     "returns a CardException if the service throws an exception" in
       new CollectionProcessScope {
 
         mockPersistenceServices.deleteCard(any, any) returns TaskService(Task(Either.left(persistenceServiceException)))
-
         val result = collectionProcess.deleteCard(collectionId, cardId).value.run
         result must beAnInstanceOf[Left[CardException, _]]
       }
 
+    "returns a CardException if the service throws a exception" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.deleteCard(any, any) returns TaskService(Task(Either.right(cardId)))
+        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Either.right(seqServicesCard)))
+        mockPersistenceServices.updateCards(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+
+        val result = collectionProcess.deleteCard(collectionId, cardId).value.run
+        result must beAnInstanceOf[Left[CardException, _]]
+      }
+  }
+
+  "deleteAllCardsByPackageName" should {
+
+    "returns a successful when delete all Seq.empty of Cards in all collection by package name" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
+        val result = collectionProcess.deleteAllCardsByPackageName(packageName).value.run
+        result shouldEqual Right((): Unit)
+
+        there was no(mockPersistenceServices).deleteCard(any, any)
+        there was no(mockPersistenceServices).fetchCardsByCollection(any)
+      }
+
+    "returns a CardException if the service throws a exception" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.left(persistenceServiceException)))
+        val result = collectionProcess.deleteAllCardsByPackageName(packageName).value.run
+        result must beAnInstanceOf[Left[CardException, _]]
+      }
+  }
+
+  "deleteCards" should {
+
+    "returns a successful answer for a valid request" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.deleteCards(any, any) returns TaskService(Task(Either.right(cardId)))
+        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Either.right(seqServicesCard)))
+        mockPersistenceServices.updateCards(any) returns TaskService(Task(Either.right(Seq(1))))
+
+        val result = collectionProcess.deleteCards(collectionId, seqCardIds).value.run
+        result shouldEqual Right((): Unit)
+
+      }
+
+    "returns a successful when return sequence empty of cards" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.deleteCards(any, any) returns TaskService(Task(Either.right(cardId)))
+        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Either.right(Seq.empty)))
+        mockPersistenceServices.updateCards(any) returns TaskService(Task(Either.right(Seq(1))))
+
+        val result = collectionProcess.deleteCards(collectionId, seqCardIds).value.run
+        result shouldEqual Right((): Unit)
+
+        there was one(mockPersistenceServices).updateCards(UpdateCardsRequest(Seq.empty))
+      }
+    "returns a CardException if the service throws a exception" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.deleteCards(any, any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        val result = collectionProcess.deleteCards(collectionId, seqCardIds).value.run
+        result must beAnInstanceOf[Left[CardException, _]]
+      }
+
+    "returns a CardException if the service throws a exception" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.deleteCards(any, any) returns TaskService(Task(Either.right(cardId)))
+        mockPersistenceServices.fetchCardsByCollection(any) returns TaskService(Task(Either.right(seqServicesCard)))
+        mockPersistenceServices.updateCards(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+
+        val result = collectionProcess.deleteCards(collectionId, seqCardIds).value.run
+        result must beAnInstanceOf[Left[CardException, _]]
+      }
   }
 
   "reorderCard" should {
