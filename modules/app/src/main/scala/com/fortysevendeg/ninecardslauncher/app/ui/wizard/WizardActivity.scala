@@ -126,11 +126,11 @@ class WizardActivity
 
   override def onClickCancelSelectAccountsDialog(): Unit = {}
 
-  override def onClickOkContactsPermissionDialog(): Unit =
-    jobs.requestContactsPermission().resolveAsync()
+  override def onClickOkPermissionsDialog(): Unit =
+    jobs.requestPermissions().resolveAsync()
 
-  override def onClickCancelContactsPermissionDialog(): Unit =
-    jobs.contactsPermissionDenied().resolveAsync()
+  override def onClickCancelPermissionsDialog(): Unit =
+    jobs.permissionDialogCancelled().resolveAsync()
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
     case ex: SocialProfileProcessException if ex.recoverable => jobs.googleSignIn()

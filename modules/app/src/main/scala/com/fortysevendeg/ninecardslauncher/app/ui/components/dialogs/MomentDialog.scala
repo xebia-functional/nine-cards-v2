@@ -8,7 +8,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.app.ui.PersistMoment
+import com.fortysevendeg.ninecardslauncher.app.ui.MomentPreferences
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.NineCardsMomentOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -24,7 +24,7 @@ class MomentDialog(implicit contextWrapper: ContextWrapper, presenter: LauncherP
   extends BottomSheetDialog(contextWrapper.getOriginal)
   with TypedFindView { dialog =>
 
-  lazy val persistMoment = new PersistMoment
+  lazy val persistMoment = new MomentPreferences
 
   lazy val selectMomentList = findView(TR.select_moment_list)
 

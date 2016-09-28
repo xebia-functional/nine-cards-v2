@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
+import cats.data.EitherT
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
@@ -56,7 +57,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     } yield deletedCollection).resolve[PersistenceServiceException]
   }
 
-  def fetchCollections =
+  def fetchCollections: EitherT[Task, NineCardException, Seq[Collection]] =
     (for {
       collectionsWithoutCards <- collectionRepository.fetchSortedCollections
       collectionWithCards <- fetchCards(collectionsWithoutCards)

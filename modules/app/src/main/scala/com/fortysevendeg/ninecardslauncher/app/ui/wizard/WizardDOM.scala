@@ -54,8 +54,8 @@ trait WizardUiListener {
 
   def onClickCancelSelectAccountsDialog(): Unit
 
-  def onClickOkContactsPermissionDialog(): Unit
+  def onClickOkPermissionsDialog(): Unit
 
-  def onClickCancelContactsPermissionDialog(): Unit
+  def onClickCancelPermissionsDialog(): Unit
 
 }
