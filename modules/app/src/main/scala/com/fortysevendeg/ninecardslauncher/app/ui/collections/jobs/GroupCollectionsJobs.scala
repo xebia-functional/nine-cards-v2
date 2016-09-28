@@ -4,8 +4,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import cats.implicits._
 import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
-import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.CallPhone
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsDetailsActivity._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentReloadedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{JobException, Jobs, RequestCodes}
@@ -13,6 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.Theme
 import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{TaskService, _}
+import com.fortysevendeg.ninecardslauncher.process.accounts.CallPhone
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{MomentCollectionType, ShortcutCardType}
@@ -24,8 +23,6 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
   with NineCardIntentConversions { self =>
 
   val delay = 200
-
-  val permissionChecker = new PermissionChecker
 
   var collections: Seq[Collection] = Seq.empty
 
@@ -136,7 +133,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def requestCallPhonePermission(phone: Option[String]): TaskService[Unit] =  {
     statuses = statuses.copy(lastPhone = phone)
-    permissionChecker.requestPermissionTask(RequestCodes.phoneCallPermission, CallPhone)
+    di.userAccountsProcess.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
   }
 
   def requestPermissionsResult(
@@ -145,7 +142,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
     grantResults: Array[Int]): TaskService[Unit] =
     if (requestCode == RequestCodes.phoneCallPermission) {
       for {
-        result <- permissionChecker.readPermissionRequestResultTask(permissions, grantResults)
+        result <- di.userAccountsProcess.parsePermissionsRequestResult(permissions, grantResults)
         hasCallPhonePermission = result.exists(_.hasPermission(CallPhone))
         _ <- (hasCallPhonePermission, statuses.lastPhone) match {
           case (true, Some(phone)) => di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, phone))
