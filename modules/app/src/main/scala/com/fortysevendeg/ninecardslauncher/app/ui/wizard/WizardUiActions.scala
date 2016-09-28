@@ -231,11 +231,11 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
       action = dom.onClickOkGooglePermissionDialog,
       negativeAction = dom.onClickCancelGooglePermissionDialog)
 
-  def showRequestContactsPermissionDialog(): TaskService[Unit] =
+  def showRequestPermissionsDialog(): TaskService[Unit] =
     showErrorDialog(
-      message = R.string.errorReadContactsMessage,
-      action = dom.onClickOkContactsPermissionDialog,
-      negativeAction = dom.onClickCancelContactsPermissionDialog)
+      message = R.string.errorFineLocationMessage,
+      action = dom.onClickOkPermissionsDialog,
+      negativeAction = dom.onClickCancelPermissionsDialog)
 
   def showSelectAccountDialog(): TaskService[Unit] =
     showErrorDialog(

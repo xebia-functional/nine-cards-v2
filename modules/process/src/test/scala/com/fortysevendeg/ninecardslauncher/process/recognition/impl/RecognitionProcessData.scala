@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.recognition.impl
 
-import com.fortysevendeg.ninecardslauncher.process.recognition.{Weather, Location, Headphones, ProbablyActivity}
-import com.fortysevendeg.ninecardslauncher.services.awareness._
+import com.fortysevendeg.ninecardslauncher.process.recognition._
+import com.fortysevendeg.ninecardslauncher._
 
 import scala.util.Random
 
@@ -18,32 +18,24 @@ trait RecognitionProcessData {
   val dewPointFahrenheit = Random.nextFloat()
   val temperatureCelsius = Random.nextFloat()
   val temperatureFahrenheit = Random.nextFloat()
-  
-  val kindActivitySeq = Seq(
-    InVehicleActivity,
-    OnBicycleActivity,
-    OnFootActivity,
-    RunningActivity,
-    StillActivity,
-    TiltingActivity,
-    WalkingActivity,
-    UnknownActivity)
 
-  val kindActivity = kindActivitySeq(Random.nextInt(kindActivitySeq.size))
+  val kindActivityService = services.awareness.InVehicleActivity
 
-  val typeActivity = TypeActivity(
-    activityType = kindActivity)
+  val kindActivityProcess = InVehicleActivity
+
+  val typeActivity = services.awareness.TypeActivity(
+    activityType = kindActivityService)
 
   val probablyActivity = ProbablyActivity(
-    activity = kindActivity)
+    activity = kindActivityProcess)
 
   val connected = Random.nextBoolean()
 
-  val headphonesState = HeadphonesState(connected = connected)
+  val headphonesState = services.awareness.HeadphonesState(connected = connected)
 
   val headphones = Headphones(connected = connected)
 
-  val awarenessLocation = AwarenessLocation(
+  val awarenessLocation = services.awareness.AwarenessLocation(
     latitude = latitude,
     longitude = longitude,
     countryCode = countryCode,
@@ -56,25 +48,19 @@ trait RecognitionProcessData {
     countryCode = countryCode,
     countryName = countryName,
     addressLines = addressLines)
-  
-  val conditionWeatherSeq = Seq(
+
+  val conditionsServices = Seq(
+    services.awareness.ClearCondition,
+    services.awareness.CloudyCondition,
+    services.awareness.FoggyCondition)
+
+  val conditionsProcess = Seq(
     ClearCondition,
     CloudyCondition,
-    FoggyCondition,
-    HazyCondition,
-    IcyCondition,
-    RainyCondition,
-    SnowyCondition,
-    StormyCondition,
-    WindyCondition,
-    UnknownCondition)
+    FoggyCondition)
 
-  def generateConditionWeather(index: Int) = conditionWeatherSeq(index)
-  
-  val conditions = 0 to 2 map (i => generateConditionWeather(Random.nextInt(conditionWeatherSeq.size)))
-
-  val weatherState = WeatherState(
-    conditions = conditions,
+  val weatherState = services.awareness.WeatherState(
+    conditions = conditionsServices,
     humidity = humidity,
     dewPointCelsius = dewPointCelsius,
     dewPointFahrenheit = dewPointFahrenheit,
@@ -82,7 +68,7 @@ trait RecognitionProcessData {
     temperatureFahrenheit = temperatureFahrenheit)
 
   val weather = Weather(
-    conditions = conditions,
+    conditions = conditionsProcess,
     humidity = humidity,
     dewPointCelsius = dewPointCelsius,
     dewPointFahrenheit = dewPointFahrenheit,

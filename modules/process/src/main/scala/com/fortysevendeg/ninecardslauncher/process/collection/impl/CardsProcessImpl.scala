@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException, CollectionProcess}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Collection, Card => ServicesCard}
+import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, ImplicitsPersistenceServiceExceptions}
 import monix.eval.Task
 
@@ -32,7 +32,7 @@ trait CardsProcessImpl extends CollectionProcess {
   override def deleteCard(collectionId: Int, cardId: Int) =
     (for {
       _ <- persistenceServices.deleteCard(collectionId, cardId)
-      cardList <- getCardsByCollectionId(collectionId)
+      cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq
       _ <- updateCardList(reloadPositions(cardList))
     } yield ()).resolve[CardException]
 
@@ -56,7 +56,7 @@ trait CardsProcessImpl extends CollectionProcess {
   override def deleteCards(collectionId: Int, cardIds: Seq[Int]) =
     (for {
       _ <- persistenceServices.deleteCards(collectionId, cardIds)
-      cardList <- getCardsByCollectionId(collectionId)
+      cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq
       _ <- updateCardList(reloadPositions(cardList))
     } yield ()).resolve[CardException]
 
@@ -73,7 +73,7 @@ trait CardsProcessImpl extends CollectionProcess {
     def reorderAux(card: ServicesCard) =
       if (card.position != newPosition)
         for {
-          cardList <- getCardsByCollectionId(collectionId)
+          cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq
           _ <- updateCardList(reorderList(cardList,card.position))
         } yield ()
       else TaskService(Task(Right(Unit)))
@@ -113,8 +113,5 @@ trait CardsProcessImpl extends CollectionProcess {
     (for {
       _ <- persistenceServices.updateCards(toServicesUpdateCardsRequest(cardList))
     } yield ()).resolve[CardException]
-
-  private[this] def getCardsByCollectionId(collectionId: Int) = (
-    persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq).resolve[CardException]
 
 }

@@ -6,8 +6,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.CardType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.CollectionType._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.moment.SaveMomentRequest
 import com.fortysevendeg.ninecardslauncher.process.moment.models.App
+import com.fortysevendeg.ninecardslauncher.process.moment.{SaveMomentRequest, UpdateMomentRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 import org.joda.time.DateTime
 import play.api.libs.json.Json
@@ -66,6 +66,18 @@ trait MomentProcessImplData {
 
   val ssid: String = Random.nextString(5)
 
+  val item: Int = Random.nextInt(5)
+
+  val updateMomentRequest =
+    UpdateMomentRequest(
+      id = momentId,
+      collectionId = Option(collectionId1),
+      timeslot = createSeqMomentTimeSlot(),
+      wifi = Seq.empty,
+      headphone = false,
+      momentType = Option(NineCardsMoment(momentType(0)))
+    )
+
   def createSeqCollection(
     num: Int = 4,
     id: Int = collectionId,
@@ -95,19 +107,19 @@ trait MomentProcessImplData {
           cards = cards))
 
   def createSeqMomentCollection(
-     num: Int = 4,
-     id: Int = collectionId,
-     position: Int = position,
-     name: String = name,
-     collectionType: CollectionType = MomentCollectionType,
-     icon: String = icon,
-     themedColorIndex: Int = themedColorIndex,
-     appsCategory: NineCardCategory = appsCategory,
-     cards: Seq[Card] = seqCard,
-     moment: Option[Moment] = Option(processMoment),
-     originalSharedCollectionId: String = originalSharedCollectionId,
-     sharedCollectionId: String = sharedCollectionId,
-     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
+    num: Int = 4,
+    id: Int = collectionId,
+    position: Int = position,
+    name: String = name,
+    collectionType: CollectionType = MomentCollectionType,
+    icon: String = icon,
+    themedColorIndex: Int = themedColorIndex,
+    appsCategory: NineCardCategory = appsCategory,
+    cards: Seq[Card] = seqCard,
+    moment: Option[Moment] = Option(processMoment),
+    originalSharedCollectionId: String = originalSharedCollectionId,
+    sharedCollectionId: String = sharedCollectionId,
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
     (0 until num) map (
       item =>
         Collection(
@@ -239,7 +251,7 @@ trait MomentProcessImplData {
   def createSeqServicesMomentTimeSlot(
     from: String = from,
     to: String = to,
-    days: Seq[Int] = days)=
+    days: Seq[Int] = days) =
     (1 until 4) map (item =>
       ServicesMomentTimeSlot(
         from = from,
@@ -330,13 +342,16 @@ trait MomentProcessImplData {
   val seqCollection = createSeqCollection()
   val collection = seqCollection.headOption
   val seqServicesCollection = createSeqServicesCollection()
+  val seqServicesCollection10 = createSeqServicesCollection(num = 10)
   val servicesCollection = seqServicesCollection(0)
 
   val seqServicesApps = createSeqServicesApp()
   val seqApps = Seq(homeApp, workApp, nightApp, transitApp)
   val seqMomentCollections = createSeqMomentCollection()
   val seqServicesMoments = createSeqServicesMoment()
+  val seqServicesMomentsWithoutCollection = createSeqServicesMoment(collectionId = None)
   val servicesMoment = seqServicesMoments(0)
+  val servicesMomentWihoutCollection = seqServicesMomentsWithoutCollection(0)
   val seqMoments = createSeqMoment()
 
   val processMoment = Moment(
@@ -517,6 +532,7 @@ trait MomentProcessImplData {
       momentType = Option(NineCardsMoment(momentType(3))))
 
   val servicesMomentSeq = Seq(homeMorningServicesMoment, workServicesMoment, homeNightServicesMoment, transitServicesMoment)
+  val processMomentSeq = Seq(homeMorningMoment, workMoment, homeNightMoment, transitMoment)
 
   val seqServicesCollectionForMoments =
     createSeqServicesCollection(num = 1, id = homeMorningCollectionId.get) ++
@@ -524,6 +540,35 @@ trait MomentProcessImplData {
       createSeqServicesCollection(num = 1, id = workCollectionId.get) ++
       createSeqServicesCollection(num = 1, id = transitCollectionId.get)
 
+  val seqServicesCollectionForMomentsWithoutId =
+    createSeqServicesCollection(num = 1, id = 0) ++
+      createSeqServicesCollection(num = 1, id = 0) ++
+      createSeqServicesCollection(num = 1, id = 0) ++
+      createSeqServicesCollection(num = 1, id = 0)
+
   val servicesAvailableMomentsSeq = Seq(homeMorningServicesMoment, workServicesMoment, homeNightServicesMoment, transitServicesMoment)
+
+  val mockNineCardMoment: NineCardsMoment = servicesMoment.momentType map (NineCardsMoment(_)) getOrElse NineCardsMoment(momentType(0))
+
+  val processMomentWithoutCollection = Moment(
+    id = servicesMomentWihoutCollection.id,
+    collectionId = None,
+    timeslot = servicesMomentWihoutCollection.timeslot map toTimeSlot,
+    wifi = servicesMomentWihoutCollection.wifi,
+    headphone = servicesMomentWihoutCollection.headphone,
+    momentType = servicesMomentWihoutCollection.momentType map (NineCardsMoment(_)))
+
+  def toTimeSlot(servicesMomentTimeSlot: ServicesMomentTimeSlot): MomentTimeSlot = MomentTimeSlot(
+    from = servicesMomentTimeSlot.from,
+    to = servicesMomentTimeSlot.to,
+    days = servicesMomentTimeSlot.days)
+
+ val processMomentByType = Moment(
+   id = servicesMoment.id,
+   collectionId = servicesMoment.collectionId,
+   timeslot = servicesMoment.timeslot map toTimeSlot,
+   wifi = servicesMoment.wifi,
+   headphone = servicesMoment.headphone,
+   momentType = servicesMoment.momentType map (NineCardsMoment(_)))
 
 }

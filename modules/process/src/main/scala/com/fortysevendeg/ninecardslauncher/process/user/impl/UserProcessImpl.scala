@@ -74,9 +74,9 @@ class UserProcessImpl(
     withActiveUser { id =>
       val update = UpdateUserRequest(id, None, None, None, None, None, None, None, None, None, None)
       (for {
-        userDB <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
+        user <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
         _ <- persistenceServices.updateUser(update)
-        _ <- syncInstallation(userDB, None)
+        _ <- syncInstallation(user.apiKey, user.sessionToken, user.deviceToken, None)
       } yield ()).resolve[UserException]
     }
 
@@ -94,13 +94,12 @@ class UserProcessImpl(
     withActiveUser { id =>
       (for {
         user <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
-        _ <- persistenceServices.updateUser(toUpdateRequest(
-          id = id,
-          user = user.copy(
-            deviceName = Option(deviceName),
-            deviceCloudId = Option(deviceCloudId),
-            deviceToken = deviceToken orElse user.deviceToken)))
-        _ <- syncInstallation(user, deviceToken)
+        newUser = user.copy(
+          deviceName = Option(deviceName),
+          deviceCloudId = Option(deviceCloudId),
+          deviceToken = deviceToken orElse user.deviceToken)
+        _ <- persistenceServices.updateUser(toUpdateRequest(id = id,user = newUser))
+        _ <- syncInstallation(user.apiKey, user.sessionToken, user.deviceToken, newUser.deviceToken)
       } yield ()).resolve[UserException]
     }
 
@@ -109,7 +108,7 @@ class UserProcessImpl(
       (for {
         user <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
         _ <- persistenceServices.updateUser(toUpdateRequest(id, user.copy(deviceToken = Option(deviceToken))))
-        _ <- syncInstallation(user, Option(deviceToken))
+        _ <- syncInstallation(user.apiKey, user.sessionToken, user.deviceToken, Option(deviceToken))
       } yield ()).resolve[UserException]
     }
 
@@ -119,10 +118,12 @@ class UserProcessImpl(
     }
 
   private[this] def syncInstallation(
-    user: ServicesUser,
+    maybeApiKey: Option[String],
+    maybeSessionToken: Option[String],
+    previousDeviceToken: Option[String],
     deviceToken: Option[String])(implicit context: ContextSupport): TaskService[Int] =
-    (user.apiKey, user.sessionToken) match {
-      case (Some(apiKey), Some(sessionToken)) if user.deviceToken != deviceToken =>
+    (maybeApiKey, maybeSessionToken) match {
+      case (Some(apiKey), Some(sessionToken)) if previousDeviceToken != deviceToken =>
         (for {
           androidId <- persistenceServices.getAndroidId
           response <- apiServices.updateInstallation(deviceToken)(RequestConfig(apiKey, sessionToken, androidId))

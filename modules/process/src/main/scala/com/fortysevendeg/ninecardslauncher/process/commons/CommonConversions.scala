@@ -55,15 +55,6 @@ trait CommonConversions extends NineCardIntentConversions {
       momentType = moment.momentType map (_.name),
       widgets = moment.widgets getOrElse Seq.empty map toServiceSaveWidgetRequest)
 
-  def toAddMomentRequest(moment: Moment): AddMomentRequest =
-    AddMomentRequest(
-      collectionId = moment.collectionId,
-      timeslot = moment.timeslot map toServicesMomentTimeSlot,
-      wifi = moment.wifi,
-      headphone = moment.headphone,
-      momentType = moment.momentType map (_.name),
-      widgets = Seq.empty)
-
   def toAddMomentRequest(moment: FormedMoment): AddMomentRequest =
     AddMomentRequest(
       collectionId = moment.collectionId,

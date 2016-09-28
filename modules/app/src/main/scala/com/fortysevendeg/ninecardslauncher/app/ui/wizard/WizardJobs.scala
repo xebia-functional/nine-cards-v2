@@ -5,7 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.process.accounts.{ReadContacts, UserAccountsProcessOperationCancelledException}
+import com.fortysevendeg.ninecardslauncher.process.accounts.{FineLocation, ReadContacts, UserAccountsProcessOperationCancelledException}
 import com.fortysevendeg.ninecardslauncher.app.services.CreateCollectionService
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
@@ -48,7 +48,7 @@ import scala.util.{Failure, Success, Try}
   *   + Job update the user profile information and calls to 'Job.loadDevices'
   *   + Job calls to 'UiAction.showDevices' with the loaded devices
   *  - UiAction calls to 'Job.deviceSelected'
-  *   + Job asks for Contacts permissions and calls to 'Job.generateCollections'
+  *   + Job asks for Contacts and Location permissions and calls to 'Job.generateCollections'
   *   + Job starts the service
   *  - Activity calls to 'Job.serviceFinished'
   *   + Job calls to 'UiAction.showDiveIn'
@@ -100,7 +100,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     def generateOrRequest(condition: Boolean): TaskService[Unit] = if (condition) {
       generateCollections(maybeKey)
     } else {
-      requestContactsPermission()
+      requestPermissions()
     }
 
     for {
@@ -110,10 +110,10 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     } yield ()
   }
 
-  def requestContactsPermission(): TaskService[Unit] =
-    di.userAccountsProcess.requestPermission(RequestCodes.contactsPermission, ReadContacts)
+  def requestPermissions(): TaskService[Unit] =
+    di.userAccountsProcess.requestPermissions(RequestCodes.wizardPermissions, Seq(ReadContacts, FineLocation))
 
-  def contactsPermissionDenied(): TaskService[Unit] =
+  def permissionDialogCancelled(): TaskService[Unit] =
     generateCollections(clientStatuses.deviceKey)
 
   def finishWizard(): TaskService[Unit] = TaskService {
@@ -224,14 +224,14 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
       if (hasPermission || !shouldRequest) {
         generateCollections(clientStatuses.deviceKey)
       } else {
-        actions.showRequestContactsPermissionDialog()
+        actions.showRequestPermissionsDialog()
       }
 
-    if (requestCode == RequestCodes.contactsPermission) {
+    if (requestCode == RequestCodes.wizardPermissions) {
       for {
         result <- di.userAccountsProcess.parsePermissionsRequestResult(permissions, grantResults)
-        shouldRequest <- di.userAccountsProcess.shouldRequestPermission(ReadContacts)
-        _ <- generateOrRequest(result.exists(_.hasPermission(ReadContacts)), shouldRequest.result)
+        shouldRequest <- di.userAccountsProcess.shouldRequestPermission(FineLocation)
+        _ <- generateOrRequest(result.exists(_.hasPermission(FineLocation)), shouldRequest.result)
       } yield ()
     } else {
       TaskService(Task(Right((): Unit)))
