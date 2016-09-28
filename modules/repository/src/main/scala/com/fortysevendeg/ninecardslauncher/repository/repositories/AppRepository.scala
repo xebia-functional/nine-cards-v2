@@ -289,7 +289,6 @@ class AppRepository(
       packageName -> data.packageName,
       className -> data.className,
       category -> data.category,
-      imagePath -> data.imagePath,
       dateInstalled -> data.dateInstalled,
       dateUpdate -> data.dateUpdate,
       version -> data.version,

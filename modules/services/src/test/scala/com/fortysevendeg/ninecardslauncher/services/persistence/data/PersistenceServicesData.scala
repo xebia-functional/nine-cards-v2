@@ -159,7 +159,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification)))
 
   def createSeqCard(
@@ -179,7 +179,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification)))
 
   def createSeqRepoCard(
@@ -202,7 +202,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification))
 
   def createSeqMoment(
@@ -273,7 +273,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification))
 
   def createAddCardRequestWithoutCollectionId =
@@ -283,7 +283,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification))
 
   def createFetchCardsByCollectionRequest(collectionId: Int): FetchCardsByCollectionRequest =
@@ -313,7 +313,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification))
 
   def createAddCollectionRequest(

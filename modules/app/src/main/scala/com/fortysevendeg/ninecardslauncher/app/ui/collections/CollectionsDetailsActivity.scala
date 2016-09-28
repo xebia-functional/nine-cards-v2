@@ -163,6 +163,7 @@ class CollectionsDetailsActivity
               case _ => TaskService.empty
             }
           } yield ()).resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+        case _ =>
       }
     }
   }

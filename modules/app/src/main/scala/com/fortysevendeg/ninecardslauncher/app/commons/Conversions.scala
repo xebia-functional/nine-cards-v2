@@ -24,7 +24,6 @@ trait Conversions
     name = app.name,
     packageName = app.packageName,
     className = app.className,
-    imagePath = app.imagePath,
     category = app.category)
 
   def toSeqUnformedContact(contacts: Seq[Contact]): Seq[UnformedContact] = contacts map toUnformedContact
@@ -97,7 +96,7 @@ trait Conversions
       packageName = None,
       cardType = ContactCardType,
       intent = contactToNineCardIntent(contact.lookupKey),
-      imagePath = contact.photoUri)
+      imagePath = Option(contact.photoUri))
 
   def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
     AddCollectionRequest(
@@ -117,7 +116,7 @@ trait Conversions
       packageName = Option(app.packageName),
       cardType = NoInstalledAppCardType,
       intent = toNineCardIntent(app),
-      imagePath = "")
+      imagePath = None)
 
   def toAddCardRequest(app: App): AddCardRequest =
     AddCardRequest(
@@ -125,7 +124,7 @@ trait Conversions
       packageName = Option(app.packageName),
       cardType = AppCardType,
       intent = toNineCardIntent(app),
-      imagePath = app.imagePath)
+      imagePath = None)
 
   def toAddCardRequest(app: RecommendedApp): AddCardRequest =
     AddCardRequest(
@@ -133,7 +132,7 @@ trait Conversions
       packageName = Option(app.packageName),
       cardType = AppCardType,
       intent = toNineCardIntent(app),
-      imagePath = "")
+      imagePath = None)
 
   def toSaveDockAppRequest(cloudStorageDockApp: CloudStorageDockApp): SaveDockAppRequest =
     SaveDockAppRequest(

@@ -12,7 +12,6 @@ object Conversions {
       packageName = app.data.packageName,
       className = app.data.className,
       category = app.data.category,
-      imagePath = app.data.imagePath,
       dateInstalled = app.data.dateInstalled,
       dateUpdate = app.data.dateUpdate,
       version = app.data.version,
@@ -26,7 +25,7 @@ object Conversions {
       packageName = Option[String](cardEntity.data.packageName),
       cardType = cardEntity.data.`type`,
       intent = cardEntity.data.intent,
-      imagePath = cardEntity.data.imagePath,
+      imagePath = Option[String](cardEntity.data.imagePath),
       notification = Option[String](cardEntity.data.notification)))
 
   def toCollection(collectionEntity: CollectionEntity): Collection = Collection(

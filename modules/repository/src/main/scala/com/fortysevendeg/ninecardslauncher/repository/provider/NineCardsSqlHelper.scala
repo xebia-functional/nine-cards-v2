@@ -138,6 +138,44 @@ class NineCardsSqlHelper(context: Context)
              |  deviceCloudId
              |FROM tmp_User """.stripMargin)
         db.execSQL(s"DROP TABLE tmp_User")
+      case 14 =>
+        db.execSQL(s"ALTER TABLE app RENAME TO tmp_App")
+        db.execSQL(
+          s"""
+             |CREATE TABLE App (
+             |  _id                       INTEGER PRIMARY KEY AUTOINCREMENT,
+             |  name                      TEXT not null,
+             |  packageName               TEXT not null,
+             |  className                 TEXT not null,
+             |  category                  TEXT not null,
+             |  dateInstalled             INTEGER,
+             |  dateUpdate                INTEGER,
+             |  version                   TEXT not null,
+             |  installedFromGooglePlay   INTEGER)""".stripMargin)
+        db.execSQL(
+          s"""
+             |INSERT INTO App (
+             |  _id,
+             |  name,
+             |  packageName,
+             |  className,
+             |  category,
+             |  dateInstalled,
+             |  dateUpdate,
+             |  version,
+             |  installedFromGooglePlay)
+             |SELECT
+             |  _id,
+             |  name,
+             |  packageName,
+             |  className,
+             |  category,
+             |  dateInstalled,
+             |  dateUpdate,
+             |  version,
+             |  installedFromGooglePlay
+             |FROM tmp_App """.stripMargin)
+        db.execSQL(s"DROP TABLE tmp_App")
     }
   }
 }
@@ -145,5 +183,5 @@ class NineCardsSqlHelper(context: Context)
 object NineCardsSqlHelper {
   val id = "_id"
   val databaseName = "nineCards"
-  val databaseVersion = 13
+  val databaseVersion = 14
 }

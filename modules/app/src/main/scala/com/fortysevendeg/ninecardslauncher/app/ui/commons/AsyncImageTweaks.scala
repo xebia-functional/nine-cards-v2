@@ -88,13 +88,16 @@ object AsyncImageTweaks {
     }
   )
 
-  def ivCardUri(uri: String, name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivCardUri(maybeUri: Option[String], name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
-        loadCardUri(
+        val request = maybeUri match {
+          case Some(uri) if new File(uri).exists() => Try(glide.load(uri)).toOption
+          case _ => None
+        }
+        loadCardRequest(
           imageView = imageView,
-          request = glide.load(uri),
-          uri = uri,
+          maybeRequest = request,
           char = name.substring(0, 1),
           circular = circular)
       }
@@ -146,20 +149,15 @@ object AsyncImageTweaks {
       }
     }.toOption
 
-  private[this] def loadCardUri(
+  private[this] def loadCardRequest(
     imageView: ImageView,
-    request: DrawableTypeRequest[_],
-    uri: String,
+    maybeRequest: Option[DrawableTypeRequest[_]],
     char: String,
     circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]) = {
-    if (new File(uri).exists()) {
-      makeRequest(
-        request = request,
-        imageView = imageView,
-        char = char,
-        circular = circular)
-    } else {
-      (imageView <~ ivSrc(new CharDrawable(char, circle = circular))).run
+    maybeRequest match {
+      case Some(request)  =>
+        makeRequest(request = request, imageView = imageView, char = char, circular = circular)
+      case _ => (imageView <~ ivSrc(CharDrawable(char, circle = circular))).run
     }
   }
 
@@ -175,7 +173,7 @@ object AsyncImageTweaks {
         override def onLoadStarted(placeholder: Drawable): Unit =
           view.setImageDrawable(javaNull)
         override def onLoadFailed(e: Exception, errorDrawable: Drawable): Unit =
-          (view <~ ivSrc(new CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
+          (view <~ ivSrc(CharDrawable(char, circle = circular)) <~ (if (fadeInFailed) fadeIn(200) else Snail.blank)).run
         override def onResourceReady(resource: GlideDrawable, glideAnimation: GlideAnimation[_ >: GlideDrawable]): Unit =
           view.setImageDrawable(resource.getCurrent)
       })

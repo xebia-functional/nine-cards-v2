@@ -21,7 +21,7 @@ class IterableApps(cursor: ServicesIterableApps)
 
 class EmptyIterableApps()
   extends IterableApps(javaNull) {
-  val emptyApp = App("", "", "", Misc, "", 0, 0, "", installedFromGooglePlay = false)
+  val emptyApp = App("", "", "", Misc, 0, 0, "", installedFromGooglePlay = false)
   override def count(): Int = 0
   override def moveToPosition(pos: Int): App = emptyApp
   override def close(): Unit = {}

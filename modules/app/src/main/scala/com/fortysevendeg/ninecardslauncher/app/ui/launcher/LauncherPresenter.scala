@@ -137,11 +137,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         card.cardType match {
           case AppCardType =>
             createOrUpdateDockApp(card, AppDockType, position).resolveAsyncUi2(
-              onResult = (_) => actions.reloadDockApps(DockApp(card.term, AppDockType, card.intent, card.imagePath, position)),
+              onResult = (_) => actions.reloadDockApps(DockApp(card.term, AppDockType, card.intent, card.imagePath getOrElse "", position)),
               onException = (_) => actions.showContactUsError())
           case ContactCardType =>
             createOrUpdateDockApp(card, ContactDockType, position).resolveAsyncUi2(
-              onResult = (_) => actions.reloadDockApps(DockApp(card.term, ContactDockType, card.intent, card.imagePath, position)),
+              onResult = (_) => actions.reloadDockApps(DockApp(card.term, ContactDockType, card.intent, card.imagePath getOrElse "", position)),
               onException = (_) => actions.showContactUsError())
           case _ =>
             actions.showContactUsError()
@@ -811,7 +811,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   private[this] def momentForceBestAvailable() = sendBroadCast(BroadAction(MomentForceBestAvailableActionFilter.action))
 
   private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
-    di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath, position)
+    di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath getOrElse "", position)
 
   // Check if there is a new best available moment, if not reload the apps moment bar
   def changeMomentIfIsAvailable(): Unit = {

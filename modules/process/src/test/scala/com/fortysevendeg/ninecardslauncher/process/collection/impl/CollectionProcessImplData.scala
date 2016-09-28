@@ -40,7 +40,6 @@ trait CollectionProcessImplData {
   val className1 = "ScalaAndroidActivity"
   val path1 = "/example/path1"
   val category1 = "category1"
-  val imagePath1 = "imagePath1"
   val dateInstalled1 = 1L
   val dateUpdate1 = 1L
   val version1 = "22"
@@ -222,7 +221,7 @@ trait CollectionProcessImplData {
         packageName = Option(packageName),
         cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
-        imagePath = imagePath,
+        imagePath = Option(imagePath),
         notification = Option(notification)))
 
   def createSeqServicesCard() =
@@ -234,7 +233,7 @@ trait CollectionProcessImplData {
         packageName = Option(packageName + item),
         cardType = cardType.name,
         intent = intent,
-        imagePath = imagePath,
+        imagePath = Option(imagePath),
         notification = Option(notification)))
 
   def createSeqUnformedApps(num: Int = 150) =
@@ -243,7 +242,6 @@ trait CollectionProcessImplData {
         name = name,
         packageName = generatePackageName,
         className = className,
-        imagePath = imagePath,
         category = appsCategory)
     }
 
@@ -265,7 +263,7 @@ trait CollectionProcessImplData {
     packageName = Option(packageName),
     cardType = cardType.name,
     intent = intent,
-    imagePath = imagePath,
+    imagePath = Option(imagePath),
     notification = Option(notification))
   val seqServicesCard = Seq(servicesCard) ++ createSeqServicesCard()
 
@@ -306,7 +304,6 @@ trait CollectionProcessImplData {
       packageName = card.packageName.getOrElse(""),
       className = "",
       category = appsCategoryName,
-      imagePath = card.imagePath,
       dateInstalled = 0,
       dateUpdate = 0,
       version = "",
@@ -458,7 +455,7 @@ trait CollectionProcessImplData {
         packageName = Option(packageName),
         cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
-        imagePath = imagePath)
+        imagePath = Option(imagePath))
     }
 
   def createSeqCardResponse(
@@ -479,7 +476,7 @@ trait CollectionProcessImplData {
         packageName = Option(packageName),
         cardType = cardType,
         intent = Json.parse(intent).as[NineCardIntent],
-        imagePath = imagePath,
+        imagePath = Option(imagePath),
         notification = Option(notification)))
 
   def updatedCard = Card(

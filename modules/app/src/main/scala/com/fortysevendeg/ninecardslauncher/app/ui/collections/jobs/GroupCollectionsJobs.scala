@@ -170,7 +170,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
   def addShortcut(name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): TaskService[Seq[Card]] = {
 
     def createShortcut(collectionId: Int): TaskService[Seq[Card]] = for {
-      path <- bitmap map (di.deviceProcess.saveShortcutIcon(_)) getOrElse TaskService.right("") // We use a empty string because the UI will generate an image
+      path <- bitmap map (di.deviceProcess.saveShortcutIcon(_).map(Option(_))) getOrElse TaskService.right(None)
       addCardRequest = AddCardRequest(
         term = name,
         packageName = None,
