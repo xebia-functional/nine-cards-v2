@@ -88,12 +88,16 @@ object AsyncImageTweaks {
     }
   )
 
-  def ivCardUri(uri: Option[String], name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
+  def ivCardUri(maybeUri: Option[String], name: String, circular: Boolean = false)(implicit context: ContextWrapper, uiContext: UiContext[_]): Tweak[W] = Tweak[W](
     imageView => {
       glide() foreach { glide =>
+        val request = maybeUri match {
+          case Some(uri) if new File(uri).exists() => Try(glide.load(uri)).toOption
+          case _ => None
+        }
         loadCardRequest(
           imageView = imageView,
-          maybeRequest = uri map glide.load,
+          maybeRequest = request,
           char = name.substring(0, 1),
           circular = circular)
       }
