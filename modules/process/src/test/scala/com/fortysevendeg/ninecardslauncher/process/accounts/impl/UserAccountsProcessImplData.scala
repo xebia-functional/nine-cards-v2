@@ -1,17 +1,21 @@
 package com.fortysevendeg.ninecardslauncher.process.accounts.impl
 
-import com.fortysevendeg.ninecardslauncher.services.accounts.models.{Account, GoogleAccount}
-
 trait UserAccountsProcessImplData {
 
-  val account1 = Account(GoogleAccount.value, "name1")
+  val accountName1 = "name1"
 
-  val account2 = Account(GoogleAccount.value, "name2")
+  val accountName2 = "name2"
 
-  val accounts = Seq(account1, account2)
+  val accountType = "com.google"
 
-  val scope = "fake-process-scope"
+  val androidAccount1 = new android.accounts.Account(accountName1, accountType)
 
-  val authToken = "fake-process-auth-token"
+  val androidAccount2 = new android.accounts.Account(accountName2, accountType)
+
+  val scope = "fake-scope"
+
+  val authToken = "fake-auth-token"
+
+  val permissionCode= 100
 
 }

@@ -5,26 +5,28 @@ import android.content.Intent
 import android.os.Bundle
 import android.view._
 import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
-import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionsPagerPresenter
+import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes
+import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
+import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactPermissionException, ContactsFilter}
 import com.fortysevendeg.ninecardslauncher2.R
 
-class ContactsFragment(implicit collectionsPagerPresenter: CollectionsPagerPresenter)
+class ContactsFragment
   extends BaseActionFragment
-  with ContactsUiActionsImpl
+  with ContactsUiActions
+  with ContactsDOM
+  with ContactsUiListener
   with NineCardIntentConversions { self =>
 
-  override lazy val contactsPresenter = new ContactsPresenter(self)
-
-  override val collectionsPresenter: CollectionsPagerPresenter = collectionsPagerPresenter
+  lazy val contactsJobs = new ContactsJobs(self)
 
   override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    contactsPresenter.initialize()
+    contactsJobs.initialize().resolveAsyncServiceOr(e => onError(e))
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
@@ -47,18 +49,37 @@ class ContactsFragment(implicit collectionsPagerPresenter: CollectionsPagerPrese
             case _ => None
           }
         }
-        contactsPresenter.addContact(maybeRequest)
+        (maybeRequest, getActivity) match {
+          case (Some(request), activity: GroupCollectionsUiListener) =>
+            activity.addCards(Seq(request))
+            contactsJobs.close().resolveAsync()
+          case _ => contactsJobs.showError().resolveAsync()
+        }
       case _ =>
     }
   }
 
   override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
-    contactsPresenter.requestPermissionsResult(requestCode, permissions, grantResults)
+    contactsJobs.requestPermissionsResult(requestCode, permissions, grantResults).resolveAsyncServiceOr(e => onError(e))
 
   override def onDestroy(): Unit = {
-    contactsPresenter.destroy()
+    contactsJobs.destroy()
     super.onDestroy()
   }
+
+  override def loadContacts(filter: ContactsFilter, reload: Boolean): Unit =
+    contactsJobs.loadContacts(filter, reload).resolveAsyncServiceOr(e => onError(e, filter))
+
+  override def showContact(lookupKey: String): Unit =
+    contactsJobs.showContact(lookupKey).resolveAsyncServiceOr(_ => contactsJobs.showError())
+
+  override def swapFilter(): Unit = contactsJobs.swapFilter().resolveAsync()
+
+  private[this] def onError(e: Throwable, filter: ContactsFilter = AllContacts) = e match {
+    case e: ContactPermissionException => contactsJobs.askForContactsPermission(RequestCodes.contactsPermission)
+    case _ => contactsJobs.showErrorLoadingContacts(filter)
+  }
+
 }
 
 object ContactsFragment {

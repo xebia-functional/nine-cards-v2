@@ -33,7 +33,7 @@ trait ProfileUiActionsImpl
   with ProfileStyles
   with TabLayout.OnTabSelectedListener {
 
-  self: TypedFindView with SystemBarsTint with Contexts[AppCompatActivity] =>
+  self: TypedFindView with Contexts[AppCompatActivity] =>
 
   implicit val presenter: ProfilePresenter
 
@@ -42,6 +42,8 @@ trait ProfileUiActionsImpl
   implicit lazy val theme = presenter.getTheme
 
   val tagDialog = "dialog"
+
+  lazy val systemBarsTint = new SystemBarsTint
 
   lazy val rootLayout = findView(TR.profile_root)
 
@@ -81,7 +83,7 @@ trait ProfileUiActionsImpl
       (tabs <~ tlSetListener(this)) ~
       (recyclerView <~
         rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
-      updateStatusColor(theme.get(PrimaryColor)) ~
+      systemBarsTint.updateStatusColor(theme.get(PrimaryColor)) ~
       Ui(presenter.loadUserAccounts())
 
   override def showLoading(): Ui[Any] = (loadingView <~ vVisible) ~ (recyclerView <~ vInvisible)

@@ -2,22 +2,28 @@ package com.fortysevendeg.ninecardslauncher.process.accounts
 
 import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
 
-trait AccountsProcessException extends NineCardException
+trait UserAccountsProcessException extends NineCardException
 
-case class AccountsProcessExceptionImpl(message: String, cause: Option[Throwable])
+case class UserAccountsProcessExceptionImpl(message: String, cause: Option[Throwable])
   extends RuntimeException(message)
-    with AccountsProcessException {
+    with UserAccountsProcessException {
   cause map initCause
 }
 
-case class AccountsProcessPermissionException(message: String, cause: Option[Throwable])
+case class UserAccountsProcessPermissionException(message: String, cause: Option[Throwable])
   extends RuntimeException(message)
-    with AccountsProcessException {
+    with UserAccountsProcessException {
   cause map initCause
 }
 
-case class AccountsProcessOperationCancelledException(message: String, cause: Option[Throwable])
+case class UserAccountsProcessOperationCancelledException(message: String, cause: Option[Throwable])
   extends RuntimeException(message)
-    with AccountsProcessException {
+    with UserAccountsProcessException {
   cause map initCause
+}
+
+trait ImplicitsAccountsProcessExceptions {
+
+  implicit def accountsServicesExceptionConverter =
+    (t: Throwable) => UserAccountsProcessExceptionImpl(t.getMessage, Option(t))
 }
