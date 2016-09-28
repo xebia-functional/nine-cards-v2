@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, Ui
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageClientListener
 import com.fortysevendeg.ninecardslauncher.process.social.{SocialProfileClientListener, SocialProfileProcessException}
 import com.fortysevendeg.ninecardslauncher.process.user.UserException

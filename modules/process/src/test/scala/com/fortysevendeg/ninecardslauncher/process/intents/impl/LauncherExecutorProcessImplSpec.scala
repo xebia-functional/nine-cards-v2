@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.intents.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.contexts.ActivityContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardIntent, NineCardIntentExtras}
 import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
 import com.fortysevendeg.ninecardslauncher.services.intents.LauncherIntentServices
@@ -12,7 +12,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 
 trait LauncherExecutorProcessImplSpecification
   extends Specification

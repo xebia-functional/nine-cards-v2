@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.commons.test.repository
+package cards.nine.commons.test.repository
 
 import java.lang.Math._
 

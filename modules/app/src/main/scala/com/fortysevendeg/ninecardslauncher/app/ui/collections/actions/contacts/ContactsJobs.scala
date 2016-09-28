@@ -3,9 +3,9 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.contacts
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker
 import com.fortysevendeg.ninecardslauncher.app.permissions.PermissionChecker.ReadContacts
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{Jobs, RequestCodes}
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.device.models.{IterableContacts, TermCounter}
 import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter}
 import macroid.ActivityContextWrapper

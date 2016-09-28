@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
+import cards.nine.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.repository.model.{DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{FindDockAppByIdRequest, DeleteDockAppRequest, CreateOrUpdateDockAppRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{IterableDockApps, DockApp}

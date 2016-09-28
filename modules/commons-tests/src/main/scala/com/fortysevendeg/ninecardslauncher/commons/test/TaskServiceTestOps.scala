@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.commons.test
+package cards.nine.commons.test
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, _}
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.{NineCardException, _}
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import org.specs2.matcher.MatchResult

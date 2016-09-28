@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.trackevent.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.track.{TrackServices, TrackServicesException}
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Game
 import com.fortysevendeg.ninecardslauncher.process.trackevent.TrackEventException
 

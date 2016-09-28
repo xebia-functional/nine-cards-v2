@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.services.drive
 
 import java.io.InputStream
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import com.google.android.gms.common.api.GoogleApiClient
 

@@ -6,8 +6,8 @@ import com.fortysevendeg.ninecardslauncher.app.commons.{BroadAction, Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.CollectionAddedActionFilter
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, Jobs}
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.R

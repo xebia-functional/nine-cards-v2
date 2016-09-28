@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.repository.repositories
 
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.CatchAll
+import cards.nine.commons.contentresolver.Conversions._
+import cards.nine.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
+import cards.nine.commons.contentresolver.NotificationUri._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.Conversions.toDockApp
 import com.fortysevendeg.ninecardslauncher.repository.model.{DockApp, DockAppData}
 import com.fortysevendeg.ninecardslauncher.repository.provider.{DockAppEntity, NineCardsUri}

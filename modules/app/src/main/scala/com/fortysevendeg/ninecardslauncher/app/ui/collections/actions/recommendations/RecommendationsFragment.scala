@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFrag
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendedAppsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.R
 

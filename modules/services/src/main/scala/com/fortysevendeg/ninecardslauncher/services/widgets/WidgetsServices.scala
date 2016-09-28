@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Widget
 
 trait WidgetsServices {

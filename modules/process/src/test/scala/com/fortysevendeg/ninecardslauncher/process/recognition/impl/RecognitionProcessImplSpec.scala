@@ -1,10 +1,10 @@
 package com.fortysevendeg.ninecardslauncher.process.recognition.impl
 
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.process.recognition.RecognitionProcessException
 import com.fortysevendeg.ninecardslauncher.services.awareness.{AwarenessException, AwarenessServices}
 import monix.eval.Task

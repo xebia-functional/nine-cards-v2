@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class AndroidIdNotFoundException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)

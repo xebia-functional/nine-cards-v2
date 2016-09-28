@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.recognition.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{TaskService, _}
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService.{TaskService, _}
 import com.fortysevendeg.ninecardslauncher.process.recognition._
 import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessServices
 

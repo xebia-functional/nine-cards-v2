@@ -26,7 +26,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drag.CollectionShadow
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.ReorderCollection
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
-import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
+import cards.nine.commons.ops.SeqOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}

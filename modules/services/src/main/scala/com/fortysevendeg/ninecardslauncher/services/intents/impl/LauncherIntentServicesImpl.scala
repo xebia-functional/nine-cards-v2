@@ -2,9 +2,9 @@ package com.fortysevendeg.ninecardslauncher.services.intents.impl
 
 import android.app.Activity
 import android.content.Intent
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.{NineCardException, TaskService}
+import cards.nine.commons.contexts.ActivityContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.{NineCardException, TaskService}
 import com.fortysevendeg.ninecardslauncher.services.intents.models._
 import com.fortysevendeg.ninecardslauncher.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException, LauncherIntentServices}
 import cats.syntax.either._

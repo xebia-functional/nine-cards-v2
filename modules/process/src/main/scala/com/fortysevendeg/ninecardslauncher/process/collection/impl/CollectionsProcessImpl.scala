@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.process.collection.impl
 
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.CatchAll
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.ops.SeqOps._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.AddCollectionRequest
 import com.fortysevendeg.ninecardslauncher.process.collection._
 import com.fortysevendeg.ninecardslauncher.process.collection.models.{FormedCollection, UnformedApp, UnformedContact}

@@ -4,8 +4,8 @@ import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.app.di.Injector
 import com.fortysevendeg.ninecardslauncher.app.ui.MomentPreferences
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.LauncherPresenterStatuses
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionProcess}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.DeviceProcess

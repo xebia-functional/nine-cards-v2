@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.utils
 
 import java.io.File
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contexts.ContextSupport
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

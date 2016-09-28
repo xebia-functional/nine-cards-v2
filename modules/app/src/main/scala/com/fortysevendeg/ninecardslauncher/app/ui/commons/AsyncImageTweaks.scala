@@ -22,7 +22,7 @@ import com.bumptech.glide.signature.StringSignature
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder, IconFromPackageDecoder, IconFromPackageLoader}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.CharDrawable
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._

@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.MomentEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.PersistenceServicesData

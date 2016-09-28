@@ -4,11 +4,11 @@ import android.accounts.{Account, AccountManager, AccountManagerCallback, Accoun
 import android.app.Activity
 import android.os.Bundle
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons._
+import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.accounts.{UserAccountsProcessException, _}
 import com.fortysevendeg.ninecardslauncher.services.permissions.{PermissionDenied, PermissionGranted, PermissionsServices}
 import monix.eval.{Callback, Task}

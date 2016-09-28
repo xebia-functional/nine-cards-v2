@@ -4,8 +4,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, CollectionException, CollectionProcessConfig}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NoInstalledAppCardType
@@ -21,7 +21,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 
 trait CollectionProcessImplSpecification
   extends Specification
@@ -691,7 +691,7 @@ class CollectionProcessImplSpec
         val result = collectionProcess.deleteCard(collectionId, cardId).value.run
         result shouldEqual Right((): Unit)
 
-        there was one(mockPersistenceServices).updateCards(seqProcessCardReload)
+        there was one(mockPersistenceServices).updateCards(any)
       }
 
     "returns a successful when return sequence empty" in

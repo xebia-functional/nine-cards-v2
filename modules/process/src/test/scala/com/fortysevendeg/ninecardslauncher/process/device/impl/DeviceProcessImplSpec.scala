@@ -5,9 +5,9 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.DisplayMetrics
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.javaNull
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppDockType, Misc}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
@@ -25,7 +25,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 
 trait DeviceProcessSpecification
   extends Specification

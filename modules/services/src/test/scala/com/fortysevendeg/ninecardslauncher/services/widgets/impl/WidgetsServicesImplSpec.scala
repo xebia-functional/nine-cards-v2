@@ -1,14 +1,14 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets.impl
 
 import android.content.pm.PackageManager
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.widgets.WidgetServicesException
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 
 
 trait WidgetsImplSpecification

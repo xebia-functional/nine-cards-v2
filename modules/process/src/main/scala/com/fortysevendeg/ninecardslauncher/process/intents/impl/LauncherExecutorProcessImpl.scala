@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.process.intents.impl
 
 import cats.data.EitherT
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.contexts.ActivityContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentExtras._
 import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig, LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}

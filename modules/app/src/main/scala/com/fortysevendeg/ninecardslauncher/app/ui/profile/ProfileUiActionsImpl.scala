@@ -22,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.AccountOption
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.{AccountsAdapter, EmptyProfileAdapter, SubscriptionsAdapter}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.dialog.{EditAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.PublishedByOther
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
 import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, PrimaryColor}

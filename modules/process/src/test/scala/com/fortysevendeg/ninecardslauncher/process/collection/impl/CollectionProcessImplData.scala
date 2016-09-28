@@ -560,13 +560,11 @@ trait CollectionProcessImplData {
         name = "nameUnformed0",
         packageName = "package.name.0",
         className = "classNameUnformed0",
-        imagePath = "imagePathUnformed0",
         category = appsCategories(0)),
       UnformedApp(
         name = "nameUnformed1",
         packageName = "package.name.1",
         className = "classNameUnformed1",
-        imagePath = "imagePathUnformed1",
         category = appsCategories(1)))
 
   val appsByCategory0: Seq[UnformedApp] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
@@ -590,7 +588,7 @@ trait CollectionProcessImplData {
             intent = NineCardIntent(NineCardIntentExtras(
               package_name = Option("package.name.0"),
               class_name = Option("classNameUnformed0"))),
-            imagePath = "imagePathUnformed0"
+            imagePath = Some("imagePathUnformed0")
           )),
         moment = None),
       PrivateCollection(
@@ -607,7 +605,7 @@ trait CollectionProcessImplData {
             intent = NineCardIntent(NineCardIntentExtras(
               package_name = Option("package.name.1"),
               class_name = Option("classNameUnformed1"))),
-            imagePath = "imagePathUnformed1"
+            imagePath = Some("imagePathUnformed1")
           )),
         moment = None)
     )

@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks
 
 import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.contexts.ActivityContextSupport
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import com.fortysevendeg.ninecardslauncher.process.device.models.App

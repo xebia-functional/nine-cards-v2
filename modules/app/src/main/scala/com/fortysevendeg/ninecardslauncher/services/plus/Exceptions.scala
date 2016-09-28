@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.plus
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class GooglePlusServicesException(message: String, cause: Option[Throwable] = None, recoverable: Boolean = false)
   extends RuntimeException(message)

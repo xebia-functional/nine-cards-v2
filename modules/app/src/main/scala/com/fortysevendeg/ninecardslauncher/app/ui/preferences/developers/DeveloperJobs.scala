@@ -3,9 +3,9 @@ package com.fortysevendeg.ninecardslauncher.app.ui.preferences.developers
 import cats.implicits._
 import com.bumptech.glide.Glide
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions, Jobs, UiException}
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.CatchAll
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.device.GetByName
 import macroid.ContextWrapper
 

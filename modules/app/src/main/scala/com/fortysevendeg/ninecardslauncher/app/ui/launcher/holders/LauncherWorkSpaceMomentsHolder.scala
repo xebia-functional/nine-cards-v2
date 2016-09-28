@@ -22,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMome
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{LauncherNoConfiguredWidgetView, LauncherWidgetView}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}

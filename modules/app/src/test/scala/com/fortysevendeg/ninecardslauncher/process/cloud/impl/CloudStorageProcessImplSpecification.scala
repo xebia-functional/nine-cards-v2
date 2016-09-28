@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 
 import android.content.Context
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageClientListener, CloudStorageProcessException}
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.RawCloudStorageDevice
 import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
@@ -13,7 +13,7 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 import play.api.libs.json.Json
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceSpecification
+import cards.nine.commons.test.TaskServiceSpecification
 import com.google.android.gms.common.api.GoogleApiClient
 
 import scala.ref.WeakReference

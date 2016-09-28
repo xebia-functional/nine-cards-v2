@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.Bitmap
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.device.{DeviceConversions, DeviceProcess, IconResize, ImplicitsDeviceException, ShortcutException}
 import com.fortysevendeg.ninecardslauncher.services.image.SaveBitmap
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.services.TaskService._
 
 
 trait ShorcutsDeviceProcessImpl extends DeviceProcess {

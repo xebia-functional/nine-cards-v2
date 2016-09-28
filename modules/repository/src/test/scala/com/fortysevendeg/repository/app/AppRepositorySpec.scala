@@ -1,12 +1,12 @@
 package com.fortysevendeg.repository.app
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{IterableCursor, ContentResolverWrapperImpl, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, LongDataType, MockCursor, StringDataType}
+import cards.nine.commons.contentresolver.Conversions._
+import cards.nine.commons.contentresolver.IterableCursor._
+import cards.nine.commons.contentresolver.{IterableCursor, ContentResolverWrapperImpl, UriCreator}
+import cards.nine.commons.services.TaskService.NineCardException
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.repository.{IntDataType, LongDataType, MockCursor, StringDataType}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.App
 import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity.{allFields, name, packageName, _}

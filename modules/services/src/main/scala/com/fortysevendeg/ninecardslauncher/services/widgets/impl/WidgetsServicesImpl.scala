@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.services.widgets.impl
 
 import android.os.Build
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.CatchAll
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.Conversions
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.impl.{AppWidgetManagerImplDefault, AppWidgetManagerImplLollipop}

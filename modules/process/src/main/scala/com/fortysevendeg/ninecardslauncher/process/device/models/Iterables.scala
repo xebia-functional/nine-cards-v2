@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.device.models
 
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
+import cards.nine.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Misc
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import cards.nine.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.device.DeviceConversions
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{IterableApps => ServicesIterableApps}

@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.collection
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.collection.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.CommonConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, NineCardIntent, PrivateCard}

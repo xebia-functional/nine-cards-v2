@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.services.shortcuts.impl
 
 import android.content.Intent
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.CatchAll
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ImplicitsShortcutsExceptions, ShortcutServicesException, ShortcutsServices}
 

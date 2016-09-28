@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.services.commons
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog._
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.commons._
 import com.google.firebase.iid.FirebaseInstanceId
 
 import scala.util.{Failure, Success, Try}

@@ -3,11 +3,11 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs
 import android.support.v7.widget.RecyclerView.ViewHolder
 import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardIntentConversions}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
+import cards.nine.commons.NineCardExtensions._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{JobException, Jobs}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
 import com.fortysevendeg.ninecardslauncher.process.trackevent.models._

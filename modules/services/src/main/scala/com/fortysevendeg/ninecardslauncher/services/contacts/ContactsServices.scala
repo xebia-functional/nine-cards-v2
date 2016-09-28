@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts
 
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.contentresolver.IterableCursor
+import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactCounter}
 
 trait ContactsServices {

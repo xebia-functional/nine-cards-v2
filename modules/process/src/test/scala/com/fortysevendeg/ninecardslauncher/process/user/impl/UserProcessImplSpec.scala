@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.user.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.persistence._
@@ -9,7 +9,7 @@ import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import  com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import  cards.nine.commons.test.TaskServiceTestOps._
 import cats.syntax.either._
 
 trait UserProcessSpecification

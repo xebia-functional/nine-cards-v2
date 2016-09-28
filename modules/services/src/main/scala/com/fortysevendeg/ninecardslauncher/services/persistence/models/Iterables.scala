@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.models
 
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
+import cards.nine.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp, DockApp => RepositoryDockApp}
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.{AppConversions, DockAppConversions}
 
