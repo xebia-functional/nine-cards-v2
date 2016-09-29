@@ -19,8 +19,8 @@ import cards.nine.commons.ops.SeqOps._
 import cards.nine.process.commons.models.{Card, Collection}
 import cards.nine.process.commons.types._
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.TypedResource._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.TypedResource._
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui, _}
 

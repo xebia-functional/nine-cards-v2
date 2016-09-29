@@ -13,7 +13,7 @@ import cards.nine.app.ui.profile.adapters.AccountOptions._
 import cards.nine.app.ui.profile.AccountsAdapterStyles
 import cards.nine.app.ui.profile.models.{AccountSync, Device, Header}
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
 

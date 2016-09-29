@@ -4,7 +4,7 @@ import android.graphics.Color
 import android.view.View
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.process.theme.models._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 import scala.util.Random
 

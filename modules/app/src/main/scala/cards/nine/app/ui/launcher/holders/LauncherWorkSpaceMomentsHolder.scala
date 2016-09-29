@@ -26,7 +26,7 @@ import cards.nine.commons._
 import cards.nine.process.theme.models.NineCardsTheme
 import cards.nine.process.widget.models.AppWidget
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

@@ -11,7 +11,7 @@ import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.CommonsResourcesExtras._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.process.commons.types.{PublishedByOther, Subscribed}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import com.google.firebase.messaging.{FirebaseMessagingService, RemoteMessage}
 import macroid.Contexts
 import play.api.libs.json._

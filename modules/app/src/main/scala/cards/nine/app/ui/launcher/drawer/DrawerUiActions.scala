@@ -34,7 +34,7 @@ import cards.nine.app.ui.launcher.{LauncherUiActions, LauncherUiActionsImpl}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.process.device._
 import cards.nine.process.device.models._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

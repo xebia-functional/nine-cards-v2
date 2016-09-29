@@ -11,7 +11,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.process.commons.types.Misc
 import cards.nine.process.device.models.App
 import cards.nine.process.recognition.{Location, Weather}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Ui}
 
 class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrapper) {

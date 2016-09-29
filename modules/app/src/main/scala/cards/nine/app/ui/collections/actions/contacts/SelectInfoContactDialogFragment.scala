@@ -18,7 +18,7 @@ import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.types._
 import cards.nine.process.device.models.Contact
 import cards.nine.process.theme.models.{NineCardsTheme, PrimaryColor}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

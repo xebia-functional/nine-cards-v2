@@ -5,12 +5,12 @@ import cards.nine.services.image._
 trait ImageServicesImplData {
 
   val appPackage = AppPackage(
-    "com.fortysevendeg.ninecardslauncher.test",
+    "cards.nine.test",
     "ClassNameExample",
     "Sample Name")
 
   val appWebsite = AppWebsite(
-    "com.fortysevendeg.ninecardslauncher.test",
+    "cards.nine.test",
     "http://www.example.com/image.jpg",
     "Sample Name")
 

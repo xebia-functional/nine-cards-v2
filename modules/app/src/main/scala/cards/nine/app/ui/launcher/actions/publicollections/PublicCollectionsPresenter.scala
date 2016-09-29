@@ -10,7 +10,7 @@ import cards.nine.process.commons.models.Collection
 import cards.nine.process.commons.types.{Communication, NineCardCategory}
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 
 class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)

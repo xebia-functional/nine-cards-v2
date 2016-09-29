@@ -26,7 +26,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection}
 import cards.nine.process.commons.types.{NotPublished, PublicCollectionStatus}
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

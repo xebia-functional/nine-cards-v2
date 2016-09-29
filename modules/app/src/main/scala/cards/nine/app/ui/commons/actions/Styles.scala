@@ -10,7 +10,7 @@ import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.process.theme.models.{DrawerTabsBackgroundColor, NineCardsTheme, PrimaryColor}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Tweak}
 
 trait Styles {

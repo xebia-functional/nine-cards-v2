@@ -11,7 +11,7 @@ import android.view._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.components.commons.{SwipeController, Swiping}
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.Contexts
 
 class PullToDownView(context: Context, attr: AttributeSet, defStyleAttr: Int)

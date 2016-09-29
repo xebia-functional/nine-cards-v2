@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.process.theme.models.{NineCardsTheme, SearchBackgroundColor}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
 class TopBarMomentEdgeBackgroundDrawable(implicit theme: NineCardsTheme, contextWrapper: ContextWrapper)

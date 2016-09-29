@@ -38,7 +38,7 @@ import cards.nine.process.recognition.{ConditionWeather, UnknownCondition}
 import cards.nine.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
 import cards.nine.process.widget.models.{AppWidget, WidgetArea}
 import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 

@@ -21,7 +21,7 @@ import cards.nine.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 import org.ocpsoft.prettytime.PrettyTime

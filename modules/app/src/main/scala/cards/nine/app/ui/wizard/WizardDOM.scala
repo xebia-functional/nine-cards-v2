@@ -1,6 +1,6 @@
 package cards.nine.app.ui.wizard
 
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
 trait WizardDOM {
 

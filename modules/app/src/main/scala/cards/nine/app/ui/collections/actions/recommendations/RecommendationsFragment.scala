@@ -11,7 +11,7 @@ import cards.nine.process.recommendations.models.RecommendedApp
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.recommendations.RecommendedAppsConfigurationException
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class RecommendationsFragment
   extends BaseActionFragment

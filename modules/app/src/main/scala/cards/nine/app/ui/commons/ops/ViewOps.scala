@@ -1,7 +1,7 @@
 package cards.nine.app.ui.commons.ops
 
 import android.view.View
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 object ViewOps {
 

@@ -27,7 +27,7 @@ trait AppsServicesImplData {
 
   val validPackageName = sampleApp1.packageName
 
-  val invalidPackageName = "com.fortysevendeg.ninecardslauncher.test.sampleapp3"
+  val invalidPackageName = "cards.nine.test.sampleapp3"
 
   def createSeqApplication(
     num: Int = 2,

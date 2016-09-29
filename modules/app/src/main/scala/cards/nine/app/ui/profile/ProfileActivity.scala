@@ -9,7 +9,7 @@ import android.view.{Menu, MenuItem}
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid.Contexts
 
 class ProfileActivity

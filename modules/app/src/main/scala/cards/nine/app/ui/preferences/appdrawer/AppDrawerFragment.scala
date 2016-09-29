@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.preference.ListPreference
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.preferences.commons._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.Contexts
 
 class AppDrawerFragment

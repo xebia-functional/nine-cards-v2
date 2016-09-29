@@ -8,7 +8,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import cards.nine.commons.javaNull
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 

@@ -32,7 +32,7 @@ import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
 import cards.nine.commons._
 import cards.nine.process.theme.models.{DrawerIconColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 object CommonsTweak {

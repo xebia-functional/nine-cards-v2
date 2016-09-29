@@ -19,7 +19,7 @@ import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import cards.nine.commons.javaNull
 import cards.nine.process.commons.models.MomentTimeSlot
 import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

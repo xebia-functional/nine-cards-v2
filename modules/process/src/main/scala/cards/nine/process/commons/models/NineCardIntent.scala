@@ -61,12 +61,12 @@ object NineCardIntentExtras {
   val nineCardExtraUrlAd: String = "url_ad"
   val nineCardExtraPackageName: String = "package_name"
   val nineCardExtraClassName: String = "class_name"
-  val openApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_APP"
-  val openNoInstalledApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_RECOMMENDED_APP"
-  val openSms: String = "com.fortysevendeg.ninecardslauncher.OPEN_SMS"
-  val openPhone: String = "com.fortysevendeg.ninecardslauncher.OPEN_PHONE"
-  val openEmail: String = "com.fortysevendeg.ninecardslauncher.OPEN_EMAIL"
-  val openContact: String = "com.fortysevendeg.ninecardslauncher.OPEN_CONTACT"
+  val openApp: String = "cards.nine.OPEN_APP"
+  val openNoInstalledApp: String = "cards.nine.OPEN_RECOMMENDED_APP"
+  val openSms: String = "cards.nine.OPEN_SMS"
+  val openPhone: String = "cards.nine.OPEN_PHONE"
+  val openEmail: String = "cards.nine.OPEN_EMAIL"
+  val openContact: String = "cards.nine.OPEN_CONTACT"
 }
 
 object NineCardIntentImplicits {

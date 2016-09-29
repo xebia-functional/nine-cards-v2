@@ -20,7 +20,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.device.models.{Contact, IterableContacts, TermCounter}
 import cards.nine.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 trait ContactsUiActions

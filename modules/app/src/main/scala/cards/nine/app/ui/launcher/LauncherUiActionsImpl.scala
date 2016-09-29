@@ -56,7 +56,7 @@ import cards.nine.process.recognition.ConditionWeather
 import cards.nine.process.theme.models.NineCardsTheme
 import cards.nine.process.widget.models.AppWidget
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

@@ -12,7 +12,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class EditCardDialogFragment(cardName: String, onChangeName: (Option[String]) => Unit)(implicit contextWrapper: ContextWrapper)

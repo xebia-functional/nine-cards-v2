@@ -59,7 +59,7 @@ import cards.nine.services.shortcuts.impl.ShortcutsServicesImpl
 import cards.nine.services.track.impl.ConsoleTrackServices
 import cards.nine.services.widgets.impl.WidgetsServicesImpl
 import cards.nine.services.wifi.impl.WifiServicesImpl
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.common.api.GoogleApiClient

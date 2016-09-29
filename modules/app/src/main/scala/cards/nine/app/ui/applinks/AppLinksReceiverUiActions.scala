@@ -11,7 +11,7 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.theme.models.{CardLayoutBackgroundColor, CardTextColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 class AppLinksReceiverUiActions(

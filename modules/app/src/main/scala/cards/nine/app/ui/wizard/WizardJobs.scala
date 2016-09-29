@@ -20,7 +20,7 @@ import cards.nine.process.cloud.Conversions
 import cards.nine.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import cards.nine.process.userv1.UserV1ConfigurationException
 import cards.nine.process.userv1.models.UserV1Device
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}
 import com.google.android.gms.common.api.GoogleApiClient

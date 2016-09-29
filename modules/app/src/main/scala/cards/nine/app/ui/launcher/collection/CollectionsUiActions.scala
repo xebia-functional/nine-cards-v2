@@ -45,7 +45,7 @@ import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.IsDeveloper
 import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

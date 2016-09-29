@@ -19,7 +19,7 @@ import cards.nine.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.layouts.FabItemMenu
 import cards.nine.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

@@ -24,7 +24,7 @@ import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.process.commons.models.{Collection, PrivateCard, PrivateCollection}
 import cards.nine.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
 import macroid._

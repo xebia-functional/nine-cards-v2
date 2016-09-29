@@ -2,7 +2,7 @@ package cards.nine.app.ui.collections.actions.apps
 
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.process.device.models.App
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
 trait AppsDOM {
 

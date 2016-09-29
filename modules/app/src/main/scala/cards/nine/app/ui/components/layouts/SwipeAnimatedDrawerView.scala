@@ -13,7 +13,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.components.widgets.{AppsView, ContactView, ContentView}
 import cards.nine.commons.javaNull
 import cards.nine.process.theme.models.{NineCardsTheme, SearchBackgroundColor, SearchIconsColor}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: Int)

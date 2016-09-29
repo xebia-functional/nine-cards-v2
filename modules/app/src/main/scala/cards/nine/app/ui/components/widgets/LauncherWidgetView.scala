@@ -15,7 +15,7 @@ import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.Statuses.EditWidgetsMode
 import cards.nine.commons._
 import cards.nine.process.widget.models.AppWidget
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 

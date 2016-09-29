@@ -12,7 +12,7 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.commons._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.{ActivityContextWrapper, FragmentBuilder, FragmentManagerContext, Ui}
 
 trait GroupCollectionsDOM {

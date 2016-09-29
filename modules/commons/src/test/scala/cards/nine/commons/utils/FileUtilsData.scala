@@ -2,7 +2,7 @@ package cards.nine.commons.utils
 
 trait FileUtilsData {
 
-  val packageName = "com.fortysevendeg.ninecardslauncher.test"
+  val packageName = "cards.nine.test"
 
   val className = "ClassNameExample"
 
@@ -13,7 +13,7 @@ trait FileUtilsData {
   val resultFilePath = s"$fileFolder/$fileName"
 
   val fileJson = """{
-                      "packageName": "com.fortysevendeg.ninecardslauncher.test",
+                      "packageName": "cards.nine.test",
                       "className": "ClassNameExample",
                       "name": "Sample Name"
                      }"""

@@ -3,7 +3,7 @@ package cards.nine.app.ui.components.drawables
 import android.graphics.drawable.Drawable
 import android.graphics._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 import cards.nine.app.ui.commons.ops.ColorOps._
 

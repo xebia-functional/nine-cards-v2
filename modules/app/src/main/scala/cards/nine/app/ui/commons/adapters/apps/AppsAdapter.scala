@@ -14,8 +14,8 @@ import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
 import cards.nine.process.device.models.{App, EmptyIterableApps, IterableApps}
 import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.TypedResource._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.TypedResource._
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

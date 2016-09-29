@@ -20,7 +20,7 @@ import cards.nine.process.commons.types.ContactsCategory
 import cards.nine.process.commons.types.NineCardCategory._
 import cards.nine.process.commons.types.NineCardsMoment._
 import cards.nine.process.theme.models._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

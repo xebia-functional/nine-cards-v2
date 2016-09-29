@@ -10,7 +10,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Snail, Ui}
 
 import scala.concurrent.Promise

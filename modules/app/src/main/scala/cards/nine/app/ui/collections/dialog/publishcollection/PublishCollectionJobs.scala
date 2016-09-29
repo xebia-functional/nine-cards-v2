@@ -10,7 +10,7 @@ import cards.nine.process.commons.models.Collection
 import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.sharedcollections.SharedCollectionsException
 import cards.nine.process.sharedcollections.models.CreateSharedCollection
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
 class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val contextWrapper: ActivityContextWrapper)

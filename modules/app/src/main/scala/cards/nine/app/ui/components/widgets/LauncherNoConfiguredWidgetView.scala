@@ -14,7 +14,7 @@ import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import cards.nine.app.ui.commons.{GenericUiContext, UiContext}
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.process.widget.models.AppWidget
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 import macroid.FullDsl._
 

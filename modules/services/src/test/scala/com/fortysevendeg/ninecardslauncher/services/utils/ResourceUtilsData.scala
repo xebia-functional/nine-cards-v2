@@ -5,7 +5,7 @@ import cards.nine.services.image._
 trait ResourceUtilsData {
 
   val appPackage = AppPackage(
-    "com.fortysevendeg.ninecardslauncher.test",
+    "cards.nine.test",
     "ClassNameExample",
     "Sample Name")
 

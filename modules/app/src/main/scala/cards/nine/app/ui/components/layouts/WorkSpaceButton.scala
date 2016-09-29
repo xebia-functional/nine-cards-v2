@@ -17,7 +17,7 @@ import cards.nine.process.commons.models.{Card, Collection}
 import cards.nine.process.commons.types.AppCardType
 import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import cards.nine.app.ui.commons.ops.CollectionOps._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class WorkSpaceButton(context: Context, attr: AttributeSet, defStyleAttr: Int)

@@ -12,7 +12,7 @@ import cards.nine.app.ui.collections.ActionsScreenListener
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
 class LauncherActivity

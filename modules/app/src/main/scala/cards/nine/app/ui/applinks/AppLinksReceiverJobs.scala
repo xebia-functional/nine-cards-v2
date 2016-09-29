@@ -10,7 +10,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
 class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextWrapper: ActivityContextWrapper)

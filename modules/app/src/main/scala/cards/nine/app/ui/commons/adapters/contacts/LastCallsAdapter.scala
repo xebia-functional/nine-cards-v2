@@ -22,8 +22,8 @@ import cards.nine.app.ui.preferences.commons.FontSize
 import cards.nine.process.device.models.LastCallsContact
 import cards.nine.process.device.types._
 import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.TypedResource._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.TypedResource._
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 import org.ocpsoft.prettytime.PrettyTime

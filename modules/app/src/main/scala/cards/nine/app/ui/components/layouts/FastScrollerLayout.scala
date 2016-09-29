@@ -23,7 +23,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.commons._
 import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.device.models.TermCounter
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

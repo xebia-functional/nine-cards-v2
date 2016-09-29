@@ -12,7 +12,7 @@ import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext}
 import cards.nine.app.ui.components.commons.{TranslationAnimator, TranslationY}
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global

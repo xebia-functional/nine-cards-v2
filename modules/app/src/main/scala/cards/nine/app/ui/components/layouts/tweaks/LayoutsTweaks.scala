@@ -17,7 +17,7 @@ import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import cards.nine.process.commons.models.{Card, Collection, MomentTimeSlot}
 import cards.nine.process.device.models.{DockApp, TermCounter}
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import AnimatedWorkSpaces._
 import android.appwidget.AppWidgetHostView
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell

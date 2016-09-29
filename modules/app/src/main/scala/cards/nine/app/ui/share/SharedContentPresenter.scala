@@ -15,7 +15,7 @@ import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Collection, NineCardIntent, NineCardIntentExtras}
 import cards.nine.process.commons.types.ShortcutCardType
 import cards.nine.process.device.IconResize
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 import cats.syntax.either._

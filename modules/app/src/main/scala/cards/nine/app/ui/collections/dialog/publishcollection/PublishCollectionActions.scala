@@ -19,7 +19,7 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.commons.types._
 import cards.nine.process.theme.models._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 

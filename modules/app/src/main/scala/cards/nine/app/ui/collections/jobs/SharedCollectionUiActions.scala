@@ -8,7 +8,7 @@ import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 class SharedCollectionUiActions(dom: GroupCollectionsDOM with GroupCollectionsUiListener)

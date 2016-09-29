@@ -15,7 +15,7 @@ import cards.nine.app.ui.profile.SubscriptionsAdapterStyles
 import cards.nine.app.ui.profile.ops.SubscriptionOps._
 import cards.nine.process.sharedcollections.models.Subscription
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

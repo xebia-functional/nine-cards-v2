@@ -18,7 +18,7 @@ import cards.nine.process.commons.models.Collection
 import cards.nine.process.commons.types.{PublishedByMe, AppCardType}
 import cards.nine.process.sharedcollections.models.UpdateSharedCollection
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 import monix.eval.Task

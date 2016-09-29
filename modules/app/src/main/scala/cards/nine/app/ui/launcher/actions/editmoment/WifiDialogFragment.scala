@@ -14,7 +14,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.commons.NineCardIntentConversions
 import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.process.theme.models._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

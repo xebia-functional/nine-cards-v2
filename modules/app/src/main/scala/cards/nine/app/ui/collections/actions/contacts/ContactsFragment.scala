@@ -11,7 +11,7 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.device.{AllContacts, ContactPermissionException, ContactsFilter}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class ContactsFragment
   extends BaseActionFragment

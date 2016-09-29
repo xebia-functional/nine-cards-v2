@@ -26,7 +26,7 @@ import cards.nine.commons._
 import cards.nine.process.commons.types.PublishedByOther
 import cards.nine.process.sharedcollections.models.{SharedCollection, Subscription}
 import cards.nine.process.theme.models.{CardLayoutBackgroundColor, PrimaryColor}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 trait ProfileUiActionsImpl

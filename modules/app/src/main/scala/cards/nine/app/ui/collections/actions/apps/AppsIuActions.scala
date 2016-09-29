@@ -21,7 +21,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.device.models.{App, IterableApps, TermCounter}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 trait AppsIuActions

@@ -20,7 +20,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.process.cloud.models.CloudStorageDeviceSummary
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import cards.nine.process.sharedcollections.models.{SharedCollection, Subscription}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.{ActivityContextWrapper, Ui}

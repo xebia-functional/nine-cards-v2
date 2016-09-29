@@ -19,7 +19,7 @@ import cards.nine.app.ui.commons.ops.SharedCollectionOps._
 import cards.nine.process.commons.types.{PublishedByOther, Subscribed, NotPublished, PublishedByMe}
 import cards.nine.process.sharedcollections.models._
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
 import macroid._

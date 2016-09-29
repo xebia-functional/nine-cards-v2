@@ -20,7 +20,7 @@ import cards.nine.app.ui.wizard.WizardActivity
 import cards.nine.commons.javaNull
 import cards.nine.process.device.ImplicitsDeviceException
 import cards.nine.process.user.models.User
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 

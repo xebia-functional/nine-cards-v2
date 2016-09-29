@@ -14,7 +14,7 @@ import cards.nine.process.cloud.CloudStorageClientListener
 import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
 import cards.nine.process.user.UserException
 import cards.nine.process.userv1.UserV1Exception
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult
 import macroid.Contexts
 
