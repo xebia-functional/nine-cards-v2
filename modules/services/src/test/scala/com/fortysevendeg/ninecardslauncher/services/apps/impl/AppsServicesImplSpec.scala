@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.services.apps.impl
 
 import android.content.Intent
 import android.content.pm._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.services.apps.AppsInstalledException
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import org.specs2.mock.Mockito

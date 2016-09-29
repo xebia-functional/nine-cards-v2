@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.commons
 
 import android.content.Context
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher2.R
 
 trait ContextSupportPreferences {

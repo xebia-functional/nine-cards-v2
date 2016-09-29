@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.calls
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
 
 trait CallsServices {

@@ -4,9 +4,9 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.CatchAll
+import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.permissions._
 
 class AndroidSupportPermissionsServices

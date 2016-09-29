@@ -6,7 +6,7 @@ import android.database.sqlite.{SQLiteDatabase, SQLiteQueryBuilder}
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsContentProvider._
 import com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsUri._
-import com.fortysevendeg.ninecardslauncher.commons.javaNull
+import cards.nine.commons.javaNull
 
 class NineCardsContentProvider extends ContentProvider {
 

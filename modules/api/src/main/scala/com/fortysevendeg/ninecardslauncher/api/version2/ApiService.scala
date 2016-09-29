@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.api.version2
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.rest.client.http.HttpClientException
 import com.fortysevendeg.rest.client.messages.ServiceClientResponse
 import com.fortysevendeg.rest.client.{ServiceClient, ServiceClientException}

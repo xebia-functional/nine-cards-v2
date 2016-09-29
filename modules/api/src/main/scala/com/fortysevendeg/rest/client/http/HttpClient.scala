@@ -1,6 +1,6 @@
 package com.fortysevendeg.rest.client.http
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import play.api.libs.json.Writes
 
 trait HttpClient {

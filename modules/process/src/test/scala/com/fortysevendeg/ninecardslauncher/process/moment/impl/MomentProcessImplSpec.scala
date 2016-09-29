@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.process.moment.impl
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardsMoments
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
@@ -16,7 +16,7 @@ import org.joda.time.DateTime
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 import cats.syntax.either._
 
 trait MomentProcessImplSpecification

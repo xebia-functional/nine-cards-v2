@@ -3,9 +3,9 @@ package com.fortysevendeg.ninecardslauncher.app.permissions
 import android.content.pm.PackageManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.CatchAll
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import macroid.ActivityContextWrapper
 
 class PermissionChecker extends ImplicitsPermissionCheckerException {

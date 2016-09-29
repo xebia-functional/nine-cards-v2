@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.app.commons
 import android.accounts.AccountManager
 import android.app.Activity
 import android.content.{Context, Intent}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.{ActivityContextSupport, ContextSupport}
+import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import macroid.{ActivityContextWrapper, ContextWrapper}
 
 import scala.ref.WeakReference

@@ -1,11 +1,11 @@
 package com.fortysevendeg.ninecardslauncher.services.plus.impl
 
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.CatchAll
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
 import com.fortysevendeg.ninecardslauncher.services.plus._
 import com.google.android.gms.auth.api.Auth

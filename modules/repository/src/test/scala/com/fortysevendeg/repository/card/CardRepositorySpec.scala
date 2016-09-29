@@ -1,8 +1,8 @@
 package com.fortysevendeg.repository.card
 
 import android.net.Uri
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import cards.nine.commons.contentresolver.Conversions._
+import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.model.Card
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity._
@@ -18,9 +18,9 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
 import scala.language.postfixOps
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor._
-import com.fortysevendeg.ninecardslauncher.commons.test.repository.{IntDataType, MockCursor, StringDataType}
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.contentresolver.IterableCursor._
+import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 
 trait CardRepositorySpecification
   extends Specification

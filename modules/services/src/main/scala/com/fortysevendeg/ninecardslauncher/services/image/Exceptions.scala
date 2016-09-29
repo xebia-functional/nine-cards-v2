@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.image
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 
 case class FileException(message: String, cause: Option[Throwable] = None)

@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.repository
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class RepositoryException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)

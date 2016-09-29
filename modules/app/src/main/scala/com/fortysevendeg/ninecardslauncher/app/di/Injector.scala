@@ -6,8 +6,8 @@ import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.fortysevendeg.ninecardslauncher.api._
 import com.fortysevendeg.ninecardslauncher.api.version2.ApiService
 import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import cards.nine.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.accounts.UserAccountsProcess
 import com.fortysevendeg.ninecardslauncher.process.accounts.impl.UserAccountsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess

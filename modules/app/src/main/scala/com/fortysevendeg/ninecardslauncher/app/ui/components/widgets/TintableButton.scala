@@ -8,7 +8,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.MotionEvent._
 import android.widget.Button
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.commons._
 
 class TintableButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends Button(context, attr, defStyleAttr) {

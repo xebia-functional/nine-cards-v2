@@ -10,7 +10,7 @@ import android.view.ViewGroup.{LayoutParams, MarginLayoutParams}
 import android.view._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons.{SwipeController, Swiping}
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.Contexts
 

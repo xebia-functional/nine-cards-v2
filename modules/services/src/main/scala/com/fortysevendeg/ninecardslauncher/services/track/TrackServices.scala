@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.track
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.services.TaskService._
 
 trait TrackServices {
 

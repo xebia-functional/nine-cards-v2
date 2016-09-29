@@ -5,9 +5,9 @@ import android.content.{Context, Intent}
 import android.database.ContentObserver
 import android.net.Uri
 import com.fortysevendeg.ninecardslauncher.app.services.SynchronizeDeviceService
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri._
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons._
+import cards.nine.commons.contentresolver.NotificationUri._
+import cards.nine.commons.contexts.ContextSupport
 import NineCardsObserver._
 
 class NineCardsObserver(implicit contextSupport: ContextSupport)

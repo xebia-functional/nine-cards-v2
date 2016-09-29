@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.PersistenceServicesData
@@ -9,7 +9,7 @@ import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 import cats.syntax.either._
 
 

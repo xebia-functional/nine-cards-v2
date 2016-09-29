@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.recommendations
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class RecommendedAppsException(message: String, cause: Option[Throwable] = None)
   extends RuntimeException(message)

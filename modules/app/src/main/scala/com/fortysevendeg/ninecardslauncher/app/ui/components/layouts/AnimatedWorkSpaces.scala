@@ -17,7 +17,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.commons._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.AnimatedWorkSpaces._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, NineCardsPreferencesValue, WorkspaceAnimations}
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.commons._
 import macroid.FullDsl._
 import macroid._
 

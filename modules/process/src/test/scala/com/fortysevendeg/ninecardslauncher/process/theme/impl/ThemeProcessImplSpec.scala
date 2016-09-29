@@ -2,15 +2,15 @@ package com.fortysevendeg.ninecardslauncher.process.theme.impl
 
 import android.content.res.Resources
 import android.util.DisplayMetrics
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.utils.FileUtils
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.utils.FileUtils
 import com.fortysevendeg.ninecardslauncher.process.theme.ThemeException
 import com.fortysevendeg.ninecardslauncher.process.theme.models._
-import com.fortysevendeg.ninecardslauncher.commons.utils.AssetException
+import cards.nine.commons.utils.AssetException
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 
 import scala.util.Success
 

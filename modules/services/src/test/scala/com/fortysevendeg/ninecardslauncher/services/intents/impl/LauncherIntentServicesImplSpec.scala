@@ -2,13 +2,13 @@ package com.fortysevendeg.ninecardslauncher.services.intents.impl
 
 import android.app.Activity
 import android.content.Intent
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ActivityContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.contexts.ActivityContextSupport
+import cards.nine.commons.services.TaskService.NineCardException
 import com.fortysevendeg.ninecardslauncher.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 import cats.syntax.either._
 
 

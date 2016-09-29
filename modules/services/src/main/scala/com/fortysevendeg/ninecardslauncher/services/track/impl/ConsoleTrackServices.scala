@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.track.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.track.{TrackEvent, TrackServices}
 import monix.eval.Task
 

@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.device
 
 import android.content.{ComponentName, Intent}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types._

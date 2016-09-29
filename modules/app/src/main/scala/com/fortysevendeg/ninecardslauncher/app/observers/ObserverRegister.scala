@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.app.observers
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsObserverExceptions, ObserverException}
-import com.fortysevendeg.ninecardslauncher.commons.CatchAll
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.UriCreator
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.NotificationUri
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.TaskService
+import cards.nine.commons.CatchAll
+import cards.nine.commons.contentresolver.UriCreator
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.contentresolver.NotificationUri
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 
 class ObserverRegister(uriCreator: UriCreator)(implicit contextSupport: ContextSupport)
   extends ImplicitsObserverExceptions {

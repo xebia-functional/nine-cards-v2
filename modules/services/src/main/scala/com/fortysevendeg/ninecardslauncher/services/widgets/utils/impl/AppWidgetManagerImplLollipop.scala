@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.drawable. Drawable
 import android.os.{UserHandle, UserManager}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Conversions, Widget}
 import com.fortysevendeg.ninecardslauncher.services.widgets.utils.AppWidgetManagerCompat
 

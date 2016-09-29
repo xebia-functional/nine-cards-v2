@@ -8,7 +8,7 @@ import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.SnailsUtils
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.PositionsUtils._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue, SpeedAnimations}
-import com.fortysevendeg.ninecardslauncher.commons._
+import cards.nine.commons._
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise

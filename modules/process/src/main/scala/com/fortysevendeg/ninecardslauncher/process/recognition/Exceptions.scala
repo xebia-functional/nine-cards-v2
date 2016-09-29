@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.recognition
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 case class RecognitionProcessException(  message: String,  cause: Option[Throwable] = None,  recoverable: Boolean = false)
   extends RuntimeException(message)

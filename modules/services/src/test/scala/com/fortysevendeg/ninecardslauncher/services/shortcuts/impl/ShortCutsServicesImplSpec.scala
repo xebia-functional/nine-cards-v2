@@ -2,13 +2,13 @@ package com.fortysevendeg.ninecardslauncher.services.shortcuts.impl
 
 import android.content.Intent
 import android.content.pm.{ActivityInfo, ApplicationInfo, PackageManager, ResolveInfo}
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
+import cards.nine.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutServicesException
 import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 
 
 import scala.collection.JavaConversions._

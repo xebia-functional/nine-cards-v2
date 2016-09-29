@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.calls.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.ContentResolverWrapper
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.Conversions._
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
+import cards.nine.commons.contentresolver.ContentResolverWrapper
+import cards.nine.commons.contentresolver.Conversions._
+import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.services.calls.CallsContentProvider.{allFields, _}
 import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServices, CallsServicesException, CallsServicesPermissionException, ImplicitsCallsExceptions}
 import com.fortysevendeg.ninecardslauncher.services.contacts._

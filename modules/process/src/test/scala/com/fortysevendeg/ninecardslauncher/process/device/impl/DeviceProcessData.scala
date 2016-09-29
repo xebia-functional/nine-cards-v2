@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.device.impl
 
 import android.graphics.drawable.Drawable
-import com.fortysevendeg.ninecardslauncher.commons._
-import com.fortysevendeg.ninecardslauncher.commons.contentresolver.IterableCursor
+import cards.nine.commons._
+import cards.nine.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.process.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntentImplicits._

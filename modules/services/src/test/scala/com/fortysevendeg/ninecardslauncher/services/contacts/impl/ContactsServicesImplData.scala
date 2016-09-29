@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.contacts.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.test.repository.{MockCursor,IntDataType, StringDataType}
+import cards.nine.commons.test.repository.{MockCursor,IntDataType, StringDataType}
 import com.fortysevendeg.ninecardslauncher.services.commons._
 import com.fortysevendeg.ninecardslauncher.services.contacts.Fields
 import com.fortysevendeg.ninecardslauncher.services.contacts.models._

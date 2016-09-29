@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.widget
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService.NineCardException
+import cards.nine.commons.services.TaskService.NineCardException
 
 
 case class AppWidgetException(message: String, cause : Option[Throwable] = None)
