@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api._
-import com.fortysevendeg.ninecardslauncher.api.version2.CollectionUpdateInfo
+import cards.nine.api._
+import cards.nine.api.version2.CollectionUpdateInfo
 import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
 import com.fortysevendeg.ninecardslauncher.services.api.models.PackagesByCategory
 
@@ -123,7 +123,7 @@ trait ApiServicesImplData {
       free = Random.nextBoolean(),
       screenshots = Seq("screenshot1", "screenshot2", "screenshot3"))
 
-  def generateCollection(collectionApps: Seq[version2.CollectionApp]) =
+  def generateCollection(collectionApps: Seq[cards.nine.api.version2.CollectionApp]) =
     version2.Collection(
       name = Random.nextString(10),
       author = Random.nextString(10),

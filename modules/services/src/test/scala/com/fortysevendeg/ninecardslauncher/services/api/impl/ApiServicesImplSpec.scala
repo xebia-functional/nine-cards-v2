@@ -1,12 +1,12 @@
 package com.fortysevendeg.ninecardslauncher.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api._
+import cards.nine.api._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.services.api._
 import com.fortysevendeg.ninecardslauncher.services.api.models._
-import com.fortysevendeg.rest.client.http.HttpClientException
-import com.fortysevendeg.rest.client.messages.ServiceClientResponse
+import cards.nine.api.rest.client.http.HttpClientException
+import cards.nine.api.rest.client.messages.ServiceClientResponse
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -57,9 +57,9 @@ trait ApiServicesSpecification
     with ApiServicesImplData
     with Conversions {
 
-    val apiService = mock[version2.ApiService]
+    val apiService = mock[cards.nine.api.version2.ApiService]
 
-    val apiServiceV1 = mock[version1.ApiService]
+    val apiServiceV1 = mock[cards.nine.api.version1.ApiService]
 
     val apiServices = new ApiServicesImpl(
       apiServicesConfig,
@@ -86,7 +86,7 @@ class ApiServicesImplSpec
         apiServiceV1.baseUrl returns baseUrl
         apiServiceV1.login(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version1.User](statusCode, Some(user))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version1.User](statusCode, Some(user))))
           }
 
         val result = apiServices.loginV1(email, LoginV1Device(name, deviceId, secretToken, permissions)).value.run
@@ -133,7 +133,7 @@ class ApiServicesImplSpec
         apiServiceV1.baseUrl returns baseUrl
         apiServiceV1.getUserConfig(any)(any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version1.UserConfig](statusCode, Some(userConfig))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version1.UserConfig](statusCode, Some(userConfig))))
           }
 
         val result = apiServices.getUserConfigV1().value.run
@@ -180,7 +180,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.login(any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.ApiLoginResponse](statusCode, Some(version2.ApiLoginResponse(apiKey, sessionToken)))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.ApiLoginResponse](statusCode, Some(version2.ApiLoginResponse(apiKey, sessionToken)))))
           }
 
         val result = apiServices.login(email, androidId, tokenId).value.run
@@ -203,7 +203,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.login(any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.ApiLoginResponse](statusCode, None)))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.ApiLoginResponse](statusCode, None)))
           }
 
         mustLeft[ApiServiceException](apiServices.login(email, androidId, tokenId))
@@ -228,7 +228,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.installations(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.InstallationResponse](statusCode, Some(version2.InstallationResponse(androidId, deviceToken)))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.InstallationResponse](statusCode, Some(version2.InstallationResponse(androidId, deviceToken)))))
           }
 
         val result = apiServices.updateInstallation(Some(deviceToken)).value.run
@@ -254,7 +254,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.installations(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.InstallationResponse](statusCode, None)))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.InstallationResponse](statusCode, None)))
           }
 
         mustLeft[ApiServiceException](apiServices.updateInstallation(Some("")))
@@ -328,7 +328,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.categorize(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
           }
 
         val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
@@ -399,7 +399,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.categorizeDetail(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.CategorizeDetailResponse](
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CategorizeDetailResponse](
               statusCode, Some(version2.CategorizeDetailResponse(Seq.empty, categorizeAppsDetail)))))
           }
 
@@ -419,7 +419,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.categorizeDetail(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.CategorizeDetailResponse](statusCode, None)))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CategorizeDetailResponse](statusCode, None)))
           }
 
         val result = apiServices.googlePlayPackagesDetail(categorizeApps.map(_.packageName)).value.run
@@ -459,7 +459,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.recommendations(any, any, any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.RecommendationsResponse](statusCode, Some(recommendationResponse))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.RecommendationsResponse](statusCode, Some(recommendationResponse))))
           }
 
         val result = apiServices.getRecommendedApps(category, excludedPackages, limit).value.run
@@ -602,7 +602,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.topCollections(any, any, any, any)(any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
           }
 
         val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeTop, offset, limit).value.run
@@ -678,7 +678,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.createCollection(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
           }
 
         val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
@@ -974,7 +974,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.rankApps(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[version2.RankAppsResponse](statusCode, Some(rankAppsResponse))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.RankAppsResponse](statusCode, Some(rankAppsResponse))))
           }
 
         val result = apiServices.rankApps(packagesByCategorySeq, Some(location)).value.run

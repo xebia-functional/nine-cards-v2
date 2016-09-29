@@ -2,12 +2,12 @@ package com.fortysevendeg.ninecardslauncher.app.di
 
 import android.content.res.Resources
 import android.support.v4.content.ContextCompat
-import com.facebook.stetho.okhttp3.StethoInterceptor
-import com.fortysevendeg.ninecardslauncher.api._
-import com.fortysevendeg.ninecardslauncher.api.version2.ApiService
-import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
+import cards.nine.api.rest.client.ServiceClient
+import cards.nine.api.rest.client.http.OkHttpClient
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.contexts.ContextSupport
+import com.facebook.stetho.okhttp3.StethoInterceptor
+import com.fortysevendeg.ninecardslauncher.app.observers.ObserverRegister
 import com.fortysevendeg.ninecardslauncher.process.accounts.UserAccountsProcess
 import com.fortysevendeg.ninecardslauncher.process.accounts.impl.UserAccountsProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageProcess
@@ -60,8 +60,6 @@ import com.fortysevendeg.ninecardslauncher.services.track.impl.ConsoleTrackServi
 import com.fortysevendeg.ninecardslauncher.services.widgets.impl.WidgetsServicesImpl
 import com.fortysevendeg.ninecardslauncher.services.wifi.impl.WifiServicesImpl
 import com.fortysevendeg.ninecardslauncher2.R
-import com.fortysevendeg.rest.client.ServiceClient
-import com.fortysevendeg.rest.client.http.OkHttpClient
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.common.api.GoogleApiClient
@@ -133,8 +131,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val apiServices = new ApiServicesImpl(
     apiServicesConfig = apiServicesConfig,
-    apiService = new version2.ApiService(serviceClient),
-    apiServiceV1 = new version1.ApiService(serviceClientV1))
+    apiService = new cards.nine.api.version2.ApiService(serviceClient),
+    apiServiceV1 = new cards.nine.api.version1.ApiService(serviceClientV1))
 
   private[this] lazy val awarenessServices = {
     val client = new GoogleApiClient.Builder(contextSupport.context)
