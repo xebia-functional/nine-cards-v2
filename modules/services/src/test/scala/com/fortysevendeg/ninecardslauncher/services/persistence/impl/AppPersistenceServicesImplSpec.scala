@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
+import cards.nine.repository.RepositoryException
+import cards.nine.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
 import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByCategory, OrderByInstallDate, OrderByName}
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.AppPersistenceServicesData

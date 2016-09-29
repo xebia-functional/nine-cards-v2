@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
+import cards.nine.repository.provider.AppEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.IterableApps

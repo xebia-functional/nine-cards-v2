@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Moment => RepositoryMoment, MomentData => RepositoryMomentData}
+import cards.nine.repository.model.{Moment => RepositoryMoment, MomentData => RepositoryMomentData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.{MomentTimeSlot, Moment}
 import com.fortysevendeg.ninecardslauncher.services.persistence.reads.MomentImplicits

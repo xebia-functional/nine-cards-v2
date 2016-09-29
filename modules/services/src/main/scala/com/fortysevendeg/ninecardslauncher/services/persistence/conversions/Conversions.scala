@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{DataCounter => RepoDataCounter}
+import cards.nine.repository.model.{DataCounter => RepoDataCounter}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.DataCounter
 
 trait Conversions

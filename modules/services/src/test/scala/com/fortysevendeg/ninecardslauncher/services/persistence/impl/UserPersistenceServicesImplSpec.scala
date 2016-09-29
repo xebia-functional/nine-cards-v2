@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
+import cards.nine.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.UserPersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
 import monix.eval.Task

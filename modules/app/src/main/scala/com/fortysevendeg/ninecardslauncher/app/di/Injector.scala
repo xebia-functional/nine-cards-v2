@@ -41,7 +41,7 @@ import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Process
 import com.fortysevendeg.ninecardslauncher.process.userv1.impl.UserV1ProcessImpl
 import com.fortysevendeg.ninecardslauncher.process.widget.WidgetProcess
 import com.fortysevendeg.ninecardslauncher.process.widget.impl.WidgetProcessImpl
-import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import cards.nine.repository.repositories._
 import com.fortysevendeg.ninecardslauncher.services.analytics.impl.AnalyticsTrackServices
 import com.fortysevendeg.ninecardslauncher.services.api.impl.{ApiServicesConfig, ApiServicesImpl}
 import com.fortysevendeg.ninecardslauncher.services.apps.impl.AppsServicesImpl

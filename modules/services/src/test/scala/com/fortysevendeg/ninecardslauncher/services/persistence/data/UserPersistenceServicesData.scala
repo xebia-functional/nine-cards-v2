@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{User => RepositoryUser, UserData => RepositoryUserData}
+import cards.nine.repository.model.{User => RepositoryUser, UserData => RepositoryUserData}
 import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateUserRequest, FindUserByIdRequest, DeleteUserRequest, AddUserRequest}
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
 

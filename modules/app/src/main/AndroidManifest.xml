@@ -102,7 +102,7 @@
 
         <provider
             android:authorities="com.fortysevendeg.ninecardslauncher2"
-            android:name="com.fortysevendeg.ninecardslauncher.repository.provider.NineCardsContentProvider"
+            android:name="cards.nine.repository.provider.NineCardsContentProvider"
             android:exported="false"/>
 
         <receiver android:name="com.fortysevendeg.ninecardslauncher.app.receivers.AppBroadcastReceiver">
