@@ -6,7 +6,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.process.recognition.RecognitionProcessException
-import com.fortysevendeg.ninecardslauncher.services.awareness.{AwarenessException, AwarenessServices}
+import cards.nine.services.awareness.{AwarenessException, AwarenessServices}
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

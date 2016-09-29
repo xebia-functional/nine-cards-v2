@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.shortcuts.impl
+package cards.nine.services.shortcuts.impl
 
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
+import cards.nine.services.shortcuts.models.Shortcut
 
 trait ShortcutsServicesImplData {
 

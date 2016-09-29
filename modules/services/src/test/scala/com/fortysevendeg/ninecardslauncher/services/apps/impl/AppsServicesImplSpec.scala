@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.services.apps.impl
+package cards.nine.services.apps.impl
 
 import android.content.Intent
 import android.content.pm._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.services.apps.AppsInstalledException
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import cards.nine.services.apps.AppsInstalledException
+import cards.nine.services.apps.models.Application
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

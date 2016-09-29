@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.data
+package cards.nine.services.persistence.data
 
 import cards.nine.repository.model.{User => RepositoryUser, UserData => RepositoryUserData}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateUserRequest, FindUserByIdRequest, DeleteUserRequest, AddUserRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
+import cards.nine.services.persistence.{UpdateUserRequest, FindUserByIdRequest, DeleteUserRequest, AddUserRequest}
+import cards.nine.services.persistence.models.User
 
 import scala.util.Random
 

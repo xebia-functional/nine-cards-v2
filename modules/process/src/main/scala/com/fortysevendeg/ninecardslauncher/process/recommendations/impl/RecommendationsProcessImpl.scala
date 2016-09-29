@@ -6,8 +6,8 @@ import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.process.recommendations._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceConfigurationException, ApiServices}
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
+import cards.nine.services.api.{ApiServiceConfigurationException, ApiServices}
+import cards.nine.services.persistence.PersistenceServices
 
 
 class RecommendationsProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)

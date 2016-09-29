@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.apps.impl
+package cards.nine.services.apps.impl
 
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
+import cards.nine.services.apps.models.Application
 
 import scala.util.Random
 

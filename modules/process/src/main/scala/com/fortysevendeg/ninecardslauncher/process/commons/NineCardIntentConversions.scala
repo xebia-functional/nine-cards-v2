@@ -6,8 +6,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardIntent, NineCardIntentExtras}
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactCardType, EmailCardType, PhoneCardType}
 import com.fortysevendeg.ninecardslauncher.process.moment.models.{App => MomentApp}
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
+import cards.nine.services.apps.models.Application
+import cards.nine.services.persistence.models.App
 import play.api.libs.json.Json
 
 trait NineCardIntentConversions {

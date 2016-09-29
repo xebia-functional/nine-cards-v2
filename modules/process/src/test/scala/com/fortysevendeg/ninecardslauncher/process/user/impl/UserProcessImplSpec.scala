@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.process.user.impl
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.persistence._
+import cards.nine.services.api._
+import cards.nine.services.persistence._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.user
 
 import com.fortysevendeg.ninecardslauncher.process.user.models.{User, UserProfile}
-import com.fortysevendeg.ninecardslauncher.services.persistence.UpdateUserRequest
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
+import cards.nine.services.persistence.UpdateUserRequest
+import cards.nine.services.persistence.models.{User => ServicesUser}
 
 trait Conversions {
 

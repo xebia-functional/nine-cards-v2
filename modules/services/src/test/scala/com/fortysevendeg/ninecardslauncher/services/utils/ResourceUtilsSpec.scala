@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.utils
+package cards.nine.services.utils
 
 import java.io.File
 

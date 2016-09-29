@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.trackevent.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{Entertainment, GameAdventure, HomeMorningMoment}
 import com.fortysevendeg.ninecardslauncher.process.trackevent.models._
-import com.fortysevendeg.ninecardslauncher.services.track.TrackEvent
+import cards.nine.services.track.TrackEvent
 
 trait TrackEventProcessData {
 

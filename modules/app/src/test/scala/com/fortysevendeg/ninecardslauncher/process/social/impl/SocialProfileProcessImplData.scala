@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.social.impl
 
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, UpdateUserRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
-import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
+import cards.nine.services.persistence.{FindUserByIdRequest, UpdateUserRequest}
+import cards.nine.services.persistence.models.User
+import cards.nine.services.plus.models.GooglePlusProfile
 
 trait SocialProfileProcessImplData {
 

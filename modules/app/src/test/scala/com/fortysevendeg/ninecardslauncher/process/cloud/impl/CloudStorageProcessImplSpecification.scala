@@ -5,8 +5,8 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageClientListener, CloudStorageProcessException}
 import com.fortysevendeg.ninecardslauncher.process.cloud.models.RawCloudStorageDevice
-import com.fortysevendeg.ninecardslauncher.services.drive.{DriveServices, DriveServicesException}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
+import cards.nine.services.drive.{DriveServices, DriveServicesException}
+import cards.nine.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
 import monix.eval.Task
 import org.hamcrest.{Description, TypeSafeMatcher}
 import org.specs2.mock.Mockito

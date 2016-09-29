@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.services.shortcuts.impl
+package cards.nine.services.shortcuts.impl
 
 import android.content.Intent
 import android.content.pm.{ActivityInfo, ApplicationInfo, PackageManager, ResolveInfo}
 import cards.nine.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.ShortcutServicesException
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
+import cards.nine.services.shortcuts.ShortcutServicesException
+import cards.nine.services.shortcuts.models.Shortcut
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

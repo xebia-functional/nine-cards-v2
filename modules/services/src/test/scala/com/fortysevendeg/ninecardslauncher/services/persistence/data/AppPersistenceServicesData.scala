@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.data
+package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
-import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateAppRequest, AddAppRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models._
+import cards.nine.services.persistence.{UpdateAppRequest, AddAppRequest}
+import cards.nine.services.persistence.models._
 import cards.nine.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, DataCounter => RepositoryDataCounter}
 
 import scala.util.Random

@@ -8,9 +8,9 @@ import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableApps
 import com.fortysevendeg.ninecardslauncher.process.device.utils.KnownCategoriesUtil
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.GooglePlayPackagesResponse
-import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence.{ImplicitsPersistenceServiceExceptions, OrderByName}
+import cards.nine.services.api.GooglePlayPackagesResponse
+import cards.nine.services.image._
+import cards.nine.services.persistence.{ImplicitsPersistenceServiceExceptions, OrderByName}
 
 trait AppsDeviceProcessImpl
   extends DeviceProcess

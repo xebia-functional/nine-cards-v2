@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.process.userv1.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, AppsCollectionType, Game}
-import com.fortysevendeg.ninecardslauncher.services.api.{GetUserV1Response, LoginResponseV1, RequestConfigV1}
-import com.fortysevendeg.ninecardslauncher.services.api.models._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => PersistenceUser}
+import cards.nine.services.api.{GetUserV1Response, LoginResponseV1, RequestConfigV1}
+import cards.nine.services.api.models._
+import cards.nine.services.persistence.models.{User => PersistenceUser}
 import play.api.libs.json.JsString
 
 trait UserV1ProcessData {

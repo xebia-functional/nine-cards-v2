@@ -4,9 +4,9 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ImplicitsApiServiceExceptions, RequestConfig}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
+import cards.nine.services.api.{ApiServiceException, ImplicitsApiServiceExceptions, RequestConfig}
+import cards.nine.services.persistence.models.User
+import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServices}
 import monix.eval.Task
 import cats.syntax.either._
 

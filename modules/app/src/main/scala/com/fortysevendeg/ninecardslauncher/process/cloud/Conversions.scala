@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
 import com.fortysevendeg.ninecardslauncher.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{WidgetArea, AppWidget}
-import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
+import cards.nine.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
 
 object Conversions {

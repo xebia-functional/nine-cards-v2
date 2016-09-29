@@ -7,7 +7,7 @@ import cards.nine.commons._
 import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.test.TaskServiceSpecification
 import com.fortysevendeg.ninecardslauncher.process.accounts._
-import com.fortysevendeg.ninecardslauncher.services.permissions.{PermissionDenied, PermissionGranted, PermissionsServices}
+import cards.nine.services.permissions.{PermissionDenied, PermissionGranted, PermissionsServices}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 

@@ -7,10 +7,10 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.social._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
-import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
-import com.fortysevendeg.ninecardslauncher.services.plus.{GooglePlusServices, GooglePlusServicesException}
+import cards.nine.services.persistence.models.{User => ServicesUser}
+import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
+import cards.nine.services.plus.models.GooglePlusProfile
+import cards.nine.services.plus.{GooglePlusServices, GooglePlusServicesException}
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import monix.eval.Task

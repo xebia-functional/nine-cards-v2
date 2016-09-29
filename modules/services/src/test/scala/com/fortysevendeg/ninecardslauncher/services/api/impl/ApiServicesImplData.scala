@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.api.impl
+package cards.nine.services.api.impl
 
 import cards.nine.api._
 import cards.nine.api.version2.CollectionUpdateInfo
-import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
-import com.fortysevendeg.ninecardslauncher.services.api.models.PackagesByCategory
+import cards.nine.services.api.CategorizedDetailPackage
+import cards.nine.services.api.models.PackagesByCategory
 
 import scala.util.Random
 

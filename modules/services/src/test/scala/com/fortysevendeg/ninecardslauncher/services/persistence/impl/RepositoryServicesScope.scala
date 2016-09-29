@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.impl
+package cards.nine.services.persistence.impl
 
 import cards.nine.repository.repositories._
 import org.specs2.mock.Mockito

@@ -1,9 +1,9 @@
 package com.fortysevendeg.ninecardslauncher.process.user.impl
 
 import com.fortysevendeg.ninecardslauncher.process.user.models.{User, UserProfile}
-import com.fortysevendeg.ninecardslauncher.services.api.{LoginResponse, UpdateInstallationResponse}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddUserRequest, UpdateUserRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
+import cards.nine.services.api.{LoginResponse, UpdateInstallationResponse}
+import cards.nine.services.persistence.{AddUserRequest, UpdateUserRequest}
+import cards.nine.services.persistence.models.{User => ServicesUser}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 

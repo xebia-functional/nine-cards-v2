@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.impl
+package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.CardEntity
-import com.fortysevendeg.ninecardslauncher.services.persistence.data.PersistenceServicesData
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
+import cards.nine.services.persistence.data.PersistenceServicesData
+import cards.nine.services.persistence.models.Collection
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito

@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.impl
+package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.services.persistence.data.DockAppPersistenceServicesData
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.DockApp
+import cards.nine.services.persistence.data.DockAppPersistenceServicesData
+import cards.nine.services.persistence.models.DockApp
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification

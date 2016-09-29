@@ -5,9 +5,9 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.user._
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServices, RequestConfig}
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
+import cards.nine.services.api.{ApiServices, RequestConfig}
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.models.{User => ServicesUser}
 import monix.eval.Task
 import cats.syntax.either._
 

@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.process.userv1
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CollectionType, NineCardCategory}
 import com.fortysevendeg.ninecardslauncher.process.userv1.models.{Device, UserV1Collection, UserV1CollectionItem, UserV1Device, UserV1Info}
-import com.fortysevendeg.ninecardslauncher.services.api.models.{LoginV1Device => ServiceLoginV1Device, UserV1 => ServiceUserV1, UserV1Device => ServiceUserV1Device, UserV1Collection => ServiceUserV1Collection, UserV1CollectionItem => ServiceUserV1CollectionItem}
+import cards.nine.services.api.models.{LoginV1Device => ServiceLoginV1Device, UserV1 => ServiceUserV1, UserV1Device => ServiceUserV1Device, UserV1Collection => ServiceUserV1Collection, UserV1CollectionItem => ServiceUserV1CollectionItem}
 
 trait UserV1Conversions {
 

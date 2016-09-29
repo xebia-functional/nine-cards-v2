@@ -4,7 +4,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import com.fortysevendeg.ninecardslauncher.process.recognition._
-import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessServices
+import cards.nine.services.awareness.AwarenessServices
 
 class RecognitionProcessImpl(awarenessServices: AwarenessServices)
   extends RecognitionProcess

@@ -4,8 +4,8 @@ import cards.nine.commons.contentresolver.IterableCursor
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Misc
 import cards.nine.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.process.device.DeviceConversions
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact => ServicesContact}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{IterableApps => ServicesIterableApps}
+import cards.nine.services.contacts.models.{Contact => ServicesContact}
+import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
 
 class IterableApps(cursor: ServicesIterableApps)
   extends IterableCursor[App]

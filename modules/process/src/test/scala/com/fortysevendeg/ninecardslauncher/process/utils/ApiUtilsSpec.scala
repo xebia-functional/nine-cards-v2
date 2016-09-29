@@ -4,8 +4,8 @@ import cats.syntax.either._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.services.api.ApiServiceException
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AndroidIdNotFoundException, FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
+import cards.nine.services.api.ApiServiceException
+import cards.nine.services.persistence.{AndroidIdNotFoundException, FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

@@ -11,15 +11,15 @@ import com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, CallData, LastCallsContact, Widget, _}
 import com.fortysevendeg.ninecardslauncher.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
-import com.fortysevendeg.ninecardslauncher.services.api.{CategorizedPackage, RequestConfig}
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => ServicesCall}
-import com.fortysevendeg.ninecardslauncher.services.commons.{EmailHome => ServicesEmailHome, PhoneHome => ServicesPhoneHome, PhoneMobile => ServicesPhoneMobile, PhoneOther => ServicesPhoneOther, PhoneWork => ServicesPhoneWork}
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
-import com.fortysevendeg.ninecardslauncher.services.image.{AppPackagePath, AppWebsitePath}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.models.Shortcut
-import com.fortysevendeg.ninecardslauncher.services.widgets.models.{Widget => ServicesWidget}
+import cards.nine.services.api.{CategorizedPackage, RequestConfig}
+import cards.nine.services.apps.models.Application
+import cards.nine.services.calls.models.{Call => ServicesCall}
+import cards.nine.services.commons.{EmailHome => ServicesEmailHome, PhoneHome => ServicesPhoneHome, PhoneMobile => ServicesPhoneMobile, PhoneOther => ServicesPhoneOther, PhoneWork => ServicesPhoneWork}
+import cards.nine.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
+import cards.nine.services.image.{AppPackagePath, AppWebsitePath}
+import cards.nine.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
+import cards.nine.services.shortcuts.models.Shortcut
+import cards.nine.services.widgets.models.{Widget => ServicesWidget}
 import play.api.libs.json.Json
 
 trait DeviceProcessData

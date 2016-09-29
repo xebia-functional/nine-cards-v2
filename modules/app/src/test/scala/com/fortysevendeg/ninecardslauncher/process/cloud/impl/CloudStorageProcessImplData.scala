@@ -3,8 +3,8 @@ package com.fortysevendeg.ninecardslauncher.process.cloud.impl
 import com.fortysevendeg.ninecardslauncher.process.cloud.models._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
-import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.User
+import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
+import cards.nine.services.persistence.models.User
 import org.joda.time.DateTime
 
 import scala.util.Random

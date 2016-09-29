@@ -6,8 +6,8 @@ import android.util.DisplayMetrics
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
+import cards.nine.services.api.{ApiServiceException, ApiServices}
+import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServices}
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

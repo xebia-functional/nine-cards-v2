@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.image.impl
+package cards.nine.services.image.impl
 
-import com.fortysevendeg.ninecardslauncher.services.image._
+import cards.nine.services.image._
 
 trait ImageServicesImplData {
 

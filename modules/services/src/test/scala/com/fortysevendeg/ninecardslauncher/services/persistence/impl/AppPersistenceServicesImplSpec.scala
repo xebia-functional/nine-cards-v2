@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.impl
+package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.AppEntity
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByCategory, OrderByInstallDate, OrderByName}
-import com.fortysevendeg.ninecardslauncher.services.persistence.data.AppPersistenceServicesData
+import cards.nine.services.persistence.models.App
+import cards.nine.services.persistence.{OrderByCategory, OrderByInstallDate, OrderByName}
+import cards.nine.services.persistence.data.AppPersistenceServicesData
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
