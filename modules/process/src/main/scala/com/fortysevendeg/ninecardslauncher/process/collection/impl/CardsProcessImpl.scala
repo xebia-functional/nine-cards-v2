@@ -9,8 +9,8 @@ import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, CardException, CollectionProcess}
 import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{CardType, NoInstalledAppCardType}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, ImplicitsPersistenceServiceExceptions}
+import cards.nine.services.persistence.models.{Card => ServicesCard, Collection}
+import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, ImplicitsPersistenceServiceExceptions}
 import monix.eval.Task
 
 trait CardsProcessImpl extends CollectionProcess {

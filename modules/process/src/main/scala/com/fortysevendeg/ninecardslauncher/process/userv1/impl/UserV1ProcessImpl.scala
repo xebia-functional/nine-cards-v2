@@ -6,9 +6,9 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.userv1.models.{Device, UserV1Info}
 import com.fortysevendeg.ninecardslauncher.process.userv1._
-import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindUserByIdRequest, PersistenceServices}
+import cards.nine.services.api._
+import cards.nine.services.persistence.models.{User => ServicesUser}
+import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServices}
 import monix.eval.Task
 import cats.syntax.either._
 

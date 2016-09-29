@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.commons.types
 
-import com.fortysevendeg.ninecardslauncher.services.commons.{
+import cards.nine.services.commons.{
   EmailCategory => ServicesEmailCategory,
   EmailHome => ServicesEmailHome,
   EmailWork => ServicesEmailWork,

@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.trackevent._
 import monix.eval.Task
 import cats.implicits._
 import com.fortysevendeg.ninecardslauncher.process.trackevent.models._
-import com.fortysevendeg.ninecardslauncher.services.track.{TrackEvent, TrackServices}
+import cards.nine.services.track.{TrackEvent, TrackServices}
 
 class TrackEventProcessImpl(trackServices: TrackServices)
   extends TrackEventProcess

@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import com.fortysevendeg.ninecardslauncher.process.device.{DeviceConversions, DeviceProcess, ImplicitsDeviceException, WidgetException}
-import com.fortysevendeg.ninecardslauncher.services.persistence.OrderByName
+import cards.nine.services.persistence.OrderByName
 import cards.nine.commons.services.TaskService._
 
 

@@ -6,8 +6,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppDockType, DockType}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.persistence.ImplicitsPersistenceServiceExceptions
+import cards.nine.services.apps.models.Application
+import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import cards.nine.commons.services.TaskService._
 
 trait DockAppsDeviceProcessImpl extends DeviceProcess {

@@ -4,7 +4,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType._
 import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Widget => ServicesWidget}
+import cards.nine.services.persistence.models.{Widget => ServicesWidget}
 
 import scala.util.Random
 

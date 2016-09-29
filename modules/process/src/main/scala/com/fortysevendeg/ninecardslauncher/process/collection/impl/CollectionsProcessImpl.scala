@@ -15,10 +15,10 @@ import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{NineCardCategory, NoInstalledAppCardType}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence.OrderByCategory
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
+import cards.nine.services.api.CategorizedDetailPackage
+import cards.nine.services.persistence.models.App
+import cards.nine.services.persistence.OrderByCategory
+import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
 import monix.eval.Task
 
 

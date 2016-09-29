@@ -10,12 +10,12 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{CardException, Co
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NoInstalledAppCardType
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceException, ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}
-import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
-import com.fortysevendeg.ninecardslauncher.services.awareness.AwarenessServices
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
+import cards.nine.services.api.{ApiServiceException, ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}
+import cards.nine.services.apps.{AppsInstalledException, AppsServices}
+import cards.nine.services.awareness.AwarenessServices
+import cards.nine.services.contacts.ContactsServices
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.models.Collection
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

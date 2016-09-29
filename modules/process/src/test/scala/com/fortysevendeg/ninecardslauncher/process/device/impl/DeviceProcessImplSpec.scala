@@ -11,15 +11,15 @@ import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppDockType, Misc}
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.apps.{AppsInstalledException, AppsServices}
-import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServices, CallsServicesException}
-import com.fortysevendeg.ninecardslauncher.services.contacts.{ContactsServiceException, ContactsServices}
-import com.fortysevendeg.ninecardslauncher.services.image._
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
-import com.fortysevendeg.ninecardslauncher.services.widgets.{WidgetServicesException, WidgetsServices}
-import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
+import cards.nine.services.api._
+import cards.nine.services.apps.{AppsInstalledException, AppsServices}
+import cards.nine.services.calls.{CallsServices, CallsServicesException}
+import cards.nine.services.contacts.{ContactsServiceException, ContactsServices}
+import cards.nine.services.image._
+import cards.nine.services.persistence._
+import cards.nine.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
+import cards.nine.services.widgets.{WidgetServicesException, WidgetsServices}
+import cards.nine.services.wifi.WifiServices
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

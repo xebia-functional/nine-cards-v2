@@ -2,8 +2,8 @@ package com.fortysevendeg.ninecardslauncher.process.widget
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.WidgetType
 import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddWidgetRequest => ServicesAddWidgetRequest, UpdateWidgetRequest => ServicesUpdateWidgetRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Widget => ServicesWidget}
+import cards.nine.services.persistence.{AddWidgetRequest => ServicesAddWidgetRequest, UpdateWidgetRequest => ServicesUpdateWidgetRequest}
+import cards.nine.services.persistence.models.{Widget => ServicesWidget}
 
 trait WidgetConversions {
 

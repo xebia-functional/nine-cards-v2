@@ -5,8 +5,8 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{NineCardIntent, NineCardIntentExtras}
 import com.fortysevendeg.ninecardslauncher.process.intents.{LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
-import com.fortysevendeg.ninecardslauncher.services.intents.LauncherIntentServices
-import com.fortysevendeg.ninecardslauncher.services.intents.models._
+import cards.nine.services.intents.LauncherIntentServices
+import cards.nine.services.intents.models._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

@@ -4,8 +4,8 @@ import com.fortysevendeg.ninecardslauncher.process.collection.models.FormedMomen
 import com.fortysevendeg.ninecardslauncher.process.commons.models.{Moment, MomentTimeSlot, _}
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.{SaveMomentRequest, UpdateMomentRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{UpdateMomentRequest => ServiceUpdateMomentRequest, SaveWidgetRequest => ServiceSaveWidgetRequest, AddMomentRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import cards.nine.services.persistence.{UpdateMomentRequest => ServiceUpdateMomentRequest, SaveWidgetRequest => ServiceSaveWidgetRequest, AddMomentRequest}
+import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 
 trait CommonConversions extends NineCardIntentConversions {
 

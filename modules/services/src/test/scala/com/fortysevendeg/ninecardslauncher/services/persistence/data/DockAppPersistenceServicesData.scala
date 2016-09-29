@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.data
+package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.repository.model.{DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{FindDockAppByIdRequest, DeleteDockAppRequest, CreateOrUpdateDockAppRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{IterableDockApps, DockApp}
+import cards.nine.services.persistence.{FindDockAppByIdRequest, DeleteDockAppRequest, CreateOrUpdateDockAppRequest}
+import cards.nine.services.persistence.models.{IterableDockApps, DockApp}
 
 import scala.util.Random
 

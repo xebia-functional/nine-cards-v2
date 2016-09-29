@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.intents.impl
+package cards.nine.services.intents.impl
 
-import com.fortysevendeg.ninecardslauncher.services.intents.models._
+import cards.nine.services.intents.models._
 
 trait LauncherIntentServicesImplData {
 

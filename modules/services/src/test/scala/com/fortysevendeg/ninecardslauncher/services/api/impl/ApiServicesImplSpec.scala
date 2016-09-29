@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.services.api.impl
+package cards.nine.services.api.impl
 
 import cards.nine.api._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.services.api._
-import com.fortysevendeg.ninecardslauncher.services.api.models._
+import cards.nine.services.api._
+import cards.nine.services.api.models._
 import cards.nine.api.rest.client.http.HttpClientException
 import cards.nine.api.rest.client.messages.ServiceClientResponse
 import monix.eval.Task

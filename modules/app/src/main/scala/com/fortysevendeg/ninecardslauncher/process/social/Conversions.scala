@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.process.social
 
-import com.fortysevendeg.ninecardslauncher.services.persistence.UpdateUserRequest
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{User => ServicesUser}
-import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
+import cards.nine.services.persistence.UpdateUserRequest
+import cards.nine.services.persistence.models.{User => ServicesUser}
+import cards.nine.services.plus.models.GooglePlusProfile
 trait Conversions {
 
   def toUpdateRequest(user: ServicesUser, googlePlusProfile: GooglePlusProfile) =

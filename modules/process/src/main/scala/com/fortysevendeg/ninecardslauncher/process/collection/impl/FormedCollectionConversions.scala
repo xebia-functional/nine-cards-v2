@@ -7,10 +7,10 @@ import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionProcess
 import com.fortysevendeg.ninecardslauncher.process.commons.Spaces._
 import com.fortysevendeg.ninecardslauncher.process.commons.models.PrivateCollection
 import com.fortysevendeg.ninecardslauncher.process.commons.types.{ContactsCategory, NineCardCategory, _}
-import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServices
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.Contact
-import com.fortysevendeg.ninecardslauncher.services.persistence.{AddCardRequest, AddCollectionRequest}
+import cards.nine.services.apps.models.Application
+import cards.nine.services.contacts.ContactsServices
+import cards.nine.services.contacts.models.Contact
+import cards.nine.services.persistence.{AddCardRequest, AddCollectionRequest}
 import monix.eval.Task
 
 import scala.annotation.tailrec

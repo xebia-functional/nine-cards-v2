@@ -10,7 +10,7 @@ import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.accounts.{UserAccountsProcessException, _}
-import com.fortysevendeg.ninecardslauncher.services.permissions.{PermissionDenied, PermissionGranted, PermissionsServices}
+import cards.nine.services.permissions.{PermissionDenied, PermissionGranted, PermissionsServices}
 import monix.eval.{Callback, Task}
 import monix.execution.Cancelable
 

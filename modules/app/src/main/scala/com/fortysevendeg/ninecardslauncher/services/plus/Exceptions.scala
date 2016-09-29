@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.plus
+package cards.nine.services.plus
 
 import cards.nine.commons.services.TaskService.NineCardException
 

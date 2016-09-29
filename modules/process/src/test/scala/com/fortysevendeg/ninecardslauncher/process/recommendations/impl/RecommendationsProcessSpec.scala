@@ -4,8 +4,8 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import com.fortysevendeg.ninecardslauncher.process.recommendations.{RecommendedAppsConfigurationException, RecommendedAppsException}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices, RecommendationResponse}
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
+import cards.nine.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices, RecommendationResponse}
+import cards.nine.services.persistence.PersistenceServices
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

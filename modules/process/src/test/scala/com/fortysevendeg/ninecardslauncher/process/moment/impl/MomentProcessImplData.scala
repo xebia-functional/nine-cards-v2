@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.models.App
 import com.fortysevendeg.ninecardslauncher.process.moment.{SaveMomentRequest, UpdateMomentRequest}
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 

@@ -11,8 +11,8 @@ import cards.nine.commons.test.TaskServiceTestOps._
 import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{SharedCollectionsConfigurationException, SharedCollectionsException}
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices}
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
+import cards.nine.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices}
+import cards.nine.services.persistence.PersistenceServices
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

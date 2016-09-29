@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.process.device.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.device.{DeviceConversions, DeviceProcess, ImplicitsDeviceException, ResetException}
-import com.fortysevendeg.ninecardslauncher.services.persistence.ImplicitsPersistenceServiceExceptions
+import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 
 trait ResetProcessImpl extends DeviceProcess {
 

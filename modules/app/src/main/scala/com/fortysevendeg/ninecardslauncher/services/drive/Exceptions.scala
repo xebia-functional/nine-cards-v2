@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.drive
+package cards.nine.services.drive
 
 import cards.nine.commons.services.TaskService.NineCardException
 import com.google.android.gms.common.ConnectionResult

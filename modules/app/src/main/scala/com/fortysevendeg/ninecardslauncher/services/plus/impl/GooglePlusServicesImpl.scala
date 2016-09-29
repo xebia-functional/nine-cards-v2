@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.plus.impl
+package cards.nine.services.plus.impl
 
 import cats.syntax.either._
 import cards.nine.commons.CatchAll
@@ -6,8 +6,8 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.services.plus.models.GooglePlusProfile
-import com.fortysevendeg.ninecardslauncher.services.plus._
+import cards.nine.services.plus.models.GooglePlusProfile
+import cards.nine.services.plus._
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.auth.api.signin.{GoogleSignInOptions, GoogleSignInStatusCodes}
 import com.google.android.gms.common.api.{CommonStatusCodes, GoogleApiClient, ResultCallback}

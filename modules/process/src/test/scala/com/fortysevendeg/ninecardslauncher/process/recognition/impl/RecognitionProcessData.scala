@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.recognition.impl
 
 import com.fortysevendeg.ninecardslauncher.process.recognition._
-import com.fortysevendeg.ninecardslauncher._
+import cards.nine.services
 
 import scala.util.Random
 

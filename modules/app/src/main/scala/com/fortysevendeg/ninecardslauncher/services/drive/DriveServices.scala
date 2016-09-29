@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.services.drive
+package cards.nine.services.drive
 
 import java.io.InputStream
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
+import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import com.google.android.gms.common.api.GoogleApiClient
 
 trait DriveServices {

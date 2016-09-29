@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.calls.impl
+package cards.nine.services.calls.impl
 
 import cards.nine.commons.contentresolver.ContentResolverWrapperImpl
 import cards.nine.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.services.calls.models.Call
-import com.fortysevendeg.ninecardslauncher.services.calls.{CallsServicesException, CallsServicesPermissionException}
+import cards.nine.services.calls.models.Call
+import cards.nine.services.calls.{CallsServicesException, CallsServicesPermissionException}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

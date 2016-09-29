@@ -12,8 +12,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.moment.DefaultApps._
 import com.fortysevendeg.ninecardslauncher.process.moment.{UpdateMomentRequest, _}
 import com.fortysevendeg.ninecardslauncher.process.moment.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.wifi.WifiServices
+import cards.nine.services.persistence._
+import cards.nine.services.wifi.WifiServices
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat

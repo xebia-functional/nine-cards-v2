@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.image.impl
+package cards.nine.services.image.impl
 
 import java.io.File
 
@@ -9,7 +9,7 @@ import android.util.DisplayMetrics
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.services.image._
+import cards.nine.services.image._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

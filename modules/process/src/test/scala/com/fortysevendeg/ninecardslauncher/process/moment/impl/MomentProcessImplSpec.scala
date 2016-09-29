@@ -9,8 +9,8 @@ import com.fortysevendeg.ninecardslauncher.process.commons.NineCardsMoments
 import com.fortysevendeg.ninecardslauncher.process.commons.models.NineCardIntent
 import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
 import com.fortysevendeg.ninecardslauncher.process.moment.{MomentException, MomentProcessConfig}
-import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByName, PersistenceServiceException, PersistenceServices}
-import com.fortysevendeg.ninecardslauncher.services.wifi.{WifiServices, WifiServicesException}
+import cards.nine.services.persistence.{OrderByName, PersistenceServiceException, PersistenceServices}
+import cards.nine.services.wifi.{WifiServices, WifiServicesException}
 import monix.eval.Task
 import org.joda.time.DateTime
 import org.specs2.mock.Mockito

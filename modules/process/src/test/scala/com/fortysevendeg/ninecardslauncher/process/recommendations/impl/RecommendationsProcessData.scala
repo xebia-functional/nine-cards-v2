@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.process.recommendations.impl
 
 import com.fortysevendeg.ninecardslauncher.process.commons.types.Social
-import com.fortysevendeg.ninecardslauncher.services.api.{RecommendationApp, RequestConfig}
+import cards.nine.services.api.{RecommendationApp, RequestConfig}
 
 import scala.util.Random
 

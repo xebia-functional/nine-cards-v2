@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.process.recognition
 
-import com.fortysevendeg.ninecardslauncher._
+import cards.nine.services
 
 trait Conversions {
 

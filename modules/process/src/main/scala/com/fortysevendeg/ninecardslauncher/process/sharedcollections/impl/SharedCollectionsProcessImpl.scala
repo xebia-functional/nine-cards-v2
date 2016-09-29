@@ -7,9 +7,9 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategor
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections._
 import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
 import com.fortysevendeg.ninecardslauncher.process.utils.ApiUtils
-import com.fortysevendeg.ninecardslauncher.services.api.{ApiServiceConfigurationException, ApiServices}
-import com.fortysevendeg.ninecardslauncher.services.persistence.PersistenceServices
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
+import cards.nine.services.api.{ApiServiceConfigurationException, ApiServices}
+import cards.nine.services.persistence.PersistenceServices
+import cards.nine.services.persistence.models.Collection
 
 class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
   extends SharedCollectionsProcess

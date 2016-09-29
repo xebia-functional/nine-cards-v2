@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.drive.models
+package cards.nine.services.drive.models
 
 import java.util.Date
 

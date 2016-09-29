@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.services.drive
+package cards.nine.services.drive
 
-import com.fortysevendeg.ninecardslauncher.services.drive.impl.DriveServicesImpl._
-import com.fortysevendeg.ninecardslauncher.services.drive.models.DriveServiceFileSummary
+import cards.nine.services.drive.impl.DriveServicesImpl._
+import cards.nine.services.drive.models.DriveServiceFileSummary
 import com.google.android.gms.drive.Metadata
 
 trait Conversions {

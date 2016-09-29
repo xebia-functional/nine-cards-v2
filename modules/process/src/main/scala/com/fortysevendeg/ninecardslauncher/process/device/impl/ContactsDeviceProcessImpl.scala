@@ -6,8 +6,8 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.process.device._
 import com.fortysevendeg.ninecardslauncher.process.device.models.IterableContacts
-import com.fortysevendeg.ninecardslauncher.services.contacts.models.ContactCounter
-import com.fortysevendeg.ninecardslauncher.services.contacts.ContactsServicePermissionException
+import cards.nine.services.contacts.models.ContactCounter
+import cards.nine.services.contacts.ContactsServicePermissionException
 import monix.eval.Task
 import cats.syntax.either._
 

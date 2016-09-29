@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.plus.models
+package cards.nine.services.plus.models
 
 case class GooglePlusProfile(
   name: Option[String],

@@ -1,11 +1,11 @@
-package com.fortysevendeg.ninecardslauncher.services.awareness.impl
+package cards.nine.services.awareness.impl
 
 import android.location.{Address, Geocoder}
 import cats.syntax.either._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.services.awareness._
+import cards.nine.services.awareness._
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.awareness.snapshot.{DetectedActivityResult, HeadphoneStateResult, LocationResult, WeatherResult}
 import com.google.android.gms.awareness.state.{HeadphoneState, Weather}
