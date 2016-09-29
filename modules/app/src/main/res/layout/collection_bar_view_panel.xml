@@ -7,15 +7,15 @@
         style="@style/LauncherCollectionsPanel"
         android:id="@+id/launcher_search_panel">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             style="@style/LauncherCollectionsBurgerButton"
             android:id="@+id/launcher_burger_icon"/>
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             style="@style/LauncherCollectionsGoogleButton"
             android:id="@+id/launcher_google_icon"/>
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             style="@style/LauncherCollectionsMicButton"
             android:id="@+id/launcher_mic_icon"/>
 

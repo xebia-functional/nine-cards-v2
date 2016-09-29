@@ -6,7 +6,7 @@
     <FrameLayout
         style="@style/LauncherDrawerContentItem">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             style="@style/LauncherDrawerItem"
             android:id="@+id/launcher_page_1"/>
     </FrameLayout>
@@ -14,7 +14,7 @@
     <FrameLayout
         style="@style/LauncherDrawerContentItem">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             style="@style/LauncherDrawerItem"
             android:id="@+id/launcher_page_2"/>
     </FrameLayout>
@@ -22,7 +22,7 @@
     <FrameLayout
         style="@style/LauncherDrawerContentItem">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             style="@style/LauncherDrawerAppsItem"
             android:id="@+id/launcher_app_drawer"/>
     </FrameLayout>
@@ -30,7 +30,7 @@
     <FrameLayout
         style="@style/LauncherDrawerContentItem">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             style="@style/LauncherDrawerItem"
             android:id="@+id/launcher_page_3"/>
     </FrameLayout>
@@ -38,7 +38,7 @@
     <FrameLayout
         style="@style/LauncherDrawerContentItem">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             style="@style/LauncherDrawerItem"
             android:id="@+id/launcher_page_4"/>
     </FrameLayout>

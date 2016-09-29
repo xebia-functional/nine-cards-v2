@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout
+<cards.nine.app.ui.components.layouts.FastScrollerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/action_scroller_layout"
     style="@style/ActionsListContent">
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToTabsView
+    <cards.nine.app.ui.components.layouts.PullToTabsView
         android:id="@+id/actions_pull_to_tabs"
         style="@style/PullToTabsContent">
 
@@ -12,10 +12,10 @@
             android:id="@+id/actions_recycler"
             style="@style/PullToTabsRecycler"/>
 
-    </com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToTabsView>
+    </cards.nine.app.ui.components.layouts.PullToTabsView>
 
     <LinearLayout
         android:id="@+id/actions_tabs"
         style="@style/PullToTabsItem"/>
 
-</com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerLayout>
+</cards.nine.app.ui.components.layouts.FastScrollerLayout>

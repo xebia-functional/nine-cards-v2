@@ -21,15 +21,15 @@
             <FrameLayout
                 style="@style/LauncherTopBox">
 
-                <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.CollectionActionsPanelLayout
+                <cards.nine.app.ui.components.layouts.CollectionActionsPanelLayout
                     style="@style/LauncherCollectionActionsPanel"
                     android:id="@+id/launcher_collections_actions_panel"/>
 
-                <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.TopBarLayout
+                <cards.nine.app.ui.components.layouts.TopBarLayout
                     style="@style/LauncherSearchPanel"
                     android:id="@+id/launcher_top_bar_panel"/>
 
-                <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.EditWidgetsTopPanelLayout
+                <cards.nine.app.ui.components.layouts.EditWidgetsTopPanelLayout
                     style="@style/LauncherEditWidgetsTopBarPanel"
                     android:id="@+id/launcher_edit_widgets_top_panel"/>
 
@@ -38,7 +38,7 @@
             <FrameLayout
                 style="@style/LauncherWorkSpacesLayout">
 
-                <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.LauncherWorkSpaces
+                <cards.nine.app.ui.components.layouts.LauncherWorkSpaces
                     style="@style/LauncherWorkSpaces"
                     android:id="@+id/launcher_work_spaces"/>
 
@@ -56,13 +56,13 @@
                 style="@style/LauncherPaginationPanel"
                 android:id="@+id/launcher_pagination_panel"/>
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.DockAppsPanelLayout
+            <cards.nine.app.ui.components.layouts.DockAppsPanelLayout
                 android:id="@+id/launcher_dock_apps_panel"
                 style="@style/LauncherDrawerPanel"/>
 
         </LinearLayout>
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.EditWidgetsBottomPanelLayout
+        <cards.nine.app.ui.components.layouts.EditWidgetsBottomPanelLayout
             style="@style/LauncherEditWidgetsBottomBarPanel"
             android:id="@+id/launcher_edit_widgets_bottom_panel"/>
 
@@ -84,7 +84,7 @@
         app:menu="@menu/app_menu"
         style="@style/MenuNavigationView"/>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.AppsMomentLayout
+    <cards.nine.app.ui.components.layouts.AppsMomentLayout
         android:id="@+id/launcher_apps_moment"
         style="@style/MenuAppsMomentContent"/>
 

@@ -48,7 +48,7 @@
 
     </FrameLayout>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SlidingTabLayout
+    <cards.nine.app.ui.components.layouts.SlidingTabLayout
         android:id="@+id/collections_tabs"
         style="@style/CollectionsTabs"/>
 
