@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
-import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import cards.nine.repository.repositories._
 
 trait PersistenceDependencies {
   val appRepository: AppRepository

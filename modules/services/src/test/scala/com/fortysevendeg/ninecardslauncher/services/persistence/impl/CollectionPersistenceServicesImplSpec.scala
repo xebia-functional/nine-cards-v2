@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.provider.CardEntity
+import cards.nine.repository.RepositoryException
+import cards.nine.repository.provider.CardEntity
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.PersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Collection
 import monix.eval.Task

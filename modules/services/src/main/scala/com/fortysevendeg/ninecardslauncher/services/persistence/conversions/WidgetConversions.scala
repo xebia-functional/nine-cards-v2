@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.conversions
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
+import cards.nine.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
 import com.fortysevendeg.ninecardslauncher.services.persistence._
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget
 

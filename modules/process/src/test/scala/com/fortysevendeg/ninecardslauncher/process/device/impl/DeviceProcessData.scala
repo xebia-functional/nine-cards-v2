@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.process.commons.types._
 import com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest
 import com.fortysevendeg.ninecardslauncher.process.device.models.{App, CallData, LastCallsContact, Widget, _}
 import com.fortysevendeg.ninecardslauncher.process.device.types._
-import com.fortysevendeg.ninecardslauncher.repository.model.{App => RepositoryApp}
+import cards.nine.repository.model.{App => RepositoryApp}
 import com.fortysevendeg.ninecardslauncher.services.api.{CategorizedPackage, RequestConfig}
 import com.fortysevendeg.ninecardslauncher.services.apps.models.Application
 import com.fortysevendeg.ninecardslauncher.services.calls.models.{Call => ServicesCall}

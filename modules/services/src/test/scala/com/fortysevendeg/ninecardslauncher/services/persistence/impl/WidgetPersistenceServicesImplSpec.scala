@@ -3,7 +3,7 @@ package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 import cats.syntax.either._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
+import cards.nine.repository.RepositoryException
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.WidgetPersistenceServicesData
 import com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget
 import monix.eval.Task

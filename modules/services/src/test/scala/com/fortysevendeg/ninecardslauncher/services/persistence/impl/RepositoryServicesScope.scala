@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.impl
 
-import com.fortysevendeg.ninecardslauncher.repository.repositories._
+import cards.nine.repository.repositories._
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
