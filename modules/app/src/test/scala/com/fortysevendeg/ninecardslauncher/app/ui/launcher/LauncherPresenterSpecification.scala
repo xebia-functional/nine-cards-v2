@@ -6,10 +6,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.MomentPreferences
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.LauncherPresenterStatuses
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.process.collection.{CollectionException, CollectionProcess}
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.DeviceProcess
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentProcess
+import cards.nine.process.collection.{CollectionException, CollectionProcess}
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.device.DeviceProcess
+import cards.nine.process.moment.MomentProcess
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 import org.specs2.mock.Mockito

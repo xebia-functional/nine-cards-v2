@@ -44,7 +44,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.NineCardsPreferencesActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.IsDeveloper
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.ProfileActivity
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import cards.nine.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

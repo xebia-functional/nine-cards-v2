@@ -13,8 +13,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.SubscriptionsAdapterStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.ops.SubscriptionOps._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.Subscription
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.process.sharedcollections.models.Subscription
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

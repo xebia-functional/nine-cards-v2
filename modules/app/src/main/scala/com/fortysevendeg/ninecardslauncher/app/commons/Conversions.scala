@@ -2,16 +2,16 @@ package com.fortysevendeg.ninecardslauncher.app.commons
 
 import android.content.Intent
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Constants._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models._
-import com.fortysevendeg.ninecardslauncher.process.collection.models._
-import com.fortysevendeg.ninecardslauncher.process.collection.{AddCardRequest, AddCollectionRequest}
-import com.fortysevendeg.ninecardslauncher.process.commons.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.device.SaveDockAppRequest
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
-import com.fortysevendeg.ninecardslauncher.process.moment.SaveMomentRequest
-import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
+import cards.nine.process.cloud.models._
+import cards.nine.process.collection.models._
+import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest}
+import cards.nine.process.commons.models._
+import cards.nine.process.commons.types._
+import cards.nine.process.device.SaveDockAppRequest
+import cards.nine.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
+import cards.nine.process.moment.SaveMomentRequest
+import cards.nine.process.recommendations.models.RecommendedApp
+import cards.nine.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 
 import scala.util.Random
 

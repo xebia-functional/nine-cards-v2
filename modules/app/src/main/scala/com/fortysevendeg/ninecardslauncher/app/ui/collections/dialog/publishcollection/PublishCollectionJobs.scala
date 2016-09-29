@@ -6,10 +6,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{JobException, Jobs}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.Theme
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsException
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreateSharedCollection
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.sharedcollections.SharedCollectionsException
+import cards.nine.process.sharedcollections.models.CreateSharedCollection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 

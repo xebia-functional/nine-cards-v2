@@ -19,9 +19,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{TopBarMo
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher.process.recognition._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.process.recognition._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

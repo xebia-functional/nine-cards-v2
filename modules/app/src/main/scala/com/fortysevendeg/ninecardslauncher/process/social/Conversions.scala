@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.social
+package cards.nine.process.social
 
 import cards.nine.services.persistence.UpdateUserRequest
 import cards.nine.services.persistence.models.{User => ServicesUser}

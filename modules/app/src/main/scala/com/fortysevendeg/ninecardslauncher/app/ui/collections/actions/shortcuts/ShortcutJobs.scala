@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
+import cards.nine.process.device.models.Shortcut
 import macroid.ActivityContextWrapper
 
 class ShortcutJobs(actions: ShortcutUiActions)(implicit activityContextWrapper: ActivityContextWrapper)

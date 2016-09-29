@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.device.GetByName
+import cards.nine.process.device.GetByName
 import macroid.ContextWrapper
 
 

@@ -22,8 +22,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.styles.{CommonStyles, 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.PrivateCollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, PrivateCard, PrivateCollection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
+import cards.nine.process.commons.models.{Collection, PrivateCard, PrivateCollection}
+import cards.nine.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._

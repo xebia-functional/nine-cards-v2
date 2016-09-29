@@ -7,8 +7,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollecti
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiExtensions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AllAppsCategory, NineCardCategory}
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import cards.nine.process.commons.types.{AllAppsCategory, NineCardCategory}
+import cards.nine.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.R
 
 class AppsFragment

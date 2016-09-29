@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.collections.actions.shortcuts
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.RequestCodes._
-import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
+import cards.nine.process.device.models.Shortcut
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.SafeUi._
 import macroid.{ActivityContextWrapper, Ui}

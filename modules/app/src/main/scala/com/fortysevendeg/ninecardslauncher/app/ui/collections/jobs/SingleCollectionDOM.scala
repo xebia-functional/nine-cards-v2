@@ -4,8 +4,8 @@ import android.support.v7.widget.RecyclerView.ViewHolder
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.CollectionAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.CollectionDialog
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 import macroid.ContextWrapper
 

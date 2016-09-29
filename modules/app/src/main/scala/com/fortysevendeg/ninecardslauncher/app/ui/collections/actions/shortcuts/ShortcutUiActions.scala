@@ -6,8 +6,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFra
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
-import com.fortysevendeg.ninecardslauncher.process.theme.models.DrawerBackgroundColor
+import cards.nine.process.device.models.Shortcut
+import cards.nine.process.theme.models.DrawerBackgroundColor
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

@@ -48,14 +48,14 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.snails.LauncherSnails
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppCardType, CardType, NineCardsMoment}
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, LastCallsContact, _}
-import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
-import com.fortysevendeg.ninecardslauncher.process.recognition.ConditionWeather
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
-import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
+import cards.nine.process.commons.models.{Collection, Moment}
+import cards.nine.process.commons.types.{AppCardType, CardType, NineCardsMoment}
+import cards.nine.process.device.models.{Contact, LastCallsContact, _}
+import cards.nine.process.device.{GetAppOrder, GetByName}
+import cards.nine.process.recognition.ConditionWeather
+import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.process.widget.models.AppWidget
+import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

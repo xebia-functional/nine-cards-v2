@@ -6,11 +6,11 @@ import com.fortysevendeg.ninecardslauncher.app.commons.{Conversions, NineCardInt
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.GroupCollectionsUiListener
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.recommendations.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.recommendations.RecommendedAppsConfigurationException
+import cards.nine.process.recommendations.RecommendedAppsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.R
 
 class RecommendationsFragment

@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.process.cloud.impl
+package cards.nine.process.cloud.impl
 
-import com.fortysevendeg.ninecardslauncher.process.cloud.models._
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.commons.{CollectionTypes, NineCardCategories}
+import cards.nine.process.cloud.models._
+import cards.nine.process.commons.types._
+import cards.nine.process.commons.{CollectionTypes, NineCardCategories}
 import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import cards.nine.services.persistence.models.User
 import org.joda.time.DateTime

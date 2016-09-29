@@ -11,10 +11,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.share.models.{SharedContent, Web}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, NineCardIntent, NineCardIntentExtras}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.ShortcutCardType
-import com.fortysevendeg.ninecardslauncher.process.device.IconResize
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.commons.models.{Collection, NineCardIntent, NineCardIntentExtras}
+import cards.nine.process.commons.types.ShortcutCardType
+import cards.nine.process.device.IconResize
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task

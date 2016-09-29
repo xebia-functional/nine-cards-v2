@@ -4,10 +4,10 @@ import com.fortysevendeg.ninecardslauncher.app.commons.Conversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.GetByName
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.device.GetByName
+import cards.nine.process.device.models.App
+import cards.nine.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 
 trait CollectionJobs {
 

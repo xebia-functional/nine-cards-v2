@@ -1,8 +1,8 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
 
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.CreatedCollection
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.sharedcollections.models.CreatedCollection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
 

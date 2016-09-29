@@ -7,8 +7,8 @@ import macroid.ContextWrapper
 import cats.implicits._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.device.models.App
 import monix.eval.Task
 
 class AppBroadcastJobs(implicit contextWrapper: ContextWrapper)

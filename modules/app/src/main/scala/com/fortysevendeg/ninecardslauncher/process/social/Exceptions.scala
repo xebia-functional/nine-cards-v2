@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.process.social
+package cards.nine.process.social
 
 import cards.nine.commons.services.TaskService.NineCardException
-import com.fortysevendeg.ninecardslauncher.process.commons.ConnectionSuspendedCause
+import cards.nine.process.commons.ConnectionSuspendedCause
 import com.google.android.gms.common.ConnectionResult
 
 

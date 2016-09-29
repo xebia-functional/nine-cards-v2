@@ -10,10 +10,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.cloud.CloudStorageClientListener
-import com.fortysevendeg.ninecardslauncher.process.social.{SocialProfileClientListener, SocialProfileProcessException}
-import com.fortysevendeg.ninecardslauncher.process.user.UserException
-import com.fortysevendeg.ninecardslauncher.process.userv1.UserV1Exception
+import cards.nine.process.cloud.CloudStorageClientListener
+import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
+import cards.nine.process.user.UserException
+import cards.nine.process.userv1.UserV1Exception
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult
 import macroid.Contexts

@@ -26,18 +26,18 @@ import cards.nine.commons._
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.accounts._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection, Moment, _}
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models._
-import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
-import com.fortysevendeg.ninecardslauncher.process.moment.MomentException
-import com.fortysevendeg.ninecardslauncher.process.recognition.{ConditionWeather, UnknownCondition}
-import com.fortysevendeg.ninecardslauncher.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.{AppWidget, WidgetArea}
-import com.fortysevendeg.ninecardslauncher.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
+import cards.nine.process.accounts._
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.commons.models.{Card, Collection, Moment, _}
+import cards.nine.process.commons.types._
+import cards.nine.process.device._
+import cards.nine.process.device.models._
+import cards.nine.process.intents.LauncherExecutorProcessPermissionException
+import cards.nine.process.moment.MomentException
+import cards.nine.process.recognition.{ConditionWeather, UnknownCondition}
+import cards.nine.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
+import cards.nine.process.widget.models.{AppWidget, WidgetArea}
+import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task

@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.process.cloud.impl
+package cards.nine.process.cloud.impl
 
 import android.content.Context
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.process.cloud.{CloudStorageClientListener, CloudStorageProcessException}
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.RawCloudStorageDevice
+import cards.nine.process.cloud.{CloudStorageClientListener, CloudStorageProcessException}
+import cards.nine.process.cloud.models.RawCloudStorageDevice
 import cards.nine.services.drive.{DriveServices, DriveServicesException}
 import cards.nine.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
 import monix.eval.Task

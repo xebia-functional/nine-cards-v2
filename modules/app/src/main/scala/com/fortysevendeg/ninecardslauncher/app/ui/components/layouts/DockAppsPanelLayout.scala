@@ -19,9 +19,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableIma
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AppDockType, ContactDockType}
-import com.fortysevendeg.ninecardslauncher.process.device.models.DockApp
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DockPressedColor, NineCardsTheme}
+import cards.nine.process.commons.types.{AppDockType, ContactDockType}
+import cards.nine.process.device.models.DockApp
+import cards.nine.process.theme.models.{DockPressedColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

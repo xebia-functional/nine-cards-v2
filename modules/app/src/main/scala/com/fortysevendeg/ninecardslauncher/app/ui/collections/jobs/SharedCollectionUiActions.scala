@@ -7,7 +7,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ImplicitsUiExceptions
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import cards.nine.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

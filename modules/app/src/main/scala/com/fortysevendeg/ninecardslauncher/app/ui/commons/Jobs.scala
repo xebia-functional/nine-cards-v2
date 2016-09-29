@@ -11,7 +11,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCards
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.process.theme.models.NineCardsTheme
 import macroid.ContextWrapper
 import monix.eval.Task
 

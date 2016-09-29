@@ -18,8 +18,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.WizardState._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import com.fortysevendeg.ninecardslauncher.app.ui.wizard.WizardActivity
 import cards.nine.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.device.ImplicitsDeviceException
-import com.fortysevendeg.ninecardslauncher.process.user.models.User
+import cards.nine.process.device.ImplicitsDeviceException
+import cards.nine.process.user.models.User
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts

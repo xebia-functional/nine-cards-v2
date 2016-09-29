@@ -23,9 +23,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{LauncherNo
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.LauncherWidgetView._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
-import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
+import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.process.widget.models.AppWidget
+import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._

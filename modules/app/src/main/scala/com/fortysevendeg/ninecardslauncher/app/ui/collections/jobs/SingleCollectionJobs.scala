@@ -8,9 +8,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{JobException, Jobs}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
-import com.fortysevendeg.ninecardslauncher.process.trackevent.models._
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types.AppCardType
+import cards.nine.process.trackevent.models._
 import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.Theme
 import macroid.ActivityContextWrapper

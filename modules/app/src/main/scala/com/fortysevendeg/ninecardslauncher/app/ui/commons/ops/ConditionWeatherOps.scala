@@ -1,6 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.commons.ops
 
-import com.fortysevendeg.ninecardslauncher.process.recognition._
+import cards.nine.process.recognition._
 import com.fortysevendeg.ninecardslauncher2.R
 
 object ConditionWeatherOps {

@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps.Cell
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.Statuses.EditWidgetsMode
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import cards.nine.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._

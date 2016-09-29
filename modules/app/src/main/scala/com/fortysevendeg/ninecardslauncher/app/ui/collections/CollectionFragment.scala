@@ -14,9 +14,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, Ui
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{PhoneCardType, PublishedByMe}
-import com.fortysevendeg.ninecardslauncher.process.intents.LauncherExecutorProcessPermissionException
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types.{PhoneCardType, PublishedByMe}
+import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}
 import macroid.Contexts

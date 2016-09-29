@@ -5,7 +5,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
+import cards.nine.process.commons.types.AppCardType
 import macroid.ActivityContextWrapper
 
 class SharedCollectionJobs(actions: SharedCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
