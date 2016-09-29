@@ -17,9 +17,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs, ResultCodes}
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.AccountSync
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.cloud.models.CloudStorageDeviceSummary
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.{SharedCollection, Subscription}
+import cards.nine.process.cloud.models.CloudStorageDeviceSummary
+import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.process.sharedcollections.models.{SharedCollection, Subscription}
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient

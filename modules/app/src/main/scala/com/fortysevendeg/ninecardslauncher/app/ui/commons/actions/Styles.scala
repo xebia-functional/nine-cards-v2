@@ -9,7 +9,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTabsBackgroundColor, NineCardsTheme, PrimaryColor}
+import cards.nine.process.theme.models.{DrawerTabsBackgroundColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
 

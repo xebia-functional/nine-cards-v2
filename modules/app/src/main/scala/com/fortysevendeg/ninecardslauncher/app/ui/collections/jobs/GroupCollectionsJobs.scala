@@ -11,10 +11,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.Theme
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import com.fortysevendeg.ninecardslauncher.process.accounts.CallPhone
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{MomentCollectionType, ShortcutCardType}
+import cards.nine.process.accounts.CallPhone
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types.{MomentCollectionType, ShortcutCardType}
 import macroid.ActivityContextWrapper
 
 class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)

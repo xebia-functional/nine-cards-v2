@@ -21,8 +21,8 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.device.models.TermCounter
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

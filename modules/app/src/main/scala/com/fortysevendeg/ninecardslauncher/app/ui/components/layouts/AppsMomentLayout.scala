@@ -15,9 +15,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Work
 import com.fortysevendeg.ninecardslauncher.app.ui.components.models.LauncherMoment
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import cards.nine.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._

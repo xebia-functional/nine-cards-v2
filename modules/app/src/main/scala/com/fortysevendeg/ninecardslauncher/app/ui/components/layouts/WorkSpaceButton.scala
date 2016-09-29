@@ -13,9 +13,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.CommonsTweak._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GenericUiContext, UiContext}
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.AppCardType
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types.AppCardType
+import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._

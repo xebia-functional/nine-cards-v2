@@ -5,8 +5,8 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.dialogs.CollectionDialog
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.{Contexts, Ui}
 

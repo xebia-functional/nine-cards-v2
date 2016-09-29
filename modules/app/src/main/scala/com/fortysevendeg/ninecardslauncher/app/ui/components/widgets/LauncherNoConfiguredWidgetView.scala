@@ -13,7 +13,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{GenericUiContext, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import cards.nine.process.widget.models.AppWidget
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 import macroid.FullDsl._

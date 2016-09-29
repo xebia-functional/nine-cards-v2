@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.styles.CommonStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Tweak}
 

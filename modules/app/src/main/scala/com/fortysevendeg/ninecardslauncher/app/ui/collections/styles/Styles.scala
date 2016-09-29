@@ -28,9 +28,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Slid
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.IconsSize
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Card
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.process.commons.models.Card
+import cards.nine.process.commons.types._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 

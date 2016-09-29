@@ -6,10 +6,10 @@ import com.fortysevendeg.ninecardslauncher.app.ui.collections.tasks.CollectionJo
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{AppLog, Jobs}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{Communication, NineCardCategory}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.{Communication, NineCardCategory}
+import cards.nine.process.sharedcollections.models.SharedCollection
+import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 

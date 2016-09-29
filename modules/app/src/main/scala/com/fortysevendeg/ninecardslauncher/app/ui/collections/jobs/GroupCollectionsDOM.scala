@@ -10,8 +10,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.FabButtonTags._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.commons.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.{ActivityContextWrapper, FragmentBuilder, FragmentManagerContext, Ui}
 

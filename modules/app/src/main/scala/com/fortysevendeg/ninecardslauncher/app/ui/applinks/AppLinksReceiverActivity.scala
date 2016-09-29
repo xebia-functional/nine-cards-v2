@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import com.fortysevendeg.ninecardslauncher.app.commons.ContextSupportProvider
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.{ActivityUiContext, AppLog, UiContext}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.Contexts
 

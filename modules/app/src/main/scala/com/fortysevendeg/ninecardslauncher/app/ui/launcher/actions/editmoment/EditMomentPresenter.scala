@@ -4,9 +4,9 @@ import com.fortysevendeg.ninecardslauncher.app.commons.BroadAction
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters.MomentConstrainsChangedActionFilter
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher.process.moment.UpdateMomentRequest
+import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}
+import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.process.moment.UpdateMomentRequest
 import cards.nine.commons.services.TaskService._
 import macroid._
 

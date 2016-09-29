@@ -16,9 +16,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.styles.{CommonStyles, CollectionCardsStyles}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.SharedCollectionOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{PublishedByOther, Subscribed, NotPublished, PublishedByMe}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.process.commons.types.{PublishedByOther, Subscribed, NotPublished, PublishedByMe}
+import cards.nine.process.sharedcollections.models._
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._

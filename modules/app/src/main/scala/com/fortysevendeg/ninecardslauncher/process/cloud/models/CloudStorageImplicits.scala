@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.process.cloud.models
+package cards.nine.process.cloud.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.types.json._
+import cards.nine.process.commons.types.json._
 
 object CloudStorageImplicits {
 

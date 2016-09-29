@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.social.impl
+package cards.nine.process.social.impl
 
 import android.os.Bundle
 import cats.syntax.either._
@@ -6,7 +6,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.social._
+import cards.nine.process.social._
 import cards.nine.services.persistence.models.{User => ServicesUser}
 import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
 import cards.nine.services.plus.models.GooglePlusProfile

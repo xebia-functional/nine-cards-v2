@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.social
+package cards.nine.process.social
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService

@@ -13,11 +13,11 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.action_filters._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.cloud.Conversions._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{PublishedByMe, AppCardType}
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.UpdateSharedCollection
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.process.cloud.Conversions._
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.{PublishedByMe, AppCardType}
+import cards.nine.process.sharedcollections.models.UpdateSharedCollection
+import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts

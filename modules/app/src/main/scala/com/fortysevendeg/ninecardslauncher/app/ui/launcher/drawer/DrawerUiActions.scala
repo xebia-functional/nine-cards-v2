@@ -32,8 +32,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.Draw
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.drawer.DrawerSnails._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.{LauncherUiActions, LauncherUiActionsImpl}
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons._
-import com.fortysevendeg.ninecardslauncher.process.device._
-import com.fortysevendeg.ninecardslauncher.process.device.models._
+import cards.nine.process.device._
+import cards.nine.process.device.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.{AppsView, ContactView, ContentView, TintableImageView}
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._

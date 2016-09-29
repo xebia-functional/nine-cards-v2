@@ -1,7 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.app.ui.components.models
 
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.NineCardsMoment
 
 case class LauncherData(
   workSpaceType: WorkSpaceType,

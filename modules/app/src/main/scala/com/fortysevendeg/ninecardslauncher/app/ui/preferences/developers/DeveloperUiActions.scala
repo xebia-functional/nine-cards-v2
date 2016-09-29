@@ -8,9 +8,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.Misc
-import com.fortysevendeg.ninecardslauncher.process.device.models.App
-import com.fortysevendeg.ninecardslauncher.process.recognition.{Location, Weather}
+import cards.nine.process.commons.types.Misc
+import cards.nine.process.device.models.App
+import cards.nine.process.recognition.{Location, Weather}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Ui}
 

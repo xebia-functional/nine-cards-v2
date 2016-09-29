@@ -2,7 +2,7 @@ package com.fortysevendeg.ninecardslauncher.app.ui.launcher.actions.widgets
 
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.device.models.AppsWithWidgets
+import cards.nine.process.device.models.AppsWithWidgets
 import macroid._
 
 

@@ -16,10 +16,10 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.ContactsCategory
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardsMoment._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.process.commons.types.ContactsCategory
+import cards.nine.process.commons.types.NineCardCategory._
+import cards.nine.process.commons.types.NineCardsMoment._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

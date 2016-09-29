@@ -18,8 +18,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabs
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.device.models.{Contact, IterableContacts, TermCounter}
-import com.fortysevendeg.ninecardslauncher.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
+import cards.nine.process.device.models.{Contact, IterableContacts, TermCounter}
+import cards.nine.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

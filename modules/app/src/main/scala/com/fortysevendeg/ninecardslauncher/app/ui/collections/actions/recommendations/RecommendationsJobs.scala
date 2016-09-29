@@ -4,8 +4,8 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.recommendations.models.RecommendedApp
 import macroid.ActivityContextWrapper
 
 class RecommendationsJobs(

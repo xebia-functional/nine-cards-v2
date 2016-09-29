@@ -15,11 +15,11 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.models.{Collections
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import cards.nine.commons.javaNull
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.ninecardslauncher.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
-import com.fortysevendeg.ninecardslauncher.process.widget.models.AppWidget
+import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
+import cards.nine.process.widget.models.AppWidget
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global

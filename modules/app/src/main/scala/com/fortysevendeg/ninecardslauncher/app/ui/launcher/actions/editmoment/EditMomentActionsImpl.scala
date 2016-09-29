@@ -21,8 +21,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.Edit
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Collection, Moment, MomentTimeSlot}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor}
+import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}
+import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

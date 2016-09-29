@@ -27,7 +27,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.launcher.holders.LauncherWorkS
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.types.ReorderCollection
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
 import cards.nine.commons.ops.SeqOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
+import cards.nine.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._

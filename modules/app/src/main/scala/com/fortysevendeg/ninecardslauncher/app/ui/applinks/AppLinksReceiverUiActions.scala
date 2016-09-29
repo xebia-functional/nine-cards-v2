@@ -9,8 +9,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.adapters.sharedcollect
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.models.SharedCollection
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{CardLayoutBackgroundColor, CardTextColor, NineCardsTheme}
+import cards.nine.process.sharedcollections.models.SharedCollection
+import cards.nine.process.theme.models.{CardLayoutBackgroundColor, CardTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

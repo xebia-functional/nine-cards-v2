@@ -13,7 +13,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.WidgetsOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFragment, Styles}
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
-import com.fortysevendeg.ninecardslauncher.process.device.models.{AppsWithWidgets, Widget}
+import cards.nine.process.device.models.{AppsWithWidgets, Widget}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext

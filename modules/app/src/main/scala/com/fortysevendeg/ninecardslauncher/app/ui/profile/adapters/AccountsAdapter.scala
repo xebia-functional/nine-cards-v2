@@ -12,7 +12,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCards
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.adapters.AccountOptions._
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.AccountsAdapterStyles
 import com.fortysevendeg.ninecardslauncher.app.ui.profile.models.{AccountSync, Device, Header}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.NineCardsTheme
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._

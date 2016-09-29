@@ -18,9 +18,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.{BaseActionFra
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.launcher.LauncherPresenter
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.Communication
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, DrawerTextColor}
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.Communication
+import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

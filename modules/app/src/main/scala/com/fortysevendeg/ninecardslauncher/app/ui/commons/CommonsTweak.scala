@@ -31,7 +31,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ViewOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.adapters.ThemeArrayAdapter
 import com.fortysevendeg.ninecardslauncher.app.ui.components.drawables.DrawerBackgroundDrawable
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerIconColor, NineCardsTheme}
+import cards.nine.process.theme.models.{DrawerIconColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

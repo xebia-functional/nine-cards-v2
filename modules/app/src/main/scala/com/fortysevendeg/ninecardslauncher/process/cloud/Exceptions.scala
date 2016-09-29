@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.cloud
+package cards.nine.process.cloud
 
 import cards.nine.commons.services.TaskService.NineCardException
 

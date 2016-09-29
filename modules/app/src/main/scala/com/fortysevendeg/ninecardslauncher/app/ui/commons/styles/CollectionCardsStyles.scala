@@ -12,7 +12,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.ColorOps._
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.process.theme.models._
 import macroid.{ContextWrapper, Tweak}
 
 trait CollectionCardsStyles extends CommonStyles {

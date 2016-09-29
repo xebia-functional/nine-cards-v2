@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.social.impl
+package cards.nine.process.social.impl
 
 import cards.nine.services.persistence.{FindUserByIdRequest, UpdateUserRequest}
 import cards.nine.services.persistence.models.User

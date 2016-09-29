@@ -10,9 +10,9 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.collections.jobs.SharedCollectionJobs
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.AppLog
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 

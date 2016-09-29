@@ -22,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.{FragmentUiContext, Ui
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

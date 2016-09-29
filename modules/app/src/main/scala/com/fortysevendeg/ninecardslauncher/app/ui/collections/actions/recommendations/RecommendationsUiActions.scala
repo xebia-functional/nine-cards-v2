@@ -8,8 +8,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.recommendations.models.RecommendedApp
-import com.fortysevendeg.ninecardslauncher.process.theme.models.CardLayoutBackgroundColor
+import cards.nine.process.recommendations.models.RecommendedApp
+import cards.nine.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

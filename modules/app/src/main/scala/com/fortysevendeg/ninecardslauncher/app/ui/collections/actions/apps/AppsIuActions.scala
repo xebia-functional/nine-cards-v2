@@ -19,8 +19,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.{PullToTabs
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.commons.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, IterableApps, TermCounter}
+import cards.nine.process.commons.types.NineCardCategory
+import cards.nine.process.device.models.{App, IterableApps, TermCounter}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

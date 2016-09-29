@@ -16,9 +16,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher.process.commons.types._
-import com.fortysevendeg.ninecardslauncher.process.theme.models._
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.commons.types._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._

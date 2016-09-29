@@ -6,7 +6,7 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.ninecardslauncher2.R
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.ops.TaskServiceOps._
-import com.fortysevendeg.ninecardslauncher.process.device.models.Shortcut
+import cards.nine.process.device.models.Shortcut
 
 class ShortcutFragment
   extends BaseActionFragment

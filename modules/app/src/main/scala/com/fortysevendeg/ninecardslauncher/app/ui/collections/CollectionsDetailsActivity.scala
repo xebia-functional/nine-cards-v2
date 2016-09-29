@@ -23,9 +23,9 @@ import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{CircleOpe
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.collection.AddCardRequest
-import com.fortysevendeg.ninecardslauncher.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{NotPublished, PublicCollectionStatus}
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.process.commons.types.{NotPublished, PublicCollectionStatus}
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._

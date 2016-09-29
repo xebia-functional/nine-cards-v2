@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.process.commons
+package cards.nine.process.commons
 
 import com.google.android.gms.common.api.GoogleApiClient
 

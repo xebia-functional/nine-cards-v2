@@ -12,8 +12,8 @@ import com.fortysevendeg.ninecardslauncher.app.ui.commons.UiContext
 import com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.FastScrollerListener
 import com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.ScrollingLinearLayoutManager
 import com.fortysevendeg.ninecardslauncher.app.ui.preferences.commons.{FontSize, IconsSize}
-import com.fortysevendeg.ninecardslauncher.process.device.models.{App, EmptyIterableApps, IterableApps}
-import com.fortysevendeg.ninecardslauncher.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import cards.nine.process.device.models.{App, EmptyIterableApps, IterableApps}
+import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._

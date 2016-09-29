@@ -4,9 +4,9 @@ import com.fortysevendeg.ninecardslauncher.app.commons.NineCardIntentConversions
 import com.fortysevendeg.ninecardslauncher.app.ui.commons.Jobs
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.process.commons.types.{AllAppsCategory, Misc, NineCardCategory}
-import com.fortysevendeg.ninecardslauncher.process.device.models.{IterableApps, TermCounter}
-import com.fortysevendeg.ninecardslauncher.process.device.{GetAppOrder, GetByName}
+import cards.nine.process.commons.types.{AllAppsCategory, Misc, NineCardCategory}
+import cards.nine.process.device.models.{IterableApps, TermCounter}
+import cards.nine.process.device.{GetAppOrder, GetByName}
 import macroid.ActivityContextWrapper
 
 case class AppsJobs(
