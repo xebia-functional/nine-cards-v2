@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/ProfileAccountsItemLayout">
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
         android:id="@+id/profile_account_device"
         style="@style/ProfileAccountsItemIcon"/>
 
@@ -19,7 +19,7 @@
 
     </LinearLayout>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
         android:id="@+id/profile_account_action"
         style="@style/ProfileAccountsItemAction"/>
 
