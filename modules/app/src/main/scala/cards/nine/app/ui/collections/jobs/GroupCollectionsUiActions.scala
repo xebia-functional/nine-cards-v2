@@ -100,10 +100,9 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
 
   def showCollections(collections: Seq[Collection], position: Int): TaskService[Unit] =
-    (activityContextWrapper.getOriginal match {
-      case fragmentActivity: FragmentActivity =>
-        val maybeCollection = collections lift position
-        val adapter = CollectionsPagerAdapter(fragmentActivity.getSupportFragmentManager, collections, position)
+    (collections lift position match {
+      case Some(collection) =>
+        val adapter = CollectionsPagerAdapter(fragmentManagerContext.manager, collections, position)
         selectorDrawable.setNumberOfItems(collections.length)
         (dom.viewPager <~ vpAdapter(adapter)) ~
           Ui(adapter.activateFragment(position)) ~
@@ -115,11 +114,8 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
           uiHandlerDelayed(Ui {
             dom.bindAnimatedAdapter()
           }, delayMilis = 100) ~
-          (maybeCollection match {
-            case Some(collection) =>
-              (dom.titleName <~ tvText(collection.name)) ~ (dom.titleIcon <~ ivSrc(collection.getIconDetail))
-            case _ => Ui.nop
-          }) ~
+          (dom.titleName <~ tvText(collection.name)) ~
+          (dom.titleIcon <~ ivSrc(collection.getIconDetail))~
           (dom.tabs <~ vVisible <~~ enterViews)
       case _ => Ui.nop
     }).toService
@@ -388,66 +384,64 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       systemBarsTint.updateStatusColor(color)
 
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] =
-    Ui (dom.closeEditingMode()) ~
-      (dom.getAdapter map {
-        adapter =>
-          val resIcon = collection.getIconDetail
-          val distance = resGetDimensionPixelSize(R.dimen.padding_large)
-          val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
-          ((pageMovement, adapter.statuses.scrollType) match {
-            case (Start | Idle, _) =>
-              (dom.icon <~ ivSrc(resIcon)) ~
-                (dom.titleName <~ tvText(collection.name)) ~
-                (dom.titleIcon <~ ivSrc(resIcon))
-            case (Left, ScrollDown) =>
-              (dom.icon <~ animationIcon(fromLeft = true, resIcon)) ~
-                (dom.titleName <~ tvText(collection.name)) ~
-                (dom.titleIcon <~ ivSrc(resIcon))
-            case (Left, ScrollUp) =>
-              (dom.icon <~ ivSrc(resIcon)) ~
-                (dom.titleContent <~~
-                  applyAnimation(
-                    duration = Option(duration),
-                    x = Option(distance),
-                    alpha = Option(0))) ~~
-                (dom.titleContent <~ vTranslationX(-distance)) ~~
-                (dom.titleName <~ tvText(collection.name)) ~~
-                (dom.titleIcon <~ ivSrc(resIcon)) ~~
-                (dom.titleContent <~~
-                  applyAnimation(
-                    duration = Option(duration),
-                    x = Option(0),
-                    alpha = Option(1)))
-            case (Right | Jump, ScrollDown) =>
-              (dom.icon <~ animationIcon(fromLeft = false, resIcon)) ~
-                (dom.titleName <~ tvText(collection.name)) ~
-                (dom.titleIcon <~ ivSrc(resIcon))
-            case (Right | Jump, ScrollUp) =>
-              (dom.icon <~ ivSrc(resIcon)) ~
-                (dom.titleContent <~~
-                  applyAnimation(
-                    duration = Option(duration),
-                    x = Option(-distance),
-                    alpha = Option(0))) ~~
-                (dom.titleContent <~ vTranslationX(distance)) ~~
-                (dom.titleName <~ tvText(collection.name)) ~~
-                (dom.titleIcon <~ ivSrc(resIcon)) ~~
-                (dom.titleContent <~~
-                  applyAnimation(
-                    duration = Option(duration),
-                    x = Option(0),
-                    alpha = Option(1)))
-            case _ => Ui.nop
-          }) ~
-            Ui(selectorDrawable.setSelected(position)) ~
-            adapter.notifyChanged(position) ~
-            (if (collection.cards.isEmpty) {
-              val color = getIndexColor(collection.themedColorIndex)
-              showFabButton(color = color, autoHide = false)
-            } else {
-              hideFabButton
-            })
-      } getOrElse Ui.nop)
+    (dom.getAdapter map { adapter =>
+      val resIcon = collection.getIconDetail
+      val distance = resGetDimensionPixelSize(R.dimen.padding_large)
+      val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
+      ((pageMovement, adapter.statuses.scrollType) match {
+        case (Start | Idle, _) =>
+          (dom.icon <~ ivSrc(resIcon)) ~
+            (dom.titleName <~ tvText(collection.name)) ~
+            (dom.titleIcon <~ ivSrc(resIcon))
+        case (Left, ScrollDown) =>
+          (dom.icon <~ animationIcon(fromLeft = true, resIcon)) ~
+            (dom.titleName <~ tvText(collection.name)) ~
+            (dom.titleIcon <~ ivSrc(resIcon))
+        case (Left, ScrollUp) =>
+          (dom.icon <~ ivSrc(resIcon)) ~
+            (dom.titleContent <~~
+              applyAnimation(
+                duration = Option(duration),
+                x = Option(distance),
+                alpha = Option(0))) ~~
+            (dom.titleContent <~ vTranslationX(-distance)) ~~
+            (dom.titleName <~ tvText(collection.name)) ~~
+            (dom.titleIcon <~ ivSrc(resIcon)) ~~
+            (dom.titleContent <~~
+              applyAnimation(
+                duration = Option(duration),
+                x = Option(0),
+                alpha = Option(1)))
+        case (Right | Jump, ScrollDown) =>
+          (dom.icon <~ animationIcon(fromLeft = false, resIcon)) ~
+            (dom.titleName <~ tvText(collection.name)) ~
+            (dom.titleIcon <~ ivSrc(resIcon))
+        case (Right | Jump, ScrollUp) =>
+          (dom.icon <~ ivSrc(resIcon)) ~
+            (dom.titleContent <~~
+              applyAnimation(
+                duration = Option(duration),
+                x = Option(-distance),
+                alpha = Option(0))) ~~
+            (dom.titleContent <~ vTranslationX(distance)) ~~
+            (dom.titleName <~ tvText(collection.name)) ~~
+            (dom.titleIcon <~ ivSrc(resIcon)) ~~
+            (dom.titleContent <~~
+              applyAnimation(
+                duration = Option(duration),
+                x = Option(0),
+                alpha = Option(1)))
+        case _ => Ui.nop
+      }) ~
+        Ui(selectorDrawable.setSelected(position)) ~
+        adapter.notifyChanged(position) ~
+        (if (collection.cards.isEmpty) {
+          val color = getIndexColor(collection.themedColorIndex)
+          showFabButton(color = color, autoHide = false)
+        } else {
+          hideFabButton
+        })
+    } getOrElse Ui.nop)
 
   private[this] def createBundle(view: View, map: Map[String, NineCardCategory] = Map.empty, packages: Seq[String] = Seq.empty): Bundle = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
@@ -543,6 +537,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
 
     override def onPageScrollStateChanged(state: Int): Unit = state match {
       case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
+      case ViewPager.SCROLL_STATE_DRAGGING => dom.closeEditingMode()
       case _ =>
     }
 

@@ -172,18 +172,20 @@ class CollectionFragment
     groupCollectionsJobs.openReorderMode(scrollType, canScroll).resolveAsync()
 
   def closeReorderMode(position: Int): Unit =
-    groupCollectionsJobs.closeReorderMode(position).resolveAsync()
+    (for {
+      _ <- toolbarJobs.scrollIdle()
+      _ <- groupCollectionsJobs.closeReorderMode(position)
+    } yield ()).resolveAsync()
+
 
   def startReorderCards(holder: ViewHolder): Unit =
     singleCollectionJobs.startReorderCards(holder).resolveAsync()
 
   override def performCard(card: Card, position: Int): Unit =
-    groupCollectionsJobs.performCard(card, position).resolveAsyncServiceOr { (e: Throwable) =>
-      e match {
-        case _: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
-          groupCollectionsJobs.requestCallPhonePermission(card.intent.extractPhone())
-        case _ => groupCollectionsJobs.showGenericError()
-      }
+    groupCollectionsJobs.performCard(card, position).resolveAsyncServiceOr[Throwable] {
+      case _: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
+        groupCollectionsJobs.requestCallPhonePermission(card.intent.extractPhone())
+      case _ => groupCollectionsJobs.showGenericError()
     }
 }
 

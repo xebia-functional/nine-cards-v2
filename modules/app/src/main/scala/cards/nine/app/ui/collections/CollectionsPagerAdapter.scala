@@ -88,7 +88,7 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
 
   def activateFragment(pos: Int): Unit = fragments foreach {
     case (id, fragment) if id == pos => fragment.setActiveFragment(true)
-    case _ =>
+    case (_, fragment) => fragment.setActiveFragment(false)
   }
 
   def setScrollType(sType: ScrollType): Unit = statuses = statuses.copy(scrollType = sType)

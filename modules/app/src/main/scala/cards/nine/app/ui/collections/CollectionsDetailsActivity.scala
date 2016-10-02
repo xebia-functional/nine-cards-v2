@@ -221,7 +221,7 @@ class CollectionsDetailsActivity
 
   override def closeEditingMode(): Unit =
     statuses.collectionMode match {
-      case EditingCollectionMode => groupCollectionsJobs.closeEditingMode()
+      case EditingCollectionMode => groupCollectionsJobs.closeEditingMode().resolveAsync()
       case _ =>
     }
 
