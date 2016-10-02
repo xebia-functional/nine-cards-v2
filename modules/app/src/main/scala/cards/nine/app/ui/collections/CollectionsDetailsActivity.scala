@@ -63,7 +63,7 @@ class CollectionsDetailsActivity
 
   implicit lazy val sharedCollectionJobs = new SharedCollectionJobs(new SharedCollectionUiActions(self))
 
-  def getSingleCollectionJobs: Option[SingleCollectionJobs] =
+  implicit def getSingleCollectionJobs: Option[SingleCollectionJobs] =
     getAdapter flatMap (_.getActiveFragment) map (_.singleCollectionJobs)
 
   def getSingleCollectionJobsByPosition(position: Int): Option[SingleCollectionJobs] =

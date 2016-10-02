@@ -59,6 +59,8 @@ case class AppsJobs(
       _ <- if (isTabsOpened) actions.closeTabs() else actions.openTabs()
     } yield ()
 
+  def showError(): TaskService[Unit] = actions.showError()
+
   def close(): TaskService[Unit] = actions.close()
 
 }

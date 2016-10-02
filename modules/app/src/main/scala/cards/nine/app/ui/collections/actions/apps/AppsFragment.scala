@@ -3,15 +3,17 @@ package cards.nine.app.ui.collections.actions.apps
 import android.os.Bundle
 import android.view.View
 import cards.nine.app.commons.Conversions
-import cards.nine.app.ui.collections.jobs.GroupCollectionsUiListener
+import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.UiExtensions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import cards.nine.process.commons.types.{AllAppsCategory, NineCardCategory}
 import cards.nine.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.R
 
-class AppsFragment
+class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
   extends BaseActionFragment
   with AppsIuActions
   with AppsDOM
@@ -40,14 +42,15 @@ class AppsFragment
   override def loadApps(filter: AppsFilter): Unit =
     appsJobs.loadApps(filter).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps(filter))
 
-  override def addApp(app: App): Unit = {
-    getActivity match {
-      case listener: GroupCollectionsUiListener =>
-        listener.addCards(Seq(toAddCardRequest(app)))
-        appsJobs.close().resolveAsync()
-      case _ =>
-    }
-  }
+  override def addApp(app: App): Unit =
+    (for {
+      cards <- groupCollectionsJobs.addCards(Seq(toAddCardRequest(app)))
+      _ <- singleCollectionJobs match {
+        case Some(job) => job.addCards(cards)
+        case _ => TaskService.empty
+      }
+      _ <- appsJobs.close()
+    } yield ()).resolveAsyncServiceOr(_ => appsJobs.showError())
 
   override def swapFilter(): Unit = appsJobs.swapFilter().resolveAsync()
 }

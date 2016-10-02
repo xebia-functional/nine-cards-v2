@@ -105,7 +105,9 @@ trait GroupCollectionsDOM {
 
   // TODO We should move this call to NavigationProcess #826
   def launchDialog[F <: BaseActionFragment]
-  (fragmentBuilder: FragmentBuilder[F], args: Bundle)(implicit fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager]): Ui[Any] = {
+  (fragmentBuilder: FragmentBuilder[F], args: Bundle)
+    (implicit fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+      groupCollectionsJobs: GroupCollectionsJobs): Ui[Any] = {
     fragmentBuilder.pass(args).framed(R.id.action_fragment_content, ActionsBehaviours.nameActionFragment)
   }
 
