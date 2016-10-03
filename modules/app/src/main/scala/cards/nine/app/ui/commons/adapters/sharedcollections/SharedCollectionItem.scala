@@ -11,8 +11,7 @@ import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.SharedCollectionOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
-import cards.nine.models.types
-import cards.nine.models.types.{NotPublished, PublishedByMe, PublishedByOther}
+import cards.nine.models.types.{NotPublished, PublishedByMe, PublishedByOther, Subscribed}
 import cards.nine.process.sharedcollections.models._
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -77,7 +76,7 @@ trait SharedCollectionItem
       case NotPublished =>
         tvText(R.string.addMyCollection) +
           tvAllCaps2(true) + tvNormalMedium + On.click(Ui(onAddCollection)) + vEnabled(true)
-      case types.Subscribed | PublishedByOther =>
+      case Subscribed | PublishedByOther =>
         tvText(R.string.alreadyAddedCollection) +
           tvAllCaps2(false) + tvItalicLight + vEnabled(false)
       case PublishedByMe =>

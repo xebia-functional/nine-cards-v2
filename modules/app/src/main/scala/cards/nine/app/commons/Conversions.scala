@@ -2,7 +2,7 @@ package cards.nine.app.commons
 
 import android.content.Intent
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.models.types
+import cards.nine.models.types.{AppCardType, AppsCollectionType, ContactCardType, NoInstalledAppCardType}
 import cards.nine.process.cloud.models._
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest}
@@ -94,14 +94,14 @@ trait Conversions
     AddCardRequest(
       term = contact.name,
       packageName = None,
-      cardType = types.ContactCardType,
+      cardType = ContactCardType,
       intent = contactToNineCardIntent(contact.lookupKey),
       imagePath = Option(contact.photoUri))
 
   def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
     AddCollectionRequest(
       name = collection.name,
-      collectionType = types.AppsCollectionType,
+      collectionType = AppsCollectionType,
       icon = collection.icon,
       themedColorIndex = Random.nextInt(numSpaces),
       appsCategory = Option(collection.category),
@@ -114,7 +114,7 @@ trait Conversions
     AddCardRequest(
       term = app.title,
       packageName = Option(app.packageName),
-      cardType = types.NoInstalledAppCardType,
+      cardType = NoInstalledAppCardType,
       intent = toNineCardIntent(app),
       imagePath = None)
 
@@ -122,7 +122,7 @@ trait Conversions
     AddCardRequest(
       term = app.name,
       packageName = Option(app.packageName),
-      cardType = types.AppCardType,
+      cardType = AppCardType,
       intent = toNineCardIntent(app),
       imagePath = None)
 
@@ -130,7 +130,7 @@ trait Conversions
     AddCardRequest(
       term = app.title,
       packageName = Option(app.packageName),
-      cardType = types.AppCardType,
+      cardType = AppCardType,
       intent = toNineCardIntent(app),
       imagePath = None)
 

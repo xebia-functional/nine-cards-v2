@@ -13,8 +13,7 @@ import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types
-import cards.nine.models.types.PhoneCardType
+import cards.nine.models.types.{PhoneCardType, PublishedByMe}
 import cards.nine.process.commons.models.{Card, Collection}
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -98,7 +97,7 @@ class CollectionFragment
     (statuses.collectionMode, statuses.positionsEditing.toSeq.length) match {
       case (NormalCollectionMode, _) =>
         statuses.publishStatus match {
-          case types.PublishedByMe =>
+          case PublishedByMe =>
             menu.findItem(R.id.action_make_public).setEnabled(false).setTitle(resGetString(R.string.alreadyPublishedCollection))
             menu.findItem(R.id.action_share).setVisible(true)
           case _ =>

@@ -12,7 +12,7 @@ import cards.nine.app.ui.components.commons.ReorderItemTouchListener
 import cards.nine.app.ui.components.drawables.{BackgroundSelectedDrawable, IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, NineCardsPreferencesValue, ShowPositionInCards}
 import cards.nine.commons.ops.SeqOps._
-import cards.nine.models.types
+import cards.nine.models.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
 import cards.nine.process.commons.models.{Card, Collection}
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -142,10 +142,10 @@ case class ViewHolderCollectionAdapter(
 
   def clearSelectedCard() = selectedIcon <~ vGone
 
-  private[this] def getBadge(cardType: cards.nine.models.types.CardType): Option[Int] = cardType match {
-    case types.PhoneCardType => Option(R.drawable.badge_phone)
-    case types.SmsCardType => Option(R.drawable.badge_sms)
-    case types.EmailCardType => Option(R.drawable.badge_email)
+  private[this] def getBadge(cardType: CardType): Option[Int] = cardType match {
+    case PhoneCardType => Option(R.drawable.badge_phone)
+    case SmsCardType => Option(R.drawable.badge_sms)
+    case EmailCardType => Option(R.drawable.badge_email)
     case _ => None
   }
 

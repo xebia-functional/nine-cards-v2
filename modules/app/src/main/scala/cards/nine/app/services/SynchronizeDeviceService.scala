@@ -13,8 +13,7 @@ import cards.nine.app.ui.commons.{AppLog, SyncDeviceState}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types
-import cards.nine.models.types.AppCardType
+import cards.nine.models.types.{AppCardType, PublishedByMe}
 import cards.nine.process.cloud.Conversions._
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
@@ -107,7 +106,7 @@ class SynchronizeDeviceService
 
       def updateSharedCollection(collection: Collection): TaskService[Option[String]] =
         (collection.publicCollectionStatus, collection.sharedCollectionId) match {
-          case (types.PublishedByMe, Some(sharedCollectionId)) =>
+          case (PublishedByMe, Some(sharedCollectionId)) =>
             di.sharedCollectionsProcess.updateSharedCollection(
               UpdateSharedCollection(
                 sharedCollectionId = sharedCollectionId,

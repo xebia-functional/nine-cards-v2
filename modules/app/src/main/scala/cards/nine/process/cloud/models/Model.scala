@@ -2,6 +2,8 @@ package cards.nine.process.cloud.models
 
 import java.util.Date
 
+import cards.nine.models.types._
+
 trait CloudStorageResource {
   def cloudId: String
   def deviceId: Option[String]
@@ -52,9 +54,9 @@ case class CloudStorageCollection(
   sharedCollectionId: Option[String],
   sharedCollectionSubscribed: Option[Boolean],
   items: Seq[CloudStorageCollectionItem],
-  collectionType: cards.nine.models.types.CollectionType,
+  collectionType: CollectionType,
   icon: String,
-  category: Option[cards.nine.models.types.NineCardCategory],
+  category: Option[NineCardCategory],
   moment: Option[CloudStorageMoment])
 
 case class CloudStorageCollectionItem(
@@ -66,7 +68,7 @@ case class CloudStorageMoment(
   timeslot: Seq[CloudStorageMomentTimeSlot],
   wifi: Seq[String],
   headphones: Boolean,
-  momentType: Option[cards.nine.models.types.NineCardsMoment],
+  momentType: Option[NineCardsMoment],
   widgets: Option[Seq[CloudStorageWidget]])
 
 case class CloudStorageMomentTimeSlot(
@@ -78,7 +80,7 @@ case class CloudStorageWidget(
   packageName: String,
   className: String,
   area: CloudStorageWidgetArea,
-  widgetType: cards.nine.models.types.WidgetType,
+  widgetType: WidgetType,
   label: Option[String],
   imagePath: Option[String],
   intent: Option[String])
@@ -91,7 +93,7 @@ case class CloudStorageWidgetArea(
 
 case class CloudStorageDockApp(
   name: String,
-  dockType: cards.nine.models.types.DockType,
+  dockType: DockType,
   intent: String,
   imagePath: String,
   position: Int)

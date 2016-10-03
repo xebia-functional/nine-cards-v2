@@ -13,7 +13,7 @@ import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types
+import cards.nine.models.types.NineCardCategory
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -33,7 +33,7 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
   var statuses = PublishCollectionActionsStatuses()
 
   lazy val (categoryNamesMenu, categories) = {
-    val categoriesSorted = types.NineCardCategory.appsCategories map { category =>
+    val categoriesSorted = NineCardCategory.appsCategories map { category =>
       (resGetString(category.getStringResource) getOrElse category.name, category)
     } sortBy(_._1)
     (categoriesSorted map (_._1), categoriesSorted map (_._2))
@@ -92,7 +92,7 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService
   }
 
-  def goBackToPublishCollectionInformation(name: String, category: cards.nine.models.types.NineCardCategory): TaskService[Unit] = {
+  def goBackToPublishCollectionInformation(name: String, category: NineCardCategory): TaskService[Unit] = {
     implicit val theme: NineCardsTheme = statuses.theme
     ((dom.startLayout <~ vInvisible) ~
       (dom.informationLayout <~ applyFadeIn()) ~
@@ -146,7 +146,7 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
   private[this] def pagination(position: Int) =
     (w[TintableImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
 
-  private[this] def setCategory(maybeCategory: Option[cards.nine.models.types.NineCardCategory]): Unit = {
+  private[this] def setCategory(maybeCategory: Option[NineCardCategory]): Unit = {
     maybeCategory foreach { category =>
       dom.categorySpinner.setTag(category)
       dom.categorySpinner.setText(categoryNamesMenu(categories.indexOf(category)))
