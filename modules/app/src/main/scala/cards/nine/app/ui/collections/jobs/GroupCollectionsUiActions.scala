@@ -114,7 +114,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
             dom.bindAnimatedAdapter()
           }, delayMilis = 100) ~
           (dom.titleName <~ tvText(collection.name)) ~
-          (dom.titleIcon <~ ivSrc(collection.getIconDetail))~
+          (dom.titleIcon <~ ivSrc(collection.getIconDetail)) ~
           (dom.tabs <~ vVisible <~~ enterViews)
       case _ => Ui.nop
     }).toService
