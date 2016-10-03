@@ -82,6 +82,8 @@ class CollectionsDetailsActivity
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
 
+    statuses = statuses.reset()
+
     val position = getInt(
       Seq(bundle, getIntent.getExtras),
       startPosition,
@@ -290,5 +292,11 @@ case class CollectionsDetailsStatuses(
   publishStatus: PublicCollectionStatus = NotPublished) {
 
   def getPositionsSelected: Int = positionsEditing.toSeq.length
+
+  def reset(): CollectionsDetailsStatuses = copy(
+    collectionMode = NormalCollectionMode,
+    positionsEditing = Set.empty,
+    lastPhone = None,
+    publishStatus = NotPublished)
 
 }
