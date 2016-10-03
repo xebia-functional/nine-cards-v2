@@ -1,4 +1,4 @@
-package cards.nine.app.ui.wizard
+package cards.nine.app.ui.wizard.jobs
 
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 
@@ -32,6 +32,14 @@ trait WizardDOM {
 
   lazy val workspaces = finder.findView(TR.wizard_steps_workspace)
 
+  lazy val newConfigurationContent = finder.findView(TR.wizard_steps_new_configuration_content)
+
+  lazy val newConfigurationStep = finder.findView(TR.wizard_steps_new_configuration_step)
+
+  lazy val newConfigurationPagers = finder.findView(TR.wizard_steps_new_configuration_pager)
+
+  lazy val newConfigurationNext = finder.findView(TR.wizard_steps_new_configuration_next)
+
 }
 
 trait WizardUiListener {
@@ -57,5 +65,7 @@ trait WizardUiListener {
   def onClickOkPermissionsDialog(): Unit
 
   def onClickCancelPermissionsDialog(): Unit
+
+  def onStartNewConfiguration(): Unit
 
 }
