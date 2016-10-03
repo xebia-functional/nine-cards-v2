@@ -104,7 +104,7 @@
                 android:id="@+id/wizard_steps_new_configuration_pager"
                 style="@style/WizardNewConfigurationPagers" />
 
-            <TextView
+            <Button
                 android:id="@+id/wizard_steps_new_configuration_next"
                 style="@style/WizardNewConfigurationNext"/>
 

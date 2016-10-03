@@ -226,6 +226,7 @@
     <style name="WizardNewConfigurationStepContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="WizardNewConfigurationHeaderContent">
@@ -242,31 +243,43 @@
     <style name="WizardNewConfigurationTitle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:textSize">@dimen/text_xxxxlarge</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:padding">@dimen/padding_xxlarge</item>
     </style>
 
     <style name="WizardNewConfigurationDescription">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:paddingLeft">@dimen/padding_xxlarge</item>
+        <item name="android:paddingRight">@dimen/padding_xxlarge</item>
     </style>
 
     <style name="WizardNewConfigurationPaginationContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
     </style>
 
     <style name="WizardNewConfigurationPagers">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="WizardNewConfigurationNext">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
         <item name="android:text">@string/next</item>
         <item name="android:textAllCaps">true</item>
+        <item name="android:layout_gravity">center_vertical|end</item>
     </style>
 
     <!-- Step 0 -->

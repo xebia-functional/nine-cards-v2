@@ -46,8 +46,7 @@ trait WizardStyles {
     val size = resGetDimensionPixelSize(R.dimen.wizard_size_pager)
     val margin = resGetDimensionPixelSize(R.dimen.wizard_margin_pager)
     lp[ViewGroup](size, size) +
-      llLayoutMargin(margin, margin, margin, margin) +
-      ivSrc(R.drawable.wizard_pager)
+      llLayoutMargin(margin, margin, margin, margin)
   }
 
 }
