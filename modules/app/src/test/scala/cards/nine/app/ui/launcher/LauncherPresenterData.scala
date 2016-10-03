@@ -2,7 +2,7 @@ package cards.nine.app.ui.launcher
 
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardCategory._
-import cards.nine.models.types.{CollectionType, NineCardCategory}
+import cards.nine.models.types._
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.process.device.models.DockApp
@@ -39,11 +39,11 @@ trait LauncherPresenterData {
     if (sharedCollectionId == originalSharedCollectionId) Random.nextBoolean()
     else false
 
-  def determinePublicCollectionStatus(): types.PublicCollectionStatus =
-    if (sharedCollectionIdOption.isDefined && sharedCollectionSubscribed) types.Subscribed
-    else if (sharedCollectionIdOption.isDefined && originalSharedCollectionIdOption == sharedCollectionIdOption) types.PublishedByOther
-    else if (sharedCollectionIdOption.isDefined) types.PublishedByMe
-    else types.NotPublished
+  def determinePublicCollectionStatus(): PublicCollectionStatus =
+    if (sharedCollectionIdOption.isDefined && sharedCollectionSubscribed) Subscribed
+    else if (sharedCollectionIdOption.isDefined && originalSharedCollectionIdOption == sharedCollectionIdOption) PublishedByOther
+    else if (sharedCollectionIdOption.isDefined) PublishedByMe
+    else NotPublished
 
   val publicCollectionStatus = determinePublicCollectionStatus()
 
@@ -53,7 +53,7 @@ trait LauncherPresenterData {
       position = 0,
       term = "App 1",
       packageName = Some("package.name"),
-      cardType = types.AppCardType,
+      cardType = AppCardType,
       intent = NineCardIntent(NineCardIntentExtras()),
       imagePath = Some("imagePath"),
       notification = Some("notification")
@@ -68,7 +68,7 @@ trait LauncherPresenterData {
     timeslot = Seq(MomentTimeSlot(from = "from-2", to = "to-2", days = 5 to 6)),
     wifi = Seq("wifi-2"),
     headphone = false,
-    momentType = momentType map (types.NineCardsMoment(_)))
+    momentType = momentType map (NineCardsMoment(_)))
 
   val collection = Collection(
     id = collectionId,
@@ -93,7 +93,7 @@ trait LauncherPresenterData {
 
   val dockApp = DockApp(
     name = packageName,
-    dockType = types.AppDockType,
+    dockType = AppDockType,
     intent = intent,
     imagePath = imagePath,
     position = 0)

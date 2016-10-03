@@ -1,5 +1,6 @@
 package cards.nine.process.cloud.impl
 
+import cards.nine.models.types._
 import cards.nine.models.{CollectionTypes, NineCardCategories}
 import cards.nine.process.cloud.models._
 import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
@@ -99,9 +100,9 @@ trait CloudStorageProcessImplData {
       sharedCollectionId = Option(s"Shared Collection Id $num"),
       sharedCollectionSubscribed = Option(true),
       generateCollectionItems(num: Int),
-      collectionType = types.FreeCollectionType,
+      collectionType = FreeCollectionType,
       icon = s"Collection Icon $num",
-      category = Option(types.Business),
+      category = Option(Business),
       None)
   }
 
@@ -117,7 +118,7 @@ trait CloudStorageProcessImplData {
       timeslot = generateTimeSlots(numItems),
       wifi = Seq(s"Wifi_Network $num", s"Mobile $num "),
       headphones = false,
-      momentType = momentType map (types.NineCardsMoment(_)),
+      momentType = momentType map (NineCardsMoment(_)),
       widgets = Some(generateWidgets(numWidgets)))
   }
 
@@ -126,7 +127,7 @@ trait CloudStorageProcessImplData {
       packageName = packageName,
       className = className,
       area = generateWidgetArea(i),
-      widgetType = types.WidgetType(widgetType),
+      widgetType = WidgetType(widgetType),
       label = None,
       imagePath = None,
       intent = None)
@@ -149,7 +150,7 @@ trait CloudStorageProcessImplData {
   def generateDockApps(num: Int): Seq[CloudStorageDockApp] = 1 to num map { i =>
     CloudStorageDockApp(
       name = s"DockApp $num",
-      dockType = types.AppDockType,
+      dockType = AppDockType,
       intent = s"Item intent $num",
       imagePath = s"/path/to/image/$num",
       position = num)
