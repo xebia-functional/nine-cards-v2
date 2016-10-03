@@ -15,6 +15,7 @@ import cards.nine.process.device.GetByName
 import cards.nine.process.user.models.User
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ContextWrapper
+import monix.eval.Task
 
 class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contextWrapper: ContextWrapper)
   extends Jobs
@@ -32,43 +33,34 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
 
   def startCommand(intent: Intent): TaskService[Unit] = {
 
-    def readCloudId: TaskService[Option[String]] = TaskService {
+    def readCloudId: TaskService[Unit] = TaskService {
       CatchAll[UiException] {
-        Option(intent) flatMap { i =>
+        val cloudId = Option(intent) flatMap { i =>
           if (i.hasExtra(cloudIdKey)) {
             val key = i.getStringExtra(cloudIdKey)
             if (key == newConfiguration) None else Some(key)
           } else None
         }
+        statuses = statuses.copy(selectedCloudId = cloudId)
       }
     }
 
-    def storeCloudId(cloudId: Option[String]): TaskService[Unit] =
-      TaskService {
-        CatchAll[UiException] {
-          statuses = statuses.copy(selectedCloudId = cloudId)
-        }
-      }
-
-    def storeApiClient(apiClient: Option[GoogleApiClient]): TaskService[Unit] =
-      TaskService {
-        CatchAll[UiException] {
-          statuses = statuses.copy(apiClient = apiClient)
-        }
-      }
+    def createAndConnectClient(email: String): TaskService[Unit] =
+      for {
+        apiClient <- di.cloudStorageProcess.createCloudStorageClient(email)
+        _ <- TaskService(Task(Right(statuses = statuses.copy(apiClient = Some(apiClient)))))
+        _ <- TaskService(CatchAll[UiException](apiClient.connect()))
+      } yield ()
 
     def tryToStartService(user: User): TaskService[Unit] = {
       val hasKey = Option(intent) exists (_.hasExtra(cloudIdKey))
       (hasKey, user.deviceCloudId.isEmpty, user.email) match {
         case (true, true, Some(email)) =>
           for {
-            cloudId <- readCloudId
-            _ <- storeCloudId(cloudId)
             _ <- setState(stateCreatingCollections)
+            _ <- readCloudId
             _ <- actions.initialize()
-            apiClient <- di.cloudStorageProcess.createCloudStorageClient(email)
-            _ <- storeApiClient(Option(apiClient))
-            _ <- TaskService(CatchAll[UiException](apiClient.connect()))
+            _ <- createAndConnectClient(email)
           } yield ()
         case (false, _, _) => setState(stateCloudIdNotSend, close = true)
         case (_, false, _) => setState(stateUserCloudIdPresent, close = true)
@@ -84,6 +76,53 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
   }
 
   def createConfiguration(): TaskService[Unit] = {
+
+    def loadConfiguration(
+      client: GoogleApiClient,
+      deviceToken: Option[String],
+      cloudId: String): TaskService[Unit] = {
+      for {
+        _ <- di.deviceProcess.resetSavedItems()
+        _ <- di.deviceProcess.saveInstalledApps
+        apps <- di.deviceProcess.getSavedApps(GetByName)
+        _ <- actions.setProcess(statuses.selectedCloudId, GettingAppsProcess)
+        device <- di.cloudStorageProcess.getCloudStorageDevice(client, cloudId)
+        _ <- actions.setProcess(statuses.selectedCloudId, LoadingConfigProcess)
+        _ <- actions.setProcess(statuses.selectedCloudId, CreatingCollectionsProcess)
+        _ <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))
+        momentSeq = device.data.moments map (_ map toSaveMomentRequest) getOrElse Seq.empty
+        dockAppSeq = device.data.dockApps map (_ map toSaveDockAppRequest) getOrElse Seq.empty
+        _ <- di.momentProcess.saveMoments(momentSeq)
+        _ <- di.deviceProcess.saveDockApps(dockAppSeq)
+        _ <- di.userProcess.updateUserDevice(device.data.deviceName, device.cloudId, deviceToken)
+      } yield ()
+    }
+
+    def newConfiguration(
+      client: GoogleApiClient,
+      deviceToken: Option[String]): TaskService[Unit] = {
+      val dockAppsSize = 4
+      for {
+        _ <- di.deviceProcess.resetSavedItems()
+        _ <- di.deviceProcess.saveInstalledApps
+        _ <- actions.setProcess(statuses.selectedCloudId, GettingAppsProcess)
+        dockApps <- di.deviceProcess.generateDockApps(dockAppsSize)
+        apps <- di.deviceProcess.getSavedApps(GetByName)
+        _ <- actions.setProcess(statuses.selectedCloudId, LoadingConfigProcess)
+        contacts <- di.deviceProcess.getFavoriteContacts.resolveLeftTo(Seq.empty)
+        _ <- actions.setProcess(statuses.selectedCloudId, CreatingCollectionsProcess)
+        _ <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
+        _ <- di.momentProcess.createMoments
+        storedCollections <- di.collectionProcess.getCollections
+        savedDevice <- di.cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
+          client = client,
+          collections = storedCollections map (collection => toCloudStorageCollection(collection, None)),
+          moments = Seq.empty,
+          dockApps = dockApps map toCloudStorageDockApp)
+        _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId, deviceToken)
+      } yield ()
+    }
+
     (statuses.apiClient, statuses.selectedCloudId)  match {
       case (Some(client), Some(cloudId)) =>
         for {
@@ -92,7 +131,7 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
         } yield ()
       case (Some(client), None) =>
         for {
-          _ <- createNewConfiguration(client, readToken)
+          _ <- newConfiguration(client, readToken)
           _ <- setState(stateSuccess, close = true)
         } yield()
       case _ => TaskService.left(UiException("GoogleAPIClient not initialized"))
@@ -106,52 +145,6 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
     for {
       _ <- sendActualState
       _ <- if (close) actions.endProcess else TaskService.right((): Unit)
-    } yield ()
-  }
-
-  private[this] def createNewConfiguration(
-    client: GoogleApiClient,
-    deviceToken: Option[String]): TaskService[Unit] = {
-    val dockAppsSize = 4
-    for {
-      _ <- di.deviceProcess.resetSavedItems()
-      _ <- di.deviceProcess.saveInstalledApps
-      _ <- actions.setProcess(statuses.selectedCloudId, GettingAppsProcess)
-      dockApps <- di.deviceProcess.generateDockApps(dockAppsSize)
-      apps <- di.deviceProcess.getSavedApps(GetByName)
-      _ <- actions.setProcess(statuses.selectedCloudId, LoadingConfigProcess)
-      contacts <- di.deviceProcess.getFavoriteContacts.resolveLeftTo(Seq.empty)
-      _ <- actions.setProcess(statuses.selectedCloudId, CreatingCollectionsProcess)
-      _ <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
-      _ <- di.momentProcess.createMoments
-      storedCollections <- di.collectionProcess.getCollections
-      savedDevice <- di.cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-        client = client,
-        collections = storedCollections map (collection => toCloudStorageCollection(collection, None)),
-        moments = Seq.empty,
-        dockApps = dockApps map toCloudStorageDockApp)
-      _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId, deviceToken)
-    } yield ()
-  }
-
-  private[this] def loadConfiguration(
-    client: GoogleApiClient,
-    deviceToken: Option[String],
-    cloudId: String): TaskService[Unit] = {
-    for {
-      _ <- di.deviceProcess.resetSavedItems()
-      _ <- di.deviceProcess.saveInstalledApps
-      apps <- di.deviceProcess.getSavedApps(GetByName)
-      _ <- actions.setProcess(statuses.selectedCloudId, GettingAppsProcess)
-      device <- di.cloudStorageProcess.getCloudStorageDevice(client, cloudId)
-      _ <- actions.setProcess(statuses.selectedCloudId, LoadingConfigProcess)
-      _ <- actions.setProcess(statuses.selectedCloudId, CreatingCollectionsProcess)
-      _ <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))
-      momentSeq = device.data.moments map (_ map toSaveMomentRequest) getOrElse Seq.empty
-      dockAppSeq = device.data.dockApps map (_ map toSaveDockAppRequest) getOrElse Seq.empty
-      _ <- di.momentProcess.saveMoments(momentSeq)
-      _ <- di.deviceProcess.saveDockApps(dockAppSeq)
-      _ <- di.userProcess.updateUserDevice(device.data.deviceName, device.cloudId, deviceToken)
     } yield ()
   }
 
