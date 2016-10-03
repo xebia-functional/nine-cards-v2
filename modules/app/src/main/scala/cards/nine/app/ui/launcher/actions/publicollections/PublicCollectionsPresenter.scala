@@ -5,8 +5,7 @@ import cards.nine.app.ui.collections.tasks.CollectionJobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{AppLog, Jobs}
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.{Communication, NineCardCategory}
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
@@ -19,7 +18,7 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
   with Conversions
   with CollectionJobs {
 
-  protected var statuses = PublicCollectionStatuses(types.Communication, TopSharedCollection)
+  protected var statuses = PublicCollectionStatuses(Communication, TopSharedCollection)
 
   def initialize(): Unit = {
     loadPublicCollections()
