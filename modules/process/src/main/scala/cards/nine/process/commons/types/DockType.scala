@@ -1,6 +1,7 @@
 package cards.nine.process.commons.types
 
-import cards.nine.process.commons.DockAppTypes._
+import cards.nine.DockAppTypes
+import DockAppTypes._
 
 sealed trait DockType {
   val name: String

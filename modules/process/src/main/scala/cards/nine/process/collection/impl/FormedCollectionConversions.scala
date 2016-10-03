@@ -1,10 +1,11 @@
 package cards.nine.process.collection.impl
 
+import cards.nine.Spaces
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
-import cards.nine.process.commons.Spaces._
+import Spaces._
 import cards.nine.process.commons.models.PrivateCollection
 import cards.nine.process.commons.types.{ContactsCategory, NineCardCategory, _}
 import cards.nine.services.apps.models.Application

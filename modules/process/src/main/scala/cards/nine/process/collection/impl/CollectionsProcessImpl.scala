@@ -1,5 +1,6 @@
 package cards.nine.process.collection.impl
 
+import cards.nine.Spaces
 import cats.syntax.either._
 import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
@@ -10,7 +11,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.process.collection.AddCollectionRequest
 import cards.nine.process.collection._
 import cards.nine.process.collection.models.{FormedCollection, UnformedApp, UnformedContact}
-import cards.nine.process.commons.Spaces._
+import Spaces._
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.commons.types.NineCardCategory._
 import cards.nine.process.commons.types.{NineCardCategory, NoInstalledAppCardType}

@@ -3,9 +3,9 @@ package cards.nine.process.moment.impl
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
+import cards.nine.NineCardsMoments
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import cards.nine.process.commons.NineCardsMoments
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.types.NineCardsMoment._
 import cards.nine.process.moment.{MomentException, MomentProcessConfig}

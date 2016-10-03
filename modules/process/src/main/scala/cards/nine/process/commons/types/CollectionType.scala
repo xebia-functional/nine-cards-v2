@@ -1,6 +1,7 @@
 package cards.nine.process.commons.types
 
-import cards.nine.process.commons.CollectionTypes._
+import cards.nine.CollectionTypes
+import CollectionTypes._
 
 sealed trait CollectionType {
   val name: String

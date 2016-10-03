@@ -1,6 +1,7 @@
 package cards.nine.process.commons.types
 
-import cards.nine.process.commons.NineCardsMoments._
+import cards.nine.NineCardsMoments
+import NineCardsMoments._
 
 sealed trait NineCardsMoment{
   val name: String

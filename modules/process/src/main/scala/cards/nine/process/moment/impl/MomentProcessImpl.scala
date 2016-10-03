@@ -1,11 +1,12 @@
 package cards.nine.process.moment.impl
 
+import cards.nine.Spaces
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.Spaces._
+import Spaces._
 import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot, PrivateCollection}
 import cards.nine.process.commons.types.NineCardsMoment._
 import cards.nine.process.commons.types._

@@ -1,8 +1,10 @@
 package cards.nine.process.cloud.impl
 
+import cards.nine
+import cards.nine.NineCardCategories
 import cards.nine.process.cloud.models._
 import cards.nine.process.commons.types._
-import cards.nine.process.commons.{CollectionTypes, NineCardCategories}
+import cards.nine.process.commons.CollectionTypes
 import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import cards.nine.services.persistence.models.User
 import org.joda.time.DateTime
@@ -176,7 +178,7 @@ trait CloudStorageProcessImplData {
       | "sharedCollectionId": "Shared Collection Id $num",
       | "sharedCollectionSubscribed": true,
       | "items": [${generateCollectionItemsJson(numItems).mkString(",")}],
-      | "collectionType": "${CollectionTypes.free}",
+      | "collectionType": "${nine.CollectionTypes.free}",
       | "icon": "Collection Icon $num",
       | "category": "${NineCardCategories.business}"
       |}

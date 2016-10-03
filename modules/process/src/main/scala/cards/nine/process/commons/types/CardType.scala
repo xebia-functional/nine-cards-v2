@@ -1,6 +1,6 @@
 package cards.nine.process.commons.types
 
-import cards.nine.process.commons.CardTypes._
+import cards.nine.CardTypes._
 
 sealed trait CardType {
   val name: String

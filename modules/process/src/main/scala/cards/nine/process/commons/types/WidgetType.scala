@@ -1,6 +1,7 @@
 package cards.nine.process.commons.types
 
-import cards.nine.process.commons.WidgetTypes._
+import cards.nine.WidgetTypes
+import WidgetTypes._
 
 sealed trait WidgetType {
   val name: String

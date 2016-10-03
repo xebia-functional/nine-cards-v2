@@ -1,8 +1,9 @@
 package cards.nine.process.collection.impl
 
+import cards.nine.Spaces
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{CollectionProcessConfig, AddCardRequest, AddCollectionRequest, EditCollectionRequest}
-import cards.nine.process.commons.Spaces._
+import Spaces._
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.process.commons.types.CardType._
