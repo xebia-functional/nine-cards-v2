@@ -6,7 +6,7 @@ import android.view.View
 import android.widget._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext, UiException}
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext, UiException}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.layouts.StepData
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
@@ -34,6 +34,8 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
   val newConfigurationKey = "new_configuration"
 
   val tagDialog = "wizard-dialog"
+
+  lazy val systemBarsTint = new SystemBarsTint
 
   lazy val steps = Seq(
     StepData(R.drawable.wizard_01, resGetString(R.string.wizard_step_1)),
@@ -100,7 +102,8 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
         (dom.stepsAction <~
           diveInActionStyle <~
           On.click(Ui(dom.onClickFinishWizardButton()))) ~
-        createPagers(steps)
+        createPagers(steps) ~
+        systemBarsTint.initSystemStatusBarTint()
 
     for {
       _ <- initializeUi().toService
@@ -123,12 +126,10 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
       (dom.newConfigurationContent <~ vInvisible)).toService
 
   def goToNewConfiguration(): TaskService[Unit] =
-    ((dom.loadingRootLayout <~ vInvisible) ~
-      (dom.userRootLayout <~ vInvisible) ~
-      (dom.wizardRootLayout <~ vInvisible) ~
-      (dom.deviceRootLayout <~ vInvisible) ~
-      (dom.newConfigurationContent <~ vVisible) ~
+    (showNewConfigurationScreen() ~
       Ui(dom.onStartNewConfiguration())).toService
+
+  def showNewConfiguration(): TaskService[Unit] = showNewConfigurationScreen().toService
 
   def showLoading(): TaskService[Unit] =
     ((dom.loadingRootLayout <~ vVisible) ~
@@ -140,6 +141,13 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
   def showErrorLoginUser(): TaskService[Unit] = backToUser(R.string.errorLoginUser)
 
   def showErrorConnectingGoogle(): TaskService[Unit] = backToUser(R.string.errorConnectingGoogle)
+
+  private[this] def showNewConfigurationScreen(): Ui[Any] =
+    (dom.loadingRootLayout <~ vInvisible) ~
+      (dom.userRootLayout <~ vInvisible) ~
+      (dom.wizardRootLayout <~ vInvisible) ~
+      (dom.deviceRootLayout <~ vInvisible) ~
+      (dom.newConfigurationContent <~ vVisible)
 
   private[this] def backToUser(errorMessage: Int): TaskService[Unit] =
     uiShortToast2(errorMessage).toService *> goToUser()

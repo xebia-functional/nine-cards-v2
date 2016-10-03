@@ -8,9 +8,10 @@ import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext}
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext}
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
+import cards.nine.process.collection.models.PackagesByCategory
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -25,16 +26,30 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
 
   val numberOfScreens = 6
 
+  lazy val systemBarsTint = new SystemBarsTint
+
   def loadFirstStep(): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_0, javaNull)
     val resColor = R.color.wizard_background_new_conf_step_0
     ((dom.newConfigurationStep <~
       vgRemoveAllViews <~
       vgAddView(stepView)) ~
+      systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       createPagers() ~
       selectPager(0, resColor) ~
       (dom.newConfigurationNext <~
+        On.click(Ui(dom.onLoadBetterCollections())) <~
         tvColorResource(resColor))).toService
+  }
+
+  def loadSecondStep(collections: Seq[PackagesByCategory]): TaskService[Unit] = {
+    val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_1, javaNull)
+    val resColor = R.color.wizard_background_new_conf_step_0
+    ((dom.newConfigurationStep <~
+      vgRemoveAllViews <~
+      vgAddView(stepView)) ~
+      selectPager(1, resColor) ~
+      (dom.newConfigurationStep1Description <~ tvText(s"${collections.length} collections"))).toService
   }
 
   private[this] def createPagers(): Ui[Any] = {
