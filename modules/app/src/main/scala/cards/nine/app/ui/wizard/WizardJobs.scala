@@ -4,9 +4,9 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
+import cards.nine.app.services.collections.CreateCollectionsService
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.process.accounts.{FineLocation, ReadContacts, UserAccountsProcessOperationCancelledException}
-import cards.nine.app.services.CreateCollectionService
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
@@ -138,6 +138,8 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
       _ <- di.userProcess.unregister
       _ <- actions.goToUser()
     } yield ()
+
+  def serviceUserEmailNotFoundError(): TaskService[Unit] = actions.goToUser()
 
   def serviceFinished(): TaskService[Unit] = actions.showDiveIn()
 
@@ -318,8 +320,8 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
   }
 
   private[this] def generateCollections(maybeKey: Option[String]): TaskService[Unit] = {
-    val intent = activityContextSupport.createIntent(classOf[CreateCollectionService])
-    intent.putExtra(CreateCollectionService.cloudIdKey, maybeKey.getOrElse(CreateCollectionService.newConfiguration))
+    val intent = activityContextSupport.createIntent(classOf[CreateCollectionsService])
+    intent.putExtra(CreateCollectionsService.cloudIdKey, maybeKey.getOrElse(CreateCollectionsService.newConfiguration))
     for {
       _ <- uiStartServiceIntent(intent).toService
       _ <- actions.goToWizard()
