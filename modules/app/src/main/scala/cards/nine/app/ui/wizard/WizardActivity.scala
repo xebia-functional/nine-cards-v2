@@ -38,7 +38,7 @@ class WizardActivity
 
   lazy val newConfigurationActions = new NewConfigurationUiActions(self)
 
-  lazy val newConfigurationJobs = new NewConfigurationJobs(newConfigurationActions)
+  lazy val newConfigurationJobs = new NewConfigurationJobs(newConfigurationActions, wizardUiActions)
 
   override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
 
@@ -139,6 +139,9 @@ class WizardActivity
 
   override def onStartNewConfiguration(): Unit =
     newConfigurationActions.loadFirstStep().resolveAsync()
+
+  override def onLoadBetterCollections(): Unit =
+    newConfigurationJobs.loadBetterCollections().resolveAsync()
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
     case ex: SocialProfileProcessException if ex.recoverable => wizardJobs.googleSignIn()
