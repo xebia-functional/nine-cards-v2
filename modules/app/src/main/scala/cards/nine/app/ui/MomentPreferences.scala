@@ -1,8 +1,8 @@
 package cards.nine.app.ui
 
 import android.content.Context
-import cards.nine.process.commons.types.NineCardsMoment
 import cards.nine.commons.javaNull
+import cards.nine.models.types.NineCardsMoment
 import macroid.ContextWrapper
 import org.joda.time.DateTime
 

@@ -3,14 +3,15 @@ package cards.nine.app.services
 import android.app.{Notification, NotificationManager, PendingIntent, Service}
 import android.content.{Context, Intent}
 import android.support.v4.app.NotificationCompat
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.InjectorImpl
 import cards.nine.app.services.payloads.SharedCollectionPayload
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.CommonsResourcesExtras._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.process.commons.types.{PublishedByOther, Subscribed}
+import cards.nine.models.types
+import cards.nine.models.types.PublishedByOther
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.firebase.messaging.{FirebaseMessagingService, RemoteMessage}
 import macroid.Contexts
@@ -57,7 +58,7 @@ class NineCardsFirebaseMessagingService
           di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync2()
         case Some(col) if col.publicCollectionStatus == PublishedByOther =>
           di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync2()
-        case Some(col) if col.publicCollectionStatus == Subscribed =>
+        case Some(col) if col.publicCollectionStatus == types.Subscribed =>
           val collectionName = col.name
           val collectionId = col.id
 

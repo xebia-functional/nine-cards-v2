@@ -1,6 +1,6 @@
-package cards.nine.process.commons.types
+package cards.nine.models.types
 
-import cards.nine.DockAppTypes
+import cards.nine.models.DockAppTypes
 import DockAppTypes._
 
 sealed trait DockType {

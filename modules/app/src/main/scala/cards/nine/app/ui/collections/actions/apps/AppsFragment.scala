@@ -9,7 +9,8 @@ import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.types.{AllAppsCategory, NineCardCategory}
+import cards.nine.models.types
+import cards.nine.models.types.NineCardCategory
 import cards.nine.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.R
 
@@ -21,10 +22,10 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
   with Conversions
   with UiExtensions { self =>
 
-  val allApps = AllAppsCategory
+  val allApps = types.AllAppsCategory
 
   lazy val appsJobs = AppsJobs(
-    category = NineCardCategory(getString(Seq(getArguments), AppsFragment.categoryKey, AllAppsCategory.name)),
+    category = NineCardCategory(getString(Seq(getArguments), AppsFragment.categoryKey, types.AllAppsCategory.name)),
     actions = self)
 
   override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment

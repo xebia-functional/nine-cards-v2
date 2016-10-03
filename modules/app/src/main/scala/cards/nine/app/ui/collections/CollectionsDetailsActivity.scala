@@ -18,9 +18,10 @@ import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, 
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types
+import cards.nine.models.types.PublicCollectionStatus
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.commons.types.{NotPublished, PublicCollectionStatus}
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 
@@ -289,7 +290,7 @@ case class CollectionsDetailsStatuses(
   collectionMode: CollectionMode = NormalCollectionMode,
   positionsEditing: Set[Int] = Set.empty,
   lastPhone: Option[String] = None,
-  publishStatus: PublicCollectionStatus = NotPublished) {
+  publishStatus: PublicCollectionStatus = types.NotPublished) {
 
   def getPositionsSelected: Int = positionsEditing.toSeq.length
 
@@ -297,6 +298,6 @@ case class CollectionsDetailsStatuses(
     collectionMode = NormalCollectionMode,
     positionsEditing = Set.empty,
     lastPhone = None,
-    publishStatus = NotPublished)
+    publishStatus = types.NotPublished)
 
 }

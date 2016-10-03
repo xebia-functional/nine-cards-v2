@@ -1,18 +1,18 @@
 package cards.nine.process.moment.impl
 
-import cards.nine.Spaces
-import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.CatchAll
+import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import Spaces._
+import cards.nine.models.Spaces
+import cards.nine.models.Spaces._
+import cards.nine.models.types.NineCardsMoment._
+import cards.nine.models.types._
 import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot, PrivateCollection}
-import cards.nine.process.commons.types.NineCardsMoment._
-import cards.nine.process.commons.types._
 import cards.nine.process.moment.DefaultApps._
-import cards.nine.process.moment.{UpdateMomentRequest, _}
 import cards.nine.process.moment.models.App
+import cards.nine.process.moment.{UpdateMomentRequest, _}
 import cards.nine.services.persistence._
 import cards.nine.services.wifi.WifiServices
 import org.joda.time.DateTime

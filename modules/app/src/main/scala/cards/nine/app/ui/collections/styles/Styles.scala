@@ -8,7 +8,22 @@ import android.support.v7.widget.CardView
 import android.view.View
 import android.view.ViewGroup.LayoutParams._
 import android.widget.ImageView.ScaleType
-import android.widget.{FrameLayout, ImageView, LinearLayout, TextView}
+import android.widget.{FrameLayout, ImageView, TextView}
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.FabButtonTags._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
+import cards.nine.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.app.ui.preferences.commons.IconsSize
+import cards.nine.commons._
+import cards.nine.models.types
+import cards.nine.process.commons.models.Card
+import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
@@ -16,21 +31,6 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.commons.ops.ColorOps._
-import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.FabButtonTags._
-import cards.nine.app.ui.commons.UiContext
-import cards.nine.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
-import cards.nine.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
-import cards.nine.app.ui.preferences.commons.IconsSize
-import cards.nine.commons._
-import cards.nine.process.commons.models.Card
-import cards.nine.process.commons.types._
-import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, ContextWrapper, Tweak}
 
@@ -102,9 +102,9 @@ trait CollectionAdapterStyles {
       view.getLayoutParams.height = (heightCard * iconContentHeightRatio).toInt
     }
 
-  def nameStyle(cardType: CardType)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
+  def nameStyle(cardType: cards.nine.models.types.CardType)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
     cardType match {
-      case NoInstalledAppCardType =>
+      case types.NoInstalledAppCardType =>
         tvColor(theme.get(CardTextColor).alpha(.4f))
       case _ =>
         tvColor(theme.get(CardTextColor))
@@ -117,8 +117,8 @@ trait CollectionAdapterStyles {
           vBackground(javaNull) +
           expandLayout +
           ivScaleType(ScaleType.CENTER_CROP)
-      case AppCardType => ivSrcByPackageName(card.packageName, card.term)
-      case NoInstalledAppCardType =>
+      case types.AppCardType => ivSrcByPackageName(card.packageName, card.term)
+      case types.NoInstalledAppCardType =>
         val shape = new ShapeDrawable(new OvalShape)
         shape.getPaint.setColor(theme.get(CardTextColor).alpha(.4f))
         val iconColor = theme.get(CardBackgroundColor)

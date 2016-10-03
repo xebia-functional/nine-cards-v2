@@ -5,20 +5,21 @@ import android.graphics.drawable.shapes.OvalShape
 import android.view.ViewGroup.LayoutParams._
 import android.view.{View, ViewGroup}
 import android.widget._
+import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.ops.SharedCollectionOps._
+import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
+import cards.nine.models.types
+import cards.nine.models.types.{NotPublished, PublishedByMe, PublishedByOther}
+import cards.nine.process.sharedcollections.models._
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.AppUtils._
-import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.UiContext
-import cards.nine.app.ui.commons.styles.{CommonStyles, CollectionCardsStyles}
-import cards.nine.app.ui.commons.ops.SharedCollectionOps._
-import cards.nine.process.commons.types.{PublishedByOther, Subscribed, NotPublished, PublishedByMe}
-import cards.nine.process.sharedcollections.models._
-import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
@@ -76,7 +77,7 @@ trait SharedCollectionItem
       case NotPublished =>
         tvText(R.string.addMyCollection) +
           tvAllCaps2(true) + tvNormalMedium + On.click(Ui(onAddCollection)) + vEnabled(true)
-      case Subscribed | PublishedByOther =>
+      case types.Subscribed | PublishedByOther =>
         tvText(R.string.alreadyAddedCollection) +
           tvAllCaps2(false) + tvItalicLight + vEnabled(false)
       case PublishedByMe =>

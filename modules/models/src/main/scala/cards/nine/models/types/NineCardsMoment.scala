@@ -1,6 +1,6 @@
-package cards.nine.process.commons.types
+package cards.nine.models.types
 
-import cards.nine.NineCardsMoments
+import cards.nine.models.NineCardsMoments
 import NineCardsMoments._
 
 sealed trait NineCardsMoment{

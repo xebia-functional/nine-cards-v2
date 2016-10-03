@@ -7,22 +7,23 @@ import cards.nine.app.di.InjectorImpl
 import cards.nine.app.observers.NineCardsObserver._
 import cards.nine.app.services.commons.GoogleDriveApiClientService
 import cards.nine.app.ui.commons.AppLog._
-import cards.nine.app.ui.commons.{AppLog, SyncDeviceState}
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.action_filters._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.{AppLog, SyncDeviceState}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types
+import cards.nine.models.types.AppCardType
 import cards.nine.process.cloud.Conversions._
 import cards.nine.process.commons.models.Collection
-import cards.nine.process.commons.types.{PublishedByMe, AppCardType}
-import cards.nine.process.sharedcollections.models.UpdateSharedCollection
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.process.sharedcollections.models.UpdateSharedCollection
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 import monix.eval.Task
-import cats.syntax.either._
 
 class SynchronizeDeviceService
   extends IntentService("synchronizeDeviceService")
@@ -106,7 +107,7 @@ class SynchronizeDeviceService
 
       def updateSharedCollection(collection: Collection): TaskService[Option[String]] =
         (collection.publicCollectionStatus, collection.sharedCollectionId) match {
-          case (PublishedByMe, Some(sharedCollectionId)) =>
+          case (types.PublishedByMe, Some(sharedCollectionId)) =>
             di.sharedCollectionsProcess.updateSharedCollection(
               UpdateSharedCollection(
                 sharedCollectionId = sharedCollectionId,

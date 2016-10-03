@@ -1,9 +1,9 @@
 package cards.nine.process.widget
 
-import cards.nine.process.commons.types.WidgetType
 import cards.nine.process.widget.models.{AppWidget, WidgetArea}
 import cards.nine.services.persistence.{AddWidgetRequest => ServicesAddWidgetRequest, UpdateWidgetRequest => ServicesUpdateWidgetRequest}
 import cards.nine.services.persistence.models.{Widget => ServicesWidget}
+import cards.nine.models.types.WidgetType
 
 trait WidgetConversions {
 

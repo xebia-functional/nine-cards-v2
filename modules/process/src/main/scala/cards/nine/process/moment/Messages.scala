@@ -1,7 +1,7 @@
 package cards.nine.process.moment
 
 import cards.nine.process.commons.models.{FormedWidget, MomentTimeSlot}
-import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.models.types.NineCardsMoment
 
 case class MomentProcessConfig(
   namesMoments: Map[NineCardsMoment, String])

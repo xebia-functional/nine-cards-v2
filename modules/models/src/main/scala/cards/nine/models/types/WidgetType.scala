@@ -1,6 +1,6 @@
-package cards.nine.process.commons.types
+package cards.nine.models.types
 
-import cards.nine.WidgetTypes
+import cards.nine.models.WidgetTypes
 import WidgetTypes._
 
 sealed trait WidgetType {

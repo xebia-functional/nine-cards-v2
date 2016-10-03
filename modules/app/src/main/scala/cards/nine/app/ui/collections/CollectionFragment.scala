@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.ui.collections.CollectionFragment._
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
@@ -14,9 +13,11 @@ import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types
+import cards.nine.models.types.PhoneCardType
 import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.commons.types.{PhoneCardType, PublishedByMe}
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{TR, _}
 import macroid.Contexts
@@ -97,7 +98,7 @@ class CollectionFragment
     (statuses.collectionMode, statuses.positionsEditing.toSeq.length) match {
       case (NormalCollectionMode, _) =>
         statuses.publishStatus match {
-          case PublishedByMe =>
+          case types.PublishedByMe =>
             menu.findItem(R.id.action_make_public).setEnabled(false).setTitle(resGetString(R.string.alreadyPublishedCollection))
             menu.findItem(R.id.action_share).setVisible(true)
           case _ =>

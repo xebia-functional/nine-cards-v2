@@ -2,11 +2,11 @@ package cards.nine.app.commons
 
 import android.content.Intent
 import cards.nine.app.ui.commons.Constants._
+import cards.nine.models.types
 import cards.nine.process.cloud.models._
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest}
 import cards.nine.process.commons.models._
-import cards.nine.process.commons.types._
 import cards.nine.process.device.SaveDockAppRequest
 import cards.nine.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
 import cards.nine.process.moment.SaveMomentRequest
@@ -94,14 +94,14 @@ trait Conversions
     AddCardRequest(
       term = contact.name,
       packageName = None,
-      cardType = ContactCardType,
+      cardType = types.ContactCardType,
       intent = contactToNineCardIntent(contact.lookupKey),
       imagePath = Option(contact.photoUri))
 
   def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
     AddCollectionRequest(
       name = collection.name,
-      collectionType = AppsCollectionType,
+      collectionType = types.AppsCollectionType,
       icon = collection.icon,
       themedColorIndex = Random.nextInt(numSpaces),
       appsCategory = Option(collection.category),
@@ -114,7 +114,7 @@ trait Conversions
     AddCardRequest(
       term = app.title,
       packageName = Option(app.packageName),
-      cardType = NoInstalledAppCardType,
+      cardType = types.NoInstalledAppCardType,
       intent = toNineCardIntent(app),
       imagePath = None)
 
@@ -122,7 +122,7 @@ trait Conversions
     AddCardRequest(
       term = app.name,
       packageName = Option(app.packageName),
-      cardType = AppCardType,
+      cardType = types.AppCardType,
       intent = toNineCardIntent(app),
       imagePath = None)
 
@@ -130,7 +130,7 @@ trait Conversions
     AddCardRequest(
       term = app.title,
       packageName = Option(app.packageName),
-      cardType = AppCardType,
+      cardType = types.AppCardType,
       intent = toNineCardIntent(app),
       imagePath = None)
 

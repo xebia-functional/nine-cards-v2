@@ -4,7 +4,8 @@ import cards.nine.app.commons.NineCardIntentConversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.types.{AllAppsCategory, Misc, NineCardCategory}
+import cards.nine.models.types
+import cards.nine.models.types.{AllAppsCategory, NineCardCategory}
 import cards.nine.process.device.models.{IterableApps, TermCounter}
 import cards.nine.process.device.{GetAppOrder, GetByName}
 import macroid.ActivityContextWrapper
@@ -16,7 +17,7 @@ case class AppsJobs(
   with NineCardIntentConversions {
 
   def initialize(): TaskService[Unit] = {
-    val onlyAllApps = category == AllAppsCategory || category == Misc
+    val onlyAllApps = category == AllAppsCategory || category == types.Misc
     for {
       _ <- actions.initialize(onlyAllApps, category)
       _ <- loadApps(if (onlyAllApps) AllApps else AppsByCategory, reload = false)

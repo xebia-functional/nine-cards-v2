@@ -1,10 +1,7 @@
 package cards.nine.process.cloud.impl
 
-import cards.nine
-import cards.nine.NineCardCategories
+import cards.nine.models.{CollectionTypes, NineCardCategories}
 import cards.nine.process.cloud.models._
-import cards.nine.process.commons.types._
-import cards.nine.process.commons.CollectionTypes
 import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import cards.nine.services.persistence.models.User
 import org.joda.time.DateTime
@@ -102,9 +99,9 @@ trait CloudStorageProcessImplData {
       sharedCollectionId = Option(s"Shared Collection Id $num"),
       sharedCollectionSubscribed = Option(true),
       generateCollectionItems(num: Int),
-      collectionType = FreeCollectionType,
+      collectionType = types.FreeCollectionType,
       icon = s"Collection Icon $num",
-      category = Option(Business),
+      category = Option(types.Business),
       None)
   }
 
@@ -120,7 +117,7 @@ trait CloudStorageProcessImplData {
       timeslot = generateTimeSlots(numItems),
       wifi = Seq(s"Wifi_Network $num", s"Mobile $num "),
       headphones = false,
-      momentType = momentType map (NineCardsMoment(_)),
+      momentType = momentType map (types.NineCardsMoment(_)),
       widgets = Some(generateWidgets(numWidgets)))
   }
 
@@ -129,7 +126,7 @@ trait CloudStorageProcessImplData {
       packageName = packageName,
       className = className,
       area = generateWidgetArea(i),
-      widgetType = WidgetType(widgetType),
+      widgetType = types.WidgetType(widgetType),
       label = None,
       imagePath = None,
       intent = None)
@@ -152,7 +149,7 @@ trait CloudStorageProcessImplData {
   def generateDockApps(num: Int): Seq[CloudStorageDockApp] = 1 to num map { i =>
     CloudStorageDockApp(
       name = s"DockApp $num",
-      dockType = AppDockType,
+      dockType = types.AppDockType,
       intent = s"Item intent $num",
       imagePath = s"/path/to/image/$num",
       position = num)
@@ -178,7 +175,7 @@ trait CloudStorageProcessImplData {
       | "sharedCollectionId": "Shared Collection Id $num",
       | "sharedCollectionSubscribed": true,
       | "items": [${generateCollectionItemsJson(numItems).mkString(",")}],
-      | "collectionType": "${nine.CollectionTypes.free}",
+      | "collectionType": "${CollectionTypes.free}",
       | "icon": "Collection Icon $num",
       | "category": "${NineCardCategories.business}"
       |}

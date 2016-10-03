@@ -1,6 +1,6 @@
-package cards.nine.process.commons.types
+package cards.nine.models.types
 
-import cards.nine.CollectionTypes
+import cards.nine.models.CollectionTypes
 import CollectionTypes._
 
 sealed trait CollectionType {
