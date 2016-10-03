@@ -9,6 +9,7 @@ import cards.nine.app.ui.commons.{ActivityUiContext, UiContext}
 import cards.nine.app.ui.commons.WizardState._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.wizard.jobs._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.cloud.CloudStorageClientListener
 import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
@@ -31,32 +32,36 @@ class WizardActivity
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
-  lazy val actions = new WizardUiActions(self)
+  lazy val wizardUiActions = new WizardUiActions(self)
 
-  lazy val jobs = new WizardJobs(actions)
+  lazy val wizardJobs = new WizardJobs(wizardUiActions)
+
+  lazy val newConfigurationActions = new NewConfigurationUiActions(self)
+
+  lazy val newConfigurationJobs = new NewConfigurationJobs(newConfigurationActions)
 
   override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
 
   override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
     case (WizardStateActionFilter, Some(`stateSuccess`)) =>
-      jobs.serviceFinished().resolveAsync()
+      wizardJobs.serviceFinished().resolveAsync()
     case (WizardStateActionFilter, Some(`stateCloudIdNotSend`)) =>
-      jobs.serviceCloudIdNotSentError().resolveAsync()
+      wizardJobs.serviceCloudIdNotSentError().resolveAsync()
     case (WizardStateActionFilter, Some(`stateUserCloudIdPresent`)) =>
-      jobs.serviceCloudIdAlreadySetError().resolveAsync()
+      wizardJobs.serviceCloudIdAlreadySetError().resolveAsync()
     case (WizardStateActionFilter, Some(`stateUserEmailNotPresent`)) =>
-      jobs.serviceUserEmailNotFoundError().resolveAsync()
+      wizardJobs.serviceUserEmailNotFoundError().resolveAsync()
     case (WizardStateActionFilter, Some(`stateFailure`)) =>
-      jobs.serviceUnknownError().resolveAsync()
+      wizardJobs.serviceUnknownError().resolveAsync()
     case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) =>
-      jobs.serviceCreatingCollections().resolveAsync()
+      wizardJobs.serviceCreatingCollections().resolveAsync()
     case _ =>
   }
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.wizard_activity)
-    jobs.initialize().resolveAsync()
+    wizardJobs.initialize().resolveAsync()
   }
 
   override def onResume(): Unit = {
@@ -71,75 +76,78 @@ class WizardActivity
   }
 
   override def onStop(): Unit = {
-    jobs.stop().resolveAsync()
+    wizardJobs.stop().resolveAsync()
     super.onStop()
   }
 
   override def onBackPressed(): Unit = {}
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
-    jobs.activityResult(requestCode, resultCode, data).resolveAsyncServiceOr(onException)
+    wizardJobs.activityResult(requestCode, resultCode, data).resolveAsyncServiceOr(onException)
 
   override def onRequestPermissionsResult(
     requestCode: Int,
     permissions: Array[String],
     grantResults: Array[Int]): Unit =
-    jobs.requestPermissionsResult(requestCode, permissions, grantResults).resolveAsyncServiceOr(onException)
+    wizardJobs.requestPermissionsResult(requestCode, permissions, grantResults).resolveAsyncServiceOr(onException)
 
   override def onClickAcceptTermsButton(termsAccepted: Boolean): Unit =
-    jobs.connectAccount(termsAccepted).resolveAsync()
+    wizardJobs.connectAccount(termsAccepted).resolveAsync()
 
   override def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit =
-    jobs.deviceSelected(maybeCloudId).resolveAsyncServiceOr(_ => actions.goToUser())
+    wizardJobs.deviceSelected(maybeCloudId).resolveAsyncServiceOr(_ => wizardUiActions.goToUser())
 
   override def onClickFinishWizardButton(): Unit =
-    jobs.finishWizard().resolveAsync()
+    wizardJobs.finishWizard().resolveAsync()
 
   override def onPlusConnectionSuspended(cause: Int): Unit = {}
 
   override def onPlusConnected(): Unit =
-    jobs.plusConnected().resolveAsyncServiceOr(onException)
+    wizardJobs.plusConnected().resolveAsyncServiceOr(onException)
 
   override def onPlusConnectionFailed(connectionResult: ConnectionResult): Unit =
-    jobs.plusConnectionFailed(connectionResult).resolveAsync()
+    wizardJobs.plusConnectionFailed(connectionResult).resolveAsync()
 
   override def onDriveConnectionSuspended(cause: Int): Unit = {}
 
   override def onDriveConnected(): Unit =
-    jobs.driveConnected().resolveAsyncServiceOr(onException)
+    wizardJobs.driveConnected().resolveAsyncServiceOr(onException)
 
   override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit =
-    jobs.driveConnectionFailed(connectionResult).resolveAsync()
+    wizardJobs.driveConnectionFailed(connectionResult).resolveAsync()
 
   override def onClickOkMarketPermissionDialog(): Unit =
-    jobs.requestAndroidMarketPermission().resolveAsyncServiceOr(onException)
+    wizardJobs.requestAndroidMarketPermission().resolveAsyncServiceOr(onException)
 
   override def onClickCancelMarketPermissionDialog(): Unit =
-    actions.goToUser().resolveAsync()
+    wizardUiActions.goToUser().resolveAsync()
 
   override def onClickOkGooglePermissionDialog(): Unit =
-    jobs.requestGooglePermission().resolveAsyncServiceOr(onException)
+    wizardJobs.requestGooglePermission().resolveAsyncServiceOr(onException)
 
   override def onClickCancelGooglePermissionDialog(): Unit =
-    actions.goToUser().resolveAsync()
+    wizardUiActions.goToUser().resolveAsync()
 
   override def onClickOkSelectAccountsDialog(): Unit =
-    jobs.connectAccount(true).resolveAsync()
+    wizardJobs.connectAccount(true).resolveAsync()
 
   override def onClickCancelSelectAccountsDialog(): Unit = {}
 
   override def onClickOkPermissionsDialog(): Unit =
-    jobs.requestPermissions().resolveAsync()
+    wizardJobs.requestPermissions().resolveAsync()
 
   override def onClickCancelPermissionsDialog(): Unit =
-    jobs.permissionDialogCancelled().resolveAsync()
+    wizardJobs.permissionDialogCancelled().resolveAsync()
+
+  override def onStartNewConfiguration(): Unit =
+    newConfigurationActions.loadFirstStep().resolveAsync()
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
-    case ex: SocialProfileProcessException if ex.recoverable => jobs.googleSignIn()
-    case _: UserException => actions.showErrorLoginUser()
-    case _: UserV1Exception => actions.showErrorLoginUser()
-    case _: WizardMarketTokenRequestCancelledException => jobs.errorOperationMarketTokenCancelled()
-    case _: WizardGoogleTokenRequestCancelledException => jobs.errorOperationGoogleTokenCancelled()
-    case _ => actions.showErrorConnectingGoogle()
+    case ex: SocialProfileProcessException if ex.recoverable => wizardJobs.googleSignIn()
+    case _: UserException => wizardUiActions.showErrorLoginUser()
+    case _: UserV1Exception => wizardUiActions.showErrorLoginUser()
+    case _: WizardMarketTokenRequestCancelledException => wizardJobs.errorOperationMarketTokenCancelled()
+    case _: WizardGoogleTokenRequestCancelledException => wizardJobs.errorOperationGoogleTokenCancelled()
+    case _ => wizardUiActions.showErrorConnectingGoogle()
   }
 }

@@ -89,4 +89,27 @@
 
     </cards.nine.app.ui.components.widgets.RippleBackgroundView>
 
+    <LinearLayout
+        android:id="@+id/wizard_steps_new_configuration_content"
+        style="@style/WizardNewConfigurationRoot">
+
+        <FrameLayout
+            android:id="@+id/wizard_steps_new_configuration_step"
+            style="@style/WizardNewConfigurationStepContentRoot"/>
+
+        <FrameLayout
+            style="@style/WizardNewConfigurationPaginationContent">
+
+            <LinearLayout
+                android:id="@+id/wizard_steps_new_configuration_pager"
+                style="@style/WizardNewConfigurationPagers" />
+
+            <TextView
+                android:id="@+id/wizard_steps_new_configuration_next"
+                style="@style/WizardNewConfigurationNext"/>
+
+        </FrameLayout>
+
+    </LinearLayout>
+
 </FrameLayout>

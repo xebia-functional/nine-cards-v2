@@ -61,6 +61,8 @@
     <color name="wizard_background_step_3">#FF9800</color>
     <color name="wizard_background_step_4">#F44336</color>
 
+    <color name="wizard_background_new_conf_step_0">#4CAF4F</color>
+
     <!-- App Drawer -->
     <color name="drawer_pager_current">#ffffff</color>
     <color name="drawer_pager_default">#6bffffff</color>

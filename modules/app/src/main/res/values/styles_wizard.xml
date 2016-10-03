@@ -137,7 +137,7 @@
         <item name="android:layout_marginBottom">@dimen/padding_large</item>
     </style>
 
-    <!-- Steps -->
+    <!-- Steps: Loading previous configuration -->
 
     <style name="WizardStepsRoot">
         <item name="android:layout_width">match_parent</item>
@@ -207,6 +207,85 @@
         <item name="android:textColor">@color/wizard_text_step_item_message</item>
         <item name="android:lines">3</item>
         <item name="android:ellipsize">end</item>
+    </style>
+
+    <!-- New configuration -->
+
+    <style name="WizardNewConfigurationRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="WizardNewConfigurationStepContentRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">0px</item>
+        <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="WizardNewConfigurationStepContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
+    <style name="WizardNewConfigurationHeaderContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/wizard_height_header_steps</item>
+    </style>
+
+    <style name="WizardNewConfigurationHeaderImage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="WizardNewConfigurationTitle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+    </style>
+
+    <style name="WizardNewConfigurationDescription">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+    </style>
+
+    <style name="WizardNewConfigurationPaginationContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="WizardNewConfigurationPagers">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="WizardNewConfigurationNext">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">@string/next</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- Step 0 -->
+
+    <style name="WizardNewConfigurationHeaderContentStep0" parent="WizardNewConfigurationHeaderContent">
+        <item name="android:background">@color/wizard_background_new_conf_step_0</item>
+    </style>
+
+    <style name="WizardNewConfigurationHeaderImageStep0" parent="WizardNewConfigurationHeaderImage">
+        <item name="android:src">@drawable/placeholder_step_0</item>
+    </style>
+
+    <style name="WizardNewConfigurationTitleStep0" parent="WizardNewConfigurationTitle">
+        <item name="android:text">@string/wizard_new_conf_title_step_0</item>
+        <item name="android:textColor">@color/wizard_background_new_conf_step_0</item>
+    </style>
+
+    <style name="WizardNewConfigurationDescriptionStep0" parent="WizardNewConfigurationDescription">
+        <item name="android:text">@string/wizard_new_conf_desc_step_0</item>
     </style>
 
 </resources>
