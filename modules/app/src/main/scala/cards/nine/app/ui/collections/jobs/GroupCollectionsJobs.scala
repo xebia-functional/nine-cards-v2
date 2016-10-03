@@ -194,7 +194,6 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def closeReorderMode(position: Int): TaskService[Unit] = {
     statuses = statuses.copy(positionsEditing = Set(position))
-    // TODO call to actions.scrollIdle() in ToolbarJobs
     actions.startEditing(statuses.getPositionsSelected)
   }
 

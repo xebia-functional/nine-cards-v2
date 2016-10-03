@@ -66,12 +66,10 @@ case class PublishCollectionFragment(collection: Collection)(implicit val shared
     sharedCollectionJobs.reloadSharedCollectionId().resolveAsync()
 
   override def publishCollection(name: Option[String], category: Option[NineCardCategory]): Unit =
-    publishCollectionJobs.publishCollection(name, category).resolveAsyncServiceOr { (e: Throwable) =>
-      e match {
-        case e: SharedCollectionsConfigurationException =>
-          AppLog.invalidConfigurationV2
-          publishCollectionJobs.showPublishingError(name, category)
-        case _ => publishCollectionJobs.showPublishingError(name, category)
-      }
+    publishCollectionJobs.publishCollection(name, category).resolveAsyncServiceOr[Throwable] {
+      case e: SharedCollectionsConfigurationException =>
+        AppLog.invalidConfigurationV2
+        publishCollectionJobs.showPublishingError(name, category)
+      case _ => publishCollectionJobs.showPublishingError(name, category)
     }
 }

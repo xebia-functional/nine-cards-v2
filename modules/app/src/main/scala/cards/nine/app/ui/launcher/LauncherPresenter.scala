@@ -902,13 +902,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     service.resolveAsyncUi2(onException = _ => actions.showContactUsError())
 
   private[this] def launcherCallService(service: TaskService[Unit], maybePhone: Option[String]) =
-    service.resolveAsyncServiceOr(
-      exception = (throwable: Throwable) => throwable match {
-        case e: LauncherExecutorProcessPermissionException =>
-          statuses = statuses.copy(lastPhone = maybePhone)
-          di.userAccountsProcess.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
-        case _ => actions.showContactUsError().toService
-      })
+    service.resolveAsyncServiceOr[Throwable] {
+      case e: LauncherExecutorProcessPermissionException =>
+        statuses = statuses.copy(lastPhone = maybePhone)
+        di.userAccountsProcess.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
+      case _ => actions.showContactUsError().toService
+    }
 
   private[this] def requestReadContacts() = launcherService {
     di.userAccountsProcess.requestPermission(RequestCodes.contactsPermission, ReadContacts)

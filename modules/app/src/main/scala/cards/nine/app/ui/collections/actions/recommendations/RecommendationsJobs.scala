@@ -42,4 +42,6 @@ class RecommendationsJobs(
 
   def showError(): TaskService[Unit] = actions.showContactUsError()
 
+  def close(): TaskService[Unit] = actions.close()
+
 }

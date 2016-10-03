@@ -76,6 +76,8 @@ trait AppsIuActions
 
   def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
 
+  def showError(): TaskService[Unit] = showGeneralError.toService
+
   def openTabs(): TaskService[Unit] = ((tabs <~ tvOpen <~ showTabs) ~ (recycler <~ hideList)).toService
 
   def closeTabs(): TaskService[Unit] = ((tabs <~ tvClose <~ hideTabs) ~ (recycler <~ showList)).toService
