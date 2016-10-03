@@ -1,4 +1,4 @@
-package cards.nine.app.ui.wizard
+package cards.nine.app.ui.wizard.jobs
 
 import android.view.{Gravity, ViewGroup}
 import android.widget.{Button, ImageView, RadioButton, TextView}

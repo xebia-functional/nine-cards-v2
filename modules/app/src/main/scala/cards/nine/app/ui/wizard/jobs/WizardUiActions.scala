@@ -1,17 +1,12 @@
-package cards.nine.app.ui.wizard
+package cards.nine.app.ui.wizard.jobs
 
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget._
-import cats.implicits._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext, UiException}
 import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext, UiException}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.layouts.StepData
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
@@ -21,6 +16,11 @@ import cards.nine.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cats.implicits._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
@@ -111,19 +111,30 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
     ((dom.loadingRootLayout <~ vInvisible) ~
       (dom.userRootLayout <~ vVisible) ~
       (dom.wizardRootLayout <~ vInvisible) ~
-      (dom.deviceRootLayout <~ vInvisible)).toService
+      (dom.deviceRootLayout <~ vInvisible) ~
+      (dom.newConfigurationContent <~ vInvisible)).toService
 
   def goToWizard(): TaskService[Unit] =
     ((dom.loadingRootLayout <~ vInvisible) ~
       (dom.userRootLayout <~ vInvisible) ~
       (dom.wizardRootLayout <~ vVisible <~ rbvColor(resGetColor(R.color.wizard_background_step_0), forceFade = true)) ~
-      (dom.deviceRootLayout <~ vInvisible)).toService
+      (dom.deviceRootLayout <~ vInvisible) ~
+      (dom.newConfigurationContent <~ vInvisible)).toService
+
+  def goToNewConfiguration(): TaskService[Unit] =
+    ((dom.loadingRootLayout <~ vInvisible) ~
+      (dom.userRootLayout <~ vInvisible) ~
+      (dom.wizardRootLayout <~ vInvisible) ~
+      (dom.deviceRootLayout <~ vInvisible) ~
+      (dom.newConfigurationContent <~ vVisible)).toService
 
   def showLoading(): TaskService[Unit] =
     ((dom.loadingRootLayout <~ vVisible) ~
       (dom.userRootLayout <~ vInvisible) ~
       (dom.wizardRootLayout <~ vInvisible) ~
-      (dom.deviceRootLayout <~ vInvisible)).toService
+      (dom.deviceRootLayout <~ vInvisible) ~
+      (dom.newConfigurationContent <~ vInvisible) ~
+      Ui(dom.onStartNewConfiguration())).toService
 
   def showErrorLoginUser(): TaskService[Unit] = backToUser(R.string.errorLoginUser)
 

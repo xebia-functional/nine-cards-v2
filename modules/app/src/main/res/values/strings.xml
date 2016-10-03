@@ -14,6 +14,7 @@
     <string name="share">Share</string>
     <string name="filter">Filter</string>
     <string name="loading">Loading</string>
+    <string name="next">Next</string>
     <string name="contactUsError">Oops! Please contact us if this problem persists</string>
     <string name="formFieldError">Is it possible to miss something in the form?</string><!-- Pending review language -->
     <string name="sendTo">Send to</string>
@@ -89,6 +90,9 @@
     <string name="newConfigurationSubtitle">We\'ll create a new configuration from your apps</string>
     <string name="deviceMigratedFromV1">Migrated from the previous version</string>
     <string name="otherDevicesLink">Other devices configurations</string>
+
+    <string name="wizard_new_conf_title_step_0">Welcome to 9 Cards</string>
+    <string name="wizard_new_conf_desc_step_0">We are looking for the better experience for you in the launcher and we would like to know the things that you are interested</string>
 
     <!-- Moment / Widgets -->
 
