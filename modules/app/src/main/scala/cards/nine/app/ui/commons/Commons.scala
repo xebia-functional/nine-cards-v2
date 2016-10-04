@@ -84,6 +84,7 @@ object WizardState {
   val stateFailure = "wizard-state-failure"
   val stateCloudIdNotSend = "wizard-state-cloud-id-not-send"
   val stateUserCloudIdPresent = "wizard-state-user-cloud-id-present"
+  val stateUserEmailNotPresent = "wizard-state-user-email-not-present"
 }
 
 object SyncDeviceState {
@@ -93,7 +94,6 @@ object SyncDeviceState {
 }
 
 object AppUtils {
-  def getUniqueId: Int = (System.currentTimeMillis & 0xfffffff).toInt
 
   def getDefaultTheme = NineCardsTheme(
     name = "light",
