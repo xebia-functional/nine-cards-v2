@@ -18,7 +18,8 @@ import monix.eval.Task
 
 class Jobs(implicit contextWrapper: ContextWrapper)
   extends ContextSupportProvider
-  with ImplicitsUiExceptions {
+  with ImplicitsUiExceptions
+  with ImplicitsJobExceptions {
 
   implicit lazy val di: Injector = new InjectorImpl
 
@@ -45,9 +46,17 @@ class Jobs(implicit contextWrapper: ContextWrapper)
       CatchAll[UiException](sendBroadCast(broadAction))
   }
 
-  def withActivity(f: (AppCompatActivity => TaskService[Unit])) =
+  def sendAskBroadCastTask(broadAction: BroadAction): TaskService[Unit] = TaskService {
+    CatchAll[UiException] {
+      val intent = new Intent(broadAction.action)
+      intent.putExtra(keyType, questionType)
+      contextWrapper.bestAvailable.sendBroadcast(intent)
+    }
+  }
+
+  def withActivity(f: (AppCompatActivity => Unit)): TaskService[Unit] =
     contextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) => f(activity)
+      case Some(activity: AppCompatActivity) => TaskService(CatchAll[JobException](f(activity)))
       case _ => TaskService(Task(Right((): Unit)))
     }
 
