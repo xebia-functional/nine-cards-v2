@@ -94,7 +94,6 @@ object SyncDeviceState {
 }
 
 object AppUtils {
-  def getUniqueId: Int = (System.currentTimeMillis & 0xfffffff).toInt
 
   def getDefaultTheme = NineCardsTheme(
     name = "light",

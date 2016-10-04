@@ -13,7 +13,6 @@ import cards.nine.process.cloud.CloudStorageClientListener
 import com.google.android.gms.common.ConnectionResult
 import macroid.Contexts
 
-
 class CreateCollectionsService
   extends Service
   with Contexts[Service]
@@ -48,7 +47,7 @@ class CreateCollectionsService
 
     registerDispatchers()
 
-    jobs.startCommand(intent).resolveAsyncService(onException = _ => jobs.closeServiceWithError())
+    jobs.startCommand(intent).resolveAsyncServiceOr(_ => jobs.closeServiceWithError())
 
     Service.START_NOT_STICKY
   }
@@ -70,9 +69,8 @@ class CreateCollectionsService
 
   override def onDriveConnectionSuspended(cause: Int): Unit = {}
 
-  override def onDriveConnected(): Unit = jobs.createConfiguration().resolveAsyncService(
-    onException = _ => jobs.closeServiceWithError()
-  )
+  override def onDriveConnected(): Unit =
+    jobs.createConfiguration().resolveAsyncServiceOr(_ => jobs.closeServiceWithError())
 
   override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit =
     jobs.closeServiceWithError().resolveAsync()
