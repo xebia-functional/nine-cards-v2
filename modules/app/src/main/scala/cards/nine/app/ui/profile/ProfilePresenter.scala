@@ -8,7 +8,7 @@ import android.os.Bundle
 import cats.data.EitherT
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.commons.{BroadAction, Conversions}
-import cards.nine.app.services.SynchronizeDeviceService
+import cards.nine.app.services.sync.SynchronizeDeviceService
 import cards.nine.app.ui.collections.tasks.CollectionJobs
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.action_filters.CollectionAddedActionFilter
