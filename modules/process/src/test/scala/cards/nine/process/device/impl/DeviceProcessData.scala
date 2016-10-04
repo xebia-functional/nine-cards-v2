@@ -8,7 +8,7 @@ import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.device.SaveDockAppRequest
-import cards.nine.process.device.models.{App, CallData, LastCallsContact, Widget, _}
+import cards.nine.process.device.models.{CallData, LastCallsContact, Widget, _}
 import cards.nine.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
@@ -181,8 +181,8 @@ trait DeviceProcessData
       installedFromGooglePlay = installedFromGooglePlay3)
   )
   
-  val apps: Seq[App] = Seq(
-    App(
+  val apps: Seq[Application] = Seq(
+    Application(
       name = name1,
       packageName = packageName1,
       className = className1,
@@ -191,7 +191,7 @@ trait DeviceProcessData
       dateUpdate = dateUpdate1,
       version = version1,
       installedFromGooglePlay = installedFromGooglePlay1),
-    App(
+    Application(
       name = name2,
       packageName = packageName2,
       className = className2,
@@ -200,7 +200,7 @@ trait DeviceProcessData
       dateUpdate = dateUpdate2,
       version = version2,
       installedFromGooglePlay = installedFromGooglePlay2),
-    App(
+    Application(
       name = name3,
       packageName = packageName3,
       className = className3,

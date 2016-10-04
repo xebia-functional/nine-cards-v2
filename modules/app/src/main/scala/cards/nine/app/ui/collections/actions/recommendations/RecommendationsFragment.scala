@@ -2,7 +2,7 @@ package cards.nine.app.ui.collections.actions.recommendations
 
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.{Conversions, NineCardIntentConversions}
+import cards.nine.app.commons.{Conversions, AppNineCardIntentConversions}
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.actions.BaseActionFragment
@@ -21,7 +21,7 @@ class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJob
   with RecommendationsDOM
   with RecommendationsUiListener
   with Conversions
-  with NineCardIntentConversions { self =>
+  with AppNineCardIntentConversions { self =>
 
   lazy val nineCardCategory = NineCardCategory(getString(Seq(getArguments), RecommendationsFragment.categoryKey, ""))
 

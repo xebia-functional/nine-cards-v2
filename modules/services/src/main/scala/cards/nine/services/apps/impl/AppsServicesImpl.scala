@@ -7,6 +7,7 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.{CatchAll, javaNull}
 import cards.nine.models.Application
+import cards.nine.models.types.Misc
 import cards.nine.services.apps._
 
 import scala.collection.JavaConversions._
@@ -76,6 +77,7 @@ class AppsServicesImpl
       name = resolveInfo.loadLabel(packageManager).toString,
       packageName = packageName,
       className = className,
+      category = Misc,
       dateInstalled = packageInfo.firstInstallTime,
       dateUpdate = packageInfo.lastUpdateTime,
       version = packageInfo.versionCode.toString,

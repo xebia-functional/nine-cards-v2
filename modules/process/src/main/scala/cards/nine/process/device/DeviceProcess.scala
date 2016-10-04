@@ -3,9 +3,10 @@ package cards.nine.process.device
 import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.Application
+import cards.nine.models.types.DockType
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models._
-import cards.nine.models.types.DockType
 
 trait DeviceProcess {
 
@@ -21,7 +22,7 @@ trait DeviceProcess {
     * @return the Seq[cards.nine.process.device.models.App]
     * @throws AppException if exist some problem getting the apps
     */
-  def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[Seq[App]]
+  def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[Seq[Application]]
 
   /**
     * Get iterable of saved apps from the database
@@ -150,7 +151,7 @@ trait DeviceProcess {
     * @param packageName the packageName of the app to save
     * @throws AppException if exist some problem getting the app or storing it
     */
-  def saveApp(packageName: String)(implicit context: ContextSupport): TaskService[App]
+  def saveApp(packageName: String)(implicit context: ContextSupport): TaskService[Application]
 
   /**
     * Delete an app from the repository

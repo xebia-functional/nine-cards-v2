@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.jobs
 
-import cards.nine.app.commons.{Conversions, NineCardIntentConversions}
+import cards.nine.app.commons.{Conversions, AppNineCardIntentConversions}
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.commons.services.TaskService._
@@ -11,7 +11,7 @@ import macroid.ActivityContextWrapper
 class SharedCollectionJobs(actions: SharedCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
     with Conversions
-    with NineCardIntentConversions { self =>
+    with AppNineCardIntentConversions { self =>
 
   def reloadSharedCollectionId(): TaskService[Unit] =
     for {

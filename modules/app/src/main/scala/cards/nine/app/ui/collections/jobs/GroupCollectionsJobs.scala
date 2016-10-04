@@ -3,7 +3,7 @@ package cards.nine.app.ui.collections.jobs
 import android.content.Intent
 import android.graphics.Bitmap
 import cats.implicits._
-import cards.nine.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
+import cards.nine.app.commons.{BroadAction, Conversions, AppNineCardIntentConversions}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
 import cards.nine.app.ui.commons.{JobException, Jobs, RequestCodes}
@@ -20,7 +20,7 @@ import macroid.ActivityContextWrapper
 class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
-  with NineCardIntentConversions { self =>
+  with AppNineCardIntentConversions { self =>
 
   val delay = 200
 

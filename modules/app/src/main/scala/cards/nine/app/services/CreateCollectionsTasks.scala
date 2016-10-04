@@ -1,6 +1,6 @@
 package cards.nine.app.services
 
-import cards.nine.app.commons.{Conversions, NineCardIntentConversions}
+import cards.nine.app.commons.{Conversions, AppNineCardIntentConversions}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.cloud.Conversions._
@@ -10,7 +10,7 @@ import com.google.android.gms.common.api.GoogleApiClient
 
 trait CreateCollectionsTasks
   extends Conversions
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   self: CreateCollectionService
     with ImplicitsDeviceException =>
