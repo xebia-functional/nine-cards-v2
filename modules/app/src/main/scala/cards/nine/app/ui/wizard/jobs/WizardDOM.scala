@@ -1,6 +1,9 @@
 package cards.nine.app.ui.wizard.jobs
 
+import cards.nine.app.ui.components.widgets.WizardCheckBox
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+
+import scala.collection.immutable.IndexedSeq
 
 trait WizardDOM {
 
@@ -49,6 +52,20 @@ trait WizardDOM {
   def newConfigurationStep1CollectionCount = finder.findView(TR.wizard_steps_new_configuration_step1_collection_count)
 
   def newConfigurationStep1CollectionsContent = finder.findView(TR.wizard_steps_new_configuration_step1_collection_content)
+
+  def getWizardCheckBoxes: Seq[WizardCheckBox] = (0 to newConfigurationStep1CollectionsContent.getChildCount) flatMap { position =>
+    newConfigurationStep1CollectionsContent.getChildAt(position) match {
+      case widget: WizardCheckBox => Some(widget)
+      case _ => None
+    }
+  }
+
+  def areAllCollectionsChecked(): Boolean = getWizardCheckBoxes forall (_.isCheck)
+
+  def countCollectionsChecked(): (Int, Int) = {
+    val items = getWizardCheckBoxes
+    (items count (_.isCheck), items.length)
+  }
 
 }
 

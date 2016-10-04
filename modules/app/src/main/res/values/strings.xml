@@ -104,6 +104,7 @@
     <string name="wizard_new_conf_best9_step_1">Best 9 apps</string>
     <string name="wizard_new_conf_collection_counter_step_1">%1$s of %2$s collections</string>
     <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
+    <string name="wizard_new_conf_collection_name_best9_step_1">%1$s (9 of %2$s apps)</string>
 
     <!-- Moment / Widgets -->
 

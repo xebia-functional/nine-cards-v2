@@ -6,16 +6,18 @@ import android.graphics.drawable.shapes.OvalShape
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.models.types.NineCardCategory
 import cards.nine.process.collection.models.PackagesByCategory
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -27,6 +29,10 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
   def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
+
+  val checkKey = "widget-check"
+
+  val dataKey = "widget-data"
 
   val sizeIconTitle = resGetDimensionPixelSize(R.dimen.wizard_size_checkbox_title)
 
@@ -56,33 +62,64 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   val text = findView(TR.wizard_check_text)
 
+  (this <~ vAddField(checkKey, true)).run
+
   val iconSelectedDrawable = PathMorphDrawable(
     defaultIcon = IconTypes.CHECK,
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_thin),
     padding = resGetDimensionPixelSize(R.dimen.padding_small))
 
-  def initialize(resText: Int): Ui[Any] =
+  def initialize(resText: Int, defaultCheck: Boolean = true): Ui[Any] =
     (icon <~
       vResize(Option(sizeIconTitle), Option(sizeIconTitle)) <~
-      ivSrc(iconSelectedDrawable) <~
-      vBackground(selectedDrawable)) ~
+      ivSrc(iconSelectedDrawable)) ~
       (text <~
         tvText(resText) <~
-        tvColorResource(R.color.wizard_text_title) <~
-        tvSizeResource(R.dimen.text_large))
+        tvSizeResource(R.dimen.text_large)) ~
+      (if (defaultCheck) check() else uncheck())
 
-  def initializeCollection(packagesByCategory: PackagesByCategory): Ui[Any] = {
+  def initializeCollection(packagesByCategory: PackagesByCategory, defaultCheck: Boolean = true): Ui[Any] = {
     val nineCardCategory = NineCardCategory(packagesByCategory.category)
     val title = resGetString(R.string.wizard_new_conf_collection_name_step_1, nineCardCategory.getName, packagesByCategory.packages.length.toString)
-    (icon <~
+    (this <~ vAddField(dataKey, packagesByCategory)) ~
+      (icon <~
       vResize(Option(sizeIconCollection), Option(sizeIconCollection)) <~
       vPaddings(paddingIcon) <~
-      ivSrc(nineCardCategory.getIconCollectionDetail) <~
-      vBackground(selectedDrawable)) ~
+      ivSrc(nineCardCategory.getIconCollectionDetail)) ~
       (text <~
         tvText(title) <~
-        tvColorResource(R.color.wizard_text_title) <~
-        tvSizeResource(R.dimen.text_xlarge))
+        tvSizeResource(R.dimen.text_xlarge)) ~
+      (if (defaultCheck) check() else uncheck())
   }
+
+  def check(): Ui[Any] =
+    (this <~ vAddField(checkKey, true)) ~
+      (icon <~ vBackground(selectedDrawable)) ~
+      (text <~ tvColorResource(R.color.wizard_text_title))
+
+  def uncheck(): Ui[Any] =
+    (this <~ vAddField(checkKey, false)) ~
+      (icon <~ vBackground(unselectedDrawable)) ~
+      (text <~ tvColorResource(R.color.wizard_checkbox_unselected))
+
+  def swap(): Ui[Any] = this.getField[Boolean](checkKey) match {
+    case Some(true) => uncheck()
+    case Some(false) => check()
+    case _ => Ui.nop
+  }
+
+  def setBest9(filter9: Boolean): Ui[Any] = getData map { packagesByCategory =>
+    val nineCardCategory = NineCardCategory(packagesByCategory.category)
+    val length = packagesByCategory.packages.length
+    val title = resGetString(
+      if (filter9 && length > 9) R.string.wizard_new_conf_collection_name_best9_step_1 else R.string.wizard_new_conf_collection_name_step_1,
+      nineCardCategory.getName,
+      length.toString)
+    text <~ tvText(title)
+  } getOrElse Ui.nop
+
+  def isCheck: Boolean = this.getField[Boolean](checkKey) exists(c => c)
+
+  def getData: Option[PackagesByCategory] = this.getField[PackagesByCategory](dataKey)
 
 }

@@ -99,8 +99,19 @@ object DrawerRecyclerViewTweaks {
 object WizardCheckBoxTweaks {
   type W = WizardCheckBox
 
-  def wcbInitialize(resText: Int) = Tweak[W] (_.initialize(resText).run)
+  def wcbInitialize(resText: Int, defaultCheck: Boolean = true) = Tweak[W] (_.initialize(resText, defaultCheck).run)
 
-  def wcbInitializeCollection(packagesByCategory: PackagesByCategory) = Tweak[W] (_.initializeCollection(packagesByCategory).run)
+  def wcbInitializeCollection(packagesByCategory: PackagesByCategory, defaultCheck: Boolean = true) =
+    Tweak[W] (_.initializeCollection(packagesByCategory, defaultCheck).run)
+
+  def wcbDoCheck(doCheck: Boolean) = Tweak[W] { view => (if (doCheck) view.check() else view.uncheck()).run }
+
+  def wcbCheck() = Tweak[W] (_.check().run)
+
+  def wcbUncheck() = Tweak[W] (_.uncheck().run)
+
+  def wcbSwap() = Tweak[W] (_.swap().run)
+
+  def wcbBest9(filter9: Boolean) = Tweak[W] (_.setBest9(filter9).run)
 
 }
