@@ -33,7 +33,7 @@ class Jobs(implicit contextWrapper: ContextWrapper)
     }
 
   @deprecated
-  def sendBroadCast(broadAction: BroadAction) = sendBroadCast(commandType, broadAction)
+  def sendBroadCast(broadAction: BroadAction): Unit = sendBroadCast(commandType, broadAction)
 
   def sendBroadCastTask(broadAction: BroadAction): TaskService[Unit] =
     TaskService(CatchAll[JobException](sendBroadCast(commandType, broadAction)))
