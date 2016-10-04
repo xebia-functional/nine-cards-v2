@@ -80,7 +80,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
   }
 
   def resume(): TaskService[Unit] =
-    sendAskBroadCastTask(BroadAction(SyncAskActionFilter.action))
+    askBroadCastTask(BroadAction(SyncAskActionFilter.action))
 
   def stop(): TaskService[Unit] = clientStatuses match {
     case GoogleApiClientStatuses(Some(client)) =>

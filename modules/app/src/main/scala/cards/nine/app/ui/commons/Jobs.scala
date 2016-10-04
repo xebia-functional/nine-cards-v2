@@ -13,12 +13,10 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.theme.models.NineCardsTheme
 import macroid.ContextWrapper
-import monix.eval.Task
 
 
 class Jobs(implicit contextWrapper: ContextWrapper)
   extends ContextSupportProvider
-  with ImplicitsUiExceptions
   with ImplicitsJobExceptions {
 
   implicit lazy val di: Injector = new InjectorImpl
@@ -35,29 +33,27 @@ class Jobs(implicit contextWrapper: ContextWrapper)
     }
 
   @deprecated
-  def sendBroadCast(broadAction: BroadAction) = {
+  def sendBroadCast(broadAction: BroadAction) = sendBroadCast(commandType, broadAction)
+
+  def sendBroadCastTask(broadAction: BroadAction): TaskService[Unit] =
+    TaskService(CatchAll[JobException](sendBroadCast(commandType, broadAction)))
+
+  def askBroadCastTask(broadAction: BroadAction): TaskService[Unit] =
+    TaskService(CatchAll[JobException](sendBroadCast(questionType, broadAction)))
+
+  private[this] def sendBroadCast(
+    broadCastKeyType: String,
+    broadAction: BroadAction): Unit = {
     val intent = new Intent(broadAction.action)
-    intent.putExtra(keyType, commandType)
+    intent.putExtra(keyType, broadCastKeyType)
     broadAction.command foreach (d => intent.putExtra(keyCommand, d))
     contextWrapper.bestAvailable.sendBroadcast(intent)
-  }
-
-  def sendBroadCastTask(broadAction: BroadAction): TaskService[Unit] = TaskService {
-      CatchAll[UiException](sendBroadCast(broadAction))
-  }
-
-  def sendAskBroadCastTask(broadAction: BroadAction): TaskService[Unit] = TaskService {
-    CatchAll[UiException] {
-      val intent = new Intent(broadAction.action)
-      intent.putExtra(keyType, questionType)
-      contextWrapper.bestAvailable.sendBroadcast(intent)
-    }
   }
 
   def withActivity(f: (AppCompatActivity => Unit)): TaskService[Unit] =
     contextWrapper.original.get match {
       case Some(activity: AppCompatActivity) => TaskService(CatchAll[JobException](f(activity)))
-      case _ => TaskService(Task(Right((): Unit)))
+      case _ => TaskService.empty
     }
 
 }
