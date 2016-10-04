@@ -101,6 +101,7 @@ trait CollectionProcessImplData {
     name = name1,
     packageName = packageName1,
     className = className1,
+    category = appsCategory,
     dateInstalled = dateInstalled1,
     dateUpdate = dateUpdate1,
     version = version1,
@@ -255,13 +256,17 @@ trait CollectionProcessImplData {
         imagePath = Option(imagePath),
         notification = Option(notification)))
 
-  def createSeqUnformedApps(num: Int = 150) =
+  def createSeqApps(num: Int = 150) =
     (0 until num) map { item =>
       Application(
         name = name,
         packageName = generatePackageName,
         className = className,
-        category = appsCategory)
+        category = appsCategory,
+        dateInstalled = dateInstalled1,
+        dateUpdate = dateUpdate1,
+        version = version1,
+        installedFromGooglePlay = installedFromGooglePlay1)
     }
 
   def createSeqUnformedContacs(num: Int = 15) =
@@ -354,17 +359,17 @@ trait CollectionProcessImplData {
   val seqServicesCollection = createSeqServicesCollection()
   val servicesCollection = seqServicesCollection.headOption
 
-  val unformedApps = createSeqUnformedApps()
+  val apps = createSeqApps()
   val unformedContacts = createSeqUnformedContacs()
 
-  val categoriesUnformedApps: Seq[NineCardCategory] = allCategories flatMap { category =>
-    val count = unformedApps.count(_.category == category)
+  val categoriesApps: Seq[NineCardCategory] = allCategories flatMap { category =>
+    val count = apps.count(_.category == category)
     if (count >= minAppsToAdd) Option(category) else None
   }
 
   val categoriesUnformedItems: Seq[NineCardCategory] = {
     val count = unformedContacts.size
-    if (count >= minAppsToAdd) categoriesUnformedApps :+ ContactsCategory else categoriesUnformedApps
+    if (count >= minAppsToAdd) categoriesApps :+ ContactsCategory else categoriesApps
   }
 
   val collectionForUnformedItem = ServicesCollection(
@@ -559,12 +564,20 @@ trait CollectionProcessImplData {
         name = "nameUnformed0",
         packageName = "package.name.0",
         className = "classNameUnformed0",
-        category = appsCategories(0)),
+        category = appsCategories(0),
+        dateInstalled = dateInstalled1,
+        dateUpdate = dateUpdate1,
+        version = version1,
+        installedFromGooglePlay = installedFromGooglePlay1),
       Application(
         name = "nameUnformed1",
         packageName = "package.name.1",
         className = "classNameUnformed1",
-        category = appsCategories(1)))
+        category = appsCategories(1),
+        dateInstalled = dateInstalled1,
+        dateUpdate = dateUpdate1,
+        version = version1,
+        installedFromGooglePlay = installedFromGooglePlay1))
 
   val appsByCategory0: Seq[Application] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
   val appsByCategory1: Seq[Application] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(1)).take(numSpaces)

@@ -31,7 +31,7 @@ trait MomentProcessImplData {
   val name1 = "Scala Android"
   val packageName1 = "com.fortysevendeg.scala.android"
   val className1 = "ScalaAndroidActivity"
-  val category1 = "category1"
+  val category1 = "Communication"
   val imagePath1 = "imagePath1"
   val dateInstalled1 = 1L
   val dateUpdate1 = 1L
@@ -48,7 +48,7 @@ trait MomentProcessImplData {
   val cardType: CardType = cardTypes(Random.nextInt(cardTypes.length))
   val imagePath: String = Random.nextString(5)
   val notification: String = Random.nextString(5)
-  val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["Communication"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
 
   val from = "8:00"
   val to = "19:00"
@@ -322,25 +322,45 @@ trait MomentProcessImplData {
     Application(
       name = name,
       packageName = homeAppPackageName,
-      className = className1)
+      className = className1,
+      category = NineCardCategory(category1),
+      dateInstalled = dateInstalled1,
+      dateUpdate = dateUpdate1,
+      version = version1,
+      installedFromGooglePlay = installedFromGooglePlay1)
 
   val workApp =
     Application(
       name = name,
       packageName = workAppPackageName,
-      className = className1)
+      className = className1,
+      category = NineCardCategory(category1),
+      dateInstalled = dateInstalled1,
+      dateUpdate = dateUpdate1,
+      version = version1,
+      installedFromGooglePlay = installedFromGooglePlay1)
 
   val nightApp =
     Application(
       name = name,
       packageName = nightAppPackageName,
-      className = className1)
+      className = className1,
+      category = NineCardCategory(category1),
+      dateInstalled = dateInstalled1,
+      dateUpdate = dateUpdate1,
+      version = version1,
+      installedFromGooglePlay = installedFromGooglePlay1)
 
   val transitApp =
     Application(
       name = name,
       packageName = transitAppPackageName,
-      className = className1)
+      className = className1,
+      category = NineCardCategory(category1),
+      dateInstalled = dateInstalled1,
+      dateUpdate = dateUpdate1,
+      version = version1,
+      installedFromGooglePlay = installedFromGooglePlay1)
 
   val seqCard = createSeqCard()
   val seqServicesCard = createSeqServicesCard()
