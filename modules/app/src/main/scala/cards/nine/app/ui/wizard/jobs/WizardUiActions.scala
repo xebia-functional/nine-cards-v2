@@ -136,7 +136,8 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
       (dom.userRootLayout <~ vInvisible) ~
       (dom.wizardRootLayout <~ vInvisible) ~
       (dom.deviceRootLayout <~ vInvisible) ~
-      (dom.newConfigurationContent <~ vInvisible)).toService
+      (dom.newConfigurationContent <~ vInvisible) ~
+      (dom.newConfigurationStep <~ vgRemoveAllViews)).toService
 
   def showErrorLoginUser(): TaskService[Unit] = backToUser(R.string.errorLoginUser)
 

@@ -1,12 +1,12 @@
 package cards.nine.app.ui.components.widgets.tweaks
 
 import android.graphics.Color
-import android.support.v7.widget.RecyclerView
 import android.view.animation.AnimationUtils
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.process.collection.models.PackagesByCategory
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -93,5 +93,14 @@ object DrawerRecyclerViewTweaks {
   }
 
   def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)
+
+}
+
+object WizardCheckBoxTweaks {
+  type W = WizardCheckBox
+
+  def wcbInitialize(resText: Int) = Tweak[W] (_.initialize(resText).run)
+
+  def wcbInitializeCollection(packagesByCategory: PackagesByCategory) = Tweak[W] (_.initializeCollection(packagesByCategory).run)
 
 }

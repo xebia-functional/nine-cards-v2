@@ -112,6 +112,9 @@
 
     <dimen name="wizard_height_header_steps">350dp</dimen>
 
+    <dimen name="wizard_size_checkbox_title">24dp</dimen>
+    <dimen name="wizard_size_checkbox_collection">38dp</dimen>
+
     <!-- Widgets -->
     <dimen name="size_widget_item_preview">150dp</dimen>
     <dimen name="size_widget_icon">54dp</dimen>

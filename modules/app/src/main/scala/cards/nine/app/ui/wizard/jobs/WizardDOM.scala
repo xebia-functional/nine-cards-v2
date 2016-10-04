@@ -42,6 +42,14 @@ trait WizardDOM {
 
   def newConfigurationStep1Description = finder.findView(TR.wizard_steps_new_configuration_step1_description)
 
+  def newConfigurationStep1AllApps = finder.findView(TR.wizard_steps_new_configuration_step1_all_apps)
+
+  def newConfigurationStep1Best9 = finder.findView(TR.wizard_steps_new_configuration_step1_best9)
+
+  def newConfigurationStep1CollectionCount = finder.findView(TR.wizard_steps_new_configuration_step1_collection_count)
+
+  def newConfigurationStep1CollectionsContent = finder.findView(TR.wizard_steps_new_configuration_step1_collection_content)
+
 }
 
 trait WizardUiListener {

@@ -3,17 +3,20 @@ package cards.nine.app.ui.wizard.jobs
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
+import android.text.Html
 import android.view.LayoutInflater
 import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext}
+import cards.nine.app.ui.components.widgets.WizardCheckBox
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.collection.models.PackagesByCategory
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import cards.nine.app.ui.components.widgets.tweaks.WizardCheckBoxTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -32,7 +35,6 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_0, javaNull)
     val resColor = R.color.wizard_background_new_conf_step_0
     ((dom.newConfigurationStep <~
-      vgRemoveAllViews <~
       vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       createPagers() ~
@@ -42,14 +44,24 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
         tvColorResource(resColor))).toService
   }
 
-  def loadSecondStep(collections: Seq[PackagesByCategory]): TaskService[Unit] = {
+  def loadSecondStep(numberOfApps: Int, collections: Seq[PackagesByCategory]): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_1, javaNull)
     val resColor = R.color.wizard_background_new_conf_step_0
+    val description = resGetString(R.string.wizard_new_conf_desc_step_1, numberOfApps.toString, collections.length.toString)
+    val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, collections.length.toString, collections.length.toString)
+
+    val collectionViews = collections map { collection =>
+      (w[WizardCheckBox] <~ vWrapContent <~ wcbInitializeCollection(collection)).get
+    }
+
     ((dom.newConfigurationStep <~
-      vgRemoveAllViews <~
       vgAddView(stepView)) ~
       selectPager(1, resColor) ~
-      (dom.newConfigurationStep1Description <~ tvText(s"${collections.length} collections"))).toService
+      (dom.newConfigurationStep1AllApps <~ wcbInitialize(R.string.all_apps)) ~
+      (dom.newConfigurationStep1Best9 <~ wcbInitialize(R.string.wizard_new_conf_best9_step_1)) ~
+      (dom.newConfigurationStep1CollectionCount <~ tvText(counter)) ~
+      (dom.newConfigurationStep1CollectionsContent <~ vgAddViews(collectionViews)) ~
+      (dom.newConfigurationStep1Description <~ tvText(Html.fromHtml(description)))).toService
   }
 
   private[this] def createPagers(): Ui[Any] = {

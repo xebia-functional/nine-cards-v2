@@ -77,11 +77,11 @@
     <string name="loadUserConfigDeviceReplace">Replace <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g> with a new configuration</string>
     <string name="deviceNotFoundMessage">This device is not associated with your account. Please log in</string>
 
-    <string name="wizard_step_1">9 Cards will organize all your applications in smart collections</string> <!-- Pending review language -->
-    <string name="wizard_step_2">Share collections with friends or download collections community</string> <!-- Pending review language -->
-    <string name="wizard_step_3">9 Cards is an intelligent launcher that fits your everyday</string> <!-- Pending review language -->
-    <string name="wizard_step_4">Adjusts the widgets use by time</string> <!-- Pending review language -->
-    <string name="wizard_step_5">If you want to know more about 9Cards, visit our YouTube channel</string> <!-- Pending review language -->
+    <string name="wizard_step_1">9 Cards will organize all your applications in smart collections</string>
+    <string name="wizard_step_2">Share collections with friends or download collections community</string>
+    <string name="wizard_step_3">9 Cards is an intelligent launcher that fits your everyday</string>
+    <string name="wizard_step_4">Adjusts the widgets use by time</string>
+    <string name="wizard_step_5">If you want to know more about 9Cards, visit our YouTube channel</string>
 
     <string name="errorAndroidMarketPermissionNotAccepted">You need to accept the Android Market permission in order to use 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">You need to accept the Google permission in order to use 9Cards</string>
@@ -93,6 +93,17 @@
 
     <string name="wizard_new_conf_title_step_0">Welcome to 9 Cards</string>
     <string name="wizard_new_conf_desc_step_0">We are looking for the better experience for you in the launcher and we would like to know the things that you are interested</string>
+
+    <string name="wizard_new_conf_title_step_1">Apps grouped by categories</string>
+    <string name="wizard_new_conf_desc_step_1">
+        <![CDATA[
+            We are categorized your <b>%1$s apps</b> in <b>%2$s categories</b> that we call <b>Collections</b>. What categories do you want to use?
+        ]]>
+    </string>
+
+    <string name="wizard_new_conf_best9_step_1">Best 9 apps</string>
+    <string name="wizard_new_conf_collection_counter_step_1">%1$s of %2$s collections</string>
+    <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
 
     <!-- Moment / Widgets -->
 
