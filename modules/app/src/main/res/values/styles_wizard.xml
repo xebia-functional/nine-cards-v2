@@ -209,6 +209,28 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <!-- Wizard Checkbox -->
+
+    <style name="WizardCheckboxRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="WizardCheckboxIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">@dimen/padding_default</item>
+    </style>
+
+    <style name="WizardCheckboxText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <!-- New configuration -->
 
     <style name="WizardNewConfigurationRoot">
@@ -253,6 +275,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:textColor">@color/wizard_text_title</item>
         <item name="android:layout_gravity">center_horizontal</item>
         <item name="android:gravity">center_horizontal</item>
         <item name="android:paddingLeft">@dimen/padding_xxlarge</item>
@@ -299,6 +322,61 @@
 
     <style name="WizardNewConfigurationDescriptionStep0" parent="WizardNewConfigurationDescription">
         <item name="android:text">@string/wizard_new_conf_desc_step_0</item>
+    </style>
+
+    <!-- Step 1 -->
+
+    <style name="WizardNewConfigurationTitleStep1" parent="WizardNewConfigurationTitle">
+        <item name="android:text">@string/wizard_new_conf_title_step_1</item>
+        <item name="android:textColor">@color/wizard_background_new_conf_step_0</item>
+    </style>
+
+    <style name="WizardNewConfigurationDescriptionStep1" parent="WizardNewConfigurationDescription"/>
+
+    <style name="WizardNewConfigurationHeaderContentStep1">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="WizardNewConfigurationHeaderCheckboxStep1">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="WizardNewConfigurationHeaderLineStep1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/stroke_thin</item>
+        <item name="android:background">@color/wizard_line</item>
+        <item name="android:layout_marginRight">@dimen/padding_xxlarge</item>
+        <item name="android:layout_marginLeft">@dimen/padding_xxlarge</item>
+    </style>
+
+    <style name="WizardNewConfigurationHeaderCollectionCountStep1">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:textColor">@color/wizard_checkbox_unselected</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/padding_large</item>
+        <item name="android:layout_marginBottom">@dimen/padding_large</item>
+    </style>
+
+    <style name="WizardNewConfigurationScrollStep1">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="WizardNewConfigurationScrollContentStep1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
     </style>
 
 </resources>

@@ -3,12 +3,17 @@ package cards.nine.app.ui.wizard.jobs
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.view.LayoutInflater
+import android.text.Html
+import android.view.ViewGroup.LayoutParams._
+import android.view.{LayoutInflater, View}
 import android.widget.ImageView
+import android.widget.LinearLayout.LayoutParams
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext}
+import cards.nine.app.ui.components.widgets.WizardCheckBox
+import cards.nine.app.ui.components.widgets.tweaks.WizardCheckBoxTweaks._
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.collection.models.PackagesByCategory
@@ -32,7 +37,6 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_0, javaNull)
     val resColor = R.color.wizard_background_new_conf_step_0
     ((dom.newConfigurationStep <~
-      vgRemoveAllViews <~
       vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       createPagers() ~
@@ -42,14 +46,62 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
         tvColorResource(resColor))).toService
   }
 
-  def loadSecondStep(collections: Seq[PackagesByCategory]): TaskService[Unit] = {
+  def loadSecondStep(numberOfApps: Int, collections: Seq[PackagesByCategory]): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_1, javaNull)
     val resColor = R.color.wizard_background_new_conf_step_0
+    val description = resGetString(R.string.wizard_new_conf_desc_step_1, numberOfApps.toString, collections.length.toString)
+    val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, collections.length.toString, collections.length.toString)
+
+    val collectionViews = collections map { collection =>
+      (w[WizardCheckBox] <~
+        vWrapContent <~
+        wcbInitializeCollection(collection) <~
+        FuncOn.click { view: View =>
+          val itemCheckBox = view.asInstanceOf[WizardCheckBox]
+          (itemCheckBox <~ wcbSwap()) ~
+            (dom.newConfigurationStep1AllApps <~ wcbDoCheck(dom.areAllCollectionsChecked())) ~
+            {
+              val (checked, items) = dom.countCollectionsChecked()
+              val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, checked.toString, items.toString)
+              dom.newConfigurationStep1CollectionCount <~ tvText(counter)
+            }
+        }).get
+    }
+
+    val params = new LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+
     ((dom.newConfigurationStep <~
-      vgRemoveAllViews <~
       vgAddView(stepView)) ~
       selectPager(1, resColor) ~
-      (dom.newConfigurationStep1Description <~ tvText(s"${collections.length} collections"))).toService
+      (dom.newConfigurationStep1AllApps <~
+        wcbInitialize(R.string.all_apps) <~
+        FuncOn.click { view: View =>
+          if (dom.areAllCollectionsChecked()) {
+            Ui.nop
+          } else {
+            val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, collections.length.toString, collections.length.toString)
+            (view.asInstanceOf[WizardCheckBox] <~ wcbCheck()) ~
+              (dom.newConfigurationStep1CollectionCount <~ tvText(counter)) ~
+              checkAllCollections()
+          }
+        }) ~
+      (dom.newConfigurationStep1Best9 <~
+        wcbInitialize(R.string.wizard_new_conf_best9_step_1, defaultCheck = false) <~
+        FuncOn.click { view: View =>
+          val best9Item = view.asInstanceOf[WizardCheckBox]
+          (best9Item <~ wcbSwap()) ~ best9Apps(best9Item.isCheck)
+        }) ~
+      (dom.newConfigurationStep1CollectionCount <~ tvText(counter)) ~
+      (dom.newConfigurationStep1CollectionsContent <~ vgAddViews(collectionViews, params)) ~
+      (dom.newConfigurationStep1Description <~ tvText(Html.fromHtml(description)))).toService
+  }
+
+  private[this] def checkAllCollections() = dom.newConfigurationStep1CollectionsContent <~ Transformer {
+    case view: WizardCheckBox if !view.isCheck => view <~ wcbCheck()
+  }
+
+  private[this] def best9Apps(filter9: Boolean) = dom.newConfigurationStep1CollectionsContent <~ Transformer {
+    case view: WizardCheckBox => view <~ wcbBest9(filter9)
   }
 
   private[this] def createPagers(): Ui[Any] = {

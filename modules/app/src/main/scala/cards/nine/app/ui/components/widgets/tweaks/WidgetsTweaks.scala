@@ -1,12 +1,12 @@
 package cards.nine.app.ui.components.widgets.tweaks
 
 import android.graphics.Color
-import android.support.v7.widget.RecyclerView
 import android.view.animation.AnimationUtils
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.process.collection.models.PackagesByCategory
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -93,5 +93,25 @@ object DrawerRecyclerViewTweaks {
   }
 
   def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)
+
+}
+
+object WizardCheckBoxTweaks {
+  type W = WizardCheckBox
+
+  def wcbInitialize(resText: Int, defaultCheck: Boolean = true) = Tweak[W] (_.initialize(resText, defaultCheck).run)
+
+  def wcbInitializeCollection(packagesByCategory: PackagesByCategory, defaultCheck: Boolean = true) =
+    Tweak[W] (_.initializeCollection(packagesByCategory, defaultCheck).run)
+
+  def wcbDoCheck(doCheck: Boolean) = Tweak[W] { view => (if (doCheck) view.check() else view.uncheck()).run }
+
+  def wcbCheck() = Tweak[W] (_.check().run)
+
+  def wcbUncheck() = Tweak[W] (_.uncheck().run)
+
+  def wcbSwap() = Tweak[W] (_.swap().run)
+
+  def wcbBest9(filter9: Boolean) = Tweak[W] (_.setBest9(filter9).run)
 
 }

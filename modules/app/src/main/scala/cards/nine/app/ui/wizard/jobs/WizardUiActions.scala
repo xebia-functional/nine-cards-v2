@@ -63,94 +63,51 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
       case i: ImageView => i <~ vActivated(false)
     }
 
-    def initializeUi(): Ui[Any] =
-      (dom.userAction <~
+    ((dom.userAction <~
+      defaultActionStyle <~
+      On.click {
+        Ui {
+          val termsAccept = dom.usersTerms.isChecked
+          dom.onClickAcceptTermsButton(termsAccept)
+        }
+      }) ~
+      (dom.deviceAction <~
         defaultActionStyle <~
         On.click {
-          Ui {
-            val termsAccept = dom.usersTerms.isChecked
-            dom.onClickAcceptTermsButton(termsAccept)
+          dom.devicesGroup <~ Transformer {
+            case i: RadioButton if i.isChecked =>
+              Ui {
+                val tag = Option(i.getTag) map (_.toString)
+                tag match {
+                  case Some(`newConfigurationKey`) =>
+                    dom.onClickSelectDeviceButton(None)
+                  case cloudId =>
+                    dom.onClickSelectDeviceButton(cloudId)
+                }
+              }
           }
         }) ~
-        (dom.deviceAction <~
-          defaultActionStyle <~
-          On.click {
-            dom.devicesGroup <~ Transformer {
-              case i: RadioButton if i.isChecked =>
-                Ui {
-                  val tag = Option(i.getTag) map (_.toString)
-                  tag match {
-                    case Some(`newConfigurationKey`) =>
-                      dom.onClickSelectDeviceButton(None)
-                    case cloudId =>
-                      dom.onClickSelectDeviceButton(cloudId)
-                  }
-                }
-            }
-          }) ~
-        (dom.workspaces <~
-          vGlobalLayoutListener(_ => {
-            dom.workspaces <~
-              swData(steps) <~
-              awsAddPageChangedObserver(currentPage => {
-                val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
-                ((dom.wizardRootLayout <~ rbvColor(backgroundColor)) ~
-                  (dom.stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
-                  (dom.paginationPanel <~ reloadPagers(currentPage))).run
-              })
-          })) ~
-        (dom.stepsAction <~
-          diveInActionStyle <~
-          On.click(Ui(dom.onClickFinishWizardButton()))) ~
-        createPagers(steps) ~
-        systemBarsTint.initSystemStatusBarTint()
-
-    for {
-      _ <- initializeUi().toService
-      _ <- goToUser()
-    } yield ()
+      (dom.workspaces <~
+        vGlobalLayoutListener(_ => {
+          dom.workspaces <~
+            swData(steps) <~
+            awsAddPageChangedObserver(currentPage => {
+              val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
+              ((dom.wizardRootLayout <~ rbvColor(backgroundColor)) ~
+                (dom.stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
+                (dom.paginationPanel <~ reloadPagers(currentPage))).run
+            })
+        })) ~
+      (dom.stepsAction <~
+        diveInActionStyle <~
+        On.click(Ui(dom.onClickFinishWizardButton()))) ~
+      createPagers(steps) ~
+      systemBarsTint.initSystemStatusBarTint()).toService
   }
 
-  def goToUser(): TaskService[Unit] =
-    ((dom.loadingRootLayout <~ vInvisible) ~
-      (dom.userRootLayout <~ vVisible) ~
-      (dom.wizardRootLayout <~ vInvisible) ~
-      (dom.deviceRootLayout <~ vInvisible) ~
-      (dom.newConfigurationContent <~ vInvisible)).toService
+  def showErrorLoginUser(): TaskService[Unit] = uiShortToast2(R.string.errorLoginUser).toService
 
-  def goToWizard(): TaskService[Unit] =
-    ((dom.loadingRootLayout <~ vInvisible) ~
-      (dom.userRootLayout <~ vInvisible) ~
-      (dom.wizardRootLayout <~ vVisible <~ rbvColor(resGetColor(R.color.wizard_background_step_0), forceFade = true)) ~
-      (dom.deviceRootLayout <~ vInvisible) ~
-      (dom.newConfigurationContent <~ vInvisible)).toService
-
-  def goToNewConfiguration(): TaskService[Unit] =
-    (showNewConfigurationScreen() ~
-      Ui(dom.onStartNewConfiguration())).toService
-
-  def showNewConfiguration(): TaskService[Unit] = showNewConfigurationScreen().toService
-
-  def showLoading(): TaskService[Unit] =
-    ((dom.loadingRootLayout <~ vVisible) ~
-      (dom.userRootLayout <~ vInvisible) ~
-      (dom.wizardRootLayout <~ vInvisible) ~
-      (dom.deviceRootLayout <~ vInvisible) ~
-      (dom.newConfigurationContent <~ vInvisible)).toService
-
-  def showErrorLoginUser(): TaskService[Unit] = backToUser(R.string.errorLoginUser)
-
-  def showErrorConnectingGoogle(): TaskService[Unit] = backToUser(R.string.errorConnectingGoogle)
-
-  private[this] def showNewConfigurationScreen(): Ui[Any] =
-    (dom.loadingRootLayout <~ vInvisible) ~
-      (dom.userRootLayout <~ vInvisible) ~
-      (dom.wizardRootLayout <~ vInvisible) ~
-      (dom.deviceRootLayout <~ vInvisible) ~
-      (dom.newConfigurationContent <~ vVisible)
-
-  private[this] def backToUser(errorMessage: Int): TaskService[Unit] =
-    uiShortToast2(errorMessage).toService *> goToUser()
+  def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast2(R.string.errorConnectingGoogle).toService
 
   def showErrorAcceptTerms(): TaskService[Unit] =
     (dom.rootLayout <~ vSnackbarShort(R.string.messageAcceptTerms)).toService

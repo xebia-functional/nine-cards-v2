@@ -67,6 +67,12 @@
     <string name="downloadingBitmapsMessage">Descargando imágenes de tus apps</string>
     <string name="savingConfigurationMessage">Guardando tu configuración en nuestros servidores</string>
 
+    <string name="wizard_loading_connecting_with_google">Conectando con Google</string>
+    <string name="wizard_loading_request_google_permission">Pidiendo permisos a Google</string>
+    <string name="wizard_loading_connecting_with_plus">Conectando con Google Plus</string>
+    <string name="wizard_loading_devices">Cargando dispositivos</string>
+    <string name="wizard_loading_looking_for_better_collection">Creando las mejores colecciones con tus apps</string>
+
     <string name="creatingCollectionError">Error creando colecciones. Por favor inténtelo de nuevo</string>
 
     <string name="loadUserConfigDeviceReplace">Reemplazar %1$s con nueva configuración</string>
@@ -88,6 +94,18 @@
 
     <string name="wizard_new_conf_title_step_0">Bienvenido a 9 Cards</string>
     <string name="wizard_new_conf_desc_step_0">Estamos buscando la mejor experiencia para ti en el launcher y nos guataría saber en que cosas estás interesado</string>
+
+    <string name="wizard_new_conf_title_step_1">Aplicaciones agrupadas por categorías</string>
+    <string name="wizard_new_conf_desc_step_1">
+        <![CDATA[
+            Hemos categorizados tus <b>%1$s apps</b> en <b>%2$s categorías</b> que nosotros llamamos <b>Colecciones</b>. ¿Qué categorías te gustaría usar?
+        ]]>
+    </string>
+
+    <string name="wizard_new_conf_best9_step_1">Mejores 9 apps</string>
+    <string name="wizard_new_conf_collection_counter_step_1">%1$s de %2$s colecciones</string>
+    <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
+    <string name="wizard_new_conf_collection_name_best9_step_1">%1$s (9 de %2$s apps)</string>
 
     <!-- Moment / Widgets -->
 
