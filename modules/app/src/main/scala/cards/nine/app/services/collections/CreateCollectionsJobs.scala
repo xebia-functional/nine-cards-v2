@@ -41,7 +41,7 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
     def createAndConnectClient(email: String): TaskService[Unit] =
       for {
         apiClient <- di.cloudStorageProcess.createCloudStorageClient(email)
-        _ <- TaskService(Task(Right(statuses = statuses.copy(apiClient = Some(apiClient)))))
+        _ <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
         _ <- TaskService(CatchAll[JobException](apiClient.connect()))
       } yield ()
 

@@ -5,6 +5,7 @@ import android.content.{Context, Intent}
 import android.support.v4.app.NotificationCompat
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.wizard.WizardActivity
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -26,7 +27,7 @@ trait CreateCollectionsUiActions {
 
     def getUniqueId: Int = (System.currentTimeMillis & 0xfffffff).toInt
 
-    Ui {
+    TaskService.right {
       val context = serviceContextWrapper.bestAvailable
       val notificationIntent: Intent = new Intent(context, classOf[WizardActivity])
       val title: String = resGetString(R.string.workingNotificationTitle)
@@ -38,7 +39,7 @@ trait CreateCollectionsUiActions {
         setProgress(1, maxProgress, true).
         setContentIntent(PendingIntent.getActivity(context, getUniqueId, notificationIntent, 0))
       processStarted(notificationId, builder.build())
-    }.toService
+    }
   }
 
   def setProcess(selectedCloudId: Option[String], process: CreateCollectionsProcess): TaskService[Unit] = {
