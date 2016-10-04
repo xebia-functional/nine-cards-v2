@@ -2,9 +2,10 @@ package cards.nine.process.collection
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.Application
+import cards.nine.models.types.NineCardCategory
 import cards.nine.process.collection.models._
 import cards.nine.process.commons.models.{Card, Collection, PrivateCollection}
-import cards.nine.models.types.NineCardCategory
 
 trait CollectionProcess {
 
@@ -16,7 +17,7 @@ trait CollectionProcess {
    * @return the List[cards.nine.process.collection.models.Collection]
    * @throws CollectionException if there was an error creating the existing collections
    */
-  def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport): TaskService[Seq[Collection]]
+  def createCollectionsFromUnformedItems(apps: Seq[Application], contacts: Seq[UnformedContact])(implicit context: ContextSupport): TaskService[Seq[Collection]]
 
   /**
     * Generate Private Collections with the apps installed in the device and their categories
@@ -25,7 +26,7 @@ trait CollectionProcess {
     * @return the Seq[cards.nine.process.collection.PrivateCollection]
     * @throws CollectionException if there was an error creating the existing collections
     */
-  def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport): TaskService[Seq[PrivateCollection]]
+  def generatePrivateCollections(apps: Seq[Application])(implicit context: ContextSupport): TaskService[Seq[PrivateCollection]]
 
   /**
    * Creates Collections from some already formed and given Collections

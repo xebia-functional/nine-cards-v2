@@ -20,14 +20,6 @@ import scala.util.Random
 trait Conversions
   extends AppNineCardIntentConversions {
 
-  def toSeqUnformedApp(apps: Seq[Application]): Seq[UnformedApp] = apps map toUnformedApp
-
-  def toUnformedApp(app: Application): UnformedApp = UnformedApp(
-    name = app.name,
-    packageName = app.packageName,
-    className = app.className,
-    category = app.category)
-
   def toSeqUnformedContact(contacts: Seq[Contact]): Seq[UnformedContact] = contacts map toUnformedContact
 
   def toUnformedContact(contact: Contact): UnformedContact = UnformedContact(

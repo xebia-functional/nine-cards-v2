@@ -257,7 +257,7 @@ trait CollectionProcessImplData {
 
   def createSeqUnformedApps(num: Int = 150) =
     (0 until num) map { item =>
-      UnformedApp(
+      Application(
         name = name,
         packageName = generatePackageName,
         className = className,
@@ -553,21 +553,21 @@ trait CollectionProcessImplData {
     )
 
 
-  val seqUnformedAppsForPrivateCollections: Seq[UnformedApp] =
+  val seqUnformedAppsForPrivateCollections: Seq[Application] =
     Seq(
-      UnformedApp(
+      Application(
         name = "nameUnformed0",
         packageName = "package.name.0",
         className = "classNameUnformed0",
         category = appsCategories(0)),
-      UnformedApp(
+      Application(
         name = "nameUnformed1",
         packageName = "package.name.1",
         className = "classNameUnformed1",
         category = appsCategories(1)))
 
-  val appsByCategory0: Seq[UnformedApp] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
-  val appsByCategory1: Seq[UnformedApp] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(1)).take(numSpaces)
+  val appsByCategory0: Seq[Application] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
+  val appsByCategory1: Seq[Application] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(1)).take(numSpaces)
 
   val collectionProcessConfig: CollectionProcessConfig
 

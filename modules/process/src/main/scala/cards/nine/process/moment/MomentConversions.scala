@@ -1,10 +1,9 @@
 package cards.nine.process.moment
 
-import cards.nine.models.types.AppCardType
-import cards.nine.process.collection.models.UnformedApp
+import cards.nine.models.types.{NineCardCategory, AppCardType}
 import cards.nine.process.commons.CommonConversions
 import cards.nine.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCard}
-import cards.nine.process.moment.models.App
+import cards.nine.models.Application
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.{App => ServicesApp, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 
@@ -12,20 +11,20 @@ trait MomentConversions extends CommonConversions {
 
   def toMomentSeq(servicesMomentSeq: Seq[ServicesMoment]) = servicesMomentSeq map toMoment
 
-  def toApp(servicesApp: ServicesApp): App = App(
+  def toApplication(servicesApp: ServicesApp): Application = Application(
       name = servicesApp.name,
       packageName = servicesApp.packageName,
-      className = servicesApp.className)
+      className = servicesApp.className,
+      category = NineCardCategory(servicesApp.category),
+      dateInstalled = servicesApp.dateInstalled,
+      dateUpdate = servicesApp.dateUpdate,
+      version = servicesApp.version,
+      installedFromGooglePlay = servicesApp.installedFromGooglePlay)
 
-  def toApp(unformedApp: UnformedApp): App = App(
-      name = unformedApp.name,
-      packageName = unformedApp.packageName,
-      className = unformedApp.className)
-
-  def toAddCardRequestSeq(items: Seq[App]): Seq[AddCardRequest] =
+  def toAddCardRequestSeq(items: Seq[Application]): Seq[AddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestFromAppMoment(zipped._1, zipped._2))
 
-  def toAddCardRequestFromAppMoment(item: App, position: Int): AddCardRequest = AddCardRequest(
+  def toAddCardRequestFromAppMoment(item: Application, position: Int): AddCardRequest = AddCardRequest(
     position = position,
     term = item.name,
     packageName = Option(item.packageName),
@@ -33,7 +32,7 @@ trait MomentConversions extends CommonConversions {
     intent = nineCardIntentToJson(toNineCardIntent(item)),
     imagePath = None)
 
-  def toPrivateCard(app: App): PrivateCard =
+  def toPrivateCard(app: Application): PrivateCard =
     PrivateCard(
       term = app.name,
       packageName = Some(app.packageName),

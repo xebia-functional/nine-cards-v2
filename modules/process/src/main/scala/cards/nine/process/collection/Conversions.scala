@@ -61,10 +61,10 @@ trait Conversions extends CommonConversions {
     imagePath = card.imagePath,
     notification = card.notification)
 
-  def toAddCardRequestSeq(items: Seq[UnformedApp]): Seq[ServicesAddCardRequest] =
+  def toAddCardRequestSeq(items: Seq[Application]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestFromUnformedItems(zipped._1, zipped._2))
 
-  def toAddCardRequestFromUnformedItems(item: UnformedApp, position: Int): ServicesAddCardRequest = ServicesAddCardRequest(
+  def toAddCardRequestFromUnformedItems(item: Application, position: Int): ServicesAddCardRequest = ServicesAddCardRequest(
     position = position,
     term = item.name,
     packageName = Option(item.packageName),
@@ -150,7 +150,7 @@ trait Conversions extends CommonConversions {
       imagePath = Option(item.photoUri))
   }
 
-  def toPrivateCard(unformedApp: UnformedApp): PrivateCard =
+  def toPrivateCard(unformedApp: Application): PrivateCard =
     PrivateCard(
       term = unformedApp.name,
       packageName = Some(unformedApp.packageName),

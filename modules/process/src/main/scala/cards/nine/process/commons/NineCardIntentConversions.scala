@@ -2,11 +2,10 @@ package cards.nine.process.commons
 
 import cards.nine.models.Application
 import cards.nine.models.types.{ContactCardType, EmailCardType, PhoneCardType}
-import cards.nine.process.collection.models.{UnformedApp, UnformedContact}
+import cards.nine.process.collection.models.UnformedContact
 import cards.nine.process.commons.models.NineCardIntentExtras._
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models.{NineCardIntent, NineCardIntentExtras}
-import cards.nine.process.moment.models.{App => MomentApp}
 import cards.nine.services.persistence.models.App
 import play.api.libs.json.Json
 
@@ -16,30 +15,12 @@ trait NineCardIntentConversions {
 
   def nineCardIntentToJson(intent: NineCardIntent) = Json.toJson(intent).toString()
 
-  def toNineCardIntent(item: UnformedApp) = {
+  def toNineCardIntent(item: Application) = {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(item.packageName),
       class_name = Option(item.className)))
     intent.setAction(openApp)
     intent.setClassName(item.packageName, item.className)
-    intent
-  }
-
-  def toNineCardIntent(item: MomentApp) = {
-    val intent = NineCardIntent(NineCardIntentExtras(
-      package_name = Option(item.packageName),
-      class_name = Option(item.className)))
-    intent.setAction(openApp)
-    intent.setClassName(item.packageName, item.className)
-    intent
-  }
-
-  def toNineCardIntent(app: Application) = {
-    val intent = NineCardIntent(NineCardIntentExtras(
-      package_name = Option(app.packageName),
-      class_name = Option(app.className)))
-    intent.setAction(openApp)
-    intent.setClassName(app.packageName, app.className)
     intent
   }
 

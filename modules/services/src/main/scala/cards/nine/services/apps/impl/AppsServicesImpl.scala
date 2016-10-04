@@ -33,7 +33,7 @@ class AppsServicesImpl
     }
   }
 
-  def getDefaultApps(implicit context: ContextSupport) = TaskService {
+  override def getDefaultApps(implicit context: ContextSupport) = TaskService {
     CatchAll[AppsInstalledException] {
 
       val phoneApp: Option[Application] = getAppsByIntent(phoneIntent()).headOption

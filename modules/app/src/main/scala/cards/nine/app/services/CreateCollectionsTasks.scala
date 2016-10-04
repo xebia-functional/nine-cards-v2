@@ -29,7 +29,7 @@ trait CreateCollectionsTasks
       _ = setProcess(LoadingConfigProcess)
       contacts <- di.deviceProcess.getFavoriteContacts.resolveLeftTo(Seq.empty)
       _ = setProcess(CreatingCollectionsProcess)
-      collections <- di.collectionProcess.createCollectionsFromUnformedItems(toSeqUnformedApp(apps), toSeqUnformedContact(contacts))
+      collections <- di.collectionProcess.createCollectionsFromUnformedItems(apps, toSeqUnformedContact(contacts))
       momentCollections <- di.momentProcess.createMoments
       storedCollections <- di.collectionProcess.getCollections
       savedDevice <- di.cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
