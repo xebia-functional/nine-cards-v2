@@ -11,12 +11,14 @@ import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.wizard.jobs._
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService._
 import cards.nine.process.cloud.CloudStorageClientListener
 import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
 import cards.nine.process.user.UserException
 import cards.nine.process.userv1.UserV1Exception
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult
+import cats.implicits._
 import macroid.Contexts
 
 class WizardActivity
@@ -34,11 +36,13 @@ class WizardActivity
 
   lazy val wizardUiActions = new WizardUiActions(self)
 
-  lazy val wizardJobs = new WizardJobs(wizardUiActions)
+  lazy val visibilityUiActions = new VisibilityUiActions(self)
+
+  lazy val wizardJobs = new WizardJobs(wizardUiActions, visibilityUiActions)
 
   lazy val newConfigurationActions = new NewConfigurationUiActions(self)
 
-  lazy val newConfigurationJobs = new NewConfigurationJobs(newConfigurationActions, wizardUiActions)
+  lazy val newConfigurationJobs = new NewConfigurationJobs(newConfigurationActions, visibilityUiActions)
 
   override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
 
@@ -95,7 +99,7 @@ class WizardActivity
     wizardJobs.connectAccount(termsAccepted).resolveAsync()
 
   override def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit =
-    wizardJobs.deviceSelected(maybeCloudId).resolveAsyncServiceOr(_ => wizardUiActions.goToUser())
+    wizardJobs.deviceSelected(maybeCloudId).resolveAsyncServiceOr(_ => visibilityUiActions.goToUser())
 
   override def onClickFinishWizardButton(): Unit =
     wizardJobs.finishWizard().resolveAsync()
@@ -120,13 +124,13 @@ class WizardActivity
     wizardJobs.requestAndroidMarketPermission().resolveAsyncServiceOr(onException)
 
   override def onClickCancelMarketPermissionDialog(): Unit =
-    wizardUiActions.goToUser().resolveAsync()
+    visibilityUiActions.goToUser().resolveAsync()
 
   override def onClickOkGooglePermissionDialog(): Unit =
     wizardJobs.requestGooglePermission().resolveAsyncServiceOr(onException)
 
   override def onClickCancelGooglePermissionDialog(): Unit =
-    wizardUiActions.goToUser().resolveAsync()
+    visibilityUiActions.goToUser().resolveAsync()
 
   override def onClickOkSelectAccountsDialog(): Unit =
     wizardJobs.connectAccount(true).resolveAsync()
@@ -147,10 +151,10 @@ class WizardActivity
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
     case ex: SocialProfileProcessException if ex.recoverable => wizardJobs.googleSignIn()
-    case _: UserException => wizardUiActions.showErrorLoginUser()
-    case _: UserV1Exception => wizardUiActions.showErrorLoginUser()
+    case _: UserException => wizardUiActions.showErrorLoginUser() *> visibilityUiActions.goToWizard()
+    case _: UserV1Exception => wizardUiActions.showErrorLoginUser() *> visibilityUiActions.goToWizard()
     case _: WizardMarketTokenRequestCancelledException => wizardJobs.errorOperationMarketTokenCancelled()
     case _: WizardGoogleTokenRequestCancelledException => wizardJobs.errorOperationGoogleTokenCancelled()
-    case _ => wizardUiActions.showErrorConnectingGoogle()
+    case _ => wizardUiActions.showErrorConnectingGoogle() *> visibilityUiActions.goToWizard()
   }
 }

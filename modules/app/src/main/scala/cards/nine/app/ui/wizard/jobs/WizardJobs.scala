@@ -27,6 +27,7 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}
 import macroid.ActivityContextWrapper
 import monix.eval.Task
+import cats.implicits._
 
 import scala.util.{Failure, Success, Try}
 
@@ -56,7 +57,7 @@ import scala.util.{Failure, Success, Try}
   *  - UiAction calls to 'Job.finishWizard'
   *   + Job set the result RESULT_OK and finish the activity
   */
-class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
+class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with ImplicitsUiExceptions {
 
@@ -66,7 +67,11 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
 
   var clientStatuses = WizardJobsStatuses()
 
-  def initialize(): TaskService[Unit] = actions.initialize()
+  def initialize(): TaskService[Unit] =
+    for {
+      _ <- wizardUiActions.initialize()
+      _ <- visibilityUiActions.goToUser()
+    } yield()
 
   def stop(): TaskService[Unit] = {
 
@@ -93,7 +98,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
         .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
       uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
     } else {
-      actions.showErrorAcceptTerms()
+      wizardUiActions.showErrorAcceptTerms()
     }
 
   def deviceSelected(maybeKey: Option[String]): TaskService[Unit] = {
@@ -128,21 +133,21 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     }
   }
 
-  def serviceCreatingCollections(): TaskService[Unit] = actions.goToWizard()
+  def serviceCreatingCollections(): TaskService[Unit] = visibilityUiActions.goToWizard()
 
-  def serviceUnknownError(): TaskService[Unit] = actions.goToUser()
+  def serviceUnknownError(): TaskService[Unit] = visibilityUiActions.goToUser()
 
-  def serviceCloudIdNotSentError(): TaskService[Unit] = actions.goToUser()
+  def serviceCloudIdNotSentError(): TaskService[Unit] = visibilityUiActions.goToUser()
 
   def serviceCloudIdAlreadySetError(): TaskService[Unit] =
     for {
       _ <- di.userProcess.unregister
-      _ <- actions.goToUser()
+      _ <- visibilityUiActions.goToUser()
     } yield ()
 
-  def serviceUserEmailNotFoundError(): TaskService[Unit] = actions.goToUser()
+  def serviceUserEmailNotFoundError(): TaskService[Unit] = visibilityUiActions.goToUser()
 
-  def serviceFinished(): TaskService[Unit] = actions.showDiveIn()
+  def serviceFinished(): TaskService[Unit] = wizardUiActions.showDiveIn()
 
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): TaskService[Unit] =
     (requestCode, resultCode) match {
@@ -150,11 +155,11 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
         clientStatuses = clientStatuses.copy(email = Option(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)))
         requestAndroidMarketPermission()
       case (RequestCodes.selectAccount, _) =>
-        actions.showSelectAccountDialog()
+        wizardUiActions.showSelectAccountDialog()
       case (`resolveGooglePlayConnection`, Activity.RESULT_OK) =>
         tryToConnectDriveApiClient()
       case (`resolveGooglePlayConnection`, _) =>
-        actions.showErrorConnectingGoogle()
+        wizardUiActions.showErrorConnectingGoogle() *> visibilityUiActions.goToUser()
       case (`resolveConnectedUser`, Activity.RESULT_OK) =>
         val mailTokenId = Option(Auth.GoogleSignInApi.getSignInResultFromIntent(data)) match {
           case Some(result) if result.isSuccess =>
@@ -164,7 +169,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
         clientStatuses = clientStatuses.copy(mailTokenId = mailTokenId)
         tryToConnectGoogleApiClient()
       case (`resolveConnectedUser`, _) =>
-        actions.showErrorConnectingGoogle()
+        wizardUiActions.showErrorConnectingGoogle() *> visibilityUiActions.goToUser()
       case _ => TaskService(Task(Right((): Unit)))
     }
 
@@ -187,7 +192,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
         for {
           googleApiClient <- di.cloudStorageProcess.createCloudStorageClient(account)
           _ = storeDriveApiClient(googleApiClient)
-          _ <- actions.showLoading()
+          _ <- visibilityUiActions.showLoadingConnectingWithGoogle()
           _ <- invalidateToken()
           token <- di.userAccountsProcess
             .getAuthToken(account, resGetString(R.string.android_market_oauth_scopes))
@@ -199,7 +204,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
           _ = storeAndroidMarketToken(token)
           _ <- requestGooglePermission()
         } yield ()
-      case None => actions.goToUser()
+      case None => visibilityUiActions.goToUser()
     }
 
   }
@@ -208,7 +213,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     clientStatuses.email match {
       case Some(account) =>
         for {
-          _ <- actions.showLoading()
+          _ <- visibilityUiActions.showLoadingRequestGooglePermission()
           _ <- di.userAccountsProcess
             .getAuthToken(account, resGetString(R.string.profile_and_drive_oauth_scopes))
             .resolveLeft {
@@ -218,7 +223,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
             }
           _ <- tryToConnectDriveApiClient()
         } yield ()
-      case None => actions.goToUser()
+      case None => visibilityUiActions.goToUser()
     }
 
   def requestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): TaskService[Unit] = {
@@ -227,7 +232,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
       if (hasPermission || !shouldRequest) {
         generateCollections(clientStatuses.deviceKey)
       } else {
-        actions.showRequestPermissionsDialog()
+        wizardUiActions.showRequestPermissionsDialog()
       }
 
     if (requestCode == RequestCodes.wizardPermissions) {
@@ -241,9 +246,9 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     }
   }
 
-  def errorOperationMarketTokenCancelled(): TaskService[Unit] = actions.showMarketPermissionDialog()
+  def errorOperationMarketTokenCancelled(): TaskService[Unit] = wizardUiActions.showMarketPermissionDialog()
 
-  def errorOperationGoogleTokenCancelled(): TaskService[Unit] = actions.showGooglePermissionDialog()
+  def errorOperationGoogleTokenCancelled(): TaskService[Unit] = wizardUiActions.showGooglePermissionDialog()
 
   def driveConnected(): TaskService[Unit] = googleSignIn()
 
@@ -254,11 +259,11 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     clientStatuses.plusApiClient match {
       case Some(apiClient) =>
         for {
-          _ <- actions.showLoading()
+          _ <- visibilityUiActions.showLoadingConnectingWithGooglePlus()
           maybeProfileName <- di.socialProfileProcess.updateUserProfile(apiClient)
           _ <- loadDevices(maybeProfileName)
         } yield ()
-      case None => actions.goToUser()
+      case None => visibilityUiActions.goToUser()
     }
 
   def plusConnectionFailed(connectionResult: ConnectionResult): TaskService[Unit] =
@@ -283,7 +288,7 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
           _ = storePlusApiClient(plusApiClient)
           _ <- signInIntentService(plusApiClient)
         } yield ()
-      case None => actions.goToUser()
+      case None => visibilityUiActions.goToUser()
     }
   }
 
@@ -312,11 +317,11 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
         connectionResult.getErrorCode == ConnectionResult.SERVICE_MISSING ||
         connectionResult.getErrorCode == ConnectionResult.SERVICE_DISABLED) {
       for {
-        _ <- actions.goToUser()
+        _ <- visibilityUiActions.goToUser()
         _ <- showErrorDialog()
       } yield ()
     } else {
-      actions.showErrorConnectingGoogle()
+      wizardUiActions.showErrorConnectingGoogle() *> visibilityUiActions.goToUser()
     }
   }
 
@@ -327,9 +332,9 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
         intent.putExtra(CreateCollectionsService.cloudIdKey, key)
         for {
           _ <- uiStartServiceIntent(intent).toService
-          _ <- actions.goToWizard()
+          _ <- visibilityUiActions.goToWizard()
         } yield ()
-      case _ => actions.goToNewConfiguration()
+      case _ => visibilityUiActions.goToNewConfiguration()
     }
   }
 
@@ -388,7 +393,6 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
           (maybeUserDevice, devices) = actualDevice
         } yield {
           UserCloudDevices(
-
             name = maybeProfileName getOrElse email,
             userDevice = maybeUserDevice map toUserCloudDevice,
             devices = devices map toUserCloudDevice)
@@ -422,11 +426,11 @@ class WizardJobs(actions: WizardUiActions)(implicit contextWrapper: ActivityCont
     clientStatuses match {
       case WizardJobsStatuses(_, Some(client), _, Some(email), Some(androidMarketToken), Some(emailTokenId)) =>
         for {
-          _ <- actions.showLoading()
+          _ <- visibilityUiActions.showLoadingDevices()
           devices <- loadCloudDevices(client, email, androidMarketToken, emailTokenId)
-          _ <- actions.showDevices(devices)
+          _ <- wizardUiActions.showDevices(devices)
         } yield ()
-      case _ => actions.showErrorConnectingGoogle()
+      case _ => wizardUiActions.showErrorConnectingGoogle() *> visibilityUiActions.goToUser()
     }
 
   }

@@ -8,15 +8,15 @@ import macroid.ActivityContextWrapper
 
 class NewConfigurationJobs(
   actions: NewConfigurationUiActions,
-  wizardUiActions: WizardUiActions)(implicit contextWrapper: ActivityContextWrapper)
+  visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
 
   def loadBetterCollections(): TaskService[Unit] =
     for {
-      _ <- wizardUiActions.showLoading()
+      _ <- visibilityUiActions.showLoadingBetterCollections()
       collections <- di.collectionProcess.rankApps()
       apps <- di.deviceProcess.getSavedApps(GetByName)
-      _ <- wizardUiActions.showNewConfiguration()
+      _ <- visibilityUiActions.showNewConfiguration()
       _ <- actions.loadSecondStep(apps.length, collections)
     } yield ()
 

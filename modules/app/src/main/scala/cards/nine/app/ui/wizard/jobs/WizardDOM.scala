@@ -13,6 +13,10 @@ trait WizardDOM {
 
   lazy val loadingRootLayout = finder.findView(TR.wizard_loading_content)
 
+  lazy val loadingBar = finder.findView(TR.wizard_loading_bar)
+
+  lazy val loadingText = finder.findView(TR.wizard_loading_text)
+
   lazy val userRootLayout = finder.findView(TR.wizard_user_content)
 
   lazy val usersTerms = finder.findView(TR.wizard_user_terms)
