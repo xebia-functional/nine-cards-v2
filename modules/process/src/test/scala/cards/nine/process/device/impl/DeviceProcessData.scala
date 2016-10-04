@@ -2,6 +2,7 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
+import cards.nine.models.Application
 import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
@@ -11,7 +12,6 @@ import cards.nine.process.device.models.{App, CallData, LastCallsContact, Widget
 import cards.nine.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
-import cards.nine.services.apps.models.Application
 import cards.nine.services.calls.models.{Call => ServicesCall}
 import cards.nine.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import cards.nine.services.image.{AppPackagePath, AppWebsitePath}

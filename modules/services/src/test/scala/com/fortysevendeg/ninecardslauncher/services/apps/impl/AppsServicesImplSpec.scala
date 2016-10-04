@@ -4,8 +4,8 @@ import android.content.Intent
 import android.content.pm._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.Application
 import cards.nine.services.apps.AppsInstalledException
-import cards.nine.services.apps.models.Application
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

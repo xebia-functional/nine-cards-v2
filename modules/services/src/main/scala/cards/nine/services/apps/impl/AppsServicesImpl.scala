@@ -6,8 +6,8 @@ import android.provider.MediaStore
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.{CatchAll, javaNull}
+import cards.nine.models.Application
 import cards.nine.services.apps._
-import cards.nine.services.apps.models.Application
 
 import scala.collection.JavaConversions._
 

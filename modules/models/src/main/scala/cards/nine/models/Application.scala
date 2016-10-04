@@ -1,4 +1,4 @@
-package cards.nine.services.apps.models
+package cards.nine.models
 
 case class Application(
   name: String,

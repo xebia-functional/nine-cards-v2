@@ -1,13 +1,12 @@
 package cards.nine.process.collection.impl
 
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.Spaces
+import cards.nine.models.Application
 import cards.nine.models.Spaces._
 import cards.nine.models.types._
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
 import cards.nine.process.commons.models.PrivateCollection
-import cards.nine.services.apps.models.Application
 import cards.nine.services.contacts.ContactsServices
 import cards.nine.services.persistence.{AddCardRequest, AddCollectionRequest}
 
