@@ -40,6 +40,8 @@ trait WizardDOM {
 
   lazy val newConfigurationNext = finder.findView(TR.wizard_steps_new_configuration_next)
 
+  def newConfigurationStep1Description = finder.findView(TR.wizard_steps_new_configuration_step1_description)
+
 }
 
 trait WizardUiListener {
@@ -67,5 +69,7 @@ trait WizardUiListener {
   def onClickCancelPermissionsDialog(): Unit
 
   def onStartNewConfiguration(): Unit
+
+  def onLoadBetterCollections(): Unit
 
 }

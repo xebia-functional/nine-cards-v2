@@ -4,8 +4,8 @@ import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.commons.types.DockType
 import cards.nine.process.device.models._
+import cards.nine.models.types.DockType
 
 trait DeviceProcess {
 

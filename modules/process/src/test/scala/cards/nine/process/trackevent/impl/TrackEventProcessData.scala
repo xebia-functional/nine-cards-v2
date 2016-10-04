@@ -1,6 +1,6 @@
 package cards.nine.process.trackevent.impl
 
-import cards.nine.process.commons.types.{Entertainment, GameAdventure, HomeMorningMoment}
+import cards.nine.models.types.{Entertainment, GameAdventure, HomeMorningMoment}
 import cards.nine.process.trackevent.models._
 import cards.nine.services.track.TrackEvent
 

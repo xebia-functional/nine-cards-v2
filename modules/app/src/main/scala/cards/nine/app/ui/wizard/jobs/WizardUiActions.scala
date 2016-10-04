@@ -6,7 +6,7 @@ import android.view.View
 import android.widget._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext, UiException}
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext, UiException}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.layouts.StepData
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
@@ -21,6 +21,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
@@ -34,6 +35,8 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
 
   val tagDialog = "wizard-dialog"
 
+  lazy val systemBarsTint = new SystemBarsTint
+
   lazy val steps = Seq(
     StepData(R.drawable.wizard_01, resGetString(R.string.wizard_step_1)),
     StepData(R.drawable.wizard_02, resGetString(R.string.wizard_step_2)),
@@ -44,7 +47,7 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
   def initialize(): TaskService[Unit] = {
 
     def pagination(position: Int) =
-      (w[ImageView] <~ paginationItemStyle <~ vTag(position.toString)).get
+      (w[ImageView] <~ paginationItemStyle <~ ivSrc(R.drawable.wizard_pager) <~ vTag(position.toString)).get
 
     def createPagers(steps: Seq[StepData]) = {
       val pagerViews = steps.indices map { position =>
@@ -99,7 +102,8 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
         (dom.stepsAction <~
           diveInActionStyle <~
           On.click(Ui(dom.onClickFinishWizardButton()))) ~
-        createPagers(steps)
+        createPagers(steps) ~
+        systemBarsTint.initSystemStatusBarTint()
 
     for {
       _ <- initializeUi().toService
@@ -122,23 +126,28 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
       (dom.newConfigurationContent <~ vInvisible)).toService
 
   def goToNewConfiguration(): TaskService[Unit] =
-    ((dom.loadingRootLayout <~ vInvisible) ~
-      (dom.userRootLayout <~ vInvisible) ~
-      (dom.wizardRootLayout <~ vInvisible) ~
-      (dom.deviceRootLayout <~ vInvisible) ~
-      (dom.newConfigurationContent <~ vVisible)).toService
+    (showNewConfigurationScreen() ~
+      Ui(dom.onStartNewConfiguration())).toService
+
+  def showNewConfiguration(): TaskService[Unit] = showNewConfigurationScreen().toService
 
   def showLoading(): TaskService[Unit] =
     ((dom.loadingRootLayout <~ vVisible) ~
       (dom.userRootLayout <~ vInvisible) ~
       (dom.wizardRootLayout <~ vInvisible) ~
       (dom.deviceRootLayout <~ vInvisible) ~
-      (dom.newConfigurationContent <~ vInvisible) ~
-      Ui(dom.onStartNewConfiguration())).toService
+      (dom.newConfigurationContent <~ vInvisible)).toService
 
   def showErrorLoginUser(): TaskService[Unit] = backToUser(R.string.errorLoginUser)
 
   def showErrorConnectingGoogle(): TaskService[Unit] = backToUser(R.string.errorConnectingGoogle)
+
+  private[this] def showNewConfigurationScreen(): Ui[Any] =
+    (dom.loadingRootLayout <~ vInvisible) ~
+      (dom.userRootLayout <~ vInvisible) ~
+      (dom.wizardRootLayout <~ vInvisible) ~
+      (dom.deviceRootLayout <~ vInvisible) ~
+      (dom.newConfigurationContent <~ vVisible)
 
   private[this] def backToUser(errorMessage: Int): TaskService[Unit] =
     uiShortToast2(errorMessage).toService *> goToUser()

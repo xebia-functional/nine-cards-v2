@@ -1,6 +1,6 @@
 package cards.nine.process.widget
 
-import cards.nine.process.commons.types.{AppWidgetType, WidgetType}
+import cards.nine.models.types.{AppWidgetType, WidgetType}
 
 case class AddWidgetRequest(
   momentId: Int,

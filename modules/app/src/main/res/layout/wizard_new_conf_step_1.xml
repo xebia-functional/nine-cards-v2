@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/WizardNewConfigurationStepContent">
+
+    <TextView
+        android:id="@+id/wizard_steps_new_configuration_step1_description"
+        style="@style/WizardNewConfigurationDescriptionStep0"/>
+
+</LinearLayout>

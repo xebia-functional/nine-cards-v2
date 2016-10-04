@@ -2,13 +2,13 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.{AppDockType, DockType}
 import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.commons.types.{AppDockType, DockType}
 import cards.nine.process.device._
 import cards.nine.process.device.models.DockApp
 import cards.nine.services.apps.models.Application
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
-import cards.nine.commons.services.TaskService._
 
 trait DockAppsDeviceProcessImpl extends DeviceProcess {
 

@@ -10,9 +10,9 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.recommendations.RecommendedAppsConfigurationException
 import cards.nine.process.recommendations.models.RecommendedApp
+import cards.nine.models.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher2.R
 
 class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])

@@ -8,7 +8,7 @@ import cards.nine.app.commons.NineCardIntentConversions
 import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.commons.javaNull
-import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher2.R
 
 class EditMomentFragment

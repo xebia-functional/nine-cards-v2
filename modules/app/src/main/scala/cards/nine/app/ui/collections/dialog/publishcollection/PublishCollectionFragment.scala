@@ -11,8 +11,8 @@ import cards.nine.app.ui.collections.jobs.SharedCollectionJobs
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.process.commons.models.Collection
-import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.models.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 

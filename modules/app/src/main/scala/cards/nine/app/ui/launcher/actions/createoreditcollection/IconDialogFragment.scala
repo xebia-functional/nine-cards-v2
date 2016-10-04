@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.{LinearLayout, ScrollView}
+import cards.nine.models.types.{NineCardsMoment, NineCardCategory, ContactsCategory}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -16,9 +17,8 @@ import cards.nine.app.commons.NineCardIntentConversions
 import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import cards.nine.process.commons.types.ContactsCategory
-import cards.nine.process.commons.types.NineCardCategory._
-import cards.nine.process.commons.types.NineCardsMoment._
+import NineCardCategory._
+import NineCardsMoment._
 import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._

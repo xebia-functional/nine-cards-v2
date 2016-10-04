@@ -34,7 +34,9 @@
     <dimen name="padding_medium">12dp</dimen>
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_xlarge">24dp</dimen>
-    <dimen name="padding_xxlarge">64dp</dimen>
+    <dimen name="padding_xxlarge">32dp</dimen>
+    <dimen name="padding_xxxlarge">48dp</dimen>
+    <dimen name="padding_xxxxlarge">64dp</dimen>
 
     <dimen name="size_icon_small">36dp</dimen>
     <dimen name="size_icon_default">48dp</dimen>
@@ -108,7 +110,7 @@
 
     <dimen name="margin_left_subtitle">40dp</dimen>
 
-    <dimen name="wizard_height_header_steps">220dp</dimen>
+    <dimen name="wizard_height_header_steps">350dp</dimen>
 
     <!-- Widgets -->
     <dimen name="size_widget_item_preview">150dp</dimen>

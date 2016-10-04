@@ -3,11 +3,11 @@ package cards.nine.process.recommendations.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.recommendations._
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.{ApiServiceConfigurationException, ApiServices}
 import cards.nine.services.persistence.PersistenceServices
+import cards.nine.models.types.NineCardCategory
 
 
 class RecommendationsProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)

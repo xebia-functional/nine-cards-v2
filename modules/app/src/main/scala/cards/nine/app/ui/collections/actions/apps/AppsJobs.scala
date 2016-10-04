@@ -4,7 +4,7 @@ import cards.nine.app.commons.NineCardIntentConversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.types.{AllAppsCategory, Misc, NineCardCategory}
+import cards.nine.models.types.{AllAppsCategory, Misc, NineCardCategory}
 import cards.nine.process.device.models.{IterableApps, TermCounter}
 import cards.nine.process.device.{GetAppOrder, GetByName}
 import macroid.ActivityContextWrapper

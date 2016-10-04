@@ -1,7 +1,7 @@
 package cards.nine.process.recommendations.impl
 
-import cards.nine.process.commons.types.Social
 import cards.nine.services.api.{RecommendationApp, RequestConfig}
+import cards.nine.models.types.Social
 
 import scala.util.Random
 

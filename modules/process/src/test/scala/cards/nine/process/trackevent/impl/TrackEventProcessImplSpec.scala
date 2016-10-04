@@ -2,12 +2,12 @@ package cards.nine.process.trackevent.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.services.track.{TrackServices, TrackServicesException}
+import cards.nine.models.types.Game
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.process.commons.types.Game
 import cards.nine.process.trackevent.TrackEventException
 
 trait TrackEventProcessSpecification

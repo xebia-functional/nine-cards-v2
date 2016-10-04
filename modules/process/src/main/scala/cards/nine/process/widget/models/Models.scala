@@ -1,6 +1,6 @@
 package cards.nine.process.widget.models
 
-import cards.nine.process.commons.types.WidgetType
+import cards.nine.models.types.WidgetType
 
 case class AppWidget(
   id: Int,
