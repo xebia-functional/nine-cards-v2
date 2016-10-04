@@ -67,6 +67,12 @@
     <string name="downloadingBitmapsMessage">Descargando imágenes de tus apps</string>
     <string name="savingConfigurationMessage">Guardando tu configuración en nuestros servidores</string>
 
+    <string name="wizard_loading_connecting_with_google">Conectando con Google</string>
+    <string name="wizard_loading_request_google_permission">Pidiendo permisos a Google</string>
+    <string name="wizard_loading_connecting_with_plus">Conectando con Google Plus</string>
+    <string name="wizard_loading_devices">Cargando dispositivos</string>
+    <string name="wizard_loading_looking_for_better_collection">Creando las mejores colecciones con tus apps</string>
+
     <string name="creatingCollectionError">Error creando colecciones. Por favor inténtelo de nuevo</string>
 
     <string name="loadUserConfigDeviceReplace">Reemplazar %1$s con nueva configuración</string>
