@@ -1,6 +1,7 @@
-package cards.nine.process.commons.types
+package cards.nine.models.types
 
-import cards.nine.process.commons.NineCardCategories._
+import cards.nine.models.NineCardCategories
+import NineCardCategories._
 
 sealed trait NineCardCategory {
   val name: String

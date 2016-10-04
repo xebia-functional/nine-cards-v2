@@ -1,8 +1,8 @@
 package cards.nine.process.userv1.impl
 
-import cards.nine.process.commons.types.{AppCardType, AppsCollectionType, Game}
-import cards.nine.services.api.{GetUserV1Response, LoginResponseV1, RequestConfigV1}
+import cards.nine.models.types.{AppCardType, AppsCollectionType, Game}
 import cards.nine.services.api.models._
+import cards.nine.services.api.{GetUserV1Response, LoginResponseV1, RequestConfigV1}
 import cards.nine.services.persistence.models.{User => PersistenceUser}
 import play.api.libs.json.JsString
 

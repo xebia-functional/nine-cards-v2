@@ -3,7 +3,7 @@ package cards.nine.process.device.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.types.{Misc, NineCardCategory}
+import cards.nine.models.types.{Misc, NineCardCategory}
 import cards.nine.process.device._
 import cards.nine.process.device.models.IterableApps
 import cards.nine.process.device.utils.KnownCategoriesUtil

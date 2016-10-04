@@ -3,12 +3,12 @@ package cards.nine.app.ui.preferences.developers
 import android.content.{ClipData, ClipboardManager, Context}
 import android.preference.Preference
 import android.preference.Preference.OnPreferenceClickListener
+import cards.nine.models.types.Misc
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.types.Misc
 import cards.nine.process.device.models.App
 import cards.nine.process.recognition.{Location, Weather}
 import com.fortysevendeg.ninecardslauncher2.R

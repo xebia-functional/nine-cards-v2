@@ -1,6 +1,6 @@
 package cards.nine.process.device
 
-import cards.nine.process.commons.types.DockType
+import cards.nine.models.types.DockType
 
 sealed trait ContactsFilter
 

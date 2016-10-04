@@ -175,6 +175,7 @@ object Settings {
 
   lazy val modelsDependencies = Seq(
     androidProvidedLib,
+    playJson,
     specs2,
     mockito)
 

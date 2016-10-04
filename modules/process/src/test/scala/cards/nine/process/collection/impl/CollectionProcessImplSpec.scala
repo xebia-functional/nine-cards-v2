@@ -8,7 +8,6 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.process.collection.{CardException, CollectionException, CollectionProcessConfig}
 import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.commons.types.NoInstalledAppCardType
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.{ApiServiceException, ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}
 import cards.nine.services.apps.{AppsInstalledException, AppsServices}
@@ -16,6 +15,7 @@ import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.contacts.ContactsServices
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.Collection
+import cards.nine.models.types.NoInstalledAppCardType
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

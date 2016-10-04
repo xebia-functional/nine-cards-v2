@@ -1,6 +1,6 @@
 package cards.nine.services.contacts.models
 
-import cards.nine.services.commons.{EmailCategory, PhoneCategory}
+import cards.nine.models.types._
 
 case class Contact(
   name: String,

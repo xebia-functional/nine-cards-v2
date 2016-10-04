@@ -1,9 +1,9 @@
 package cards.nine.process.moment
 
+import cards.nine.models.types.AppCardType
 import cards.nine.process.collection.models.UnformedApp
 import cards.nine.process.commons.CommonConversions
 import cards.nine.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCard}
-import cards.nine.process.commons.types._
 import cards.nine.process.moment.models.App
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.{App => ServicesApp, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
