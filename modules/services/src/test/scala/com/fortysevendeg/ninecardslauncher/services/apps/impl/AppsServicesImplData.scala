@@ -1,6 +1,7 @@
 package cards.nine.services.apps.impl
 
 import cards.nine.models.Application
+import cards.nine.models.types.{Communication, Misc}
 
 import scala.util.Random
 
@@ -43,6 +44,7 @@ trait AppsServicesImplData {
       name = name,
       packageName = packageName,
       className = className,
+      category = Misc,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,

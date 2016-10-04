@@ -28,7 +28,7 @@ trait DeviceConversions extends NineCardIntentConversions {
     case GetByCategory(_) => OrderByCategory
   }
 
-  def toApp(app: ServicesApp): Application =
+  def toApplication(app: ServicesApp): Application =
     Application(
       name = app.name,
       packageName = app.packageName,
