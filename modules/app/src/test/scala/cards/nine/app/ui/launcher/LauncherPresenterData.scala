@@ -1,10 +1,10 @@
 package cards.nine.app.ui.launcher
 
+import cards.nine.models.types.CollectionType._
+import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types._
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
-import cards.nine.process.commons.types.CollectionType._
-import cards.nine.process.commons.types.NineCardCategory._
-import cards.nine.process.commons.types._
 import cards.nine.process.device.models.DockApp
 import cards.nine.process.user.models.{User, UserProfile}
 import play.api.libs.json.Json

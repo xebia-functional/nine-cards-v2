@@ -1,10 +1,9 @@
 package cards.nine.services.contacts
 
 import android.database.Cursor
-import android.net.Uri
 import cards.nine.commons.contentresolver.UriCreator
-import cards.nine.services.commons._
 import cards.nine.services.contacts.models._
+import cards.nine.models.types._
 
 object ContactsContentProvider {
 

@@ -2,8 +2,8 @@ package cards.nine.process.sharedcollections
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.sharedcollections.models._
+import cards.nine.models.types.NineCardCategory
 
 trait SharedCollectionsProcess {
 

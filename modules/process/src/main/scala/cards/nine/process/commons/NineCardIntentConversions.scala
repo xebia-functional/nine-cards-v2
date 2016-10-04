@@ -1,10 +1,10 @@
 package cards.nine.process.commons
 
+import cards.nine.models.types.{ContactCardType, EmailCardType, PhoneCardType}
 import cards.nine.process.collection.models.{UnformedApp, UnformedContact}
-import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models.NineCardIntentExtras._
+import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models.{NineCardIntent, NineCardIntentExtras}
-import cards.nine.process.commons.types.{ContactCardType, EmailCardType, PhoneCardType}
 import cards.nine.process.moment.models.{App => MomentApp}
 import cards.nine.services.apps.models.Application
 import cards.nine.services.persistence.models.App

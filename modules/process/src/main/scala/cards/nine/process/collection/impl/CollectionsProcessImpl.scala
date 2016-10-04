@@ -1,24 +1,23 @@
 package cards.nine.process.collection.impl
 
-import cats.syntax.either._
 import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.collection.AddCollectionRequest
-import cards.nine.process.collection._
+import cards.nine.models.Spaces
+import cards.nine.models.Spaces._
+import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types.{NineCardCategory, NoInstalledAppCardType}
+import cards.nine.process.collection.{AddCollectionRequest, _}
 import cards.nine.process.collection.models.{FormedCollection, UnformedApp, UnformedContact}
-import cards.nine.process.commons.Spaces._
 import cards.nine.process.commons.models.Collection
-import cards.nine.process.commons.types.NineCardCategory._
-import cards.nine.process.commons.types.{NineCardCategory, NoInstalledAppCardType}
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.CategorizedDetailPackage
 import cards.nine.services.persistence.models.App
-import cards.nine.services.persistence.OrderByCategory
-import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
+import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, OrderByCategory}
+import cats.syntax.either._
 import monix.eval.Task
 
 

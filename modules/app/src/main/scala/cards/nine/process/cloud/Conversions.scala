@@ -4,11 +4,11 @@ import cards.nine.app.ui.wizard.models.UserCloudDevice
 import cards.nine.process.cloud.models._
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
-import cards.nine.process.commons.types.WidgetType
 import cards.nine.process.device.models.DockApp
 import cards.nine.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
 import cards.nine.process.widget.models.{WidgetArea, AppWidget}
 import cards.nine.services.drive.models.DriveServiceFileSummary
+import cards.nine.models.types.WidgetType
 import play.api.libs.json.Json
 
 object Conversions {

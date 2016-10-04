@@ -1,12 +1,11 @@
 package cards.nine.process.device.impl
 
-import android.graphics.drawable.Drawable
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
+import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.models.NineCardIntentImplicits._
-import cards.nine.process.commons.types._
 import cards.nine.process.device.SaveDockAppRequest
 import cards.nine.process.device.models.{App, CallData, LastCallsContact, Widget, _}
 import cards.nine.process.device.types._
@@ -14,7 +13,6 @@ import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
 import cards.nine.services.apps.models.Application
 import cards.nine.services.calls.models.{Call => ServicesCall}
-import cards.nine.services.commons.{EmailHome => ServicesEmailHome, PhoneHome => ServicesPhoneHome, PhoneMobile => ServicesPhoneMobile, PhoneOther => ServicesPhoneOther, PhoneWork => ServicesPhoneWork}
 import cards.nine.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import cards.nine.services.image.{AppPackagePath, AppWebsitePath}
 import cards.nine.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
@@ -118,7 +116,7 @@ trait DeviceProcessData
 
   val phoneNumber1 = "+00 111 222 333"
   val contactName1 = "Contact 1"
-  val numberType1 = ServicesPhoneHome
+  val numberType1 = PhoneHome
   val date1 = 3L
   val callType1 = 1
   val lookupKey1 = "lookupKey 1"
@@ -126,7 +124,7 @@ trait DeviceProcessData
 
   val phoneNumber2 = "+00 444 555 666"
   val contactName2 = "Contact 2"
-  val numberType2 = ServicesPhoneWork
+  val numberType2 = PhoneWork
   val date2 = 2L
   val callType2 = 2
   val lookupKey2 = "lookupKey 2"
@@ -134,7 +132,7 @@ trait DeviceProcessData
 
   val phoneNumber3 = "+00 777 888 999"
   val contactName3 = "Contact 3"
-  val numberType3 = ServicesPhoneOther
+  val numberType3 = PhoneOther
   val date3 = 1L
   val callType3 = 3
   val lookupKey3 = "lookupKey 3"
@@ -343,17 +341,17 @@ trait DeviceProcessData
         emails = Seq(
           ContactEmail(
             address = "sample1@47deg.com",
-            category = ServicesEmailHome
+            category = EmailHome
           )
         ),
         phones = Seq(
           ContactPhone(
             number = phoneNumber1,
-            category = ServicesPhoneHome
+            category = PhoneHome
           ),
           ContactPhone(
             number = phoneNumber2,
-            category = ServicesPhoneMobile
+            category = PhoneMobile
           )
         )
       )
@@ -465,7 +463,7 @@ trait DeviceProcessData
     ServicesCall(
       number = phoneNumber1,
       name = Some(contactName1),
-      numberType = ServicesPhoneMobile,
+      numberType = PhoneMobile,
       date = date1,
       callType = callType1),
     ServicesCall(

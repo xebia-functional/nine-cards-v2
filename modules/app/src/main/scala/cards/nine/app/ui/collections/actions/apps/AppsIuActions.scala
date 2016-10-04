@@ -1,5 +1,6 @@
 package cards.nine.app.ui.collections.actions.apps
 
+import cards.nine.models.types.NineCardCategory
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -19,7 +20,6 @@ import cards.nine.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.device.models.{App, IterableApps, TermCounter}
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._

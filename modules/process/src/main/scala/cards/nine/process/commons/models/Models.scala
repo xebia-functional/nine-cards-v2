@@ -1,6 +1,6 @@
 package cards.nine.process.commons.models
 
-import cards.nine.process.commons.types._
+import cards.nine.models.types._
 
 case class Collection(
   id: Int,

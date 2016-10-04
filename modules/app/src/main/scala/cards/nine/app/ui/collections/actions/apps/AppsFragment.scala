@@ -9,7 +9,7 @@ import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.types.{AllAppsCategory, NineCardCategory}
+import cards.nine.models.types.{AllAppsCategory, NineCardCategory}
 import cards.nine.process.device.models.App
 import com.fortysevendeg.ninecardslauncher2.R
 

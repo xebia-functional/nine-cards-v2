@@ -11,10 +11,10 @@ import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.types._
 import cards.nine.process.accounts.CallPhone
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.commons.types.{MomentCollectionType, ShortcutCardType}
 import macroid.ActivityContextWrapper
 
 class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)

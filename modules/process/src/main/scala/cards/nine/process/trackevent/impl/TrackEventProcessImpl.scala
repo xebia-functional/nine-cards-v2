@@ -3,8 +3,8 @@ package cards.nine.process.trackevent.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService
-import cards.nine.process.commons.types.Game
 import cards.nine.process.trackevent._
+import cards.nine.models.types.Game
 import monix.eval.Task
 import cats.implicits._
 import cards.nine.process.trackevent.models._

@@ -1,6 +1,6 @@
 package cards.nine.process.sharedcollections.models
 
-import cards.nine.process.commons.types.{PublicCollectionStatus, NineCardCategory}
+import cards.nine.models.types.{NineCardCategory, PublicCollectionStatus}
 
 case class SharedCollection(
   id: String,

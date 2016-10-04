@@ -1,6 +1,6 @@
 package cards.nine.process.sharedcollections.impl
 
-import cards.nine.process.commons.types.{AppsCollectionType, Communication}
+import cards.nine.models.types.{AppsCollectionType, Communication}
 import cards.nine.process.sharedcollections.TopSharedCollection
 import cards.nine.process.sharedcollections.models.{CreateSharedCollection, UpdateSharedCollection}
 import cards.nine.services.api._
