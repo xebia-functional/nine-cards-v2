@@ -4,11 +4,11 @@ import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardCategory._
 import cards.nine.models.types._
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
-import cards.nine.process.moment.models.App
 import cards.nine.process.moment.{SaveMomentRequest, UpdateMomentRequest}
-import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 
@@ -31,7 +31,7 @@ trait MomentProcessImplData {
   val name1 = "Scala Android"
   val packageName1 = "com.fortysevendeg.scala.android"
   val className1 = "ScalaAndroidActivity"
-  val category1 = "category1"
+  val category1 = "Communication"
   val imagePath1 = "imagePath1"
   val dateInstalled1 = 1L
   val dateUpdate1 = 1L
@@ -48,7 +48,7 @@ trait MomentProcessImplData {
   val cardType: CardType = cardTypes(Random.nextInt(cardTypes.length))
   val imagePath: String = Random.nextString(5)
   val notification: String = Random.nextString(5)
-  val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["Communication"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
 
   val from = "8:00"
   val to = "19:00"
@@ -226,12 +226,12 @@ trait MomentProcessImplData {
     version: String = version1,
     installedFromGooglePlay: Boolean = installedFromGooglePlay1) =
     (1 until num) map (item =>
-      ServicesApp(
+      Application(
         id = id + item,
         name = name,
         packageName = packageName,
         className = className,
-        category = category,
+        category = NineCardCategory(category),
         dateInstalled = dateInstalled,
         dateUpdate = dateUpdate,
         version = version,
@@ -319,28 +319,21 @@ trait MomentProcessImplData {
         days = days))
 
   val homeApp =
-    App(
+    ApplicationData(
       name = name,
       packageName = homeAppPackageName,
-      className = className1)
+      className = className1,
+      category = NineCardCategory(category1),
+      dateInstalled = dateInstalled1,
+      dateUpdate = dateUpdate1,
+      version = version1,
+      installedFromGooglePlay = installedFromGooglePlay1)
 
-  val workApp =
-    App(
-      name = name,
-      packageName = workAppPackageName,
-      className = className1)
+  val workApp = homeApp.copy(packageName = workAppPackageName)
 
-  val nightApp =
-    App(
-      name = name,
-      packageName = nightAppPackageName,
-      className = className1)
+  val nightApp = homeApp.copy(packageName = nightAppPackageName)
 
-  val transitApp =
-    App(
-      name = name,
-      packageName = transitAppPackageName,
-      className = className1)
+  val transitApp = homeApp.copy(packageName = transitAppPackageName)
 
   val seqCard = createSeqCard()
   val seqServicesCard = createSeqServicesCard()

@@ -1,7 +1,7 @@
 package cards.nine.app.ui.collections.jobs
 
 import android.support.v7.widget.RecyclerView.ViewHolder
-import cards.nine.app.commons.{Conversions, NineCardIntentConversions}
+import cards.nine.app.commons.{Conversions, AppNineCardIntentConversions}
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.app.ui.commons.{JobException, Jobs}
@@ -22,7 +22,7 @@ class SingleCollectionJobs(
   actions: SingleCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
     with Conversions
-    with NineCardIntentConversions { self =>
+    with AppNineCardIntentConversions { self =>
 
   def initialize(sType: ScrollType): TaskService[Unit] = {
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)

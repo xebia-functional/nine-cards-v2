@@ -27,7 +27,7 @@ trait AppsDeviceProcessImpl
   def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
       apps <- persistenceServices.fetchApps(toFetchAppOrder(orderBy), orderBy.ascending)
-    } yield apps map toApp).resolve[AppException]
+    } yield apps map (_.toData)).resolve[AppException]
 
   def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
@@ -75,7 +75,7 @@ trait AppsDeviceProcessImpl
       application <- appsServices.getApplication(packageName)
       appCategory <- getAppCategory(packageName)
       applicationAdded <- persistenceServices.addApp(toAddAppRequest(application, appCategory))
-    } yield toApp(applicationAdded)).resolve[AppException]
+    } yield applicationAdded.toData).resolve[AppException]
 
   def deleteApp(packageName: String)(implicit context: ContextSupport) =
     (for {

@@ -13,7 +13,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
@@ -26,7 +26,7 @@ import macroid._
 
 case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends DialogFragment
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   val categoryIcons = appsCategories map { cat =>
     val name = resGetString(cat.getStringResource).getOrElse(cat.getStringResource)

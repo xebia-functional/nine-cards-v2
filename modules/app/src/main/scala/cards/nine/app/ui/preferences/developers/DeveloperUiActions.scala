@@ -3,14 +3,14 @@ package cards.nine.app.ui.preferences.developers
 import android.content.{ClipData, ClipboardManager, Context}
 import android.preference.Preference
 import android.preference.Preference.OnPreferenceClickListener
-import cards.nine.models.types.Misc
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.device.models.App
+import cards.nine.models.ApplicationData
+import cards.nine.models.types.Misc
 import cards.nine.process.recognition.{Location, Weather}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Ui}
 
@@ -71,7 +71,7 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
 
   def cacheCleared: TaskService[Unit] = uiShortToast2(R.string.devCacheCleared).toService
 
-  def setAppsCategorizedSummary(apps: Seq[App]): TaskService[Unit] = Ui {
+  def setAppsCategorizedSummary(apps: Seq[ApplicationData]): TaskService[Unit] = Ui {
     val categorizedCount = apps.count(_.category != Misc)
     val total = apps.length
     val summary = resGetString(R.string.devAppsCategorizedSummary, categorizedCount.toString, total.toString)

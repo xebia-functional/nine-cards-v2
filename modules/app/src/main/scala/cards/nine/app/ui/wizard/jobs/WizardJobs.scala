@@ -295,22 +295,14 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
   private[this] def onConnectionFailed(connectionResult: ConnectionResult): TaskService[Unit] = {
 
     def showErrorDialog(): TaskService[Unit] = withActivity { activity =>
-      TaskService {
-        CatchAll[UiException] {
-          GoogleApiAvailability.getInstance()
-            .getErrorDialog(activity, connectionResult.getErrorCode, resolveGooglePlayConnection)
-            .show()
-        }
-      }
+      GoogleApiAvailability.getInstance()
+        .getErrorDialog(activity, connectionResult.getErrorCode, resolveGooglePlayConnection)
+        .show()
     }
 
     if (connectionResult.hasResolution) {
       withActivity { activity =>
-        TaskService {
-          CatchAll[UiException] {
-            connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)
-          }
-        }
+        connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)
       }
     } else if (
       connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||

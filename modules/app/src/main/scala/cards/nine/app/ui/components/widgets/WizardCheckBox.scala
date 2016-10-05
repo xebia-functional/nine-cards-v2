@@ -12,7 +12,6 @@ import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons._
-import cards.nine.models.types.NineCardCategory
 import cards.nine.process.collection.models.PackagesByCategory
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -79,7 +78,7 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
       (if (defaultCheck) check() else uncheck())
 
   def initializeCollection(packagesByCategory: PackagesByCategory, defaultCheck: Boolean = true): Ui[Any] = {
-    val nineCardCategory = NineCardCategory(packagesByCategory.category)
+    val nineCardCategory = packagesByCategory.category
     val title = resGetString(R.string.wizard_new_conf_collection_name_step_1, nineCardCategory.getName, packagesByCategory.packages.length.toString)
     (this <~ vAddField(dataKey, packagesByCategory)) ~
       (icon <~
@@ -109,7 +108,7 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
   }
 
   def setBest9(filter9: Boolean): Ui[Any] = getData map { packagesByCategory =>
-    val nineCardCategory = NineCardCategory(packagesByCategory.category)
+    val nineCardCategory = packagesByCategory.category
     val length = packagesByCategory.packages.length
     val title = resGetString(
       if (filter9 && length > 9) R.string.wizard_new_conf_collection_name_best9_step_1 else R.string.wizard_new_conf_collection_name_step_1,
