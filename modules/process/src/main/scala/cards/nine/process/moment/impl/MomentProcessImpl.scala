@@ -42,7 +42,7 @@ class MomentProcessImpl(
       collections <- persistenceServices.fetchCollections //TODO - Issue #394 - Change this service's call for a new one to be created that returns the number of created collections
       length = collections.length
       servicesApp <- persistenceServices.fetchApps(OrderByName, ascending = true)
-      apps = servicesApp map toApplication
+      apps = servicesApp map (_.toData)
       collections = moments.zipWithIndex map {
         case (moment, index) =>
           generateAddCollection(filterAppsByMoment(apps, moment), moment, length + index)

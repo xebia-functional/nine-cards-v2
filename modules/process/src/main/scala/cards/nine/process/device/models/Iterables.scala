@@ -14,7 +14,7 @@ class IterableApps(cursor: ServicesIterableApps)
 
   override def count(): Int = cursor.count()
 
-  override def moveToPosition(pos: Int): ApplicationData = toApplication(cursor.moveToPosition(pos))
+  override def moveToPosition(pos: Int): ApplicationData = cursor.moveToPosition(pos).toData
 
   override def close(): Unit = cursor.close()
 

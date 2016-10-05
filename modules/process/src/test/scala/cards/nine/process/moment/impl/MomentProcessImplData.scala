@@ -329,38 +329,11 @@ trait MomentProcessImplData {
       version = version1,
       installedFromGooglePlay = installedFromGooglePlay1)
 
-  val workApp =
-    ApplicationData(
-      name = name,
-      packageName = workAppPackageName,
-      className = className1,
-      category = NineCardCategory(category1),
-      dateInstalled = dateInstalled1,
-      dateUpdate = dateUpdate1,
-      version = version1,
-      installedFromGooglePlay = installedFromGooglePlay1)
+  val workApp = homeApp.copy(packageName = workAppPackageName)
 
-  val nightApp =
-    ApplicationData(
-      name = name,
-      packageName = nightAppPackageName,
-      className = className1,
-      category = NineCardCategory(category1),
-      dateInstalled = dateInstalled1,
-      dateUpdate = dateUpdate1,
-      version = version1,
-      installedFromGooglePlay = installedFromGooglePlay1)
+  val nightApp = homeApp.copy(packageName = nightAppPackageName)
 
-  val transitApp =
-    ApplicationData(
-      name = name,
-      packageName = transitAppPackageName,
-      className = className1,
-      category = NineCardCategory(category1),
-      dateInstalled = dateInstalled1,
-      dateUpdate = dateUpdate1,
-      version = version1,
-      installedFromGooglePlay = installedFromGooglePlay1)
+  val transitApp = homeApp.copy(packageName = transitAppPackageName)
 
   val seqCard = createSeqCard()
   val seqServicesCard = createSeqServicesCard()

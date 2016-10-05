@@ -22,3 +22,19 @@ case class ApplicationData(
   dateUpdate: Long,
   version: String,
   installedFromGooglePlay: Boolean)
+
+object Application {
+
+  implicit class ApplicationOps(app: Application) {
+
+    def toData = ApplicationData(
+      name = app.name,
+      packageName = app.packageName,
+      className = app.className,
+      category = app.category,
+      dateInstalled = app.dateInstalled,
+      dateUpdate = app.dateUpdate,
+      version = app.version,
+      installedFromGooglePlay = app.installedFromGooglePlay)
+  }
+}
