@@ -1,24 +1,23 @@
-package cards.nine.app.ui.launcher.actions.editmoment
+package cards.nine.app.ui.components.dialogs
 
-import android.app.{Activity, Dialog}
-import android.content.Intent
+import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.{LinearLayout, ScrollView}
+import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.commons.NineCardIntentConversions
-import cards.nine.app.ui.commons.ops.ColorOps._
-import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class WifiDialogFragment(wifis: Seq[String])(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
+case class WifiDialogFragment(wifis: Seq[String], onSelected: (String) => Unit)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends DialogFragment
   with NineCardIntentConversions {
 
@@ -52,11 +51,9 @@ case class WifiDialogFragment(wifis: Seq[String])(implicit contextWrapper: Conte
       tvColor(theme.get(DrawerTextColor)) <~
       tvText(wifi) <~
       tvCompoundDrawablesWithIntrinsicBounds(left = Some(colorizeDrawable))) ~
-      (this <~ On.click{
+      (this <~ On.click {
         Ui {
-          val responseIntent = new Intent
-          responseIntent.putExtra(EditMomentFragment.wifiRequest, wifi)
-          getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+          onSelected(wifi)
           dismiss()
         }
       })

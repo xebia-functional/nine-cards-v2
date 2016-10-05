@@ -54,6 +54,8 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
   def showLoadingDevices(): TaskService[Unit] =
     showLoading(R.string.wizard_loading_devices).toService
 
+  def cleanStep(): TaskService[Unit] = (dom.newConfigurationStep <~ vgRemoveAllViews).toService
+
   private[this] def showLoading(resText: Int, colorBar: Option[Int] = None): Ui[Any] =
     (dom.loadingRootLayout <~ vVisible) ~
       (dom.loadingText <~ tvText(resText)) ~

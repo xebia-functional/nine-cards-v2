@@ -6,6 +6,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.collection.models.PackagesByCategory
 import macroid._
 
@@ -114,4 +115,21 @@ object WizardCheckBoxTweaks {
 
   def wcbBest9(filter9: Boolean) = Tweak[W] (_.setBest9(filter9).run)
 
+}
+
+object WizardWifiCheckBoxTweaks {
+  type W = WizardWifiCheckBox
+
+  def wwcbInitialize(moment: NineCardsMoment, onWifiClick: () => Unit, defaultCheck: Boolean = true) =
+    Tweak[W](_.initialize(moment, onWifiClick, defaultCheck).run)
+
+  def wwcbDoCheck(doCheck: Boolean) = Tweak[W] { view => (if (doCheck) view.check() else view.uncheck()).run }
+
+  def wwcbCheck() = Tweak[W] (_.check().run)
+
+  def wwcbUncheck() = Tweak[W] (_.uncheck().run)
+
+  def wwcbSwap() = Tweak[W] (_.swap().run)
+
+  def wwcbWifiName(wifi: String) = Tweak[W] (_.setWifiName(wifi).run)
 }

@@ -154,7 +154,8 @@ class WizardActivity
     newConfigurationJobs.saveCollections(collections, best9Apps).resolveAsyncServiceOr(_ =>
       wizardUiActions.showErrorGeneral() *> newConfigurationJobs.loadBetterCollections())
 
-  override def onLoadWifiByMoment(): Unit = {}
+  override def onLoadWifiByMoment(): Unit =
+    newConfigurationJobs.loadMomentWithWifi().resolveAsync()
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
     case ex: SocialProfileProcessException if ex.recoverable => wizardJobs.googleSignIn()

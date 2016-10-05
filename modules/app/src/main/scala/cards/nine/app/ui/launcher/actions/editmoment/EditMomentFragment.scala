@@ -1,11 +1,8 @@
 package cards.nine.app.ui.launcher.actions.editmoment
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import cards.nine.app.commons.NineCardIntentConversions
-import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.commons.javaNull
 import cards.nine.models.types.NineCardsMoment
@@ -32,26 +29,11 @@ class EditMomentFragment
     }
   }
 
-  override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
-    super.onActivityResult(requestCode, resultCode, data)
-    (requestCode, resultCode) match {
-      case (RequestCodes.selectInfoWifi, Activity.RESULT_OK) =>
-        Option(data) flatMap (d => Option(d.getExtras)) foreach {
-          case extras if extras.containsKey(EditMomentFragment.wifiRequest) =>
-            editPresenter.addWifi(extras.getString(EditMomentFragment.wifiRequest))
-          case _ =>
-        }
-      case _ =>
-    }
-  }
-
 }
 
 object EditMomentFragment {
 
   val momentKey = "moment"
-
-  val wifiRequest = "wifi-request"
 
 }
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/WizardWifiCheckboxRoot">
+
+    <ImageView
+        android:id="@+id/wizard_wifi_check_icon"
+        style="@style/WizardWifiCheckboxIcon"/>
+
+    <LinearLayout
+        style="@style/WizardWifiCheckboxNamesRoot">
+
+        <TextView
+            android:id="@+id/wizard_wifi_check_name"
+            style="@style/WizardWifiCheckboxName"/>
+
+        <TextView
+            android:id="@+id/wizard_wifi_check_connected"
+            style="@style/WizardWifiCheckboxConnectedText"/>
+
+    </LinearLayout>
+
+    <ImageView
+        style="@style/WizardWifiCheckboxLine"/>
+
+    <cards.nine.app.ui.components.widgets.TintableImageView
+        android:id="@+id/wizard_wifi_check_wifi_action"
+        style="@style/WizardWifiCheckboxSelectWifi"/>
+
+</LinearLayout>

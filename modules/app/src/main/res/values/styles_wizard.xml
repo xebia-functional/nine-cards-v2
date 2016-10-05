@@ -231,6 +231,63 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <!-- Wizard Wifi Checkbox -->
+
+    <style name="WizardWifiCheckboxRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingTop">@dimen/padding_large</item>
+        <item name="android:paddingBottom">@dimen/padding_large</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="WizardWifiCheckboxIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="WizardWifiCheckboxNamesRoot">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="WizardWifiCheckboxName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="WizardWifiCheckboxConnectedText">
+        <item name="android:layout_width">@dimen/wizard_min_width_checkbox_wifi</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="WizardWifiCheckboxLine">
+        <item name="android:layout_width">@dimen/stroke_thin</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@color/wizard_line</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
+    </style>
+
+    <style name="WizardWifiCheckboxSelectWifi">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/icon_edit_moment_wifi</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
     <!-- New configuration -->
 
     <style name="WizardNewConfigurationRoot">
@@ -403,5 +460,31 @@
     </style>
 
     <style name="WizardNewConfigurationDescriptionStep2" parent="WizardNewConfigurationDescription"/>
+
+    <!-- Step 3 -->
+
+    <style name="WizardNewConfigurationTitleStep3" parent="WizardNewConfigurationTitle">
+        <item name="android:text">@string/wizard_new_conf_title_step_3</item>
+        <item name="android:textColor">@color/wizard_background_new_conf_step_2</item>
+    </style>
+
+    <style name="WizardNewConfigurationDescriptionStep3" parent="WizardNewConfigurationDescription">
+        <item name="android:text">@string/wizard_new_conf_description_step_3</item>
+    </style>
+
+    <style name="WizardNewConfigurationScrollStep3">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">@dimen/padding_xlarge</item>
+    </style>
+
+    <style name="WizardNewConfigurationScrollContentStep3">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+    </style>
 
 </resources>

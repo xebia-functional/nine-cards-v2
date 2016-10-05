@@ -115,6 +115,11 @@
         ]]>
     </string>
 
+    <string name="wizard_new_conf_title_step_3">Momentos y Wifis que usas</string>
+    <string name="wizard_new_conf_description_step_3">Selecciona los momentos y el wifi para cada uno así podremos mostrarte la mejor experiencia en 9Cards</string>
+    <string name="wizard_new_conf_wifi_no_connected_step_3">No hay wifi seleccionado</string>
+    <string name="wizard_new_conf_wifi_connected_step_3">Conectado a \"%1$s\"</string>
+
     <!-- Moment / Widgets -->
 
     <string name="editMoment">Editar Momento</string>

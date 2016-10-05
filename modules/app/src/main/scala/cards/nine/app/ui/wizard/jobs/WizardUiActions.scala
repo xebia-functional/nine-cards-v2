@@ -1,6 +1,5 @@
 package cards.nine.app.ui.wizard.jobs
 
-import android.graphics.Color
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -17,11 +16,11 @@ import cards.nine.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._

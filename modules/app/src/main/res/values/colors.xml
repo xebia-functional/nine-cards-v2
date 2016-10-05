@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Main colors -->
-    <color name="background_app">#eeeeee</color>
+    <color name="background_app">#fefefe</color>
     <color name="primary">#3F51B5</color>
     <color name="primary_dark">#ff344285</color>
     <color name="color_control_highlight">#cccccc</color>
