@@ -2,7 +2,6 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.models
 import cards.nine.models.types._
 import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, _}
 import cards.nine.process.commons.NineCardIntentConversions
@@ -588,7 +587,7 @@ trait DeviceProcessData
   val dockAppProcess1 = dockAppProcessSeq(0)
   val saveDockAppRequestSeq = createSaveDockAppRequestSeq()
 
-  val iterableCursorContact = new IterableCursor[models.Contact] {
+  val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = contacts.length
 
     override def moveToPosition(pos: Int): Contact = contacts(pos)
