@@ -109,6 +109,8 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
 
   def showErrorLoginUser(): TaskService[Unit] = uiShortToast2(R.string.errorLoginUser).toService
 
+  def showErrorGeneral(): TaskService[Unit] = uiShortToast2(R.string.contactUsError).toService
+
   def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast2(R.string.errorConnectingGoogle).toService
 
   def showErrorAcceptTerms(): TaskService[Unit] =
