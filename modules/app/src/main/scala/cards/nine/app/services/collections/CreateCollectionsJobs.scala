@@ -4,7 +4,7 @@ import android.content.Intent
 import cards.nine.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import cards.nine.app.services.commons.FirebaseExtensions._
 import cards.nine.app.ui.commons.WizardState._
-import cards.nine.app.ui.commons.action_filters.WizardStateActionFilter
+import cards.nine.app.ui.commons.action_filters.{WizardAnswerActionFilter, WizardStateActionFilter}
 import cards.nine.app.ui.commons._
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
@@ -13,7 +13,6 @@ import cards.nine.process.device.GetByName
 import cards.nine.process.user.models.User
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ContextWrapper
-import monix.eval.Task
 
 class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contextWrapper: ContextWrapper)
   extends Jobs
@@ -25,9 +24,8 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
 
   var statuses = CreateCollectionsJobsStatuses()
 
-  def sendActualState: TaskService[Unit] = {
-    sendBroadCastTask(BroadAction(WizardStateActionFilter.action, statuses.currentState))
-  }
+  def sendActualState: TaskService[Unit] =
+    sendBroadCastTask(BroadAction(WizardAnswerActionFilter.action, statuses.currentState))
 
   def startCommand(intent: Intent): TaskService[Unit] = {
 
@@ -109,8 +107,8 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
   private[this] def setState(state: String, close: Boolean = false): TaskService[Unit] = {
     statuses = statuses.copy(currentState = Option(state))
     for {
-      _ <- sendActualState
-      _ <- if (close) actions.endProcess else TaskService.right((): Unit)
+      _ <- sendBroadCastTask(BroadAction(WizardStateActionFilter.action, statuses.currentState))
+      _ <- if (close) actions.endProcess else TaskService.empty
     } yield ()
   }
 
