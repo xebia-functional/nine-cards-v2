@@ -28,17 +28,6 @@ trait DeviceConversions extends NineCardIntentConversions {
     case GetByCategory(_) => OrderByCategory
   }
 
-  def toApplication(app: Application): ApplicationData =
-    ApplicationData(
-      name = app.name,
-      packageName = app.packageName,
-      className = app.className,
-      category = app.category,
-      dateInstalled = app.dateInstalled,
-      dateUpdate = app.dateUpdate,
-      version = app.version,
-      installedFromGooglePlay = app.installedFromGooglePlay)
-
   def toAddAppRequest(item: ApplicationData, category: NineCardCategory): AddAppRequest =
       AddAppRequest(
         name = item.name,
