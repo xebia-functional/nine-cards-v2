@@ -3,7 +3,6 @@ package cards.nine.services.contacts
 import android.database.Cursor
 import cards.nine.commons.contentresolver.UriCreator
 import cards.nine.models.{ContactPhone, ContactEmail, Contact}
-import cards.nine.services.contacts.models._
 import cards.nine.models.types._
 
 object ContactsContentProvider {

@@ -29,7 +29,7 @@ trait ContactsDeviceProcessImpl extends DeviceProcess {
     (for {
       favoriteContacts <- contactsServices.getFavoriteContacts
       filledFavoriteContacts <- contactsServices.populateContactInfo(favoriteContacts)
-    } yield toContactSeq(filledFavoriteContacts)).leftMap(mapServicesException)
+    } yield filledFavoriteContacts).leftMap(mapServicesException)
 
   def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
     (for {
@@ -38,7 +38,7 @@ trait ContactsDeviceProcessImpl extends DeviceProcess {
         case FavoriteContacts => contactsServices.getFavoriteContacts
         case ContactsWithPhoneNumber => contactsServices.getContactsWithPhone
       }
-    } yield toContactSeq(contacts)).leftMap(mapServicesException)
+    } yield contacts).leftMap(mapServicesException)
 
   def getTermCountersForContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
     (for {
@@ -66,6 +66,6 @@ trait ContactsDeviceProcessImpl extends DeviceProcess {
   def getContact(lookupKey: String)(implicit context: ContextSupport) =
     (for {
       contact <- contactsServices.findContactByLookupKey(lookupKey)
-    } yield toContact(contact)).leftMap(mapServicesException)
+    } yield contact).leftMap(mapServicesException)
 
 }

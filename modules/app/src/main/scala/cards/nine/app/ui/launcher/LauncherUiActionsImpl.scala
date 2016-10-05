@@ -44,12 +44,11 @@ import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
 import cards.nine.commons._
-import cards.nine.models.ApplicationData
+import cards.nine.models.{Contact, ApplicationData, ConditionWeather}
 import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment}
 import cards.nine.process.commons.models.{Collection, Moment}
-import cards.nine.process.device.models.{Contact, LastCallsContact, _}
+import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.process.device.{GetAppOrder, GetByName}
-import cards.nine.models.ConditionWeather
 import cards.nine.process.theme.models.NineCardsTheme
 import cards.nine.process.widget.models.AppWidget
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}

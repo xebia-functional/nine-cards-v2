@@ -21,18 +21,6 @@ case class LastCallsContact(
   lastCallDate: Long,
   calls: Seq[Call])
 
-case class Contact(
-  name: String,
-  lookupKey: String,
-  photoUri: String,
-  hasPhone: Boolean,
-  favorite: Boolean,
-  info: Option[ContactInfo] = None)
-
-case class ContactInfo(
-  emails: Seq[ContactEmail],
-  phones: Seq[ContactPhone])
-
 case class ContactEmail(
   address: String,
   category: EmailCategory)

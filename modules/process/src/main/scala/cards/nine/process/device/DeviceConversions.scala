@@ -2,14 +2,12 @@ package cards.nine.process.device
 
 import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models
 import cards.nine.models.types._
-import cards.nine.models.{Application, ApplicationData, Call}
+import cards.nine.models.{ContactCounter, Application, ApplicationData, Call}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models._
 import cards.nine.process.device.types.WidgetResizeMode
-import cards.nine.services.contacts.models.ContactCounter
 import cards.nine.services.image.{AppPackage, BitmapResize}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
@@ -116,7 +114,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       calls = calls)
   }
 
-  def toTermCounter(item: models.ContactCounter): TermCounter = TermCounter(
+  def toTermCounter(item: ContactCounter): TermCounter = TermCounter(
     term = item.term,
     count = item.count)
 
@@ -124,25 +122,11 @@ trait DeviceConversions extends NineCardIntentConversions {
     term = item.term,
     count = item.count)
 
-  def toContactSeq(items: Seq[models.Contact]): Seq[Contact] = items map toContact
-
-  def toContact(item: models.Contact): Contact = Contact(
-      name = item.name,
-      lookupKey = item.lookupKey,
-      photoUri = item.photoUri,
-      hasPhone = item.hasPhone,
-      favorite = item.favorite,
-      info = item.info map toContactInfo)
-
-  def toContactInfo(item: models.ContactInfo): ContactInfo = ContactInfo(
-    emails = item.emails map toContactEmail,
-    phones = item.phones map toContactPhone)
-
-  def toContactEmail(item: models.ContactEmail): ContactEmail = ContactEmail(
+  def toContactEmail(item: ContactEmail): ContactEmail = ContactEmail(
     address = item.address,
     category = item.category)
 
-  def toContactPhone(item: models.ContactPhone): ContactPhone = ContactPhone(
+  def toContactPhone(item: ContactPhone): ContactPhone = ContactPhone(
     number = item.number,
     category = item.category)
 

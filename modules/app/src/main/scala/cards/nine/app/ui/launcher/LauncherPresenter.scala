@@ -26,7 +26,7 @@ import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types._
-import cards.nine.models.{ApplicationData, ConditionWeather, UnknownCondition}
+import cards.nine.models.{Contact, ApplicationData, ConditionWeather, UnknownCondition}
 import cards.nine.process.accounts._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection, Moment, _}
