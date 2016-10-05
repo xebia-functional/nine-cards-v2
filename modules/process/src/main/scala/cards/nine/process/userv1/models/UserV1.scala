@@ -1,6 +1,6 @@
 package cards.nine.process.userv1.models
 
-import cards.nine.process.commons.types.{CollectionType, NineCardCategory}
+import cards.nine.models.types.{CollectionType, NineCardCategory}
 
 case class Device(
   name: String,

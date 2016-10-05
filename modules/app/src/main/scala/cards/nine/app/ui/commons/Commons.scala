@@ -98,22 +98,23 @@ object AppUtils {
   def getDefaultTheme = NineCardsTheme(
     name = "light",
     styles = Seq(
+      ThemeStyle(PrimaryColor, Color.parseColor("#3F51B5")),
+      ThemeStyle(SearchBackgroundColor, Color.parseColor("#ffffff")),
+      ThemeStyle(SearchPressedColor, Color.parseColor("#ff59afdd")),
+      ThemeStyle(SearchGoogleColor, Color.parseColor("#a3a3a3")),
+      ThemeStyle(SearchIconsColor, Color.parseColor("#646464")),
+      ThemeStyle(SearchTextColor, Color.parseColor("#646464")),
+      ThemeStyle(DrawerTabsBackgroundColor, Color.parseColor("#16000000")),
+      ThemeStyle(DrawerBackgroundColor, Color.parseColor("#ffffff")),
+      ThemeStyle(DrawerTextColor, Color.parseColor("#cc000000")),
+      ThemeStyle(DrawerIconColor, Color.parseColor("#99000000")),
       ThemeStyle(DockPressedColor, Color.parseColor("#ffd5f2fa")),
       ThemeStyle(CardLayoutBackgroundColor, Color.parseColor("#eeeeee")),
       ThemeStyle(CardTextColor, Color.parseColor("#000000")),
       ThemeStyle(CardBackgroundColor, Color.parseColor("#ffffff")),
       ThemeStyle(CardBackgroundPressedColor, Color.parseColor("#000000")),
       ThemeStyle(CollectionDetailTextTabSelectedColor, Color.parseColor("#ffffff")),
-      ThemeStyle(CollectionDetailTextTabDefaultColor, Color.parseColor("#80ffffff")),
-      ThemeStyle(DrawerTabsBackgroundColor, Color.parseColor("#16000000")),
-      ThemeStyle(DrawerBackgroundColor, Color.parseColor("#ffffff")),
-      ThemeStyle(DrawerTextColor, Color.parseColor("#ffffff")),
-      ThemeStyle(SearchBackgroundColor, Color.parseColor("#ffffff")),
-      ThemeStyle(SearchPressedColor, Color.parseColor("#ff59afdd")),
-      ThemeStyle(SearchGoogleColor, Color.parseColor("#a3a3a3")),
-      ThemeStyle(SearchIconsColor, Color.parseColor("#646464")),
-      ThemeStyle(SearchTextColor, Color.parseColor("#646464")),
-      ThemeStyle(DrawerIconColor, Color.parseColor("#000000"))))
+      ThemeStyle(CollectionDetailTextTabDefaultColor, Color.parseColor("#80ffffff"))))
 
   // TODO We should move this colors to theme
   def getIndexColor(index: Int): Int = index match {

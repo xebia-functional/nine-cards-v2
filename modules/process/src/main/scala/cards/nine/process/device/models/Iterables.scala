@@ -1,11 +1,11 @@
 package cards.nine.process.device.models
 
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.process.commons.types.Misc
 import cards.nine.commons.javaNull
 import cards.nine.process.device.DeviceConversions
 import cards.nine.services.contacts.models.{Contact => ServicesContact}
 import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
+import cards.nine.models.types.Misc
 
 class IterableApps(cursor: ServicesIterableApps)
   extends IterableCursor[App]

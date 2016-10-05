@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.ui.collections.CollectionFragment._
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
@@ -14,9 +13,10 @@ import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.{PhoneCardType, PublishedByMe}
 import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.commons.types.{PhoneCardType, PublishedByMe}
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{TR, _}
 import macroid.Contexts
@@ -172,18 +172,20 @@ class CollectionFragment
     groupCollectionsJobs.openReorderMode(scrollType, canScroll).resolveAsync()
 
   def closeReorderMode(position: Int): Unit =
-    groupCollectionsJobs.closeReorderMode(position).resolveAsync()
+    (for {
+      _ <- toolbarJobs.scrollIdle()
+      _ <- groupCollectionsJobs.closeReorderMode(position)
+    } yield ()).resolveAsync()
+
 
   def startReorderCards(holder: ViewHolder): Unit =
     singleCollectionJobs.startReorderCards(holder).resolveAsync()
 
   override def performCard(card: Card, position: Int): Unit =
-    groupCollectionsJobs.performCard(card, position).resolveAsyncServiceOr { (e: Throwable) =>
-      e match {
-        case _: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
-          groupCollectionsJobs.requestCallPhonePermission(card.intent.extractPhone())
-        case _ => groupCollectionsJobs.showGenericError()
-      }
+    groupCollectionsJobs.performCard(card, position).resolveAsyncServiceOr[Throwable] {
+      case _: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
+        groupCollectionsJobs.requestCallPhonePermission(card.intent.extractPhone())
+      case _ => groupCollectionsJobs.showGenericError()
     }
 }
 

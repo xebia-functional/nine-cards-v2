@@ -1,11 +1,11 @@
 package cards.nine.process.moment.impl
 
+import cards.nine.models.types.CardType._
+import cards.nine.models.types.CollectionType._
+import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types._
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
-import cards.nine.process.commons.types.CardType._
-import cards.nine.process.commons.types.CollectionType._
-import cards.nine.process.commons.types.NineCardCategory._
-import cards.nine.process.commons.types._
 import cards.nine.process.moment.models.App
 import cards.nine.process.moment.{SaveMomentRequest, UpdateMomentRequest}
 import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}

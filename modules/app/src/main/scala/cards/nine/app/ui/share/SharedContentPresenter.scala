@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.webkit.URLUtil
+import cards.nine.models.types.ShortcutCardType
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.Jobs
@@ -13,7 +14,6 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Collection, NineCardIntent, NineCardIntentExtras}
-import cards.nine.process.commons.types.ShortcutCardType
 import cards.nine.process.device.IconResize
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}

@@ -2,6 +2,7 @@ package cards.nine.app.ui.launcher.actions.publicollections
 
 import android.support.v4.app.Fragment
 import android.widget.{LinearLayout, TextView}
+import cards.nine.models.types.NineCardCategory
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -14,7 +15,6 @@ import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.process.commons.models.Collection
-import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.sharedcollections.{LatestSharedCollection, TopSharedCollection, TypeSharedCollection}
 import cards.nine.process.theme.models.CardLayoutBackgroundColor

@@ -7,6 +7,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import cards.nine.models.types.PublishedByOther
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -23,7 +24,6 @@ import cards.nine.app.ui.profile.adapters.{AccountsAdapter, EmptyProfileAdapter,
 import cards.nine.app.ui.profile.dialog.{EditAccountDeviceDialogFragment, RemoveAccountDeviceDialogFragment}
 import cards.nine.app.ui.profile.models.AccountSync
 import cards.nine.commons._
-import cards.nine.process.commons.types.PublishedByOther
 import cards.nine.process.sharedcollections.models.{SharedCollection, Subscription}
 import cards.nine.process.theme.models.{CardLayoutBackgroundColor, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}

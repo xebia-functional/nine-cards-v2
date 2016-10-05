@@ -1,6 +1,6 @@
-package cards.nine.process.commons.types.json
+package cards.nine.models.types.json
 
-import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.models.types.NineCardsMoment
 import play.api.libs.json._
 
 object NineCardsMomentImplicits {

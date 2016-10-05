@@ -3,6 +3,7 @@ package cards.nine.app.ui.components.dialogs
 import android.support.design.widget.BottomSheetDialog
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -13,7 +14,6 @@ import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.process.commons.types.NineCardsMoment
 import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerTextColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}

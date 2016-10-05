@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar.OnMenuItemClickListener
 import android.view.{MenuItem, View}
 import android.widget.LinearLayout
+import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.UiContext
@@ -22,7 +23,6 @@ import AnimatedWorkSpaces._
 import android.appwidget.AppWidgetHostView
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
-import cards.nine.process.commons.types.NineCardsMoment
 import cards.nine.process.recognition.ConditionWeather
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import cards.nine.process.widget.models.AppWidget

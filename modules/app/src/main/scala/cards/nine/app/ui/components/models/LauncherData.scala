@@ -1,7 +1,7 @@
 package cards.nine.app.ui.components.models
 
 import cards.nine.process.commons.models.Collection
-import cards.nine.process.commons.types.NineCardsMoment
+import cards.nine.models.types.NineCardsMoment
 
 case class LauncherData(
   workSpaceType: WorkSpaceType,

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
+import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -19,7 +20,6 @@ import cards.nine.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, T
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons._
-import cards.nine.process.commons.types.NineCardsMoment
 import cards.nine.process.recognition._
 import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}

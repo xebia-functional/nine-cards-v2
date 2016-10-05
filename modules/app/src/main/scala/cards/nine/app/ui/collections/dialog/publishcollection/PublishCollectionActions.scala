@@ -2,10 +2,6 @@ package cards.nine.app.ui.collections.dialog.publishcollection
 
 import android.view.View
 import android.widget.TextView
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.AppUtils
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
@@ -15,10 +11,15 @@ import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.types.NineCardCategory
 import cards.nine.process.commons.models.Collection
-import cards.nine.process.commons.types._
 import cards.nine.process.theme.models._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -38,9 +39,9 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
     (categoriesSorted map (_._1), categoriesSorted map (_._2))
   }
 
-  def loadTheme(theme: NineCardsTheme): TaskService[Unit] = Ui {
+  def loadTheme(theme: NineCardsTheme): TaskService[Unit] = TaskService.right {
     statuses = statuses.copy(theme = theme)
-  }.toService
+  }
 
   def initialize(): TaskService[Unit] = {
     implicit val theme: NineCardsTheme = statuses.theme

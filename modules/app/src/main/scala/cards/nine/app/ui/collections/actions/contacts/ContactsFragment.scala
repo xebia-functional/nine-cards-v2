@@ -5,15 +5,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.view._
 import cards.nine.app.commons.NineCardIntentConversions
-import cards.nine.app.ui.collections.jobs.GroupCollectionsUiListener
-import cards.nine.app.ui.commons.RequestCodes
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.actions.BaseActionFragment
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.{JobException, RequestCodes}
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.device.{AllContacts, ContactPermissionException, ContactsFilter}
 import com.fortysevendeg.ninecardslauncher.R
 
-class ContactsFragment
+class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
   extends BaseActionFragment
   with ContactsUiActions
   with ContactsDOM
@@ -49,12 +51,17 @@ class ContactsFragment
             case _ => None
           }
         }
-        (maybeRequest, getActivity) match {
-          case (Some(request), activity: GroupCollectionsUiListener) =>
-            activity.addCards(Seq(request))
-            contactsJobs.close().resolveAsync()
-          case _ => contactsJobs.showError().resolveAsync()
-        }
+        (for {
+          cards <- maybeRequest match {
+            case Some(request) => groupCollectionsJobs.addCards(Seq(request))
+            case _ => TaskService.left(JobException("Request not found"))
+          }
+          _ <- singleCollectionJobs match {
+            case Some(job) => job.addCards(cards)
+            case _ => TaskService.empty
+          }
+          _ <- contactsJobs.close()
+        } yield ()).resolveAsyncServiceOr(_ => contactsJobs.showError())
       case _ =>
     }
   }

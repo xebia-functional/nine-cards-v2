@@ -1,4 +1,4 @@
-package cards.nine.process.commons.types
+package cards.nine.models.types
 
 sealed trait PublicCollectionStatus
 

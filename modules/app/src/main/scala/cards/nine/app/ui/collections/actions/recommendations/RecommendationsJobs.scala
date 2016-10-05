@@ -4,8 +4,8 @@ import cards.nine.app.commons.NineCardIntentConversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.recommendations.models.RecommendedApp
+import cards.nine.models.types.NineCardCategory
 import macroid.ActivityContextWrapper
 
 class RecommendationsJobs(
@@ -41,5 +41,7 @@ class RecommendationsJobs(
   def showErrorLoadingRecommendation(): TaskService[Unit] = actions.showErrorLoadingRecommendationInScreen()
 
   def showError(): TaskService[Unit] = actions.showContactUsError()
+
+  def close(): TaskService[Unit] = actions.close()
 
 }

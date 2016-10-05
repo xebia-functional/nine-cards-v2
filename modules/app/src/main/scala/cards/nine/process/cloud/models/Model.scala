@@ -2,7 +2,7 @@ package cards.nine.process.cloud.models
 
 import java.util.Date
 
-import cards.nine.process.commons.types._
+import cards.nine.models.types._
 
 trait CloudStorageResource {
   def cloudId: String

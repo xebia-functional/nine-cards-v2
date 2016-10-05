@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
+import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -16,7 +17,6 @@ import cards.nine.app.ui.components.models.LauncherMoment
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons.javaNull
 import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.commons.types.NineCardsMoment
 import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import cards.nine.app.ui.commons.ops.CollectionOps._

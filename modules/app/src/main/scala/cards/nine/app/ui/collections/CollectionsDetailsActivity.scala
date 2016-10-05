@@ -9,11 +9,6 @@ import android.support.v7.app.AppCompatActivity
 import android.view._
 import cards.nine.app.commons._
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
-import cards.nine.app.ui.collections.actions.apps.AppsFragment
-import cards.nine.app.ui.collections.actions.contacts.ContactsFragment
-import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
-import cards.nine.app.ui.collections.actions.shortcuts.ShortcutFragment
-import cards.nine.app.ui.collections.dialog.publishcollection.PublishCollectionFragment
 import cards.nine.app.ui.collections.jobs._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
@@ -23,11 +18,10 @@ import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, 
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.{NotPublished, PublicCollectionStatus}
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.commons.types.{NotPublished, PublicCollectionStatus}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
-import macroid.FullDsl._
 import macroid._
 
 import scala.util.Try
@@ -55,6 +49,8 @@ class CollectionsDetailsActivity
 
   lazy val preferenceValues = new NineCardsPreferencesValue
 
+  val navigation = new NavigationCollections()
+
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
 
   implicit lazy val groupCollectionsJobs = new GroupCollectionsJobs(new GroupCollectionsUiActions(self))
@@ -63,7 +59,7 @@ class CollectionsDetailsActivity
 
   implicit lazy val sharedCollectionJobs = new SharedCollectionJobs(new SharedCollectionUiActions(self))
 
-  def getSingleCollectionJobs: Option[SingleCollectionJobs] =
+  implicit def getSingleCollectionJobs: Option[SingleCollectionJobs] =
     getAdapter flatMap (_.getActiveFragment) map (_.singleCollectionJobs)
 
   def getSingleCollectionJobsByPosition(position: Int): Option[SingleCollectionJobs] =
@@ -85,6 +81,8 @@ class CollectionsDetailsActivity
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
+
+    statuses = statuses.reset()
 
     val position = getInt(
       Seq(bundle, getIntent.getExtras),
@@ -221,7 +219,7 @@ class CollectionsDetailsActivity
 
   override def closeEditingMode(): Unit =
     statuses.collectionMode match {
-      case EditingCollectionMode => groupCollectionsJobs.closeEditingMode()
+      case EditingCollectionMode => groupCollectionsJobs.closeEditingMode().resolveAsync()
       case _ =>
     }
 
@@ -231,7 +229,10 @@ class CollectionsDetailsActivity
 
   override def isEditingMode: Boolean = statuses.collectionMode == EditingCollectionMode
 
-  override def showPublicCollectionDialog(collection: Collection): Unit = showDialog(PublishCollectionFragment(collection))
+  override def showPublicCollectionDialog(collection: Collection): Unit = navigation.openPublishCollection(collection)
+
+  def showEditCollectionDialog(cardName: String, onChangeName: (Option[String]) => Unit): Unit =
+    navigation.openEditCard(cardName, onChangeName)
 
   override def addCards(cardsRequest: Seq[AddCardRequest]): Unit =
     (for {
@@ -254,13 +255,13 @@ class CollectionsDetailsActivity
   override def showDataInPosition(position: Int): Unit =
     getSingleCollectionJobsByPosition(position) foreach(_.showData().resolveAsync())
 
-  override def showAppsDialog(args: Bundle): Ui[Any] = launchDialog(f[AppsFragment], args)
+  override def showAppsDialog(args: Bundle): Ui[Any] = navigation.openApps(args)
 
-  override def showContactsDialog(args: Bundle): Ui[Any] = launchDialog(f[ContactsFragment], args)
+  override def showContactsDialog(args: Bundle): Ui[Any] = navigation.openContacts(args)
 
-  override def showShortcutsDialog(args: Bundle): Ui[Any] = launchDialog(f[ShortcutFragment], args)
+  override def showShortcutsDialog(args: Bundle): Ui[Any] = navigation.openShortcuts(args)
 
-  override def showRecommendationsDialog(args: Bundle): Ui[Any] = launchDialog(f[RecommendationsFragment], args)
+  override def showRecommendationsDialog(args: Bundle): Ui[Any] = navigation.openRecommendations(args)
 }
 
 trait ActionsScreenListener {
@@ -291,5 +292,11 @@ case class CollectionsDetailsStatuses(
   publishStatus: PublicCollectionStatus = NotPublished) {
 
   def getPositionsSelected: Int = positionsEditing.toSeq.length
+
+  def reset(): CollectionsDetailsStatuses = copy(
+    collectionMode = NormalCollectionMode,
+    positionsEditing = Set.empty,
+    lastPhone = None,
+    publishStatus = NotPublished)
 
 }

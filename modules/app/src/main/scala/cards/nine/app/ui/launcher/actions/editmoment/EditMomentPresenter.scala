@@ -5,9 +5,9 @@ import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.action_filters.MomentConstrainsChangedActionFilter
 import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}
-import cards.nine.process.commons.types.NineCardsMoment
 import cards.nine.process.moment.UpdateMomentRequest
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.NineCardsMoment
 import macroid._
 
 class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: ActivityContextWrapper)

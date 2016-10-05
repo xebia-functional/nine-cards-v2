@@ -3,8 +3,8 @@ package cards.nine.process.moment
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCollection}
-import cards.nine.process.commons.types.NineCardsMoment
 import cards.nine.process.moment.models._
+import cards.nine.models.types.NineCardsMoment
 
 trait MomentProcess {
 

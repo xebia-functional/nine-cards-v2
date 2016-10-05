@@ -3,10 +3,6 @@ package cards.nine.app.ui.collections
 import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.{CardView, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.jobs.EditingCollectionMode
 import cards.nine.app.ui.collections.styles.CollectionAdapterStyles
@@ -16,9 +12,13 @@ import cards.nine.app.ui.components.commons.ReorderItemTouchListener
 import cards.nine.app.ui.components.drawables.{BackgroundSelectedDrawable, IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, NineCardsPreferencesValue, ShowPositionInCards}
 import cards.nine.commons.ops.SeqOps._
+import cards.nine.models.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
 import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.commons.types._
 import cards.nine.process.theme.models.NineCardsTheme
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._

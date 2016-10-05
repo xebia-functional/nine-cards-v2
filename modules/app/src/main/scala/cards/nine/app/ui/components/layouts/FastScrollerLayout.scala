@@ -14,6 +14,7 @@ import android.view.ViewGroup.LayoutParams._
 import android.view._
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
+import cards.nine.models.types.NineCardCategory
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -21,7 +22,6 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.commons._
-import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.device.models.TermCounter
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._

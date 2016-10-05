@@ -1,5 +1,6 @@
 package cards.nine.app.ui.collections.dialog.publishcollection
 
+import cards.nine.models.types.NineCardCategory
 import cats.implicits._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.{JobException, Jobs}
@@ -7,7 +8,6 @@ import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.commons.models.Collection
-import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.sharedcollections.SharedCollectionsException
 import cards.nine.process.sharedcollections.models.CreateSharedCollection
 import com.fortysevendeg.ninecardslauncher.R

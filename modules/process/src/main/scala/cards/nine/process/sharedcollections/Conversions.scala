@@ -1,9 +1,9 @@
 package cards.nine.process.sharedcollections
 
+import cards.nine.models.types.{AppCardType, CardType, NineCardCategory}
 import cards.nine.process.commons.CommonConversions
-import cards.nine.process.commons.types._
 import cards.nine.process.sharedcollections.models._
-import cards.nine.services.api.{SharedCollectionPackageResponse, SharedCollection => SharedCollectionService}
+import cards.nine.services.api.{SharedCollection => SharedCollectionService, SharedCollectionPackageResponse}
 import cards.nine.services.persistence.UpdateCollectionRequest
 import cards.nine.services.persistence.models.Collection
 
