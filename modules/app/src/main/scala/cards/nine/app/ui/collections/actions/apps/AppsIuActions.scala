@@ -1,10 +1,6 @@
 package cards.nine.app.ui.collections.actions.apps
 
-import cards.nine.models.types.NineCardCategory
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
@@ -20,12 +16,17 @@ import cards.nine.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.device.models.{App, IterableApps, TermCounter}
+import cards.nine.models.ApplicationData
+import cards.nine.models.types.NineCardCategory
+import cards.nine.process.device.models.{IterableApps, TermCounter}
+import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 trait AppsIuActions
-  extends NineCardIntentConversions
+  extends AppNineCardIntentConversions
   with Styles {
 
   self: BaseActionFragment with AppsDOM with AppsUiListener =>
@@ -114,7 +115,7 @@ trait AppsIuActions
     counters: Seq[TermCounter],
     filter: AppsFilter,
     category: NineCardCategory,
-    clickListener: (App) => Unit) = {
+    clickListener: (ApplicationData) => Unit) = {
     val categoryName = resGetString(category.getStringResource) getOrElse category.getStringResource
     val adapter = AppsAdapter(
       apps = apps,

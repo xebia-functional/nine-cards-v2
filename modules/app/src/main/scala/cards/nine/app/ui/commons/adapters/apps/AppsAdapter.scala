@@ -4,16 +4,17 @@ import java.io.Closeable
 
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
-import cards.nine.process.device.models.{App, EmptyIterableApps, IterableApps}
+import cards.nine.models.ApplicationData
+import cards.nine.process.device.models.{EmptyIterableApps, IterableApps}
 import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -21,8 +22,8 @@ import macroid._
 
 case class AppsAdapter(
   var apps: IterableApps,
-  clickListener: (App) => Unit,
-  longClickListener: Option[(View, App) => Unit])
+  clickListener: (ApplicationData) => Unit,
+  longClickListener: Option[(View, ApplicationData) => Unit])
   (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[AppsIterableHolder]
   with FastScrollerListener
@@ -67,8 +68,8 @@ case class AppsAdapter(
 
 case class AppsIterableHolder(
   content: ViewGroup,
-  clickListener: (App) => Unit,
-  longClickListener: Option[(View, App) => Unit])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
+  clickListener: (ApplicationData) => Unit,
+  longClickListener: Option[(View, ApplicationData) => Unit])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -76,7 +77,7 @@ case class AppsIterableHolder(
 
   lazy val name = Option(findView(TR.simple_item_name))
 
-  def bind(app: App): Ui[_] =
+  def bind(app: ApplicationData): Ui[_] =
     (icon <~ vResize(IconsSize.getIconApp) <~ ivSrcByPackageName(Some(app.packageName), app.name)) ~
       (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(app.name) + tvColor(theme.get(DrawerTextColor))) ~
       (content <~

@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.commons.javaNull
@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.R
 class EditMomentFragment
   extends BaseActionFragment
   with EditMomentActionsImpl
-  with NineCardIntentConversions { self =>
+  with AppNineCardIntentConversions { self =>
 
   lazy val momentType = Option(getString(Seq(getArguments), EditMomentFragment.momentKey, javaNull))
 

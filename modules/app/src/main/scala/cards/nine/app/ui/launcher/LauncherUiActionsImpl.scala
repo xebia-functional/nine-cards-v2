@@ -44,6 +44,7 @@ import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
 import cards.nine.commons._
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment}
 import cards.nine.process.commons.models.{Collection, Moment}
 import cards.nine.process.device.models.{Contact, LastCallsContact, _}
@@ -276,8 +277,8 @@ trait LauncherUiActionsImpl
     counters: Seq[TermCounter] = Seq.empty): Ui[Any] =
     addApps(
       apps = apps,
-      clickListener = (app: App) => presenter.openApp(app),
-      longClickListener = (view: View, app: App) => {
+      clickListener = (app: ApplicationData) => presenter.openApp(app),
+      longClickListener = (view: View, app: ApplicationData) => {
         presenter.startAddItemToCollection(app)
         (view <~ startDrag()).run
       },

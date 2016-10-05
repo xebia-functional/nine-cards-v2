@@ -11,7 +11,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
@@ -20,7 +20,7 @@ import macroid._
 
 case class WifiDialogFragment(wifis: Seq[String])(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends DialogFragment
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
     val rootView = new ScrollView(getActivity)

@@ -9,8 +9,8 @@ import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.{AllAppsCategory, NineCardCategory}
-import cards.nine.process.device.models.App
 import com.fortysevendeg.ninecardslauncher.R
 
 class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -42,7 +42,7 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
   override def loadApps(filter: AppsFilter): Unit =
     appsJobs.loadApps(filter).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps(filter))
 
-  override def addApp(app: App): Unit =
+  override def addApp(app: ApplicationData): Unit =
     (for {
       cards <- groupCollectionsJobs.addCards(Seq(toAddCardRequest(app)))
       _ <- singleCollectionJobs match {

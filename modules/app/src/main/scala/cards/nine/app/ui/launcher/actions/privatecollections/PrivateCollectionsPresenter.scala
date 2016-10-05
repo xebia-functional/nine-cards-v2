@@ -44,9 +44,8 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
       collections <- di.collectionProcess.getCollections
       moments <- di.momentProcess.getMoments
       apps <- di.deviceProcess.getSavedApps(GetByName)
-      unformedApps = toSeqUnformedApp(apps)
-      newCollections <- di.collectionProcess.generatePrivateCollections(unformedApps)
-      newMomentCollections <- di.momentProcess.generatePrivateMoments(unformedApps map toApp, newCollections.length)
+      newCollections <- di.collectionProcess.generatePrivateCollections(apps)
+      newMomentCollections <- di.momentProcess.generatePrivateMoments(apps, newCollections.length)
     } yield {
       val privateCollections = newCollections filterNot { newCollection =>
         newCollection.appsCategory match {

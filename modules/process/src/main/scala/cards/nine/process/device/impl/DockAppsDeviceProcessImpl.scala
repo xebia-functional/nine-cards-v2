@@ -3,11 +3,11 @@ package cards.nine.process.device.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.{AppDockType, DockType}
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device._
 import cards.nine.process.device.models.DockApp
-import cards.nine.services.apps.models.Application
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 
 trait DockAppsDeviceProcessImpl extends DeviceProcess {
@@ -47,7 +47,7 @@ trait DockAppsDeviceProcessImpl extends DeviceProcess {
       _ <- persistenceServices.deleteAllDockApps()
     } yield ()).resolve[DockAppException]
 
-  private[this] def matchAppsWithImages(apps: Seq[Application], images: Seq[(String, String)])(implicit context: ContextSupport) : Seq[DockApp] = {
+  private[this] def matchAppsWithImages(apps: Seq[ApplicationData], images: Seq[(String, String)])(implicit context: ContextSupport) : Seq[DockApp] = {
     apps.zipWithIndex.map {
       case (app, index) =>
         val image = images find (i => i._1 == app.packageName) map (_._2)

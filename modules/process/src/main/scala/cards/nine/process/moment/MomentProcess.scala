@@ -3,7 +3,7 @@ package cards.nine.process.moment
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCollection}
-import cards.nine.process.moment.models._
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.NineCardsMoment
 
 trait MomentProcess {
@@ -71,12 +71,12 @@ trait MomentProcess {
   /**
     * Generate Private Moments Collections with the apps installed in the device
     *
-    * @param apps the Seq[cards.nine.process.moment.models.App] with the apps' data
+    * @param apps the Seq[cards.nine.models.Application] with the apps' data
     * @param position the position of the next collection
     * @return the Seq[cards.nine.process.commons.PrivateCollection]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def generatePrivateMoments(apps: Seq[App], position: Int)(implicit context: ContextSupport): TaskService[Seq[PrivateCollection]]
+  def generatePrivateMoments(apps: Seq[ApplicationData], position: Int)(implicit context: ContextSupport): TaskService[Seq[PrivateCollection]]
 
   /**
     * Delete all moments in database

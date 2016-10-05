@@ -763,7 +763,7 @@ class DeviceProcessImplSpec
     "returns an app with Misc category if api service fails" in
       new DeviceProcessScope {
 
-        val appsPersistenceFailed = appsPersistence map (_.copy(category = Misc.name))
+        val appsPersistenceFailed = appsPersistence map (_.copy(category = Misc))
         val appExpected = apps.head.copy(category = Misc)
 
         mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService(Task(Either.right(applications.head)))
