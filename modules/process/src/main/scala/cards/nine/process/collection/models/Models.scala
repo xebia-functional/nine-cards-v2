@@ -3,12 +3,6 @@ package cards.nine.process.collection.models
 import cards.nine.models.types.{CollectionType, NineCardCategory, NineCardsMoment}
 import cards.nine.process.commons.models.{FormedWidget, MomentTimeSlot}
 
-case class UnformedApp(
-  name: String,
-  packageName: String,
-  className: String,
-  category: NineCardCategory)
-
 case class UnformedContact(
   name: String,
   lookupKey: String,
@@ -53,5 +47,5 @@ case class FormedMoment(
   widgets: Option[Seq[FormedWidget]])
 
 case class PackagesByCategory(
-  category: String,
+  category: NineCardCategory,
   packages: Seq[String])

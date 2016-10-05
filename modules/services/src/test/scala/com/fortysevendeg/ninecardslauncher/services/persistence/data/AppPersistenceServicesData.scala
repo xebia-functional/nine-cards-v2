@@ -1,9 +1,11 @@
 package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.services.persistence.{UpdateAppRequest, AddAppRequest}
-import cards.nine.services.persistence.models._
+import cards.nine.models.types.NineCardCategory
 import cards.nine.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, DataCounter => RepositoryDataCounter}
+import cards.nine.services.persistence.models._
+import cards.nine.models.Application
+import cards.nine.services.persistence.{AddAppRequest, UpdateAppRequest}
 
 import scala.util.Random
 
@@ -21,13 +23,13 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[App] = List.tabulate(num)(
-    item => App(
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[Application] = List.tabulate(num)(
+    item => Application(
       id = id + item,
       name = name,
       packageName = packageName,
       className = className,
-      category = category,
+      category = NineCardCategory(category),
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,
@@ -59,8 +61,8 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
       version = version,
       installedFromGooglePlay = installedFromGooglePlay)
 
-  val seqApp: Seq[App] = createSeqApp()
-  val app: App = seqApp(0)
+  val seqApp: Seq[Application] = createSeqApp()
+  val app: Application = seqApp(0)
   val repoAppData: RepositoryAppData = createRepoAppData()
   val seqRepoApp: Seq[RepositoryApp] = createSeqRepoApp(data = repoAppData)
   val repoApp: RepositoryApp = seqRepoApp(0)

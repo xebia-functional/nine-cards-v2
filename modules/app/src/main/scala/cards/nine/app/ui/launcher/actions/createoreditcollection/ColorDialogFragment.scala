@@ -15,7 +15,7 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
@@ -25,7 +25,7 @@ import macroid._
 
 case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends DialogFragment
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
     def createRow(from: Int, to: Int): LinearLayout = {

@@ -1,7 +1,7 @@
 package cards.nine.app.ui.collections.actions.apps
 
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
-import cards.nine.process.device.models.App
+import cards.nine.models.ApplicationData
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 
 trait AppsDOM {
@@ -27,7 +27,7 @@ trait AppsUiListener {
 
   def loadApps(filter: AppsFilter): Unit
 
-  def addApp(app: App): Unit
+  def addApp(app: ApplicationData): Unit
 
   def swapFilter(): Unit
 }

@@ -1,6 +1,7 @@
 package cards.nine.services.apps.impl
 
-import cards.nine.services.apps.models.Application
+import cards.nine.models.ApplicationData
+import cards.nine.models.types.{Communication, Misc}
 
 import scala.util.Random
 
@@ -38,11 +39,12 @@ trait AppsServicesImplData {
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[Application] = List.tabulate(num)(
-    item => Application(
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[ApplicationData] = List.tabulate(num)(
+    item => ApplicationData(
       name = name,
       packageName = packageName,
       className = className,
+      category = Misc,
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,

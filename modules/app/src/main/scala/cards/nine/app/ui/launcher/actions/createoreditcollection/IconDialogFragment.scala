@@ -7,7 +7,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.{LinearLayout, ScrollView}
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
@@ -26,7 +26,7 @@ import macroid._
 
 case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends DialogFragment
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   val categoryIcons = appsCategories map { cat =>
     val name = resGetString(cat.getStringResource).getOrElse(cat.getStringResource)
