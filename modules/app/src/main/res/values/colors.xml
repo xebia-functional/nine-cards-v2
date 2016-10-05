@@ -2,6 +2,7 @@
 <resources>
 
     <!-- Main colors -->
+    <color name="background_app">#eeeeee</color>
     <color name="primary">#3F51B5</color>
     <color name="primary_dark">#ff344285</color>
     <color name="color_control_highlight">#cccccc</color>
@@ -62,6 +63,7 @@
     <color name="wizard_background_step_4">#F44336</color>
 
     <color name="wizard_background_new_conf_step_0">#4CAF4F</color>
+    <color name="wizard_background_new_conf_step_2">#3F51B5</color>
 
     <color name="wizard_checkbox_unselected">#47000000</color>
 

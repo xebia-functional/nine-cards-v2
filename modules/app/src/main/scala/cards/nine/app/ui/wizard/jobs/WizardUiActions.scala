@@ -1,5 +1,6 @@
 package cards.nine.app.ui.wizard.jobs
 
+import android.graphics.Color
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.view.View
@@ -16,7 +17,6 @@ import cards.nine.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cats.implicits._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -102,10 +102,14 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
         diveInActionStyle <~
         On.click(Ui(dom.onClickFinishWizardButton()))) ~
       createPagers(steps) ~
-      systemBarsTint.initSystemStatusBarTint()).toService
+      systemBarsTint.initSystemStatusBarTint() ~
+      systemBarsTint.updateStatusColor(resGetColor(R.color.background_app)) ~
+      systemBarsTint.lightStatusBar()).toService
   }
 
   def showErrorLoginUser(): TaskService[Unit] = uiShortToast2(R.string.errorLoginUser).toService
+
+  def showErrorGeneral(): TaskService[Unit] = uiShortToast2(R.string.contactUsError).toService
 
   def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast2(R.string.errorConnectingGoogle).toService
 

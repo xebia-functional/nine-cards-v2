@@ -1,6 +1,7 @@
 package cards.nine.app.ui.wizard.jobs
 
 import cards.nine.app.ui.components.widgets.WizardCheckBox
+import cards.nine.process.collection.models.PackagesByCategory
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 
 import scala.collection.immutable.IndexedSeq
@@ -57,6 +58,8 @@ trait WizardDOM {
 
   def newConfigurationStep1CollectionsContent = finder.findView(TR.wizard_steps_new_configuration_step1_collection_content)
 
+  def newConfigurationStep2Description = finder.findView(TR.wizard_steps_new_configuration_step2_description)
+
   def getWizardCheckBoxes: Seq[WizardCheckBox] = (0 to newConfigurationStep1CollectionsContent.getChildCount) flatMap { position =>
     newConfigurationStep1CollectionsContent.getChildAt(position) match {
       case widget: WizardCheckBox => Some(widget)
@@ -70,6 +73,8 @@ trait WizardDOM {
     val items = getWizardCheckBoxes
     (items count (_.isCheck), items.length)
   }
+
+  def getCollectionsSelected: Seq[PackagesByCategory] = getWizardCheckBoxes flatMap(_.getData)
 
 }
 
@@ -100,5 +105,9 @@ trait WizardUiListener {
   def onStartNewConfiguration(): Unit
 
   def onLoadBetterCollections(): Unit
+
+  def onSaveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): Unit
+
+  def onLoadWifiByMoment(): Unit
 
 }

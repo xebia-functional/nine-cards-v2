@@ -39,6 +39,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
     ((dom.newConfigurationStep <~
       vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
+      systemBarsTint.defaultStatusBar() ~
       createPagers() ~
       selectPager(0, resColor) ~
       (dom.newConfigurationNext <~
@@ -93,7 +94,24 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
         }) ~
       (dom.newConfigurationStep1CollectionCount <~ tvText(counter)) ~
       (dom.newConfigurationStep1CollectionsContent <~ vgAddViews(collectionViews, params)) ~
-      (dom.newConfigurationStep1Description <~ tvText(Html.fromHtml(description)))).toService
+      (dom.newConfigurationStep1Description <~ tvText(Html.fromHtml(description))) ~
+      (dom.newConfigurationNext <~
+        On.click(Ui(dom.onSaveCollections(dom.getCollectionsSelected, best9Apps = dom.newConfigurationStep1Best9.isCheck))) <~
+        tvColorResource(resColor))).toService
+  }
+
+  def loadThirdStep(): TaskService[Unit] = {
+    val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_2, javaNull)
+    val resColor = R.color.wizard_background_new_conf_step_2
+    ((dom.newConfigurationStep <~
+      vgAddView(stepView)) ~
+      (dom.newConfigurationStep2Description <~ tvText(Html.fromHtml(resGetString(R.string.wizard_new_conf_desc_step_2)))) ~
+      systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
+      systemBarsTint.defaultStatusBar() ~
+      selectPager(2, resColor) ~
+      (dom.newConfigurationNext <~
+        On.click(Ui(dom.onLoadWifiByMoment())) <~
+        tvColorResource(resColor))).toService
   }
 
   private[this] def checkAllCollections() = dom.newConfigurationStep1CollectionsContent <~ Transformer {
