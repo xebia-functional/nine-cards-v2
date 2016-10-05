@@ -105,7 +105,7 @@ class NewConfigurationJobs(
         SaveMomentRequest(
           collectionId = None,
           timeslot = toMomentTimeSlotSeq(moment),
-          wifi = Seq(wifi).flatten,
+          wifi = wifi.toSeq,
           headphone = false,
           momentType = Option(moment),
           widgets = None)

@@ -121,7 +121,7 @@
     <string name="wizard_new_conf_wifi_no_connected_step_3">No hay wifi seleccionado</string>
     <string name="wizard_new_conf_wifi_connected_step_3">Conectado a \"%1$s\"</string>
 
-    <string name="wizard_new_conf_title_step_4">¿Qué momentos estás interesado?</string>
+    <string name="wizard_new_conf_title_step_4">¿En qué momentos estás interesado?</string>
     <string name="wizard_new_conf_description_step_4">Selecciona los momentos en los que estás interesado</string>
 
     <!-- Moment / Widgets -->

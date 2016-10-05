@@ -47,26 +47,26 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
 
   def showLoadingBetterCollections(): TaskService[Unit] =
     (showLoading(R.string.wizard_loading_looking_for_better_collection) ~
-      systemBarsTint.lightStatusBar() ~
-      systemBarsTint.updateStatusColor(resGetColor(R.color.background_app)) ~
+      updateStatusColor() ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_1)))).toService
 
   def showLoadingSavingCollection(): TaskService[Unit] =
     (showLoading(R.string.wizard_loading_saving_collections) ~
-      systemBarsTint.lightStatusBar() ~
-      systemBarsTint.updateStatusColor(resGetColor(R.color.background_app)) ~
+      updateStatusColor() ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_2)))).toService
 
   def showLoadingSavingMoments(): TaskService[Unit] =
     (showLoading(R.string.wizard_loading_saving_moments) ~
-      systemBarsTint.lightStatusBar() ~
-      systemBarsTint.updateStatusColor(resGetColor(R.color.background_app)) ~
+      updateStatusColor() ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_3)))).toService
 
   def showLoadingDevices(): TaskService[Unit] =
     showLoading(R.string.wizard_loading_devices).toService
 
   def cleanStep(): TaskService[Unit] = (dom.newConfigurationStep <~ vgRemoveAllViews).toService
+
+  private[this] def updateStatusColor(): Ui[Any] =
+    systemBarsTint.lightStatusBar() ~ systemBarsTint.updateStatusColor(resGetColor(R.color.background_app))
 
   private[this] def showLoading(resText: Int, colorBar: Option[Int] = None): Ui[Any] =
     (dom.loadingRootLayout <~ vVisible) ~

@@ -85,10 +85,11 @@ trait WizardDOM {
   def getCollectionsSelected: Seq[PackagesByCategory] = getWizardCheckBoxes flatMap(_.getData)
 
   def getWifisSelected: Seq[(NineCardsMoment, Option[String])] =
-    getWizardWifiCheckBoxes flatMap (widget => (widget.isCheck, widget.getMoment, widget.getWifiName) match {
-      case (true, Some(moment), wifiName) => Option(moment, wifiName)
-      case _ => None
-    })
+    getWizardWifiCheckBoxes flatMap (widget =>
+      (widget.isCheck, widget.getMoment, widget.getWifiName) match {
+        case (true, Some(moment), wifiName) => Option(moment, wifiName)
+        case _ => None
+      })
 
 }
 
