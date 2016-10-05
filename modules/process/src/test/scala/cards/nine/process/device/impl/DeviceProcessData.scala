@@ -2,8 +2,8 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.models.{Application, ApplicationData}
 import cards.nine.models.types._
+import cards.nine.models.{Application, ApplicationData, Call}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.models.NineCardIntentImplicits._
@@ -12,7 +12,6 @@ import cards.nine.process.device.models.{CallData, LastCallsContact, Widget, _}
 import cards.nine.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
-import cards.nine.services.calls.models.{Call => ServicesCall}
 import cards.nine.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import cards.nine.services.image.{AppPackagePath, AppWebsitePath}
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
@@ -463,7 +462,7 @@ trait DeviceProcessData
       widgets = Seq(widget))
   }
 
-  val callsServices: Seq[ServicesCall] = Seq(
+  val callsServices: Seq[Call] = Seq(
     ServicesCall(
       number = phoneNumber1,
       name = Some(contactName1),

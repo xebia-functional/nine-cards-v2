@@ -1,7 +1,7 @@
 package cards.nine.services.calls.impl
 
+import cards.nine.models.Call
 import cards.nine.models.types._
-import cards.nine.services.calls.models._
 
 trait CallsServicesImplData {
 

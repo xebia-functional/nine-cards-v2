@@ -2,13 +2,12 @@ package cards.nine.process.device
 
 import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.{Application, ApplicationData}
 import cards.nine.models.types._
+import cards.nine.models.{Application, ApplicationData, Call}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models._
 import cards.nine.process.device.types.{CallType, WidgetResizeMode}
-import cards.nine.services.calls.models.{Call => ServicesCall}
 import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactCounter, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import cards.nine.services.image.{AppPackage, BitmapResize}
 import cards.nine.services.persistence._
@@ -104,7 +103,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       intent = intent)
   }
 
-  def toSimpleLastCallsContact(number: String, calls: Seq[ServicesCall]): LastCallsContact = {
+  def toSimpleLastCallsContact(number: String, calls: Seq[Call]): LastCallsContact = {
     val (hasContact, name, date) = calls.headOption map { call =>
       (call.name.isDefined, call.name getOrElse number, call.date)
     } getOrElse (false, number, defaultDate)
@@ -116,7 +115,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       calls = calls map toCallData)
   }
 
-  def toCallData(item: ServicesCall): CallData =
+  def toCallData(item: Call): CallData =
     CallData(
       date = item.date,
       callType = CallType(item.callType))

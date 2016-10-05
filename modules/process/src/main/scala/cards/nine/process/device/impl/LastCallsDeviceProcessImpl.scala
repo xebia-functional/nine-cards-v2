@@ -3,12 +3,12 @@ package cards.nine.process.device.impl
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.device.models.{Contact, LastCallsContact}
+import cards.nine.models.Call
 import cards.nine.process.device._
+import cards.nine.process.device.models.{Contact, LastCallsContact}
 import cards.nine.services.calls.CallsServicesPermissionException
-import cards.nine.services.calls.models.Call
-import monix.eval.Task
 import cats.syntax.either._
+import monix.eval.Task
 
 trait LastCallsDeviceProcessImpl extends DeviceProcess {
   self: DeviceConversions

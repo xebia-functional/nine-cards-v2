@@ -1,4 +1,4 @@
-package cards.nine.services.calls.models
+package cards.nine.models
 
 import cards.nine.models.types.PhoneCategory
 
