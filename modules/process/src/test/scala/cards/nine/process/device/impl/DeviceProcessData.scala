@@ -8,7 +8,7 @@ import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.device.SaveDockAppRequest
-import cards.nine.process.device.models.{Call, LastCallsContact, Widget, _}
+import cards.nine.process.device.models.{LastCallsContact, Widget, _}
 import cards.nine.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
@@ -117,7 +117,7 @@ trait DeviceProcessData
   val contactName1 = "Contact 1"
   val numberType1 = PhoneHome
   val date1 = 3L
-  val callType1 = 1
+  val callType1 = IncomingType
   val lookupKey1 = "lookupKey 1"
   val photoUri1 = "photoUri 1"
 
@@ -125,7 +125,7 @@ trait DeviceProcessData
   val contactName2 = "Contact 2"
   val numberType2 = PhoneWork
   val date2 = 2L
-  val callType2 = 2
+  val callType2 = OutgoingType
   val lookupKey2 = "lookupKey 2"
   val photoUri2 = "photoUri 2"
 
@@ -133,7 +133,7 @@ trait DeviceProcessData
   val contactName3 = "Contact 3"
   val numberType3 = PhoneOther
   val date3 = 1L
-  val callType3 = 3
+  val callType3 = MissedType
   val lookupKey3 = "lookupKey 3"
   val photoUri3 = "photoUri 3"
 
@@ -462,25 +462,26 @@ trait DeviceProcessData
       widgets = Seq(widget))
   }
 
-  val callsServices: Seq[Call] = Seq(
-    ServicesCall(
+  val call1 = Call(
       number = phoneNumber1,
       name = Some(contactName1),
       numberType = PhoneMobile,
       date = date1,
-      callType = callType1),
-    ServicesCall(
+      callType = callType1)
+  val call2 = Call(
       number = phoneNumber2,
       name = Some(contactName2),
       numberType = numberType2,
       date = date2,
-      callType = callType2),
-    ServicesCall(
+      callType = callType2)
+  val call3 =  Call(
       number = phoneNumber3,
       name = Some(contactName3),
       numberType = numberType3,
       date = date3,
-      callType = callType3))
+      callType = callType3)
+
+  val calls: Seq[Call] = Seq(call1, call2, call3)
 
   val callsContacts: Seq[Contact] = Seq(
     Contact(
@@ -505,21 +506,6 @@ trait DeviceProcessData
       favorite = false,
       info = None))
 
-  val callsData1: Seq[Call] = Seq(
-    Call(
-      date = date1,
-      callType = IncomingType))
-
-  val callsData2: Seq[Call] = Seq(
-    Call(
-      date = date2,
-      callType = OutgoingType))
-
-  val callsData3: Seq[Call] = Seq(
-    Call(
-      date = date3,
-      callType = MissedType))
-
   val lastCallsContacts: Seq[LastCallsContact] = Seq(
     LastCallsContact(
       hasContact = true,
@@ -528,7 +514,7 @@ trait DeviceProcessData
       photoUri = Some(photoUri1),
       lookupKey = Some(lookupKey1),
       lastCallDate = date1,
-      calls = callsData1),
+      calls = Seq(call1)),
     LastCallsContact(
       hasContact = true,
       number = phoneNumber2,
@@ -536,7 +522,7 @@ trait DeviceProcessData
       photoUri = Some(photoUri2),
       lookupKey = Some(lookupKey2),
       lastCallDate = date2,
-      calls = callsData2),
+      calls = Seq(call2)),
     LastCallsContact(
       hasContact = true,
       number = phoneNumber3,
@@ -544,7 +530,7 @@ trait DeviceProcessData
       photoUri = Some(photoUri3),
       lookupKey = Some(lookupKey3),
       lastCallDate = date3,
-      calls = callsData3))
+      calls = Seq(call3)))
 
   val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val intent = Json.parse(intentStr).as[NineCardIntent]

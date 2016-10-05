@@ -878,7 +878,7 @@ class DeviceProcessImplSpec
     "get last calls" in
       new DeviceProcessScope {
 
-        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(callsServices)))
+        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(calls)))
         mockContactsServices.fetchContactByPhoneNumber(phoneNumber1) returns TaskService(Task(Either.right(Some(callsContacts(0)))))
         mockContactsServices.fetchContactByPhoneNumber(phoneNumber2) returns TaskService(Task(Either.right(Some(callsContacts(1)))))
         mockContactsServices.fetchContactByPhoneNumber(phoneNumber3) returns TaskService(Task(Either.right(Some(callsContacts(2)))))
@@ -898,7 +898,7 @@ class DeviceProcessImplSpec
     "returns an empty List if ContactsServices fail getting the contacts " in
       new DeviceProcessScope {
 
-        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(callsServices)))
+        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(calls)))
         mockContactsServices.fetchContactByPhoneNumber(any) returns TaskService(Task(Either.left(contactsServicesException)))
 
         val result = deviceProcess.getLastCalls(contextSupport).value.run
