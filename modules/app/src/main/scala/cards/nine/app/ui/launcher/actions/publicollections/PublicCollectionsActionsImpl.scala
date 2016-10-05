@@ -8,7 +8,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
@@ -26,7 +26,7 @@ trait PublicCollectionsActionsImpl
   extends PublicCollectionsUiActions 
   with Styles
   with PublicCollectionsStyle
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   self: TypedFindView with BaseActionFragment with Contexts[Fragment] =>
 

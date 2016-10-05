@@ -3,28 +3,32 @@ package cards.nine.process.device
 import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.ApplicationData
+import cards.nine.models.types.DockType
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models._
-import cards.nine.models.types.DockType
 
 trait DeviceProcess {
 
   /**
     * Delete all apps, cards, collections and dockApps from the repository
+    *
     * @throws ResetException if exist some problem deleting the apps, cards, collections and dockApps
     */
   def resetSavedItems(): TaskService[Unit]
 
   /**
     * Get the saved apps from the database
+    *
     * @param orderBy indicates the order to fetch the apps
     * @return the Seq[cards.nine.process.device.models.App]
     * @throws AppException if exist some problem getting the apps
     */
-  def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[Seq[App]]
+  def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[Seq[ApplicationData]]
 
   /**
     * Get iterable of saved apps from the database
+    *
     * @param orderBy indicates the order to fetch the apps
     * @return the cards.nine.process.device.models.IterableApps contains
     *         information about the app
@@ -34,6 +38,7 @@ trait DeviceProcess {
 
   /**
     * Get iterable by category of saved apps from the database
+    *
     * @param category indicates the category
     * @return the cards.nine.process.device.models.IterableApps contains
     *         information about the app
@@ -44,6 +49,7 @@ trait DeviceProcess {
   /**
     * Returns a sequence that contains all the distinct apps' first letter and the number of apps whose name 
     * starts with this letter
+    *
     * @param orderBy indicates the order to fetch the apps
     * @return the Seq[cards.nine.process.device.models.TermCounter] contains
     *         information about the times is repeated an apps
@@ -53,6 +59,7 @@ trait DeviceProcess {
 
   /**
     * Get the iterable apps by keyword.
+    *
     * @param keyword the filter for the query
     * @param orderBy indicates the order to fetch the apps
     * @return the cards.nine.process.device.models.IterableApps contains
@@ -63,6 +70,7 @@ trait DeviceProcess {
 
   /**
     * Get the available applications that contain shortcuts creating Intents and Drawables necessaries for UI actions
+    *
     * @return the Seq[cards.nine.process.device.models.Shortcut] contains
     *         information about shortcut with the Intents and Drawables for UI actions
     * @throws ShortcutException if exist some problem getting the shortcuts in the cell phone
@@ -71,6 +79,7 @@ trait DeviceProcess {
 
   /**
     * Save shortcut icon from bitmap
+    *
     * @param bitmap the image
     * @param iconResize optional parameter that indicates some resizing arguments
     * @return the String contains the path where the icon was stored
@@ -80,6 +89,7 @@ trait DeviceProcess {
 
   /**
     * Get the favorite contacts if they exist and fill all their data
+    *
     * @return the Seq[cards.nine.process.device.models.Contact] contains
     *         information about the contact including its ContactInfo (if it exists)
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
@@ -90,6 +100,7 @@ trait DeviceProcess {
   /**
     * Get the contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
     * and contacts with phone number
+    *
     * @param filter specify the filter in the query
     * @return the Seq[cards.nine.process.device.models.Contact] contains
     *         information about the contact
@@ -101,6 +112,7 @@ trait DeviceProcess {
   /**
     * Returns a sequence that contains all the distinct contacts' first letter and the number of contacts whose name 
     * starts with this letter
+    *
     * @param filter specify the filter in the query
     * @return the Seq[cards.nine.process.device.models.TermCounter]
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
@@ -111,6 +123,7 @@ trait DeviceProcess {
   /**
     * Get the iterable contacts by filter selected sorted without data. The filters are: all contacts, favorite contacts
     * and contacts with phone number
+    *
     * @param filter specify the filter in the query
     * @return the cards.nine.process.device.models.IterableContacts contains
     *         information about the contact
@@ -121,6 +134,7 @@ trait DeviceProcess {
 
   /**
     * Get the contact and fill all their data
+    *
     * @param lookupKey the contact lookup key
     * @return the cards.nine.process.device.models.Contact contains
     *         information about the contact
@@ -131,6 +145,7 @@ trait DeviceProcess {
 
   /**
     * Get the iterable contacts by keyword.
+    *
     * @param keyword the filter for the query
     * @return the cards.nine.process.device.models.IterableContacts contains
     *         information about the contact
@@ -141,19 +156,22 @@ trait DeviceProcess {
 
   /**
     * Get the installed apps and store them in the repository
+    *
     * @throws AppException if exist some problem getting the apps or storing them
     */
   def saveInstalledApps(implicit context: ContextSupport): TaskService[Unit]
 
   /**
     * Get an installed app and store it in the repository
+    *
     * @param packageName the packageName of the app to save
     * @throws AppException if exist some problem getting the app or storing it
     */
-  def saveApp(packageName: String)(implicit context: ContextSupport): TaskService[App]
+  def saveApp(packageName: String)(implicit context: ContextSupport): TaskService[ApplicationData]
 
   /**
     * Delete an app from the repository
+    *
     * @param packageName the packageName of the app to delete
     * @throws AppException if exist some problem deleting the app
     */
@@ -161,6 +179,7 @@ trait DeviceProcess {
 
   /**
     * Get the contact and fill all their data
+    *
     * @param packageName the packageName of the app to update
     * @throws AppException if exist some problem getting the app or updating it
     */
@@ -168,6 +187,7 @@ trait DeviceProcess {
 
   /**
     * Get the widgets available on the phone
+    *
     * @return the Seq[cards.nine.process.device.models.AppsWithWidgets]
     * @throws WidgetException if exist some problem getting the widgets
     */
@@ -175,6 +195,7 @@ trait DeviceProcess {
 
   /**
     * Get the last calls available on the phone
+    *
     * @return the Seq[cards.nine.process.device.models.Call]
     * @throws CallPermissionException if the permission to read calls hasn't been granted
     * @throws CallException if exist some problem getting the last calls
@@ -183,6 +204,7 @@ trait DeviceProcess {
 
   /**
     * Generate the docks apps available for user
+    *
     * @param size of the dock apps needed
     * @return the Seq[cards.nine.process.device.models.DockApp]
     * @throws DockAppException if exist some problem getting the app or storing it
@@ -191,6 +213,7 @@ trait DeviceProcess {
 
   /**
     * Create or update a dock app
+    *
     * @param name name of dock app
     * @param dockType dock type
     * @param intent action

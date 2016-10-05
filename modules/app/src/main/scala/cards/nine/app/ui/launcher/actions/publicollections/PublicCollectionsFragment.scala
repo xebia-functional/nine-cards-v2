@@ -2,7 +2,7 @@ package cards.nine.app.ui.launcher.actions.publicollections
 
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher2.R
@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 class PublicCollectionsFragment(implicit lPresenter: LauncherPresenter)
   extends BaseActionFragment
   with PublicCollectionsActionsImpl
-  with NineCardIntentConversions { self =>
+  with AppNineCardIntentConversions { self =>
 
   override lazy val collectionPresenter: PublicCollectionsPresenter = new PublicCollectionsPresenter(self)
 

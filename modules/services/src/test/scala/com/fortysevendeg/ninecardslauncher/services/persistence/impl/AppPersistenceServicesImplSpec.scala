@@ -3,7 +3,7 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.services.TaskService
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.AppEntity
-import cards.nine.services.persistence.models.App
+import cards.nine.models.Application
 import cards.nine.services.persistence.{OrderByCategory, OrderByInstallDate, OrderByName}
 import cards.nine.services.persistence.data.AppPersistenceServicesData
 import monix.eval.Task
@@ -82,7 +82,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
       result must beLike {
         case Right(maybeApp) =>
-          maybeApp must beSome[App].which { app =>
+          maybeApp must beSome[Application].which { app =>
             app.id shouldEqual appId
             app.packageName shouldEqual packageName
           }
