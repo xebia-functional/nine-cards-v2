@@ -9,7 +9,6 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.process.device.GetByName
 import macroid.ContextWrapper
 
-
 class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrapper)
   extends Jobs
   with ImplicitsUiExceptions {
@@ -48,7 +47,7 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
 
   def loadMostProbableActivity: TaskService[Unit] = for {
     probableActivity <- di.recognitionProcess.getMostProbableActivity
-    _ <- ui.setProbablyActivitySummary(probableActivity.activity.toString)
+    _ <- ui.setProbablyActivitySummary(probableActivity.activityType.toString)
   } yield ()
 
   def loadHeadphone: TaskService[Unit] = for {

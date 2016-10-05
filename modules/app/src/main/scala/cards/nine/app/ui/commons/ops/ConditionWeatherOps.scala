@@ -1,6 +1,6 @@
 package cards.nine.app.ui.commons.ops
 
-import cards.nine.process.recognition._
+import cards.nine.models._
 import com.fortysevendeg.ninecardslauncher2.R
 
 object ConditionWeatherOps {

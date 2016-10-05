@@ -49,7 +49,7 @@ import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment}
 import cards.nine.process.commons.models.{Collection, Moment}
 import cards.nine.process.device.models.{Contact, LastCallsContact, _}
 import cards.nine.process.device.{GetAppOrder, GetByName}
-import cards.nine.process.recognition.ConditionWeather
+import cards.nine.models.ConditionWeather
 import cards.nine.process.theme.models.NineCardsTheme
 import cards.nine.process.widget.models.AppWidget
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}

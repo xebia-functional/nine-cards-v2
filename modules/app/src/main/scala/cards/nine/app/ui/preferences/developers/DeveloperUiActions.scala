@@ -7,9 +7,8 @@ import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.ApplicationData
 import cards.nine.models.types.Misc
-import cards.nine.process.recognition.{Location, Weather}
+import cards.nine.models.{ApplicationData, Location, WeatherState}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ContextWrapper, Ui}
@@ -95,7 +94,7 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
     dom.locationPreference.setSummary(summary)
   }.toService
 
-  def setWeatherSummary(weather: Weather): TaskService[Unit] = Ui {
+  def setWeatherSummary(weather: WeatherState): TaskService[Unit] = Ui {
     val summary = s"${weather.conditions.headOption getOrElse "No Conditions"} Temp: ${weather.temperatureCelsius} C -  ${weather.temperatureFahrenheit} F"
     dom.weatherPreference.setSummary(summary)
   }.toService

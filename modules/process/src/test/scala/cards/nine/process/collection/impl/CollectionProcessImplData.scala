@@ -1,6 +1,6 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.models.ApplicationData
+import cards.nine.models.{Location, ApplicationData, Application}
 import cards.nine.models.Spaces._
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
@@ -11,10 +11,8 @@ import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, Coll
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
-import cards.nine.services.awareness.AwarenessLocation
 import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
-import cards.nine.models.Application
 import cards.nine.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
 import play.api.libs.json.Json
 
@@ -550,7 +548,7 @@ trait CollectionProcessImplData {
     }
 
   val awarenessLocation =
-    AwarenessLocation(
+    Location(
       latitude = latitude,
       longitude = longitude,
       countryCode = Some("ES"),
