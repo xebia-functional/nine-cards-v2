@@ -1,6 +1,6 @@
 package cards.nine.services.utils
 
-import cards.nine.services.image._
+import cards.nine.models.AppPackage
 
 trait ResourceUtilsData {
 

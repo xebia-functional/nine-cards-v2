@@ -3,10 +3,9 @@ package cards.nine.process.device.impl
 import android.graphics.Bitmap
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.process.device.{DeviceConversions, DeviceProcess, IconResize, ImplicitsDeviceException, ShortcutException}
-import cards.nine.services.image.SaveBitmap
 import cards.nine.commons.services.TaskService._
-
+import cards.nine.models.SaveBitmap
+import cards.nine.process.device.{DeviceConversions, DeviceProcess, IconResize, ImplicitsDeviceException, ShortcutException}
 
 trait ShorcutsDeviceProcessImpl extends DeviceProcess {
 

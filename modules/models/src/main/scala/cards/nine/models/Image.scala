@@ -1,4 +1,4 @@
-package cards.nine.services.image
+package cards.nine.models
 
 import android.graphics.Bitmap
 

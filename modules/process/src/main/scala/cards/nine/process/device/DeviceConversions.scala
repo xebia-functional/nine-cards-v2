@@ -2,13 +2,12 @@ package cards.nine.process.device
 
 import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.models.{ContactCounter, Application, ApplicationData, Call}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.device.models._
+import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
 import cards.nine.process.device.types.WidgetResizeMode
-import cards.nine.services.image.{AppPackage, BitmapResize}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
 import cards.nine.services.shortcuts.models.{Shortcut => ServicesShortcut}

@@ -13,7 +13,7 @@ import cards.nine.process.device.models.{LastCallsContact, Widget, _}
 import cards.nine.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
-import cards.nine.services.image.{AppPackagePath, AppWebsitePath}
+import cards.nine.services.image.AppWebsitePath
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
 import cards.nine.services.shortcuts.models.Shortcut
 import cards.nine.services.widgets.models.{Widget => ServicesWidget}

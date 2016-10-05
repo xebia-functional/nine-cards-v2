@@ -1,6 +1,6 @@
 package cards.nine.services.image.impl
 
-import cards.nine.services.image._
+import cards.nine.models._
 
 trait ImageServicesImplData {
 

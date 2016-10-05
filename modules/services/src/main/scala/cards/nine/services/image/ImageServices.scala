@@ -2,6 +2,7 @@ package cards.nine.services.image
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.{SaveBitmap, SaveBitmapPath}
 
 trait ImageServices {
 

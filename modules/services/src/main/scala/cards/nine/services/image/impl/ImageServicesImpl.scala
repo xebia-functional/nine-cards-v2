@@ -2,9 +2,9 @@ package cards.nine.services.image.impl
 
 import android.media.ThumbnailUtils
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.services.image._
 import cards.nine.commons.services.TaskService._
-
+import cards.nine.models.{ImageServicesConfig, SaveBitmap, SaveBitmapPath}
+import cards.nine.services.image._
 
 class ImageServicesImpl(config: ImageServicesConfig, imageServicesTasks: ImageServicesTasks = ImageServicesTasks)
   extends ImageServices {

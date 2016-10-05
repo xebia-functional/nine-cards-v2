@@ -7,6 +7,7 @@ import cards.nine.api.rest.client.http.OkHttpClient
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.models.ImageServicesConfig
 import cards.nine.models.types.NineCardCategory._
 import cards.nine.models.types.NineCardsMoment._
 import cards.nine.models.types.{NineCardCategory, NineCardsMoment}
@@ -48,7 +49,6 @@ import cards.nine.services.awareness.impl.GoogleAwarenessServicesImpl
 import cards.nine.services.calls.impl.CallsServicesImpl
 import cards.nine.services.contacts.impl.ContactsServicesImpl
 import cards.nine.services.drive.impl.DriveServicesImpl
-import cards.nine.services.image.ImageServicesConfig
 import cards.nine.services.image.impl.ImageServicesImpl
 import cards.nine.services.intents.impl.LauncherIntentServicesImpl
 import cards.nine.services.permissions.impl.AndroidSupportPermissionsServices

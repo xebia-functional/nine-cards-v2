@@ -9,14 +9,14 @@ import android.util.DisplayMetrics
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.{BitmapResize, SaveBitmap}
 import cards.nine.services.image._
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cats.syntax.either._
-import cards.nine.commons.test.TaskServiceTestOps._
-
 
 trait ImageServicesImplSpecification
   extends Specification
