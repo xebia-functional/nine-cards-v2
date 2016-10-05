@@ -5,7 +5,6 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.Spaces
 import cards.nine.models.Spaces._
 import cards.nine.models.types.NineCardsMoment._
 import cards.nine.models.types._
@@ -170,7 +169,8 @@ class MomentProcessImpl(
         case HomeMorningMoment => homeApps.contains(app.packageName)
         case WorkMoment => workApps.contains(app.packageName)
         case HomeNightMoment => nightApps.contains(app.packageName)
-        case TransitMoment => transitApps.contains(app.packageName)
+        case WalkMoment => walkApps.contains(app.packageName)
+        case _ => false
       }
     }.take(numSpaces)
 

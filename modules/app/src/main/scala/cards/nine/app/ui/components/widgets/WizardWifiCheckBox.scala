@@ -37,7 +37,7 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   val paddingIcon = resGetDimensionPixelSize(R.dimen.padding_default)
 
-  val selectedColor = resGetColor(R.color.wizard_background_new_conf_step_2)
+  val selectedColor = resGetColor(R.color.wizard_new_conf_accent_2)
 
   val unselectedColor = resGetColor(R.color.wizard_checkbox_unselected)
 
@@ -91,7 +91,7 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
       (wifiAction <~ vClickable(false) <~ tivColor(resGetColor(R.color.wizard_checkbox_unselected)))
 
   def setWifiName(wifi: String): Ui[Any] =
-    (this <~ vAddField(wifiNameKey, false)) ~
+    (this <~ vAddField(wifiNameKey, wifi)) ~
       (textConnected <~
         tvText(resGetString(R.string.wizard_new_conf_wifi_connected_step_3, wifi)))
 

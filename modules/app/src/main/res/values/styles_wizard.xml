@@ -26,7 +26,7 @@
     <style name="WizardLoadingMessage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:padding">@dimen/padding_large</item>
         <item name="android:textSize">@dimen/text_default</item>
     </style>
 
@@ -249,7 +249,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">@dimen/padding_large</item>
-        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:padding">@dimen/padding_large</item>
     </style>
 
     <style name="WizardWifiCheckboxNamesRoot">
@@ -365,7 +365,7 @@
     <!-- Step 0 -->
 
     <style name="WizardNewConfigurationHeaderContentStep0" parent="WizardNewConfigurationHeaderContent">
-        <item name="android:background">@color/wizard_background_new_conf_step_0</item>
+        <item name="android:background">@color/wizard_new_conf_accent_1</item>
     </style>
 
     <style name="WizardNewConfigurationHeaderImageStep0" parent="WizardNewConfigurationHeaderImage">
@@ -374,7 +374,7 @@
 
     <style name="WizardNewConfigurationTitleStep0" parent="WizardNewConfigurationTitle">
         <item name="android:text">@string/wizard_new_conf_title_step_0</item>
-        <item name="android:textColor">@color/wizard_background_new_conf_step_0</item>
+        <item name="android:textColor">@color/wizard_new_conf_accent_1</item>
     </style>
 
     <style name="WizardNewConfigurationDescriptionStep0" parent="WizardNewConfigurationDescription">
@@ -385,7 +385,7 @@
 
     <style name="WizardNewConfigurationTitleStep1" parent="WizardNewConfigurationTitle">
         <item name="android:text">@string/wizard_new_conf_title_step_1</item>
-        <item name="android:textColor">@color/wizard_background_new_conf_step_0</item>
+        <item name="android:textColor">@color/wizard_new_conf_accent_1</item>
     </style>
 
     <style name="WizardNewConfigurationDescriptionStep1" parent="WizardNewConfigurationDescription"/>
@@ -439,7 +439,7 @@
     <!-- Step 2 -->
 
     <style name="WizardNewConfigurationHeaderContentStep2" parent="WizardNewConfigurationHeaderContent">
-        <item name="android:background">@color/wizard_background_new_conf_step_2</item>
+        <item name="android:background">@color/wizard_new_conf_accent_2</item>
     </style>
 
     <style name="WizardNewConfigurationHeaderImageStep2_1" parent="WizardNewConfigurationHeaderImage">
@@ -456,7 +456,7 @@
 
     <style name="WizardNewConfigurationTitleStep2" parent="WizardNewConfigurationTitle">
         <item name="android:text">@string/wizard_new_conf_title_step_2</item>
-        <item name="android:textColor">@color/wizard_background_new_conf_step_2</item>
+        <item name="android:textColor">@color/wizard_new_conf_accent_2</item>
     </style>
 
     <style name="WizardNewConfigurationDescriptionStep2" parent="WizardNewConfigurationDescription"/>
@@ -465,7 +465,7 @@
 
     <style name="WizardNewConfigurationTitleStep3" parent="WizardNewConfigurationTitle">
         <item name="android:text">@string/wizard_new_conf_title_step_3</item>
-        <item name="android:textColor">@color/wizard_background_new_conf_step_2</item>
+        <item name="android:textColor">@color/wizard_new_conf_accent_2</item>
     </style>
 
     <style name="WizardNewConfigurationDescriptionStep3" parent="WizardNewConfigurationDescription">
@@ -485,6 +485,17 @@
         <item name="android:orientation">vertical</item>
         <item name="android:paddingLeft">@dimen/padding_default</item>
         <item name="android:paddingRight">@dimen/padding_default</item>
+    </style>
+
+    <!-- Step 4 -->
+
+    <style name="WizardNewConfigurationTitleStep4" parent="WizardNewConfigurationTitle">
+        <item name="android:text">@string/wizard_new_conf_title_step_4</item>
+        <item name="android:textColor">@color/wizard_new_conf_accent_3</item>
+    </style>
+
+    <style name="WizardNewConfigurationDescriptionStep4" parent="WizardNewConfigurationDescription">
+        <item name="android:text">@string/wizard_new_conf_description_step_4</item>
     </style>
 
 </resources>
