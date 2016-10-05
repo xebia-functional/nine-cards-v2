@@ -4,25 +4,11 @@ import cards.nine.models._
 
 trait ImageServicesImplData {
 
-  val appPackage = AppPackage(
-    "com.fortysevendeg.ninecardslauncher.test",
-    "ClassNameExample",
-    "Sample Name")
-
-  val appWebsite = AppWebsite(
-    "com.fortysevendeg.ninecardslauncher.test",
-    "http://www.example.com/image.jpg",
-    "Sample Name")
-
   val fileFolder = "/file/example"
 
-  val fileName = String.format("%s_%s", appPackage.packageName.toLowerCase.replace(".", "_"), appPackage.className.toLowerCase.replace(".", "_"))
+  val packageName = "com.fortysevendeg.ninecardslauncher.test"
 
-  val filePath = s"$fileFolder/$fileName"
-
-  val packageName = appPackage.packageName
-
-  val className = appPackage.className
+  val className = "ClassNameExample"
 
   val resultFileName = "C"
 
@@ -30,9 +16,9 @@ trait ImageServicesImplData {
 
   val resultFilePathPackage = s"$fileFolder/$packageName"
 
-  val uri = appWebsite.url
+  val uri = "http://www.example.com/image.jpg"
 
-  val name = appWebsite.name
+  val name = "Sample Name"
 
   val textToMeasure = "M"
 
@@ -45,16 +31,6 @@ trait ImageServicesImplData {
   val widthPixels = 240
 
   val heightPixels = 320
-
-  val appPackagePath = AppPackagePath(
-    packageName = appPackage.packageName,
-    className = appPackage.className,
-    path = filePath)
-
-  val appWebsitePath = AppWebsitePath(
-    packageName = appWebsite.packageName,
-    url = appWebsite.url,
-    path = filePath)
 
   val bitmapName = "aeiuo-12345"
 

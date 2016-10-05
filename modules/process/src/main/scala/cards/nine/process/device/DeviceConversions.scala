@@ -48,14 +48,6 @@ trait DeviceConversions extends NineCardIntentConversions {
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
 
-  def toAppPackageSeq(items: Seq[ApplicationData]): Seq[AppPackage] = items map toAppPackage
-
-  def toAppPackage(item: ApplicationData): AppPackage =
-    AppPackage(
-      packageName = item.packageName,
-      className = item.className,
-      name = item.name)
-
   def toCreateOrUpdateDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): CreateOrUpdateDockAppRequest =
     CreateOrUpdateDockAppRequest(
       name = name,
