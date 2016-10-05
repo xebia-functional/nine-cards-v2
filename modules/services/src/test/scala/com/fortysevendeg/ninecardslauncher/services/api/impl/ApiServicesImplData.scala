@@ -2,6 +2,7 @@ package cards.nine.services.api.impl
 
 import cards.nine.api._
 import cards.nine.api.version2.CollectionUpdateInfo
+import cards.nine.models.types.NineCardCategory
 import cards.nine.services.api.CategorizedDetailPackage
 import cards.nine.services.api.models.PackagesByCategory
 
@@ -274,7 +275,7 @@ trait ApiServicesImplData {
   def generatePackagesByCategorySeq(num: Int = 10) =
     1 to num map { _ =>
       PackagesByCategory(
-        category = category,
+        category = NineCardCategory(category),
         packages = packages
       )
     }
@@ -282,7 +283,7 @@ trait ApiServicesImplData {
   val packagesByCategorySeq = generatePackagesByCategorySeq()
 
   val items = Map(packagesByCategorySeq map (
-    packagesByCategory => packagesByCategory.category -> packagesByCategory.packages): _*)
+    packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
   val rankAppsRequest = version2.RankAppsRequest(items, Some(location))
 

@@ -13,7 +13,8 @@ import cards.nine.process.commons.models._
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
 import cards.nine.services.awareness.AwarenessLocation
 import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import cards.nine.services.persistence.models.{Application => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
+import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
+import cards.nine.models.Application
 import cards.nine.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
 import play.api.libs.json.Json
 
@@ -322,12 +323,12 @@ trait CollectionProcessImplData {
 
 
   val seqServicesApp = seqServicesCard map { card =>
-    ServicesApp(
+    Application(
       id = card.id,
       name = card.term,
       packageName = card.packageName.getOrElse(""),
       className = "",
-      category = appsCategoryName,
+      category = NineCardCategory(appsCategoryName),
       dateInstalled = 0,
       dateUpdate = 0,
       version = "",
@@ -347,7 +348,7 @@ trait CollectionProcessImplData {
     CategorizedDetailPackage(
       packageName = app.packageName,
       title = app.name,
-      category = Some(app.category),
+      category = Some(app.category.name),
       icon = "",
       free = true,
       downloads = "",
@@ -533,7 +534,7 @@ trait CollectionProcessImplData {
 
   def generateRankAppsResponse() = seqCategoryAndPackages map { item =>
     RankAppsResponse(
-      category = item._1,
+      category = item._1.name,
       packages = item._2)
   }
 

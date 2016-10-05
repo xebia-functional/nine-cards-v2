@@ -1,9 +1,11 @@
 package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.services.persistence.{UpdateAppRequest, AddAppRequest}
-import cards.nine.services.persistence.models._
+import cards.nine.models.types.NineCardCategory
 import cards.nine.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, DataCounter => RepositoryDataCounter}
+import cards.nine.services.persistence.models._
+import cards.nine.models.Application
+import cards.nine.services.persistence.{AddAppRequest, UpdateAppRequest}
 
 import scala.util.Random
 
@@ -27,7 +29,7 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
       name = name,
       packageName = packageName,
       className = className,
-      category = category,
+      category = NineCardCategory(category),
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,

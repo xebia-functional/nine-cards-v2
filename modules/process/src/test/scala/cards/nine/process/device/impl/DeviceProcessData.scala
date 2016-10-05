@@ -2,7 +2,7 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.models.ApplicationData
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
@@ -15,7 +15,7 @@ import cards.nine.services.api.{CategorizedPackage, RequestConfig}
 import cards.nine.services.calls.models.{Call => ServicesCall}
 import cards.nine.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import cards.nine.services.image.{AppPackagePath, AppWebsitePath}
-import cards.nine.services.persistence.models.{Application => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
+import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
 import cards.nine.services.shortcuts.models.Shortcut
 import cards.nine.services.widgets.models.{Widget => ServicesWidget}
 import play.api.libs.json.Json
@@ -215,33 +215,33 @@ trait DeviceProcessData
       installedFromGooglePlay = installedFromGooglePlay3)
   )
 
-  val appsPersistence: Seq[ServicesApp] = Seq(
-    ServicesApp(
+  val appsPersistence: Seq[Application] = Seq(
+    Application(
       id = 1,
       name = name1,
       packageName = packageName1,
       className = className1,
-      category = category1.name,
+      category = category1,
       dateInstalled = dateInstalled1,
       dateUpdate = dateUpdate1,
       version = version1,
       installedFromGooglePlay = installedFromGooglePlay1),
-    ServicesApp(
+    Application(
       id = 2,
       name = name2,
       packageName = packageName2,
       className = className2,
-      category = category2.name,
+      category = category2,
       dateInstalled = dateInstalled2,
       dateUpdate = dateUpdate2,
       version = version2,
       installedFromGooglePlay = installedFromGooglePlay2),
-    ServicesApp(
+    Application(
       id = 3,
       name = name3,
       packageName = packageName3,
       className = className3,
-      category = category3.name,
+      category = category3,
       dateInstalled = dateInstalled3,
       dateUpdate = dateUpdate3,
       version = version3,
@@ -624,7 +624,7 @@ trait DeviceProcessData
   val iterableCursorApps = new ServicesIterableApps(mockIterableCursor) {
     override def count(): Int = appsPersistence.length
 
-    override def moveToPosition(pos: Int): ServicesApp = appsPersistence(pos)
+    override def moveToPosition(pos: Int): Application = appsPersistence(pos)
 
     override def close(): Unit = ()
   }

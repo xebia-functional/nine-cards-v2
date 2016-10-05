@@ -1,14 +1,14 @@
 package cards.nine.process.moment.impl
 
-import cards.nine.models.ApplicationData
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardCategory._
 import cards.nine.models.types._
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.process.moment.{SaveMomentRequest, UpdateMomentRequest}
-import cards.nine.services.persistence.models.{Application => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 
@@ -226,12 +226,12 @@ trait MomentProcessImplData {
     version: String = version1,
     installedFromGooglePlay: Boolean = installedFromGooglePlay1) =
     (1 until num) map (item =>
-      ServicesApp(
+      Application(
         id = id + item,
         name = name,
         packageName = packageName,
         className = className,
-        category = category,
+        category = NineCardCategory(category),
         dateInstalled = dateInstalled,
         dateUpdate = dateUpdate,
         version = version,
