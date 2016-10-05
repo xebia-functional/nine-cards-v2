@@ -3,7 +3,7 @@ package cards.nine.app.ui.components.widgets
 import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.commons.ops.ColorOps._
 import android.widget.{FrameLayout, ImageView}
 import android.widget.FrameLayout.LayoutParams
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

@@ -70,5 +70,9 @@
       "styleType": "CollectionDetailTextTabDefaultColor",
       "color": "#80ffffff"
     }
-  ]
+  ],
+  "themeColors": {
+    "defaultColor": "#607D8B",
+    "colors": ["#FF9800", "#F44336", "#9C27B0", "#2196F3", "#673AB7", "#3F51B5", "#8BC34A", "#4CAF50", "#009688"]
+  }
 }

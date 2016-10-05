@@ -26,7 +26,7 @@ import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
@@ -177,7 +177,7 @@ trait CollectionsUiActions
   def showEditCollection(collection: Collection): Ui[Any] = {
     val view = collectionActionsPanel flatMap (_.leftActionView)
     val collectionMap = Map(collectionId -> collection.id.toString)
-    showAction(f[CreateOrEditCollectionFragment], view, resGetColor(getIndexColor(collection.themedColorIndex)), collectionMap)
+    showAction(f[CreateOrEditCollectionFragment], view, theme.getIndexColor(collection.themedColorIndex), collectionMap)
   }
 
   def showEditMoment(momentType: String): Ui[Any] = {

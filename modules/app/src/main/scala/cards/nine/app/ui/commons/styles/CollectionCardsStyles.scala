@@ -10,7 +10,8 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.DrawableOps._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons._
 import cards.nine.process.theme.models._
 import macroid.{ContextWrapper, Tweak}

@@ -8,7 +8,7 @@ import android.graphics.{Paint, PorterDuff}
 import android.os.Vibrator
 import android.support.design.widget.{TabLayout, Snackbar}
 import android.view.{MotionEvent, View, ViewGroup}
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.commons.ops.ColorOps._
 import android.support.v4.view.{GravityCompat, ViewPager}
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
@@ -26,7 +26,7 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.AppUtils._
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
@@ -49,8 +49,8 @@ object CommonsTweak {
     }
   }
 
-  def vBackgroundCollection(indexColor: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] =
-    vBackgroundCircle(resGetColor(getIndexColor(indexColor)))
+  def vBackgroundCollection(indexColor: Int)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme): Tweak[View] =
+    vBackgroundCircle(theme.getIndexColor(indexColor))
 
   def vBackgroundCircle(color: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
     def createShapeDrawable(c: Int) = {

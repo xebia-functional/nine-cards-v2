@@ -1,14 +1,24 @@
 package cards.nine.process.theme.models
 
 import android.graphics.Color
+import cards.nine.commons.ops.ColorOps._
 import play.api.libs.json._
 
-case class NineCardsTheme(name: String, parent: ThemeType, styles: Seq[ThemeStyle]) {
+import scala.util.Random
+
+case class NineCardsTheme(name: String, parent: ThemeType, styles: Seq[ThemeStyle], themeColors: ThemeColors) {
+
   def get(style: ThemeStyleType): Int = styles.find(_.styleType == style) map (_.color) getOrElse {
     android.util.Log.i("9Cards", s"The selected theme doesn't have the $style property")
     Color.TRANSPARENT
   }
+
+  def getIndexColor(index: Int): Int = themeColors.colors.lift(index).getOrElse(themeColors.defaultColor)
+
+  def getRandomIndexColor: Int = getIndexColor(Random.nextInt(themeColors.colors.size))
 }
+
+case class ThemeColors(defaultColor: Int, colors: Seq[Int])
 
 sealed trait ThemeType
 
@@ -135,8 +145,31 @@ object NineCardsThemeImplicits {
     def writes(themeStyle: ThemeStyle) =
       Json.obj(
         "styleType" -> Json.toJsFieldJsValueWrapper(themeStyle.styleType),
-        "color" -> Json.toJsFieldJsValueWrapper(Integer.toHexString(themeStyle.color))
+        "color" -> Json.toJsFieldJsValueWrapper(themeStyle.color.colorToString)
       )
+  }
+
+  implicit val themeColorsReads = new Reads[ThemeColors] {
+
+    def reads(js: JsValue) = {
+
+      val defaultColor = Color.parseColor((js \ "defaultColor").as[String])
+
+      val colors = (js \ "colors").as[Array[String]].map(Color.parseColor)
+
+      JsSuccess(ThemeColors(defaultColor, colors))
+    }
+
+  }
+
+  implicit val themeColorsWrites = new Writes[ThemeColors] {
+
+    def writes(themeColors: ThemeColors) =
+      Json.obj(
+        "defaultColor" -> Json.toJsFieldJsValueWrapper(themeColors.defaultColor.colorToString),
+        "color" -> Json.toJsFieldJsValueWrapper(themeColors.colors.map(_.colorToString).toArray)
+      )
+
   }
 
   implicit val nineCardsThemeReads = Json.reads[NineCardsTheme]

@@ -15,7 +15,7 @@ import cards.nine.app.ui.collections.CollectionAdapter
 import cards.nine.app.ui.collections.decorations.CollectionItemDecoration
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{AppUtils, ImplicitsUiExceptions, UiContext}
 import cards.nine.app.ui.components.commons._

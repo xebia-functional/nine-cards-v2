@@ -16,7 +16,7 @@ import cards.nine.app.ui.collections.ActionsScreenListener
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.PositionsUtils._
 import cards.nine.app.ui.commons.actions.ActionsSnails._
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._

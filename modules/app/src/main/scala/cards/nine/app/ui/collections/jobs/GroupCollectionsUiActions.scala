@@ -23,7 +23,7 @@ import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import cards.nine.app.ui.commons.ops.CollectionOps._
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
@@ -93,7 +93,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       (dom.selector <~ vGone <~ selectorStyle(selectorDrawable)) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu) ~
-      updateToolbarColor(resGetColor(getIndexColor(indexColor))) ~
+      updateToolbarColor(theme.getIndexColor(indexColor)) ~
       (dom.icon <~ ivSrc(iconCollection.getIconDetail)) ~
       systemBarsTint.initSystemStatusBarTint() ~
       (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
@@ -229,7 +229,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       Ui(dom.invalidateOptionMenu)).toService
 
   def showMenuButton(autoHide: Boolean = true, indexColor: Int): TaskService[Unit] = {
-    val color = getIndexColor(indexColor)
+    val color = theme.getIndexColor(indexColor)
     showFabButton(color, autoHide).toService
   }
 
@@ -240,7 +240,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   // FabButtonBehaviour
 
   def updateBarsInFabMenuHide(): Ui[Any] =
-    dom.getCurrentCollection map (c => systemBarsTint.updateStatusColor(resGetColor(getIndexColor(c.themedColorIndex)))) getOrElse Ui.nop
+    dom.getCurrentCollection map (c => systemBarsTint.updateStatusColor(theme.getIndexColor(c.themedColorIndex))) getOrElse Ui.nop
 
   var runnableHideFabButton: Option[RunnableWrapper] = None
 
@@ -279,17 +279,16 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     if (dom.isFabButtonVisible && autoHide) {
       resetDelayedHide
     } else {
-      val colorDefault = resGetColor(color)
-      val colorDark = colorDefault.dark()
+      val colorDark = color.dark()
       (if (autoHide) postDelayedHideFabButton else removeDelayedHideFabButton()) ~
-        (dom.fabButton <~ (if (color != 0) fbaColor(colorDefault, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(autoHideKey, autoHide)) ~
+        (dom.fabButton <~ (if (color != 0) fbaColor(color, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(autoHideKey, autoHide)) ~
         (if (color != 0) dom.fabMenu <~ changeItemsColor(color) else Ui.nop)
     }
 
   def hideFabButton: Ui[_] = removeDelayedHideFabButton() ~ (dom.fabButton <~ hideFabMenu)
 
   def changeItemsColor(color: Int) = Transformer {
-    case item: FabItemMenu => item <~ fimBackgroundColor(resGetColor(color))
+    case item: FabItemMenu => item <~ fimBackgroundColor(color)
   }
 
   private[this] def updateBars(opened: Boolean): Ui[_] = if (opened) {
@@ -434,7 +433,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
         Ui(selectorDrawable.setSelected(position)) ~
         adapter.notifyChanged(position) ~
         (if (collection.cards.isEmpty) {
-          val color = getIndexColor(collection.themedColorIndex)
+          val color = theme.getIndexColor(collection.themedColorIndex)
           showFabButton(color = color, autoHide = false)
         } else {
           hideFabButton
@@ -458,7 +457,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       args.putString(categoryKey, category.name)
     })
     dom.getCurrentCollection foreach (c =>
-      args.putInt(BaseActionFragment.colorPrimary, resGetColor(getIndexColor(c.themedColorIndex))))
+      args.putInt(BaseActionFragment.colorPrimary, theme.getIndexColor(c.themedColorIndex)))
     args
   }
 
@@ -520,7 +519,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
 
     var currentMovement: PageMovement = if (position == 0) Left else Loading
 
-    private[this] def getColor(col: Collection): Int = resGetColor(getIndexColor(col.themedColorIndex))
+    private[this] def getColor(col: Collection): Int = theme.getIndexColor(col.themedColorIndex)
 
     private[this] def jump(from: Collection, to: Collection) = {
       val valueAnimator = ValueAnimator.ofInt(0, 100)

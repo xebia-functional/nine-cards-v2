@@ -5,7 +5,7 @@ import android.graphics._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.commons.ops.ColorOps._
 
 case class CollectionSelectorDrawable(
   color: Int = Color.WHITE)(implicit contextWrapper: ContextWrapper)
