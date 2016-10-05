@@ -3,8 +3,7 @@ package cards.nine.app.services.collections
 import android.app.{Notification, Service}
 import android.content.Intent
 import android.os.IBinder
-import cards.nine.app.commons.ContextSupportProvider
-import cards.nine.app.services.commons.SelfBroadcastDispatcher
+import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import cards.nine.app.ui.commons.SyncDeviceState.{stateFailure => _, stateSuccess => _}
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -17,7 +16,7 @@ class CreateCollectionsService
   extends Service
   with Contexts[Service]
   with ContextSupportProvider
-  with SelfBroadcastDispatcher
+  with BroadcastDispatcher
   with CreateCollectionsUiActions
   with CreateCollectionsListener
   with CloudStorageClientListener {

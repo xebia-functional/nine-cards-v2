@@ -7,7 +7,7 @@ import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
-import cards.nine.app.commons._
+import cards.nine.app.commons.{BroadcastDispatcher$, _}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.jobs._
 import cards.nine.app.ui.commons.RequestCodes._
@@ -109,7 +109,7 @@ class CollectionsDetailsActivity
     groupCollectionsJobs.initialize(indexColor, icon, position, isStateChanged).
       resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
 
-    registerDispatchers
+    registerDispatchers()
 
   }
 
@@ -133,7 +133,7 @@ class CollectionsDetailsActivity
 
   override def onDestroy(): Unit = {
     super.onDestroy()
-    unregisterDispatcher
+    unregisterDispatcher()
   }
 
   override def onSaveInstanceState(outState: Bundle): Unit = {

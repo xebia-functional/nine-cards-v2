@@ -3,14 +3,14 @@ package cards.nine.app.ui.collections.jobs
 import android.content.Intent
 import android.graphics.Bitmap
 import cats.implicits._
-import cards.nine.app.commons.{BroadAction, Conversions, AppNineCardIntentConversions}
+import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
-import cards.nine.app.ui.commons.{JobException, Jobs, RequestCodes}
+import cards.nine.app.ui.commons.{BroadAction, JobException, Jobs, RequestCodes}
 import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
-import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.commons.services.TaskService._
 import cards.nine.models.types._
 import cards.nine.process.accounts.CallPhone
 import cards.nine.process.collection.AddCardRequest

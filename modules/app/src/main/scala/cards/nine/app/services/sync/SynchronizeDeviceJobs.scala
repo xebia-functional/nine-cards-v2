@@ -1,15 +1,14 @@
 package cards.nine.app.services.sync
 
 import android.content.Context
-import cards.nine.app.commons.BroadAction
 import cards.nine.app.observers.NineCardsObserver._
 import cards.nine.app.ui.commons.SyncDeviceState._
 import cards.nine.app.ui.commons.action_filters.{SyncAnswerActionFilter, SyncStateActionFilter}
-import cards.nine.app.ui.commons.{ImplicitsJobExceptions, JobException, Jobs}
+import cards.nine.app.ui.commons.{BroadAction, ImplicitsJobExceptions, JobException, Jobs}
+import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.commons.{CatchAll, services}
 import cards.nine.models.types.{AppCardType, PublishedByMe}
 import cards.nine.process.cloud.Conversions._
 import cards.nine.process.commons.models.Collection
@@ -41,7 +40,7 @@ class SynchronizeDeviceJobs(actions: SynchronizeDeviceUiActions)(implicit contex
                   sharedCollectionId = sharedCollectionId,
                   name = collection.name,
                   packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName))).map(Option(_))
-            case _ => services.TaskService.right(None)
+            case _ => TaskService.right(None)
           }
 
         for {
@@ -54,7 +53,7 @@ class SynchronizeDeviceJobs(actions: SynchronizeDeviceUiActions)(implicit contex
       val updateServices = ids filterNot (_.isEmpty) map (id => updateCollection(id.toInt).value)
       preferences.edit().remove(collectionIdsKey).apply()
 
-      services.TaskService{
+      TaskService{
         Task.gatherUnordered(updateServices) map (_ => Right((): Unit))
       }
 

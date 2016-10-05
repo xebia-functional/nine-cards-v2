@@ -3,7 +3,7 @@ package cards.nine.app.ui.launcher
 import android.content.{ComponentName, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
-import cards.nine.app.commons.{BroadAction, Conversions, AppNineCardIntentConversions}
+import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
@@ -11,7 +11,7 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
-import cards.nine.app.ui.commons.{Jobs, RequestCodes}
+import cards.nine.app.ui.commons.{BroadAction, Jobs, RequestCodes}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.Statuses._

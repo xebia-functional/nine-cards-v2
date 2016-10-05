@@ -2,8 +2,7 @@ package cards.nine.app.services.sync
 
 import android.app.{IntentService, Service}
 import android.content.Intent
-import cards.nine.app.commons.ContextSupportProvider
-import cards.nine.app.services.commons.SelfBroadcastDispatcher
+import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -16,7 +15,7 @@ class SynchronizeDeviceService
   extends IntentService("synchronizeDeviceService")
   with Contexts[Service]
   with ContextSupportProvider
-  with SelfBroadcastDispatcher
+  with BroadcastDispatcher
   with SynchronizeDeviceUiActions
   with SynchronizeDeviceListener
   with CloudStorageClientListener {

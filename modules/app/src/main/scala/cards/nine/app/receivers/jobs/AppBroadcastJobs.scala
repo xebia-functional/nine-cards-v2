@@ -1,7 +1,7 @@
 package cards.nine.app.receivers.jobs
 
-import cards.nine.app.commons.{BroadAction, Conversions}
-import cards.nine.app.ui.commons.Jobs
+import cards.nine.app.commons.Conversions
+import cards.nine.app.ui.commons.{BroadAction, Jobs}
 import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppUninstalledActionFilter, AppUpdatedActionFilter}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
