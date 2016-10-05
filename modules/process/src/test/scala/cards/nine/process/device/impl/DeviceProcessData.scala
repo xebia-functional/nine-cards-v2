@@ -2,8 +2,9 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
+import cards.nine.models
 import cards.nine.models.types._
-import cards.nine.models.{Application, ApplicationData, Call}
+import cards.nine.models.{Application, ApplicationData, Call, ContactCounter}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.models.NineCardIntentImplicits._
@@ -12,7 +13,7 @@ import cards.nine.process.device.models.{LastCallsContact, Widget, _}
 import cards.nine.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
-import cards.nine.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
+import cards.nine.services.contacts.models.ContactPhone
 import cards.nine.services.image.{AppPackagePath, AppWebsitePath}
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
 import cards.nine.services.shortcuts.models.Shortcut
@@ -301,21 +302,21 @@ trait DeviceProcessData
       packageName = "com.example.shortcut3"))
 
   val contacts: Seq[Contact] = Seq(
-    Contact(
+   Contact(
       name = contactName1,
       lookupKey = lookupKey1,
       photoUri = photoUri1,
       hasPhone = false,
       favorite = false,
       info = None),
-    Contact(
+   Contact(
       name = contactName2,
       lookupKey = lookupKey2,
       photoUri = photoUri2,
       hasPhone = false,
       favorite = false,
       info = None),
-    Contact(
+   Contact(
       name = contactName3,
       lookupKey = lookupKey3,
       photoUri = photoUri3,
@@ -340,19 +341,19 @@ trait DeviceProcessData
     hasPhone = true,
     favorite = false,
     info = Some(
-      ContactInfo(
+     ContactInfo(
         emails = Seq(
-          ContactEmail(
+         ContactEmail(
             address = "sample1@47deg.com",
             category = EmailHome
           )
         ),
         phones = Seq(
-          ContactPhone(
+         ContactPhone(
             number = phoneNumber1,
             category = PhoneHome
           ),
-          ContactPhone(
+         ContactPhone(
             number = phoneNumber2,
             category = PhoneMobile
           )
@@ -484,21 +485,21 @@ trait DeviceProcessData
   val calls: Seq[Call] = Seq(call1, call2, call3)
 
   val callsContacts: Seq[Contact] = Seq(
-    Contact(
+   Contact(
       name = contactName1,
       lookupKey = lookupKey1,
       photoUri = photoUri1,
       hasPhone = false,
       favorite = false,
       info = None),
-    Contact(
+   Contact(
       name = contactName2,
       lookupKey = lookupKey2,
       photoUri = photoUri2,
       hasPhone = false,
       favorite = false,
       info = None),
-    Contact(
+   Contact(
       name = contactName3,
       lookupKey = lookupKey3,
       photoUri = photoUri3,
@@ -588,7 +589,7 @@ trait DeviceProcessData
   val dockAppProcess1 = dockAppProcessSeq(0)
   val saveDockAppRequestSeq = createSaveDockAppRequestSeq()
 
-  val iterableCursorContact = new IterableCursor[Contact] {
+  val iterableCursorContact = new IterableCursor[models.Contact] {
     override def count(): Int = contacts.length
 
     override def moveToPosition(pos: Int): Contact = contacts(pos)

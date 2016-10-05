@@ -1,6 +1,7 @@
 package cards.nine.services.contacts.impl
 
 import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
+import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.services.contacts.Fields
 import cards.nine.services.contacts.models._

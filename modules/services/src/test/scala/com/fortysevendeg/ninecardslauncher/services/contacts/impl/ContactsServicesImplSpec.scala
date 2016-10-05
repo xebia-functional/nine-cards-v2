@@ -6,8 +6,9 @@ import cards.nine.commons.contentresolver.IterableCursor._
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.repository.{IntDataType, StringDataType}
+import cards.nine.models.{ContactPhone, ContactEmail, Contact}
 import cards.nine.services.contacts.ContactsContentProvider._
-import cards.nine.services.contacts.models.{Contact, ContactEmail, ContactPhone}
+import cards.nine.services.contacts.models.ContactPhone
 import cards.nine.services.contacts.{ContactNotFoundException, ContactsServiceException, ContactsServicePermissionException, Fields}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

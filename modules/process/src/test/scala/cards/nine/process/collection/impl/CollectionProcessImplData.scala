@@ -1,6 +1,6 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.models.{Location, ApplicationData, Application}
+import cards.nine.models.{Contact, Location, ApplicationData, Application}
 import cards.nine.models.Spaces._
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
@@ -11,7 +11,6 @@ import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, Coll
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
-import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import cards.nine.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
 import play.api.libs.json.Json
@@ -410,9 +409,9 @@ trait CollectionProcessImplData {
         favorite = true)
     }
 
-  val seqContacts: Seq[ServicesContact] = createSeqServicesContact()
+  val seqContacts: Seq[Contact] = createSeqServicesContact()
 
-  val seqContactsWithPhones: Seq[ServicesContact] = seqContacts map {
+  val seqContactsWithPhones: Seq[Contact] = seqContacts map {
     _.copy(info = Option(ServicesContactInfo(Seq.empty, Seq(ServicesContactPhone(phoneNumber, PhoneHome)))))
   }
 
