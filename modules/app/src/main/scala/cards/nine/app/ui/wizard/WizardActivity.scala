@@ -151,7 +151,8 @@ class WizardActivity
     newConfigurationJobs.loadBetterCollections().resolveAsync()
 
   override def onSaveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): Unit =
-    newConfigurationJobs.saveCollections(collections, best9Apps).resolveAsync()
+    newConfigurationJobs.saveCollections(collections, best9Apps).resolveAsyncServiceOr(_ =>
+      wizardUiActions.showErrorGeneral() *> newConfigurationJobs.loadBetterCollections())
 
   override def onLoadWifiByMoment(): Unit = {}
 

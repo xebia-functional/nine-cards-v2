@@ -50,18 +50,12 @@ class SystemBarsTint(implicit activityContextWrapper: ActivityContextWrapper) {
     }
 
   def lightStatusBar(): Ui[_] =
-    Ui {
-      Marshmallow ifSupportedThen {
-        activityContextWrapper.getOriginal.getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR)
-      }
-    }
+    Ui(Marshmallow ifSupportedThen
+      activityContextWrapper.getOriginal.getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR))
 
   def defaultStatusBar(): Ui[_] =
-    Ui {
-      Marshmallow ifSupportedThen {
-        activityContextWrapper.getOriginal.getWindow.getDecorView.setSystemUiVisibility(0)
-      }
-    }
+    Ui(Marshmallow ifSupportedThen
+      activityContextWrapper.getOriginal.getWindow.getDecorView.setSystemUiVisibility(0))
 
   def hasNavigationBar = systemBarTintManager.getConfig.hasNavigationBar
 
