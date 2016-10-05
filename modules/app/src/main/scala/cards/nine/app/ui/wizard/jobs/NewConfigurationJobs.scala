@@ -70,7 +70,8 @@ class NewConfigurationJobs(
   def loadMomentWithWifi(): TaskService[Unit] =
     for {
       _ <- visibilityUiActions.cleanStep()
-      _ <- actions.loadFourthStep(Seq(HomeMorningMoment, WorkMoment))
+      wifis <- di.deviceProcess.getConfiguredNetworks
+      _ <- actions.loadFourthStep(wifis, Seq(HomeMorningMoment, WorkMoment))
     } yield ()
 
 }

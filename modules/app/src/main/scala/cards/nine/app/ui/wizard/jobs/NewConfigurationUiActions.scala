@@ -3,6 +3,7 @@ package cards.nine.app.ui.wizard.jobs
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
+import android.support.v4.app.{DialogFragment, Fragment, FragmentManager}
 import android.text.Html
 import android.view.ViewGroup.LayoutParams._
 import android.view.{LayoutInflater, View}
@@ -11,7 +12,8 @@ import android.widget.LinearLayout.LayoutParams
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext}
+import cards.nine.app.ui.commons.{AppUtils, ImplicitsUiExceptions, SystemBarsTint, UiContext}
+import cards.nine.app.ui.components.dialogs.WifiDialogFragment
 import cards.nine.app.ui.components.widgets.{WizardCheckBox, WizardWifiCheckBox}
 import cards.nine.app.ui.components.widgets.tweaks.WizardCheckBoxTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.WizardWifiCheckBoxTweaks._
@@ -27,11 +29,17 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 
-class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
+class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
+  (implicit
+    context: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_])
   extends WizardStyles
   with ImplicitsUiExceptions {
 
   val numberOfScreens = 6
+
+  val tagDialog = "dialog"
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -116,13 +124,18 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
         tvColorResource(resColor))).toService
   }
 
-  def loadFourthStep(moments: Seq[NineCardsMoment]): TaskService[Unit] = {
+  def loadFourthStep(wifis: Seq[String], moments: Seq[NineCardsMoment]): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_3, javaNull)
     val resColor = R.color.wizard_background_new_conf_step_2
 
     val momentViews = moments map { moment =>
       (w[WizardWifiCheckBox] <~
-        wwcbInitialize(moment) <~
+        wwcbInitialize(moment, onWifiClick = () => {
+          val dialog = WifiDialogFragment(wifis, (wifi) => {
+            changeWifiName(moment, wifi).run
+          })(context, AppUtils.getDefaultTheme)
+          showDialog(dialog).run
+        }) <~
         FuncOn.click { view: View =>
           val itemCheckBox = view.asInstanceOf[WizardWifiCheckBox]
           itemCheckBox <~ wwcbSwap()
@@ -139,6 +152,10 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onLoadWifiByMoment())) <~
         tvColorResource(resColor))).toService
+  }
+
+  private[this] def changeWifiName(moment: NineCardsMoment, wifi: String) = dom.newConfigurationStep3WifiContent <~ Transformer {
+    case view: WizardWifiCheckBox if view.getMoment.contains(moment) => view <~ wwcbWifiName(wifi)
   }
 
   private[this] def checkAllCollections() = dom.newConfigurationStep1CollectionsContent <~ Transformer {
@@ -168,6 +185,13 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
     drawable.getPaint.setColor(color)
     drawable.getPaint.setAntiAlias(true)
     drawable
+  }
+
+  private[this] def showDialog(dialog: DialogFragment) = Ui {
+    val ft = fragmentManagerContext.manager.beginTransaction()
+    Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    dialog.show(ft, tagDialog)
   }
 
 }

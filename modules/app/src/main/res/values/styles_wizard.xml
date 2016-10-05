@@ -236,7 +236,6 @@
     <style name="WizardWifiCheckboxRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:minWidth">@dimen/wizard_min_width_checkbox_wifi</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:paddingTop">@dimen/padding_large</item>
@@ -267,9 +266,11 @@
     </style>
 
     <style name="WizardWifiCheckboxConnectedText">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">@dimen/wizard_min_width_checkbox_wifi</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <style name="WizardWifiCheckboxLine">

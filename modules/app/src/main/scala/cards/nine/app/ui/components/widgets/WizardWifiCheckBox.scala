@@ -17,6 +17,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import macroid.FullDsl._
 import macroid._
 
 class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
@@ -29,6 +30,10 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   val checkKey = "widget-check"
+
+  val momentKey = "widget-moment"
+
+  val wifiNameKey = "widget-wifi-name"
 
   val paddingIcon = resGetDimensionPixelSize(R.dimen.padding_default)
 
@@ -60,13 +65,15 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   (this <~ vAddField(checkKey, true)).run
 
-  def initialize(moment: NineCardsMoment, defaultCheck: Boolean = true): Ui[Any] =
-    (icon <~
-      ivSrc(moment.getIconCollectionDetail)) ~
+  def initialize(moment: NineCardsMoment, onWifiClick: () => Unit, defaultCheck: Boolean = true): Ui[Any] =
+    (this <~ vAddField(momentKey, moment)) ~
+      (icon <~
+        ivSrc(moment.getIconCollectionDetail)) ~
       (name <~
         tvText(moment.getName)) ~
       (textConnected <~
         tvText(R.string.wizard_new_conf_wifi_no_connected_step_3)) ~
+      (wifiAction <~ On.click(Ui(onWifiClick()))) ~
       (if (defaultCheck) check() else uncheck())
 
   def check(): Ui[Any] =
@@ -81,7 +88,12 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
       (icon <~ vBackground(unselectedDrawable)) ~
       (name <~ tvColorResource(R.color.wizard_checkbox_unselected)) ~
       (textConnected <~ tvColorResource(R.color.wizard_checkbox_unselected)) ~
-      (wifiAction <~ vClickable(true) <~ tivColor(resGetColor(R.color.wizard_checkbox_unselected)))
+      (wifiAction <~ vClickable(false) <~ tivColor(resGetColor(R.color.wizard_checkbox_unselected)))
+
+  def setWifiName(wifi: String): Ui[Any] =
+    (this <~ vAddField(wifiNameKey, false)) ~
+      (textConnected <~
+        tvText(resGetString(R.string.wizard_new_conf_wifi_connected_step_3, wifi)))
 
   def swap(): Ui[Any] = this.getField[Boolean](checkKey) match {
     case Some(true) => uncheck()
@@ -90,5 +102,9 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   def isCheck: Boolean = this.getField[Boolean](checkKey) exists(c => c)
+
+  def getMoment: Option[NineCardsMoment] = this.getField[NineCardsMoment](momentKey)
+
+  def getWifiName: Option[String] = this.getField[String](wifiNameKey)
 
 }

@@ -48,8 +48,6 @@ object RequestCodes {
 
   val goToConfigureWidgets = 11
 
-  val selectInfoWifi = 12
-
   val contactsPermission = 13
 
   val callLogPermission = 14
