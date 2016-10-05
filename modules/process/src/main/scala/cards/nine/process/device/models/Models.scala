@@ -2,7 +2,8 @@ package cards.nine.process.device.models
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import cards.nine.models.types.{CallType, DockType, EmailCategory, PhoneCategory}
+import cards.nine.models.Call
+import cards.nine.models.types.{DockType, EmailCategory, PhoneCategory}
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.types.WidgetResizeMode
 
@@ -18,11 +19,7 @@ case class LastCallsContact(
   photoUri: Option[String] = None,
   lookupKey: Option[String] = None,
   lastCallDate: Long,
-  calls: Seq[CallData])
-
-case class CallData(
-  date: Long,
-  callType: CallType)
+  calls: Seq[Call])
 
 case class Contact(
   name: String,

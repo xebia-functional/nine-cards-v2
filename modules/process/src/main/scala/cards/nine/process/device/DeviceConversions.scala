@@ -112,13 +112,8 @@ trait DeviceConversions extends NineCardIntentConversions {
       number = number,
       title = name,
       lastCallDate = date,
-      calls = calls map toCallData)
+      calls = calls)
   }
-
-  def toCallData(item: Call): CallData =
-    CallData(
-      date = item.date,
-      callType = item.callType)
 
   def toTermCounter(item: ContactCounter): TermCounter = TermCounter(
     term = item.term,

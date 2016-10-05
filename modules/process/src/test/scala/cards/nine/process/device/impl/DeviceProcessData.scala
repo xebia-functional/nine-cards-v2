@@ -8,7 +8,7 @@ import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.device.SaveDockAppRequest
-import cards.nine.process.device.models.{CallData, LastCallsContact, Widget, _}
+import cards.nine.process.device.models.{Call, LastCallsContact, Widget, _}
 import cards.nine.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
@@ -505,18 +505,18 @@ trait DeviceProcessData
       favorite = false,
       info = None))
 
-  val callsData1: Seq[CallData] = Seq(
-    CallData(
+  val callsData1: Seq[Call] = Seq(
+    Call(
       date = date1,
       callType = IncomingType))
 
-  val callsData2: Seq[CallData] = Seq(
-    CallData(
+  val callsData2: Seq[Call] = Seq(
+    Call(
       date = date2,
       callType = OutgoingType))
 
-  val callsData3: Seq[CallData] = Seq(
-    CallData(
+  val callsData3: Seq[Call] = Seq(
+    Call(
       date = date3,
       callType = MissedType))
 
