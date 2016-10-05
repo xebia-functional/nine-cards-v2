@@ -40,7 +40,7 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   val paddingIcon = resGetDimensionPixelSize(R.dimen.padding_default)
 
-  val selectedColor = resGetColor(R.color.wizard_background_new_conf_step_0)
+  val selectedColor = resGetColor(R.color.wizard_new_conf_accent_1)
 
   val unselectedColor = resGetColor(R.color.wizard_checkbox_unselected)
 

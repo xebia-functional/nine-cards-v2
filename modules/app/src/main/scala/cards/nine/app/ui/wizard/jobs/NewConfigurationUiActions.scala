@@ -43,15 +43,21 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
 
   lazy val systemBarsTint = new SystemBarsTint
 
+  val firstStep = 0
+  val secondStep = 1
+  val thirdStep = 2
+  val fourthStep = 3
+  val fifthStep = 4
+
   def loadFirstStep(): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_0, javaNull)
-    val resColor = R.color.wizard_background_new_conf_step_0
+    val resColor = R.color.wizard_new_conf_accent_1
     ((dom.newConfigurationStep <~
       vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
       createPagers() ~
-      selectPager(0, resColor) ~
+      selectPager(firstStep, resColor) ~
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onLoadBetterCollections())) <~
         tvColorResource(resColor))).toService
@@ -59,7 +65,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
 
   def loadSecondStep(numberOfApps: Int, collections: Seq[PackagesByCategory]): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_1, javaNull)
-    val resColor = R.color.wizard_background_new_conf_step_0
+    val resColor = R.color.wizard_new_conf_accent_1
     val description = resGetString(R.string.wizard_new_conf_desc_step_1, numberOfApps.toString, collections.length.toString)
     val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, collections.length.toString, collections.length.toString)
 
@@ -83,7 +89,9 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
 
     ((dom.newConfigurationStep <~
       vgAddView(stepView)) ~
-      selectPager(1, resColor) ~
+      selectPager(secondStep, resColor) ~
+      systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
+      systemBarsTint.defaultStatusBar() ~
       (dom.newConfigurationStep1AllApps <~
         wcbInitialize(R.string.all_apps) <~
         FuncOn.click { view: View =>
@@ -112,13 +120,13 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
 
   def loadThirdStep(): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_2, javaNull)
-    val resColor = R.color.wizard_background_new_conf_step_2
+    val resColor = R.color.wizard_new_conf_accent_2
     ((dom.newConfigurationStep <~
       vgAddView(stepView)) ~
       (dom.newConfigurationStep2Description <~ tvText(Html.fromHtml(resGetString(R.string.wizard_new_conf_desc_step_2)))) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
-      selectPager(2, resColor) ~
+      selectPager(thirdStep, resColor) ~
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onLoadWifiByMoment())) <~
         tvColorResource(resColor))).toService
@@ -126,7 +134,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
 
   def loadFourthStep(wifis: Seq[String], moments: Seq[(NineCardsMoment, Boolean)]): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_3, javaNull)
-    val resColor = R.color.wizard_background_new_conf_step_2
+    val resColor = R.color.wizard_new_conf_accent_2
 
     val momentViews = moments map {
       case (moment, selected) =>
@@ -148,7 +156,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
-      selectPager(3, resColor) ~
+      selectPager(fourthStep, resColor) ~
       (dom.newConfigurationStep3WifiContent <~ vgAddViews(momentViews, params)) ~
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onSaveMoments(dom.getWifisSelected))) <~
@@ -157,12 +165,12 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
 
   def loadFifthStep(): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_4, javaNull)
-    val resColor = R.color.wizard_background_new_conf_step_4
+    val resColor = R.color.wizard_new_conf_accent_3
     ((dom.newConfigurationStep <~
       vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
-      selectPager(4, resColor) ~
+      selectPager(fifthStep, resColor) ~
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onLoadBetterCollections())) <~
         tvColorResource(resColor))).toService
