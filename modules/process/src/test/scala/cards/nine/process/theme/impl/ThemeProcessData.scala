@@ -28,7 +28,11 @@ trait ThemeProcessData {
       |      "styleType": "DrawerTextColor",
       |      "color": "$sampleColorWithoutAlpha"
       |    }
-      |  ]
+      |  ],
+      |  "themeColors": {
+      |    "defaultColor": "$sampleColorWithAlpha",
+      |    "colors": ["$sampleColorWithAlpha", "$sampleColorWithoutAlpha"]
+      |  }
       |}
     """.stripMargin
 
