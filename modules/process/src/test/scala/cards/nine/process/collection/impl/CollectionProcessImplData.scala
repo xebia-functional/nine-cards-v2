@@ -109,7 +109,7 @@ trait CollectionProcessImplData {
 
   val collectionId1 = 1
 
-  val collectionId2 = 2
+//  val collectionId2 = 2
 
   val collection1 = ServicesCollection(
     id = collectionId1,
