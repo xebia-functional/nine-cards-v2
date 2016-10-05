@@ -10,13 +10,13 @@ import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.UiContext
-import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.types.{AppDockType, ContactDockType}
 import cards.nine.process.device.models.DockApp
 import cards.nine.process.theme.models.{DockPressedColor, NineCardsTheme}

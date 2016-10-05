@@ -6,10 +6,6 @@ import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.{Paint, PorterDuff}
 import android.os.Vibrator
-import android.support.design.widget.{TabLayout, Snackbar}
-import android.view.{MotionEvent, View, ViewGroup}
-import cards.nine.commons.ops.ColorOps._
-import android.support.v4.view.{GravityCompat, ViewPager}
 import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
@@ -22,16 +18,15 @@ import android.view.inputmethod.InputMethodManager
 import android.view.{View, ViewGroup}
 import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}
 import android.widget._
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.AppUtils._
-import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
 import cards.nine.commons._
-import cards.nine.process.theme.models.{DrawerIconColor, NineCardsTheme}
+import cards.nine.commons.ops.ColorOps._
+import cards.nine.process.theme.models.NineCardsTheme
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
