@@ -47,5 +47,5 @@ case class FormedMoment(
   widgets: Option[Seq[FormedWidget]])
 
 case class PackagesByCategory(
-  category: String,
+  category: NineCardCategory,
   packages: Seq[String])

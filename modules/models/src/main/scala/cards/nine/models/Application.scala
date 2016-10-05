@@ -7,7 +7,7 @@ case class Application(
   name: String,
   packageName: String,
   className: String,
-  category: String,
+  category: NineCardCategory,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,

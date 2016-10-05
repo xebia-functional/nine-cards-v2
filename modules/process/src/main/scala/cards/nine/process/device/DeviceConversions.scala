@@ -2,7 +2,7 @@ package cards.nine.process.device
 
 import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.ApplicationData
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
@@ -12,7 +12,6 @@ import cards.nine.services.calls.models.{Call => ServicesCall}
 import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactCounter, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import cards.nine.services.image.{AppPackage, BitmapResize}
 import cards.nine.services.persistence._
-import cards.nine.models.Application
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
 import cards.nine.services.shortcuts.models.{Shortcut => ServicesShortcut}
 import cards.nine.services.widgets.models.{Widget => ServicesWidget}
@@ -34,7 +33,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       name = app.name,
       packageName = app.packageName,
       className = app.className,
-      category = NineCardCategory(app.category),
+      category = app.category,
       dateInstalled = app.dateInstalled,
       dateUpdate = app.dateUpdate,
       version = app.version,

@@ -180,10 +180,10 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def rankApps()(implicit context: ContextSupport) = {
 
-    def mapValues(seq: Seq[(String, String)]): Seq[(String, Seq[String])] =
+    def mapValues(seq: Seq[(NineCardCategory, String)]): Seq[(NineCardCategory, Seq[String])] =
       seq.groupBy(_._1).mapValues(_.map(_._2)).toSeq
 
-    def getPackagesByCategory: TaskService[Seq[(String, Seq[String])]] =
+    def getPackagesByCategory: TaskService[Seq[(NineCardCategory, Seq[String])]] =
       for {
         appList <- persistenceServices.fetchApps(OrderByCategory)
       } yield mapValues(appList map (app => (app.category, app.packageName)))

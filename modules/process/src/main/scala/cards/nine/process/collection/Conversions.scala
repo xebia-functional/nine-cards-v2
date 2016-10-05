@@ -2,7 +2,7 @@ package cards.nine.process.collection
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models.{Application, ApplicationData}
-import cards.nine.models.types.{AppCardType, CardType}
+import cards.nine.models.types.{NineCardCategory, AppCardType, CardType}
 import cards.nine.process.collection.models._
 import cards.nine.process.commons.CommonConversions
 import cards.nine.process.commons.models.{Card, Collection, NineCardIntent, PrivateCard}
@@ -158,7 +158,7 @@ trait Conversions extends CommonConversions {
       intent = toNineCardIntent(unformedApp),
       imagePath = None)
 
-  def toServicesPackagesByCategory(packagesByCategory: (String, Seq[String])) = {
+  def toServicesPackagesByCategory(packagesByCategory: (NineCardCategory, Seq[String])) = {
     val (category, packages) = packagesByCategory
     ServicesPackagesByCategory(
       category = category,
@@ -167,7 +167,7 @@ trait Conversions extends CommonConversions {
 
   def toPackagesByCategory(item: RankAppsResponse) =
     PackagesByCategory(
-      category = item.category,
+      category = NineCardCategory(item.category),
       packages = item.packages)
 
 }

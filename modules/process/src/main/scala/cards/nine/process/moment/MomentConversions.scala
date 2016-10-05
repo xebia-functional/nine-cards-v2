@@ -1,7 +1,7 @@
 package cards.nine.process.moment
 
+import cards.nine.models.types.AppCardType
 import cards.nine.models.{Application, ApplicationData}
-import cards.nine.models.types.{AppCardType, NineCardCategory}
 import cards.nine.process.commons.CommonConversions
 import cards.nine.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCard}
 import cards.nine.services.persistence._
@@ -15,7 +15,7 @@ trait MomentConversions extends CommonConversions {
       name = app.name,
       packageName = app.packageName,
       className = app.className,
-      category = NineCardCategory(app.category),
+      category = app.category,
       dateInstalled = app.dateInstalled,
       dateUpdate = app.dateUpdate,
       version = app.version,
