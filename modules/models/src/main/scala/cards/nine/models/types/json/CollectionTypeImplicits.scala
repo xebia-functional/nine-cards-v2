@@ -1,6 +1,6 @@
-package cards.nine.process.commons.types.json
+package cards.nine.models.types.json
 
-import cards.nine.process.commons.types.CollectionType
+import cards.nine.models.types.CollectionType
 import play.api.libs.json._
 
 object CollectionTypeImplicits {

@@ -4,19 +4,18 @@ import android.content.res.Resources
 import android.support.v4.content.ContextCompat
 import cards.nine.api.rest.client.ServiceClient
 import cards.nine.api.rest.client.http.OkHttpClient
+import cards.nine.app.observers.ObserverRegister
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.contexts.ContextSupport
-import com.facebook.stetho.okhttp3.StethoInterceptor
-import cards.nine.app.observers.ObserverRegister
+import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types.NineCardsMoment._
+import cards.nine.models.types.{NineCardCategory, NineCardsMoment}
 import cards.nine.process.accounts.UserAccountsProcess
 import cards.nine.process.accounts.impl.UserAccountsProcessImpl
 import cards.nine.process.cloud.CloudStorageProcess
 import cards.nine.process.cloud.impl.CloudStorageProcessImpl
 import cards.nine.process.collection.impl.CollectionProcessImpl
 import cards.nine.process.collection.{CollectionProcess, CollectionProcessConfig}
-import cards.nine.process.commons.types.NineCardCategory._
-import cards.nine.process.commons.types.NineCardsMoment._
-import cards.nine.process.commons.types.{NineCardCategory, NineCardsMoment}
 import cards.nine.process.device.DeviceProcess
 import cards.nine.process.device.impl.DeviceProcessImpl
 import cards.nine.process.intents.impl.LauncherExecutorProcessImpl
@@ -59,6 +58,7 @@ import cards.nine.services.shortcuts.impl.ShortcutsServicesImpl
 import cards.nine.services.track.impl.ConsoleTrackServices
 import cards.nine.services.widgets.impl.WidgetsServicesImpl
 import cards.nine.services.wifi.impl.WifiServicesImpl
+import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.fortysevendeg.ninecardslauncher2.R
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.awareness.Awareness

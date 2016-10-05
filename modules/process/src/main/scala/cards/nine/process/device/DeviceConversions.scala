@@ -2,14 +2,14 @@ package cards.nine.process.device
 
 import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.commons.types._
 import cards.nine.process.device.models._
 import cards.nine.process.device.types.{CallType, WidgetResizeMode}
 import cards.nine.services.apps.models.Application
 import cards.nine.services.calls.models.{Call => ServicesCall}
-import cards.nine.services.contacts.models.{ContactCounter, Contact => ServicesContact, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
+import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactCounter, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import cards.nine.services.image.{AppPackage, BitmapResize}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
@@ -156,11 +156,11 @@ trait DeviceConversions extends NineCardIntentConversions {
 
   def toContactEmail(item: ServicesContactEmail): ContactEmail = ContactEmail(
     address = item.address,
-    category = EmailCategory(item.category))
+    category = item.category)
 
   def toContactPhone(item: ServicesContactPhone): ContactPhone = ContactPhone(
     number = item.number,
-    category = PhoneCategory(item.category))
+    category = item.category)
 
   def toAppsWithWidgets(apps: Seq[ServicesApp], widgets: Seq[ServicesWidget]): Seq[AppsWithWidgets] = apps map { app =>
     AppsWithWidgets(

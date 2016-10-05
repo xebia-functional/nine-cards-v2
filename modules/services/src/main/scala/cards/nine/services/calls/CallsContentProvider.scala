@@ -2,8 +2,8 @@ package cards.nine.services.calls
 
 import android.database.Cursor
 import cards.nine.services.calls.models._
-import cards.nine.services.commons._
 import cards.nine.services.contacts.Fields
+import cards.nine.models.types._
 
 object CallsContentProvider {
 

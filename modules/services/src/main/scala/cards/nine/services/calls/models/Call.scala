@@ -1,6 +1,6 @@
 package cards.nine.services.calls.models
 
-import cards.nine.services.commons.PhoneCategory
+import cards.nine.models.types.PhoneCategory
 
 case class Call(
   number: String,

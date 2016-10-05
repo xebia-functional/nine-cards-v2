@@ -3,16 +3,16 @@ package cards.nine.process.sharedcollections.impl
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
-import cats.syntax.either._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.process.commons.types._
+import cards.nine.models.types._
 import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, SharedCollectionsException}
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices}
 import cards.nine.services.persistence.PersistenceServices
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification

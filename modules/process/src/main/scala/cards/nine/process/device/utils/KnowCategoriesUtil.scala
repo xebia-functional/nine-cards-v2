@@ -1,6 +1,6 @@
 package cards.nine.process.device.utils
 
-import cards.nine.process.commons.types._
+import cards.nine.models.types._
 
 trait KnownCategoriesUtil {
 

@@ -8,7 +8,8 @@ import android.util.DisplayMetrics
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService
-import cards.nine.process.commons.types.{AppDockType, Misc}
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.types.{AppDockType, Misc}
 import cards.nine.process.device._
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api._
@@ -20,12 +21,11 @@ import cards.nine.services.persistence._
 import cards.nine.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
 import cards.nine.services.widgets.{WidgetServicesException, WidgetsServices}
 import cards.nine.services.wifi.WifiServices
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cats.syntax.either._
-import cards.nine.commons.test.TaskServiceTestOps._
 
 trait DeviceProcessSpecification
   extends Specification

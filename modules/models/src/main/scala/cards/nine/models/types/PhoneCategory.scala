@@ -1,4 +1,4 @@
-package cards.nine.services.commons
+package cards.nine.models.types
 
 sealed trait PhoneCategory
 

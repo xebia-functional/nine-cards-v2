@@ -1,18 +1,18 @@
 package cards.nine.process.collection.impl
 
+import cards.nine.models.Spaces
+import cards.nine.models.Spaces._
+import cards.nine.models.types.CardType._
+import cards.nine.models.types.CollectionType._
+import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types._
 import cards.nine.process.collection.models._
-import cards.nine.process.collection.{CollectionProcessConfig, AddCardRequest, AddCollectionRequest, EditCollectionRequest}
-import cards.nine.process.commons.Spaces._
+import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, CollectionProcessConfig, EditCollectionRequest}
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
-import cards.nine.process.commons.types.CardType._
-import cards.nine.process.commons.types.CollectionType._
-import cards.nine.process.commons.types.NineCardCategory._
-import cards.nine.process.commons.types._
-import cards.nine.services.api.{RankAppsResponse, RankAppsResponseList, CategorizedDetailPackage}
+import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
 import cards.nine.services.apps.models.Application
 import cards.nine.services.awareness.AwarenessLocation
-import cards.nine.services.commons.PhoneHome
 import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
 import cards.nine.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}

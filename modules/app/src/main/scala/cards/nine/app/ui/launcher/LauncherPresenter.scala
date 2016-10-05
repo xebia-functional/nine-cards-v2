@@ -3,7 +3,6 @@ package cards.nine.app.ui.launcher
 import android.content.{ComponentName, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
-import cats.syntax.either._
 import cards.nine.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
@@ -26,10 +25,10 @@ import cards.nine.commons._
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types._
 import cards.nine.process.accounts._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection, Moment, _}
-import cards.nine.process.commons.types._
 import cards.nine.process.device._
 import cards.nine.process.device.models._
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
@@ -38,6 +37,7 @@ import cards.nine.process.recognition.{ConditionWeather, UnknownCondition}
 import cards.nine.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
 import cards.nine.process.widget.models.{AppWidget, WidgetArea}
 import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
+import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
@@ -902,13 +902,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     service.resolveAsyncUi2(onException = _ => actions.showContactUsError())
 
   private[this] def launcherCallService(service: TaskService[Unit], maybePhone: Option[String]) =
-    service.resolveAsyncServiceOr(
-      exception = (throwable: Throwable) => throwable match {
-        case e: LauncherExecutorProcessPermissionException =>
-          statuses = statuses.copy(lastPhone = maybePhone)
-          di.userAccountsProcess.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
-        case _ => actions.showContactUsError().toService
-      })
+    service.resolveAsyncServiceOr[Throwable] {
+      case e: LauncherExecutorProcessPermissionException =>
+        statuses = statuses.copy(lastPhone = maybePhone)
+        di.userAccountsProcess.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
+      case _ => actions.showContactUsError().toService
+    }
 
   private[this] def requestReadContacts() = launcherService {
     di.userAccountsProcess.requestPermission(RequestCodes.contactsPermission, ReadContacts)

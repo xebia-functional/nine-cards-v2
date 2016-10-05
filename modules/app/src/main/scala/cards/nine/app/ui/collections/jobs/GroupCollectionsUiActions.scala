@@ -4,24 +4,16 @@ import android.animation.ValueAnimator
 import android.graphics.drawable.Drawable
 import android.os.{Bundle, Handler}
 import android.support.design.widget.FloatingActionButton
-import android.support.v4.app.{Fragment, FragmentActivity, FragmentManager}
+import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.support.v7.app.AppCompatActivity
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View}
 import android.widget.{ImageView, LinearLayout, TextView}
-import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.collections.CollectionsPagerAdapter
 import cards.nine.app.ui.collections.actions.apps.AppsFragment
 import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
-import cards.nine.app.ui.collections.dialog.EditCardDialogFragment
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.CommonsTweak._
@@ -43,8 +35,15 @@ import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.commons.types.NineCardCategory
 import cards.nine.process.theme.models.{CardLayoutBackgroundColor, CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor, NineCardsTheme}
+import cards.nine.models.types.NineCardCategory
+import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
@@ -100,10 +99,9 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
 
   def showCollections(collections: Seq[Collection], position: Int): TaskService[Unit] =
-    (activityContextWrapper.getOriginal match {
-      case fragmentActivity: FragmentActivity =>
-        val maybeCollection = collections lift position
-        val adapter = CollectionsPagerAdapter(fragmentActivity.getSupportFragmentManager, collections, position)
+    (collections lift position match {
+      case Some(collection) =>
+        val adapter = CollectionsPagerAdapter(fragmentManagerContext.manager, collections, position)
         selectorDrawable.setNumberOfItems(collections.length)
         (dom.viewPager <~ vpAdapter(adapter)) ~
           Ui(adapter.activateFragment(position)) ~
@@ -115,11 +113,8 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
           uiHandlerDelayed(Ui {
             dom.bindAnimatedAdapter()
           }, delayMilis = 100) ~
-          (maybeCollection match {
-            case Some(collection) =>
-              (dom.titleName <~ tvText(collection.name)) ~ (dom.titleIcon <~ ivSrc(collection.getIconDetail))
-            case _ => Ui.nop
-          }) ~
+          (dom.titleName <~ tvText(collection.name)) ~
+          (dom.titleIcon <~ ivSrc(collection.getIconDetail)) ~
           (dom.tabs <~ vVisible <~~ enterViews)
       case _ => Ui.nop
     }).toService
@@ -163,11 +158,10 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     }
   }.toService
 
-  def editCard(collectionId: Int, cardId: Int, cardName: String): TaskService[Unit] = Ui {
-    dom.showDialog(new EditCardDialogFragment(cardName, (maybeNewName) => {
+  def editCard(collectionId: Int, cardId: Int, cardName: String): TaskService[Unit] =
+    Ui (dom.showEditCollectionDialog(cardName, (maybeNewName) => {
       dom.saveEditedCard(collectionId, cardId, maybeNewName)
-    }))
-  }.toService
+    })).toService
 
   def removeCards(cards: Seq[Card]): TaskService[Unit] = Ui {
     for {
@@ -388,66 +382,64 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       systemBarsTint.updateStatusColor(color)
 
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] =
-    Ui (dom.closeEditingMode()) ~
-      (dom.getAdapter map {
-        adapter =>
-          val resIcon = collection.getIconDetail
-          val distance = resGetDimensionPixelSize(R.dimen.padding_large)
-          val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
-          ((pageMovement, adapter.statuses.scrollType) match {
-            case (Start | Idle, _) =>
-              (dom.icon <~ ivSrc(resIcon)) ~
-                (dom.titleName <~ tvText(collection.name)) ~
-                (dom.titleIcon <~ ivSrc(resIcon))
-            case (Left, ScrollDown) =>
-              (dom.icon <~ animationIcon(fromLeft = true, resIcon)) ~
-                (dom.titleName <~ tvText(collection.name)) ~
-                (dom.titleIcon <~ ivSrc(resIcon))
-            case (Left, ScrollUp) =>
-              (dom.icon <~ ivSrc(resIcon)) ~
-                (dom.titleContent <~~
-                  applyAnimation(
-                    duration = Option(duration),
-                    x = Option(distance),
-                    alpha = Option(0))) ~~
-                (dom.titleContent <~ vTranslationX(-distance)) ~~
-                (dom.titleName <~ tvText(collection.name)) ~~
-                (dom.titleIcon <~ ivSrc(resIcon)) ~~
-                (dom.titleContent <~~
-                  applyAnimation(
-                    duration = Option(duration),
-                    x = Option(0),
-                    alpha = Option(1)))
-            case (Right | Jump, ScrollDown) =>
-              (dom.icon <~ animationIcon(fromLeft = false, resIcon)) ~
-                (dom.titleName <~ tvText(collection.name)) ~
-                (dom.titleIcon <~ ivSrc(resIcon))
-            case (Right | Jump, ScrollUp) =>
-              (dom.icon <~ ivSrc(resIcon)) ~
-                (dom.titleContent <~~
-                  applyAnimation(
-                    duration = Option(duration),
-                    x = Option(-distance),
-                    alpha = Option(0))) ~~
-                (dom.titleContent <~ vTranslationX(distance)) ~~
-                (dom.titleName <~ tvText(collection.name)) ~~
-                (dom.titleIcon <~ ivSrc(resIcon)) ~~
-                (dom.titleContent <~~
-                  applyAnimation(
-                    duration = Option(duration),
-                    x = Option(0),
-                    alpha = Option(1)))
-            case _ => Ui.nop
-          }) ~
-            Ui(selectorDrawable.setSelected(position)) ~
-            adapter.notifyChanged(position) ~
-            (if (collection.cards.isEmpty) {
-              val color = getIndexColor(collection.themedColorIndex)
-              showFabButton(color = color, autoHide = false)
-            } else {
-              hideFabButton
-            })
-      } getOrElse Ui.nop)
+    dom.getAdapter map { adapter =>
+      val resIcon = collection.getIconDetail
+      val distance = resGetDimensionPixelSize(R.dimen.padding_large)
+      val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
+      ((pageMovement, adapter.statuses.scrollType) match {
+        case (Start | Idle, _) =>
+          (dom.icon <~ ivSrc(resIcon)) ~
+            (dom.titleName <~ tvText(collection.name)) ~
+            (dom.titleIcon <~ ivSrc(resIcon))
+        case (Left, ScrollDown) =>
+          (dom.icon <~ animationIcon(fromLeft = true, resIcon)) ~
+            (dom.titleName <~ tvText(collection.name)) ~
+            (dom.titleIcon <~ ivSrc(resIcon))
+        case (Left, ScrollUp) =>
+          (dom.icon <~ ivSrc(resIcon)) ~
+            (dom.titleContent <~~
+              applyAnimation(
+                duration = Option(duration),
+                x = Option(distance),
+                alpha = Option(0))) ~~
+            (dom.titleContent <~ vTranslationX(-distance)) ~~
+            (dom.titleName <~ tvText(collection.name)) ~~
+            (dom.titleIcon <~ ivSrc(resIcon)) ~~
+            (dom.titleContent <~~
+              applyAnimation(
+                duration = Option(duration),
+                x = Option(0),
+                alpha = Option(1)))
+        case (Right | Jump, ScrollDown) =>
+          (dom.icon <~ animationIcon(fromLeft = false, resIcon)) ~
+            (dom.titleName <~ tvText(collection.name)) ~
+            (dom.titleIcon <~ ivSrc(resIcon))
+        case (Right | Jump, ScrollUp) =>
+          (dom.icon <~ ivSrc(resIcon)) ~
+            (dom.titleContent <~~
+              applyAnimation(
+                duration = Option(duration),
+                x = Option(-distance),
+                alpha = Option(0))) ~~
+            (dom.titleContent <~ vTranslationX(distance)) ~~
+            (dom.titleName <~ tvText(collection.name)) ~~
+            (dom.titleIcon <~ ivSrc(resIcon)) ~~
+            (dom.titleContent <~~
+              applyAnimation(
+                duration = Option(duration),
+                x = Option(0),
+                alpha = Option(1)))
+        case _ => Ui.nop
+      }) ~
+        Ui(selectorDrawable.setSelected(position)) ~
+        adapter.notifyChanged(position) ~
+        (if (collection.cards.isEmpty) {
+          val color = getIndexColor(collection.themedColorIndex)
+          showFabButton(color = color, autoHide = false)
+        } else {
+          hideFabButton
+        })
+    } getOrElse Ui.nop
 
   private[this] def createBundle(view: View, map: Map[String, NineCardCategory] = Map.empty, packages: Seq[String] = Seq.empty): Bundle = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
@@ -543,6 +535,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
 
     override def onPageScrollStateChanged(state: Int): Unit = state match {
       case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
+      case ViewPager.SCROLL_STATE_DRAGGING => dom.closeEditingMode()
       case _ =>
     }
 

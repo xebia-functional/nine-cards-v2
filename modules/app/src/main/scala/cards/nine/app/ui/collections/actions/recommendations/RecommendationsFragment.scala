@@ -3,17 +3,19 @@ package cards.nine.app.ui.collections.actions.recommendations
 import android.os.Bundle
 import android.view.View
 import cards.nine.app.commons.{Conversions, NineCardIntentConversions}
-import cards.nine.app.ui.collections.jobs.GroupCollectionsUiListener
+import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.actions.BaseActionFragment
-import cards.nine.process.commons.types.NineCardCategory
-import cards.nine.process.recommendations.models.RecommendedApp
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.recommendations.RecommendedAppsConfigurationException
+import cards.nine.process.recommendations.models.RecommendedApp
+import cards.nine.models.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher2.R
 
-class RecommendationsFragment
+class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
   extends BaseActionFragment
   with RecommendationsUiActions
   with RecommendationsDOM
@@ -38,10 +40,15 @@ class RecommendationsFragment
 
   override def loadRecommendations(): Unit = recommendationsJobs.loadRecommendations().resolveAsyncServiceOr(onError)
 
-  override def addApp(app: RecommendedApp): Unit = getActivity match {
-    case activity: GroupCollectionsUiListener => activity.addCards(Seq(toAddCardRequest(app)))
-    case _ =>
-  }
+  override def addApp(app: RecommendedApp): Unit =
+    (for {
+      cards <- groupCollectionsJobs.addCards(Seq(toAddCardRequest(app)))
+      _ <- singleCollectionJobs match {
+        case Some(job) => job.addCards(cards)
+        case _ => TaskService.empty
+      }
+      _ <- recommendationsJobs.close()
+    } yield ()).resolveAsyncServiceOr(_ => recommendationsJobs.showError())
 
   override def installApp(app: RecommendedApp): Unit =
     recommendationsJobs.installNow(app).resolveAsyncServiceOr(_ => recommendationsJobs.showError())
