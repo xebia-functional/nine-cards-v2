@@ -57,6 +57,12 @@ trait ProfileListener {
 
   def onClickSubscribeCollection(sharedCollectionId: String, subscribed: Boolean): Unit
 
+  def onClickCopyDevice(cloudId: String, actualName: String): Unit
+
+  def onClickRenameDevice(cloudId: String, actualName: String): Unit
+
+  def onClickDeleteDevice(cloudId: String): Unit
+
   def onClickPrintInfoDevice(cloudId: String): Unit
 
   def onClickOkRemoveDeviceDialog(cloudId: String): Unit

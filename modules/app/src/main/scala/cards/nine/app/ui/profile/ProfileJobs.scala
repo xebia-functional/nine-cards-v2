@@ -31,16 +31,14 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
   with Conversions
   with CollectionJobs {
 
-  import Statuses._
+  import ProfileActivity._
 
   val tagDialog = "dialog"
 
-  var clientStatuses = GoogleApiClientStatuses()
-
   var syncEnabled: Boolean = false
 
-  def driveConnected(): TaskService[Unit] = clientStatuses match {
-    case GoogleApiClientStatuses(Some(client)) if client.isConnected => loadUserAccounts(client)
+  def driveConnected(): TaskService[Unit] = statuses.apiClient match {
+    case Some(client) if client.isConnected => loadUserAccounts(client)
     case _ =>
       for {
         _ <- actions.showLoading()
@@ -63,7 +61,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
       case Some(email) =>
         for {
           apiClient <- di.cloudStorageProcess.createCloudStorageClient(email)
-          _ <- TaskService.right(clientStatuses = clientStatuses.copy(apiClient = Some(apiClient)))
+          _ <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
           _ <- actions.userProfile(user.userProfile.name, email, user.userProfile.avatar)
           _ <- tryToConnect()
         } yield ()
@@ -82,11 +80,8 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
   def resume(): TaskService[Unit] =
     askBroadCastTask(BroadAction(SyncAskActionFilter.action))
 
-  def stop(): TaskService[Unit] = clientStatuses match {
-    case GoogleApiClientStatuses(Some(client)) =>
-      TaskService(CatchAll[JobException](clientStatuses.apiClient foreach (_.disconnect())))
-    case _ => TaskService.right((): Unit)
-  }
+  def stop(): TaskService[Unit] =
+    TaskService(CatchAll[JobException](statuses.apiClient foreach(_.disconnect())))
 
   def onOffsetChanged(percentage: Float): TaskService[Unit] =
     for {
@@ -180,9 +175,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
         syncEnabled = false
         activity.startService(new Intent(activity, classOf[SynchronizeDeviceService]))
       }
-    } else {
-      TaskService.right((): Unit)
-    }
+    } else TaskService.empty
 
   def deleteDevice(cloudId: String): TaskService[Unit] =
     withConnectedClient { client =>
@@ -251,7 +244,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
   }
 
   private[this] def tryToConnect(): TaskService[Unit] =
-    TaskService(CatchAll[JobException](clientStatuses.apiClient foreach (_.connect())))
+    TaskService(CatchAll[JobException](statuses.apiClient foreach (_.connect())))
 
   private[this] def loadUserAccounts(
     client: GoogleApiClient,
@@ -312,14 +305,14 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
         _ <- actions.showLoading()
         email <- loadUserEmail()
         apiClient <- di.cloudStorageProcess.createCloudStorageClient(email)
-        _ <- TaskService.right(clientStatuses = clientStatuses.copy(apiClient = Some(apiClient)))
+        _ <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
         _ <- tryToConnect()
       } yield ()
 
-    clientStatuses match {
-      case GoogleApiClientStatuses(Some(client)) if client.isConnected =>
+    statuses.apiClient match {
+      case Some(client) if client.isConnected =>
         f(client)
-      case GoogleApiClientStatuses(Some(client)) =>
+      case Some(client) =>
         for {
           _ <- actions.showLoading()
           _ <- tryToConnect()
@@ -328,10 +321,4 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
         loadUserInfo()
     }
   }
-}
-
-object Statuses {
-
-  case class GoogleApiClientStatuses(apiClient: Option[GoogleApiClient] = None)
-
 }

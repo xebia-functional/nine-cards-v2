@@ -230,9 +230,9 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
   private[this] def accountClickListener(accountOption: AccountOption, accountSync: AccountSync): Unit =
     (accountOption, accountSync.cloudId) match {
       case (SyncOption, _) => dom.onClickSynchronizeDevice()
-      case (DeleteOption, Some(cloudId)) => showDialogForDeleteDevice(cloudId)
-      case (CopyOption, Some(cloudId)) => showDialogForCopyDevice(cloudId, accountSync.title)
-      case (ChangeNameOption, Some(cloudId)) => showDialogForRenameDevice(cloudId, accountSync.title)
+      case (DeleteOption, Some(cloudId)) => dom.onClickDeleteDevice(cloudId)
+      case (CopyOption, Some(cloudId)) => dom.onClickCopyDevice(cloudId, accountSync.title)
+      case (ChangeNameOption, Some(cloudId)) => dom.onClickRenameDevice(cloudId, accountSync.title)
       case (PrintInfoOption, Some(cloudId)) => dom.onClickPrintInfoDevice(cloudId)
       case _ =>
     }

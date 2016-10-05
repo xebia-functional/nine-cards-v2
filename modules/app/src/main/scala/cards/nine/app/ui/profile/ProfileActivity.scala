@@ -15,8 +15,10 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.process.cloud.CloudStorageClientListener
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import cards.nine.process.sharedcollections.models.SharedCollection
+import cats.implicits._
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 
 class ProfileActivity
@@ -31,6 +33,7 @@ class ProfileActivity
   self =>
 
   import SyncDeviceState._
+  import ProfileActivity._
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
 
@@ -72,6 +75,8 @@ class ProfileActivity
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     setContentView(R.layout.profile_activity)
+
+    statuses = statuses.reset()
 
     setSupportActionBar(toolbar)
 
@@ -118,49 +123,42 @@ class ProfileActivity
     jobs.onOffsetChanged(percentage).resolveAsync()
   }
 
-  override def onClickProfileTab(tab: ProfileTab): Unit = {
+  override def onClickProfileTab(tab: ProfileTab): Unit = loadTab(tab)
 
-    def onException(service: TaskService[Unit]): (Throwable) => TaskService[Unit] = {
-      case e: SharedCollectionsConfigurationException =>
-        AppLog.invalidConfigurationV2
-        service
-      case _ => service
-    }
-
-    tab match {
-      case AccountsTab => jobs.loadUserAccounts()
-        .resolveAsyncServiceOr(_ => actions.showEmptyAccountsContent(error = true))
-      case PublicationsTab => jobs.loadPublications()
-        .resolveAsyncServiceOr(onException(actions.showEmptyPublicationsContent(error = true)))
-      case SubscriptionsTab => jobs.loadSubscriptions()
-        .resolveAsyncServiceOr(onException(actions.showEmptySubscriptionsContent(error = true)))
-    }
-  }
-
-  override def onClickReloadTab(tab: ProfileTab): Unit = onClickProfileTab(tab)
+  override def onClickReloadTab(tab: ProfileTab): Unit = loadTab(tab)
 
   override def onClickSynchronizeDevice(): Unit =
     jobs.launchService().resolveAsync()
 
   override def onClickSubscribeCollection(sharedCollectionId: String, newSubscribeStatus: Boolean): Unit =
     jobs.changeSubscriptionStatus(sharedCollectionId, newSubscribeStatus).resolveAsyncServiceOr { _ =>
-      for {
-        _ <- actions.showErrorSubscribing(triedToSubscribe = newSubscribeStatus)
-        _ <- actions.refreshCurrentSubscriptions()
-      } yield ()
+      actions.showErrorSubscribing(triedToSubscribe = newSubscribeStatus) *>
+        actions.refreshCurrentSubscriptions()
     }
+
+  override def onClickCopyDevice(cloudId: String, actualName: String): Unit =
+    actions.showDialogForCopyDevice(cloudId, actualName).resolveAsync()
+
+  override def onClickRenameDevice(cloudId: String, actualName: String): Unit =
+    actions.showDialogForRenameDevice(cloudId, actualName).resolveAsync()
+
+  override def onClickDeleteDevice(cloudId: String): Unit =
+    actions.showDialogForDeleteDevice(cloudId).resolveAsync()
 
   override def onClickPrintInfoDevice(cloudId: String): Unit =
     jobs.printDeviceInfo(cloudId).resolveAsyncServiceOr(_ => actions.showContactUsError())
 
   override def onClickOkRemoveDeviceDialog(cloudId: String): Unit =
-    jobs.deleteDevice(cloudId).resolveAsyncServiceOr(_ => actions.showContactUsError())
+    jobs.deleteDevice(cloudId)
+      .resolveAsync(onException = _ => loadTab(AccountsTab, error = true))
 
   override def onClickOkRenameDeviceDialog(maybeName: Option[String], cloudId: String, actualName: String): Unit =
-    jobs.renameDevice(maybeName, cloudId, actualName).resolveAsyncServiceOr(_ => actions.showContactUsError())
+    jobs.renameDevice(maybeName, cloudId, actualName)
+      .resolveAsync(onException = _ => loadTab(AccountsTab, error = true))
 
   override def onClickOkOnCopyDeviceDialog(maybeName: Option[String], cloudId: String, actualName: String): Unit =
-    jobs.copyDevice(maybeName, cloudId, actualName).resolveAsyncServiceOr(_ => actions.showContactUsError())
+    jobs.copyDevice(maybeName, cloudId, actualName)
+      .resolveAsync(onException = _ => loadTab(AccountsTab, error = true))
 
   override def onDriveConnectionSuspended(cause: Int): Unit = {}
 
@@ -175,4 +173,42 @@ class ProfileActivity
 
   override def onClickShareSharedCollection(collection: SharedCollection): Unit =
     jobs.shareCollection(collection).resolveAsyncServiceOr(_ => actions.showContactUsError())
+
+  private[this] def loadTab(tab: ProfileTab, error: Boolean = false): Unit = {
+
+    def withError(service: TaskService[Unit]): TaskService[Unit] = if (error) {
+      for {
+        _ <- actions.showContactUsError()
+        _ <- service
+      } yield ()
+    } else service
+
+    def onException(service: TaskService[Unit]): (Throwable) => TaskService[Unit] = {
+      case e: SharedCollectionsConfigurationException =>
+        AppLog.invalidConfigurationV2
+        service
+      case _ => service
+    }
+
+    tab match {
+      case AccountsTab => withError(jobs.loadUserAccounts())
+        .resolveAsyncServiceOr(_ => actions.showEmptyAccountsContent(error = true))
+      case PublicationsTab => withError(jobs.loadPublications())
+        .resolveAsyncServiceOr(onException(actions.showEmptyPublicationsContent(error = true)))
+      case SubscriptionsTab => withError(jobs.loadSubscriptions())
+        .resolveAsyncServiceOr(onException(actions.showEmptySubscriptionsContent(error = true)))
+    }
+  }
+}
+
+object ProfileActivity {
+
+  var statuses = ProfileStatuses()
+
+}
+
+case class ProfileStatuses(apiClient: Option[GoogleApiClient] = None) {
+
+  def reset() = ProfileStatuses()
+
 }
