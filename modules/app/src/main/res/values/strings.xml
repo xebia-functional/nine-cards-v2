@@ -120,6 +120,11 @@
         ]]>
     </string>
 
+    <string name="wizard_new_conf_title_step_3">Moments and Wifi that you use</string>
+    <string name="wizard_new_conf_description_step_3">Select the moments for you and the wifi for every moment, then we can show you the better experience</string>
+    <string name="wizard_new_conf_wifi_no_connected_step_3">No wifi in this moment</string>
+    <string name="wizard_new_conf_wifi_connected_step_3">When you are connected to \"%1$s\"</string>
+
     <!-- Moment / Widgets -->
 
     <string name="editMoment">Edit Moment</string>

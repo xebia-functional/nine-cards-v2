@@ -12,10 +12,12 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext}
-import cards.nine.app.ui.components.widgets.WizardCheckBox
+import cards.nine.app.ui.components.widgets.{WizardCheckBox, WizardWifiCheckBox}
 import cards.nine.app.ui.components.widgets.tweaks.WizardCheckBoxTweaks._
+import cards.nine.app.ui.components.widgets.tweaks.WizardWifiCheckBoxTweaks._
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.collection.models.PackagesByCategory
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -109,6 +111,31 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)(implicit v
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
       selectPager(2, resColor) ~
+      (dom.newConfigurationNext <~
+        On.click(Ui(dom.onLoadWifiByMoment())) <~
+        tvColorResource(resColor))).toService
+  }
+
+  def loadFourthStep(moments: Seq[NineCardsMoment]): TaskService[Unit] = {
+    val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_3, javaNull)
+    val resColor = R.color.wizard_background_new_conf_step_2
+
+    val momentViews = moments map { moment =>
+      (w[WizardWifiCheckBox] <~
+        wwcbInitialize(moment) <~
+        FuncOn.click { view: View =>
+          val itemCheckBox = view.asInstanceOf[WizardWifiCheckBox]
+          itemCheckBox <~ wwcbSwap()
+        }).get
+    }
+    val params = new LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+
+    ((dom.newConfigurationStep <~
+      vgAddView(stepView)) ~
+      systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
+      systemBarsTint.defaultStatusBar() ~
+      selectPager(3, resColor) ~
+      (dom.newConfigurationStep3WifiContent <~ vgAddViews(momentViews, params)) ~
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onLoadWifiByMoment())) <~
         tvColorResource(resColor))).toService

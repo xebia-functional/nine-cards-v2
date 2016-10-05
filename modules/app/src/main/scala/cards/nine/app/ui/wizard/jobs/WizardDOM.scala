@@ -60,6 +60,8 @@ trait WizardDOM {
 
   def newConfigurationStep2Description = finder.findView(TR.wizard_steps_new_configuration_step2_description)
 
+  def newConfigurationStep3WifiContent = finder.findView(TR.wizard_steps_new_configuration_step3_wifi_content)
+
   def getWizardCheckBoxes: Seq[WizardCheckBox] = (0 to newConfigurationStep1CollectionsContent.getChildCount) flatMap { position =>
     newConfigurationStep1CollectionsContent.getChildAt(position) match {
       case widget: WizardCheckBox => Some(widget)
