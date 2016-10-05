@@ -7,10 +7,6 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
 import android.widget.ImageView
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.commons._
 import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.CommonsTweak._
@@ -32,8 +28,13 @@ import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import cards.nine.app.ui.launcher.drawer.DrawerSnails._
 import cards.nine.app.ui.launcher.{LauncherUiActions, LauncherUiActionsImpl}
 import cards.nine.app.ui.preferences.commons._
+import cards.nine.models.ApplicationData
 import cards.nine.process.device._
 import cards.nine.process.device.models._
+import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -289,8 +290,8 @@ trait DrawerUiActions
 
   protected def addApps(
     apps: IterableApps,
-    clickListener: (App) => Unit,
-    longClickListener: (View, App) => Unit,
+    clickListener: (ApplicationData) => Unit,
+    longClickListener: (View, ApplicationData) => Unit,
     getAppOrder: GetAppOrder = GetByName,
     counters: Seq[TermCounter] = Seq.empty): Ui[_] = {
     val appsAdapter = AppsAdapter(

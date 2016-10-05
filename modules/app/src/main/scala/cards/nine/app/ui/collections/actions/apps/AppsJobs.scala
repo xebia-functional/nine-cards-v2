@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.actions.apps
 
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
@@ -13,7 +13,7 @@ case class AppsJobs(
   category: NineCardCategory,
   actions: AppsIuActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   def initialize(): TaskService[Unit] = {
     val onlyAllApps = category == AllAppsCategory || category == Misc

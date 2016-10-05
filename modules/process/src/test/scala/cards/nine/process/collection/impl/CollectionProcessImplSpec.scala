@@ -194,7 +194,7 @@ class CollectionProcessImplSpec
         mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
         mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.right(collections)))
 
-        val result = collectionProcess.createCollectionsFromUnformedItems(unformedApps, unformedContacts)(contextSupport).value.run
+        val result = collectionProcess.createCollectionsFromUnformedItems(apps, unformedContacts)(contextSupport).value.run
         result must beLike {
           case Right(resultSeqCollection) =>
             resultSeqCollection.size shouldEqual categoriesUnformedItems.size
@@ -207,7 +207,7 @@ class CollectionProcessImplSpec
         mockPersistenceServices.fetchCollections returns TaskService(Task(Either.left(persistenceServiceException)))
         mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
-        val result = collectionProcess.createCollectionsFromUnformedItems(unformedApps, unformedContacts)(contextSupport).value.run
+        val result = collectionProcess.createCollectionsFromUnformedItems(apps, unformedContacts)(contextSupport).value.run
         result must beAnInstanceOf[Left[CollectionException, _]]
       }
 
@@ -224,7 +224,7 @@ class CollectionProcessImplSpec
         mockContactsServices.findContactByLookupKey(anyString) returns(tasks(0), tasks.tail: _*)
 
 
-        val result = collectionProcess.createCollectionsFromUnformedItems(unformedApps, unformedContacts)(contextSupport).value.run
+        val result = collectionProcess.createCollectionsFromUnformedItems(apps, unformedContacts)(contextSupport).value.run
         result must beLike {
           case Right(resultSeqCollection) =>
             resultSeqCollection.size shouldEqual categoriesUnformedItems.size

@@ -1,6 +1,6 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.models.Spaces
+import cards.nine.models.ApplicationData
 import cards.nine.models.Spaces._
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
@@ -11,10 +11,10 @@ import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, Coll
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
-import cards.nine.services.apps.models.Application
 import cards.nine.services.awareness.AwarenessLocation
 import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
+import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
+import cards.nine.models.Application
 import cards.nine.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
 import play.api.libs.json.Json
 
@@ -98,10 +98,11 @@ trait CollectionProcessImplData {
 
   val publicCollectionStatus = determinePublicCollectionStatus()
 
-  val application1 = Application(
+  val application1 = ApplicationData(
     name = name1,
     packageName = packageName1,
     className = className1,
+    category = appsCategory,
     dateInstalled = dateInstalled1,
     dateUpdate = dateUpdate1,
     version = version1,
@@ -256,13 +257,17 @@ trait CollectionProcessImplData {
         imagePath = Option(imagePath),
         notification = Option(notification)))
 
-  def createSeqUnformedApps(num: Int = 150) =
+  def createSeqApps(num: Int = 150) =
     (0 until num) map { item =>
-      UnformedApp(
+      ApplicationData(
         name = name,
         packageName = generatePackageName,
         className = className,
-        category = appsCategory)
+        category = appsCategory,
+        dateInstalled = dateInstalled1,
+        dateUpdate = dateUpdate1,
+        version = version1,
+        installedFromGooglePlay = installedFromGooglePlay1)
     }
 
   def createSeqUnformedContacs(num: Int = 15) =
@@ -318,12 +323,12 @@ trait CollectionProcessImplData {
 
 
   val seqServicesApp = seqServicesCard map { card =>
-    ServicesApp(
+    Application(
       id = card.id,
       name = card.term,
       packageName = card.packageName.getOrElse(""),
       className = "",
-      category = appsCategoryName,
+      category = NineCardCategory(appsCategoryName),
       dateInstalled = 0,
       dateUpdate = 0,
       version = "",
@@ -343,7 +348,7 @@ trait CollectionProcessImplData {
     CategorizedDetailPackage(
       packageName = app.packageName,
       title = app.name,
-      category = Some(app.category),
+      category = Some(app.category.name),
       icon = "",
       free = true,
       downloads = "",
@@ -355,17 +360,17 @@ trait CollectionProcessImplData {
   val seqServicesCollection = createSeqServicesCollection()
   val servicesCollection = seqServicesCollection.headOption
 
-  val unformedApps = createSeqUnformedApps()
+  val apps = createSeqApps()
   val unformedContacts = createSeqUnformedContacs()
 
-  val categoriesUnformedApps: Seq[NineCardCategory] = allCategories flatMap { category =>
-    val count = unformedApps.count(_.category == category)
+  val categoriesApps: Seq[NineCardCategory] = allCategories flatMap { category =>
+    val count = apps.count(_.category == category)
     if (count >= minAppsToAdd) Option(category) else None
   }
 
   val categoriesUnformedItems: Seq[NineCardCategory] = {
     val count = unformedContacts.size
-    if (count >= minAppsToAdd) categoriesUnformedApps :+ ContactsCategory else categoriesUnformedApps
+    if (count >= minAppsToAdd) categoriesApps :+ ContactsCategory else categoriesApps
   }
 
   val collectionForUnformedItem = ServicesCollection(
@@ -529,7 +534,7 @@ trait CollectionProcessImplData {
 
   def generateRankAppsResponse() = seqCategoryAndPackages map { item =>
     RankAppsResponse(
-      category = item._1,
+      category = item._1.name,
       packages = item._2)
   }
 
@@ -554,21 +559,29 @@ trait CollectionProcessImplData {
     )
 
 
-  val seqUnformedAppsForPrivateCollections: Seq[UnformedApp] =
+  val seqUnformedAppsForPrivateCollections: Seq[ApplicationData] =
     Seq(
-      UnformedApp(
+      ApplicationData(
         name = "nameUnformed0",
         packageName = "package.name.0",
         className = "classNameUnformed0",
-        category = appsCategories(0)),
-      UnformedApp(
+        category = appsCategories(0),
+        dateInstalled = dateInstalled1,
+        dateUpdate = dateUpdate1,
+        version = version1,
+        installedFromGooglePlay = installedFromGooglePlay1),
+      ApplicationData(
         name = "nameUnformed1",
         packageName = "package.name.1",
         className = "classNameUnformed1",
-        category = appsCategories(1)))
+        category = appsCategories(1),
+        dateInstalled = dateInstalled1,
+        dateUpdate = dateUpdate1,
+        version = version1,
+        installedFromGooglePlay = installedFromGooglePlay1))
 
-  val appsByCategory0: Seq[UnformedApp] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
-  val appsByCategory1: Seq[UnformedApp] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(1)).take(numSpaces)
+  val appsByCategory0: Seq[ApplicationData] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
+  val appsByCategory1: Seq[ApplicationData] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(1)).take(numSpaces)
 
   val collectionProcessConfig: CollectionProcessConfig
 

@@ -2,13 +2,15 @@ package cards.nine.app.commons
 
 import android.content.Intent
 import cards.nine.app.ui.commons.Constants._
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.{AppCardType, AppsCollectionType, ContactCardType, NoInstalledAppCardType}
 import cards.nine.process.cloud.models._
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest}
+import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models._
 import cards.nine.process.device.SaveDockAppRequest
-import cards.nine.process.device.models.{App, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
+import cards.nine.process.device.models.{Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
 import cards.nine.process.moment.SaveMomentRequest
 import cards.nine.process.recommendations.models.RecommendedApp
 import cards.nine.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
@@ -16,15 +18,7 @@ import cards.nine.process.sharedcollections.models.{SharedCollection, SharedColl
 import scala.util.Random
 
 trait Conversions
-  extends NineCardIntentConversions {
-
-  def toSeqUnformedApp(apps: Seq[App]): Seq[UnformedApp] = apps map toUnformedApp
-
-  def toUnformedApp(app: App): UnformedApp = UnformedApp(
-    name = app.name,
-    packageName = app.packageName,
-    className = app.className,
-    category = app.category)
+  extends AppNineCardIntentConversions {
 
   def toSeqUnformedContact(contacts: Seq[Contact]): Seq[UnformedContact] = contacts map toUnformedContact
 
@@ -118,7 +112,7 @@ trait Conversions
       intent = toNineCardIntent(app),
       imagePath = None)
 
-  def toAddCardRequest(app: App): AddCardRequest =
+  def toAddCardRequest(app: ApplicationData): AddCardRequest =
     AddCardRequest(
       term = app.name,
       packageName = Option(app.packageName),
@@ -144,16 +138,7 @@ trait Conversions
 
 }
 
-trait NineCardIntentConversions {
-
-  def toNineCardIntent(app: App): NineCardIntent = {
-    val intent = NineCardIntent(NineCardIntentExtras(
-      package_name = Option(app.packageName),
-      class_name = Option(app.className)))
-    intent.setAction(NineCardIntentExtras.openApp)
-    intent.setClassName(app.packageName, app.className)
-    intent
-  }
+trait AppNineCardIntentConversions extends NineCardIntentConversions {
 
   def toNineCardIntent(app: SharedCollectionPackage): NineCardIntent = {
     val intent = NineCardIntent(NineCardIntentExtras(
