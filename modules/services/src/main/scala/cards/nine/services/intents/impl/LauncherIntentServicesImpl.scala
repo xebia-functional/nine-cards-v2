@@ -5,7 +5,7 @@ import android.content.Intent
 import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{NineCardException, TaskService}
-import cards.nine.services.intents.models._
+import cards.nine.models._
 import cards.nine.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException, LauncherIntentServices}
 import cats.syntax.either._
 import monix.eval.Task

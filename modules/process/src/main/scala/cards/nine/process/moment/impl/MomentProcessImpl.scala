@@ -6,8 +6,8 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.ApplicationData
-import cards.nine.models.Spaces._
 import cards.nine.models.types.NineCardsMoment._
+import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
 import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot, PrivateCollection}
 import cards.nine.process.moment.DefaultApps._

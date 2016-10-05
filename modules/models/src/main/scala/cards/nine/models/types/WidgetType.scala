@@ -1,7 +1,6 @@
 package cards.nine.models.types
 
-import cards.nine.models.WidgetTypes
-import WidgetTypes._
+import cards.nine.models.types.WidgetTypes._
 
 sealed trait WidgetType {
   val name: String

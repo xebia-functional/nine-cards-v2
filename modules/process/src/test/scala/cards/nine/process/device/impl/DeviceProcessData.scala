@@ -12,7 +12,6 @@ import cards.nine.process.device.models.{LastCallsContact, Widget, _}
 import cards.nine.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
-import cards.nine.services.image.{AppPackagePath, AppWebsitePath}
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
 import cards.nine.services.shortcuts.models.Shortcut
 import cards.nine.services.widgets.models.{Widget => ServicesWidget}
@@ -246,25 +245,6 @@ trait DeviceProcessData
       installedFromGooglePlay = installedFromGooglePlay3)
   )
 
-  val appPackagePathNoCached = AppPackagePath(
-    packageName = packageName4,
-    className = className4,
-    path = path4)
-
-  val appPathResponses: Seq[AppPackagePath] = Seq(
-    AppPackagePath(
-      packageName = packageName1,
-      className = className1,
-      path = path1),
-    AppPackagePath(
-      packageName = packageName2,
-      className = className2,
-      path = path2),
-    AppPackagePath(
-      packageName = packageName3,
-      className = className3,
-      path = path3))
-
   val requestConfig = RequestConfig("fake-api-key", "fake-session-token", "fake-android-id", Some("fake-android-token"))
 
   val packageNameForCreateImage = "com.example"
@@ -272,11 +252,6 @@ trait DeviceProcessData
   val pathForCreateImage = "/example/for/create/image"
 
   val urlForCreateImage = "http://www.w.com/image.jpg"
-
-  val appWebsitePath = AppWebsitePath(
-    packageName = packageNameForCreateImage,
-    url = urlForCreateImage,
-    path = pathForCreateImage)
 
   val categorizedPackage = CategorizedPackage(
     packageName = packageNameForCreateImage,

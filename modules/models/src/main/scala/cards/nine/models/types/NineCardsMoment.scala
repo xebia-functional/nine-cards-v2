@@ -1,7 +1,6 @@
 package cards.nine.models.types
 
-import cards.nine.models.NineCardsMoments
-import NineCardsMoments._
+import cards.nine.models.types.NineCardsMoments._
 
 sealed trait NineCardsMoment{
   val name: String

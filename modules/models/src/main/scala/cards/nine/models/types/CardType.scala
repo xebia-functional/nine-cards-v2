@@ -1,7 +1,6 @@
 package cards.nine.models.types
 
-import cards.nine.models.CardTypes
-import CardTypes._
+import cards.nine.models.types.CardTypes._
 
 sealed trait CardType {
   val name: String

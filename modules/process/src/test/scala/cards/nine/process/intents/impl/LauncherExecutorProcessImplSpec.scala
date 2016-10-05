@@ -3,16 +3,16 @@ package cards.nine.process.intents.impl
 import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models._
 import cards.nine.process.commons.models.{NineCardIntent, NineCardIntentExtras}
 import cards.nine.process.intents.{LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
 import cards.nine.services.intents.LauncherIntentServices
-import cards.nine.services.intents.models._
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cats.syntax.either._
-import cards.nine.commons.test.TaskServiceTestOps._
 
 trait LauncherExecutorProcessImplSpecification
   extends Specification

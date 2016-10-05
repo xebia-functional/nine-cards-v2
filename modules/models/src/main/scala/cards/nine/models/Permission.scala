@@ -1,4 +1,4 @@
-package cards.nine.services.permissions
+package cards.nine.models
 
 sealed trait PermissionStatus
 

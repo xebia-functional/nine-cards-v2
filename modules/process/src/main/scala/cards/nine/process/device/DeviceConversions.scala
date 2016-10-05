@@ -2,13 +2,12 @@ package cards.nine.process.device
 
 import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.models.{ContactCounter, Application, ApplicationData, Call}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.device.models._
+import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
 import cards.nine.process.device.types.WidgetResizeMode
-import cards.nine.services.image.{AppPackage, BitmapResize}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
 import cards.nine.services.shortcuts.models.{Shortcut => ServicesShortcut}
@@ -48,14 +47,6 @@ trait DeviceConversions extends NineCardIntentConversions {
         dateUpdate = item.dateUpdate,
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
-
-  def toAppPackageSeq(items: Seq[ApplicationData]): Seq[AppPackage] = items map toAppPackage
-
-  def toAppPackage(item: ApplicationData): AppPackage =
-    AppPackage(
-      packageName = item.packageName,
-      className = item.className,
-      name = item.name)
 
   def toCreateOrUpdateDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): CreateOrUpdateDockAppRequest =
     CreateOrUpdateDockAppRequest(
@@ -152,10 +143,5 @@ trait DeviceConversions extends NineCardIntentConversions {
     updatePeriodMillis = item.updatePeriodMillis,
     label = item.label,
     preview = item.preview)
-
-  def toBitmapResize(iconResize: IconResize) =
-    BitmapResize(
-      width = iconResize.width,
-      height = iconResize.height)
 
 }
