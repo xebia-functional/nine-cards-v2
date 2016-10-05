@@ -6,7 +6,7 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.ApplicationData
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.models.Spaces._
 import cards.nine.models.types.NineCardCategory._
 import cards.nine.models.types.{NineCardCategory, NoInstalledAppCardType}
@@ -15,7 +15,6 @@ import cards.nine.process.collection.{AddCollectionRequest, _}
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.CategorizedDetailPackage
-import cards.nine.services.persistence.models.App
 import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, OrderByCategory}
 import cats.syntax.either._
 import monix.eval.Task
@@ -129,14 +128,14 @@ trait CollectionsProcessImpl extends CollectionProcess {
         notAdded = packages.filterNot(packageName => cards.exists(_.packageName.contains(packageName)))
       } yield (cards.size, notAdded)
 
-    def fetchInstalledPackages(packages: Seq[String]): TaskService[Seq[App]] =
+    def fetchInstalledPackages(packages: Seq[String]): TaskService[Seq[Application]] =
       if (packages.isEmpty) {
         TaskService(Task(Either.right(Seq.empty)))
       } else {
         persistenceServices.fetchAppByPackages(packages)
       }
 
-    def categorizeNotInstalledPackages(installedApps: Seq[App], notAdded: Seq[String]): TaskService[Seq[CategorizedDetailPackage]] = {
+    def categorizeNotInstalledPackages(installedApps: Seq[Application], notAdded: Seq[String]): TaskService[Seq[CategorizedDetailPackage]] = {
       val notInstalledApps = notAdded.filterNot(packageName => installedApps.exists(_.packageName == packageName))
       if (notInstalledApps.isEmpty) {
         TaskService(Task(Either.right(Seq.empty)))
@@ -150,7 +149,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
     def addCards(
       actualCollectionSize: Int,
-      installedApps: Seq[App],
+      installedApps: Seq[Application],
       categorizedPackages: Seq[CategorizedDetailPackage]): TaskService[Unit] = {
 
       if (installedApps.isEmpty && categorizedPackages.isEmpty) {

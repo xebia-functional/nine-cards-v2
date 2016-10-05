@@ -1,14 +1,14 @@
 package cards.nine.process.collection
 
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.ApplicationData
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.models.types.{AppCardType, CardType}
 import cards.nine.process.collection.models._
 import cards.nine.process.commons.CommonConversions
 import cards.nine.process.commons.models.{Card, Collection, NineCardIntent, PrivateCard}
 import cards.nine.services.api.models.{PackagesByCategory => ServicesPackagesByCategory}
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse}
-import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
+import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import cards.nine.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, UpdateCollectionsRequest => ServicesUpdateCollectionsRequest, _}
 
 trait Conversions extends CommonConversions {
@@ -93,7 +93,7 @@ trait Conversions extends CommonConversions {
     intent = nineCardIntentToJson(addCardRequest.intent),
     imagePath = addCardRequest.imagePath)
 
-  def toAddCardRequest(collectionId: Int, app: ServicesApp, position: Int): ServicesAddCardRequest = ServicesAddCardRequest (
+  def toAddCardRequest(collectionId: Int, app: Application, position: Int): ServicesAddCardRequest = ServicesAddCardRequest (
     collectionId = Option(collectionId),
     position = position,
     term = app.name,

@@ -12,7 +12,8 @@ import cards.nine.services.calls.models.{Call => ServicesCall}
 import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactCounter, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import cards.nine.services.image.{AppPackage, BitmapResize}
 import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
+import cards.nine.models.Application
+import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
 import cards.nine.services.shortcuts.models.{Shortcut => ServicesShortcut}
 import cards.nine.services.widgets.models.{Widget => ServicesWidget}
 
@@ -28,7 +29,7 @@ trait DeviceConversions extends NineCardIntentConversions {
     case GetByCategory(_) => OrderByCategory
   }
 
-  def toApplication(app: ServicesApp): ApplicationData =
+  def toApplication(app: Application): ApplicationData =
     ApplicationData(
       name = app.name,
       packageName = app.packageName,
@@ -162,7 +163,7 @@ trait DeviceConversions extends NineCardIntentConversions {
     number = item.number,
     category = item.category)
 
-  def toAppsWithWidgets(apps: Seq[ServicesApp], widgets: Seq[ServicesWidget]): Seq[AppsWithWidgets] = apps map { app =>
+  def toAppsWithWidgets(apps: Seq[Application], widgets: Seq[ServicesWidget]): Seq[AppsWithWidgets] = apps map { app =>
     AppsWithWidgets(
       packageName = app.packageName,
       name = app.name,

@@ -1,13 +1,13 @@
 package cards.nine.services.persistence.conversions
 
+import cards.nine.models.Application
 import cards.nine.repository.model.{App => RepositoryApp, AppData => RepositoryAppData}
-import cards.nine.services.persistence.models.App
 import cards.nine.services.persistence.{AddAppRequest, UpdateAppRequest}
 
 trait AppConversions {
 
-  def toApp(app: RepositoryApp): App =
-    App(
+  def toApp(app: RepositoryApp): Application =
+    Application(
       id = app.id,
       name = app.data.name,
       packageName = app.data.packageName,

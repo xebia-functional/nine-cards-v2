@@ -15,7 +15,7 @@ import cards.nine.services.api.{CategorizedPackage, RequestConfig}
 import cards.nine.services.calls.models.{Call => ServicesCall}
 import cards.nine.services.contacts.models.{Contact, ContactEmail, ContactInfo, ContactPhone, _}
 import cards.nine.services.image.{AppPackagePath, AppWebsitePath}
-import cards.nine.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
+import cards.nine.services.persistence.models.{Application => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
 import cards.nine.services.shortcuts.models.Shortcut
 import cards.nine.services.widgets.models.{Widget => ServicesWidget}
 import play.api.libs.json.Json

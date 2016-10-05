@@ -21,8 +21,8 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[App] = List.tabulate(num)(
-    item => App(
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[Application] = List.tabulate(num)(
+    item => Application(
       id = id + item,
       name = name,
       packageName = packageName,
@@ -59,8 +59,8 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
       version = version,
       installedFromGooglePlay = installedFromGooglePlay)
 
-  val seqApp: Seq[App] = createSeqApp()
-  val app: App = seqApp(0)
+  val seqApp: Seq[Application] = createSeqApp()
+  val app: Application = seqApp(0)
   val repoAppData: RepositoryAppData = createRepoAppData()
   val seqRepoApp: Seq[RepositoryApp] = createSeqRepoApp(data = repoAppData)
   val repoApp: RepositoryApp = seqRepoApp(0)

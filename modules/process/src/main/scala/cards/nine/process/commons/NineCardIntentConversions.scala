@@ -6,7 +6,7 @@ import cards.nine.process.collection.models.UnformedContact
 import cards.nine.process.commons.models.NineCardIntentExtras._
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models.{NineCardIntent, NineCardIntentExtras}
-import cards.nine.services.persistence.models.App
+import cards.nine.models.Application
 import play.api.libs.json.Json
 
 trait NineCardIntentConversions {
@@ -24,7 +24,7 @@ trait NineCardIntentConversions {
     intent
   }
 
-  def toNineCardIntent(app: App) = {
+  def toNineCardIntent(app: Application) = {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(app.packageName),
       class_name = Option(app.className)))

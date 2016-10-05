@@ -2,21 +2,24 @@ package cards.nine.services.persistence
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.Application
 import cards.nine.services.persistence.models._
 
 trait PersistenceServices {
 
   /**
     * Obtains all the apps from the repository
+    *
     * @param orderBy   indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
     * @return the Seq[cards.nine.services.persistence.models.App]
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[Seq[App]]
+  def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[Seq[Application]]
 
   /**
     * Obtains iterable of apps from the repository
+    *
     * @param orderBy   indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
     * @return the cards.nine.services.persistence.models.IterableApps
@@ -26,6 +29,7 @@ trait PersistenceServices {
 
   /**
     * Obtains iterable of apps by keywords from the repository
+    *
     * @param keyword keyword for search
     * @param orderBy indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
@@ -36,16 +40,18 @@ trait PersistenceServices {
 
   /**
     * Obtains all the apps by category from the repository
+    *
     * @param category category for search
     * @param orderBy indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
     * @return the Seq[cards.nine.services.persistence.models.App]
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[Seq[App]]
+  def fetchAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[Seq[Application]]
 
   /**
     * Obtains iterable of apps by category from the repository
+    *
     * @param category category for search
     * @param orderBy indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
@@ -56,6 +62,7 @@ trait PersistenceServices {
 
   /**
     * Returns the number of times the first letter of a app is repeated alphabetically
+    *
     * @return the Seq[cards.nine.services.persistence.models.DataCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
@@ -63,6 +70,7 @@ trait PersistenceServices {
 
   /**
     * Returns the number of times in every category alphabetically
+    *
     * @return the Seq[cards.nine.services.persistence.models.DataCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
@@ -70,6 +78,7 @@ trait PersistenceServices {
 
   /**
     * Returns the number of times by installation date
+    *
     * @return the Seq[cards.nine.services.persistence.models.DataCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
@@ -77,30 +86,34 @@ trait PersistenceServices {
 
   /**
     * Obtains an app from the repository by the package name
+    *
     * @param packageName the package name of the app to get
     * @return an Option[cards.nine.services.persistence.models.App]
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def findAppByPackage(packageName: String): TaskService[Option[App]]
+  def findAppByPackage(packageName: String): TaskService[Option[Application]]
 
   /**
     * Obtains apps from the repository by the package names
+    *
     * @param packageNames the package names of the apps to get
     * @return an Seq[cards.nine.services.persistence.models.App]
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchAppByPackages(packageNames: Seq[String]): TaskService[Seq[App]]
+  def fetchAppByPackages(packageNames: Seq[String]): TaskService[Seq[Application]]
 
   /**
     * Adds an app to the repository
+    *
     * @param request includes the necessary data to create a new app in the repository
     * @return the cards.nine.services.persistence.models.App
     * @throws PersistenceServiceException if exist some problem creating the app
     */
-  def addApp(request: AddAppRequest): TaskService[App]
+  def addApp(request: AddAppRequest): TaskService[Application]
 
   /**
     * Adds a sequence of apps to the repository
+    *
     * @param request includes the necessary data to create new apps in the repository
     * @return Unit
     * @throws PersistenceServiceException if exist some problem creating apps
@@ -109,6 +122,7 @@ trait PersistenceServices {
 
   /**
     * Deletes all apps from the repository by the where clause
+    *
     * @return an Int if the apps has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the apps
     */
@@ -116,6 +130,7 @@ trait PersistenceServices {
 
   /**
     * Deletes an app from the repository by the package name
+    *
     * @param packageName the package name of the app to delete
     * @return an Int if the app has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the app
@@ -124,6 +139,7 @@ trait PersistenceServices {
 
   /**
     * Updates the data of an app from the repository
+    *
     * @param request includes the data to update the app
     * @return an Int if the app has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the app
@@ -132,6 +148,7 @@ trait PersistenceServices {
 
   /**
     * Adds a card to the repository
+    *
     * @param request includes the necessary data to create a new card in the repository
     * @return the cards.nine.services.persistence.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
@@ -140,6 +157,7 @@ trait PersistenceServices {
 
   /**
     * Adds a sequence of cards to the repository
+    *
     * @param request includes the necessary data to create new cards in the repository
     * @return the cards.nine.services.persistence.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
@@ -148,6 +166,7 @@ trait PersistenceServices {
 
   /**
     * Deletes all cards from the repository by the where clause
+    *
     * @return an Int if the cards has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the cards
     */
@@ -155,6 +174,7 @@ trait PersistenceServices {
 
   /**
     * Deletes a card from the repository by the card
+    *
     * @param collectionId includes the collection where the card is included
     * @param cardId includes the card to delete
     * @return an Int if the card has been deleted correctly
@@ -164,6 +184,7 @@ trait PersistenceServices {
 
   /**
     * Deletes a card from the repository by the card
+    *
     * @param collectionId includes the collection where the card is included
     * @param cardIds includes the cards to delete
     * @return an Int if the card has been deleted correctly
@@ -173,6 +194,7 @@ trait PersistenceServices {
 
   /**
     * Deletes the cards from the repository by the collection id
+    *
     * @param collectionId the id of the collection that contains the cards
     * @return an Int if the cards have been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the cards
@@ -181,6 +203,7 @@ trait PersistenceServices {
 
   /**
     * Obtains all the cards from the repository by the collection id
+    *
     * @param request includes the id of the collection
     * @return the Seq[cards.nine.services.persistence.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the cards
@@ -189,6 +212,7 @@ trait PersistenceServices {
 
   /**
     * Obtains all the cards from the repository
+    *
     * @return the Seq[cards.nine.services.persistence.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the cards
     */
@@ -196,6 +220,7 @@ trait PersistenceServices {
 
   /**
     * Obtains a card from the repository by the id
+    *
     * @param request includes the id of the card to find
     * @return an Option[cards.nine.services.persistence.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the card
@@ -204,6 +229,7 @@ trait PersistenceServices {
 
   /**
     * Updates the data of an card from the repository
+    *
     * @param request includes the data to update the card
     * @return an Int if the card has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
@@ -212,6 +238,7 @@ trait PersistenceServices {
 
   /**
     * Bulk update of the data of some cards from the repository
+    *
     * @param request includes the data to update the cards
     * @return a Seq[Int] if the cards has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
@@ -220,6 +247,7 @@ trait PersistenceServices {
 
   /**
     * Adds an collection to the repository
+    *
     * @param request includes the necessary data to create a new collection in the repository
     * @return the cards.nine.services.persistence.models.Collection
     * @throws PersistenceServiceException if exist some problem creating the collection
@@ -228,6 +256,7 @@ trait PersistenceServices {
 
   /**
     * Adds collections to the repository
+    *
     * @param requests includes the necessary data to create new collections in the repository
     * @return the Seq[cards.nine.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem creating the collection
@@ -236,6 +265,7 @@ trait PersistenceServices {
 
   /**
     * Deletes all collections from the repository by the where clause
+    *
     * @return an Int if the collections has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the collections
     */
@@ -243,6 +273,7 @@ trait PersistenceServices {
 
   /**
     * Deletes a collection from the repository by the collection
+    *
     * @param request includes the collection to delete
     * @return an Int if the collection has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the collection
@@ -251,6 +282,7 @@ trait PersistenceServices {
 
   /**
     * Obtains all the collections from the repository
+    *
     * @return the Seq[cards.nine.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collections
     */
@@ -258,6 +290,7 @@ trait PersistenceServices {
 
   /**
     * Obtains the collection from the repository by the sharedCollection id
+    *
     * @param sharedCollectionId the shared collection public identifier
     * @return an Option[cards.nine.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
@@ -266,6 +299,7 @@ trait PersistenceServices {
 
   /**
     * Obtains some collections based on a sequence of shared collection ids
+    *
     * @param sharedCollectionIds the shared collection ids sequence
     * @return a Seq[cards.nine.services.persistence.models.Collection] that could have less
     *         size than the sharedCollectionIds.
@@ -276,6 +310,7 @@ trait PersistenceServices {
 
   /**
     * Obtains the collection from the repository by the position
+    *
     * @param request includes the position
     * @return an Option[cards.nine.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
@@ -284,6 +319,7 @@ trait PersistenceServices {
 
   /**
     * Obtains a collection from the repository by the id
+    *
     * @param request includes the id of the collection to find
     * @return an Option[cards.nine.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
@@ -292,6 +328,7 @@ trait PersistenceServices {
 
   /**
     * Obtains a collection from the repository by category
+    *
     * @param category category of collection
     * @return an Option[cards.nine.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
@@ -300,6 +337,7 @@ trait PersistenceServices {
 
   /**
     * Updates the data of an collection from the repository
+    *
     * @param request includes the data to update the collection
     * @return an Int if the collection has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the collection
@@ -308,6 +346,7 @@ trait PersistenceServices {
 
   /**
     * Bulk update of the data of some collections from the repository
+    *
     * @param request includes the data to update the cards
     * @return a Seq[Int] if the cards has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
@@ -316,6 +355,7 @@ trait PersistenceServices {
 
   /**
     * Obtains the android id from the repository
+    *
     * @return an String with the android id
     * @throws AndroidIdNotFoundException if exist some problem obtaining the android id
     */
@@ -323,6 +363,7 @@ trait PersistenceServices {
 
   /**
     * Adds an user to the repository
+    *
     * @param request includes the necessary data to create a new user in the repository
     * @return the cards.nine.services.persistence.models.User
     * @throws PersistenceServiceException if exist some problem creating the user
@@ -331,6 +372,7 @@ trait PersistenceServices {
 
   /**
     * Deletes all users from the repository by the where clause
+    *
     * @return an Int if the users has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the users
     */
@@ -338,6 +380,7 @@ trait PersistenceServices {
 
   /**
     * Deletes an user from the repository by the user
+    *
     * @param request includes the user to delete
     * @return an Int if the user has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the user
@@ -346,6 +389,7 @@ trait PersistenceServices {
 
   /**
     * Obtains all the users from the repository
+    *
     * @return the Seq[cards.nine.services.persistence.models.User]
     * @throws PersistenceServiceException if exist some problem obtaining the users
     */
@@ -353,6 +397,7 @@ trait PersistenceServices {
 
   /**
     * Obtains an user from the repository by the id
+    *
     * @param request includes the user id  of the user to get
     * @return an Option[cards.nine.services.persistence.models.User]
     * @throws PersistenceServiceException if exist some problem obtaining the user
@@ -361,6 +406,7 @@ trait PersistenceServices {
 
   /**
     * Updates the data of an user from the repository
+    *
     * @param request includes the data to update the user
     * @return an Int if the user has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the user
@@ -369,6 +415,7 @@ trait PersistenceServices {
 
   /**
     * Creates or updates dock app to the repository
+    *
     * @param requests includes the necessary data to create a sequence of new dock apps in the repository
     * @return the Seq[cards.nine.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem creating or updating the dock app
@@ -377,6 +424,7 @@ trait PersistenceServices {
 
   /**
     * Deletes all dock apps from the repository by the where clause
+    *
     * @return an Int if the dock apps has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the dock apps
     */
@@ -384,6 +432,7 @@ trait PersistenceServices {
 
   /**
     * Deletes a dock app from the repository by the dock app
+    *
     * @param request includes the dock app to delete
     * @return an Int if the dock app has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the dock app
@@ -392,6 +441,7 @@ trait PersistenceServices {
 
   /**
     * Obtains all the dock apps from the repository
+    *
     * @return the Seq[cards.nine.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
@@ -399,6 +449,7 @@ trait PersistenceServices {
 
   /**
     * Obtains iterable of dock apps from the repository
+    *
     * @return the cards.nine.services.persistence.models.IterableDockApps
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
@@ -406,6 +457,7 @@ trait PersistenceServices {
 
   /**
     * Obtains a dock app from the repository by the id
+    *
     * @param request includes the dock app id  of the dock app to get
     * @return an Option[cards.nine.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock app
@@ -414,6 +466,7 @@ trait PersistenceServices {
 
   /**
     * Adds an moment to the repository
+    *
     * @param request includes the necessary data to create a new moment in the repository
     * @return the cards.nine.services.persistence.models.Moment
     * @throws PersistenceServiceException if exist some problem creating the moment
@@ -422,6 +475,7 @@ trait PersistenceServices {
 
   /**
     * Adds moments to the repository
+    *
     * @param request includes the necessary data to create new moments in the repository
     * @return the Seq[cards.nine.services.persistence.models.Moment]
     * @throws PersistenceServiceException if exist some problem creating the moments
@@ -430,6 +484,7 @@ trait PersistenceServices {
 
   /**
     * Deletes all moments from the repository by the where clause
+    *
     * @return an Int if the moments has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the moments
     */
@@ -437,6 +492,7 @@ trait PersistenceServices {
 
   /**
     * Deletes an moment from the repository by the moment
+    *
     * @param request includes the moment to delete
     * @return an Int if the moment has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the moment
@@ -445,6 +501,7 @@ trait PersistenceServices {
 
   /**
     * Obtains all the moments from the repository
+    *
     * @return the Seq[cards.nine.services.persistence.models.Moment]
     * @throws PersistenceServiceException if exist some problem obtaining the moments
     */
@@ -452,6 +509,7 @@ trait PersistenceServices {
 
   /**
     * Obtains an moment from the repository by the id
+    *
     * @param request includes the moment id  of the moment to get
     * @return an Option[cards.nine.services.persistence.models.Moment]
     * @throws PersistenceServiceException if exist some problem obtaining the moment
@@ -460,6 +518,7 @@ trait PersistenceServices {
 
   /**
     * Obtains an moment from the repository by type. Return exception if the type doesn't exist
+    *
     * @param momentType type of the moment
     * @return an cards.nine.services.persistence.models.Moment
     * @throws PersistenceServiceException if exist some problem obtaining the moment
@@ -468,6 +527,7 @@ trait PersistenceServices {
 
   /**
     * Obtains an moment from the repository by type. Return None if the type doesn't exist
+    *
     * @param momentType type of the moment
     * @return an cards.nine.services.persistence.models.Moment
     * @throws PersistenceServiceException if exist some problem obtaining the moment
@@ -477,6 +537,7 @@ trait PersistenceServices {
 
   /**
     * Updates the data of an moment from the repository
+    *
     * @param request includes the data to update the moment
     * @return an Int if the moment has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the moment
@@ -485,6 +546,7 @@ trait PersistenceServices {
 
   /**
     * Add a widget to the repository
+    *
     * @param request includes the necessary data to create a new widget in the repository
     * @return the cards.nine.services.persistence.models.Widget
     * @throws PersistenceServiceException if exist some problem creating the widgets
@@ -493,6 +555,7 @@ trait PersistenceServices {
 
   /**
     * Adds widgets to the repository
+    *
     * @param request includes the necessary data to create new widgets in the repository
     * @return the Seq[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem creating the widgets
@@ -501,6 +564,7 @@ trait PersistenceServices {
 
   /**
     * Deletes all widgets from the repository
+    *
     * @return an Int if the widgets has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the widgets
     */
@@ -508,6 +572,7 @@ trait PersistenceServices {
 
   /**
     * Deletes a widget from the repository
+    *
     * @param request includes the widget to delete
     * @return an Int if the widget has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the widget
@@ -516,6 +581,7 @@ trait PersistenceServices {
 
   /**
     * Deletes the widgets from the repository by the moment id
+    *
     * @param momentId the id of the moment that contains the widgets
     * @return an Int if the widgets have been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the widgets
@@ -524,6 +590,7 @@ trait PersistenceServices {
 
   /**
     * Obtains all the widgets from the repository
+    *
     * @return the Seq[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widgets
     */
@@ -531,6 +598,7 @@ trait PersistenceServices {
 
   /**
     * Obtains a widget from the repository by the id
+    *
     * @param widgetId the widget id  of the widget to get
     * @return an Option[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
@@ -539,6 +607,7 @@ trait PersistenceServices {
 
   /**
     * Obtains the widget from the repository by the appWidgetId
+    *
     * @param appWidgetId the appWidgetId value
     * @return an Option[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
@@ -547,6 +616,7 @@ trait PersistenceServices {
 
   /**
     * Obtains all widgets from the repository by the moment id
+    *
     * @param momentId id of the moment
     * @return the Seq[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widgets
@@ -555,6 +625,7 @@ trait PersistenceServices {
 
   /**
     * Updates the data of a widget from the repository
+    *
     * @param request includes the data to update the widget
     * @return an Int if the widget has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the widget
@@ -563,6 +634,7 @@ trait PersistenceServices {
 
   /**
     * Bulk update of the data of some widgets from the repository
+    *
     * @param request includes the data to update the widgets
     * @return a Seq[Int] if the widgets has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the widget

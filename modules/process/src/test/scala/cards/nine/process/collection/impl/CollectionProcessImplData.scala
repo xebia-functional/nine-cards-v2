@@ -13,7 +13,7 @@ import cards.nine.process.commons.models._
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
 import cards.nine.services.awareness.AwarenessLocation
 import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
+import cards.nine.services.persistence.models.{Application => ServicesApp, Card => ServicesCard, Collection => ServicesCollection}
 import cards.nine.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
 import play.api.libs.json.Json
 

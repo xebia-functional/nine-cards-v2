@@ -8,7 +8,7 @@ import cards.nine.models.types._
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.process.moment.{SaveMomentRequest, UpdateMomentRequest}
-import cards.nine.services.persistence.models.{App => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import cards.nine.services.persistence.models.{Application => ServicesApp, Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 import org.joda.time.DateTime
 import play.api.libs.json.Json
 
