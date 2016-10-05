@@ -4,7 +4,7 @@
     android:id="@+id/profile_empty_item"
     style="@style/BaseActionsErrorContent">
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
             android:id="@+id/profile_empty_image"
             style="@style/BaseActionsErrorIcon"/>
 

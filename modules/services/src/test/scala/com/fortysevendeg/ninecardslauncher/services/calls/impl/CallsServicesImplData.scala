@@ -1,7 +1,7 @@
-package com.fortysevendeg.ninecardslauncher.services.calls.impl
+package cards.nine.services.calls.impl
 
-import com.fortysevendeg.ninecardslauncher.services.calls.models._
-import com.fortysevendeg.ninecardslauncher.services.commons._
+import cards.nine.models.types._
+import cards.nine.services.calls.models._
 
 trait CallsServicesImplData {
 

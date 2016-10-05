@@ -7,15 +7,15 @@
         android:id="@+id/edit_widget_bottom_actions_content"
         style="@style/LauncherEditWidgetsBottomBarActions">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceButton
+        <cards.nine.app.ui.components.layouts.WorkSpaceButton
             android:id="@+id/edit_widget_bottom_action_resize"
             style="@style/LauncherEditWidgetsBottomBarIcon" />
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceButton
+        <cards.nine.app.ui.components.layouts.WorkSpaceButton
             android:id="@+id/edit_widget_bottom_action_move"
             style="@style/LauncherEditWidgetsBottomBarIcon" />
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.WorkSpaceButton
+        <cards.nine.app.ui.components.layouts.WorkSpaceButton
             android:id="@+id/edit_widget_bottom_action_delete"
             style="@style/LauncherEditWidgetsBottomBarIcon" />
 

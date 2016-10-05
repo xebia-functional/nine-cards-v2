@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.services.widgets.impl.utils.impl
+package cards.nine.services.widgets.impl.utils.impl
 
 import android.appwidget.AppWidgetProviderInfo
 import android.content.ComponentName
 import android.content.pm.PackageManager
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.services.widgets.utils.impl.AppWidgetManagerImplDefault
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.services.widgets.utils.impl.AppWidgetManagerImplDefault
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

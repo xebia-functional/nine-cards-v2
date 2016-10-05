@@ -139,11 +139,15 @@
     <dimen name="size_icon_collection_detail">60dp</dimen>
     <dimen name="pivot_x_icon_collection_detail">30dp</dimen>
     <dimen name="margin_top_pagers_collection_details">74dp</dimen>
-    <dimen name="margin_top_tabs_collection_details">90dp</dimen>
+    <dimen name="margin_top_tabs_collection_details">86dp</dimen>
     <dimen name="height_tabs_collection_details">40dp</dimen>
-    <dimen name="height_toolbar_collection_details">186dp</dimen>
+    <dimen name="height_toolbar_collection_details">130dp</dimen>
     <dimen name="space_moving_collection_details">56dp</dimen>
     <integer name="anim_duration_icon_collection_detail">100</integer>
+
+    <dimen name="margin_top_selector_collection_details">68dp</dimen>
+    <dimen name="size_icon_title_collapse_collection_details">22dp</dimen>
+    <dimen name="padding_selector_collection_details">2dp</dimen>
 
     <dimen name="space_enter_views_collection_detail">128dp</dimen>
 
@@ -239,11 +243,9 @@
     <!-- Publish Collection Wizard -->
     <dimen name="publish_collection_message_width">260dp</dimen>
     <dimen name="publish_collection_message_height">60dp</dimen>
-    <dimen name="publish_collection_input_margin_top">15dp</dimen>
-    <dimen name="publish_collection_input_category_margin_top">20dp</dimen>
+    <dimen name="publish_collection_field_height">34dp</dimen>
     <dimen name="publish_collection_form_padding">0dp</dimen>
     <dimen name="publish_collection_form_height">232dp</dimen>
-    <dimen name="publish_collection_category_padding">4dp</dimen>
     <dimen name="publish_collection_footer_height">70dp</dimen>
     <dimen name="publish_collection_footer_center">30dp</dimen>
     <dimen name="publish_collection_footer_end_margin">20dp</dimen>

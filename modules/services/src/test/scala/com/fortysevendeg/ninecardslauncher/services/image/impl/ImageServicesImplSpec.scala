@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.image.impl
+package cards.nine.services.image.impl
 
 import java.io.File
 
@@ -6,16 +6,16 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.DisplayMetrics
-import com.fortysevendeg.ninecardslauncher.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher.services.image._
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.services.image._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 
 
 trait ImageServicesImplSpecification
@@ -42,6 +42,7 @@ trait ImageServicesImplSpecification
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
     val saveBitmap = SaveBitmap(bitmap = mock[Bitmap], bitmapResize = None)
+    val saveBitmapWithResize = SaveBitmap(bitmap = mock[Bitmap], bitmapResize = Option(BitmapResize(width = 10, height = 10)))
 
     val saveBitmapTask = TaskService(Task {
       Either.catchOnly[FileException] {
@@ -73,6 +74,19 @@ class ImageServicesImplSpec
         mockTasks.getPathByName(any)(any) returns saveBitmapTask
 
         val result = mockImageService.saveBitmap(saveBitmap)(contextSupport).value.run
+        result must beLike {
+          case Right(resultSaveBitmapPath) =>
+            resultSaveBitmapPath.path shouldEqual saveBitmapPath.path
+        }
+      }
+
+    "returns filename when the file exists with resize" in
+      new ImageServicesScope {
+
+        mockTasks.saveBitmap(any[File], any[Bitmap]) returns TaskService(Task(Either.catchOnly[FileException](())))
+        mockTasks.getPathByName(any)(any) returns saveBitmapTask
+
+        val result = mockImageService.saveBitmap(saveBitmapWithResize)(contextSupport).value.run
         result must beLike {
           case Right(resultSaveBitmapPath) =>
             resultSaveBitmapPath.path shouldEqual saveBitmapPath.path

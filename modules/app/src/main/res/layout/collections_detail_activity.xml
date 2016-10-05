@@ -4,6 +4,10 @@
              android:id="@+id/collections_root"
              style="@style/CollectionsRoot">
 
+    <android.support.v4.view.ViewPager
+        style="@style/CollectionsPager"
+        android:id="@+id/collections_view_pager"/>
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/collections_toolbar"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
@@ -14,7 +18,25 @@
             android:id="@+id/collections_toolbar_title"
             style="@style/CollectionsToolbarTitle" />
 
+        <LinearLayout
+            android:id="@+id/collections_title_content"
+            style="@style/CollectionsTitleContent">
+
+            <ImageView
+                android:id="@+id/collections_title_icon"
+                style="@style/CollectionsTitleIcon"/>
+
+            <TextView
+                android:id="@+id/collections_title_name"
+                style="@style/CollectionsTitleName"/>
+
+        </LinearLayout>
+
     </android.support.v7.widget.Toolbar>
+
+    <ImageView
+        android:id="@+id/collections_selector"
+        style="@style/CollectionsSelector"/>
 
     <FrameLayout
         android:id="@+id/collections_icon_content"
@@ -26,11 +48,7 @@
 
     </FrameLayout>
 
-    <android.support.v4.view.ViewPager
-        style="@style/CollectionsPager"
-        android:id="@+id/collections_view_pager"/>
-
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.SlidingTabLayout
+    <cards.nine.app.ui.components.layouts.SlidingTabLayout
         android:id="@+id/collections_tabs"
         style="@style/CollectionsTabs"/>
 

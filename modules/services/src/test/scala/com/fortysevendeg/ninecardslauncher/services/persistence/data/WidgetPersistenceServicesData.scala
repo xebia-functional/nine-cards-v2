@@ -1,8 +1,8 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.data
+package cards.nine.services.persistence.data
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.Widget
+import cards.nine.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.models.Widget
 
 import scala.util.Random
 

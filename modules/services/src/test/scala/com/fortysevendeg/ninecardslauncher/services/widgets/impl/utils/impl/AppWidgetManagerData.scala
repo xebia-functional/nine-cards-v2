@@ -1,6 +1,6 @@
-package com.fortysevendeg.ninecardslauncher.services.widgets.impl.utils.impl
+package cards.nine.services.widgets.impl.utils.impl
 
-import com.fortysevendeg.ninecardslauncher.services.widgets.models.Widget
+import cards.nine.services.widgets.models.Widget
 
 import scala.util.Random
 

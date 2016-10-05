@@ -14,7 +14,7 @@
         android:id="@+id/action_content_root"
         style="@style/BaseActionsContent">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.DialogToolbar
+        <cards.nine.app.ui.components.layouts.DialogToolbar
             android:id="@+id/actions_toolbar"
             style="@style/BaseActionsToolbarDialog"/>
 
@@ -28,7 +28,7 @@
         android:id="@+id/actions_content_error_layout"
         style="@style/BaseActionsErrorContent">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
             android:id="@+id/actions_content_error_icon"
             style="@style/BaseActionsErrorIcon"/>
 

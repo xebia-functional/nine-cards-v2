@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/publish_collection_wizard_root"
     style="@style/PublishCollectionWizardRoot">
 
     <LinearLayout
@@ -29,7 +30,7 @@
                 android:id="@+id/publish_collection_wizard_start_footer"
                 style="@style/PublishCollectionWizardStartFooter">
 
-            <ImageButton
+            <cards.nine.app.ui.components.widgets.TintableImageView
                     android:id="@+id/publish_collection_wizard_arrow"
                     style="@style/PublishCollectionWizardStartArrow"/>
         </LinearLayout>
@@ -60,37 +61,49 @@
                             android:id="@+id/publish_collection_wizard_information_form"
                             style="@style/PublishCollectionWizardInformationForm">
 
-                        <android.support.design.widget.TextInputLayout
-                                android:id="@+id/collection_name_information"
-                                style="@style/PublishCollectionWizardInformationInput">
+                        <LinearLayout
+                                style="@style/PublishCollectionWizardInformationCollectionNameContent">
+
+                            <TextView
+                                    android:id="@+id/collection_name_tag"
+                                    style="@style/PublishCollectionWizardInformationCollectionNameTag"/>
 
                             <EditText
                                     android:id="@+id/collection_name"
                                     style="@style/PublishCollectionWizardInformationCollectionNameInputMessage"/>
 
-                        </android.support.design.widget.TextInputLayout>
+                            <cards.nine.app.ui.components.widgets.TintableImageView
+                                    android:id="@+id/collection_name_line"
+                                    style="@style/PublishCollectionWizardInformationLineHorizontal"/>
 
-                        <android.support.design.widget.TextInputLayout
-                                android:id="@+id/description_information"
-                                style="@style/PublishCollectionWizardInformationInput">
-
-                            <EditText
-                                    android:id="@+id/description"
-                                    style="@style/PublishCollectionWizardInformationDescriptionInputMessage"/>
-
-                        </android.support.design.widget.TextInputLayout>
+                        </LinearLayout>
 
                         <LinearLayout
                                 style="@style/PublishCollectionWizardInformationCategorySelectContent">
 
-                            <Spinner
-                                    android:id="@+id/category"
-                                    style="@style/PublishCollectionWizardInformationCategorySpinner"/>
+                            <TextView
+                                    android:id="@+id/category_tag"
+                                    style="@style/PublishCollectionWizardInformationCategoryTag"/>
 
-                            <ImageView
+                            <LinearLayout
+                                    android:id="@+id/category_select"
+                                    style="@style/PublishCollectionWizardInformationCategorySelect">
+
+                                <TextView
+                                        android:id="@+id/category"
+                                        style="@style/PublishCollectionWizardInformationCategorySpinner"/>
+
+                                <cards.nine.app.ui.components.widgets.TintableImageView
+                                        android:id="@+id/category_indicator"
+                                        style="@style/PublishCollectionWizardInformationCategoryIndicator"/>
+
+                            </LinearLayout>
+
+                            <cards.nine.app.ui.components.widgets.TintableImageView
+                                    android:id="@+id/category_line"
                                     style="@style/PublishCollectionWizardInformationLineHorizontal"/>
 
-                    </LinearLayout>
+                        </LinearLayout>
 
                     </LinearLayout>
 
@@ -167,7 +180,8 @@
                 android:id="@+id/publish_collection_wizard_end_footer"
                 style="@style/PublishCollectionWizardEndFooter">
 
-            <ImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/end_line"
                     style="@style/PublishCollectionWizardEndLineHorizontal"/>
 
             <Button

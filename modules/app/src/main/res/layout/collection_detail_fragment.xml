@@ -15,21 +15,21 @@
                     android:id="@+id/collection_empty_message"
                     style="@style/CollectionEmptyMessage"/>
 
-            <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.TintableImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                     android:id="@+id/collection_empty_image"
                     style="@style/CollectionEmptyImage"/>
         </LinearLayout>
 
     </android.support.v7.widget.CardView>
 
-    <com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToCloseView
+    <cards.nine.app.ui.components.layouts.PullToCloseView
             android:id="@+id/collection_detail_pull_to_close"
             style="@style/CollectionDetailPullToClose">
 
-        <com.fortysevendeg.ninecardslauncher.app.ui.components.widgets.CollectionRecyclerView
+        <cards.nine.app.ui.components.widgets.CollectionRecyclerView
                 android:id="@+id/collection_detail_recycler"
                 style="@style/CollectionDetailView"/>
 
-    </com.fortysevendeg.ninecardslauncher.app.ui.components.layouts.PullToCloseView>
+    </cards.nine.app.ui.components.layouts.PullToCloseView>
 
 </FrameLayout>

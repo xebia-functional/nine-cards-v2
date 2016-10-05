@@ -40,15 +40,13 @@
     <string name="termsAndConditions">Aceptar terminos y condiciones</string>
     <string name="welcome">Un Launcher creado para\nAndroid Power Users</string>
 
-    <string name="errorSelectUser">Debes seleccionar un usuario</string>
-
     <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
 
     <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
 
     <string name="errorAccountsMessage">Necesitas una cuenta de Google para utilizar 9Cards. Sólo tendremos acceso al nombre de la cuenta y se le pedirá para futuros accesos</string>
-    <string name="errorReadContactsMessage">Con el acceso a los contactos podremos mejorar tus colecciones basadas en contactos y podrás acceder a los contactos desde el drawer.</string>
+    <string name="errorFineLocationMessage">Usaremos la localización para mostrarte el tiempo en la pantalla de momentos.</string>
 
     <string name="deviceDetectedNoProUser">Hemos detectado una configuración guardada para tu %1$s. Si eres usuario Pro puedes cargar previas configuraciones (colecciones y temas). ¿Quieres convertirte en Pro ahora?</string>
 
@@ -118,15 +116,15 @@
     <string name="selectIcon">Seleccionar icono</string>
     <string name="selectColor">Seleccionar color</string>
 
-    <string name="addMyCollection">Añadir a mis collecciones</string>
-    <string name="alreadyAddedCollection">Collección ya añadida</string>
+    <string name="addMyCollection">Añadir a mis colecciones</string>
+    <string name="alreadyAddedCollection">Colección ya añadida</string>
     <string name="ownedCollection">Esta colección es tuya</string>
 
     <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta colección?</string>
 
     <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
 
-    <string name="momentNotFoundMessage">Momento no encontrado. Tu deberías crear colecciones desde la sección Mis Collections</string>
+    <string name="momentNotFoundMessage">Momento no encontrado. Deberías crear colecciones desde la sección Mis Colecciones</string>
     <string name="noPhoneCallPermissionMessage">Se necesita el permiso para poder llamar al contacto</string>
 
     <!-- Collections Detail -->
@@ -144,6 +142,10 @@
 
     <!-- Publish Collections Wizard -->
 
+    <string name="alreadyPublishedCollection">Colección ya publicada</string>
+
+    <string name="category">Categoría</string>
+
     <string name="publishCollectionHeader">Publica tu colección</string>
     <string name="publishCollectionMessage">Si publicas tu colección, otros usuarios podrán encontrar nuevas aplicaciones</string>
     <string name="addInformationHeader">Añade información</string>
@@ -151,8 +153,7 @@
     <string name="publishAction">Publicar</string>
     <string name="publishingHeader">Publicando</string>
     <string name="publishingMessage">Tu colección se está publicando</string>
-    <string name="addInformationcollectionName">Nombre de la colección</string>
-    <string name="addInformationDescription">Descripción</string>
+    <string name="addInformationcollectionName">Añade el nombre de la colección</string>
     <string name="addInformationCategory">Selecciona una categoría</string>
     <string name="congratulationsHeader">¡Enhorabuena!</string>
     <string name="congratulationsMessage">Tu colección se ha publicado con éxito</string>

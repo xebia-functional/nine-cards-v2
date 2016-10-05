@@ -1,10 +1,10 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.data
+package cards.nine.services.persistence.data
 
-import com.fortysevendeg.ninecardslauncher.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData, Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
-import com.fortysevendeg.ninecardslauncher.services.persistence._
-import com.fortysevendeg.ninecardslauncher.services.persistence.conversions.Conversions
-import com.fortysevendeg.ninecardslauncher.services.persistence.models._
-import com.fortysevendeg.ninecardslauncher.services.persistence.reads.MomentImplicits
+import cards.nine.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData, Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
+import cards.nine.services.persistence._
+import cards.nine.services.persistence.conversions.Conversions
+import cards.nine.services.persistence.models._
+import cards.nine.services.persistence.reads.MomentImplicits
 import play.api.libs.json.Json
 
 import scala.util.Random
@@ -159,7 +159,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification)))
 
   def createSeqCard(
@@ -179,7 +179,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification)))
 
   def createSeqRepoCard(
@@ -202,7 +202,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification))
 
   def createSeqMoment(
@@ -248,7 +248,9 @@ trait PersistenceServicesData extends Conversions {
   val repoCard: RepositoryCard = seqRepoCard(0)
 
   val seqCollection: Seq[Collection] = createSeqCollection()
+  val seqCollectionWithoutMoment: Seq[Collection] = createSeqCollection(moment = None)
   val collection: Collection = seqCollection(0)
+  val collectionWithoutMoment: Collection = seqCollectionWithoutMoment(0)
   val repoCollectionData: RepositoryCollectionData = createRepoCollectionData()
   val seqRepoCollection: Seq[RepositoryCollection] = createSeqRepoCollection(data = repoCollectionData)
   val repoCollection: RepositoryCollection = seqRepoCollection(0)
@@ -271,7 +273,17 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
+      notification = Option(notification))
+
+  def createAddCardRequestWithoutCollectionId =
+    AddCardRequest(
+      position = position,
+      term = term,
+      packageName = Option(packageName),
+      cardType = cardType,
+      intent = intent,
+      imagePath = Option(imagePath),
       notification = Option(notification))
 
   def createFetchCardsByCollectionRequest(collectionId: Int): FetchCardsByCollectionRequest =
@@ -301,7 +313,7 @@ trait PersistenceServicesData extends Conversions {
       packageName = Option(packageName),
       cardType = cardType,
       intent = intent,
-      imagePath = imagePath,
+      imagePath = Option(imagePath),
       notification = Option(notification))
 
   def createAddCollectionRequest(
@@ -327,6 +339,10 @@ trait PersistenceServicesData extends Conversions {
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
       cards = createSeqAddCardRequest(),
       moment = Option(createAddMomentRequest()))
+
+  def createSeqaddCollectionRequest(
+    num: Int = 5) :Seq[AddCollectionRequest]  =
+    List.tabulate(num)(item => createAddCollectionRequest())
 
   def createDeleteCollectionRequest(collection: Collection): DeleteCollectionRequest =
     DeleteCollectionRequest(collection = collection)
@@ -360,6 +376,12 @@ trait PersistenceServicesData extends Conversions {
       sharedCollectionId = Option(sharedCollectionId),
       sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
       cards = seqCard)
+
+  def createUpdateCollectionsRequest(
+    num: Int = 5 ): UpdateCollectionsRequest = UpdateCollectionsRequest(
+    List.tabulate(num)(item => createUpdateCollectionRequest()))
+
+  val updateCollectionsRequest = createUpdateCollectionsRequest()
 
   def createSeqRepoWidget(
     num: Int = 5,
@@ -442,6 +464,10 @@ trait PersistenceServicesData extends Conversions {
       momentType = momentType,
       widgets = saveWidgetRequest)
 
+  def createSeqAddMomentRequest(
+    num: Int = 5) :Seq[AddMomentRequest]  =
+    List.tabulate(num)(item => createAddMomentRequest())
+
   def createDeleteMomentRequest(moment: Moment): DeleteMomentRequest =
     DeleteMomentRequest(moment = moment)
 
@@ -464,6 +490,8 @@ trait PersistenceServicesData extends Conversions {
       momentType = momentType)
 
   val addCollectionRequest = createAddCollectionRequest()
+
+  val seqAddCollectionRequest = createSeqaddCollectionRequest()
 
   val seqAddCardWithCollectionIdRequest = Seq(CardsWithCollectionId(collection.id, Seq.empty))
 

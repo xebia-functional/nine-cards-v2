@@ -1,4 +1,4 @@
-package com.fortysevendeg.ninecardslauncher.services.wifi.impl
+package cards.nine.services.wifi.impl
 
 import android.net.wifi.WifiConfiguration
 
@@ -13,6 +13,10 @@ trait WifiServicesImplData {
   val ssidWithQuotesResult = "My wifi with \"quotes\""
 
   val ssidWithQuotes: String = "\"" + ssidWithQuotesResult + "\""
+
+  val ssidWithoutQuotes: String = ssidResult
+
+  val ssidWithError: String = "\"\""
 
   val networksUnsorted = Seq("znf", "Abc", "47 deg", "trn", "bcb", "BB", "ant")
 

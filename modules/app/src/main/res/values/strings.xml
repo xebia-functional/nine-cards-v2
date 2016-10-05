@@ -45,15 +45,13 @@
     <string name="termsAndConditions">Accept terms and conditions</string>
     <string name="welcome">A launcher craft if for\nAndroid Power Users</string>
 
-    <string name="errorSelectUser">You must select a user</string>
-
     <string name="messageAcceptTerms">You should accept terms and conditions</string>
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
 
     <string name="errorAccountsMessage">You need a Google account for using 9Cards. We only access to the account name and all next permissions will we prompted</string>
-    <string name="errorReadContactsMessage">With read contacts access we will be able to improve your contact base collections and you will have access to the contacts from the drawer.</string>
+    <string name="errorFineLocationMessage">We\'ll use the location to show the weather in the moments screen.</string>
 
     <string name="deviceDetectedNoProUser">We have detected a saved configuration for your <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g>. If you are PRO User you can load your previous collections and themes. Would you like to upgrade now?</string>
 
@@ -153,6 +151,10 @@
 
     <!-- Publish Collections Wizard -->
 
+    <string name="alreadyPublishedCollection">Already published</string>
+
+    <string name="category">Category</string>
+
     <string name="publishCollectionHeader">Publish your collection</string>
     <string name="publishCollectionMessage">If you publish your collections, other users can find new applications</string>
     <string name="addInformationHeader">Add information</string>
@@ -160,8 +162,7 @@
     <string name="publishAction">Publish</string>
     <string name="publishingHeader">Publishing</string>
     <string name="publishingMessage">Your collection is being published</string>
-    <string name="addInformationcollectionName">Collection name</string>
-    <string name="addInformationDescription">Description</string>
+    <string name="addInformationcollectionName">Add the collection\'s name</string>
     <string name="addInformationCategory">Select a category</string>
     <string name="congratulationsHeader">Congratulations!</string>
     <string name="congratulationsMessage">Your collection has been successfully published</string>

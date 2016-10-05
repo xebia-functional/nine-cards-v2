@@ -1,7 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.api.impl
+package cards.nine.services.api.impl
 
-import com.fortysevendeg.ninecardslauncher.api._
-import com.fortysevendeg.ninecardslauncher.services.api.CategorizedDetailPackage
+import cards.nine.api._
+import cards.nine.api.version2.CollectionUpdateInfo
+import cards.nine.services.api.CategorizedDetailPackage
+import cards.nine.services.api.models.PackagesByCategory
 
 import scala.util.Random
 
@@ -114,19 +116,17 @@ trait ApiServicesImplData {
   def generateRecommendationApp =
     version2.RecommendationApp(
       packageName = Random.nextString(10),
-      name = Random.nextString(10),
+      title = Random.nextString(10),
       downloads = "500,000,000+",
       icon = Random.nextString(10),
       stars = Random.nextDouble() * 5,
       free = Random.nextBoolean(),
-      description = Random.nextString(10),
       screenshots = Seq("screenshot1", "screenshot2", "screenshot3"))
 
-  def generateCollection(collectionApps: Seq[version2.CollectionApp]) =
+  def generateCollection(collectionApps: Seq[cards.nine.api.version2.CollectionApp]) =
     version2.Collection(
       name = Random.nextString(10),
       author = Random.nextString(10),
-      description = Some(Random.nextString(10)),
       icon = Random.nextString(10),
       category = "SOCIAL",
       community = Random.nextBoolean(),
@@ -156,11 +156,11 @@ trait ApiServicesImplData {
 
   val name = "Name"
 
-  val description = "Description"
-
   val author = "Author"
 
   val packages = List("Package1", "Package2")
+
+  val excludedPackages = List("Package3", "Package4")
 
   val icon = "Icon"
 
@@ -168,6 +168,7 @@ trait ApiServicesImplData {
 
   val collectionTypeTop = "top"
   val collectionTypeLatest = "latest"
+  val collectionTypeUnknown = "unknown"
 
   val user = generateUser
 
@@ -209,9 +210,19 @@ trait ApiServicesImplData {
 
   val sessionToken = Random.nextString(20)
 
+  val deviceId = "device-id"
+
   val deviceToken = Random.nextString(20)
 
+  val secretToken = Random.nextString(20)
+
+  val permissions = Seq("permission1", "permission2")
+
   val email = "email@dot.com"
+
+  val packageName = Random.nextString(20)
+
+  val location = "ES"
 
   val androidId = Random.nextString(10)
 
@@ -221,7 +232,59 @@ trait ApiServicesImplData {
 
   val packageStats = version2.PackagesStats(1, None)
 
-  val originalSharedCollectionId = Random.nextString(30)
+  val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(sharedCollectionId))
 
-  val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(originalSharedCollectionId))
+  val createCollectionRequest = version2.CreateCollectionRequest(name, author, icon, category, community, packages)
+
+  val updateCollectionRequest = version2.UpdateCollectionRequest(Some(CollectionUpdateInfo(name)), Some(packages))
+
+  val updateCollectionResponse = version2.UpdateCollectionResponse(sharedCollectionId, packageStats)
+
+  val recommendationsRequest = version2.RecommendationsRequest(excludedPackages, limit)
+
+  val recommendationsByAppsRequest = version2.RecommendationsByAppsRequest(packages, excludedPackages, limit)
+
+  val categorizeRequest = version2.CategorizeRequest(categorizeApps.map(_.packageName))
+
+  val categorizeOneRequest = version2.CategorizeRequest(categorizeApps.headOption.map(_.packageName).toSeq)
+
+  val installationRequest = version2.InstallationRequest(deviceToken)
+
+  val loginRequest = version2.ApiLoginRequest(email, androidId, tokenId)
+
+  val loginV1User = version1.User(
+    _id = None,
+    email = None,
+    sessionToken = None,
+    username = None,
+    password = None,
+    authData = Some(version1.AuthData(
+      google = Some(version1.AuthGoogle(
+        email = email,
+        devices = List(version1.AuthGoogleDevice(
+          name = name,
+          deviceId = deviceId,
+          secretToken = secretToken,
+          permissions = permissions))
+      )),
+      facebook = None,
+      twitter = None,
+      anonymous = None)))
+
+  def generatePackagesByCategorySeq(num: Int = 10) =
+    1 to num map { _ =>
+      PackagesByCategory(
+        category = category,
+        packages = packages
+      )
+    }
+
+  val packagesByCategorySeq = generatePackagesByCategorySeq()
+
+  val items = Map(packagesByCategorySeq map (
+    packagesByCategory => packagesByCategory.category -> packagesByCategory.packages): _*)
+
+  val rankAppsRequest = version2.RankAppsRequest(items, Some(location))
+
+  val rankAppsResponse = version2.RankAppsResponse(items)
 }

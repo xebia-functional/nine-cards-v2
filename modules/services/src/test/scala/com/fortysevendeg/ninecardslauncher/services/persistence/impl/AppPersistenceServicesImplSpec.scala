@@ -1,15 +1,15 @@
-package com.fortysevendeg.ninecardslauncher.services.persistence.impl
+package cards.nine.services.persistence.impl
 
-import com.fortysevendeg.ninecardslauncher.commons.services.TaskService
-import com.fortysevendeg.ninecardslauncher.repository.RepositoryException
-import com.fortysevendeg.ninecardslauncher.repository.provider.AppEntity
-import com.fortysevendeg.ninecardslauncher.services.persistence.models.App
-import com.fortysevendeg.ninecardslauncher.services.persistence.{OrderByCategory, OrderByInstallDate, OrderByName}
-import com.fortysevendeg.ninecardslauncher.services.persistence.data.AppPersistenceServicesData
+import cards.nine.commons.services.TaskService
+import cards.nine.repository.RepositoryException
+import cards.nine.repository.provider.AppEntity
+import cards.nine.services.persistence.models.App
+import cards.nine.services.persistence.{OrderByCategory, OrderByInstallDate, OrderByName}
+import cards.nine.services.persistence.data.AppPersistenceServicesData
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
-import com.fortysevendeg.ninecardslauncher.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceTestOps._
 import cats.syntax.either._
 
 
@@ -100,6 +100,27 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
       mockAppRepository.fetchAppByPackage(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.findAppByPackage(packageName).value.run
+      result must beAnInstanceOf[Left[RepositoryException, _]]
+    }
+  }
+
+  "fetchAppByPackages" should {
+
+    "return a Seq App when a valid packageName is provided" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchAppByPackages(any) returns TaskService(Task(Either.right(seqRepoApp)))
+      val result = persistenceServices.fetchAppByPackages(Seq(packageName)).value.run
+
+      result must beLike {
+        case Right(seqApp) =>
+          seqApp.size shouldEqual seqRepoApp.size
+          }
+      }
+
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
+
+      mockAppRepository.fetchAppByPackages(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.fetchAppByPackages(Seq(packageName)).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

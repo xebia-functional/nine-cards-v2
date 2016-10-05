@@ -1,9 +1,9 @@
-package com.fortysevendeg.ninecardslauncher.services.contacts.impl
+package cards.nine.services.contacts.impl
 
-import com.fortysevendeg.ninecardslauncher.services.commons._
-import com.fortysevendeg.ninecardslauncher.services.contacts.Fields
-import com.fortysevendeg.ninecardslauncher.services.contacts.models._
-import com.fortysevendeg.repository.{MockCursor, StringDataType}
+import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
+import cards.nine.models.types._
+import cards.nine.services.contacts.Fields
+import cards.nine.services.contacts.models._
 
 trait ContactsServicesImplData {
 
@@ -37,6 +37,8 @@ trait ContactsServicesImplData {
   val contactWithEmail = generateContacts(1, withEmails = true, withPhones = false).headOption
 
   val contactWithPhone = generateContacts(1, withEmails = false, withPhones = true).headOption
+
+  val testMockKeyword = "mock-keyword"
 
   def generateContacts(num: Int, withEmails: Boolean = true, withPhones: Boolean = true): Seq[Contact] =
     1 to num map { i =>
@@ -74,7 +76,7 @@ trait ContactsServicesImplData {
 
 
 
-  trait ContactsMockCursor
+  trait AlphabeticalMockCursor
     extends MockCursor {
 
     val contactsIterator: Seq[String] = Seq("!aaa", "2bbb", "?ccc", "1ddd", "#eeee", "Abc", "Acd", "Ade", "Bcd", "Bde", "Bef", "Cde")
@@ -82,6 +84,40 @@ trait ContactsServicesImplData {
     val data = Seq((Fields.DISPLAY_NAME, 0, contactsIterator, StringDataType))
 
     prepareCursor[String](contactsIterator.size, data)
+  }
+
+  trait ContactsMockCursor
+    extends MockCursor {
+
+    val cursorData = Seq(
+      ("display_name", 0, contacts map (_.name), StringDataType),
+      ("lookup", 1, contacts map (_.lookupKey), StringDataType),
+      ("has_phone_number", 3, contacts map (c => booleanToInt(c.hasPhone)), IntDataType),
+      ("starred", 4, contacts map (c => booleanToInt(c.favorite)), IntDataType)
+    )
+
+    prepareCursor[Contact](contacts.size, cursorData)
+
+  }
+
+  trait EmptyPhoneMockCursor
+    extends MockCursor {
+
+    val cursorPhone = Seq(
+      ("number", 0, Seq.empty, StringDataType),
+      ("category", 1, Seq.empty, StringDataType)
+    )
+    prepareCursor[ContactPhone](0, cursorPhone)
+  }
+
+  trait EmptyEmailMockCursor
+    extends MockCursor {
+
+    val cursorEmail = Seq(
+      ("address", 0, Seq.empty, StringDataType),
+      ("category", 1, Seq.empty, StringDataType)
+    )
+    prepareCursor[ContactEmail](0, cursorEmail)
   }
 
   val contactCounters = Seq(
