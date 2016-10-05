@@ -6,13 +6,6 @@ import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.ImageView
-import cards.nine.models.types
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.UiContext
@@ -20,9 +13,15 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.FontSize
+import cards.nine.models.types._
 import cards.nine.process.device.models.LastCallsContact
-import cards.nine.process.device.types._
 import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -91,12 +90,12 @@ case class LastCallsContactHolder(content: View)(implicit context: ActivityConte
       (content <~ vSetPosition(position))
   }
 
-  private[this] def addCallTypesView(callTypes: Seq[types.CallType])(implicit context: ActivityContextWrapper) = {
+  private[this] def addCallTypesView(callTypes: Seq[CallType])(implicit context: ActivityContextWrapper) = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val callViews = callTypes map { ct =>
       (w[ImageView] <~ ivSrc(ct match {
-        case types.IncomingType => R.drawable.icon_call_incoming
-        case types.MissedType => R.drawable.icon_call_missed
+        case IncomingType => R.drawable.icon_call_incoming
+        case MissedType => R.drawable.icon_call_missed
         case _ => R.drawable.icon_call_outgoing
       }) <~  vPadding(paddingRight = padding)).get
     }
