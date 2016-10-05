@@ -99,6 +99,11 @@ class ProfileActivity
     super.onStop()
   }
 
+  override def onDestroy(): Unit = {
+    statuses = statuses.reset()
+    super.onDestroy()
+  }
+
   override def onCreateOptionsMenu(menu: Menu): Boolean = {
     getMenuInflater.inflate(R.menu.profile_menu, menu)
     super.onCreateOptionsMenu(menu)
