@@ -13,6 +13,7 @@ import cards.nine.app.ui.wizard.jobs._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.cloud.CloudStorageClientListener
+import cards.nine.process.collection.models.PackagesByCategory
 import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
 import cards.nine.process.user.UserException
 import cards.nine.process.userv1.UserV1Exception
@@ -148,6 +149,11 @@ class WizardActivity
 
   override def onLoadBetterCollections(): Unit =
     newConfigurationJobs.loadBetterCollections().resolveAsync()
+
+  override def onSaveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): Unit =
+    newConfigurationJobs.saveCollections(collections, best9Apps).resolveAsync()
+
+  override def onLoadWifiByMoment(): Unit = {}
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
     case ex: SocialProfileProcessException if ex.recoverable => wizardJobs.googleSignIn()

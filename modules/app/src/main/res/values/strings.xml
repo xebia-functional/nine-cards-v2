@@ -77,6 +77,7 @@
     <string name="wizard_loading_connecting_with_plus">Connecting with Google Plus</string>
     <string name="wizard_loading_devices">Loading devices</string>
     <string name="wizard_loading_looking_for_better_collection">Creating the better collections with your apps</string>
+    <string name="wizard_loading_saving_collections">Saving collections</string>
 
     <string name="creatingCollectionError">We could not create your collections at this time. Please try again later</string>
 
@@ -111,6 +112,13 @@
     <string name="wizard_new_conf_collection_counter_step_1">%1$s of %2$s collections</string>
     <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
     <string name="wizard_new_conf_collection_name_best9_step_1">%1$s (9 of %2$s apps)</string>
+
+    <string name="wizard_new_conf_title_step_2">9Cards adapts to your day</string>
+    <string name="wizard_new_conf_desc_step_2">
+        <![CDATA[
+            Do you use the same widget in your work, when you listen music or at night? Help us to discover how do you want to use 9Cards. We call <b>Moment</b> to every moment of the day that you do different things
+        ]]>
+    </string>
 
     <!-- Moment / Widgets -->
 

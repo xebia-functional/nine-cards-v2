@@ -379,4 +379,29 @@
         <item name="android:paddingRight">@dimen/padding_default</item>
     </style>
 
+    <!-- Step 2 -->
+
+    <style name="WizardNewConfigurationHeaderContentStep2" parent="WizardNewConfigurationHeaderContent">
+        <item name="android:background">@color/wizard_background_new_conf_step_2</item>
+    </style>
+
+    <style name="WizardNewConfigurationHeaderImageStep2_1" parent="WizardNewConfigurationHeaderImage">
+        <item name="android:src">@drawable/placeholder_moment_work_step_03</item>
+        <item name="android:layout_marginRight">@dimen/padding_xxxlarge</item>
+        <item name="android:layout_marginBottom">@dimen/padding_xxlarge</item>
+    </style>
+
+    <style name="WizardNewConfigurationHeaderImageStep2_2" parent="WizardNewConfigurationHeaderImage">
+        <item name="android:src">@drawable/placeholder_moment_night_step_03</item>
+        <item name="android:layout_marginTop">@dimen/padding_xxlarge</item>
+        <item name="android:layout_marginLeft">@dimen/padding_xxxlarge</item>
+    </style>
+
+    <style name="WizardNewConfigurationTitleStep2" parent="WizardNewConfigurationTitle">
+        <item name="android:text">@string/wizard_new_conf_title_step_2</item>
+        <item name="android:textColor">@color/wizard_background_new_conf_step_2</item>
+    </style>
+
+    <style name="WizardNewConfigurationDescriptionStep2" parent="WizardNewConfigurationDescription"/>
+
 </resources>
