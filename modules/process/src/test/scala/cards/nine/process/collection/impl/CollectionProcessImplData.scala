@@ -1,9 +1,9 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.models.Spaces._
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
 import cards.nine.models.{Application, ApplicationData, Contact, ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, Location}
 import cards.nine.process.collection.models._

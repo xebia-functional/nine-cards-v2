@@ -6,10 +6,10 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{Application, ApplicationData}
-import cards.nine.models.Spaces._
 import cards.nine.models.types.NineCardCategory._
-import cards.nine.models.types.{NineCardCategory, NoInstalledAppCardType}
+import cards.nine.models.types.Spaces._
+import cards.nine.models.types.{NineCardCategory, NoInstalledAppCardType, Spaces}
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.process.collection.models.{FormedCollection, UnformedContact}
 import cards.nine.process.collection.{AddCollectionRequest, _}
 import cards.nine.process.commons.models.Collection
@@ -18,7 +18,6 @@ import cards.nine.services.api.CategorizedDetailPackage
 import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, OrderByCategory}
 import cats.syntax.either._
 import monix.eval.Task
-
 
 trait CollectionsProcessImpl extends CollectionProcess {
 
