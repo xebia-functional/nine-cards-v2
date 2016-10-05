@@ -3,14 +3,15 @@ package cards.nine.process.accounts.impl
 import android.accounts.{Account, AccountManager, AccountManagerCallback, AccountManagerFuture, OperationCanceledException}
 import android.app.Activity
 import android.os.Bundle
-import cats.syntax.either._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.{PermissionDenied, PermissionGranted}
 import cards.nine.process.accounts.{UserAccountsProcessException, _}
-import cards.nine.services.permissions.{PermissionDenied, PermissionGranted, PermissionsServices}
+import cards.nine.services.permissions.PermissionsServices
+import cats.syntax.either._
 import monix.eval.{Callback, Task}
 import monix.execution.Cancelable
 
