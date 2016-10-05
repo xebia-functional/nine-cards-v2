@@ -1,6 +1,5 @@
 package cards.nine.process.device
 
-import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models._
 import cards.nine.models.types._
@@ -10,10 +9,7 @@ import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
 import cards.nine.process.device.types.WidgetResizeMode
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
-import cards.nine.services.shortcuts.models.{Shortcut => ServicesShortcut}
 import cards.nine.services.widgets.models.{Widget => ServicesWidget}
-
-import scala.util.Try
 
 trait DeviceConversions extends NineCardIntentConversions {
 
@@ -78,20 +74,6 @@ trait DeviceConversions extends NineCardIntentConversions {
     intent = toNineCardIntent(app),
     imagePath = imagePath,
     position = position)
-
-  def toShortcutSeq(items: Seq[ServicesShortcut])(implicit context: ContextSupport): Seq[Shortcut] = items map toShortcut
-
-  def toShortcut(item: ServicesShortcut)(implicit context: ContextSupport): Shortcut = {
-    val componentName = new ComponentName(item.packageName, item.name)
-    val drawable = Try(context.getPackageManager.getActivityIcon(componentName)).toOption
-    val intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
-    intent.addCategory(Intent.CATEGORY_DEFAULT)
-    intent.setComponent(componentName)
-    Shortcut(
-      title = item.title,
-      icon = drawable,
-      intent = intent)
-  }
 
   def toSimpleLastCallsContact(number: String, calls: Seq[Call]): LastCallsContact = {
     val (hasContact, name, date) = calls.headOption map { call =>

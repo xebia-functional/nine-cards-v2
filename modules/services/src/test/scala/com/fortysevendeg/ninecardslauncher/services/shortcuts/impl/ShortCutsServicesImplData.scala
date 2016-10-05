@@ -1,6 +1,6 @@
 package cards.nine.services.shortcuts.impl
 
-import cards.nine.services.shortcuts.models.Shortcut
+import cards.nine.models.Shortcut
 
 trait ShortcutsServicesImplData {
 

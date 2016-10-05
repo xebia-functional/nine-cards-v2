@@ -2,9 +2,8 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.models
 import cards.nine.models.types._
-import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, _}
+import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, Shortcut, _}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.models.NineCardIntentImplicits._
@@ -14,7 +13,6 @@ import cards.nine.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
-import cards.nine.services.shortcuts.models.Shortcut
 import cards.nine.services.widgets.models.{Widget => ServicesWidget}
 import play.api.libs.json.Json
 
@@ -563,7 +561,7 @@ trait DeviceProcessData
   val dockAppProcess1 = dockAppProcessSeq(0)
   val saveDockAppRequestSeq = createSaveDockAppRequestSeq()
 
-  val iterableCursorContact = new IterableCursor[models.Contact] {
+  val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = contacts.length
 
     override def moveToPosition(pos: Int): Contact = contacts(pos)

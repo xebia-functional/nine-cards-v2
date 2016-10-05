@@ -1,4 +1,4 @@
-package cards.nine.services.shortcuts.models
+package cards.nine.models
 
 case class Shortcut (
   title: String,

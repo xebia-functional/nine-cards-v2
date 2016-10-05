@@ -2,7 +2,7 @@ package cards.nine.services.shortcuts
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.services.shortcuts.models.Shortcut
+import cards.nine.models.Shortcut
 
 trait ShortcutsServices {
 

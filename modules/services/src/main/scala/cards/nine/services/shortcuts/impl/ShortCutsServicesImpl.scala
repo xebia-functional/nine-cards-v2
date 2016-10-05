@@ -4,7 +4,7 @@ import android.content.Intent
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import cards.nine.services.shortcuts.models.Shortcut
+import cards.nine.models.Shortcut
 import cards.nine.services.shortcuts.{ImplicitsShortcutsExceptions, ShortcutServicesException, ShortcutsServices}
 
 import scala.collection.JavaConversions._
