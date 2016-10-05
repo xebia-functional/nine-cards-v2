@@ -1,11 +1,11 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.models.{Contact, Location, ApplicationData, Application}
 import cards.nine.models.Spaces._
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardCategory._
 import cards.nine.models.types._
+import cards.nine.models.{Application, ApplicationData, Contact, ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, Location}
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, CollectionProcessConfig, EditCollectionRequest}
 import cards.nine.process.commons.models.NineCardIntentImplicits._
@@ -400,19 +400,19 @@ trait CollectionProcessImplData {
 
   val seqFormedCollection = createSeqFormedCollection()
 
-  def createSeqServicesContact(num: Int = 10) =
+  def createSeqContact(num: Int = 10) =
     (0 until num) map { item =>
-      ServicesContact(
+      Contact(
         name = name,
         lookupKey = lookupKey,
         photoUri = photoUri,
         favorite = true)
     }
 
-  val seqContacts: Seq[Contact] = createSeqServicesContact()
+  val seqContacts: Seq[Contact] = createSeqContact()
 
   val seqContactsWithPhones: Seq[Contact] = seqContacts map {
-    _.copy(info = Option(ServicesContactInfo(Seq.empty, Seq(ServicesContactPhone(phoneNumber, PhoneHome)))))
+    _.copy(info = Option(ModelsContactInfo(Seq.empty, Seq(ModelsContactPhone(phoneNumber, PhoneHome)))))
   }
 
   val addCollectionRequest = AddCollectionRequest(

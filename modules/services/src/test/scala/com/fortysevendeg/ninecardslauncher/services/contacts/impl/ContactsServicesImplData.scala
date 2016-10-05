@@ -4,7 +4,6 @@ import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataTy
 import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.services.contacts.Fields
-import cards.nine.services.contacts.models._
 
 trait ContactsServicesImplData {
 

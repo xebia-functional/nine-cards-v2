@@ -208,7 +208,7 @@ class DeviceProcessImplSpec
         mockContactsServices.populateContactInfo(any) returns TaskService(Task(Either.right(contacts)))
 
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
-        result shouldEqual Right(deviceProcess.toContactSeq(contacts))
+        result shouldEqual Right(contacts)
       }
 
     "returns ContactException when ContactsServices fails getting the favorite contacts" in

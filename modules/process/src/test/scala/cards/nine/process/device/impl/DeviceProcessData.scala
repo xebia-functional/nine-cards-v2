@@ -4,7 +4,7 @@ import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.models
 import cards.nine.models.types._
-import cards.nine.models.{Application, ApplicationData, Call, ContactCounter}
+import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, _}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.models.NineCardIntentImplicits._
@@ -13,7 +13,6 @@ import cards.nine.process.device.models.{LastCallsContact, Widget, _}
 import cards.nine.process.device.types._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
-import cards.nine.services.contacts.models.ContactPhone
 import cards.nine.services.image.{AppPackagePath, AppWebsitePath}
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
 import cards.nine.services.shortcuts.models.Shortcut
@@ -341,19 +340,19 @@ trait DeviceProcessData
     hasPhone = true,
     favorite = false,
     info = Some(
-     ContactInfo(
+     ModelsContactInfo(
         emails = Seq(
-         ContactEmail(
+          ModelsContactEmail(
             address = "sample1@47deg.com",
             category = EmailHome
           )
         ),
         phones = Seq(
-         ContactPhone(
+          ModelsContactPhone(
             number = phoneNumber1,
             category = PhoneHome
           ),
-         ContactPhone(
+          ModelsContactPhone(
             number = phoneNumber2,
             category = PhoneMobile
           )
