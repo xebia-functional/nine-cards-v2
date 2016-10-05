@@ -169,7 +169,8 @@ class MomentProcessImpl(
         case HomeMorningMoment => homeApps.contains(app.packageName)
         case WorkMoment => workApps.contains(app.packageName)
         case HomeNightMoment => nightApps.contains(app.packageName)
-        case TransitMoment => transitApps.contains(app.packageName)
+        case WalkMoment => walkApps.contains(app.packageName)
+        case _ => false
       }
     }.take(numSpaces)
 
