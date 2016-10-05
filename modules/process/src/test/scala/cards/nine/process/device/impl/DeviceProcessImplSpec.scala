@@ -10,6 +10,7 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.BitmapPath
 import cards.nine.models.types.{AppDockType, Misc}
 import cards.nine.process.device._
 import cards.nine.process.utils.ApiUtils
@@ -281,9 +282,8 @@ class DeviceProcessImplSpec
     "get path of icon stored" in
       new DeviceProcessScope {
 
-        val saveBitmap = nine.models.SaveBitmap(bitmap = mockBitmap, bitmapResize = None)
-        val saveBitmapPath = nine.models.SaveBitmapPath(nameShortcut, fileNameShortcut)
-        mockImageServices.saveBitmap(saveBitmap)(contextSupport) returns TaskService(Task(Either.right(saveBitmapPath)))
+        val bitmapPath = BitmapPath(nameShortcut, fileNameShortcut)
+        mockImageServices.saveBitmap(mockBitmap, None, None)(contextSupport) returns TaskService(Task(Either.right(bitmapPath)))
 
         val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).value.run
         result must beLike {
@@ -294,7 +294,7 @@ class DeviceProcessImplSpec
     "returns ShortcutException when ImageServices fails storing the icon" in
       new DeviceProcessScope {
 
-        mockImageServices.saveBitmap(any[nine.models.SaveBitmap])(any) returns TaskService(Task(Either.left(fileServicesException)))
+        mockImageServices.saveBitmap(any, any, any)(any) returns TaskService(Task(Either.left(fileServicesException)))
         val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).value.run
         result must beAnInstanceOf[Left[ShortcutException, _]]
       }

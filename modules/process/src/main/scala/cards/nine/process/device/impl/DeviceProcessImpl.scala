@@ -30,7 +30,7 @@ class DeviceProcessImpl(
   with DockAppsDeviceProcessImpl
   with LastCallsDeviceProcessImpl
   with ResetProcessImpl
-  with ShorcutsDeviceProcessImpl
+  with ShortcutsDeviceProcessImpl
   with WidgetsDeviceProcessImpl
   with ImplicitsDeviceException
   with ImplicitsImageExceptions
