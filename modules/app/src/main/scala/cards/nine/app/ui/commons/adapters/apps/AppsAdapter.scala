@@ -10,7 +10,7 @@ import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.process.device.models.{EmptyIterableApps, IterableApps}
 import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -22,8 +22,8 @@ import macroid._
 
 case class AppsAdapter(
   var apps: IterableApps,
-  clickListener: (Application) => Unit,
-  longClickListener: Option[(View, Application) => Unit])
+  clickListener: (ApplicationData) => Unit,
+  longClickListener: Option[(View, ApplicationData) => Unit])
   (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[AppsIterableHolder]
   with FastScrollerListener
@@ -68,8 +68,8 @@ case class AppsAdapter(
 
 case class AppsIterableHolder(
   content: ViewGroup,
-  clickListener: (Application) => Unit,
-  longClickListener: Option[(View, Application) => Unit])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
+  clickListener: (ApplicationData) => Unit,
+  longClickListener: Option[(View, ApplicationData) => Unit])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
@@ -77,7 +77,7 @@ case class AppsIterableHolder(
 
   lazy val name = Option(findView(TR.simple_item_name))
 
-  def bind(app: Application): Ui[_] =
+  def bind(app: ApplicationData): Ui[_] =
     (icon <~ vResize(IconsSize.getIconApp) <~ ivSrcByPackageName(Some(app.packageName), app.name)) ~
       (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(app.name) + tvColor(theme.get(DrawerTextColor))) ~
       (content <~

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.content.pm._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.services.apps.AppsInstalledException
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -26,7 +26,7 @@ trait AppsServicesImplSpecification
 
     val mockIntent = mock[Intent]
 
-    def createMockResolveInfo(sampleApp: Application): ResolveInfo = {
+    def createMockResolveInfo(sampleApp: ApplicationData): ResolveInfo = {
       val sampleResolveInfo = mock[ResolveInfo]
       val mockActivityInfo = mock[ActivityInfo]
       val mockApplicationInfo = mock[ApplicationInfo]
@@ -38,7 +38,7 @@ trait AppsServicesImplSpecification
       sampleResolveInfo
     }
 
-    def createMockPackageInfo(sampleApp: Application): PackageInfo = {
+    def createMockPackageInfo(sampleApp: ApplicationData): PackageInfo = {
       val samplePackageInfo = mock[PackageInfo]
       val mockApplicationInfo = mock[ApplicationInfo]
       samplePackageInfo.applicationInfo = mockApplicationInfo

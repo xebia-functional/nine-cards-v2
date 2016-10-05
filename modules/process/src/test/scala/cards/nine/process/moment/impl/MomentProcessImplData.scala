@@ -1,6 +1,6 @@
 package cards.nine.process.moment.impl
 
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardCategory._
@@ -319,7 +319,7 @@ trait MomentProcessImplData {
         days = days))
 
   val homeApp =
-    Application(
+    ApplicationData(
       name = name,
       packageName = homeAppPackageName,
       className = className1,
@@ -330,7 +330,7 @@ trait MomentProcessImplData {
       installedFromGooglePlay = installedFromGooglePlay1)
 
   val workApp =
-    Application(
+    ApplicationData(
       name = name,
       packageName = workAppPackageName,
       className = className1,
@@ -341,7 +341,7 @@ trait MomentProcessImplData {
       installedFromGooglePlay = installedFromGooglePlay1)
 
   val nightApp =
-    Application(
+    ApplicationData(
       name = name,
       packageName = nightAppPackageName,
       className = className1,
@@ -352,7 +352,7 @@ trait MomentProcessImplData {
       installedFromGooglePlay = installedFromGooglePlay1)
 
   val transitApp =
-    Application(
+    ApplicationData(
       name = name,
       packageName = transitAppPackageName,
       className = className1,

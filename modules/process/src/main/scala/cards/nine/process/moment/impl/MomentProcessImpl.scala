@@ -5,7 +5,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.Spaces._
 import cards.nine.models.types.NineCardsMoment._
 import cards.nine.models.types._
@@ -65,7 +65,7 @@ class MomentProcessImpl(
       moments <- persistenceServices.addMoments(items map toAddMomentRequest)
     } yield moments map toMoment).resolve[MomentException]
 
-  override def generatePrivateMoments(apps: Seq[Application], position: Int)(implicit context: ContextSupport) = TaskService {
+  override def generatePrivateMoments(apps: Seq[ApplicationData], position: Int)(implicit context: ContextSupport) = TaskService {
       CatchAll[MomentException] {
         generatePrivateMomentsCollections(apps, moments, Seq.empty, position)
     }
@@ -163,7 +163,7 @@ class MomentProcessImpl(
     (fromDT, toDT)
   }
 
-  private[this] def filterAppsByMoment(apps: Seq[Application], moment: NineCardsMoment): Seq[Application] =
+  private[this] def filterAppsByMoment(apps: Seq[ApplicationData], moment: NineCardsMoment): Seq[ApplicationData] =
     apps.filter { app =>
       moment match {
         case HomeMorningMoment => homeApps.contains(app.packageName)
@@ -173,7 +173,7 @@ class MomentProcessImpl(
       }
     }.take(numSpaces)
 
-  private[this] def generateAddCollection(items: Seq[Application], moment: NineCardsMoment, position: Int): AddCollectionRequest = {
+  private[this] def generateAddCollection(items: Seq[ApplicationData], moment: NineCardsMoment, position: Int): AddCollectionRequest = {
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
     AddCollectionRequest(
       position = position,
@@ -189,7 +189,7 @@ class MomentProcessImpl(
 
   @tailrec
   private[this] def generatePrivateMomentsCollections(
-    items: Seq[Application],
+    items: Seq[ApplicationData],
     moments: Seq[NineCardsMoment],
     acc: Seq[PrivateCollection],
     position: Int): Seq[PrivateCollection] = moments match {
@@ -200,7 +200,7 @@ class MomentProcessImpl(
       generatePrivateMomentsCollections(items, t, a, position)
   }
 
-  private[this] def generatePrivateMomentsCollection(items: Seq[Application], moment: NineCardsMoment, position: Int): PrivateCollection = {
+  private[this] def generatePrivateMomentsCollection(items: Seq[ApplicationData], moment: NineCardsMoment, position: Int): PrivateCollection = {
     val appsByMoment = filterAppsByMoment(items, moment)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
 

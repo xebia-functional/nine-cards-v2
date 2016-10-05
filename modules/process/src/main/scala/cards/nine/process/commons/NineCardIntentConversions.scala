@@ -1,6 +1,6 @@
 package cards.nine.process.commons
 
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.{ContactCardType, EmailCardType, PhoneCardType}
 import cards.nine.process.collection.models.UnformedContact
 import cards.nine.process.commons.models.NineCardIntentExtras._
@@ -15,7 +15,7 @@ trait NineCardIntentConversions {
 
   def nineCardIntentToJson(intent: NineCardIntent) = Json.toJson(intent).toString()
 
-  def toNineCardIntent(item: Application) = {
+  def toNineCardIntent(item: ApplicationData) = {
     val intent = NineCardIntent(NineCardIntentExtras(
       package_name = Option(item.packageName),
       class_name = Option(item.className)))

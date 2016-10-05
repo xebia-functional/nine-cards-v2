@@ -3,7 +3,7 @@ package cards.nine.process.moment
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCollection}
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.NineCardsMoment
 
 trait MomentProcess {
@@ -76,7 +76,7 @@ trait MomentProcess {
     * @return the Seq[cards.nine.process.commons.PrivateCollection]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def generatePrivateMoments(apps: Seq[Application], position: Int)(implicit context: ContextSupport): TaskService[Seq[PrivateCollection]]
+  def generatePrivateMoments(apps: Seq[ApplicationData], position: Int)(implicit context: ContextSupport): TaskService[Seq[PrivateCollection]]
 
   /**
     * Delete all moments in database

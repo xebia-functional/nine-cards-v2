@@ -2,7 +2,7 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
@@ -145,7 +145,7 @@ trait DeviceProcessData
   val dockType = AppDockType
   val dockTypeName = AppDockType.name
 
-  val applicationNoCached = Application(
+  val applicationNoCached = ApplicationData(
     name = name4,
     packageName = packageName4,
     className = className4,
@@ -155,8 +155,8 @@ trait DeviceProcessData
     version = version4,
     installedFromGooglePlay = installedFromGooglePlay4)
 
-  val applications: Seq[Application] = Seq(
-    Application(
+  val applications: Seq[ApplicationData] = Seq(
+    ApplicationData(
       name = name1,
       packageName = packageName1,
       className = className1,
@@ -165,7 +165,7 @@ trait DeviceProcessData
       dateUpdate = dateUpdate1,
       version = version1,
       installedFromGooglePlay = installedFromGooglePlay1),
-    Application(
+    ApplicationData(
       name = name2,
       packageName = packageName2,
       className = className2,
@@ -174,7 +174,7 @@ trait DeviceProcessData
       dateUpdate = dateUpdate2,
       version = version2,
       installedFromGooglePlay = installedFromGooglePlay2),
-    Application(
+    ApplicationData(
       name = name3,
       packageName = packageName3,
       className = className3,
@@ -185,8 +185,8 @@ trait DeviceProcessData
       installedFromGooglePlay = installedFromGooglePlay3)
   )
   
-  val apps: Seq[Application] = Seq(
-    Application(
+  val apps: Seq[ApplicationData] = Seq(
+    ApplicationData(
       name = name1,
       packageName = packageName1,
       className = className1,
@@ -195,7 +195,7 @@ trait DeviceProcessData
       dateUpdate = dateUpdate1,
       version = version1,
       installedFromGooglePlay = installedFromGooglePlay1),
-    Application(
+    ApplicationData(
       name = name2,
       packageName = packageName2,
       className = className2,
@@ -204,7 +204,7 @@ trait DeviceProcessData
       dateUpdate = dateUpdate2,
       version = version2,
       installedFromGooglePlay = installedFromGooglePlay2),
-    Application(
+    ApplicationData(
       name = name3,
       packageName = packageName3,
       className = className3,

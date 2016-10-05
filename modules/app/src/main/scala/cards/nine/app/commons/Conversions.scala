@@ -2,7 +2,7 @@ package cards.nine.app.commons
 
 import android.content.Intent
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.{AppCardType, AppsCollectionType, ContactCardType, NoInstalledAppCardType}
 import cards.nine.process.cloud.models._
 import cards.nine.process.collection.models._
@@ -112,7 +112,7 @@ trait Conversions
       intent = toNineCardIntent(app),
       imagePath = None)
 
-  def toAddCardRequest(app: Application): AddCardRequest =
+  def toAddCardRequest(app: ApplicationData): AddCardRequest =
     AddCardRequest(
       term = app.name,
       packageName = Option(app.packageName),

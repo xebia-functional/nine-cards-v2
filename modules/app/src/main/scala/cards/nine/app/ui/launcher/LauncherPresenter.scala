@@ -25,7 +25,7 @@ import cards.nine.commons._
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.types._
 import cards.nine.process.accounts._
 import cards.nine.process.collection.AddCardRequest
@@ -94,7 +94,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def logout(): Unit = actions.logout.run
 
-  def startAddItemToCollection(app: Application): Unit = startAddItemToCollection(toAddCardRequest(app))
+  def startAddItemToCollection(app: ApplicationData): Unit = startAddItemToCollection(toAddCardRequest(app))
 
   def startAddItemToCollection(contact: Contact): Unit = startAddItemToCollection(toAddCardRequest(contact))
 
@@ -260,7 +260,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     launcherCallService(di.launcherExecutorProcess.execute(card.intent), card.intent.extractPhone())
   }
 
-  def openApp(app: Application): Unit = if (actions.isTabsOpened) {
+  def openApp(app: ApplicationData): Unit = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
     di.trackEventProcess.openAppFromAppDrawer(app.packageName, AppCategory(app.category)).resolveAsync2()

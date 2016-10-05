@@ -1,7 +1,7 @@
 package cards.nine.process.collection
 
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.{AppCardType, CardType}
 import cards.nine.process.collection.models._
 import cards.nine.process.commons.CommonConversions
@@ -61,10 +61,10 @@ trait Conversions extends CommonConversions {
     imagePath = card.imagePath,
     notification = card.notification)
 
-  def toAddCardRequestSeq(items: Seq[Application]): Seq[ServicesAddCardRequest] =
+  def toAddCardRequestSeq(items: Seq[ApplicationData]): Seq[ServicesAddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestFromUnformedItems(zipped._1, zipped._2))
 
-  def toAddCardRequestFromUnformedItems(item: Application, position: Int): ServicesAddCardRequest = ServicesAddCardRequest(
+  def toAddCardRequestFromUnformedItems(item: ApplicationData, position: Int): ServicesAddCardRequest = ServicesAddCardRequest(
     position = position,
     term = item.name,
     packageName = Option(item.packageName),
@@ -127,7 +127,7 @@ trait Conversions extends CommonConversions {
     imagePath = card.imagePath,
     notification = card.notification)
 
-  def toInstalledApp(cards: Seq[ServicesCard], app: Application)(implicit contextSupport: ContextSupport): Seq[ServicesCard] = {
+  def toInstalledApp(cards: Seq[ServicesCard], app: ApplicationData)(implicit contextSupport: ContextSupport): Seq[ServicesCard] = {
     val intent = toNineCardIntent(app)
     cards map (_.copy(
       term = app.name,
@@ -150,7 +150,7 @@ trait Conversions extends CommonConversions {
       imagePath = Option(item.photoUri))
   }
 
-  def toPrivateCard(unformedApp: Application): PrivateCard =
+  def toPrivateCard(unformedApp: ApplicationData): PrivateCard =
     PrivateCard(
       term = unformedApp.name,
       packageName = Some(unformedApp.packageName),

@@ -28,7 +28,7 @@ import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import cards.nine.app.ui.launcher.drawer.DrawerSnails._
 import cards.nine.app.ui.launcher.{LauncherUiActions, LauncherUiActionsImpl}
 import cards.nine.app.ui.preferences.commons._
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.process.device._
 import cards.nine.process.device.models._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -290,8 +290,8 @@ trait DrawerUiActions
 
   protected def addApps(
     apps: IterableApps,
-    clickListener: (Application) => Unit,
-    longClickListener: (View, Application) => Unit,
+    clickListener: (ApplicationData) => Unit,
+    longClickListener: (View, ApplicationData) => Unit,
     getAppOrder: GetAppOrder = GetByName,
     counters: Seq[TermCounter] = Seq.empty): Ui[_] = {
     val appsAdapter = AppsAdapter(

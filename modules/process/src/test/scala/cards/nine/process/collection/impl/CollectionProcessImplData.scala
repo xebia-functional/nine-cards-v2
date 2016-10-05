@@ -1,6 +1,6 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.Spaces._
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
@@ -97,7 +97,7 @@ trait CollectionProcessImplData {
 
   val publicCollectionStatus = determinePublicCollectionStatus()
 
-  val application1 = Application(
+  val application1 = ApplicationData(
     name = name1,
     packageName = packageName1,
     className = className1,
@@ -258,7 +258,7 @@ trait CollectionProcessImplData {
 
   def createSeqApps(num: Int = 150) =
     (0 until num) map { item =>
-      Application(
+      ApplicationData(
         name = name,
         packageName = generatePackageName,
         className = className,
@@ -558,9 +558,9 @@ trait CollectionProcessImplData {
     )
 
 
-  val seqUnformedAppsForPrivateCollections: Seq[Application] =
+  val seqUnformedAppsForPrivateCollections: Seq[ApplicationData] =
     Seq(
-      Application(
+      ApplicationData(
         name = "nameUnformed0",
         packageName = "package.name.0",
         className = "classNameUnformed0",
@@ -569,7 +569,7 @@ trait CollectionProcessImplData {
         dateUpdate = dateUpdate1,
         version = version1,
         installedFromGooglePlay = installedFromGooglePlay1),
-      Application(
+      ApplicationData(
         name = "nameUnformed1",
         packageName = "package.name.1",
         className = "classNameUnformed1",
@@ -579,8 +579,8 @@ trait CollectionProcessImplData {
         version = version1,
         installedFromGooglePlay = installedFromGooglePlay1))
 
-  val appsByCategory0: Seq[Application] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
-  val appsByCategory1: Seq[Application] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(1)).take(numSpaces)
+  val appsByCategory0: Seq[ApplicationData] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
+  val appsByCategory1: Seq[ApplicationData] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(1)).take(numSpaces)
 
   val collectionProcessConfig: CollectionProcessConfig
 

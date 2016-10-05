@@ -16,7 +16,7 @@ import cards.nine.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.NineCardCategory
 import cards.nine.process.device.models.{IterableApps, TermCounter}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -115,7 +115,7 @@ trait AppsIuActions
     counters: Seq[TermCounter],
     filter: AppsFilter,
     category: NineCardCategory,
-    clickListener: (Application) => Unit) = {
+    clickListener: (ApplicationData) => Unit) = {
     val categoryName = resGetString(category.getStringResource) getOrElse category.getStringResource
     val adapter = AppsAdapter(
       apps = apps,

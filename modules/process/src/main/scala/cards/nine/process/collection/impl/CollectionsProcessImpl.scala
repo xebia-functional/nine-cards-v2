@@ -6,7 +6,7 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.Spaces._
 import cards.nine.models.types.NineCardCategory._
 import cards.nine.models.types.{NineCardCategory, NoInstalledAppCardType}
@@ -32,7 +32,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  def createCollectionsFromUnformedItems(apps: Seq[Application], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = {
+  def createCollectionsFromUnformedItems(apps: Seq[ApplicationData], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = {
     val collections = createCollections(apps, contacts, appsCategories, minAppsToAdd)
     (for {
       collections <- persistenceServices.addCollections(collections)
@@ -46,7 +46,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
       collections <- persistenceServices.addCollections(collectionsRequest)
     } yield collections map toCollection).resolve[CollectionException]
 
-  def generatePrivateCollections(apps: Seq[Application])(implicit context: ContextSupport) = TaskService {
+  def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport) = TaskService {
       CatchAll[CollectionException] {
         createPrivateCollections(apps, appsCategories, minAppsGenerateCollections)
     }

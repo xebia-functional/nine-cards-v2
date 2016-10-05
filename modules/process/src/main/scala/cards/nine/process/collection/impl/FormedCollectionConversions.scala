@@ -1,7 +1,7 @@
 package cards.nine.process.collection.impl
 
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.Spaces._
 import cards.nine.models.types._
 import cards.nine.process.collection.models._
@@ -55,13 +55,13 @@ trait FormedCollectionConversions
   }
 
   def createPrivateCollections(
-    apps: Seq[Application],
+    apps: Seq[ApplicationData],
     categories: Seq[NineCardCategory],
     minApps: Int): Seq[PrivateCollection] = generatePrivateCollections(apps, categories, Seq.empty)
 
   @tailrec
   private[this] def generatePrivateCollections(
-    items: Seq[Application],
+    items: Seq[ApplicationData],
     categories: Seq[NineCardCategory],
     acc: Seq[PrivateCollection]): Seq[PrivateCollection] = categories match {
       case Nil => acc
@@ -71,7 +71,7 @@ trait FormedCollectionConversions
         generatePrivateCollections(items, t, a)
     }
 
-  private[this] def generatePrivateCollection(items: Seq[Application], category: NineCardCategory, position: Int): PrivateCollection = {
+  private[this] def generatePrivateCollection(items: Seq[ApplicationData], category: NineCardCategory, position: Int): PrivateCollection = {
     // TODO We should sort the application using an endpoint in the new sever
     val appsByCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
@@ -87,7 +87,7 @@ trait FormedCollectionConversions
   }
 
   def createCollections(
-    apps: Seq[Application],
+    apps: Seq[ApplicationData],
     contacts: Seq[UnformedContact],
     categories: Seq[NineCardCategory],
     minApps: Int): Seq[AddCollectionRequest] = {
@@ -98,7 +98,7 @@ trait FormedCollectionConversions
 
   @tailrec
   private[this] def generateAddCollections(
-    items: Seq[Application],
+    items: Seq[ApplicationData],
     categories: Seq[NineCardCategory],
     acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = categories match {
       case Nil => acc
@@ -108,7 +108,7 @@ trait FormedCollectionConversions
         generateAddCollections(items, t, a)
     }
 
-  private[this] def generateAddCollection(items: Seq[Application], category: NineCardCategory, position: Int): AddCollectionRequest = {
+  private[this] def generateAddCollection(items: Seq[ApplicationData], category: NineCardCategory, position: Int): AddCollectionRequest = {
     // TODO We should sort the application using an endpoint in the new sever
     val appsCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
@@ -141,7 +141,7 @@ trait FormedCollectionConversions
     )
   }
 
-  def adaptCardsToAppsInstalled(formedCollections: Seq[FormedCollection], apps: Seq[Application]): Seq[FormedCollection] =
+  def adaptCardsToAppsInstalled(formedCollections: Seq[FormedCollection], apps: Seq[ApplicationData]): Seq[FormedCollection] =
     formedCollections map { fc =>
       val itemsWithPath = fc.items map { item =>
         val nineCardIntent = jsonToNineCardIntent(item.intent)

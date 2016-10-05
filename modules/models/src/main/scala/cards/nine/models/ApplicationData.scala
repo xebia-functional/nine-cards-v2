@@ -2,7 +2,7 @@ package cards.nine.models
 
 import cards.nine.models.types.NineCardCategory
 
-case class Application(
+case class ApplicationData(
   name: String,
   packageName: String,
   className: String,

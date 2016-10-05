@@ -2,7 +2,7 @@ package cards.nine.process.device
 
 import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.Application
+import cards.nine.models.ApplicationData
 import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
@@ -28,8 +28,8 @@ trait DeviceConversions extends NineCardIntentConversions {
     case GetByCategory(_) => OrderByCategory
   }
 
-  def toApplication(app: ServicesApp): Application =
-    Application(
+  def toApplication(app: ServicesApp): ApplicationData =
+    ApplicationData(
       name = app.name,
       packageName = app.packageName,
       className = app.className,
@@ -39,7 +39,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       version = app.version,
       installedFromGooglePlay = app.installedFromGooglePlay)
 
-  def toAddAppRequest(item: Application, category: NineCardCategory): AddAppRequest =
+  def toAddAppRequest(item: ApplicationData, category: NineCardCategory): AddAppRequest =
       AddAppRequest(
         name = item.name,
         packageName = item.packageName,
@@ -50,7 +50,7 @@ trait DeviceConversions extends NineCardIntentConversions {
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
 
-  def toUpdateAppRequest(id: Int, item: Application, category: NineCardCategory): UpdateAppRequest =
+  def toUpdateAppRequest(id: Int, item: ApplicationData, category: NineCardCategory): UpdateAppRequest =
       UpdateAppRequest(
         id = id,
         name = item.name,
@@ -62,9 +62,9 @@ trait DeviceConversions extends NineCardIntentConversions {
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
 
-  def toAppPackageSeq(items: Seq[Application]): Seq[AppPackage] = items map toAppPackage
+  def toAppPackageSeq(items: Seq[ApplicationData]): Seq[AppPackage] = items map toAppPackage
 
-  def toAppPackage(item: Application): AppPackage =
+  def toAppPackage(item: ApplicationData): AppPackage =
     AppPackage(
       packageName = item.packageName,
       className = item.className,
@@ -94,7 +94,7 @@ trait DeviceConversions extends NineCardIntentConversions {
     position = app.position
   )
 
-  def toDockApp(app: Application, position: Int, imagePath: String)(implicit context: ContextSupport): DockApp = DockApp(
+  def toDockApp(app: ApplicationData, position: Int, imagePath: String)(implicit context: ContextSupport): DockApp = DockApp(
     name = app.packageName,
     dockType = AppDockType,
     intent = toNineCardIntent(app),
