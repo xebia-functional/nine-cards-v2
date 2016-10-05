@@ -2,9 +2,9 @@ package cards.nine.process.device.models
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import cards.nine.models.types.{DockType, EmailCategory, PhoneCategory}
+import cards.nine.models.types.{CallType, DockType, EmailCategory, PhoneCategory}
 import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.device.types.{CallType, WidgetResizeMode}
+import cards.nine.process.device.types.WidgetResizeMode
 
 case class Shortcut (
   title: String,

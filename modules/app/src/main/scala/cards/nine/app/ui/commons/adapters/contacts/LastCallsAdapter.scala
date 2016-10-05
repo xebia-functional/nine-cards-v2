@@ -6,6 +6,7 @@ import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.View.OnClickListener
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.ImageView
+import cards.nine.models.types
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -90,12 +91,12 @@ case class LastCallsContactHolder(content: View)(implicit context: ActivityConte
       (content <~ vSetPosition(position))
   }
 
-  private[this] def addCallTypesView(callTypes: Seq[CallType])(implicit context: ActivityContextWrapper) = {
+  private[this] def addCallTypesView(callTypes: Seq[types.CallType])(implicit context: ActivityContextWrapper) = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val callViews = callTypes map { ct =>
       (w[ImageView] <~ ivSrc(ct match {
-        case IncomingType => R.drawable.icon_call_incoming
-        case MissedType => R.drawable.icon_call_missed
+        case types.IncomingType => R.drawable.icon_call_incoming
+        case types.MissedType => R.drawable.icon_call_missed
         case _ => R.drawable.icon_call_outgoing
       }) <~  vPadding(paddingRight = padding)).get
     }

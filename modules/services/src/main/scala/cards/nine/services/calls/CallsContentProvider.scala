@@ -43,6 +43,6 @@ object CallsContentProvider {
         name = Option(cursor.getString(cursor.getColumnIndex(name))),
         numberType = numberType,
         date = cursor.getLong(cursor.getColumnIndex(date)),
-        callType = cursor.getInt(cursor.getColumnIndex(callType)))
+        callType = CallType(cursor.getInt(cursor.getColumnIndex(callType))))
    }
 }
