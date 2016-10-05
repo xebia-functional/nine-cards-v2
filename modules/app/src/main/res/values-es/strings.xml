@@ -73,6 +73,7 @@
     <string name="wizard_loading_devices">Cargando dispositivos</string>
     <string name="wizard_loading_looking_for_better_collection">Creando las mejores colecciones con tus apps</string>
     <string name="wizard_loading_saving_collections">Guardando colecciones</string>
+    <string name="wizard_loading_saving_moments">Guardando momentos</string>
 
     <string name="creatingCollectionError">Error creando colecciones. Por favor inténtelo de nuevo</string>
 
@@ -119,6 +120,9 @@
     <string name="wizard_new_conf_description_step_3">Selecciona los momentos y el wifi para cada uno así podremos mostrarte la mejor experiencia en 9Cards</string>
     <string name="wizard_new_conf_wifi_no_connected_step_3">No hay wifi seleccionado</string>
     <string name="wizard_new_conf_wifi_connected_step_3">Conectado a \"%1$s\"</string>
+
+    <string name="wizard_new_conf_title_step_4">¿Qué momentos estás interesado?</string>
+    <string name="wizard_new_conf_description_step_4">Selecciona los momentos en los que estás interesado</string>
 
     <!-- Moment / Widgets -->
 
@@ -330,7 +334,12 @@
     <string name="home">Hogar</string>
     <string name="work">Trabajo</string>
     <string name="night">Noche</string>
-    <string name="transit">Tránsito</string>
+    <string name="study">Estudio</string>
+    <string name="music">Música</string>
+    <string name="car">Coche</string>
+    <string name="running">Correr</string>
+    <string name="bike">Bicicleta</string>
+    <string name="walk">Andar</string>
 
     <!-- Profile -->
     <string name="publications">Publicaciones</string>

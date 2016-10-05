@@ -51,6 +51,10 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
     (showLoading(R.string.wizard_loading_saving_collections) ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_background_new_conf_step_2)))).toService
 
+  def showLoadingSavingMoments(): TaskService[Unit] =
+    (showLoading(R.string.wizard_loading_saving_moments) ~
+      (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_background_new_conf_step_0)))).toService
+
   def showLoadingDevices(): TaskService[Unit] =
     showLoading(R.string.wizard_loading_devices).toService
 

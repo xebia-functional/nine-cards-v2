@@ -124,22 +124,23 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
         tvColorResource(resColor))).toService
   }
 
-  def loadFourthStep(wifis: Seq[String], moments: Seq[NineCardsMoment]): TaskService[Unit] = {
+  def loadFourthStep(wifis: Seq[String], moments: Seq[(NineCardsMoment, Boolean)]): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_3, javaNull)
     val resColor = R.color.wizard_background_new_conf_step_2
 
-    val momentViews = moments map { moment =>
-      (w[WizardWifiCheckBox] <~
-        wwcbInitialize(moment, onWifiClick = () => {
-          val dialog = WifiDialogFragment(wifis, (wifi) => {
-            changeWifiName(moment, wifi).run
-          })(context, AppUtils.getDefaultTheme)
-          showDialog(dialog).run
-        }) <~
-        FuncOn.click { view: View =>
-          val itemCheckBox = view.asInstanceOf[WizardWifiCheckBox]
-          itemCheckBox <~ wwcbSwap()
-        }).get
+    val momentViews = moments map {
+      case (moment, selected) =>
+        (w[WizardWifiCheckBox] <~
+          wwcbInitialize(moment, onWifiClick = () => {
+            val dialog = WifiDialogFragment(wifis, (wifi) => {
+              changeWifiName(moment, wifi).run
+            })(context, AppUtils.getDefaultTheme)
+            showDialog(dialog).run
+          }, selected) <~
+          FuncOn.click { view: View =>
+            val itemCheckBox = view.asInstanceOf[WizardWifiCheckBox]
+            itemCheckBox <~ wwcbSwap()
+          }).get
     }
     val params = new LayoutParams(MATCH_PARENT, WRAP_CONTENT)
 
@@ -150,7 +151,20 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       selectPager(3, resColor) ~
       (dom.newConfigurationStep3WifiContent <~ vgAddViews(momentViews, params)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onLoadWifiByMoment())) <~
+        On.click(Ui(dom.onSaveMoments(dom.getWifisSelected))) <~
+        tvColorResource(resColor))).toService
+  }
+
+  def loadFifthStep(): TaskService[Unit] = {
+    val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_4, javaNull)
+    val resColor = R.color.wizard_background_new_conf_step_4
+    ((dom.newConfigurationStep <~
+      vgAddView(stepView)) ~
+      systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
+      systemBarsTint.defaultStatusBar() ~
+      selectPager(4, resColor) ~
+      (dom.newConfigurationNext <~
+        On.click(Ui(dom.onLoadBetterCollections())) <~
         tvColorResource(resColor))).toService
   }
 

@@ -249,7 +249,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginRight">@dimen/padding_large</item>
-        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:padding">@dimen/padding_large</item>
     </style>
 
     <style name="WizardWifiCheckboxNamesRoot">
@@ -485,6 +485,17 @@
         <item name="android:orientation">vertical</item>
         <item name="android:paddingLeft">@dimen/padding_default</item>
         <item name="android:paddingRight">@dimen/padding_default</item>
+    </style>
+
+    <!-- Step 4 -->
+
+    <style name="WizardNewConfigurationTitleStep4" parent="WizardNewConfigurationTitle">
+        <item name="android:text">@string/wizard_new_conf_title_step_4</item>
+        <item name="android:textColor">@color/wizard_background_new_conf_step_4</item>
+    </style>
+
+    <style name="WizardNewConfigurationDescriptionStep4" parent="WizardNewConfigurationDescription">
+        <item name="android:text">@string/wizard_new_conf_description_step_4</item>
     </style>
 
 </resources>

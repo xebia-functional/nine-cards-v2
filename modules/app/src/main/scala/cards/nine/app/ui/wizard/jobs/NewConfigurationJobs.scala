@@ -8,8 +8,11 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.types._
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.process.collection.models.{FormedCollection, FormedItem, PackagesByCategory}
+import cards.nine.process.commons.CommonConversions
+import cards.nine.process.commons.models.MomentTimeSlot
 import cards.nine.process.device.GetByName
 import cards.nine.process.device.models.App
+import cards.nine.process.moment.SaveMomentRequest
 import macroid.ActivityContextWrapper
 import play.api.libs.json.Json
 
@@ -17,7 +20,8 @@ class NewConfigurationJobs(
   actions: NewConfigurationUiActions,
   visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with NineCardIntentConversions {
+  with NineCardIntentConversions
+  with CommonConversions {
 
   val defaultDockAppsSize = 4
 
@@ -71,7 +75,47 @@ class NewConfigurationJobs(
     for {
       _ <- visibilityUiActions.cleanStep()
       wifis <- di.deviceProcess.getConfiguredNetworks
-      _ <- actions.loadFourthStep(wifis, Seq(HomeMorningMoment, WorkMoment))
+      _ <- actions.loadFourthStep(wifis, Seq(
+        (HomeMorningMoment, true),
+        (WorkMoment, false),
+        (StudyMoment, false)))
     } yield ()
+
+  def saveMoments(infoMoment: Seq[(NineCardsMoment, Option[String])]): TaskService[Unit] = {
+
+    def toMomentTimeSlotSeq(moment: NineCardsMoment): Seq[MomentTimeSlot] =
+      moment match {
+        case HomeMorningMoment => Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+        case WorkMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
+        case HomeNightMoment => Seq(MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+        case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
+        case MusicMoment => Seq.empty
+        case CarMoment => Seq.empty
+        case RunningMoment => Seq.empty
+        case BikeMoment => Seq.empty
+        case WalkMoment => Seq.empty
+      }
+
+    val homeNightMoment = infoMoment find (_._1 == HomeMorningMoment) map (info => (HomeNightMoment, info._2))
+
+    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (WalkMoment, None)) ++ Seq(homeNightMoment).flatten
+
+    val request = momentsToAdd map {
+      case (moment, wifi) =>
+        SaveMomentRequest(
+          collectionId = None,
+          timeslot = toMomentTimeSlotSeq(moment),
+          wifi = Seq(wifi).flatten,
+          headphone = false,
+          momentType = Option(moment),
+          widgets = None)
+    }
+    for {
+      _ <- visibilityUiActions.showLoadingSavingMoments()
+      _ <- di.momentProcess.saveMoments(request)
+      _ <- visibilityUiActions.showNewConfiguration()
+      _ <- actions.loadFifthStep()
+    } yield ()
+  }
 
 }

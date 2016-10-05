@@ -78,6 +78,7 @@
     <string name="wizard_loading_devices">Loading devices</string>
     <string name="wizard_loading_looking_for_better_collection">Creating the better collections with your apps</string>
     <string name="wizard_loading_saving_collections">Saving collections</string>
+    <string name="wizard_loading_saving_moments">Saving moments</string>
 
     <string name="creatingCollectionError">We could not create your collections at this time. Please try again later</string>
 
@@ -124,6 +125,9 @@
     <string name="wizard_new_conf_description_step_3">Select the moments for you and the wifi for every moment, then we can show you the better experience</string>
     <string name="wizard_new_conf_wifi_no_connected_step_3">No wifi in this moment</string>
     <string name="wizard_new_conf_wifi_connected_step_3">Connected to \"%1$s\"</string>
+
+    <string name="wizard_new_conf_title_step_4">What\'s moments are you interested?</string>
+    <string name="wizard_new_conf_description_step_4">Select the moment where you are interested</string>
 
     <!-- Moment / Widgets -->
 
@@ -345,7 +349,12 @@
     <string name="home">Home</string>
     <string name="work">Work</string>
     <string name="night">Night</string>
-    <string name="transit">Transit</string>
+    <string name="study">Study</string>
+    <string name="music">Music</string>
+    <string name="car">Car</string>
+    <string name="running">Running</string>
+    <string name="bike">Bike</string>
+    <string name="walk">Walk</string>
 
     <!-- Profile -->
     <string name="publications">Publications</string>

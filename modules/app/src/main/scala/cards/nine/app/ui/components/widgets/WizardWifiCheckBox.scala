@@ -91,7 +91,7 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
       (wifiAction <~ vClickable(false) <~ tivColor(resGetColor(R.color.wizard_checkbox_unselected)))
 
   def setWifiName(wifi: String): Ui[Any] =
-    (this <~ vAddField(wifiNameKey, false)) ~
+    (this <~ vAddField(wifiNameKey, wifi)) ~
       (textConnected <~
         tvText(resGetString(R.string.wizard_new_conf_wifi_connected_step_3, wifi)))
 

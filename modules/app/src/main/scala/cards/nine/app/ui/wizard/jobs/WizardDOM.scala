@@ -1,10 +1,9 @@
 package cards.nine.app.ui.wizard.jobs
 
-import cards.nine.app.ui.components.widgets.WizardCheckBox
+import cards.nine.app.ui.components.widgets.{WizardCheckBox, WizardWifiCheckBox}
+import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.collection.models.PackagesByCategory
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
-
-import scala.collection.immutable.IndexedSeq
 
 trait WizardDOM {
 
@@ -69,6 +68,13 @@ trait WizardDOM {
     }
   }
 
+  def getWizardWifiCheckBoxes: Seq[WizardWifiCheckBox] = (0 to newConfigurationStep3WifiContent.getChildCount) flatMap { position =>
+    newConfigurationStep3WifiContent.getChildAt(position) match {
+      case widget: WizardWifiCheckBox => Some(widget)
+      case _ => None
+    }
+  }
+
   def areAllCollectionsChecked(): Boolean = getWizardCheckBoxes forall (_.isCheck)
 
   def countCollectionsChecked(): (Int, Int) = {
@@ -77,6 +83,12 @@ trait WizardDOM {
   }
 
   def getCollectionsSelected: Seq[PackagesByCategory] = getWizardCheckBoxes flatMap(_.getData)
+
+  def getWifisSelected: Seq[(NineCardsMoment, Option[String])] =
+    getWizardWifiCheckBoxes flatMap (widget => (widget.isCheck, widget.getMoment, widget.getWifiName) match {
+      case (true, Some(moment), wifiName) => Option(moment, wifiName)
+      case _ => None
+    })
 
 }
 
@@ -111,5 +123,7 @@ trait WizardUiListener {
   def onSaveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): Unit
 
   def onLoadWifiByMoment(): Unit
+
+  def onSaveMoments(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit
 
 }

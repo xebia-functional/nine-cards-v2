@@ -85,13 +85,6 @@ object WidgetTypes {
   val app = "APP"
 }
 
-object NineCardsMoments {
-  val homeMorningMoment = "HOME"
-  val workMoment = "WORK"
-  val homeNightMoment = "NIGHT"
-  val transitMoment = "TRANSIT"
-}
-
 object Spaces {
   val numSpaces = 9
   val numInLine = 3
