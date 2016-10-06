@@ -548,7 +548,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case _ => di.momentProcess.getBestAvailableMoment
     }
 
-    def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
+    def getLauncherInfo: TaskService[(Seq[Collection], Seq[PersistenceDockApp], Option[Moment])] =
       for {
         collections <- di.collectionProcess.getCollections
         dockApps <- di.deviceProcess.getDockApps
@@ -1073,7 +1073,7 @@ trait LauncherUiActions {
 
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): Ui[Any]
 
-  def reloadDockApps(dockApp: DockApp): Ui[Any]
+  def reloadDockApps(dockApp: PersistenceDockApp): Ui[Any]
 
   def openModeEditWidgets(): Ui[Any]
 
@@ -1117,7 +1117,7 @@ trait LauncherUiActions {
 
   def goToCollection(collection: Collection, point: Point): Ui[Any]
 
-  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
+  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[PersistenceDockApp]): Ui[Any]
 
   def reloadCurrentMoment(): Ui[Any]
 

@@ -141,7 +141,7 @@ case class CreateOrUpdateDockAppRequest(
 
 case class DeleteDockAppsRequest(where: String)
 
-case class DeleteDockAppRequest(dockApp: DockApp)
+case class DeleteDockAppRequest(dockApp: PersistenceDockApp)
 
 case class FindDockAppByIdRequest(id: Int)
 

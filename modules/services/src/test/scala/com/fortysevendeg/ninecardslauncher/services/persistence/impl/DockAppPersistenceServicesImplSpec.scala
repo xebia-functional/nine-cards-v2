@@ -2,7 +2,7 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.models.DockApp
+import cards.nine.models.PersistenceDockApp
 import cards.nine.repository.RepositoryException
 import cards.nine.services.persistence.data.DockAppPersistenceServicesData
 import cats.syntax.either._
@@ -172,7 +172,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
       result must beLike {
         case Right(maybeDockApp) =>
-          maybeDockApp must beSome[DockApp].which { dockApp =>
+          maybeDockApp must beSome[PersistenceDockApp].which { dockApp =>
             dockApp.id shouldEqual dockAppId
           }
       }

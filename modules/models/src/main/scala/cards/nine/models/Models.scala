@@ -37,7 +37,7 @@ case class User(
   deviceName: Option[String],
   deviceCloudId: Option[String])
 
-case class DockApp(
+case class PersistenceDockApp(
   id: Int,
   name: String,
   dockType: String,

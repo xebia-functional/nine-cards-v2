@@ -24,7 +24,7 @@ class ShortcutsServicesImpl
         shortcuts map { resolveInfo =>
           val activityInfo = resolveInfo.activityInfo
           val componentName = new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name)
-          val drawable = Try(context.getPackageManager.getActivityIcon(componentName)).toOption
+          val drawable = Try(context.getPackageManager.getActivityIcon(componentName)).toOption.flatten
           val intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
           intent.addCategory(Intent.CATEGORY_DEFAULT)
           intent.setComponent(componentName)

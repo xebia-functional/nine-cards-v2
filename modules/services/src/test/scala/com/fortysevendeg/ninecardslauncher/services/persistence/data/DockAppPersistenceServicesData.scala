@@ -1,7 +1,7 @@
 package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.models.DockApp
+import cards.nine.models.PersistenceDockApp
 import cards.nine.repository.model.{DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData}
 import cards.nine.services.persistence.models.IterableDockApps
 import cards.nine.services.persistence.{CreateOrUpdateDockAppRequest, DeleteDockAppRequest, FindDockAppByIdRequest}
@@ -21,9 +21,9 @@ trait DockAppPersistenceServicesData extends PersistenceServicesData {
     dockType: String = dockType,
     intent: String = intent,
     imagePath: String = imagePath,
-    position: Int = position): Seq[DockApp] = List.tabulate(num)(
+    position: Int = position): Seq[PersistenceDockApp] = List.tabulate(num)(
     item =>
-      DockApp(
+      PersistenceDockApp(
         id = id + item,
         name = name,
         dockType = dockType,
@@ -50,8 +50,8 @@ trait DockAppPersistenceServicesData extends PersistenceServicesData {
       imagePath = imagePath,
       position = position)
 
-  val seqDockApp: Seq[DockApp] = createSeqDockApp()
-  val dockApp: DockApp = seqDockApp(0)
+  val seqDockApp: Seq[PersistenceDockApp] = createSeqDockApp()
+  val dockApp: PersistenceDockApp = seqDockApp(0)
   val repoDockAppData: RepositoryDockAppData = createRepoDockAppData()
   val seqRepoDockApp: Seq[RepositoryDockApp] = createSeqRepoDockApp(data = repoDockAppData)
   val repoDockApp: RepositoryDockApp = seqRepoDockApp(0)
@@ -69,7 +69,7 @@ trait DockAppPersistenceServicesData extends PersistenceServicesData {
       imagePath = imagePath,
       position = position)
 
-  def createDeleteDockAppRequest(dockApp: DockApp): DeleteDockAppRequest =
+  def createDeleteDockAppRequest(dockApp: PersistenceDockApp): DeleteDockAppRequest =
     DeleteDockAppRequest(dockApp = dockApp)
 
   def createFindDockAppByIdRequest(id: Int): FindDockAppByIdRequest =

@@ -420,7 +420,7 @@ trait PersistenceServices {
     * @return the Seq[cards.nine.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem creating or updating the dock app
     */
-  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): TaskService[Seq[DockApp]]
+  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): TaskService[Seq[PersistenceDockApp]]
 
   /**
     * Deletes all dock apps from the repository by the where clause
@@ -445,7 +445,7 @@ trait PersistenceServices {
     * @return the Seq[cards.nine.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
-  def fetchDockApps: TaskService[Seq[DockApp]]
+  def fetchDockApps: TaskService[Seq[PersistenceDockApp]]
 
   /**
     * Obtains iterable of dock apps from the repository
@@ -462,7 +462,7 @@ trait PersistenceServices {
     * @return an Option[cards.nine.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock app
     */
-  def findDockAppById(request: FindDockAppByIdRequest): TaskService[Option[DockApp]]
+  def findDockAppById(request: FindDockAppByIdRequest): TaskService[Option[PersistenceDockApp]]
 
   /**
     * Adds an moment to the repository
