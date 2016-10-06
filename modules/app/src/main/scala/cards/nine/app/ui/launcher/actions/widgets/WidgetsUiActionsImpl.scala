@@ -4,21 +4,21 @@ import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.{View, ViewGroup}
 import android.widget.{ImageView, LinearLayout, TextView}
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import cards.nine.app.ui.commons.ops.WidgetsOps._
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.process.device.models.{AppsWithWidgets, Widget}
+import cards.nine.models.Widget
+import cards.nine.process.device.models.AppsWithWidgets
+import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.commons.UiContext
-import macroid._
 import macroid.FullDsl._
+import macroid._
 
 trait WidgetsUiActionsImpl
   extends WidgetsUiActions

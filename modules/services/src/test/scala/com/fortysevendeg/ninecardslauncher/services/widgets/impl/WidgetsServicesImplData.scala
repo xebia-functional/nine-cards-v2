@@ -1,6 +1,6 @@
 package cards.nine.services.widgets.impl
 
-import cards.nine.services.widgets.models.Widget
+import cards.nine.models.Widget
 
 import scala.util.Random
 

@@ -1,4 +1,6 @@
-package cards.nine.services.widgets.models
+package cards.nine.models
+
+import cards.nine.models.types.WidgetResizeMode
 
 case class Widget (
   userHashCode: Option[Int],
@@ -10,10 +12,7 @@ case class Widget (
   minWidth: Int,
   className: String,
   packageName: String,
-  resizeMode: Int,
+  resizeMode: WidgetResizeMode,
   updatePeriodMillis: Int,
   label: String,
   preview: Int)
-
-
-

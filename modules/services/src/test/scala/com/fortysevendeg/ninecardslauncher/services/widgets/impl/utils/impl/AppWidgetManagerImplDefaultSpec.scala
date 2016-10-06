@@ -4,7 +4,7 @@ import android.appwidget.AppWidgetProviderInfo
 import android.content.ComponentName
 import android.content.pm.PackageManager
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.services.widgets.utils.impl.AppWidgetManagerImplDefault
+import cards.nine.models.utils.impl.AppWidgetManagerImplDefault
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

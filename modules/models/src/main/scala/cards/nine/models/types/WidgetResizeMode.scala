@@ -1,4 +1,4 @@
-package cards.nine.process.device.types
+package cards.nine.models.types
 
 import android.appwidget.AppWidgetProviderInfo
 

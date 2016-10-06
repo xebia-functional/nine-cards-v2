@@ -2,18 +2,17 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
+import cards.nine.models
 import cards.nine.models.types._
 import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, Shortcut, _}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.device.SaveDockAppRequest
-import cards.nine.process.device.models.{LastCallsContact, Widget, _}
-import cards.nine.process.device.types._
+import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
-import cards.nine.services.widgets.models.{Widget => ServicesWidget}
 import play.api.libs.json.Json
 
 trait DeviceProcessData
@@ -333,8 +332,8 @@ trait DeviceProcessData
       )
     ))
 
-  val widgetsServices: Seq[ServicesWidget] = Seq(
-    ServicesWidget(
+  val widgetsServices: Seq[models.Widget] = Seq(
+    Widget(
       userHashCode = userHashCodeOption1,
       autoAdvanceViewId = autoAdvanceViewId1,
       initialLayout = initialLayout1,
@@ -344,11 +343,11 @@ trait DeviceProcessData
       minWidth = minWidth1,
       className = className1,
       packageName = packageName1,
-      resizeMode = resizeMode1,
+      resizeMode = WidgetResizeMode(resizeMode1),
       updatePeriodMillis = updatePeriodMillis1,
       label = label1,
       preview = preview1),
-    ServicesWidget(
+    Widget(
       userHashCode = userHashCodeOption2,
       autoAdvanceViewId = autoAdvanceViewId2,
       initialLayout = initialLayout2,
@@ -358,11 +357,11 @@ trait DeviceProcessData
       minWidth = minWidth2,
       className = className2,
       packageName = packageName2,
-      resizeMode = resizeMode2,
+      resizeMode = WidgetResizeMode(resizeMode2),
       updatePeriodMillis = updatePeriodMillis2,
       label = label2,
       preview = preview2),
-    ServicesWidget(
+    Widget(
       userHashCode = userHashCodeOption3,
       autoAdvanceViewId = autoAdvanceViewId3,
       initialLayout = initialLayout3,
@@ -372,7 +371,7 @@ trait DeviceProcessData
       minWidth = minWidth3,
       className = className3,
       packageName = packageName3,
-      resizeMode = resizeMode3,
+      resizeMode = WidgetResizeMode(resizeMode3),
       updatePeriodMillis = updatePeriodMillis3,
       label = label3,
       preview = preview3)

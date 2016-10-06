@@ -1,14 +1,10 @@
-package cards.nine.services.widgets.utils.impl
+package cards.nine.models.utils.impl
 
-import android.app.ActivityManager
 import android.appwidget.{AppWidgetManager, AppWidgetProviderInfo}
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
-import cards.nine.commons.contexts.ContextSupport
-import cards.nine.commons.javaNull
-import cards.nine.services.widgets.models.Conversions
-import cards.nine.services.widgets.utils.AppWidgetManagerCompat
+import cards.nine.models.Conversions
+import cards.nine.models.utils.AppWidgetManagerCompat
 
 import scala.collection.JavaConversions._
 

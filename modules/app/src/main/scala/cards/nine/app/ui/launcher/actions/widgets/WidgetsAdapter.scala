@@ -4,7 +4,7 @@ import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, ViewGroup}
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.process.device.models.Widget
+import cards.nine.models.Widget
 import com.fortysevendeg.ninecardslauncher2.TR
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import macroid.ActivityContextWrapper

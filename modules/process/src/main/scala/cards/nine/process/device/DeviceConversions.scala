@@ -6,10 +6,8 @@ import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
-import cards.nine.process.device.types.WidgetResizeMode
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
-import cards.nine.services.widgets.models.{Widget => ServicesWidget}
 
 trait DeviceConversions extends NineCardIntentConversions {
 
@@ -103,27 +101,12 @@ trait DeviceConversions extends NineCardIntentConversions {
     number = item.number,
     category = item.category)
 
-  def toAppsWithWidgets(apps: Seq[Application], widgets: Seq[ServicesWidget]): Seq[AppsWithWidgets] = apps map { app =>
+  def toAppsWithWidgets(apps: Seq[Application], widgets: Seq[Widget]): Seq[AppsWithWidgets] = apps map { app =>
     AppsWithWidgets(
       packageName = app.packageName,
       name = app.name,
-      widgets = widgets filter(_.packageName == app.packageName) map toWidget
+      widgets = widgets filter(_.packageName == app.packageName)
     )
   }
-
-  def toWidget(item: ServicesWidget): Widget = Widget(
-    userHashCode = item.userHashCode,
-    autoAdvanceViewId = item.autoAdvanceViewId,
-    initialLayout = item.initialLayout,
-    minWidth = item.minWidth,
-    minHeight = item.minHeight,
-    minResizeWidth = item.minResizeWidth,
-    minResizeHeight = item.minResizeHeight,
-    className = item.className,
-    packageName = item.packageName,
-    resizeMode = WidgetResizeMode(item.resizeMode),
-    updatePeriodMillis = item.updatePeriodMillis,
-    label = item.label,
-    preview = item.preview)
 
 }

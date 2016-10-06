@@ -1,6 +1,7 @@
-package cards.nine.services.widgets.models
+package cards.nine.models
 
 import android.appwidget.{AppWidgetProviderInfo => AndroidAppWidgetProviderInfo}
+import cards.nine.models.types.WidgetResizeMode
 
 trait Conversions {
 
@@ -18,7 +19,7 @@ trait Conversions {
         minWidth = minWidth,
         className = provider.getClassName,
         packageName = provider.getPackageName,
-        resizeMode = resizeMode,
+        resizeMode = WidgetResizeMode(resizeMode),
         updatePeriodMillis = updatePeriodMillis,
         label = widgetLabel,
         preview = previewImage)

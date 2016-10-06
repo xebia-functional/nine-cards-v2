@@ -2,7 +2,7 @@ package cards.nine.services.widgets
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.services.widgets.models.Widget
+import cards.nine.models.Widget
 
 trait WidgetsServices {
   /**

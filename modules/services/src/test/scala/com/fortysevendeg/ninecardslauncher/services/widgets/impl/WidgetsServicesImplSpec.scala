@@ -2,14 +2,13 @@ package cards.nine.services.widgets.impl
 
 import android.content.pm.PackageManager
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.Conversions
+import cards.nine.models.utils.AppWidgetManagerCompat
 import cards.nine.services.widgets.WidgetServicesException
-import cards.nine.services.widgets.models.Conversions
-import cards.nine.services.widgets.utils.AppWidgetManagerCompat
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.test.TaskServiceTestOps._
-
 
 trait WidgetsImplSpecification
   extends Specification
