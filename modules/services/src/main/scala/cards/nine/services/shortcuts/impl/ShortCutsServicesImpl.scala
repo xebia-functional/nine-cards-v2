@@ -8,7 +8,7 @@ import cards.nine.models.Shortcut
 import cards.nine.services.shortcuts.{ImplicitsShortcutsExceptions, ShortcutServicesException, ShortcutsServices}
 
 import scala.collection.JavaConversions._
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 class ShortcutsServicesImpl
   extends ShortcutsServices
@@ -24,7 +24,10 @@ class ShortcutsServicesImpl
         shortcuts map { resolveInfo =>
           val activityInfo = resolveInfo.activityInfo
           val componentName = new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name)
-          val drawable = Try(context.getPackageManager.getActivityIcon(componentName)).toOption
+          val drawable = Try(context.getPackageManager.getActivityIcon(componentName)) match {
+            case Success(result) => Some(result)
+            case Failure(e) => None
+          }
           val intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
           intent.addCategory(Intent.CATEGORY_DEFAULT)
           intent.setComponent(componentName)
