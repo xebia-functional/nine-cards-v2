@@ -118,7 +118,7 @@ trait WizardDOM {
     (items count (_.isCheck), items.length)
   }
 
-  def getCollectionsSelected: Seq[PackagesByCategory] = getWizardCheckBoxes flatMap(_.getData)
+  def getCollectionsSelected: Seq[PackagesByCategory] = getWizardCheckBoxes flatMap(_.getDataIfSelected)
 
   def getWifisSelected: Seq[(NineCardsMoment, Option[String])] =
     getWizardWifiCheckBoxes flatMap (widget =>
