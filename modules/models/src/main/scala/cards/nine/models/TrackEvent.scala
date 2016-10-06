@@ -1,8 +1,10 @@
 package cards.nine.models
 
+import cards.nine.models.types.{Value, Action, Screen, Category}
+
 case class TrackEvent(
-  screen: String,
-  category: String,
-  action: String,
+  screen: Screen,
+  category: Category,
+  action: Action,
   label: Option[String] = None,
-  value: Option[Long] = None)
+  value: Option[Value] = None)
