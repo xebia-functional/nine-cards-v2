@@ -1,16 +1,9 @@
 package cards.nine.process.device.models
 
-import android.content.Intent
-import android.graphics.drawable.Drawable
 import cards.nine.models.Call
 import cards.nine.models.types.{DockType, EmailCategory, PhoneCategory}
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.types.WidgetResizeMode
-
-case class Shortcut (
-  title: String,
-  icon: Option[Drawable],
-  intent: Intent)
 
 case class LastCallsContact(
   hasContact: Boolean,

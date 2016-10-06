@@ -251,7 +251,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
     card.packageName foreach { packageName =>
-      val category = moment map MomentCategory getOrElse types.FreeCategory
+      val category = moment map MomentCategory getOrElse FreeCategory
       di.trackEventProcess.openAppFromAppDrawer(packageName, category).resolveAsync2()
     }
     actions.closeAppsMoment().run

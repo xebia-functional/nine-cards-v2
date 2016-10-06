@@ -3,7 +3,7 @@ package cards.nine.process.device
 import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{Contact, ApplicationData}
+import cards.nine.models.{Shortcut, Contact, ApplicationData}
 import cards.nine.models.types.DockType
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models._
@@ -71,7 +71,7 @@ trait DeviceProcess {
   /**
     * Get the available applications that contain shortcuts creating Intents and Drawables necessaries for UI actions
     *
-    * @return the Seq[cards.nine.process.device.models.Shortcut] contains
+    * @return the Seq[cards.nine.models.Shortcut] contains
     *         information about shortcut with the Intents and Drawables for UI actions
     * @throws ShortcutException if exist some problem getting the shortcuts in the cell phone
     */

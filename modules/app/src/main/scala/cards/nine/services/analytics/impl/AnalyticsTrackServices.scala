@@ -12,12 +12,12 @@ class AnalyticsTrackServices(tracker: Tracker)
 
   override def trackEvent(event: TrackEvent) = TaskService {
     CatchAll[TrackServicesException] {
-      tracker.setScreenName(event.screen)
+      tracker.setScreenName(event.screen.name)
       val eventBuilder = new HitBuilders.EventBuilder()
-      eventBuilder.setCategory(event.category)
-      eventBuilder.setAction(event.action)
+      eventBuilder.setCategory(event.category.name)
+      eventBuilder.setAction(event.action.name)
       event.label foreach eventBuilder.setLabel
-      event.value foreach eventBuilder.setValue
+      event.value.map(_.value) foreach eventBuilder.setValue
       tracker.send(eventBuilder.build())
     }
   }

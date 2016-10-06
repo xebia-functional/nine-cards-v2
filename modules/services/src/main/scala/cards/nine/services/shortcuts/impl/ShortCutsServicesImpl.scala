@@ -1,6 +1,6 @@
 package cards.nine.services.shortcuts.impl
 
-import android.content.Intent
+import android.content.{ComponentName, Intent}
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
@@ -8,6 +8,7 @@ import cards.nine.models.Shortcut
 import cards.nine.services.shortcuts.{ImplicitsShortcutsExceptions, ShortcutServicesException, ShortcutsServices}
 
 import scala.collection.JavaConversions._
+import scala.util.Try
 
 class ShortcutsServicesImpl
   extends ShortcutsServices
@@ -22,12 +23,17 @@ class ShortcutsServicesImpl
 
         shortcuts map { resolveInfo =>
           val activityInfo = resolveInfo.activityInfo
+          val componentName = new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name)
+          val drawable = Try(context.getPackageManager.getActivityIcon(componentName)).toOption
+          val intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
+          intent.addCategory(Intent.CATEGORY_DEFAULT)
+          intent.setComponent(componentName)
           Shortcut(
             title = resolveInfo.loadLabel(packageManager).toString,
-            icon = activityInfo.icon,
-            name = activityInfo.name,
-            packageName = activityInfo.applicationInfo.packageName)
+            icon = drawable,
+            intent = intent)
         } sortBy (_.title)
       }
     }
+
 }

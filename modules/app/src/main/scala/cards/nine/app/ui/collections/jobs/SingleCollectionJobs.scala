@@ -9,9 +9,8 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types
-import cards.nine.models.types.AppCardType
+import cards.nine.models.types.{MomentCategory, AppCardType}
 import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.trackevent.models._
 import cats.syntax.either._
 import macroid.ActivityContextWrapper
 import monix.eval.Task
