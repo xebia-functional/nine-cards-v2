@@ -27,7 +27,7 @@ class NewConfigurationJobs(
 
   def loadBetterCollections(): TaskService[Unit] =
     for {
-      _ <- visibilityUiActions.showLoadingBetterCollections()
+      _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections()
       collections <- di.collectionProcess.rankApps()
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ <- visibilityUiActions.showNewConfiguration()
@@ -62,7 +62,7 @@ class NewConfigurationJobs(
     }
 
     for {
-      _ <- visibilityUiActions.showLoadingSavingCollection()
+      _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ <- di.collectionProcess.createCollectionsFromFormedCollections(toFormedCollection(apps))
       _ <- di.deviceProcess.generateDockApps(defaultDockAppsSize)
@@ -73,7 +73,7 @@ class NewConfigurationJobs(
 
   def loadMomentWithWifi(): TaskService[Unit] =
     for {
-      _ <- visibilityUiActions.cleanStep()
+      _ <- visibilityUiActions.hideThirdStep()
       wifis <- di.deviceProcess.getConfiguredNetworks
       _ <- actions.loadFourthStep(wifis, Seq(
         (HomeMorningMoment, true),
@@ -96,9 +96,8 @@ class NewConfigurationJobs(
           widgets = None)
     }
     for {
-      _ <- visibilityUiActions.showLoadingSavingMoments()
+      _ <- visibilityUiActions.fadeOutInAllChildInStep
       _ <- di.momentProcess.saveMoments(request)
-      _ <- visibilityUiActions.showNewConfiguration()
       _ <- actions.loadFifthStep()
     } yield ()
   }

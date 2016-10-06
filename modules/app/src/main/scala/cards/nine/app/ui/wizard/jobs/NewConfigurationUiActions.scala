@@ -7,6 +7,7 @@ import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.app.{DialogFragment, Fragment, FragmentManager}
 import android.text.Html
 import android.view.ViewGroup.LayoutParams._
+import android.view.animation.DecelerateInterpolator
 import android.view.{LayoutInflater, View}
 import android.widget.ImageView
 import android.widget.LinearLayout.LayoutParams
@@ -22,6 +23,7 @@ import cards.nine.app.ui.components.widgets.tweaks.WizardWifiCheckBoxTweaks._
 import cards.nine.app.ui.components.widgets.{WizardCheckBox, WizardMomentCheckBox, WizardWifiCheckBox}
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
+import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.models.types._
 import cards.nine.process.collection.models.PackagesByCategory
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -32,6 +34,8 @@ import com.fortysevendeg.ninecardslauncher2.R
 import cards.nine.app.ui.commons.SafeUi._
 import macroid.FullDsl._
 import macroid._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
   (implicit
@@ -44,6 +48,10 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
   val numberOfScreens = 6
 
   val tagDialog = "dialog"
+
+  val padding = resGetDimensionPixelSize(R.dimen.padding_large)
+
+  lazy val defaultInterpolator = new DecelerateInterpolator(.7f)
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -60,6 +68,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
+      firstStepChoreographyIn ~
       createPagers() ~
       selectPager(firstStep, resColor) ~
       (dom.newConfigurationNext <~
@@ -117,6 +126,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       (dom.newConfigurationStep1CollectionCount <~ tvText(counter)) ~
       (dom.newConfigurationStep1CollectionsContent <~ vgAddViews(collectionViews, params)) ~
       (dom.newConfigurationStep1Description <~ tvText(Html.fromHtml(description))) ~
+      (dom.newConfigurationStep <~~ applyFadeIn()) ~~
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onSaveCollections(dom.getCollectionsSelected, best9Apps = dom.newConfigurationStep1Best9.isCheck))) <~
         tvColorResource(resColor))).toService
@@ -130,6 +140,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       (dom.newConfigurationStep2Description <~ tvText(Html.fromHtml(resGetString(R.string.wizard_new_conf_desc_step_2)))) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
+      thirdStepChoreographyIn ~
       selectPager(thirdStep, resColor) ~
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onLoadWifiByMoment())) <~
@@ -205,6 +216,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
       (dom.newConfigurationStep5GoTo9Cards <~ On.click(Ui(dom.onClickFinishWizardButton()))) ~
+      sixthStepChoreographyIn ~
       (dom.newConfigurationPagers <~ vGone) ~
       (dom.newConfigurationNext <~ vGone)).toService
   }
@@ -248,5 +260,60 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
     ft.addToBackStack(javaNull)
     dialog.show(ft, tagDialog)
   }
+
+  private[this] def firstStepChoreographyIn = {
+    (dom.newConfigurationStep0HeaderImage <~ vInvisible) ~
+      (dom.newConfigurationStep0Title <~ vInvisible) ~
+      (dom.newConfigurationStep0Description <~ vInvisible) ~
+      (dom.newConfigurationStep0HeaderContent <~
+        vPivotY(0) <~
+        vAlpha(0) <~
+        vScaleY(0) <~~
+        applyAnimation(alpha = Some(1), scaleY = Some(1), interpolator = Some(defaultInterpolator))) ~~
+      (dom.newConfigurationStep0HeaderImage <~~ slideUp) ~~
+      (dom.newConfigurationStep0Title <~~ slideUp) ~~
+      (dom.newConfigurationStep0Description <~ slideUp)
+  }
+
+  private[this] def thirdStepChoreographyIn = {
+    (dom.newConfigurationStep2HeaderImage1 <~ vInvisible) ~
+      (dom.newConfigurationStep2HeaderImage2 <~ vInvisible) ~
+      (dom.newConfigurationStep2Title <~ vInvisible) ~
+      (dom.newConfigurationStep2Description <~ vInvisible) ~
+      (dom.newConfigurationStep2HeaderContent <~
+        vPivotY(0) <~
+        vAlpha(0) <~
+        vScaleY(0) <~~
+        applyAnimation(alpha = Some(1), scaleY = Some(1), interpolator = Some(defaultInterpolator))) ~~
+      (dom.newConfigurationStep2HeaderImage1 <~~ slideLeft) ~~
+      (dom.newConfigurationStep2HeaderImage2 <~~ slideRight) ~~
+      (dom.newConfigurationStep2Title <~~ slideUp) ~~
+      (dom.newConfigurationStep2Description <~ slideUp)
+  }
+
+  private[this] def sixthStepChoreographyIn = {
+    (dom.newConfigurationStep5HeaderImage <~ vInvisible) ~
+      (dom.newConfigurationStep5Title <~ vInvisible) ~
+      (dom.newConfigurationStep5Description <~ vInvisible) ~
+      (dom.newConfigurationStep5GoTo9Cards <~ vInvisible) ~
+      (dom.newConfigurationStep5HeaderContent <~
+        vPivotY(0) <~
+        vAlpha(0) <~
+        vScaleY(0) <~~
+        applyAnimation(alpha = Some(1), scaleY = Some(1), interpolator = Some(defaultInterpolator))) ~~
+      (dom.newConfigurationStep5HeaderImage <~~ slideUp) ~~
+      (dom.newConfigurationStep5Title <~~ slideUp) ~~
+      (dom.newConfigurationStep5Description <~ slideUp) ~~
+      (dom.newConfigurationStep5GoTo9Cards <~ slideUp)
+  }
+
+  private[this] def slideUp: Snail[View] =
+    vVisible + vAlpha(0) + vTranslationY(padding) ++ applyAnimation(alpha = Some(1), y = Some(0), interpolator = Some(defaultInterpolator))
+
+  private[this] def slideLeft: Snail[View] =
+    vVisible + vAlpha(0) + vTranslationX(-padding) ++ applyAnimation(alpha = Some(1), x = Some(0), interpolator = Some(defaultInterpolator))
+
+  private[this] def slideRight: Snail[View] =
+    vVisible + vAlpha(0) + vTranslationX(padding) ++ applyAnimation(alpha = Some(1), x = Some(0), interpolator = Some(defaultInterpolator))
 
 }

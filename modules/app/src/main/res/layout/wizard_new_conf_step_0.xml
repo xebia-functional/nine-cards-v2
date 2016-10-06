@@ -3,17 +3,21 @@
               style="@style/WizardNewConfigurationStepContent">
 
     <FrameLayout
+        android:id="@+id/wizard_steps_new_configuration_step0_header_content"
         style="@style/WizardNewConfigurationHeaderContentStep0">
 
         <ImageView
+            android:id="@+id/wizard_steps_new_configuration_step0_header_image"
             style="@style/WizardNewConfigurationHeaderImageStep0"/>
 
     </FrameLayout>
 
     <TextView
+        android:id="@+id/wizard_steps_new_configuration_step0_title"
         style="@style/WizardNewConfigurationTitleStep0"/>
 
     <TextView
+        android:id="@+id/wizard_steps_new_configuration_step0_description"
         style="@style/WizardNewConfigurationDescriptionStep0"/>
 
 </LinearLayout>
