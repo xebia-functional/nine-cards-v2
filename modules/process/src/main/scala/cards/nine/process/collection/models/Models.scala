@@ -3,12 +3,6 @@ package cards.nine.process.collection.models
 import cards.nine.models.types.{CollectionType, NineCardCategory, NineCardsMoment}
 import cards.nine.process.commons.models.{FormedWidget, MomentTimeSlot}
 
-case class UnformedContact(
-  name: String,
-  lookupKey: String,
-  photoUri: String,
-  info: Option[ContactInfo] = None)
-
 case class ContactInfo(
   emails: Seq[ContactEmail],
   phones: Seq[ContactPhone])

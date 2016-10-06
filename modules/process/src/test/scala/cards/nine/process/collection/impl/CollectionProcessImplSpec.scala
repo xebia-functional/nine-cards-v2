@@ -185,54 +185,6 @@ class CollectionProcessImplSpec
       }
   }
 
-  "createCollectionsFromUnformedItems" should {
-
-    "the size of collections should be equal to size of categories" in
-      new CollectionProcessScope {
-
-        val collections: Seq[Collection] = Seq(collectionForUnformedItem, collectionForUnformedItem)
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
-        mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.right(collections)))
-
-        val result = collectionProcess.createCollectionsFromUnformedItems(apps, unformedContacts)(contextSupport).value.run
-        result must beLike {
-          case Right(resultSeqCollection) =>
-            resultSeqCollection.size shouldEqual categoriesUnformedItems.size
-        }
-      }
-
-    "returns CollectionExceptionImpl when persistence services fails" in
-      new CollectionProcessScope {
-
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.left(persistenceServiceException)))
-        mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-
-        val result = collectionProcess.createCollectionsFromUnformedItems(apps, unformedContacts)(contextSupport).value.run
-        result must beAnInstanceOf[Left[CollectionException, _]]
-      }
-
-    "the size of collections should be equal to size of categories with contact collection" in
-      new CollectionProcessScope {
-
-        val collections: Seq[Collection] = Seq(collectionForUnformedItem, collectionForUnformedItem)
-
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
-        mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.right(collections)))
-        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(seqContacts)))
-
-        val tasks = seqContactsWithPhones map (contact => TaskService(Task(Either.right(contact))))
-        mockContactsServices.findContactByLookupKey(anyString) returns(tasks(0), tasks.tail: _*)
-
-
-        val result = collectionProcess.createCollectionsFromUnformedItems(apps, unformedContacts)(contextSupport).value.run
-        result must beLike {
-          case Right(resultSeqCollection) =>
-            resultSeqCollection.size shouldEqual categoriesUnformedItems.size
-        }
-      }
-
-  }
-
   "createCollectionsFromFormedCollections" should {
 
     "the size of collections should be equal to size of collections passed by parameter" in

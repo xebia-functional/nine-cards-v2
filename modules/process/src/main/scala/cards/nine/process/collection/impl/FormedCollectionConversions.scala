@@ -86,61 +86,6 @@ trait FormedCollectionConversions
     )
   }
 
-  def createCollections(
-    apps: Seq[ApplicationData],
-    contacts: Seq[UnformedContact],
-    categories: Seq[NineCardCategory],
-    minApps: Int): Seq[AddCollectionRequest] = {
-    val collections = generateAddCollections(apps, categories, Seq.empty)
-    if (contacts.length > minApps) collections :+ toAddCollectionRequestByContact(contacts.take(numSpaces), collections.length)
-    else collections
-  }
-
-  @tailrec
-  private[this] def generateAddCollections(
-    items: Seq[ApplicationData],
-    categories: Seq[NineCardCategory],
-    acc: Seq[AddCollectionRequest]): Seq[AddCollectionRequest] = categories match {
-      case Nil => acc
-      case h :: t =>
-        val insert = generateAddCollection(items, h, acc.length)
-        val a = if (insert.cards.length >= minAppsToAdd) acc :+ insert else acc
-        generateAddCollections(items, t, a)
-    }
-
-  private[this] def generateAddCollection(items: Seq[ApplicationData], category: NineCardCategory, position: Int): AddCollectionRequest = {
-    // TODO We should sort the application using an endpoint in the new sever
-    val appsCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
-    val themeIndex = if (position >= numSpaces) position % numSpaces else position
-    AddCollectionRequest(
-      position = position,
-      name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
-      collectionType = AppsCollectionType.name,
-      icon = category.getIconResource,
-      themedColorIndex = themeIndex,
-      appsCategory = Some(category.name),
-      sharedCollectionSubscribed = Option(false),
-      cards = toAddCardRequestSeq(appsCategory),
-      moment = None
-    )
-  }
-
-  def toAddCollectionRequestByContact(contacts: Seq[UnformedContact], position: Int): AddCollectionRequest = {
-    val category = ContactsCategory
-    val themeIndex = if (position >= numSpaces) position % numSpaces else position
-    AddCollectionRequest(
-      position = position,
-      name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
-      collectionType = ContactsCollectionType.name,
-      icon = category.getIconResource,
-      themedColorIndex = themeIndex,
-      appsCategory = None,
-      sharedCollectionSubscribed = Option(false),
-      cards = toAddCardRequestByContacts(contacts),
-      moment = None
-    )
-  }
-
   def adaptCardsToAppsInstalled(formedCollections: Seq[FormedCollection], apps: Seq[ApplicationData]): Seq[FormedCollection] =
     formedCollections map { fc =>
       val itemsWithPath = fc.items map { item =>
