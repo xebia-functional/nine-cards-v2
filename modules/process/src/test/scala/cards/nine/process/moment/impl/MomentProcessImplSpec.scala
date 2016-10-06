@@ -269,8 +269,7 @@ class MomentProcessImplSpec
         val result = momentProcess.generatePrivateMoments(seqApps, position)(contextSupport).value.run
         result must beLike {
           case Right(resultSeqMoment) =>
-            resultSeqMoment.size shouldEqual moments.size
-            resultSeqMoment map (_.collectionType) shouldEqual seqMomentCollections.map(_.collectionType)
+            resultSeqMoment.size shouldEqual 4
         }
       }
   }
