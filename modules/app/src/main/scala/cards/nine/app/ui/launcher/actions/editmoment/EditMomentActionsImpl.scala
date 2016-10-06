@@ -3,16 +3,12 @@ package cards.nine.app.ui.launcher.actions.editmoment
 import android.support.v4.app.DialogFragment
 import android.view.Gravity
 import android.widget.TextView
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import cards.nine.app.ui.commons.ExtraTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.CollectionOps._
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
@@ -21,8 +17,13 @@ import cards.nine.app.ui.components.layouts.tweaks.EditWifiMomentLayoutTweaks._
 import cards.nine.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}
 import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

@@ -6,9 +6,9 @@ import android.view.Gravity
 import android.widget.FrameLayout.LayoutParams
 import android.widget.{FrameLayout, ImageView}
 import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.{GenericUiContext, UiContext}
 import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.Widget
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
