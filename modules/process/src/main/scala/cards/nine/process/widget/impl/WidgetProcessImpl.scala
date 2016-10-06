@@ -1,11 +1,10 @@
 package cards.nine.process.widget.impl
 
 import cards.nine.commons.NineCardExtensions._
-import cards.nine.process.widget.{AddWidgetRequest, _}
-import cards.nine.process.widget.models.AppWidget
-import cards.nine.services.persistence.{DeleteWidgetRequest => ServicesDeleteWidgetRequest, _}
 import cards.nine.commons.services.TaskService._
-
+import cards.nine.models.AppWidget
+import cards.nine.process.widget.{AddWidgetRequest, _}
+import cards.nine.services.persistence.{DeleteWidgetRequest => ServicesDeleteWidgetRequest, _}
 
 class WidgetProcessImpl(
   val persistenceServices: PersistenceServices)

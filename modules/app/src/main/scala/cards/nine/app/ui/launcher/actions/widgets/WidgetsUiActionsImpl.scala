@@ -7,6 +7,7 @@ import android.widget.{ImageView, LinearLayout, TextView}
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
+import cards.nine.app.ui.commons.ops.WidgetsOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.models.Widget

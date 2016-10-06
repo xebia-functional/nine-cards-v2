@@ -8,9 +8,6 @@ import android.view.View
 import android.view.ViewGroup.LayoutParams._
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -19,13 +16,16 @@ import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.drawables.DottedDrawable
 import cards.nine.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import cards.nine.app.ui.components.models.LauncherMoment
-import cards.nine.app.ui.components.widgets.{LauncherNoConfiguredWidgetView, LauncherWidgetView}
 import cards.nine.app.ui.components.widgets.LauncherWidgetView._
+import cards.nine.app.ui.components.widgets.{LauncherNoConfiguredWidgetView, LauncherWidgetView}
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons._
+import cards.nine.models.AppWidget
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.process.widget.models.AppWidget
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._

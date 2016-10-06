@@ -1,7 +1,7 @@
 package cards.nine.process.widget
 
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.widget.models._
+import cards.nine.models.AppWidget
 
 trait WidgetProcess {
 

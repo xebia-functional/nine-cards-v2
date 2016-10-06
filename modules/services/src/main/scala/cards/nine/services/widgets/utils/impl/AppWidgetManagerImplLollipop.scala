@@ -1,11 +1,14 @@
-package cards.nine.models.utils.impl
+package cards.nine.services.widgets.utils.impl
 
 import android.appwidget.{AppWidgetManager, AppWidgetProviderInfo}
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.{UserHandle, UserManager}
-import cards.nine.models.utils.AppWidgetManagerCompat
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.services.widgets.utils.AppWidgetManagerCompat
 import cards.nine.models.{Conversions, Widget}
+
+import scala.collection.JavaConversions._
 
 class AppWidgetManagerImplLollipop(implicit contextSupport: ContextSupport)
   extends AppWidgetManagerCompat
