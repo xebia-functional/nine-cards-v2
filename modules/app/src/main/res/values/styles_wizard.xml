@@ -288,6 +288,36 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
+    <!-- Wizard Moment Checkbox -->
+
+    <style name="WizardMomentCheckboxRoot">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="WizardMomentCheckboxIconContent">
+        <item name="android:layout_width">@dimen/wizard_size_moment_checkbox</item>
+        <item name="android:layout_height">@dimen/wizard_size_moment_checkbox</item>
+    </style>
+
+    <style name="WizardMomentCheckboxIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="WizardMomentCheckboxName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:textColor">@color/wizard_text_title</item>
+        <item name="android:layout_marginTop">@dimen/padding_large</item>
+    </style>
+
     <!-- New configuration -->
 
     <style name="WizardNewConfigurationRoot">
@@ -496,6 +526,18 @@
 
     <style name="WizardNewConfigurationDescriptionStep4" parent="WizardNewConfigurationDescription">
         <item name="android:text">@string/wizard_new_conf_description_step_4</item>
+    </style>
+
+    <style name="WizardNewConfigurationContentMomentsStep4">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="WizardNewConfigurationCheckStep4">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
 </resources>

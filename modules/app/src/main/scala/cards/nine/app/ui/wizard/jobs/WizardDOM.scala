@@ -61,6 +61,14 @@ trait WizardDOM {
 
   def newConfigurationStep3WifiContent = finder.findView(TR.wizard_steps_new_configuration_step3_wifi_content)
 
+  def newConfigurationStep4Music = finder.findView(TR.wizard_moment_step4_music)
+
+  def newConfigurationStep4Car = finder.findView(TR.wizard_moment_step4_car)
+
+  def newConfigurationStep4Running = finder.findView(TR.wizard_moment_step4_running)
+
+  def newConfigurationStep4Bike = finder.findView(TR.wizard_moment_step4_bike)
+
   def getWizardCheckBoxes: Seq[WizardCheckBox] = (0 to newConfigurationStep1CollectionsContent.getChildCount) flatMap { position =>
     newConfigurationStep1CollectionsContent.getChildAt(position) match {
       case widget: WizardCheckBox => Some(widget)
@@ -90,6 +98,14 @@ trait WizardDOM {
         case (true, Some(moment), wifiName) => Option(moment, wifiName)
         case _ => None
       })
+
+  def getMomentsSelected: Seq[NineCardsMoment] =
+    Seq(
+      newConfigurationStep4Music.getMomentIfSelected,
+      newConfigurationStep4Car.getMomentIfSelected,
+      newConfigurationStep4Running.getMomentIfSelected,
+      newConfigurationStep4Bike.getMomentIfSelected
+    ).flatten
 
 }
 
@@ -125,6 +141,8 @@ trait WizardUiListener {
 
   def onLoadWifiByMoment(): Unit
 
-  def onSaveMoments(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit
+  def onSaveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit
+
+  def onSaveMoments(moments: Seq[NineCardsMoment]): Unit
 
 }

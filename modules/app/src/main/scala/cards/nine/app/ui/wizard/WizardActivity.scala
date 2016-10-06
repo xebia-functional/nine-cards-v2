@@ -158,9 +158,11 @@ class WizardActivity
   override def onLoadWifiByMoment(): Unit =
     newConfigurationJobs.loadMomentWithWifi().resolveAsync()
 
-  override def onSaveMoments(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit =
+  override def onSaveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit =
     newConfigurationJobs.saveMoments(infoMoment).resolveAsyncServiceOr(_ =>
       wizardUiActions.showErrorGeneral() *> newConfigurationJobs.loadMomentWithWifi())
+
+  override def onSaveMoments(moments: Seq[NineCardsMoment]): Unit = {}
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
     case ex: SocialProfileProcessException if ex.recoverable => wizardJobs.googleSignIn()

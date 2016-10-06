@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/WizardMomentCheckboxRoot">
+
+    <FrameLayout
+        android:id="@+id/wizard_moment_check_content"
+        style="@style/WizardMomentCheckboxIconContent">
+
+        <ImageView
+            android:id="@+id/wizard_moment_check_icon"
+            style="@style/WizardMomentCheckboxIcon"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/wizard_moment_check_name"
+        style="@style/WizardMomentCheckboxName"/>
+
+</LinearLayout>

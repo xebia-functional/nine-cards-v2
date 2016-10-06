@@ -1,8 +1,6 @@
 package cards.nine.models.types
 
-import cards.nine.models.types.NineCardsMoments._
-
-sealed trait NineCardsMoment{
+sealed trait NineCardsMoment {
   val name: String
 
   def getIconResource : String = name.toLowerCase
