@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import cards.nine.app.commons.BroadcastDispatcher._
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import cards.nine.app.ui.commons.WizardState._
 import cards.nine.app.ui.commons.action_filters._
@@ -57,6 +56,8 @@ class WizardActivity
       wizardJobs.serviceCloudIdAlreadySetError().resolveAsync()
     case (WizardStateActionFilter, Some(`stateUserEmailNotPresent`)) =>
       wizardJobs.serviceUserEmailNotFoundError().resolveAsync()
+    case (WizardStateActionFilter, Some(`stateEmptyDevice`)) =>
+      wizardJobs.serviceEmptyDeviceError().resolveAsync()
     case (WizardStateActionFilter, Some(`stateFailure`)) =>
       wizardJobs.serviceUnknownError().resolveAsync()
     case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) =>
