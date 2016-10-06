@@ -2,36 +2,6 @@ package cards.nine.services.persistence
 
 import cards.nine.models._
 
-sealed trait FetchAppOrder
-
-case object OrderByName extends FetchAppOrder
-
-case object OrderByInstallDate extends FetchAppOrder
-
-case object OrderByCategory extends FetchAppOrder
-
-case class AddMomentRequest(
-  collectionId: Option[Int],
-  timeslot: Seq[MomentTimeSlot],
-  wifi: Seq[String],
-  headphone: Boolean,
-  momentType: Option[String],
-  widgets: Seq[SaveWidgetRequest])
-
-case class DeleteMomentsRequest(where: String)
-
-case class DeleteMomentRequest(moment: Moment)
-
-case class FindMomentByIdRequest(id: Int)
-
-case class UpdateMomentRequest(
-  id: Int,
-  collectionId: Option[Int],
-  timeslot: Seq[MomentTimeSlot],
-  wifi: Seq[String],
-  headphone: Boolean,
-  momentType: Option[String])
-
 case class AddWidgetRequest(
   momentId: Int,
   packageName: String,
@@ -58,8 +28,6 @@ case class SaveWidgetRequest(
   label: Option[String],
   imagePath: Option[String],
   intent: Option[String])
-
-case class DeleteWidgetsRequest(where: String)
 
 case class DeleteWidgetRequest(widget: PersistenceWidget)
 

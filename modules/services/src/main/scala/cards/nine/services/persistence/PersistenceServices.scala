@@ -468,20 +468,20 @@ trait PersistenceServices {
   /**
     * Adds an moment to the repository
     *
-    * @param request includes the necessary data to create a new moment in the repository
+    * @param moment includes the necessary data to create a new moment in the repository
     * @return the cards.nine.services.persistence.models.Moment
     * @throws PersistenceServiceException if exist some problem creating the moment
     */
-  def addMoment(request: AddMomentRequest): TaskService[Moment]
+  def addMoment(moment: MomentData, widgets: Seq[SaveWidgetRequest]): TaskService[Moment]
 
   /**
     * Adds moments to the repository
     *
-    * @param request includes the necessary data to create new moments in the repository
+    * @param moments includes the necessary data to create new moments in the repository
     * @return the Seq[cards.nine.services.persistence.models.Moment]
     * @throws PersistenceServiceException if exist some problem creating the moments
     */
-  def addMoments(request: Seq[AddMomentRequest]): TaskService[Seq[Moment]]
+  def addMoments(moments: Seq[MomentData]): TaskService[Seq[Moment]]
 
   /**
     * Deletes all moments from the repository by the where clause
@@ -494,11 +494,11 @@ trait PersistenceServices {
   /**
     * Deletes an moment from the repository by the moment
     *
-    * @param request includes the moment to delete
+    * @param moment includes the moment to delete
     * @return an Int if the moment has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the moment
     */
-  def deleteMoment(request: DeleteMomentRequest): TaskService[Int]
+  def deleteMoment(moment: Moment): TaskService[Int]
 
   /**
     * Obtains all the moments from the repository
@@ -511,11 +511,11 @@ trait PersistenceServices {
   /**
     * Obtains an moment from the repository by the id
     *
-    * @param request includes the moment id  of the moment to get
+    * @param momentId the moment id  of the moment to get
     * @return an Option[cards.nine.services.persistence.models.Moment]
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
-  def findMomentById(request: FindMomentByIdRequest): TaskService[Option[Moment]]
+  def findMomentById(momentId: Int): TaskService[Option[Moment]]
 
   /**
     * Obtains an moment from the repository by type. Return exception if the type doesn't exist
@@ -539,11 +539,11 @@ trait PersistenceServices {
   /**
     * Updates the data of an moment from the repository
     *
-    * @param request includes the data to update the moment
+    * @param moment includes the data to update the moment
     * @return an Int if the moment has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the moment
     */
-  def updateMoment(request: UpdateMomentRequest): TaskService[Int]
+  def updateMoment(moment: Moment): TaskService[Int]
 
   /**
     * Add a widget to the repository
