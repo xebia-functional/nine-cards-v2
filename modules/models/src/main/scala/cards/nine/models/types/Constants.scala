@@ -1,4 +1,4 @@
-package cards.nine.models
+package cards.nine.models.types
 
 object NineCardCategories {
   val allApps: String = "ALL_APPS"

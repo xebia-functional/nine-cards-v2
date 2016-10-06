@@ -1,11 +1,12 @@
 package cards.nine.services.awareness.impl
 
 import android.location.{Address, Geocoder}
-import cats.syntax.either._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models._
 import cards.nine.services.awareness._
+import cats.syntax.either._
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.awareness.snapshot.{DetectedActivityResult, HeadphoneStateResult, LocationResult, WeatherResult}
 import com.google.android.gms.awareness.state.{HeadphoneState, Weather}
@@ -20,7 +21,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
   override def getTypeActivity =
     TaskService {
-      Task.async[AwarenessException Either TypeActivity] { (scheduler, callback) =>
+      Task.async[AwarenessException Either ProbablyActivity] { (scheduler, callback) =>
         Awareness.SnapshotApi.getDetectedActivity(client)
           .setResultCallback(new ResultCallback[DetectedActivityResult]() {
             override def onResult(detectedActivityResult: DetectedActivityResult): Unit = {
@@ -28,7 +29,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
                 case Some(result) if result.getStatus.isSuccess =>
                   Option(result.getActivityRecognitionResult) match {
                     case Some(recognition) if Option(recognition.getMostProbableActivity).isDefined =>
-                      callback(Success(Either.right(TypeActivity(KindActivity(recognition.getMostProbableActivity.getType)))))
+                      callback(Success(Either.right(ProbablyActivity(KindActivity(recognition.getMostProbableActivity.getType)))))
                     case _ => callback(Success(Either.left(AwarenessException("Most probable activity not found"))))
                   }
                 case _ =>
@@ -43,7 +44,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
   override def getHeadphonesState =
     TaskService {
-      Task.async[AwarenessException Either HeadphonesState] { (scheduler, callback) =>
+      Task.async[AwarenessException Either Headphones] { (scheduler, callback) =>
         Awareness.SnapshotApi.getHeadphoneState(client)
           .setResultCallback(new ResultCallback[HeadphoneStateResult]() {
             override def onResult(headphoneStateResult: HeadphoneStateResult): Unit = {
@@ -51,7 +52,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
                 case Some(result) if result.getStatus.isSuccess =>
                   Option(result.getHeadphoneState) match {
                     case Some(headphoneState) =>
-                      callback(Success(Either.right(HeadphonesState(headphoneState.getState == HeadphoneState.PLUGGED_IN))))
+                      callback(Success(Either.right(Headphones(headphoneState.getState == HeadphoneState.PLUGGED_IN))))
                     case _ =>
                       callback(Success(Either.left(AwarenessException("Headphone state not found"))))
                   }
@@ -64,7 +65,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
       }
     }
 
-  override def getLocation(implicit contextSupport: ContextSupport): TaskService[AwarenessLocation] = {
+  override def getLocation(implicit contextSupport: ContextSupport): TaskService[Location] = {
 
     def getCurrentLocation =
       TaskService {
@@ -137,8 +138,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
                         dewPointCelsius = weather.getDewPoint(Weather.CELSIUS),
                         dewPointFahrenheit = weather.getDewPoint(Weather.FAHRENHEIT),
                         temperatureCelsius = weather.getTemperature(Weather.CELSIUS),
-                        temperatureFahrenheit = weather.getTemperature(Weather.FAHRENHEIT)
-                      )
+                        temperatureFahrenheit = weather.getTemperature(Weather.FAHRENHEIT))
                       callback(Success(Either.right(weatherState)))
                     case _ =>
                       callback(Success(Either.left(AwarenessException("Weather not found"))))
@@ -154,7 +154,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
     }
 
   private[this] def toAwarenessLocation(address: Address) =
-    AwarenessLocation(
+    Location(
       latitude = address.getLatitude,
       longitude = address.getLongitude,
       countryCode = Option(address.getCountryCode),

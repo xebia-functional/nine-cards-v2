@@ -1,7 +1,6 @@
 package cards.nine.models.types
 
-import cards.nine.models.DockAppTypes
-import DockAppTypes._
+import cards.nine.models.types.DockAppTypes._
 
 sealed trait DockType {
   val name: String

@@ -4,24 +4,24 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
+import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
+import cards.nine.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
+import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.preferences.commons._
+import cards.nine.commons._
+import cards.nine.models.ConditionWeather
 import cards.nine.models.types.NineCardsMoment
+import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.SnailsCommons._
-import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
-import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
-import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
-import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
-import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.app.ui.preferences.commons._
-import cards.nine.commons._
-import cards.nine.process.recognition._
-import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

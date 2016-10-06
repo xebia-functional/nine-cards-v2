@@ -2,15 +2,12 @@ package cards.nine.process.device
 
 import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.{Application, ApplicationData}
+import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.device.models._
-import cards.nine.process.device.types.{CallType, WidgetResizeMode}
-import cards.nine.services.calls.models.{Call => ServicesCall}
-import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactCounter, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import cards.nine.services.image.{AppPackage, BitmapResize}
+import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
+import cards.nine.process.device.types.WidgetResizeMode
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
 import cards.nine.services.shortcuts.models.{Shortcut => ServicesShortcut}
@@ -50,14 +47,6 @@ trait DeviceConversions extends NineCardIntentConversions {
         dateUpdate = item.dateUpdate,
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
-
-  def toAppPackageSeq(items: Seq[ApplicationData]): Seq[AppPackage] = items map toAppPackage
-
-  def toAppPackage(item: ApplicationData): AppPackage =
-    AppPackage(
-      packageName = item.packageName,
-      className = item.className,
-      name = item.name)
 
   def toCreateOrUpdateDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): CreateOrUpdateDockAppRequest =
     CreateOrUpdateDockAppRequest(
@@ -104,7 +93,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       intent = intent)
   }
 
-  def toSimpleLastCallsContact(number: String, calls: Seq[ServicesCall]): LastCallsContact = {
+  def toSimpleLastCallsContact(number: String, calls: Seq[Call]): LastCallsContact = {
     val (hasContact, name, date) = calls.headOption map { call =>
       (call.name.isDefined, call.name getOrElse number, call.date)
     } getOrElse (false, number, defaultDate)
@@ -113,13 +102,8 @@ trait DeviceConversions extends NineCardIntentConversions {
       number = number,
       title = name,
       lastCallDate = date,
-      calls = calls map toCallData)
+      calls = calls)
   }
-
-  def toCallData(item: ServicesCall): CallData =
-    CallData(
-      date = item.date,
-      callType = CallType(item.callType))
 
   def toTermCounter(item: ContactCounter): TermCounter = TermCounter(
     term = item.term,
@@ -129,25 +113,11 @@ trait DeviceConversions extends NineCardIntentConversions {
     term = item.term,
     count = item.count)
 
-  def toContactSeq(items: Seq[ServicesContact]): Seq[Contact] = items map toContact
-
-  def toContact(item: ServicesContact): Contact = Contact(
-      name = item.name,
-      lookupKey = item.lookupKey,
-      photoUri = item.photoUri,
-      hasPhone = item.hasPhone,
-      favorite = item.favorite,
-      info = item.info map toContactInfo)
-
-  def toContactInfo(item: ServicesContactInfo): ContactInfo = ContactInfo(
-    emails = item.emails map toContactEmail,
-    phones = item.phones map toContactPhone)
-
-  def toContactEmail(item: ServicesContactEmail): ContactEmail = ContactEmail(
+  def toContactEmail(item: ContactEmail): ContactEmail = ContactEmail(
     address = item.address,
     category = item.category)
 
-  def toContactPhone(item: ServicesContactPhone): ContactPhone = ContactPhone(
+  def toContactPhone(item: ContactPhone): ContactPhone = ContactPhone(
     number = item.number,
     category = item.category)
 
@@ -173,10 +143,5 @@ trait DeviceConversions extends NineCardIntentConversions {
     updatePeriodMillis = item.updatePeriodMillis,
     label = item.label,
     preview = item.preview)
-
-  def toBitmapResize(iconResize: IconResize) =
-    BitmapResize(
-      width = iconResize.width,
-      height = iconResize.height)
 
 }

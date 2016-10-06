@@ -25,8 +25,8 @@ import cards.nine.commons._
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.ApplicationData
 import cards.nine.models.types._
+import cards.nine.models.{Contact, ApplicationData, ConditionWeather, UnknownCondition}
 import cards.nine.process.accounts._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection, Moment, _}
@@ -34,7 +34,6 @@ import cards.nine.process.device._
 import cards.nine.process.device.models._
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import cards.nine.process.moment.MomentException
-import cards.nine.process.recognition.{ConditionWeather, UnknownCondition}
 import cards.nine.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
 import cards.nine.process.widget.models.{AppWidget, WidgetArea}
 import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}

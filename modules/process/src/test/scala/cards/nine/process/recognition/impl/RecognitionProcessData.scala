@@ -1,7 +1,6 @@
 package cards.nine.process.recognition.impl
 
-import cards.nine.process.recognition._
-import cards.nine.services
+import cards.nine.models._
 
 import scala.util.Random
 
@@ -19,23 +18,23 @@ trait RecognitionProcessData {
   val temperatureCelsius = Random.nextFloat()
   val temperatureFahrenheit = Random.nextFloat()
 
-  val kindActivityService = services.awareness.InVehicleActivity
+  val kindActivityService = InVehicleActivity
 
   val kindActivityProcess = InVehicleActivity
 
-  val typeActivity = services.awareness.TypeActivity(
+  val typeActivity = ProbablyActivity(
     activityType = kindActivityService)
 
   val probablyActivity = ProbablyActivity(
-    activity = kindActivityProcess)
+    activityType = kindActivityProcess)
 
   val connected = Random.nextBoolean()
 
-  val headphonesState = services.awareness.HeadphonesState(connected = connected)
+  val headphonesState = Headphones(connected = connected)
 
   val headphones = Headphones(connected = connected)
 
-  val awarenessLocation = services.awareness.AwarenessLocation(
+  val awarenessLocation = Location(
     latitude = latitude,
     longitude = longitude,
     countryCode = countryCode,
@@ -50,16 +49,16 @@ trait RecognitionProcessData {
     addressLines = addressLines)
 
   val conditionsServices = Seq(
-    services.awareness.ClearCondition,
-    services.awareness.CloudyCondition,
-    services.awareness.FoggyCondition)
+    ClearCondition,
+    CloudyCondition,
+    FoggyCondition)
 
   val conditionsProcess = Seq(
     ClearCondition,
     CloudyCondition,
     FoggyCondition)
 
-  val weatherState = services.awareness.WeatherState(
+  val weatherState = WeatherState(
     conditions = conditionsServices,
     humidity = humidity,
     dewPointCelsius = dewPointCelsius,
@@ -67,7 +66,7 @@ trait RecognitionProcessData {
     temperatureCelsius = temperatureCelsius,
     temperatureFahrenheit = temperatureFahrenheit)
 
-  val weather = Weather(
+  val weather = WeatherState(
     conditions = conditionsProcess,
     humidity = humidity,
     dewPointCelsius = dewPointCelsius,

@@ -1,7 +1,6 @@
 package cards.nine.models.types
 
-import cards.nine.models.CollectionTypes
-import CollectionTypes._
+import cards.nine.models.types.CollectionTypes._
 
 sealed trait CollectionType {
   val name: String

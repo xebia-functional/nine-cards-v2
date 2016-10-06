@@ -3,7 +3,7 @@ package cards.nine.process.device
 import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.ApplicationData
+import cards.nine.models.{Contact, ApplicationData}
 import cards.nine.models.types.DockType
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models._

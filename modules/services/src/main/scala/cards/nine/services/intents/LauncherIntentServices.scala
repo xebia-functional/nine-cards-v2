@@ -3,7 +3,7 @@ package cards.nine.services.intents
 import android.content.Intent
 import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.services.intents.models.IntentAction
+import cards.nine.models.IntentAction
 
 trait LauncherIntentServices {
 
