@@ -10,37 +10,6 @@ case object OrderByInstallDate extends FetchAppOrder
 
 case object OrderByCategory extends FetchAppOrder
 
-case class AddUserRequest(
-  email: Option[String],
-  apiKey: Option[String],
-  sessionToken: Option[String],
-  deviceToken: Option[String],
-  marketToken: Option[String],
-  name: Option[String],
-  avatar: Option[String],
-  cover: Option[String],
-  deviceName: Option[String],
-  deviceCloudId: Option[String])
-
-case class DeleteUsersRequest(where: String)
-
-case class DeleteUserRequest(user: User)
-
-case class FindUserByIdRequest(id: Int)
-
-case class UpdateUserRequest(
-  id: Int,
-  email: Option[String],
-  apiKey: Option[String],
-  sessionToken: Option[String],
-  deviceToken: Option[String],
-  marketToken: Option[String],
-  name: Option[String],
-  avatar: Option[String],
-  cover: Option[String],
-  deviceName: Option[String],
-  deviceCloudId: Option[String])
-
 case class CreateOrUpdateDockAppRequest(
   name: String,
   dockType: String,

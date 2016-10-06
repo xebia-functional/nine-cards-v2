@@ -1,18 +1,5 @@
 package cards.nine.models
 
-case class User(
-  id: Int,
-  email: Option[String],
-  apiKey: Option[String],
-  sessionToken: Option[String],
-  deviceToken: Option[String],
-  marketToken: Option[String],
-  name: Option[String],
-  avatar: Option[String],
-  cover: Option[String],
-  deviceName: Option[String],
-  deviceCloudId: Option[String])
-
 case class PersistenceDockApp(
   id: Int,
   name: String,

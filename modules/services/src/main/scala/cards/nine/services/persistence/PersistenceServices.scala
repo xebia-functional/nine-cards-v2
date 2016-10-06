@@ -365,11 +365,11 @@ trait PersistenceServices {
   /**
     * Adds an user to the repository
     *
-    * @param request includes the necessary data to create a new user in the repository
+    * @param user includes the necessary data to create a new user in the repository
     * @return the cards.nine.services.persistence.models.User
     * @throws PersistenceServiceException if exist some problem creating the user
     */
-  def addUser(request: AddUserRequest): TaskService[User]
+  def addUser(user: UserData): TaskService[User]
 
   /**
     * Deletes all users from the repository by the where clause
@@ -382,11 +382,11 @@ trait PersistenceServices {
   /**
     * Deletes an user from the repository by the user
     *
-    * @param request includes the user to delete
+    * @param user includes the user to delete
     * @return an Int if the user has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the user
     */
-  def deleteUser(request: DeleteUserRequest): TaskService[Int]
+  def deleteUser(user: User): TaskService[Int]
 
   /**
     * Obtains all the users from the repository
@@ -399,20 +399,20 @@ trait PersistenceServices {
   /**
     * Obtains an user from the repository by the id
     *
-    * @param request includes the user id  of the user to get
+    * @param userId includes the user id  of the user to get
     * @return an Option[cards.nine.services.persistence.models.User]
     * @throws PersistenceServiceException if exist some problem obtaining the user
     */
-  def findUserById(request: FindUserByIdRequest): TaskService[Option[User]]
+  def findUserById(userId: Int): TaskService[Option[User]]
 
   /**
     * Updates the data of an user from the repository
     *
-    * @param request includes the data to update the user
+    * @param user includes the data to update the user
     * @return an Int if the user has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the user
     */
-  def updateUser(request: UpdateUserRequest): TaskService[Int]
+  def updateUser(user: User): TaskService[Int]
 
   /**
     * Creates or updates dock app to the repository

@@ -1,6 +1,6 @@
 package cards.nine.services.persistence.conversions
 
-import cards.nine.models.User
+import cards.nine.models.{UserData, User}
 import cards.nine.repository.model.{User => RepositoryUser, UserData => RepositoryUserData}
 import cards.nine.services.persistence._
 
@@ -50,16 +50,16 @@ trait UserConversions {
         deviceName = request.deviceName,
         deviceCloudId = request.deviceCloudId))
 
-  def toRepositoryUserData(request: AddUserRequest): RepositoryUserData =
+  def toRepositoryUserData(user: UserData): RepositoryUserData =
     RepositoryUserData(
-      email = request.email,
-      apiKey = request.apiKey,
-      sessionToken = request.sessionToken,
-      deviceToken = request.deviceToken,
-      marketToken = request.marketToken,
-      name = request.name,
-      avatar = request.avatar,
-      cover = request.cover,
-      deviceName = request.deviceName,
-      deviceCloudId = request.deviceCloudId)
+      email = user.email,
+      apiKey = user.apiKey,
+      sessionToken = user.sessionToken,
+      deviceToken = user.deviceToken,
+      marketToken = user.marketToken,
+      name = user.name,
+      avatar = user.avatar,
+      cover = user.cover,
+      deviceName = user.deviceName,
+      deviceCloudId = user.deviceCloudId)
 }
