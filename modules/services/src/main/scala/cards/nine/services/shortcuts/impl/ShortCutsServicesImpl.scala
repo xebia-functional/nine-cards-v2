@@ -25,7 +25,7 @@ class ShortcutsServicesImpl
           val activityInfo = resolveInfo.activityInfo
           val componentName = new ComponentName(activityInfo.applicationInfo.packageName, activityInfo.name)
           val drawable = Try(context.getPackageManager.getActivityIcon(componentName)) match {
-            case Success(result) => Some(result)
+            case Success(result) => Option(result)
             case Failure(e) => None
           }
           val intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
