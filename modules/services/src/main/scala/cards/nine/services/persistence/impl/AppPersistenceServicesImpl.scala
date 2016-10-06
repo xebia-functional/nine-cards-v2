@@ -2,6 +2,7 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.repository.provider.AppEntity
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
@@ -31,14 +32,14 @@ trait AppPersistenceServicesImpl extends PersistenceServices {
       app <- appRepository.fetchAppByPackages(packageNames)
     } yield app map toApp).resolve[PersistenceServiceException]
 
-  def addApp(request: AddAppRequest) =
+  def addApp(app: ApplicationData) =
     (for {
-      app <- appRepository.addApp(toRepositoryAppData(request))
+      app <- appRepository.addApp(toRepositoryAppData(app))
     } yield toApp(app)).resolve[PersistenceServiceException]
 
-  def addApps(request: Seq[AddAppRequest]) =
+  def addApps(app: Seq[ApplicationData]) =
     (for {
-      _ <- appRepository.addApps(request map toRepositoryAppData)
+      _ <- appRepository.addApps(app map toRepositoryAppData)
     } yield ()).resolve[PersistenceServiceException]
 
   def deleteAllApps() =
@@ -51,9 +52,9 @@ trait AppPersistenceServicesImpl extends PersistenceServices {
       deleted <- appRepository.deleteAppByPackage(packageName)
     } yield deleted).resolve[PersistenceServiceException]
 
-  def updateApp(request: UpdateAppRequest) =
+  def updateApp(app: Application) =
     (for {
-      updated <- appRepository.updateApp(toRepositoryApp(request))
+      updated <- appRepository.updateApp(toRepositoryApp(app))
     } yield updated).resolve[PersistenceServiceException]
 
   def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true) = {

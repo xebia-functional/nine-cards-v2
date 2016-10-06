@@ -105,20 +105,20 @@ trait PersistenceServices {
   /**
     * Adds an app to the repository
     *
-    * @param request includes the necessary data to create a new app in the repository
+    * @param app includes the necessary data to create a new app in the repository
     * @return the cards.nine.services.persistence.models.App
     * @throws PersistenceServiceException if exist some problem creating the app
     */
-  def addApp(request: AddAppRequest): TaskService[Application]
+  def addApp(app: ApplicationData): TaskService[Application]
 
   /**
     * Adds a sequence of apps to the repository
     *
-    * @param request includes the necessary data to create new apps in the repository
+    * @param app includes the necessary data to create new apps in the repository
     * @return Unit
     * @throws PersistenceServiceException if exist some problem creating apps
     */
-  def addApps(request: Seq[AddAppRequest]): TaskService[Unit]
+  def addApps(app: Seq[ApplicationData]): TaskService[Unit]
 
   /**
     * Deletes all apps from the repository by the where clause
@@ -140,11 +140,11 @@ trait PersistenceServices {
   /**
     * Updates the data of an app from the repository
     *
-    * @param request includes the data to update the app
+    * @param app includes the data to update the app
     * @return an Int if the app has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the app
     */
-  def updateApp(request: UpdateAppRequest): TaskService[Int]
+  def updateApp(app: Application): TaskService[Int]
 
   /**
     * Adds a card to the repository

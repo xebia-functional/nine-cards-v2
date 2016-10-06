@@ -10,29 +10,6 @@ case object OrderByInstallDate extends FetchAppOrder
 
 case object OrderByCategory extends FetchAppOrder
 
-case class AddAppRequest(
-  name: String,
-  packageName: String,
-  className: String,
-  category: String,
-  dateInstalled: Long,
-  dateUpdate: Long,
-  version: String,
-  installedFromGooglePlay: Boolean)
-
-case class DeleteAppsRequest(where: String)
-
-case class UpdateAppRequest(
-  id: Int,
-  name: String,
-  packageName: String,
-  className: String,
-  category: String,
-  dateInstalled: Long,
-  dateUpdate: Long,
-  version: String,
-  installedFromGooglePlay: Boolean)
-
 case class AddCardRequest(
   collectionId: Option[Int] = None,
   position: Int,
