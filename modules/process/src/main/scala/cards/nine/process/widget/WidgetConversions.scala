@@ -1,13 +1,12 @@
 package cards.nine.process.widget
 
 import cards.nine.models.types.WidgetType
-import cards.nine.models.{Widget, WidgetArea}
-import cards.nine.services.persistence.models.{Widget => ServicesWidget}
+import cards.nine.models.{PersistenceWidget, Widget, WidgetArea}
 import cards.nine.services.persistence.{AddWidgetRequest => ServicesAddWidgetRequest, UpdateWidgetRequest => ServicesUpdateWidgetRequest}
 
 trait WidgetConversions {
 
-  def toWidgetSeq(servicesWidgetSeq: Seq[ServicesWidget]) = servicesWidgetSeq map toWidget
+  def toWidgetSeq(servicesWidgetSeq: Seq[PersistenceWidget]) = servicesWidgetSeq map toWidget
 
   def toAddWidgetRequest(addWidgetRequest: AddWidgetRequest): ServicesAddWidgetRequest = ServicesAddWidgetRequest(
     momentId = addWidgetRequest.momentId,
@@ -23,7 +22,7 @@ trait WidgetConversions {
     imagePath = addWidgetRequest.imagePath,
     intent = addWidgetRequest.intent)
 
-  def toWidget(servicesWidget: ServicesWidget): Widget = Widget(
+  def toWidget(servicesWidget: PersistenceWidget): Widget = Widget(
     id = servicesWidget.id,
     momentId = servicesWidget.momentId,
     packageName = servicesWidget.packageName,

@@ -1,7 +1,7 @@
 package cards.nine.services.persistence.models
 
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.models.Application
+import cards.nine.models.{Application, DockApp}
 import cards.nine.repository.model.{App => RepositoryApp, DockApp => RepositoryDockApp}
 import cards.nine.services.persistence.conversions.{AppConversions, DockAppConversions}
 

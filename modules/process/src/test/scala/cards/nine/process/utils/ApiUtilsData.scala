@@ -1,6 +1,6 @@
 package cards.nine.process.utils
 
-import cards.nine.services.persistence.models.User
+import cards.nine.models.User
 
 trait ApiUtilsData {
 

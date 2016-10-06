@@ -1,9 +1,9 @@
 package cards.nine.services.persistence.data
 
+import cards.nine.models.{Card, Collection, Moment, MomentTimeSlot}
 import cards.nine.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData, Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
-import cards.nine.services.persistence.models._
 import cards.nine.services.persistence.reads.MomentImplicits
 import play.api.libs.json.Json
 

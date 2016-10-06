@@ -1,8 +1,8 @@
 package cards.nine.services.persistence.conversions
 
+import cards.nine.models.DockApp
 import cards.nine.repository.model.{DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData}
 import cards.nine.services.persistence.CreateOrUpdateDockAppRequest
-import cards.nine.services.persistence.models.DockApp
 
 trait DockAppConversions {
 

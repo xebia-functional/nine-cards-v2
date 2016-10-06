@@ -1,6 +1,6 @@
 package cards.nine.services.persistence
 
-import cards.nine.services.persistence.models._
+import cards.nine.models._
 
 sealed trait FetchAppOrder
 
@@ -196,7 +196,7 @@ case class SaveWidgetRequest(
 
 case class DeleteWidgetsRequest(where: String)
 
-case class DeleteWidgetRequest(widget: Widget)
+case class DeleteWidgetRequest(widget: PersistenceWidget)
 
 case class UpdateWidgetRequest(
   id: Int,

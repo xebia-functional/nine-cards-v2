@@ -1,7 +1,7 @@
 package cards.nine.services.persistence.conversions
 
+import cards.nine.models.DataCounter
 import cards.nine.repository.model.{DataCounter => RepoDataCounter}
-import cards.nine.services.persistence.models.DataCounter
 
 trait Conversions
   extends AppConversions

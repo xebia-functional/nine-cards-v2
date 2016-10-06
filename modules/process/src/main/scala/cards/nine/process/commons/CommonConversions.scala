@@ -4,7 +4,7 @@ import cards.nine.models.types._
 import cards.nine.process.collection.models.FormedMoment
 import cards.nine.process.commons.models.{Moment, MomentTimeSlot, _}
 import cards.nine.process.moment.{SaveMomentRequest, UpdateMomentRequest}
-import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import cards.nine.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
 import cards.nine.services.persistence.{AddMomentRequest, SaveWidgetRequest => ServiceSaveWidgetRequest, UpdateMomentRequest => ServiceUpdateMomentRequest}
 
 trait CommonConversions extends NineCardIntentConversions {

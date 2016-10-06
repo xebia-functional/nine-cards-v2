@@ -2,15 +2,14 @@ package cards.nine.process.user.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.models.User
 import cards.nine.process.user._
 import cards.nine.services.api.{ApiServices, RequestConfig}
 import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.{User => ServicesUser}
-import monix.eval.Task
 import cats.syntax.either._
-
+import monix.eval.Task
 
 class UserProcessImpl(
   apiServices: ApiServices,
@@ -41,7 +40,7 @@ class UserProcessImpl(
 
   override def register(implicit context: ContextSupport) = {
 
-    def checkOrAddUser(id: Int)(implicit context: ContextSupport): TaskService[ServicesUser] =
+    def checkOrAddUser(id: Int)(implicit context: ContextSupport): TaskService[User] =
       (for {
         maybeUser <- persistenceServices.findUserById(FindUserByIdRequest(id))
         user <- maybeUser map (user => TaskService(Task(Either.right(user)))) getOrElse {
@@ -49,7 +48,7 @@ class UserProcessImpl(
         }
       } yield user).resolve[UserException]
 
-    def getFirstOrAddUser(implicit context: ContextSupport): TaskService[ServicesUser] =
+    def getFirstOrAddUser(implicit context: ContextSupport): TaskService[User] =
       (for {
         maybeUsers <- persistenceServices.fetchUsers
         user <- maybeUsers.headOption map (user => TaskService(Task(Either.right(user)))) getOrElse {

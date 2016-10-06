@@ -1,9 +1,10 @@
 package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
+import cards.nine.models.DockApp
 import cards.nine.repository.model.{DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData}
-import cards.nine.services.persistence.{FindDockAppByIdRequest, DeleteDockAppRequest, CreateOrUpdateDockAppRequest}
-import cards.nine.services.persistence.models.{IterableDockApps, DockApp}
+import cards.nine.services.persistence.models.IterableDockApps
+import cards.nine.services.persistence.{CreateOrUpdateDockAppRequest, DeleteDockAppRequest, FindDockAppByIdRequest}
 
 import scala.util.Random
 

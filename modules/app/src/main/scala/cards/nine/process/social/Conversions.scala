@@ -1,11 +1,12 @@
 package cards.nine.process.social
 
+import cards.nine.models.User
 import cards.nine.services.persistence.UpdateUserRequest
-import cards.nine.services.persistence.models.{User => ServicesUser}
 import cards.nine.services.plus.models.GooglePlusProfile
+
 trait Conversions {
 
-  def toUpdateRequest(user: ServicesUser, googlePlusProfile: GooglePlusProfile) =
+  def toUpdateRequest(user: User, googlePlusProfile: GooglePlusProfile) =
     UpdateUserRequest(
       id = user.id,
       email = user.email,

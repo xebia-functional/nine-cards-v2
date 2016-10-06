@@ -1,8 +1,8 @@
 package cards.nine.services.persistence.conversions
 
+import cards.nine.models.User
 import cards.nine.repository.model.{User => RepositoryUser, UserData => RepositoryUserData}
 import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.User
 
 trait UserConversions {
 

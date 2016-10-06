@@ -1,15 +1,15 @@
 package cards.nine.process.widget.impl
 
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.PersistenceWidget
 import cards.nine.process.widget.AppWidgetException
-import cards.nine.services.persistence.models.Widget
 import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
 
 trait WidgetProcessImplSpecification
   extends Specification
@@ -41,7 +41,7 @@ class WidgetProcessImplSpec
         mockPersistenceServices.fetchWidgets returns TaskService(Task(Either.right(seqServicesWidget)))
         mockPersistenceServices.addWidgets(any) returns TaskService(Task(Either.right(widgets)))
 
-        val widgets: Seq[Widget] = Seq.empty
+        val widgets: Seq[PersistenceWidget] = Seq.empty
 
         val result = widgetProcess.getWidgets.value.run
         result must beLike {

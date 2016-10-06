@@ -1,15 +1,14 @@
 package cards.nine.process.utils
 
-import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.User
 import cards.nine.services.api.{ApiServiceException, ImplicitsApiServiceExceptions, RequestConfig}
-import cards.nine.services.persistence.models.User
 import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServices}
-import monix.eval.Task
 import cats.syntax.either._
-
+import monix.eval.Task
 
 class ApiUtils(persistenceServices: PersistenceServices)
   extends ImplicitsApiServiceExceptions {

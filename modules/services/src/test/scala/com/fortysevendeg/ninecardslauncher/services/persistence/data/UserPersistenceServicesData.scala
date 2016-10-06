@@ -1,8 +1,8 @@
 package cards.nine.services.persistence.data
 
+import cards.nine.models.User
 import cards.nine.repository.model.{User => RepositoryUser, UserData => RepositoryUserData}
-import cards.nine.services.persistence.{UpdateUserRequest, FindUserByIdRequest, DeleteUserRequest, AddUserRequest}
-import cards.nine.services.persistence.models.User
+import cards.nine.services.persistence.{AddUserRequest, DeleteUserRequest, FindUserByIdRequest, UpdateUserRequest}
 
 import scala.util.Random
 

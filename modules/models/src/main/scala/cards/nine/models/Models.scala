@@ -1,4 +1,4 @@
-package cards.nine.services.persistence.models
+package cards.nine.models
 
 case class Collection(
   id: Int,
@@ -60,7 +60,7 @@ case class MomentTimeSlot(
 
 case class DataCounter(term: String, count: Int)
 
-case class Widget(
+case class PersistenceWidget(
   id: Int,
   momentId: Int,
   packageName: String,

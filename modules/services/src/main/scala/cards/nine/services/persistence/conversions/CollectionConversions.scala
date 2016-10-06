@@ -1,8 +1,8 @@
 package cards.nine.services.persistence.conversions
 
+import cards.nine.models.Collection
 import cards.nine.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, Moment => RepositoryMoment}
 import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.Collection
 
 trait CollectionConversions
   extends CardConversions

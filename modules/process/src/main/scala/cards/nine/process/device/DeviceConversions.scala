@@ -1,13 +1,12 @@
 package cards.nine.process.device
 
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models._
 import cards.nine.models.types._
+import cards.nine.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, _}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
 import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
 
 trait DeviceConversions extends NineCardIntentConversions {
 

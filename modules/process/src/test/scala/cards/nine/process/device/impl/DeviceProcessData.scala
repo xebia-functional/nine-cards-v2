@@ -1,7 +1,5 @@
 package cards.nine.process.device.impl
 
-import android.content.Intent
-import android.graphics.drawable.Drawable
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.models
@@ -14,7 +12,7 @@ import cards.nine.process.device.SaveDockAppRequest
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
-import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
+import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
 import play.api.libs.json.Json
 
 trait DeviceProcessData

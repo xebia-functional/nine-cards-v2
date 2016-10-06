@@ -1,16 +1,16 @@
 package cards.nine.process.social.impl
 
 import android.os.Bundle
-import cats.syntax.either._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.User
 import cards.nine.process.social._
-import cards.nine.services.persistence.models.{User => ServicesUser}
 import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
 import cards.nine.services.plus.models.GooglePlusProfile
 import cards.nine.services.plus.{GooglePlusServices, GooglePlusServicesException}
+import cats.syntax.either._
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import monix.eval.Task
@@ -52,7 +52,7 @@ class SocialProfileProcessImpl(
 
   override def updateUserProfile(client: GoogleApiClient)(implicit context: ContextSupport) = {
 
-    def updateUser(maybeUser: Option[ServicesUser], googlePlusProfile: GooglePlusProfile) =
+    def updateUser(maybeUser: Option[User], googlePlusProfile: GooglePlusProfile) =
       maybeUser match {
         case Some(user) => persistenceServices.updateUser(toUpdateRequest(user, googlePlusProfile))
         case None => TaskService(Task(Either.left(PersistenceServiceException(noActiveUserErrorMessage))))

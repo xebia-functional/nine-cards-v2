@@ -5,10 +5,11 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models
+import cards.nine.models.Collection
 import cards.nine.models.types.{CardType, NoInstalledAppCardType}
 import cards.nine.process.collection.{AddCardRequest, CardException, CollectionProcess}
 import cards.nine.process.commons.models.Card
-import cards.nine.services.persistence.models.{Card => ServicesCard, Collection}
 import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, ImplicitsPersistenceServiceExceptions}
 import monix.eval.Task
 
@@ -69,7 +70,7 @@ trait CardsProcessImpl extends CollectionProcess {
         .map( { case (card, index) => card.copy(position = index) })
     }
 
-    def reorderAux(card: ServicesCard) =
+    def reorderAux(card: models.Card) =
       if (card.position != newPosition)
         for {
           cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq

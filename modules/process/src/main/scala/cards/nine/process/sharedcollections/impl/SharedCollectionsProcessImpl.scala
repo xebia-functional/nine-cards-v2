@@ -3,13 +3,13 @@ package cards.nine.process.sharedcollections.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.Collection
+import cards.nine.models.types.NineCardCategory
 import cards.nine.process.sharedcollections._
 import cards.nine.process.sharedcollections.models._
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.{ApiServiceConfigurationException, ApiServices}
 import cards.nine.services.persistence.PersistenceServices
-import cards.nine.services.persistence.models.Collection
-import cards.nine.models.types.NineCardCategory
 
 class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
   extends SharedCollectionsProcess

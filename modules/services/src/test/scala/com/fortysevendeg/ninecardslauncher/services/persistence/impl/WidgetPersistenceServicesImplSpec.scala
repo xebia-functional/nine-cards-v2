@@ -1,16 +1,14 @@
 package cards.nine.services.persistence.impl
 
-import cats.syntax.either._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.PersistenceWidget
 import cards.nine.repository.RepositoryException
 import cards.nine.services.persistence.data.WidgetPersistenceServicesData
-import cards.nine.services.persistence.models.Widget
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
-
-
 
 trait WidgetPersistenceServicesSpecification
   extends Specification
@@ -198,7 +196,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
       result must beLike {
         case Right(maybeWidget) =>
-          maybeWidget must beSome[Widget].which { widget =>
+          maybeWidget must beSome[PersistenceWidget].which { widget =>
             widget.id shouldEqual widgetId
           }
       }

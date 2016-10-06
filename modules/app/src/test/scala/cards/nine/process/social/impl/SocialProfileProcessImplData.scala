@@ -1,7 +1,7 @@
 package cards.nine.process.social.impl
 
+import cards.nine.models.User
 import cards.nine.services.persistence.{FindUserByIdRequest, UpdateUserRequest}
-import cards.nine.services.persistence.models.User
 import cards.nine.services.plus.models.GooglePlusProfile
 
 trait SocialProfileProcessImplData {

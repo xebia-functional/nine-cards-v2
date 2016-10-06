@@ -2,7 +2,7 @@ package cards.nine.process.user
 
 import cards.nine.process.user.models.{User, UserProfile}
 import cards.nine.services.persistence.UpdateUserRequest
-import cards.nine.services.persistence.models.{User => ServicesUser}
+import cards.nine.models.{User => ServicesUser}
 
 trait Conversions {
 

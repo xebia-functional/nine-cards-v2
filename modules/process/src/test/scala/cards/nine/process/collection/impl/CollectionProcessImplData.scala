@@ -11,7 +11,6 @@ import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, Coll
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
-import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
 import cards.nine.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
 import play.api.libs.json.Json
 

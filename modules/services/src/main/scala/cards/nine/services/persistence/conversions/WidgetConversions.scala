@@ -1,8 +1,8 @@
 package cards.nine.services.persistence.conversions
 
+import cards.nine.models.PersistenceWidget
 import cards.nine.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
 import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.Widget
 
 trait WidgetConversions {
 
@@ -24,8 +24,8 @@ trait WidgetConversions {
       imagePath = widget.imagePath,
       intent = widget.intent)
 
-  def toWidget(widget: RepositoryWidget): Widget =
-    Widget(
+  def toWidget(widget: RepositoryWidget): PersistenceWidget =
+    PersistenceWidget(
       id = widget.id,
       momentId = widget.data.momentId,
       packageName = widget.data.packageName,
@@ -40,7 +40,7 @@ trait WidgetConversions {
       imagePath = widget.data.imagePath,
       intent = widget.data.intent)
 
-  def toRepositoryWidget(widget: Widget): RepositoryWidget =
+  def toRepositoryWidget(widget: PersistenceWidget): RepositoryWidget =
     RepositoryWidget(
       id = widget.id,
       data = RepositoryWidgetData(

@@ -2,7 +2,7 @@ package cards.nine.services.persistence
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.Application
+import cards.nine.models._
 import cards.nine.services.persistence.models._
 
 trait PersistenceServices {
@@ -551,7 +551,7 @@ trait PersistenceServices {
     * @return the cards.nine.services.persistence.models.Widget
     * @throws PersistenceServiceException if exist some problem creating the widgets
     */
-  def addWidget(request: AddWidgetRequest): TaskService[Widget]
+  def addWidget(request: AddWidgetRequest): TaskService[PersistenceWidget]
 
   /**
     * Adds widgets to the repository
@@ -560,7 +560,7 @@ trait PersistenceServices {
     * @return the Seq[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem creating the widgets
     */
-  def addWidgets(request: Seq[AddWidgetRequest]): TaskService[Seq[Widget]]
+  def addWidgets(request: Seq[AddWidgetRequest]): TaskService[Seq[PersistenceWidget]]
 
   /**
     * Deletes all widgets from the repository
@@ -594,7 +594,7 @@ trait PersistenceServices {
     * @return the Seq[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widgets
     */
-  def fetchWidgets: TaskService[Seq[Widget]]
+  def fetchWidgets: TaskService[Seq[PersistenceWidget]]
 
   /**
     * Obtains a widget from the repository by the id
@@ -603,7 +603,7 @@ trait PersistenceServices {
     * @return an Option[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
     */
-  def findWidgetById(widgetId: Int): TaskService[Option[Widget]]
+  def findWidgetById(widgetId: Int): TaskService[Option[PersistenceWidget]]
 
   /**
     * Obtains the widget from the repository by the appWidgetId
@@ -612,7 +612,7 @@ trait PersistenceServices {
     * @return an Option[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
     */
-  def fetchWidgetByAppWidgetId(appWidgetId: Int): TaskService[Option[Widget]]
+  def fetchWidgetByAppWidgetId(appWidgetId: Int): TaskService[Option[PersistenceWidget]]
 
   /**
     * Obtains all widgets from the repository by the moment id
@@ -621,7 +621,7 @@ trait PersistenceServices {
     * @return the Seq[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widgets
     */
-  def fetchWidgetsByMoment(momentId: Int): TaskService[Seq[Widget]]
+  def fetchWidgetsByMoment(momentId: Int): TaskService[Seq[PersistenceWidget]]
 
   /**
     * Updates the data of a widget from the repository

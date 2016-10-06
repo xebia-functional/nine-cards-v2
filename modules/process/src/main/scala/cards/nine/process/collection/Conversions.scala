@@ -8,7 +8,7 @@ import cards.nine.process.commons.CommonConversions
 import cards.nine.process.commons.models.{Card, Collection, NineCardIntent, PrivateCard}
 import cards.nine.services.api.models.{PackagesByCategory => ServicesPackagesByCategory}
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse}
-import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
+import cards.nine.models.{Card => ServicesCard, Collection => ServicesCollection}
 import cards.nine.services.persistence.{AddCardRequest => ServicesAddCardRequest, AddCollectionRequest => ServicesAddCollectionRequest, UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest, UpdateCollectionRequest => ServicesUpdateCollectionRequest, UpdateCollectionsRequest => ServicesUpdateCollectionsRequest, _}
 
 trait Conversions extends CommonConversions {
