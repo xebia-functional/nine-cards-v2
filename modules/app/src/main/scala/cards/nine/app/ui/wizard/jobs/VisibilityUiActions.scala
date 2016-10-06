@@ -2,20 +2,19 @@ package cards.nine.app.ui.wizard.jobs
 
 import android.view.animation.DecelerateInterpolator
 import cards.nine.app.ui.commons.SnailsCommons._
-import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
-import cards.nine.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
-import cards.nine.commons.services.TaskService._
 import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
+import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_]) {
 
@@ -30,12 +29,16 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
       (dom.deviceRootLayout <~ vInvisible) ~
       (dom.newConfigurationContent <~ vInvisible)).toService
 
-  def goToWizard(): TaskService[Unit] =
+  def goToWizard(): TaskService[Unit] = {
+    val backgroundColor = resGetColor(R.color.wizard_background_step_0)
     ((dom.loadingRootLayout <~ vInvisible) ~
       (dom.userRootLayout <~ vInvisible) ~
-      (dom.wizardRootLayout <~ vVisible <~ rbvColor(resGetColor(R.color.wizard_background_step_0), forceFade = true)) ~
+      (dom.wizardRootLayout <~ vVisible <~ ripple(backgroundColor, forceFade = true)) ~
+      systemBarsTint.updateStatusColor(backgroundColor) ~
+      systemBarsTint.defaultStatusBar() ~
       (dom.deviceRootLayout <~ vInvisible) ~
       (dom.newConfigurationContent <~ vInvisible)).toService
+  }
 
   def goToNewConfiguration(): TaskService[Unit] =
     (showNewConfigurationScreen() ~
