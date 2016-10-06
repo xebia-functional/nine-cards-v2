@@ -190,7 +190,7 @@ object WorkSpaceButtonTweaks {
 
   def wbInit(t: WorkSpaceButtonType)(implicit theme: NineCardsTheme) = Tweak[W](_.init(t).run)
 
-  def wbPopulateCollection(collection: Collection) = Tweak[W](_.populateCollection(collection).run)
+  def wbPopulateCollection(collection: Collection)(implicit theme: NineCardsTheme) = Tweak[W](_.populateCollection(collection).run)
 
   def wbPopulateCard(card: Card) = Tweak[W](_.populateCard(card).run)
 

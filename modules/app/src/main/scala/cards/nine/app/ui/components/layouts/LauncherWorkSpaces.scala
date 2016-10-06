@@ -147,14 +147,14 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   override def createView(viewType: Int): LauncherWorkSpaceHolder =
     (WorkSpaceType(viewType), presenter, theme) match {
-      case (_, None, _) =>
-        throw new RuntimeException("Missing LauncherPresenter")
-      case (MomentWorkSpace, _, None) =>
-        throw new RuntimeException("Missing Theme")
       case (MomentWorkSpace, Some(p), Some(t)) =>
         new LauncherWorkSpaceMomentsHolder(context, p, t, statuses.dimen)
-      case (CollectionsWorkSpace, Some(p), _) =>
-        new LauncherWorkSpaceCollectionsHolder(context, p, statuses.dimen)
+      case (CollectionsWorkSpace, Some(p), Some(t)) =>
+        new LauncherWorkSpaceCollectionsHolder(context, p, t, statuses.dimen)
+      case (_, None, _) =>
+        throw new RuntimeException("Missing LauncherPresenter")
+      case (_, _, None) =>
+        throw new RuntimeException("Missing Theme")
     }
 
   override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =

@@ -28,17 +28,20 @@ import cards.nine.app.ui.launcher.types.ReorderCollection
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.process.commons.models.Collection
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher2.TypedResource._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPresenter, parentDimen: Dimen)
+class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPresenter, theme: NineCardsTheme, parentDimen: Dimen)
   extends LauncherWorkSpaceHolder(context)
   with Contexts[View]
   with TypedFindView {
 
   LayoutInflater.from(context).inflate(R.layout.collections_workspace_layout, this)
+
+  implicit def nineCardsTheme: NineCardsTheme = theme
 
   val selectedScale = 1.1f
 

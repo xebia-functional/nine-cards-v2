@@ -1,8 +1,6 @@
-package cards.nine.app.ui.commons.ops
+package cards.nine.commons.ops
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
-import android.support.v4.graphics.drawable.DrawableCompat
 
 object ColorOps {
 
@@ -24,17 +22,7 @@ object ColorOps {
 
     def alpha(alpha: Float): Int = Color.argb((255 * alpha).toInt, Color.red(color), Color.green(color), Color.blue(color))
 
-    def colorToString(): String = s"#${0xFFFFFF & color}"
-
-  }
-
-  implicit class DrawableColors(drawable: Drawable) {
-
-    def colorize(color: Int) = {
-      val colorizeDrawable = DrawableCompat.wrap(drawable).mutate()
-      DrawableCompat.setTint(DrawableCompat.wrap(colorizeDrawable).mutate(), color)
-      colorizeDrawable
-    }
+    def colorToString: String = s"#${0xFFFFFF & color}"
 
   }
 
