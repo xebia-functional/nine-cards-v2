@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.actions.recommendations
 
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
@@ -13,7 +13,7 @@ class RecommendationsJobs(
   packages: Seq[String],
   actions: RecommendationsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   def initialize(): TaskService[Unit] = for {
     _ <- actions.initialize()

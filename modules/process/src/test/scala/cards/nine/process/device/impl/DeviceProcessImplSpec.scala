@@ -5,10 +5,12 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.util.DisplayMetrics
+import cards.nine
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.BitmapPath
 import cards.nine.models.types.{AppDockType, Misc}
 import cards.nine.process.device._
 import cards.nine.process.utils.ApiUtils
@@ -208,7 +210,7 @@ class DeviceProcessImplSpec
         mockContactsServices.populateContactInfo(any) returns TaskService(Task(Either.right(contacts)))
 
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
-        result shouldEqual Right(deviceProcess.toContactSeq(contacts))
+        result shouldEqual Right(contacts)
       }
 
     "returns ContactException when ContactsServices fails getting the favorite contacts" in
@@ -280,9 +282,8 @@ class DeviceProcessImplSpec
     "get path of icon stored" in
       new DeviceProcessScope {
 
-        val saveBitmap = SaveBitmap(bitmap = mockBitmap, bitmapResize = None)
-        val saveBitmapPath = SaveBitmapPath(nameShortcut, fileNameShortcut)
-        mockImageServices.saveBitmap(saveBitmap)(contextSupport) returns TaskService(Task(Either.right(saveBitmapPath)))
+        val bitmapPath = BitmapPath(nameShortcut, fileNameShortcut)
+        mockImageServices.saveBitmap(mockBitmap, None, None)(contextSupport) returns TaskService(Task(Either.right(bitmapPath)))
 
         val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).value.run
         result must beLike {
@@ -293,7 +294,7 @@ class DeviceProcessImplSpec
     "returns ShortcutException when ImageServices fails storing the icon" in
       new DeviceProcessScope {
 
-        mockImageServices.saveBitmap(any[SaveBitmap])(any) returns TaskService(Task(Either.left(fileServicesException)))
+        mockImageServices.saveBitmap(any, any, any)(any) returns TaskService(Task(Either.left(fileServicesException)))
         val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).value.run
         result must beAnInstanceOf[Left[ShortcutException, _]]
       }
@@ -763,7 +764,7 @@ class DeviceProcessImplSpec
     "returns an app with Misc category if api service fails" in
       new DeviceProcessScope {
 
-        val appsPersistenceFailed = appsPersistence map (_.copy(category = Misc.name))
+        val appsPersistenceFailed = appsPersistence map (_.copy(category = Misc))
         val appExpected = apps.head.copy(category = Misc)
 
         mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService(Task(Either.right(applications.head)))
@@ -878,7 +879,7 @@ class DeviceProcessImplSpec
     "get last calls" in
       new DeviceProcessScope {
 
-        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(callsServices)))
+        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(calls)))
         mockContactsServices.fetchContactByPhoneNumber(phoneNumber1) returns TaskService(Task(Either.right(Some(callsContacts(0)))))
         mockContactsServices.fetchContactByPhoneNumber(phoneNumber2) returns TaskService(Task(Either.right(Some(callsContacts(1)))))
         mockContactsServices.fetchContactByPhoneNumber(phoneNumber3) returns TaskService(Task(Either.right(Some(callsContacts(2)))))
@@ -898,7 +899,7 @@ class DeviceProcessImplSpec
     "returns an empty List if ContactsServices fail getting the contacts " in
       new DeviceProcessScope {
 
-        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(callsServices)))
+        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(calls)))
         mockContactsServices.fetchContactByPhoneNumber(any) returns TaskService(Task(Either.left(contactsServicesException)))
 
         val result = deviceProcess.getLastCalls(contextSupport).value.run

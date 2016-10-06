@@ -2,17 +2,14 @@ package cards.nine.process.device
 
 import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.device.models._
-import cards.nine.process.device.types.{CallType, WidgetResizeMode}
-import cards.nine.services.apps.models.Application
-import cards.nine.services.calls.models.{Call => ServicesCall}
-import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactCounter, ContactEmail => ServicesContactEmail, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
-import cards.nine.services.image.{AppPackage, BitmapResize}
+import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
+import cards.nine.process.device.types.WidgetResizeMode
 import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.{App => ServicesApp, DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
+import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
 import cards.nine.services.shortcuts.models.{Shortcut => ServicesShortcut}
 import cards.nine.services.widgets.models.{Widget => ServicesWidget}
 
@@ -28,18 +25,7 @@ trait DeviceConversions extends NineCardIntentConversions {
     case GetByCategory(_) => OrderByCategory
   }
 
-  def toApp(app: ServicesApp): App =
-    App(
-      name = app.name,
-      packageName = app.packageName,
-      className = app.className,
-      category = NineCardCategory(app.category),
-      dateInstalled = app.dateInstalled,
-      dateUpdate = app.dateUpdate,
-      version = app.version,
-      installedFromGooglePlay = app.installedFromGooglePlay)
-
-  def toAddAppRequest(item: Application, category: NineCardCategory): AddAppRequest =
+  def toAddAppRequest(item: ApplicationData, category: NineCardCategory): AddAppRequest =
       AddAppRequest(
         name = item.name,
         packageName = item.packageName,
@@ -50,7 +36,7 @@ trait DeviceConversions extends NineCardIntentConversions {
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
 
-  def toUpdateAppRequest(id: Int, item: Application, category: NineCardCategory): UpdateAppRequest =
+  def toUpdateAppRequest(id: Int, item: ApplicationData, category: NineCardCategory): UpdateAppRequest =
       UpdateAppRequest(
         id = id,
         name = item.name,
@@ -61,14 +47,6 @@ trait DeviceConversions extends NineCardIntentConversions {
         dateUpdate = item.dateUpdate,
         version = item.version,
         installedFromGooglePlay = item.installedFromGooglePlay)
-
-  def toAppPackageSeq(items: Seq[Application]): Seq[AppPackage] = items map toAppPackage
-
-  def toAppPackage(item: Application): AppPackage =
-    AppPackage(
-      packageName = item.packageName,
-      className = item.className,
-      name = item.name)
 
   def toCreateOrUpdateDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): CreateOrUpdateDockAppRequest =
     CreateOrUpdateDockAppRequest(
@@ -94,7 +72,7 @@ trait DeviceConversions extends NineCardIntentConversions {
     position = app.position
   )
 
-  def toDockApp(app: Application, position: Int, imagePath: String)(implicit context: ContextSupport): DockApp = DockApp(
+  def toDockApp(app: ApplicationData, position: Int, imagePath: String)(implicit context: ContextSupport): DockApp = DockApp(
     name = app.packageName,
     dockType = AppDockType,
     intent = toNineCardIntent(app),
@@ -115,7 +93,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       intent = intent)
   }
 
-  def toSimpleLastCallsContact(number: String, calls: Seq[ServicesCall]): LastCallsContact = {
+  def toSimpleLastCallsContact(number: String, calls: Seq[Call]): LastCallsContact = {
     val (hasContact, name, date) = calls.headOption map { call =>
       (call.name.isDefined, call.name getOrElse number, call.date)
     } getOrElse (false, number, defaultDate)
@@ -124,13 +102,8 @@ trait DeviceConversions extends NineCardIntentConversions {
       number = number,
       title = name,
       lastCallDate = date,
-      calls = calls map toCallData)
+      calls = calls)
   }
-
-  def toCallData(item: ServicesCall): CallData =
-    CallData(
-      date = item.date,
-      callType = CallType(item.callType))
 
   def toTermCounter(item: ContactCounter): TermCounter = TermCounter(
     term = item.term,
@@ -140,29 +113,15 @@ trait DeviceConversions extends NineCardIntentConversions {
     term = item.term,
     count = item.count)
 
-  def toContactSeq(items: Seq[ServicesContact]): Seq[Contact] = items map toContact
-
-  def toContact(item: ServicesContact): Contact = Contact(
-      name = item.name,
-      lookupKey = item.lookupKey,
-      photoUri = item.photoUri,
-      hasPhone = item.hasPhone,
-      favorite = item.favorite,
-      info = item.info map toContactInfo)
-
-  def toContactInfo(item: ServicesContactInfo): ContactInfo = ContactInfo(
-    emails = item.emails map toContactEmail,
-    phones = item.phones map toContactPhone)
-
-  def toContactEmail(item: ServicesContactEmail): ContactEmail = ContactEmail(
+  def toContactEmail(item: ContactEmail): ContactEmail = ContactEmail(
     address = item.address,
     category = item.category)
 
-  def toContactPhone(item: ServicesContactPhone): ContactPhone = ContactPhone(
+  def toContactPhone(item: ContactPhone): ContactPhone = ContactPhone(
     number = item.number,
     category = item.category)
 
-  def toAppsWithWidgets(apps: Seq[ServicesApp], widgets: Seq[ServicesWidget]): Seq[AppsWithWidgets] = apps map { app =>
+  def toAppsWithWidgets(apps: Seq[Application], widgets: Seq[ServicesWidget]): Seq[AppsWithWidgets] = apps map { app =>
     AppsWithWidgets(
       packageName = app.packageName,
       name = app.name,
@@ -184,10 +143,5 @@ trait DeviceConversions extends NineCardIntentConversions {
     updatePeriodMillis = item.updatePeriodMillis,
     label = item.label,
     preview = item.preview)
-
-  def toBitmapResize(iconResize: IconResize) =
-    BitmapResize(
-      width = iconResize.width,
-      height = iconResize.height)
 
 }

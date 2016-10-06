@@ -201,7 +201,7 @@ trait Conversions {
 
   def toItemsMap(packagesByCategorySeq: Seq[PackagesByCategory]) =
     Map(packagesByCategorySeq map (
-      packagesByCategory => packagesByCategory.category -> packagesByCategory.packages): _*)
+      packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
   def toRankAppsResponse(items: Map[String, Seq[String]]) =
     (items map {

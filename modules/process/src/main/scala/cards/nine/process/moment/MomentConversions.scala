@@ -1,31 +1,20 @@
 package cards.nine.process.moment
 
+import cards.nine.models.ApplicationData
 import cards.nine.models.types.AppCardType
-import cards.nine.process.collection.models.UnformedApp
 import cards.nine.process.commons.CommonConversions
 import cards.nine.process.commons.models.{Collection, Moment, MomentWithCollection, PrivateCard}
-import cards.nine.process.moment.models.App
 import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.{App => ServicesApp, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import cards.nine.services.persistence.models.{Moment => ServicesMoment}
 
 trait MomentConversions extends CommonConversions {
 
   def toMomentSeq(servicesMomentSeq: Seq[ServicesMoment]) = servicesMomentSeq map toMoment
 
-  def toApp(servicesApp: ServicesApp): App = App(
-      name = servicesApp.name,
-      packageName = servicesApp.packageName,
-      className = servicesApp.className)
-
-  def toApp(unformedApp: UnformedApp): App = App(
-      name = unformedApp.name,
-      packageName = unformedApp.packageName,
-      className = unformedApp.className)
-
-  def toAddCardRequestSeq(items: Seq[App]): Seq[AddCardRequest] =
+  def toAddCardRequestSeq(items: Seq[ApplicationData]): Seq[AddCardRequest] =
     items.zipWithIndex map (zipped => toAddCardRequestFromAppMoment(zipped._1, zipped._2))
 
-  def toAddCardRequestFromAppMoment(item: App, position: Int): AddCardRequest = AddCardRequest(
+  def toAddCardRequestFromAppMoment(item: ApplicationData, position: Int): AddCardRequest = AddCardRequest(
     position = position,
     term = item.name,
     packageName = Option(item.packageName),
@@ -33,7 +22,7 @@ trait MomentConversions extends CommonConversions {
     intent = nineCardIntentToJson(toNineCardIntent(item)),
     imagePath = None)
 
-  def toPrivateCard(app: App): PrivateCard =
+  def toPrivateCard(app: ApplicationData): PrivateCard =
     PrivateCard(
       term = app.name,
       packageName = Some(app.packageName),

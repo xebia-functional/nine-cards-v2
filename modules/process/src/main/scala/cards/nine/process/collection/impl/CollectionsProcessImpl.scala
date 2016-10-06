@@ -6,20 +6,18 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.Spaces
-import cards.nine.models.Spaces._
 import cards.nine.models.types.NineCardCategory._
-import cards.nine.models.types.{NineCardCategory, NoInstalledAppCardType}
+import cards.nine.models.types.Spaces._
+import cards.nine.models.types.{NineCardCategory, NoInstalledAppCardType, Spaces}
+import cards.nine.models.{Application, ApplicationData}
+import cards.nine.process.collection.models.{FormedCollection, UnformedContact}
 import cards.nine.process.collection.{AddCollectionRequest, _}
-import cards.nine.process.collection.models.{FormedCollection, UnformedApp, UnformedContact}
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.CategorizedDetailPackage
-import cards.nine.services.persistence.models.App
 import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, OrderByCategory}
 import cats.syntax.either._
 import monix.eval.Task
-
 
 trait CollectionsProcessImpl extends CollectionProcess {
 
@@ -32,7 +30,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  def createCollectionsFromUnformedItems(apps: Seq[UnformedApp], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = {
+  def createCollectionsFromUnformedItems(apps: Seq[ApplicationData], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = {
     val collections = createCollections(apps, contacts, appsCategories, minAppsToAdd)
     (for {
       collections <- persistenceServices.addCollections(collections)
@@ -46,7 +44,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
       collections <- persistenceServices.addCollections(collectionsRequest)
     } yield collections map toCollection).resolve[CollectionException]
 
-  def generatePrivateCollections(apps: Seq[UnformedApp])(implicit context: ContextSupport) = TaskService {
+  def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport) = TaskService {
       CatchAll[CollectionException] {
         createPrivateCollections(apps, appsCategories, minAppsGenerateCollections)
     }
@@ -129,14 +127,14 @@ trait CollectionsProcessImpl extends CollectionProcess {
         notAdded = packages.filterNot(packageName => cards.exists(_.packageName.contains(packageName)))
       } yield (cards.size, notAdded)
 
-    def fetchInstalledPackages(packages: Seq[String]): TaskService[Seq[App]] =
+    def fetchInstalledPackages(packages: Seq[String]): TaskService[Seq[Application]] =
       if (packages.isEmpty) {
         TaskService(Task(Either.right(Seq.empty)))
       } else {
         persistenceServices.fetchAppByPackages(packages)
       }
 
-    def categorizeNotInstalledPackages(installedApps: Seq[App], notAdded: Seq[String]): TaskService[Seq[CategorizedDetailPackage]] = {
+    def categorizeNotInstalledPackages(installedApps: Seq[Application], notAdded: Seq[String]): TaskService[Seq[CategorizedDetailPackage]] = {
       val notInstalledApps = notAdded.filterNot(packageName => installedApps.exists(_.packageName == packageName))
       if (notInstalledApps.isEmpty) {
         TaskService(Task(Either.right(Seq.empty)))
@@ -150,7 +148,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
     def addCards(
       actualCollectionSize: Int,
-      installedApps: Seq[App],
+      installedApps: Seq[Application],
       categorizedPackages: Seq[CategorizedDetailPackage]): TaskService[Unit] = {
 
       if (installedApps.isEmpty && categorizedPackages.isEmpty) {
@@ -181,10 +179,10 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def rankApps()(implicit context: ContextSupport) = {
 
-    def mapValues(seq: Seq[(String, String)]): Seq[(String, Seq[String])] =
+    def mapValues(seq: Seq[(NineCardCategory, String)]): Seq[(NineCardCategory, Seq[String])] =
       seq.groupBy(_._1).mapValues(_.map(_._2)).toSeq
 
-    def getPackagesByCategory: TaskService[Seq[(String, Seq[String])]] =
+    def getPackagesByCategory: TaskService[Seq[(NineCardCategory, Seq[String])]] =
       for {
         appList <- persistenceServices.fetchApps(OrderByCategory)
       } yield mapValues(appList map (app => (app.category, app.packageName)))

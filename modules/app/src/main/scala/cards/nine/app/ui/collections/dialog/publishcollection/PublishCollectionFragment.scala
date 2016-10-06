@@ -6,7 +6,7 @@ import android.support.v4.app.{DialogFragment, Fragment}
 import android.support.v7.app.AlertDialog
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.collections.jobs.SharedCollectionJobs
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -24,7 +24,7 @@ case class PublishCollectionFragment(collection: Collection)(implicit val shared
   with PublishCollectionUiListener
   with TypedFindView
   with Contexts[Fragment]
-  with NineCardIntentConversions { self =>
+  with AppNineCardIntentConversions { self =>
 
   lazy val actions = new PublishCollectionActions(self)
 

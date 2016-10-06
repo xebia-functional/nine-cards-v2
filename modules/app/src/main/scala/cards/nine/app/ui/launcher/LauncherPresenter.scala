@@ -3,7 +3,7 @@ package cards.nine.app.ui.launcher
 import android.content.{ComponentName, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
-import cards.nine.app.commons.{BroadAction, Conversions, NineCardIntentConversions}
+import cards.nine.app.commons.{AppNineCardIntentConversions, BroadAction, Conversions}
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
@@ -26,6 +26,7 @@ import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types._
+import cards.nine.models.{Contact, ApplicationData, ConditionWeather, UnknownCondition}
 import cards.nine.process.accounts._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection, Moment, _}
@@ -33,7 +34,6 @@ import cards.nine.process.device._
 import cards.nine.process.device.models._
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import cards.nine.process.moment.MomentException
-import cards.nine.process.recognition.{ConditionWeather, UnknownCondition}
 import cards.nine.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
 import cards.nine.process.widget.models.{AppWidget, WidgetArea}
 import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
@@ -47,7 +47,7 @@ import scala.language.postfixOps
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   val tagDialog = "dialog"
 
@@ -93,7 +93,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def logout(): Unit = actions.logout.run
 
-  def startAddItemToCollection(app: App): Unit = startAddItemToCollection(toAddCardRequest(app))
+  def startAddItemToCollection(app: ApplicationData): Unit = startAddItemToCollection(toAddCardRequest(app))
 
   def startAddItemToCollection(contact: Contact): Unit = startAddItemToCollection(toAddCardRequest(contact))
 
@@ -259,7 +259,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     launcherCallService(di.launcherExecutorProcess.execute(card.intent), card.intent.extractPhone())
   }
 
-  def openApp(app: App): Unit = if (actions.isTabsOpened) {
+  def openApp(app: ApplicationData): Unit = if (actions.isTabsOpened) {
     actions.closeTabs.run
   } else {
     di.trackEventProcess.openAppFromAppDrawer(app.packageName, AppCategory(app.category)).resolveAsync2()

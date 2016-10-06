@@ -1,4 +1,4 @@
-package cards.nine.services.intents.models
+package cards.nine.models
 
 sealed trait IntentAction
 

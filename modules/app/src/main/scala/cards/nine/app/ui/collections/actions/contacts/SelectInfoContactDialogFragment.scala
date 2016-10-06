@@ -7,12 +7,12 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.{LayoutInflater, View}
 import android.widget.{LinearLayout, ScrollView}
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
+import cards.nine.models.Contact
 import cards.nine.models.types._
 import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.device.models.Contact
 import cards.nine.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -26,7 +26,7 @@ import scala.annotation.tailrec
 
 case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, activityContext: ActivityContextWrapper, theme: NineCardsTheme, uiContext: UiContext[_])
   extends DialogFragment
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   val primaryColor = theme.get(PrimaryColor)
 

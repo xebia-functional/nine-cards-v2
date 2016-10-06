@@ -2,7 +2,7 @@ package cards.nine.app.ui.launcher.actions.widgets
 
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.NineCardIntentConversions
+import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.launcher.LauncherPresenter
 import com.fortysevendeg.ninecardslauncher2.R
@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 class WidgetsFragment(implicit lPresenter: LauncherPresenter)
   extends BaseActionFragment
   with WidgetsUiActionsImpl
-  with NineCardIntentConversions {
+  with AppNineCardIntentConversions {
 
   override lazy val widgetContentWidth = getString(Seq(getArguments), WidgetsFragment.widgetContentWidth, "0").toInt
 

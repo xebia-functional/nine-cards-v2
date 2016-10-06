@@ -2,6 +2,7 @@ package cards.nine.process.recognition
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.{Location, Headphones, ProbablyActivity, WeatherState}
 
 trait RecognitionProcess {
 
@@ -31,6 +32,6 @@ trait RecognitionProcess {
     *
     * @return Weather
     */
-  def getWeather: TaskService[Weather]
+  def getWeather: TaskService[WeatherState]
 
 }

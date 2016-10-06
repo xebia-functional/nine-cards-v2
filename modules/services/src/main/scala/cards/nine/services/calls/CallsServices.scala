@@ -1,7 +1,7 @@
 package cards.nine.services.calls
 
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.services.calls.models.Call
+import cards.nine.models.Call
 
 trait CallsServices {
   /**
