@@ -18,10 +18,10 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
     with WidgetPersistenceServicesImpl
     with ImplicitsPersistenceServiceExceptions =>
 
-  def addMoment(moment: MomentData, widgets: Seq[SaveWidgetRequest]) =
+  def addMoment(moment: MomentData, widgets: Seq[PersistenceWidgetData]) =
     (for {
       moment <- momentRepository.addMoment(toRepositoryMomentData(moment))
-      _ <- addWidgets(widgets map (w => toAddWidgetRequest(moment.id, w)))
+      _ <- addWidgets(widgets map (widget => widget.copy(momentId = moment.id)))
     } yield toMoment(moment)).resolve[PersistenceServiceException]
 
   def addMoments(momentsWithWidgets: Seq[(MomentData, Seq[PersistenceWidgetData])]) = {
@@ -29,8 +29,8 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
     val widgetsData = momentsWithWidgets flatMap (_._2)
     (for {
       momentsAdded <- momentRepository.addMoments(moments map toRepositoryMomentData)
-      widgets = momentsAdded.zip(widgetsData) flatMap {
-        case (moment, widgetRequest) => toAddWidgetRequestSeq(moment.id, widgetRequest)
+      widgets = momentsAdded.zip(widgetsData) map {
+        case (moment, widgetRequest) => widgetRequest.copy(momentId = moment.id)
       }
       _ <- addWidgets(widgets)
     } yield momentsAdded map toMoment).resolve[PersistenceServiceException]

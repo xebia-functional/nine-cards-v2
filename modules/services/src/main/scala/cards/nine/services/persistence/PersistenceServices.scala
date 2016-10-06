@@ -3,6 +3,7 @@ package cards.nine.services.persistence
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models._
+import cards.nine.models.types.FetchAppOrder
 import cards.nine.services.persistence.models._
 
 trait PersistenceServices {
@@ -548,20 +549,20 @@ trait PersistenceServices {
   /**
     * Add a widget to the repository
     *
-    * @param request includes the necessary data to create a new widget in the repository
+    * @param widget includes the necessary data to create a new widget in the repository
     * @return the cards.nine.services.persistence.models.Widget
     * @throws PersistenceServiceException if exist some problem creating the widgets
     */
-  def addWidget(request: AddWidgetRequest): TaskService[PersistenceWidget]
+  def addWidget(widget: PersistenceWidgetData): TaskService[PersistenceWidget]
 
   /**
     * Adds widgets to the repository
     *
-    * @param request includes the necessary data to create new widgets in the repository
+    * @param widgets includes the necessary data to create new widgets in the repository
     * @return the Seq[cards.nine.services.persistence.models.Widget]
     * @throws PersistenceServiceException if exist some problem creating the widgets
     */
-  def addWidgets(request: Seq[AddWidgetRequest]): TaskService[Seq[PersistenceWidget]]
+  def addWidgets(widgets: Seq[PersistenceWidgetData]): TaskService[Seq[PersistenceWidget]]
 
   /**
     * Deletes all widgets from the repository
@@ -574,11 +575,11 @@ trait PersistenceServices {
   /**
     * Deletes a widget from the repository
     *
-    * @param request includes the widget to delete
+    * @param widget includes the widget to delete
     * @return an Int if the widget has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the widget
     */
-  def deleteWidget(request: DeleteWidgetRequest): TaskService[Int]
+  def deleteWidget(widget: PersistenceWidget): TaskService[Int]
 
   /**
     * Deletes the widgets from the repository by the moment id
@@ -627,19 +628,19 @@ trait PersistenceServices {
   /**
     * Updates the data of a widget from the repository
     *
-    * @param request includes the data to update the widget
+    * @param widget includes the data to update the widget
     * @return an Int if the widget has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the widget
     */
-  def updateWidget(request: UpdateWidgetRequest): TaskService[Int]
+  def updateWidget(widget: PersistenceWidget): TaskService[Int]
 
   /**
     * Bulk update of the data of some widgets from the repository
     *
-    * @param request includes the data to update the widgets
+    * @param widgets includes the data to update the widgets
     * @return a Seq[Int] if the widgets has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the widget
     */
-  def updateWidgets(request: UpdateWidgetsRequest): TaskService[Seq[Int]]
+  def updateWidgets(widgets: Seq[PersistenceWidget]): TaskService[Seq[Int]]
 
 }

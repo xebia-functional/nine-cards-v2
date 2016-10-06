@@ -1,28 +1,10 @@
 package cards.nine.services.persistence.conversions
 
-import cards.nine.models.PersistenceWidget
+import cards.nine.models.{PersistenceWidgetData, PersistenceWidget}
 import cards.nine.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
 import cards.nine.services.persistence._
 
 trait WidgetConversions {
-
-  def toAddWidgetRequestSeq(momentId: Int, widgetRequest: Seq[SaveWidgetRequest]) =
-    widgetRequest map (widget => toAddWidgetRequest(momentId, widget))
-
-  def toAddWidgetRequest(momentId: Int, widget: SaveWidgetRequest) =
-    AddWidgetRequest(
-      momentId = momentId,
-      packageName = widget.packageName,
-      className = widget.className,
-      appWidgetId = widget.appWidgetId,
-      startX = widget.startX,
-      startY = widget.startY,
-      spanX = widget.spanX,
-      spanY = widget.spanY,
-      widgetType = widget.widgetType,
-      label = widget.label,
-      imagePath = widget.imagePath,
-      intent = widget.intent)
 
   def toWidget(widget: RepositoryWidget): PersistenceWidget =
     PersistenceWidget(
@@ -57,36 +39,19 @@ trait WidgetConversions {
         imagePath = widget.imagePath,
         intent = widget.intent))
 
-  def toRepositoryWidget(request: UpdateWidgetRequest): RepositoryWidget =
-    RepositoryWidget(
-      id = request.id,
-      data = RepositoryWidgetData(
-        momentId = request.momentId,
-        packageName = request.packageName,
-        className = request.className,
-        appWidgetId = request.appWidgetId getOrElse 0,
-        startX = request.startX,
-        startY = request.startY,
-        spanX = request.spanX,
-        spanY = request.spanY,
-        widgetType = request.widgetType,
-        label = request.label,
-        imagePath = request.imagePath,
-        intent = request.intent))
-
-  def toRepositoryWidgetData(request: AddWidgetRequest): RepositoryWidgetData =
+  def toRepositoryWidgetData(widget: PersistenceWidgetData): RepositoryWidgetData =
     RepositoryWidgetData(
-      momentId = request.momentId,
-      packageName = request.packageName,
-      className = request.className,
-      appWidgetId = request.appWidgetId,
-      startX = request.startX,
-      startY = request.startY,
-      spanX = request.spanX,
-      spanY = request.spanY,
-      widgetType = request.widgetType,
-      label = request.label,
-      imagePath = request.imagePath,
-      intent = request.intent)
+      momentId = widget.momentId,
+      packageName = widget.packageName,
+      className = widget.className,
+      appWidgetId = widget.appWidgetId getOrElse 0,
+      startX = widget.startX,
+      startY = widget.startY,
+      spanX = widget.spanX,
+      spanY = widget.spanY,
+      widgetType = widget.widgetType,
+      label = widget.label,
+      imagePath = widget.imagePath,
+      intent = widget.intent)
 
 }

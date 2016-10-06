@@ -1,7 +1,8 @@
 package cards.nine.services.persistence.impl
 
-import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService._
+import cards.nine.models.{PersistenceWidget, PersistenceWidgetData}
 import cards.nine.repository.provider.WidgetEntity
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
@@ -10,24 +11,24 @@ trait WidgetPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 
-  def addWidget(request: AddWidgetRequest) =
+  def addWidget(widget: PersistenceWidgetData) =
     (for {
-      widget <- widgetRepository.addWidget(toRepositoryWidgetData(request))
-    } yield toWidget(widget)).resolve[PersistenceServiceException]
+      widgetAdded <- widgetRepository.addWidget(toRepositoryWidgetData(widget))
+    } yield toWidget(widgetAdded)).resolve[PersistenceServiceException]
 
-  def addWidgets(request: Seq[AddWidgetRequest]) =
+  def addWidgets(widgets: Seq[PersistenceWidgetData]) =
     (for {
-      widgets <- widgetRepository.addWidgets(request map toRepositoryWidgetData)
-    } yield widgets map toWidget).resolve[PersistenceServiceException]
+      widgetsAdded <- widgetRepository.addWidgets(widgets map toRepositoryWidgetData)
+    } yield widgetsAdded map toWidget).resolve[PersistenceServiceException]
 
   def deleteAllWidgets() =
     (for {
       deleted <- widgetRepository.deleteWidgets()
     } yield deleted).resolve[PersistenceServiceException]
 
-  def deleteWidget(request: DeleteWidgetRequest) =
+  def deleteWidget(widget: PersistenceWidget) =
     (for {
-      deleted <- widgetRepository.deleteWidget(toRepositoryWidget(request.widget))
+      deleted <- widgetRepository.deleteWidget(toRepositoryWidget(widget))
     } yield deleted).resolve[PersistenceServiceException]
 
   def deleteWidgetsByMoment(momentId: Int) =
@@ -55,13 +56,13 @@ trait WidgetPersistenceServicesImpl extends PersistenceServices {
       maybeWidget <- widgetRepository.findWidgetById(widgetId)
     } yield maybeWidget map toWidget).resolve[PersistenceServiceException]
 
-  def updateWidget(request: UpdateWidgetRequest) =
+  def updateWidget(widget: PersistenceWidget) =
     (for {
-      updated <- widgetRepository.updateWidget(toRepositoryWidget(request))
+      updated <- widgetRepository.updateWidget(toRepositoryWidget(widget))
     } yield updated).resolve[PersistenceServiceException]
 
-  def updateWidgets(request: UpdateWidgetsRequest) =
+  def updateWidgets(widgets: Seq[PersistenceWidget]) =
     (for {
-      updated <- widgetRepository.updateWidgets(request.updateWidgetRequests map toRepositoryWidget)
+      updated <- widgetRepository.updateWidgets(widgets map toRepositoryWidget)
     } yield updated).resolve[PersistenceServiceException]
 }
