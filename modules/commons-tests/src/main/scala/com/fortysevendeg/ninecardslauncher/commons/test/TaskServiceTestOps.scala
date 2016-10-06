@@ -41,9 +41,9 @@ trait TaskServiceSpecification extends Specification {
         case Right(v) => f(v)
       }
 
-    def mustRightUnit: Unit = mustRight { r => r shouldEqual ((): Unit)}
+    def mustRightUnit: Unit = mustRight (_ shouldEqual ((): Unit))
 
-    def mustRightNone: Unit = mustRight { r => r shouldEqual None}
+    def mustRightNone: Unit = mustRight (_ shouldEqual None)
   }
 
 }

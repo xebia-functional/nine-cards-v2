@@ -75,6 +75,7 @@ trait CollectionProcessImplSpecification
 
     }
   }
+
 }
 
 class CollectionProcessImplSpec
@@ -85,7 +86,7 @@ class CollectionProcessImplSpec
     "returns a sequence of collections for a valid request without cards" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection.map { r => r.copy(cards = Seq.empty) })
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection.map(_.copy(cards = Seq.empty)))
 
         collectionProcess.getCollections.mustRight { resultSeqCollection =>
           resultSeqCollection.size shouldEqual seqServicesCollection.size
@@ -228,17 +229,15 @@ class CollectionProcessImplSpec
 
   }
 
-    "generatePrivateCollections" should {
+  "generatePrivateCollections" should {
 
-      "return a seq empty if number of cards by category is < minAppsToAdd" in
-        new CollectionProcessScope {
+    "return a seq empty if number of cards by category is < minAppsToAdd" in
+      new CollectionProcessScope {
 
-          val result = collectionProcess.generatePrivateCollections(seqApplicationData)(contextSupport).mustRight { r =>
-            r shouldEqual Seq.empty
-          }
-        }
+        collectionProcess.generatePrivateCollections(seqApplicationData)(contextSupport).mustRight(_ shouldEqual Seq.empty)
+      }
 
-    }
+  }
 
 
   "addCollection" should {
@@ -246,7 +245,7 @@ class CollectionProcessImplSpec
     "returns a the collection added for a valid request without cards" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection map { c => c.copy(cards = Seq.empty) })
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection map (_.copy(cards = Seq.empty)))
         mockPersistenceServices.addCollection(any) returns serviceRight(servicesCollection.copy(id = seqServicesCollection.size, position = seqServicesCollection.size, cards = Seq.empty))
 
         val result = collectionProcess.addCollection(addCollectionRequest.copy(cards = Seq.empty)).run
@@ -550,9 +549,7 @@ class CollectionProcessImplSpec
         mockAwarenessServices.getLocation(any) returns serviceRight(awarenessLocation)
         mockApiServices.rankApps(any, any)(any) returns serviceRight(rankAppsResponseList)
 
-        collectionProcess.rankApps()(contextSupport).mustRight { r =>
-          r shouldEqual packagesByCategory
-        }
+        collectionProcess.rankApps()(contextSupport).mustRight(_ shouldEqual packagesByCategory)
       }
 
     "returns a CollectionException if the service throws an exception finding the collection by Id" in
@@ -569,9 +566,7 @@ class CollectionProcessImplSpec
         mockAwarenessServices.getLocation(any) returns serviceLeft(apiServiceException)
         mockApiServices.rankApps(any, any)(any) returns serviceRight(rankAppsResponseList)
 
-        collectionProcess.rankApps()(contextSupport).mustRight { r =>
-          r shouldEqual packagesByCategory
-        }
+        collectionProcess.rankApps()(contextSupport).mustRight(_ shouldEqual packagesByCategory)
       }
 
     "returns a CollectionException if the service throws an exception updating the collection" in
