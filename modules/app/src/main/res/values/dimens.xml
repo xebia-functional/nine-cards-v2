@@ -117,6 +117,8 @@
 
     <dimen name="wizard_min_width_checkbox_wifi">200dp</dimen>
 
+    <dimen name="wizard_size_moment_checkbox">75dp</dimen>
+
     <!-- Widgets -->
     <dimen name="size_widget_item_preview">150dp</dimen>
     <dimen name="size_widget_icon">54dp</dimen>

@@ -1,5 +1,6 @@
 package cards.nine.app.ui.wizard.jobs
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -9,23 +10,26 @@ import android.view.ViewGroup.LayoutParams._
 import android.view.{LayoutInflater, View}
 import android.widget.ImageView
 import android.widget.LinearLayout.LayoutParams
+import cards.nine.app.services.sync.SynchronizeDeviceService
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{AppUtils, ImplicitsUiExceptions, SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.dialogs.WifiDialogFragment
-import cards.nine.app.ui.components.widgets.{WizardCheckBox, WizardWifiCheckBox}
 import cards.nine.app.ui.components.widgets.tweaks.WizardCheckBoxTweaks._
+import cards.nine.app.ui.components.widgets.tweaks.WizardMomentCheckBoxTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.WizardWifiCheckBoxTweaks._
+import cards.nine.app.ui.components.widgets.{WizardCheckBox, WizardMomentCheckBox, WizardWifiCheckBox}
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.types._
 import cards.nine.process.collection.models.PackagesByCategory
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
+import cards.nine.app.ui.commons.SafeUi._
 import macroid.FullDsl._
 import macroid._
 
@@ -159,21 +163,50 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       selectPager(fourthStep, resColor) ~
       (dom.newConfigurationStep3WifiContent <~ vgAddViews(momentViews, params)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onSaveMoments(dom.getWifisSelected))) <~
+        On.click(Ui(dom.onSaveMomentsWithWifi(dom.getWifisSelected))) <~
         tvColorResource(resColor))).toService
   }
 
   def loadFifthStep(): TaskService[Unit] = {
+
+    def momentTweak(moment: NineCardsMoment, defaultCheck: Boolean = true) =
+      wmcbInitialize(moment, defaultCheck) +
+        FuncOn.click { view: View =>
+          view.asInstanceOf[WizardMomentCheckBox] <~ wmcbSwap()
+        }
+
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_4, javaNull)
     val resColor = R.color.wizard_new_conf_accent_3
     ((dom.newConfigurationStep <~
       vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
+      (dom.newConfigurationStep4Music <~
+        momentTweak(MusicMoment)) ~
+      (dom.newConfigurationStep4Car <~
+        momentTweak(CarMoment, defaultCheck = false)) ~
+      (dom.newConfigurationStep4Running <~
+        momentTweak(RunningMoment, defaultCheck = false)) ~
+      (dom.newConfigurationStep4Bike <~
+        momentTweak(BikeMoment, defaultCheck = false)) ~
       selectPager(fifthStep, resColor) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onLoadBetterCollections())) <~
+        On.click(Ui(dom.onSaveMoments(dom.getMomentsSelected))) <~
         tvColorResource(resColor))).toService
+  }
+
+  def loadSixthStep(): TaskService[Unit] = {
+    val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_5, javaNull)
+    val resColor = R.color.wizard_new_conf_accent_4
+
+    (uiStartServiceIntent(new Intent(context.bestAvailable, classOf[SynchronizeDeviceService])) ~
+      (dom.newConfigurationStep <~
+        vgAddView(stepView)) ~
+      systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
+      systemBarsTint.defaultStatusBar() ~
+      (dom.newConfigurationStep5GoTo9Cards <~ On.click(Ui(dom.onClickFinishWizardButton()))) ~
+      (dom.newConfigurationPagers <~ vGone) ~
+      (dom.newConfigurationNext <~ vGone)).toService
   }
 
   private[this] def changeWifiName(moment: NineCardsMoment, wifi: String) = dom.newConfigurationStep3WifiContent <~ Transformer {

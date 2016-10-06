@@ -133,3 +133,19 @@ object WizardWifiCheckBoxTweaks {
 
   def wwcbWifiName(wifi: String) = Tweak[W] (_.setWifiName(wifi).run)
 }
+
+object WizardMomentCheckBoxTweaks {
+  type W = WizardMomentCheckBox
+
+  def wmcbInitialize(moment: NineCardsMoment, defaultCheck: Boolean = true) =
+    Tweak[W](_.initialize(moment, defaultCheck).run)
+
+  def wmcbDoCheck(doCheck: Boolean) = Tweak[W] { view => (if (doCheck) view.check() else view.uncheck()).run }
+
+  def wmcbCheck() = Tweak[W] (_.check().run)
+
+  def wmcbUncheck() = Tweak[W] (_.uncheck().run)
+
+  def wmcbSwap() = Tweak[W] (_.swap().run)
+
+}

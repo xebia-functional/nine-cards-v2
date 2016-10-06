@@ -288,6 +288,36 @@
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
+    <!-- Wizard Moment Checkbox -->
+
+    <style name="WizardMomentCheckboxRoot">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="WizardMomentCheckboxIconContent">
+        <item name="android:layout_width">@dimen/wizard_size_moment_checkbox</item>
+        <item name="android:layout_height">@dimen/wizard_size_moment_checkbox</item>
+    </style>
+
+    <style name="WizardMomentCheckboxIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="WizardMomentCheckboxName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:textColor">@color/wizard_text_title</item>
+        <item name="android:layout_marginTop">@dimen/padding_large</item>
+    </style>
+
     <!-- New configuration -->
 
     <style name="WizardNewConfigurationRoot">
@@ -496,6 +526,53 @@
 
     <style name="WizardNewConfigurationDescriptionStep4" parent="WizardNewConfigurationDescription">
         <item name="android:text">@string/wizard_new_conf_description_step_4</item>
+    </style>
+
+    <style name="WizardNewConfigurationContentMomentsStep4">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="WizardNewConfigurationCheckStep4">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- Step 5 -->
+
+    <style name="WizardNewConfigurationHeaderContentStep5" parent="WizardNewConfigurationHeaderContent">
+        <item name="android:background">@color/wizard_new_conf_accent_4</item>
+    </style>
+
+    <style name="WizardNewConfigurationHeaderImageStep5" parent="WizardNewConfigurationHeaderImage">
+        <item name="android:src">@drawable/placeholder_step_06</item>
+    </style>
+
+    <style name="WizardNewConfigurationTitleStep5" parent="WizardNewConfigurationTitle">
+        <item name="android:text">@string/wizard_new_conf_title_step_5</item>
+        <item name="android:textColor">@color/wizard_new_conf_accent_4</item>
+    </style>
+
+    <style name="WizardNewConfigurationDescriptionStep5" parent="WizardNewConfigurationDescription">
+        <item name="android:text">@string/wizard_new_conf_desc_step_5</item>
+    </style>
+
+    <style name="WizardNewConfigurationActionStep5">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/wizard_new_conf_accent_4</item>
+        <item name="android:textColor">@color/wizard_text_button_on</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_marginTop">@dimen/padding_large</item>
+        <item name="android:paddingLeft">@dimen/padding_xlarge</item>
+        <item name="android:paddingRight">@dimen/padding_xlarge</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
+        <item name="android:text">@string/wizard_new_conf_action_step_5</item>
     </style>
 
 </resources>
