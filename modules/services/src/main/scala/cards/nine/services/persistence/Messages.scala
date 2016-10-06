@@ -10,19 +10,6 @@ case object OrderByInstallDate extends FetchAppOrder
 
 case object OrderByCategory extends FetchAppOrder
 
-case class CreateOrUpdateDockAppRequest(
-  name: String,
-  dockType: String,
-  intent: String,
-  imagePath: String,
-  position: Int)
-
-case class DeleteDockAppsRequest(where: String)
-
-case class DeleteDockAppRequest(dockApp: PersistenceDockApp)
-
-case class FindDockAppByIdRequest(id: Int)
-
 case class AddMomentRequest(
   collectionId: Option[Int],
   timeslot: Seq[MomentTimeSlot],

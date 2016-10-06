@@ -21,7 +21,7 @@ case class ContactPhone(
   number: String,
   category: PhoneCategory)
 
-case class DockApp(
+case class ProcessDockApp(
   name: String,
   dockType: DockType,
   intent: NineCardIntent,

@@ -135,11 +135,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         card.cardType match {
           case AppCardType =>
             createOrUpdateDockApp(card, AppDockType, position).resolveAsyncUi2(
-              onResult = (_) => actions.reloadDockApps(DockApp(card.term, AppDockType, card.intent, card.imagePath getOrElse "", position)),
+              onResult = (_) => actions.reloadDockApps(ProcessDockApp(card.term, AppDockType, card.intent, card.imagePath getOrElse "", position)),
               onException = (_) => actions.showContactUsError())
           case ContactCardType =>
             createOrUpdateDockApp(card, ContactDockType, position).resolveAsyncUi2(
-              onResult = (_) => actions.reloadDockApps(DockApp(card.term, ContactDockType, card.intent, card.imagePath getOrElse "", position)),
+              onResult = (_) => actions.reloadDockApps(ProcessDockApp(card.term, ContactDockType, card.intent, card.imagePath getOrElse "", position)),
               onException = (_) => actions.showContactUsError())
           case _ =>
             actions.showContactUsError()
@@ -548,7 +548,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case _ => di.momentProcess.getBestAvailableMoment
     }
 
-    def getLauncherInfo: TaskService[(Seq[Collection], Seq[PersistenceDockApp], Option[Moment])] =
+    def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
       for {
         collections <- di.collectionProcess.getCollections
         dockApps <- di.deviceProcess.getDockApps
@@ -1073,7 +1073,7 @@ trait LauncherUiActions {
 
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): Ui[Any]
 
-  def reloadDockApps(dockApp: PersistenceDockApp): Ui[Any]
+  def reloadDockApps(dockApp: DockApp): Ui[Any]
 
   def openModeEditWidgets(): Ui[Any]
 
@@ -1117,7 +1117,7 @@ trait LauncherUiActions {
 
   def goToCollection(collection: Collection, point: Point): Ui[Any]
 
-  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[PersistenceDockApp]): Ui[Any]
+  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
 
   def reloadCurrentMoment(): Ui[Any]
 

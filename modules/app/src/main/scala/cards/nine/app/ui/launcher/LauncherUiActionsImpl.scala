@@ -112,7 +112,7 @@ trait LauncherUiActionsImpl
   override def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): Ui[Any] =
     (workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager
 
-  override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
+  override def reloadDockApps(dockApp: ProcessDockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
 
   override def openModeEditWidgets(): Ui[Any] =
     uiVibrate() ~
@@ -219,7 +219,7 @@ trait LauncherUiActionsImpl
     }
   }
 
-  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] = {
+  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[ProcessDockApp]): Ui[Any] = {
     val momentType = data.headOption.flatMap(_.moment).flatMap(_.momentType)
     val launcherMoment = data.headOption.flatMap(_.moment)
     (loading <~ vGone) ~

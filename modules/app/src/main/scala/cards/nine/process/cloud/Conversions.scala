@@ -5,7 +5,7 @@ import cards.nine.models.{Widget, WidgetArea}
 import cards.nine.process.cloud.models._
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
-import cards.nine.process.device.models.DockApp
+import cards.nine.process.device.models.ProcessDockApp
 import cards.nine.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
 import cards.nine.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
@@ -100,7 +100,7 @@ object Conversions {
       to = timeSlot.to,
       days = timeSlot.days)
 
-  def toCloudStorageDockApp(dockApp: DockApp) =
+  def toCloudStorageDockApp(dockApp: ProcessDockApp) =
     CloudStorageDockApp(
       name = dockApp.name,
       dockType = dockApp.dockType,

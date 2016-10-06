@@ -529,7 +529,7 @@ trait DeviceProcessData
     imagePath: String = imagePath1,
     position: Int = 0) =
     (0 until num) map (item =>
-      DockApp(
+      ProcessDockApp(
         name = name,
         dockType = DockType(dockType),
         intent = jsonToNineCardIntent(intent),

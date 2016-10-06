@@ -209,7 +209,7 @@ trait DeviceProcess {
     * @return the Seq[cards.nine.process.device.models.DockApp]
     * @throws DockAppException if exist some problem getting the app or storing it
     */
-  def generateDockApps(size: Int)(implicit context: ContextSupport): TaskService[Seq[DockApp]]
+  def generateDockApps(size: Int)(implicit context: ContextSupport): TaskService[Seq[ProcessDockApp]]
 
   /**
     * Create or update a dock app
@@ -230,7 +230,7 @@ trait DeviceProcess {
     * @return the Seq[cards.nine.process.device.SaveDockAppRequest]
     * @throws DockAppException if there was an error creating the moments' collections
     */
-  def saveDockApps(items: Seq[SaveDockAppRequest]): TaskService[Seq[DockApp]]
+  def saveDockApps(items: Seq[SaveDockAppRequest]): TaskService[Seq[ProcessDockApp]]
 
   /**
     * Get the docks apps available for user
@@ -238,7 +238,7 @@ trait DeviceProcess {
     * @return the Seq[cards.nine.process.device.models.DockApp]
     * @throws DockAppException if exist some problem getting the app or storing it
     */
-  def getDockApps: TaskService[Seq[DockApp]]
+  def getDockApps: TaskService[Seq[ProcessDockApp]]
 
   /**
     * Delete all dock apps in database

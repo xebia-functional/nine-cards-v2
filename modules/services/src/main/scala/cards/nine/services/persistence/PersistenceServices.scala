@@ -417,11 +417,11 @@ trait PersistenceServices {
   /**
     * Creates or updates dock app to the repository
     *
-    * @param requests includes the necessary data to create a sequence of new dock apps in the repository
+    * @param dockApps includes the necessary data to create a sequence of new dock apps in the repository
     * @return the Seq[cards.nine.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem creating or updating the dock app
     */
-  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): TaskService[Seq[PersistenceDockApp]]
+  def createOrUpdateDockApp(dockApps: Seq[DockAppData]): TaskService[Seq[DockApp]]
 
   /**
     * Deletes all dock apps from the repository by the where clause
@@ -434,11 +434,11 @@ trait PersistenceServices {
   /**
     * Deletes a dock app from the repository by the dock app
     *
-    * @param request includes the dock app to delete
+    * @param dockApp includes the dock app to delete
     * @return an Int if the dock app has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the dock app
     */
-  def deleteDockApp(request: DeleteDockAppRequest): TaskService[Int]
+  def deleteDockApp(dockApp: DockApp): TaskService[Int]
 
   /**
     * Obtains all the dock apps from the repository
@@ -446,7 +446,7 @@ trait PersistenceServices {
     * @return the Seq[cards.nine.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
-  def fetchDockApps: TaskService[Seq[PersistenceDockApp]]
+  def fetchDockApps: TaskService[Seq[DockApp]]
 
   /**
     * Obtains iterable of dock apps from the repository
@@ -459,11 +459,11 @@ trait PersistenceServices {
   /**
     * Obtains a dock app from the repository by the id
     *
-    * @param request includes the dock app id  of the dock app to get
+    * @param dockAppId includes the dock app id  of the dock app to get
     * @return an Option[cards.nine.services.persistence.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock app
     */
-  def findDockAppById(request: FindDockAppByIdRequest): TaskService[Option[PersistenceDockApp]]
+  def findDockAppById(dockAppId: Int): TaskService[Option[DockApp]]
 
   /**
     * Adds an moment to the repository

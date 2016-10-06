@@ -20,7 +20,7 @@ import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{ConditionWeather, Widget}
 import cards.nine.process.commons.models.{Card, Collection, MomentTimeSlot}
-import cards.nine.process.device.models.{DockApp, TermCounter}
+import cards.nine.process.device.models.{ProcessDockApp, TermCounter}
 import cards.nine.process.theme.models.NineCardsTheme
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -379,12 +379,12 @@ object SwipeAnimatedDrawerViewTweaks {
 object DockAppsPanelLayoutTweaks {
   type W = DockAppsPanelLayout
 
-  def daplInit(dockApps: Seq[DockApp])(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplInit(dockApps: Seq[ProcessDockApp])(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.init(dockApps).run)
 
   def daplDragDispatcher(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) = Tweak[W] (_.dragAddItemController(action, x, y))
 
-  def daplReload(dockApp: DockApp)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplReload(dockApp: ProcessDockApp)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.reload(dockApp).run)
 
 }

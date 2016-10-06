@@ -1,13 +1,5 @@
 package cards.nine.models
 
-case class PersistenceDockApp(
-  id: Int,
-  name: String,
-  dockType: String,
-  intent: String,
-  imagePath: String,
-  position: Int)
-
 case class DataCounter(term: String, count: Int)
 
 case class PersistenceWidget(

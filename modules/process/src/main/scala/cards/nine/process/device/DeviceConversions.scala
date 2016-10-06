@@ -2,7 +2,7 @@ package cards.nine.process.device
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models.types._
-import cards.nine.models.{DataCounter => ServicesDataCounter, PersistenceDockApp => ServicesDockApp, _}
+import cards.nine.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, _}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
@@ -57,7 +57,7 @@ trait DeviceConversions extends NineCardIntentConversions {
       imagePath = dockApp.imagePath,
       position = dockApp.position)
 
-  def toDockApp(app: ServicesDockApp): DockApp = DockApp(
+  def toDockApp(app: ServicesDockApp): ProcessDockApp = ProcessDockApp(
     name = app.name,
     dockType = DockType(app.dockType),
     intent = jsonToNineCardIntent(app.intent),
@@ -65,7 +65,7 @@ trait DeviceConversions extends NineCardIntentConversions {
     position = app.position
   )
 
-  def toDockApp(app: ApplicationData, position: Int, imagePath: String)(implicit context: ContextSupport): DockApp = DockApp(
+  def toDockApp(app: ApplicationData, position: Int, imagePath: String)(implicit context: ContextSupport): ProcessDockApp = ProcessDockApp(
     name = app.packageName,
     dockType = AppDockType,
     intent = toNineCardIntent(app),
