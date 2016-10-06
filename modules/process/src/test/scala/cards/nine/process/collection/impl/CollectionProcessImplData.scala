@@ -38,9 +38,9 @@ trait CollectionProcessImplData {
   val sharedCollectionSubscribedFalse: Boolean = false
   val className: String = "className"
 
-  def servicesCollectionWithoutCards(num: Int = 0) = ServicesCollection(
-    id = collectionId + num,
-    position = position + num,
+  val servicesCollection = ServicesCollection(
+    id = collectionId,
+    position = position,
     name = name,
     collectionType = collectionTypeAppsType.name,
     icon = icon,
@@ -51,8 +51,6 @@ trait CollectionProcessImplData {
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = sharedCollectionIdOption,
     sharedCollectionSubscribed = sharedCollectionSubscribedFalse)
-
-  val seqServicesCollectionWithoutCards = Seq(servicesCollectionWithoutCards(0), servicesCollectionWithoutCards(1))
 
   val cardId: Int = 1
   val term: String = "term"
@@ -90,9 +88,9 @@ trait CollectionProcessImplData {
 
   val seqServicesCollectionWithCards = Seq(servicesCollectionWithCards(0), servicesCollectionWithCards(1))
 
-  val servicesCollectionById = ServicesCollection(
-    id = collectionId,
-    position = position,
+  def servicesCollectionWithoutCards(num: Int = 0) = ServicesCollection(
+    id = collectionId + num,
+    position = position + num,
     name = name,
     collectionType = collectionTypeAppsType.name,
     icon = icon,
@@ -104,33 +102,8 @@ trait CollectionProcessImplData {
     sharedCollectionId = sharedCollectionIdOption,
     sharedCollectionSubscribed = sharedCollectionSubscribedFalse)
 
-  val servicesCollectionByCategory = ServicesCollection(
-    id = collectionId,
-    position = position,
-    name = name,
-    collectionType = collectionTypeAppsType.name,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategoryGame.name),
-    cards = Seq.empty,
-    moment = None,
-    originalSharedCollectionId = Option(originalSharedCollectionId),
-    sharedCollectionId = sharedCollectionIdOption,
-    sharedCollectionSubscribed = sharedCollectionSubscribedFalse)
+  val seqServicesCollectionWithoutCards = Seq(servicesCollectionWithoutCards(0), servicesCollectionWithoutCards(1))
 
-  val servicesCollectionBySharedCollectionId = ServicesCollection(
-    id = collectionId,
-    position = position,
-    name = name,
-    collectionType = collectionTypeAppsType.name,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategoryGame.name),
-    cards = Seq.empty,
-    moment = None,
-    originalSharedCollectionId = Option(originalSharedCollectionId),
-    sharedCollectionId = sharedCollectionIdOption,
-    sharedCollectionSubscribed = sharedCollectionSubscribedFalse)
 
   val servicesCollectionForUnformedItem = ServicesCollection(
     id = position,
