@@ -56,6 +56,8 @@ class WizardActivity
       wizardJobs.serviceCloudIdAlreadySetError().resolveAsync()
     case (WizardStateActionFilter, Some(`stateUserEmailNotPresent`)) =>
       wizardJobs.serviceUserEmailNotFoundError().resolveAsync()
+    case (WizardStateActionFilter, Some(`stateEmptyDevice`)) =>
+      wizardJobs.serviceEmptyDeviceError().resolveAsync()
     case (WizardStateActionFilter, Some(`stateFailure`)) =>
       wizardJobs.serviceUnknownError().resolveAsync()
     case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) =>

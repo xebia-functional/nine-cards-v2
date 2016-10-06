@@ -16,7 +16,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.accounts.{FineLocation, ReadContacts, UserAccountsProcessOperationCancelledException}
+import cards.nine.process.accounts.{FineLocation, UserAccountsProcessOperationCancelledException}
 import cards.nine.process.cloud.Conversions
 import cards.nine.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import cards.nine.process.userv1.UserV1ConfigurationException
@@ -51,7 +51,7 @@ import scala.util.{Failure, Success, Try}
   *   + Job update the user profile information and calls to 'Job.loadDevices'
   *   + Job calls to 'UiAction.showDevices' with the loaded devices
   *  - UiAction calls to 'Job.deviceSelected'
-  *   + Job asks for Contacts and Location permissions and calls to 'Job.generateCollections'
+  *   + Job asks for Location permissions and calls to 'Job.generateCollections'
   *   + Job starts the service
   *  - Activity calls to 'Job.serviceFinished'
   *   + Job calls to 'UiAction.showDiveIn'
@@ -104,23 +104,15 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
       wizardUiActions.showErrorAcceptTerms()
     }
 
-  def deviceSelected(maybeKey: Option[String]): TaskService[Unit] = {
-
-    def generateOrRequest(condition: Boolean): TaskService[Unit] = if (condition) {
-      generateCollections(maybeKey)
-    } else {
-      requestPermissions()
-    }
-
+  def deviceSelected(maybeKey: Option[String]): TaskService[Unit] =
     for {
       _ <- TaskService(Task(Right(clientStatuses = clientStatuses.copy(deviceKey = maybeKey))))
-      havePermission <- di.userAccountsProcess.havePermission(ReadContacts)
-      _ <- generateOrRequest(havePermission.result)
+      havePermission <- di.userAccountsProcess.havePermission(FineLocation)
+      _ <- if (havePermission.result) generateCollections(maybeKey) else requestPermissions()
     } yield ()
-  }
 
   def requestPermissions(): TaskService[Unit] =
-    di.userAccountsProcess.requestPermissions(RequestCodes.wizardPermissions, Seq(ReadContacts, FineLocation))
+    di.userAccountsProcess.requestPermission(RequestCodes.wizardPermissions, FineLocation)
 
   def permissionDialogCancelled(): TaskService[Unit] =
     generateCollections(clientStatuses.deviceKey)
@@ -138,17 +130,23 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
 
   def serviceCreatingCollections(): TaskService[Unit] = visibilityUiActions.goToWizard()
 
-  def serviceUnknownError(): TaskService[Unit] = visibilityUiActions.goToUser()
+  def serviceUnknownError(): TaskService[Unit] =
+    wizardUiActions.showErrorGeneral() *> visibilityUiActions.goToUser()
 
-  def serviceCloudIdNotSentError(): TaskService[Unit] = visibilityUiActions.goToUser()
+  def serviceCloudIdNotSentError(): TaskService[Unit] =
+    wizardUiActions.showErrorGeneral() *> visibilityUiActions.goToUser()
 
   def serviceCloudIdAlreadySetError(): TaskService[Unit] =
     for {
+      _ <- wizardUiActions.showErrorGeneral()
       _ <- di.userProcess.unregister
       _ <- visibilityUiActions.goToUser()
     } yield ()
 
-  def serviceUserEmailNotFoundError(): TaskService[Unit] = visibilityUiActions.goToUser()
+  def serviceUserEmailNotFoundError(): TaskService[Unit] =
+    wizardUiActions.showErrorEmptyDevice() *> visibilityUiActions.goToUser()
+
+  def serviceEmptyDeviceError(): TaskService[Unit] = visibilityUiActions.goToUser()
 
   def serviceFinished(): TaskService[Unit] = wizardUiActions.showDiveIn()
 
@@ -245,7 +243,7 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
         _ <- generateOrRequest(result.exists(_.hasPermission(FineLocation)), shouldRequest.result)
       } yield ()
     } else {
-      TaskService(Task(Right((): Unit)))
+      TaskService.empty
     }
   }
 

@@ -9,6 +9,7 @@ import cards.nine.app.ui.commons._
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.process.cloud.models.CloudStorageDevice
 import cards.nine.process.device.GetByName
 import cards.nine.process.user.models.User
 import com.google.android.gms.common.api.GoogleApiClient
@@ -69,16 +70,12 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
   def createConfiguration(): TaskService[Unit] = {
 
     def loadConfiguration(
-      client: GoogleApiClient,
-      deviceToken: Option[String],
-      cloudId: String): TaskService[Unit] = {
+      device: CloudStorageDevice,
+      deviceToken: Option[String]): TaskService[Unit] = {
       for {
-        _ <- di.deviceProcess.resetSavedItems()
         _ <- actions.setProcess(statuses.selectedCloudId, GettingAppsProcess)
         _ <- di.deviceProcess.saveInstalledApps
         apps <- di.deviceProcess.getSavedApps(GetByName)
-        _ <- actions.setProcess(statuses.selectedCloudId, LoadingConfigProcess)
-        device <- di.cloudStorageProcess.getCloudStorageDevice(client, cloudId)
         _ <- actions.setProcess(statuses.selectedCloudId, CreatingCollectionsProcess)
         _ <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))
         momentSeq = device.data.moments map (_ map toSaveMomentRequest) getOrElse Seq.empty
@@ -86,14 +83,17 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
         _ <- di.momentProcess.saveMoments(momentSeq)
         _ <- di.deviceProcess.saveDockApps(dockAppSeq)
         _ <- di.userProcess.updateUserDevice(device.data.deviceName, device.cloudId, deviceToken)
+        _ <- setState(stateSuccess, close = true)
       } yield ()
     }
 
     (statuses.apiClient, statuses.selectedCloudId)  match {
       case (Some(client), Some(cloudId)) =>
         for {
-          _ <- loadConfiguration(client, readToken, cloudId)
-          _ <- setState(stateSuccess, close = true)
+          _ <- di.deviceProcess.resetSavedItems()
+          _ <- actions.setProcess(statuses.selectedCloudId, LoadingConfigProcess)
+          device <- di.cloudStorageProcess.getCloudStorageDevice(client, cloudId)
+          _ <- if (device.data.collections.isEmpty) setState(stateEmptyDevice, close = true) else loadConfiguration(device, readToken)
         } yield ()
       case (Some(client), None) =>
         TaskService.left(JobException("Device cloud id not received"))
