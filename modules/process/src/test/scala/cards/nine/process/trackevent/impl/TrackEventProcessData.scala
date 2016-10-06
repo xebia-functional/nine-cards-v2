@@ -16,46 +16,46 @@ trait TrackEventProcessData {
   val momentClassName = "class.name.moment"
 
   val openAppEntertainmentEvent = TrackEvent(
-    screen = LauncherScreen.name,
-    category = entertainmentCategory.name,
-    action = OpenAction.name,
+    screen = LauncherScreen,
+    category = entertainmentCategory,
+    action = OpenAction,
     label = Option(entertainmentPackageName),
-    value = Option(OpenAppFromAppDrawerValue.value))
+    value = Option(OpenAppFromAppDrawerValue))
 
   val openAppGameEvent = TrackEvent(
-    screen = LauncherScreen.name,
-    category = gameCategory.name,
-    action = OpenAction.name,
+    screen = LauncherScreen,
+    category = gameCategory,
+    action = OpenAction,
     label = Option(gamePackageName),
-    value = Option(OpenAppFromAppDrawerValue.value))
+    value = Option(OpenAppFromAppDrawerValue))
 
   val openAppFromCollectionEvent = TrackEvent(
-    screen = CollectionDetailScreen.name,
-    category = entertainmentCategory.name,
-    action = OpenCardAction.name,
+    screen = CollectionDetailScreen,
+    category = entertainmentCategory,
+    action = OpenCardAction,
     label = Option(entertainmentPackageName),
-    value = Option(OpenAppFromCollectionValue.value))
+    value = Option(OpenAppFromCollectionValue))
 
   val addAppEvent = TrackEvent(
-    screen = CollectionDetailScreen.name,
-    category = entertainmentCategory.name,
-    action = AddedToCollectionAction.name,
+    screen = CollectionDetailScreen,
+    category = entertainmentCategory,
+    action = AddedToCollectionAction,
     label = Option(entertainmentPackageName),
-    value = Option(AddedToCollectionValue.value))
+    value = Option(AddedToCollectionValue))
 
   val removeEvent = TrackEvent(
-    screen = CollectionDetailScreen.name,
-    category = entertainmentCategory.name,
-    action = RemovedFromCollectionAction.name,
+    screen = CollectionDetailScreen,
+    category = entertainmentCategory,
+    action = RemovedFromCollectionAction,
     label = Option(entertainmentPackageName),
-    value = Option(RemovedFromCollectionValue.value))
+    value = Option(RemovedFromCollectionValue))
 
   val momentEvent = TrackEvent(
-    screen = WidgetScreen.name,
-    category = s"WIDGET_${momentCategory.name}",
-    action = AddedWidgetToMomentAction.name,
+    screen = WidgetScreen,
+    category = momentCategory,
+    action = AddedWidgetToMomentAction,
     label = Option(s"$momentPackageName:$momentClassName"),
-    value = Option(AddedWidgetToMomentValue.value))
+    value = Option(AddedWidgetToMomentValue))
 
 
 }

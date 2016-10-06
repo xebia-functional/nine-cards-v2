@@ -1,6 +1,7 @@
 package cards.nine.services.widgets.impl
 
 import cards.nine.models.AppWidget
+import cards.nine.models.types.WidgetResizeMode
 
 import scala.util.Random
 
@@ -48,7 +49,7 @@ trait WidgetsServicesImplData {
       minWidth = minWidth,
       className = className,
       packageName = packageName,
-      resizeMode = resizeMode,
+      resizeMode = WidgetResizeMode(resizeMode),
       updatePeriodMillis = updatePeriodMillis,
       label = label,
       preview = preview))

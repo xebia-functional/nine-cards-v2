@@ -2,7 +2,7 @@ package cards.nine.models
 
 import cards.nine.models.types.{WidgetType, WidgetResizeMode}
 
-case class Widget (
+case class AppWidget (
   userHashCode: Option[Int],
   autoAdvanceViewId: Int,
   initialLayout: Int,
@@ -17,7 +17,7 @@ case class Widget (
   label: String,
   preview: Int)
 
-case class AppWidget (
+case class Widget (
   id: Int,
   momentId: Int,
   packageName: String,

@@ -1,5 +1,7 @@
 package cards.nine.process.device.impl
 
+import android.content.Intent
+import android.graphics.drawable.Drawable
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.models
@@ -255,22 +257,22 @@ trait DeviceProcessData
     packageName = packageNameForCreateImage,
     category = Some("SOCIAL"))
 
+  val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val intent = Json.parse(intentStr).as[NineCardIntent]
+
   val shortcuts: Seq[Shortcut] = Seq(
     Shortcut(
       title = "Shortcut 1",
-      icon = 0,
-      name = "Shortcut 1",
-      packageName = "com.example.shortcut1"),
+      icon = None,
+      intent = intent),
     Shortcut(
-      title = "Shortcut 2",
-      icon = 0,
-      name = "Shortcut 2",
-      packageName = "com.example.shortcut2"),
+      title = "Shortcut 1",
+      icon = None,
+      intent = intent),
     Shortcut(
-      title = "Shortcut 3",
-      icon = 0,
-      name = "Shortcut 3",
-      packageName = "com.example.shortcut3"))
+      title = "Shortcut 1",
+      icon = None,
+      intent = intent))
 
   val contacts: Seq[Contact] = Seq(
    Contact(
@@ -503,9 +505,6 @@ trait DeviceProcessData
       lookupKey = Some(lookupKey3),
       lastCallDate = date3,
       calls = Seq(call3)))
-
-  val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
-  val intent = Json.parse(intentStr).as[NineCardIntent]
 
   def createDockAppServiceSeq(
     num: Int = 4,

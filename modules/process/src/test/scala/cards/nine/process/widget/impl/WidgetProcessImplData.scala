@@ -1,11 +1,10 @@
 package cards.nine.process.widget.impl
 
 import cards.nine.models.types.WidgetType
-import WidgetType._
+import cards.nine.models.types.WidgetType._
+import cards.nine.models.{Widget, WidgetArea}
 import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
-import cards.nine.process.widget.models.{AppWidget, WidgetArea}
 import cards.nine.services.persistence.models.{Widget => ServicesWidget}
-import cards.nine.models.types.WidgetType
 
 import scala.util.Random
 
@@ -57,7 +56,7 @@ trait WidgetProcessImplData {
    intent: Option[String] = widgetIntentOption) =
     (0 until 5) map (
       item =>
-        AppWidget(
+        Widget(
           id = id,
           momentId = momentId,
           packageName = packageName,
