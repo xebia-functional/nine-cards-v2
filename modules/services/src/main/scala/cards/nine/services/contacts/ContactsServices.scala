@@ -2,7 +2,7 @@ package cards.nine.services.contacts
 
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.services.contacts.models.{Contact, ContactCounter}
+import cards.nine.models.{ContactCounter, Contact}
 
 trait ContactsServices {
 

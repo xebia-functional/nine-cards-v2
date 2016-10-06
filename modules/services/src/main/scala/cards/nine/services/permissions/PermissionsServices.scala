@@ -2,6 +2,7 @@ package cards.nine.services.permissions
 
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.PermissionStatus
 
 trait PermissionsServices {
 
@@ -34,6 +35,7 @@ trait PermissionsServices {
 
   /**
     * Parses the permission request response
+ *
     * @param permissions the permissions names
     * @param grantResults the status codes
     * @return a map with the status of each permission

@@ -1,7 +1,6 @@
 package cards.nine.process.cloud.impl
 
 import cards.nine.models.types._
-import cards.nine.models.{CollectionTypes, NineCardCategories}
 import cards.nine.process.cloud.models._
 import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import cards.nine.services.persistence.models.User

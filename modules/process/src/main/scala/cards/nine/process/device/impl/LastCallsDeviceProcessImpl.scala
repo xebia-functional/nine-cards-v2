@@ -3,12 +3,12 @@ package cards.nine.process.device.impl
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.device.models.{Contact, LastCallsContact}
+import cards.nine.models.{Call, Contact}
 import cards.nine.process.device._
+import cards.nine.process.device.models.LastCallsContact
 import cards.nine.services.calls.CallsServicesPermissionException
-import cards.nine.services.calls.models.Call
-import monix.eval.Task
 import cats.syntax.either._
+import monix.eval.Task
 
 trait LastCallsDeviceProcessImpl extends DeviceProcess {
   self: DeviceConversions
@@ -28,7 +28,7 @@ trait LastCallsDeviceProcessImpl extends DeviceProcess {
     def combineContact(lastCallsContact: LastCallsContact): TaskService[(LastCallsContact, Option[Contact])] =
       for {
         contact <- contactsServices.fetchContactByPhoneNumber(lastCallsContact.number)
-      } yield (lastCallsContact, contact map toContact)
+      } yield (lastCallsContact, contact)
 
     def getCombinedContacts(items: Seq[LastCallsContact]):
     TaskService[Seq[(LastCallsContact, Option[Contact])]] = TaskService {

@@ -2,9 +2,10 @@ package cards.nine.process.device.models
 
 import android.content.Intent
 import android.graphics.drawable.Drawable
+import cards.nine.models.Call
 import cards.nine.models.types.{DockType, EmailCategory, PhoneCategory}
 import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.device.types.{CallType, WidgetResizeMode}
+import cards.nine.process.device.types.WidgetResizeMode
 
 case class Shortcut (
   title: String,
@@ -18,23 +19,7 @@ case class LastCallsContact(
   photoUri: Option[String] = None,
   lookupKey: Option[String] = None,
   lastCallDate: Long,
-  calls: Seq[CallData])
-
-case class CallData(
-  date: Long,
-  callType: CallType)
-
-case class Contact(
-  name: String,
-  lookupKey: String,
-  photoUri: String,
-  hasPhone: Boolean,
-  favorite: Boolean,
-  info: Option[ContactInfo] = None)
-
-case class ContactInfo(
-  emails: Seq[ContactEmail],
-  phones: Seq[ContactPhone])
+  calls: Seq[Call])
 
 case class ContactEmail(
   address: String,
