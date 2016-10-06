@@ -1,8 +1,7 @@
 package cards.nine.process.trackevent.impl
 
-import cards.nine.models.types.{Entertainment, GameAdventure, HomeMorningMoment}
-import cards.nine.process.trackevent.models._
-import cards.nine.services.track.TrackEvent
+import cards.nine.models.TrackEvent
+import cards.nine.models.types._
 
 trait TrackEventProcessData {
 
@@ -44,7 +43,7 @@ trait TrackEventProcessData {
     label = Option(entertainmentPackageName),
     value = Option(AddedToCollectionValue.value))
 
-  val removeEvent =TrackEvent(
+  val removeEvent = TrackEvent(
     screen = CollectionDetailScreen.name,
     category = entertainmentCategory.name,
     action = RemovedFromCollectionAction.name,

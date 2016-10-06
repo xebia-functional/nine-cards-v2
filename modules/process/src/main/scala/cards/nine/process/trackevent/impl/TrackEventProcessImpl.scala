@@ -1,14 +1,13 @@
 package cards.nine.process.trackevent.impl
 
 import cards.nine.commons.NineCardExtensions._
-import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.models.TrackEvent
+import cards.nine.models.types._
 import cards.nine.process.trackevent._
-import cards.nine.models.types.Game
+import cards.nine.services.track.TrackServices
 import monix.eval.Task
-import cats.implicits._
-import cards.nine.process.trackevent.models._
-import cards.nine.services.track.{TrackEvent, TrackServices}
 
 class TrackEventProcessImpl(trackServices: TrackServices)
   extends TrackEventProcess

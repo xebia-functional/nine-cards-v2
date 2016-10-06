@@ -1,4 +1,4 @@
-package cards.nine.services.track
+package cards.nine.models
 
 case class TrackEvent(
   screen: String,

@@ -2,7 +2,8 @@ package cards.nine.services.track.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.services.track.{TrackEvent, TrackServices}
+import cards.nine.models.TrackEvent
+import cards.nine.services.track.TrackServices
 import monix.eval.Task
 
 class ConsoleTrackServices extends TrackServices {

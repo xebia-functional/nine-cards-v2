@@ -1,6 +1,4 @@
-package cards.nine.process.trackevent.models
-
-import cards.nine.models.types.{NineCardsMoment, NineCardCategory}
+package cards.nine.models.types
 
 sealed trait Category {
   def name: String

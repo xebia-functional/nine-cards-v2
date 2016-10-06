@@ -2,7 +2,8 @@ package cards.nine.services.analytics.impl
 
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
-import cards.nine.services.track.{TrackEvent, TrackServicesException, ImplicitsTrackServicesException, TrackServices}
+import cards.nine.models.TrackEvent
+import cards.nine.services.track.{ImplicitsTrackServicesException, TrackServices, TrackServicesException}
 import com.google.android.gms.analytics.{HitBuilders, Tracker}
 
 class AnalyticsTrackServices(tracker: Tracker)
