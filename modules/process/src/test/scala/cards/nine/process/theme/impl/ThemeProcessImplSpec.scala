@@ -3,14 +3,13 @@ package cards.nine.process.theme.impl
 import android.content.res.Resources
 import android.util.DisplayMetrics
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.commons.utils.FileUtils
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.utils.{AssetException, FileUtils}
 import cards.nine.process.theme.ThemeException
 import cards.nine.process.theme.models._
-import cards.nine.commons.utils.AssetException
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.test.TaskServiceTestOps._
 
 import scala.util.Success
 
@@ -50,8 +49,9 @@ class ThemeProcessImplSpec
         result must beLike {
           case Right(theme) =>
             theme.name mustEqual defaultThemeName
-            theme.get(SearchBackgroundColor) mustEqual intSampleColorWithoutAlpha
-            theme.get(SearchPressedColor) mustEqual intSampleColorWithAlpha
+            theme.parent mustEqual themeParentLight
+            theme.get(PrimaryColor) mustEqual intSampleColorWithAlpha
+            theme.get(DrawerTextColor) mustEqual intSampleColorWithoutAlpha
         }
       }
 
@@ -59,6 +59,14 @@ class ThemeProcessImplSpec
       new ThemeProcessScope {
 
         mockFileUtils.readFile(any)(any) returns Success(wrongThemeJson)
+        val result = themeProcess.getTheme("")(mockContextSupport).value.run
+        result must beAnInstanceOf[Left[ThemeException, _]]
+      }
+
+    "return a ThemeException if a wrong parent is included in the JSON" in
+      new ThemeProcessScope  {
+
+        mockFileUtils.readFile(any)(any) returns Success(wrongThemeParentJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
         result must beAnInstanceOf[Left[ThemeException, _]]
       }
