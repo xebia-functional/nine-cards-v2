@@ -10,42 +10,6 @@ case object OrderByInstallDate extends FetchAppOrder
 
 case object OrderByCategory extends FetchAppOrder
 
-case class AddCollectionRequest(
-  position: Int,
-  name: String,
-  collectionType: String,
-  icon: String,
-  themedColorIndex: Int,
-  appsCategory: Option[String] = None,
-  originalSharedCollectionId: Option[String] = None,
-  sharedCollectionId: Option[String] = None,
-  sharedCollectionSubscribed: Option[Boolean],
-  cards: Seq[CardData],
-  moment: Option[AddMomentRequest])
-
-case class DeleteCollectionsRequest(where: String)
-
-case class DeleteCollectionRequest(collection: Collection)
-
-case class FetchCollectionByPositionRequest(position: Int)
-
-case class FindCollectionByIdRequest(id: Int)
-
-case class UpdateCollectionRequest(
-  id: Int,
-  position: Int,
-  name: String,
-  collectionType: String,
-  icon: String,
-  themedColorIndex: Int,
-  appsCategory: Option[String] = None,
-  originalSharedCollectionId: Option[String] = None,
-  sharedCollectionId: Option[String] = None,
-  sharedCollectionSubscribed: Option[Boolean],
-  cards: Seq[Card])
-
-case class UpdateCollectionsRequest(updateCollectionsRequests: Seq[UpdateCollectionRequest])
-
 case class AddUserRequest(
   email: Option[String],
   apiKey: Option[String],

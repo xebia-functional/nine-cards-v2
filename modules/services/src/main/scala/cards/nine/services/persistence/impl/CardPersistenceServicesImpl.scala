@@ -1,14 +1,11 @@
 package cards.nine.services.persistence.impl
 
 import cards.nine.commons.NineCardExtensions._
-import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{Card, CardData}
 import cards.nine.repository.provider.{CardEntity, NineCardsSqlHelper}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
-import monix.eval.Task
-
 
 trait CardPersistenceServicesImpl extends PersistenceServices {
 

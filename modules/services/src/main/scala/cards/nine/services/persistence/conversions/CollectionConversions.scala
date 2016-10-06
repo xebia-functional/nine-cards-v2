@@ -1,6 +1,6 @@
 package cards.nine.services.persistence.conversions
 
-import cards.nine.models.Collection
+import cards.nine.models.{CollectionData, Collection}
 import cards.nine.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, Moment => RepositoryMoment}
 import cards.nine.services.persistence._
 
@@ -55,32 +55,15 @@ trait CollectionConversions
       )
     )
 
-  def toRepositoryCollection(request: UpdateCollectionRequest): RepositoryCollection =
-    RepositoryCollection(
-      id = request.id,
-      data = RepositoryCollectionData(
-        position = request.position,
-        name = request.name,
-        collectionType = request.collectionType,
-        icon = request.icon,
-        themedColorIndex = request.themedColorIndex,
-        appsCategory = request.appsCategory,
-        originalSharedCollectionId = request.originalSharedCollectionId,
-        sharedCollectionId = request.sharedCollectionId,
-        sharedCollectionSubscribed = request.sharedCollectionSubscribed
-      )
-    )
-
-  def toRepositoryCollectionData(request: AddCollectionRequest): RepositoryCollectionData =
+  def toRepositoryCollectionData(collection: CollectionData): RepositoryCollectionData =
     RepositoryCollectionData(
-      position = request.position,
-      name = request.name,
-      collectionType = request.collectionType,
-      icon = request.icon,
-      themedColorIndex = request.themedColorIndex,
-      appsCategory = request.appsCategory,
-      originalSharedCollectionId = request.originalSharedCollectionId,
-      sharedCollectionId = request.sharedCollectionId,
-      sharedCollectionSubscribed = request.sharedCollectionSubscribed
-    )
+      position = collection.position,
+      name = collection.name,
+      collectionType = collection.collectionType,
+      icon = collection.icon,
+      themedColorIndex = collection.themedColorIndex,
+      appsCategory = collection.appsCategory,
+      originalSharedCollectionId = collection.originalSharedCollectionId,
+      sharedCollectionId = collection.sharedCollectionId,
+      sharedCollectionSubscribed = Option(collection.sharedCollectionSubscribed))
 }

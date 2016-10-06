@@ -249,20 +249,20 @@ trait PersistenceServices {
   /**
     * Adds an collection to the repository
     *
-    * @param request includes the necessary data to create a new collection in the repository
+    * @param collection includes the necessary data to create a new collection in the repository
     * @return the cards.nine.services.persistence.models.Collection
     * @throws PersistenceServiceException if exist some problem creating the collection
     */
-  def addCollection(request: AddCollectionRequest): TaskService[Collection]
+  def addCollection(collection: CollectionData): TaskService[Collection]
 
   /**
     * Adds collections to the repository
     *
-    * @param requests includes the necessary data to create new collections in the repository
+    * @param collections includes the necessary data to create new collections in the repository
     * @return the Seq[cards.nine.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem creating the collection
     */
-  def addCollections(requests: Seq[AddCollectionRequest]): TaskService[Seq[Collection]]
+  def addCollections(collections: Seq[CollectionData]): TaskService[Seq[Collection]]
 
   /**
     * Deletes all collections from the repository by the where clause
@@ -275,11 +275,11 @@ trait PersistenceServices {
   /**
     * Deletes a collection from the repository by the collection
     *
-    * @param request includes the collection to delete
+    * @param collection the collection to delete
     * @return an Int if the collection has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the collection
     */
-  def deleteCollection(request: DeleteCollectionRequest): TaskService[Int]
+  def deleteCollection(collection: Collection): TaskService[Int]
 
   /**
     * Obtains all the collections from the repository
@@ -312,20 +312,20 @@ trait PersistenceServices {
   /**
     * Obtains the collection from the repository by the position
     *
-    * @param request includes the position
+    * @param position the position
     * @return an Option[cards.nine.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
     */
-  def fetchCollectionByPosition(request: FetchCollectionByPositionRequest): TaskService[Option[Collection]]
+  def fetchCollectionByPosition(position: Int): TaskService[Option[Collection]]
 
   /**
     * Obtains a collection from the repository by the id
     *
-    * @param request includes the id of the collection to find
+    * @param collectionId the id of the collection to find
     * @return an Option[cards.nine.services.persistence.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
     */
-  def findCollectionById(request: FindCollectionByIdRequest): TaskService[Option[Collection]]
+  def findCollectionById(collectionId: Int): TaskService[Option[Collection]]
 
   /**
     * Obtains a collection from the repository by category
@@ -339,20 +339,20 @@ trait PersistenceServices {
   /**
     * Updates the data of an collection from the repository
     *
-    * @param request includes the data to update the collection
+    * @param collection includes the data to update the collection
     * @return an Int if the collection has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the collection
     */
-  def updateCollection(request: UpdateCollectionRequest): TaskService[Int]
+  def updateCollection(collection: Collection): TaskService[Int]
 
   /**
     * Bulk update of the data of some collections from the repository
     *
-    * @param request includes the data to update the cards
+    * @param collections includes the data to update the cards
     * @return a Seq[Int] if the cards has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
     */
-  def updateCollections(request: UpdateCollectionsRequest): TaskService[Seq[Int]]
+  def updateCollections(collections: Seq[Collection]): TaskService[Seq[Int]]
 
   /**
     * Obtains the android id from the repository

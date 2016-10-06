@@ -1,19 +1,5 @@
 package cards.nine.models
 
-case class Collection(
-  id: Int,
-  position: Int,
-  name: String,
-  collectionType: String,
-  icon: String,
-  themedColorIndex: Int,
-  appsCategory: Option[String] = None,
-  originalSharedCollectionId: Option[String] = None,
-  sharedCollectionId: Option[String] = None,
-  sharedCollectionSubscribed: Boolean,
-  cards: Seq[Card] = Seq.empty,
-  moment: Option[Moment])
-
 case class User(
   id: Int,
   email: Option[String],
@@ -34,19 +20,6 @@ case class PersistenceDockApp(
   intent: String,
   imagePath: String,
   position: Int)
-
-case class Moment(
-  id: Int,
-  collectionId: Option[Int],
-  timeslot: Seq[MomentTimeSlot],
-  wifi: Seq[String],
-  headphone: Boolean,
-  momentType: Option[String])
-
-case class MomentTimeSlot(
-  from: String,
-  to: String,
-  days: Seq[Int])
 
 case class DataCounter(term: String, count: Int)
 
