@@ -11,7 +11,7 @@ trait BroadcastDispatcher {
 
   def manageCommand(action: String, command: Option[String]): Unit = {}
 
-  def manageQuestion(action: String): Option[BroadAction] = None
+  def manageQuestion(action: String): Unit = {}
 
   lazy val broadcast = new BroadcastReceiver {
     override def onReceive(context: Context, intent: Intent): Unit = Option(intent) map { i =>
@@ -20,35 +20,20 @@ trait BroadcastDispatcher {
       case Some((Some(action: String), Some(key: String), data)) if key == commandType =>
         manageCommand(action, data)
       case Some((Some(action: String), Some(key: String), _)) if key == questionType =>
-        manageQuestion(action) foreach (ba => dispatcher ! ba)
+        manageQuestion(action)
       case _ =>
     }
   }
 
-  def registerDispatchers = {
+  def registerDispatchers() = {
     val intentFilter = new IntentFilter()
     actionsFilters foreach intentFilter.addAction
     registerReceiver(broadcast, intentFilter)
   }
 
-  def unregisterDispatcher = unregisterReceiver(broadcast)
-
-  def !(broadAction: BroadAction) = {
-    val intent = new Intent(broadAction.action)
-    intent.putExtra(keyType, commandType)
-    broadAction.command foreach (d => intent.putExtra(keyCommand, d))
-    sendBroadcast(intent)
-  }
-
-  def ?(action: String) = {
-    val intent = new Intent(action)
-    intent.putExtra(keyType, questionType)
-    sendBroadcast(intent)
-  }
+  def unregisterDispatcher() = unregisterReceiver(broadcast)
 
 }
-
-case class BroadAction(action: String, command: Option[String] = None)
 
 object BroadcastDispatcher {
   val keyType = "broadcast-key-type"

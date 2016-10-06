@@ -4,13 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import cards.nine.app.commons.BroadcastDispatcher._
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import cards.nine.app.ui.commons.{ActivityUiContext, UiContext}
 import cards.nine.app.ui.commons.WizardState._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.{ActivityUiContext, UiContext}
 import cards.nine.app.ui.wizard.jobs._
-import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.cloud.CloudStorageClientListener
@@ -18,9 +18,9 @@ import cards.nine.process.collection.models.PackagesByCategory
 import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
 import cards.nine.process.user.UserException
 import cards.nine.process.userv1.UserV1Exception
+import cats.implicits._
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult
-import cats.implicits._
 import macroid.Contexts
 
 class WizardActivity
@@ -72,13 +72,13 @@ class WizardActivity
 
   override def onResume(): Unit = {
     super.onResume()
-    registerDispatchers
-    self ? WizardAskActionFilter.action
+    registerDispatchers()
+    wizardJobs.sendAsk().resolveAsync()
   }
 
   override def onPause(): Unit = {
     super.onPause()
-    unregisterDispatcher
+    unregisterDispatcher()
   }
 
   override def onStop(): Unit = {

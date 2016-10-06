@@ -109,7 +109,7 @@ class CollectionsDetailsActivity
     groupCollectionsJobs.initialize(indexColor, icon, position, isStateChanged).
       resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
 
-    registerDispatchers
+    registerDispatchers()
 
   }
 
@@ -133,7 +133,7 @@ class CollectionsDetailsActivity
 
   override def onDestroy(): Unit = {
     super.onDestroy()
-    unregisterDispatcher
+    unregisterDispatcher()
   }
 
   override def onSaveInstanceState(outState: Bundle): Unit = {

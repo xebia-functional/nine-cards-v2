@@ -1,7 +1,7 @@
 package cards.nine.app.services.collections
 
 import android.content.Intent
-import cards.nine.app.commons.{AppNineCardIntentConversions, BroadAction, Conversions}
+import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
 import cards.nine.app.services.commons.FirebaseExtensions._
 import cards.nine.app.ui.commons.WizardState._
 import cards.nine.app.ui.commons.action_filters.{WizardAnswerActionFilter, WizardStateActionFilter}
