@@ -8,8 +8,7 @@ import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types
-import cards.nine.models.types.{MomentCategory, AppCardType}
+import cards.nine.models.types._
 import cards.nine.process.commons.models.{Card, Collection}
 import cats.syntax.either._
 import macroid.ActivityContextWrapper
@@ -56,13 +55,13 @@ class SingleCollectionJobs(
 
   def addCards(cards: Seq[Card]): TaskService[Unit] =
     for {
-      _ <- trackCards(cards, types.AddedToCollectionAction)
+      _ <- trackCards(cards, AddedToCollectionAction)
       _ <- actions.addCards(cards)
     } yield ()
 
   def removeCards(cards: Seq[Card]): TaskService[Unit] =
     for {
-      _ <- trackCards(cards, types.RemovedFromCollectionAction)
+      _ <- trackCards(cards, RemovedFromCollectionAction)
       _ <- actions.removeCards(cards)
     } yield ()
 
@@ -94,26 +93,26 @@ class SingleCollectionJobs(
 
   def showGenericError(): TaskService[Unit] = actions.showContactUsError()
 
-  private[this] def trackCards(cards: Seq[Card], action: types.Action): TaskService[Unit] = TaskService {
+  private[this] def trackCards(cards: Seq[Card], action: Action): TaskService[Unit] = TaskService {
     val tasks = cards map { card =>
       trackCard(card, action).value
     }
     Task.gatherUnordered(tasks) map (_ => Either.right(()))
   }
 
-  private[this] def trackCard(card: Card, action: types.Action): TaskService[Unit] = card.cardType match {
+  private[this] def trackCard(card: Card, action: Action): TaskService[Unit] = card.cardType match {
     case AppCardType =>
       for {
         collection <- actions.getCurrentCollection.resolveOption()
-        maybeCategory = collection.appsCategory map (c => Option(types.AppCategory(c))) getOrElse {
+        maybeCategory = collection.appsCategory map (c => Option(AppCategory(c))) getOrElse {
           collection.moment flatMap (_.momentType) map MomentCategory
         }
         _ <- (action, card.packageName, maybeCategory) match {
-          case (types.OpenCardAction, Some(packageName), Some(category)) =>
+          case (OpenCardAction, Some(packageName), Some(category)) =>
             di.trackEventProcess.openAppFromCollection(packageName, category)
-          case (types.AddedToCollectionAction, Some(packageName), Some(category)) =>
+          case (AddedToCollectionAction, Some(packageName), Some(category)) =>
             di.trackEventProcess.addAppToCollection(packageName, category)
-          case (types.RemovedFromCollectionAction, Some(packageName), Some(category)) =>
+          case (RemovedFromCollectionAction, Some(packageName), Some(category)) =>
             di.trackEventProcess.removeFromCollection(packageName, category)
           case _ => TaskService.empty
         }
