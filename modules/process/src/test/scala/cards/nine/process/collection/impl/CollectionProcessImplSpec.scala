@@ -5,10 +5,8 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.util.DisplayMetrics
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.commons.services.TaskService
-import cards.nine.commons.services.TaskService
-import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.models.types.NoInstalledAppCardType
 import cards.nine.process.collection.{CardException, CollectionException, CollectionProcessConfig}
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.utils.ApiUtils
@@ -16,20 +14,14 @@ import cards.nine.services.api.{ApiServiceException, ApiServices, GooglePlayPack
 import cards.nine.services.apps.{AppsInstalledException, AppsServices}
 import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.contacts.ContactsServices
-import cards.nine.services.contacts.models.Contact
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.Collection
-import cards.nine.models.types.NoInstalledAppCardType
-import monix.eval.Task
 import org.specs2.mock.Mockito
-import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cats.syntax.either._
-import cards.nine.commons.test.TaskServiceTestOps._
 
 trait CollectionProcessImplSpecification
   extends TaskServiceSpecification
-    with Mockito {
+  with Mockito {
 
   val persistenceServiceException = PersistenceServiceException("")
 
@@ -40,7 +32,7 @@ trait CollectionProcessImplSpecification
 
   trait CollectionProcessScope
     extends Scope
-      with CollectionProcessImplData {
+    with CollectionProcessImplData {
 
     val resources = mock[Resources]
     resources.getDisplayMetrics returns mock[DisplayMetrics]
@@ -82,9 +74,7 @@ trait CollectionProcessImplSpecification
       override val apiUtils: ApiUtils = mockApiUtils
 
     }
-
   }
-
 }
 
 class CollectionProcessImplSpec
@@ -95,11 +85,11 @@ class CollectionProcessImplSpec
     "returns a sequence of collections for a valid request without cards" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionWithoutCards)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection.map { r => r.copy(cards = Seq.empty) })
 
         collectionProcess.getCollections.mustRight { resultSeqCollection =>
-          resultSeqCollection.size shouldEqual seqServicesCollectionWithoutCards.size
-          resultSeqCollection map (_.name) shouldEqual seqServicesCollectionWithoutCards.map(_.name)
+          resultSeqCollection.size shouldEqual seqServicesCollection.size
+          resultSeqCollection map (_.name) shouldEqual seqServicesCollection.map(_.name)
           resultSeqCollection map (_.cards) shouldEqual Seq(Seq.empty, Seq.empty)
         }
       }
@@ -107,12 +97,12 @@ class CollectionProcessImplSpec
     "returns a sequence of collections for a valid request " in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionWithCards)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection)
 
         collectionProcess.getCollections.mustRight { resultSeqCollection =>
-          resultSeqCollection.size shouldEqual seqServicesCollectionWithCards.size
-          resultSeqCollection map (_.name) shouldEqual seqServicesCollectionWithCards.map(_.name)
-          resultSeqCollection map (_.cards.size) shouldEqual seqServicesCollectionWithCards.map(_.cards.size)
+          resultSeqCollection.size shouldEqual seqServicesCollection.size
+          resultSeqCollection map (_.name) shouldEqual seqServicesCollection.map(_.name)
+          resultSeqCollection map (_.cards.size) shouldEqual seqServicesCollection.map(_.cards.size)
         }
       }
 
@@ -129,7 +119,7 @@ class CollectionProcessImplSpec
     "returns a collection for a valid request" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId)) returns serviceRight(Some(servicesCollection.copy(id = collectionId)))
+        mockPersistenceServices.findCollectionById(any) returns serviceRight(Some(servicesCollection.copy(id = collectionId)))
 
         collectionProcess.getCollectionById(collectionId).mustRight { resultCollection =>
           resultCollection must beSome.which { collection =>
@@ -141,14 +131,14 @@ class CollectionProcessImplSpec
     "returns None for a valid request if the collection id don't exists" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId)) returns serviceRight(None)
+        mockPersistenceServices.findCollectionById(any) returns serviceRight(None)
         collectionProcess.getCollectionById(collectionId).mustRightNone
       }
 
     "returns a CollectionException if the service throws an exception" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId)) returns serviceLeft(persistenceServiceException)
+        mockPersistenceServices.findCollectionById(any) returns serviceLeft(persistenceServiceException)
         collectionProcess.getCollectionById(collectionId).mustLeft[CollectionException]
       }
   }
@@ -218,8 +208,8 @@ class CollectionProcessImplSpec
     "the size of collections should be equal to size of collections passed by parameter" in
       new CollectionProcessScope {
 
-        val collections: Seq[Collection] = seqFormedCollection map (_ => collectionForUnformedItem)
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionWithCards)
+        val collections: Seq[Collection] = seqFormedCollection map (_ => servicesCollection)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection)
         mockPersistenceServices.addCollections(any) returns serviceRight(collections)
 
         collectionProcess.createCollectionsFromFormedCollections(seqFormedCollection)(contextSupport).mustRight { resultSeqCollection =>
@@ -238,17 +228,17 @@ class CollectionProcessImplSpec
 
   }
 
-  "generatePrivateCollections" should {
+    "generatePrivateCollections" should {
 
-    "return a seq empty if number of cards by category is < minAppsToAdd" in
-      new CollectionProcessScope {
+      "return a seq empty if number of cards by category is < minAppsToAdd" in
+        new CollectionProcessScope {
 
-        val result = collectionProcess.generatePrivateCollections(seqUnformedAppsForPrivateCollections)(contextSupport).mustRight { r =>
-          r shouldEqual Seq.empty
+          val result = collectionProcess.generatePrivateCollections(seqApplicationData)(contextSupport).mustRight { r =>
+            r shouldEqual Seq.empty
+          }
         }
-      }
 
-  }
+    }
 
 
   "addCollection" should {
@@ -256,20 +246,20 @@ class CollectionProcessImplSpec
     "returns a the collection added for a valid request without cards" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionAddWithoutCards)
-        mockPersistenceServices.addCollection(any) returns serviceRight(servicesCollectionAddedWithoutCards)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection map { c => c.copy(cards = Seq.empty) })
+        mockPersistenceServices.addCollection(any) returns serviceRight(servicesCollection.copy(id = seqServicesCollection.size, position = seqServicesCollection.size, cards = Seq.empty))
 
-        val result = collectionProcess.addCollection(addCollectionRequest).run
-        result shouldEqual Right(collectionAddedWithoutCards)
+        val result = collectionProcess.addCollection(addCollectionRequest.copy(cards = Seq.empty)).run
+        result shouldEqual Right(collection.copy(id = seqServicesCollection.size, position = seqServicesCollection.size, cards = Seq.empty))
       }
 
     "returns a the collection added for a valid request with cards" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionAddWithCards)
-        mockPersistenceServices.addCollection(any) returns serviceRight(servicesCollectionAddedWithCards)
-        val result = collectionProcess.addCollection(addCollectionRequestWithCards).run
-        result shouldEqual Right(collectionAddedWithCards)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection)
+        mockPersistenceServices.addCollection(any) returns serviceRight(servicesCollection.copy(id = seqServicesCollection.size, position = seqServicesCollection.size))
+        val result = collectionProcess.addCollection(addCollectionRequest).run
+        result shouldEqual Right(collection.copy(id = seqServicesCollection.size, position = seqServicesCollection.size))
       }
 
 
@@ -283,7 +273,7 @@ class CollectionProcessImplSpec
     "returns a CollectionException if the service throws an exception adding the new collection" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionAddWithoutCards)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection)
         mockPersistenceServices.addCollection(any) returns serviceLeft(persistenceServiceException)
 
         collectionProcess.addCollection(addCollectionRequest).mustLeft[CollectionException]
@@ -298,7 +288,7 @@ class CollectionProcessImplSpec
         mockPersistenceServices.findCollectionById(any) returns serviceRight(Option(servicesCollection.copy()))
         mockPersistenceServices.deleteCollection(any) returns serviceRight(collectionRemoved)
         mockPersistenceServices.deleteCardsByCollection(any) returns serviceRight(cardsRemoved)
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionWithCards)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection)
         mockPersistenceServices.updateCollections(any) returns serviceRight(Seq(updatedCollection))
 
         collectionProcess.deleteCollection(collectionId).mustRightUnit
@@ -347,7 +337,7 @@ class CollectionProcessImplSpec
         mockPersistenceServices.findCollectionById(any) returns serviceRight(Option(servicesCollection.copy(id = collectionId)))
         mockPersistenceServices.deleteCollection(any) returns serviceRight(collectionRemoved)
         mockPersistenceServices.deleteCardsByCollection(any) returns serviceRight(cardsRemoved)
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionWithCards)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection)
         mockPersistenceServices.updateCollections(any) returns serviceLeft(persistenceServiceException)
 
         collectionProcess.deleteCollection(collectionId).mustLeft[CollectionException]
@@ -386,7 +376,7 @@ class CollectionProcessImplSpec
     "returns a empty answer for a valid request" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionWithCards)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection)
         mockPersistenceServices.updateCollections(any) returns serviceRight(Seq(updatedCollections))
         collectionProcess.reorderCollection(0, newPosition).mustRightUnit
       }
@@ -408,7 +398,7 @@ class CollectionProcessImplSpec
     "returns a CollectionException if the service throws an exception updating the collection" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionWithCards)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection)
         mockPersistenceServices.updateCollections(any) returns serviceLeft(persistenceServiceException)
         collectionProcess.reorderCollection(0, newPosition).mustLeft[CollectionException]
       }
@@ -423,7 +413,11 @@ class CollectionProcessImplSpec
         mockPersistenceServices.updateCollection(any) returns serviceRight(updatedCollection)
 
         val result = collectionProcess.editCollection(collectionId, editCollectionRequest).run
-        result shouldEqual Right(editedCollection)
+        result shouldEqual Right(collection.copy(
+          name = nameCollectionRequest,
+          icon = iconCollectionRequest,
+          themedColorIndex = themedColorIndexRequest,
+          appsCategory = Option(appsCategoryBooksAndReference)))
       }
 
     "returns a CollectionException if the service throws an exception finding the collection by Id" in
@@ -451,7 +445,7 @@ class CollectionProcessImplSpec
         mockPersistenceServices.updateCollection(any) returns serviceRight(updatedCollection)
 
         val result = collectionProcess.updateSharedCollection(collectionId, newSharedCollectionId).run
-        result shouldEqual Right(updatedSharedCollection)
+        result shouldEqual Right(collection.copy(sharedCollectionId = Option(newSharedCollectionId)))
       }
 
     "returns a CollectionException if the service throws an exception finding the collection by Id" in
@@ -485,9 +479,9 @@ class CollectionProcessImplSpec
       "already included on the collection" in new CollectionProcessScope {
 
       mockPersistenceServices.findCollectionById(any) returns serviceRight(Some(servicesCollection.copy(id = collectionId)))
-      mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCardsAddPackages)
+      mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCards)
 
-      val result = collectionProcess.addPackages(collectionId, seqServicesCardsAddPackages.flatMap(_.packageName))(contextSupport).mustRightUnit
+      val result = collectionProcess.addPackages(collectionId, seqServicesCards.flatMap(_.packageName))(contextSupport).mustRightUnit
 
       there was one(mockPersistenceServices).findCollectionById(FindCollectionByIdRequest(collectionId))
       there was one(mockPersistenceServices).fetchCardsByCollection(FetchCardsByCollectionRequest(collectionId))
@@ -500,13 +494,13 @@ class CollectionProcessImplSpec
       "or installed in the device" in new CollectionProcessScope {
 
       mockPersistenceServices.findCollectionById(any) returns serviceRight(Some(servicesCollection.copy(id = collectionId)))
-      val (firstHalf, secondHalf) = seqServicesCardsAddPackages.splitAt(seqServicesCardsAddPackages.size / 2)
+      val (firstHalf, secondHalf) = seqServicesCards.splitAt(seqServicesCards.size / 2)
       mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(firstHalf)
-      val secondHalfApps = seqServicesAppAddPackages.filter(app => secondHalf.exists(_.packageName.contains(app.packageName)))
+      val secondHalfApps = seqServicesApp.filter(app => secondHalf.exists(_.packageName.contains(app.packageName)))
       mockPersistenceServices.fetchAppByPackages(any) returns serviceRight(secondHalfApps)
       mockPersistenceServices.addCards(any) returns serviceRight(secondHalf)
 
-      val result = collectionProcess.addPackages(collectionId, seqServicesCardsAddPackages.flatMap(_.packageName))(contextSupport).mustRightUnit
+      val result = collectionProcess.addPackages(collectionId, seqServicesCards.flatMap(_.packageName))(contextSupport).mustRightUnit
 
       there was one(mockPersistenceServices).findCollectionById(FindCollectionByIdRequest(collectionId))
       there was one(mockPersistenceServices).fetchCardsByCollection(FetchCardsByCollectionRequest(collectionId))
@@ -522,7 +516,7 @@ class CollectionProcessImplSpec
       new CollectionProcessScope {
 
         mockPersistenceServices.findCollectionById(any) returns serviceRight(Some(servicesCollection.copy(id = collectionId)))
-        val (firstHalf, secondHalf) = seqServicesCardsAddPackages.splitAt(seqServicesCardsAddPackages.size / 2)
+        val (firstHalf, secondHalf) = seqServicesCards.splitAt(seqServicesCards.size / 2)
         mockPersistenceServices.fetchCardsByCollection(any) returns
           serviceRight(firstHalf)
         mockPersistenceServices.fetchAppByPackages(any) returns
@@ -533,7 +527,7 @@ class CollectionProcessImplSpec
         mockPersistenceServices.addCards(any) returns
           serviceRight(secondHalf)
 
-        collectionProcess.addPackages(collectionId, seqServicesCardsAddPackages.flatMap(_.packageName))(contextSupport).mustRightUnit
+        collectionProcess.addPackages(collectionId, seqServicesCards.flatMap(_.packageName))(contextSupport).mustRightUnit
 
         there was one(mockPersistenceServices).findCollectionById(FindCollectionByIdRequest(collectionId))
         there was one(mockPersistenceServices).fetchCardsByCollection(FetchCardsByCollectionRequest(collectionId))
@@ -552,7 +546,7 @@ class CollectionProcessImplSpec
     "returns a the ordered packages for a valid request" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqServicesAppRank)
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqServicesApp)
         mockAwarenessServices.getLocation(any) returns serviceRight(awarenessLocation)
         mockApiServices.rankApps(any, any)(any) returns serviceRight(rankAppsResponseList)
 
@@ -571,7 +565,7 @@ class CollectionProcessImplSpec
     "returns the ordered packages even if the service throws an exception getting the country location" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqServicesAppRank)
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqServicesApp)
         mockAwarenessServices.getLocation(any) returns serviceLeft(apiServiceException)
         mockApiServices.rankApps(any, any)(any) returns serviceRight(rankAppsResponseList)
 
@@ -583,7 +577,7 @@ class CollectionProcessImplSpec
     "returns a CollectionException if the service throws an exception updating the collection" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqServicesAppRank)
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqServicesApp)
         mockAwarenessServices.getLocation(any) returns serviceRight(awarenessLocation)
         mockApiServices.rankApps(any, any)(any) returns serviceLeft(apiServiceException)
 
@@ -596,11 +590,11 @@ class CollectionProcessImplSpec
     "returns a sequence of cards for a valid request" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCardByCollection)
-        mockPersistenceServices.addCards(any) returns serviceRight(seqServicesAddedCards)
+        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCards)
+        mockPersistenceServices.addCards(any) returns serviceRight(seqServicesCards)
 
         collectionProcess.addCards(collectionId, seqAddCardsRequest).mustRight { resultCards =>
-          resultCards map (_.term) shouldEqual (seqServicesAddedCards map (_.term))
+          resultCards map (_.term) shouldEqual (seqServicesCards map (_.term))
         }
       }
 
@@ -614,7 +608,7 @@ class CollectionProcessImplSpec
     "returns an CardException if the service throws an exception adding the new cards" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCardByCollection)
+        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCards)
         mockPersistenceServices.addCards(any) returns serviceLeft(persistenceServiceException)
 
         collectionProcess.addCards(collectionId, seqAddCardsRequest).mustLeft[CardException]
@@ -627,7 +621,7 @@ class CollectionProcessImplSpec
       new CollectionProcessScope {
 
         mockPersistenceServices.deleteCard(any, any) returns serviceRight(cardRemoved)
-        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCardByCollection)
+        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCards)
         mockPersistenceServices.updateCards(any) returns serviceRight(Seq(updatedCards))
 
         collectionProcess.deleteCard(collectionId, cardId).mustRightUnit
@@ -658,7 +652,7 @@ class CollectionProcessImplSpec
       new CollectionProcessScope {
 
         mockPersistenceServices.deleteCard(any, any) returns serviceRight(cardRemoved)
-        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCardByCollection)
+        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCards)
         mockPersistenceServices.updateCards(any) returns serviceLeft(persistenceServiceException)
 
         collectionProcess.deleteCard(collectionId, cardId).mustLeft[CardException]
@@ -670,7 +664,7 @@ class CollectionProcessImplSpec
     "returns a successful when delete all Seq.empty of Cards in all collection by package name" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollectionWithCards)
+        mockPersistenceServices.fetchCollections returns serviceRight(seqServicesCollection)
         collectionProcess.deleteAllCardsByPackageName(packageName).mustRightUnit
 
         there was no(mockPersistenceServices).deleteCard(any, any)
@@ -691,7 +685,7 @@ class CollectionProcessImplSpec
       new CollectionProcessScope {
 
         mockPersistenceServices.deleteCards(any, any) returns serviceRight(cardsRemoved)
-        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCardDelete)
+        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCards)
         mockPersistenceServices.updateCards(any) returns serviceRight(Seq(updatedCards))
 
         collectionProcess.deleteCards(collectionId, seqCardIds).mustRightUnit
@@ -719,7 +713,7 @@ class CollectionProcessImplSpec
       new CollectionProcessScope {
 
         mockPersistenceServices.deleteCards(any, any) returns serviceRight(cardId)
-        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCardDelete)
+        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCards)
         mockPersistenceServices.updateCards(any) returns serviceLeft(persistenceServiceException)
 
         collectionProcess.deleteCards(collectionId, seqCardIds).mustLeft[CardException]
@@ -731,8 +725,8 @@ class CollectionProcessImplSpec
     "returns a empty answer for a valid request" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCardById(any) returns serviceRight(Option(servicesCardReorder))
-        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCardReorder)
+        mockPersistenceServices.findCardById(any) returns serviceRight(Option(serviceCard))
+        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCards)
         mockPersistenceServices.updateCards(any) returns serviceRight(Seq(updatedCards))
 
         collectionProcess.reorderCard(collectionId, cardIdReorder, newPositionReorder).mustRightUnit
@@ -741,8 +735,8 @@ class CollectionProcessImplSpec
     "returns an empty answer for a valid request, even if new position is the same" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCardById(any) returns serviceRight(Option(servicesCardReorder))
-        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCardReorder)
+        mockPersistenceServices.findCardById(any) returns serviceRight(Option(serviceCard))
+        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCards)
         mockPersistenceServices.updateCards(any) returns serviceRight(Seq(1))
 
         collectionProcess.reorderCard(collectionId, cardIdReorder, samePositionReorder).mustRightUnit
@@ -758,7 +752,7 @@ class CollectionProcessImplSpec
     "returns a CardException if the service throws an exception fetching the cards" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCardById(any) returns serviceRight(Option(servicesCardReorder))
+        mockPersistenceServices.findCardById(any) returns serviceRight(Option(serviceCard))
         mockPersistenceServices.fetchCardsByCollection(any) returns serviceLeft(persistenceServiceException)
 
         collectionProcess.reorderCard(collectionId, cardIdReorder, newPositionReorder).mustLeft[CardException]
@@ -767,8 +761,8 @@ class CollectionProcessImplSpec
     "returns a CardException if the service throws an exception updating the cards" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCardById(any) returns serviceRight(Option(servicesCardReorder))
-        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCardReorder)
+        mockPersistenceServices.findCardById(any) returns serviceRight(Option(serviceCard))
+        mockPersistenceServices.fetchCardsByCollection(any) returns serviceRight(seqServicesCards)
         mockPersistenceServices.updateCards(any) returns serviceLeft(persistenceServiceException)
 
         collectionProcess.reorderCard(collectionId, cardIdReorder, newPositionReorder).mustLeft[CardException]
@@ -780,11 +774,11 @@ class CollectionProcessImplSpec
     "returns a the updated card for a valid request" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCardById(any) returns serviceRight(Option(editCard))
+        mockPersistenceServices.findCardById(any) returns serviceRight(Option(serviceCard))
         mockPersistenceServices.updateCard(any) returns serviceRight(updatedCard)
 
-        collectionProcess.editCard(collectionId, cardIdEdit, newNameEditCard).mustRight { r =>
-          r shouldEqual editedCard.copy(term = newNameEditCard)
+        collectionProcess.editCard(collectionId, serviceCard.id, newNameEditCard).mustRight { r =>
+          r shouldEqual card.copy(term = newNameEditCard)
         }
       }
 
@@ -792,16 +786,16 @@ class CollectionProcessImplSpec
       new CollectionProcessScope {
 
         mockPersistenceServices.findCardById(any) returns serviceLeft(persistenceServiceException)
-        collectionProcess.editCard(collectionId, cardId, newNameEditCard).mustLeft[CardException]
+        collectionProcess.editCard(collectionId, serviceCard.id, newNameEditCard).mustLeft[CardException]
       }
 
     "returns a CardException if the service throws an exception updating the collection" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCardById(any) returns serviceRight(Option(editCard))
+        mockPersistenceServices.findCardById(any) returns serviceRight(Option(serviceCard))
         mockPersistenceServices.updateCard(any) returns serviceLeft(persistenceServiceException)
 
-        collectionProcess.editCard(collectionId, cardId, newNameEditCard).mustLeft[CardException]
+        collectionProcess.editCard(collectionId, serviceCard.id, newNameEditCard).mustLeft[CardException]
       }
   }
 
@@ -810,9 +804,9 @@ class CollectionProcessImplSpec
     "returns Unit if the updated card for a valid request" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCards returns serviceRight(seqServicesCardUpdateNoInstallation)
+        mockPersistenceServices.fetchCards returns serviceRight(seqServicesCards)
         mockPersistenceServices.updateCards(any) returns serviceRight(Seq(updatedCards))
-        mockAppsServices.getApplication(packageNameApplication)(contextSupport) returns serviceRight(applicationUpdateNoInstallation)
+        mockAppsServices.getApplication(packageNameApplication)(contextSupport) returns serviceRight(applicationData)
 
         collectionProcess.updateNoInstalledCardsInCollections(packageNameApplication)(contextSupport).mustRightUnit
       }
@@ -820,7 +814,7 @@ class CollectionProcessImplSpec
     "returns a CardException if the service throws an exception updating the collection" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.fetchCards returns serviceRight(seqServicesCardUpdateNoInstallation)
+        mockPersistenceServices.fetchCards returns serviceRight(seqServicesCards)
         mockPersistenceServices.updateCard(any) returns serviceRight(updatedCard)
         mockAppsServices.getApplication(packageNameApplication)(contextSupport) returns serviceLeft(appsInstalledException)
 
