@@ -149,20 +149,21 @@ trait PersistenceServices {
   /**
     * Adds a card to the repository
     *
-    * @param request includes the necessary data to create a new card in the repository
+    * @param collectionId the collection where the card is included
+    * @param card includes the necessary data to create a new card in the repository
     * @return the cards.nine.services.persistence.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
     */
-  def addCard(request: AddCardRequest): TaskService[Card]
+  def addCard(collectionId: Int, card: CardData): TaskService[Card]
 
   /**
     * Adds a sequence of cards to the repository
     *
-    * @param request includes the necessary data to create new cards in the repository
+    * @param cardsByCollectionId includes the collection where the cards are included and the cards
     * @return the cards.nine.services.persistence.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
     */
-  def addCards(request: Seq[AddCardWithCollectionIdRequest]): TaskService[Seq[Card]]
+  def addCards(cardsByCollectionId: Seq[(Int, Seq[CardData])]): TaskService[Seq[Card]]
 
   /**
     * Deletes all cards from the repository by the where clause
@@ -175,7 +176,7 @@ trait PersistenceServices {
   /**
     * Deletes a card from the repository by the card
     *
-    * @param collectionId includes the collection where the card is included
+    * @param collectionId the collection where the card is included
     * @param cardId includes the card to delete
     * @return an Int if the card has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the card
@@ -204,11 +205,11 @@ trait PersistenceServices {
   /**
     * Obtains all the cards from the repository by the collection id
     *
-    * @param request includes the id of the collection
+    * @param collectionId the id of the collection
     * @return the Seq[cards.nine.services.persistence.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the cards
     */
-  def fetchCardsByCollection(request: FetchCardsByCollectionRequest): TaskService[Seq[Card]]
+  def fetchCardsByCollection(collectionId: Int): TaskService[Seq[Card]]
 
   /**
     * Obtains all the cards from the repository
@@ -221,29 +222,29 @@ trait PersistenceServices {
   /**
     * Obtains a card from the repository by the id
     *
-    * @param request includes the id of the card to find
+    * @param cardId the id of the card to find
     * @return an Option[cards.nine.services.persistence.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the card
     */
-  def findCardById(request: FindCardByIdRequest): TaskService[Option[Card]]
+  def findCardById(cardId: Int): TaskService[Option[Card]]
 
   /**
     * Updates the data of an card from the repository
     *
-    * @param request includes the data to update the card
+    * @param card includes the data to update the card
     * @return an Int if the card has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
     */
-  def updateCard(request: UpdateCardRequest): TaskService[Int]
+  def updateCard(card: Card): TaskService[Int]
 
   /**
     * Bulk update of the data of some cards from the repository
     *
-    * @param request includes the data to update the cards
+    * @param cards includes the data to update the cards
     * @return a Seq[Int] if the cards has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
     */
-  def updateCards(request: UpdateCardsRequest): TaskService[Seq[Int]]
+  def updateCards(cards: Seq[Card]): TaskService[Seq[Int]]
 
   /**
     * Adds an collection to the repository

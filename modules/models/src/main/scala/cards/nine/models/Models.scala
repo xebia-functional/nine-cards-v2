@@ -14,16 +14,6 @@ case class Collection(
   cards: Seq[Card] = Seq.empty,
   moment: Option[Moment])
 
-case class Card(
-  id: Int,
-  position: Int,
-  term: String,
-  packageName: Option[String],
-  cardType: String,
-  intent: String,
-  imagePath: Option[String],
-  notification: Option[String] = None)
-
 case class User(
   id: Int,
   email: Option[String],

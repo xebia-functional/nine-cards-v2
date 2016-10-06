@@ -10,38 +10,6 @@ case object OrderByInstallDate extends FetchAppOrder
 
 case object OrderByCategory extends FetchAppOrder
 
-case class AddCardRequest(
-  collectionId: Option[Int] = None,
-  position: Int,
-  term: String,
-  packageName: Option[String],
-  cardType: String,
-  intent: String,
-  imagePath: Option[String],
-  notification: Option[String] = None)
-
-case class AddCardWithCollectionIdRequest(
-  collectionId: Int,
-  cards: Seq[AddCardRequest])
-
-case class DeleteCardsRequest(where: String)
-
-case class FindCardByIdRequest(id: Int)
-
-case class FetchCardsByCollectionRequest(collectionId: Int)
-
-case class UpdateCardsRequest(updateCardRequests: Seq[UpdateCardRequest])
-
-case class UpdateCardRequest(
-  id: Int,
-  position: Int,
-  term: String,
-  packageName: Option[String],
-  cardType: String,
-  intent: String,
-  imagePath: Option[String],
-  notification: Option[String] = None)
-
 case class AddCollectionRequest(
   position: Int,
   name: String,
@@ -52,7 +20,7 @@ case class AddCollectionRequest(
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
   sharedCollectionSubscribed: Option[Boolean],
-  cards: Seq[AddCardRequest],
+  cards: Seq[CardData],
   moment: Option[AddMomentRequest])
 
 case class DeleteCollectionsRequest(where: String)

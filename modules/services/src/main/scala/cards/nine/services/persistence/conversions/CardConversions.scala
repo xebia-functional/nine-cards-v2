@@ -1,16 +1,18 @@
 package cards.nine.services.persistence.conversions
 
-import cards.nine.models.Card
+import cards.nine.models.{CardData, Card}
 import cards.nine.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId}
 import cards.nine.services.persistence._
 
 trait CardConversions {
 
-  def toCardsWithCollectionId(request: AddCardWithCollectionIdRequest): CardsWithCollectionId =
+  def toCardsWithCollectionId(cardsByCollectionId: (Int, Seq[CardData])): CardsWithCollectionId = {
+    val (collectionId, cards) = cardsByCollectionId
     CardsWithCollectionId(
-      collectionId = request.collectionId,
-      data = request.cards map toRepositoryCardData)
-
+      collectionId = collectionId,
+      data = cards map toRepositoryCardData)
+  }
+  
   def toCard(card: RepositoryCard): Card = {
     Card(
       id = card.id,
@@ -23,27 +25,27 @@ trait CardConversions {
       notification = card.data.notification)
   }
 
-  def toRepositoryCard(request: UpdateCardRequest): RepositoryCard =
+  def toRepositoryCard(card: Card): RepositoryCard =
     RepositoryCard(
-      id = request.id,
+      id = card.id,
       data = RepositoryCardData(
-        position = request.position,
-        term = request.term,
-        packageName = request.packageName,
-        cardType = request.cardType,
-        intent = request.intent,
-        imagePath = request.imagePath,
-        notification = request.notification
+        position = card.position,
+        term = card.term,
+        packageName = card.packageName,
+        cardType = card.cardType,
+        intent = card.intent,
+        imagePath = card.imagePath,
+        notification = card.notification
       )
     )
 
-  def toRepositoryCardData(request: AddCardRequest): RepositoryCardData =
+  def toRepositoryCardData(card: CardData): RepositoryCardData =
     RepositoryCardData(
-      position = request.position,
-      term = request.term,
-      packageName = request.packageName,
-      cardType = request.cardType,
-      intent = request.intent,
-      imagePath = request.imagePath,
-      notification = request.notification)
+      position = card.position,
+      term = card.term,
+      packageName = card.packageName,
+      cardType = card.cardType,
+      intent = card.intent,
+      imagePath = card.imagePath,
+      notification = card.notification)
 }
