@@ -45,7 +45,7 @@ import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
 import cards.nine.commons._
 import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment}
-import cards.nine.models.{AppWidget, ApplicationData, ConditionWeather, Contact}
+import cards.nine.models.{ApplicationData, ConditionWeather, Contact, Widget}
 import cards.nine.process.commons.models.{Collection, Moment}
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.process.device.{GetAppOrder, GetByName}
@@ -304,7 +304,7 @@ trait LauncherUiActionsImpl
 
   override def editMoment(momentType: String): Ui[Any] = showEditMoment(momentType)
 
-  override def addWidgets(widgets: Seq[AppWidget]): Ui[Any] = {
+  override def addWidgets(widgets: Seq[Widget]): Ui[Any] = {
     val uiWidgets = widgets map { widget =>
       val widthContent = workspaces map (_.getWidth) getOrElse 0
       val heightContent = workspaces map (_.getHeight) getOrElse 0
@@ -329,7 +329,7 @@ trait LauncherUiActionsImpl
     Ui.sequence(uiWidgets: _*)
   }
 
-  override def replaceWidget(widget: AppWidget): Ui[Any] = {
+  override def replaceWidget(widget: Widget): Ui[Any] = {
     val maybeAppWidgetInfo = widget.appWidgetId flatMap(widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
 
     (maybeAppWidgetInfo, widget.appWidgetId) match {

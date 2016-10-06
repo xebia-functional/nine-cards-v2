@@ -10,7 +10,7 @@ import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.WidgetsOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.models.Widget
+import cards.nine.models.AppWidget
 import cards.nine.process.device.models.AppsWithWidgets
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -83,7 +83,7 @@ trait WidgetsUiActionsImpl
     menu <~ vgAddViews(views)
   }
 
-  private[this] def showWidgets(tag: String, widgets: Seq[Widget]) = recycler.getAdapter match {
+  private[this] def showWidgets(tag: String, widgets: Seq[AppWidget]) = recycler.getAdapter match {
     case adapter: WidgetsAdapter =>
       (recycler <~ rvSwapAdapter(adapter.copy(widgets))) ~
         (menu <~ Transformer {
@@ -114,7 +114,7 @@ case class ViewHolderWidgetsLayoutAdapter(
 
   lazy val cells = findView(TR.widget_item_cells)
 
-  def bind(widget: Widget, widgetContentWidth: Int, widgetContentHeight: Int): Ui[Any] = {
+  def bind(widget: AppWidget, widgetContentWidth: Int, widgetContentHeight: Int): Ui[Any] = {
     val cell = widget.getCell(widgetContentWidth, widgetContentHeight)
     val size = s"${cell.spanX}x${cell.spanY}"
     val iconTweak = if (widget.preview > 0)

@@ -9,7 +9,7 @@ import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.{GenericUiContext, UiContext}
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.models.AppWidget
+import cards.nine.models.Widget
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -18,7 +18,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 
-case class LauncherNoConfiguredWidgetView(id: Int, wCell: Int, hCell: Int, widget: AppWidget, presenter: LauncherPresenter)
+case class LauncherNoConfiguredWidgetView(id: Int, wCell: Int, hCell: Int, widget: Widget, presenter: LauncherPresenter)
   (implicit contextWrapper: ContextWrapper)
   extends FrameLayout(contextWrapper.bestAvailable) {
 

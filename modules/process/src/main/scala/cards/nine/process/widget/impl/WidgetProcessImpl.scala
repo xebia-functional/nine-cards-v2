@@ -2,7 +2,7 @@ package cards.nine.process.widget.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.AppWidget
+import cards.nine.models.Widget
 import cards.nine.process.widget.{AddWidgetRequest, _}
 import cards.nine.services.persistence.{DeleteWidgetRequest => ServicesDeleteWidgetRequest, _}
 
@@ -82,7 +82,7 @@ class WidgetProcessImpl(
       widget <- persistenceServices.findWidgetById(widgetId)
     } yield widget).resolve[AppWidgetException]
 
-  private[this] def updateWidget(widget: AppWidget) =
+  private[this] def updateWidget(widget: Widget) =
     (for {
       _ <- persistenceServices.updateWidget(toServicesUpdateWidgetRequest(widget))
     } yield ()).resolve[AppWidgetException]

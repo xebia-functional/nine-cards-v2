@@ -332,8 +332,8 @@ trait DeviceProcessData
       )
     ))
 
-  val widgetsServices: Seq[models.Widget] = Seq(
-    Widget(
+  val widgetsServices: Seq[models.AppWidget] = Seq(
+    AppWidget(
       userHashCode = userHashCodeOption1,
       autoAdvanceViewId = autoAdvanceViewId1,
       initialLayout = initialLayout1,
@@ -347,7 +347,7 @@ trait DeviceProcessData
       updatePeriodMillis = updatePeriodMillis1,
       label = label1,
       preview = preview1),
-    Widget(
+    AppWidget(
       userHashCode = userHashCodeOption2,
       autoAdvanceViewId = autoAdvanceViewId2,
       initialLayout = initialLayout2,
@@ -361,7 +361,7 @@ trait DeviceProcessData
       updatePeriodMillis = updatePeriodMillis2,
       label = label2,
       preview = preview2),
-    Widget(
+    AppWidget(
       userHashCode = userHashCodeOption3,
       autoAdvanceViewId = autoAdvanceViewId3,
       initialLayout = initialLayout3,
@@ -377,8 +377,8 @@ trait DeviceProcessData
       preview = preview3)
   )
 
-  val widgets: Seq[Widget] = Seq(
-    Widget(
+  val widgets: Seq[AppWidget] = Seq(
+    AppWidget(
       userHashCode = userHashCodeOption1,
       autoAdvanceViewId = autoAdvanceViewId1,
       initialLayout = initialLayout1,
@@ -392,7 +392,7 @@ trait DeviceProcessData
       updatePeriodMillis = updatePeriodMillis1,
       label = label1,
       preview = preview1),
-    Widget(
+    AppWidget(
       userHashCode = userHashCodeOption2,
       autoAdvanceViewId = autoAdvanceViewId2,
       initialLayout = initialLayout2,
@@ -406,7 +406,7 @@ trait DeviceProcessData
       updatePeriodMillis = updatePeriodMillis2,
       label = label2,
       preview = preview2),
-    Widget(
+    AppWidget(
       userHashCode = userHashCodeOption3,
       autoAdvanceViewId = autoAdvanceViewId3,
       initialLayout = initialLayout3,

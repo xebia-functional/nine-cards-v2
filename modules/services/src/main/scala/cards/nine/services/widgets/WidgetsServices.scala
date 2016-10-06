@@ -2,7 +2,7 @@ package cards.nine.services.widgets
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.Widget
+import cards.nine.models.AppWidget
 
 trait WidgetsServices {
   /**
@@ -11,5 +11,5 @@ trait WidgetsServices {
    *         information about the widget
    * @throws WidgetServicesException if exist some problem to get the widgets in the cell phone
    */
-  def getWidgets(implicit context: ContextSupport): TaskService[Seq[Widget]]
+  def getWidgets(implicit context: ContextSupport): TaskService[Seq[AppWidget]]
 }

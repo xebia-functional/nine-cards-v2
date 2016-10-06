@@ -11,7 +11,7 @@ import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.Statuses.EditWidgetsMode
 import cards.nine.commons._
-import cards.nine.models.AppWidget
+import cards.nine.models.Widget
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -66,7 +66,7 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter:
 
   def deactivateSelected(): Ui[Any] = this <~ vBlankBackground
 
-  def adaptSize(widget: AppWidget): Ui[Any] = this.getField[Cell](LauncherWidgetView.cellKey) match {
+  def adaptSize(widget: Widget): Ui[Any] = this.getField[Cell](LauncherWidgetView.cellKey) match {
     case Some(cell) => Ui {
       updateWidgetSize(cell)
       setLayoutParams(createParams(cell, widget))
@@ -74,12 +74,12 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter:
     case _ => Ui.nop
   }
 
-  def addView(cell: Cell, widget: AppWidget): Tweak[FrameLayout] = {
+  def addView(cell: Cell, widget: Widget): Tweak[FrameLayout] = {
     updateWidgetSize(cell)
     vgAddView(this, createParams(cell, widget))
   }
 
-  private[this] def createParams(cell: Cell, widget: AppWidget): LayoutParams = {
+  private[this] def createParams(cell: Cell, widget: Widget): LayoutParams = {
     val (width, height) = cell.getSize(widget.area.spanX, widget.area.spanY)
     val (startX, startY) = cell.getSize(widget.area.startX, widget.area.startY)
     val params = new LayoutParams(width  + stroke, height + stroke)

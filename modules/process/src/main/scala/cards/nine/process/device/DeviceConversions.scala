@@ -101,7 +101,7 @@ trait DeviceConversions extends NineCardIntentConversions {
     number = item.number,
     category = item.category)
 
-  def toAppsWithWidgets(apps: Seq[Application], widgets: Seq[Widget]): Seq[AppsWithWidgets] = apps map { app =>
+  def toAppsWithWidgets(apps: Seq[Application], widgets: Seq[AppWidget]): Seq[AppsWithWidgets] = apps map { app =>
     AppsWithWidgets(
       packageName = app.packageName,
       name = app.name,

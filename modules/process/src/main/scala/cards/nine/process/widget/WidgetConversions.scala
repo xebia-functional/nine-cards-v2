@@ -1,7 +1,7 @@
 package cards.nine.process.widget
 
 import cards.nine.models.types.WidgetType
-import cards.nine.models.{AppWidget, WidgetArea}
+import cards.nine.models.{Widget, WidgetArea}
 import cards.nine.services.persistence.models.{Widget => ServicesWidget}
 import cards.nine.services.persistence.{AddWidgetRequest => ServicesAddWidgetRequest, UpdateWidgetRequest => ServicesUpdateWidgetRequest}
 
@@ -23,7 +23,7 @@ trait WidgetConversions {
     imagePath = addWidgetRequest.imagePath,
     intent = addWidgetRequest.intent)
 
-  def toWidget(servicesWidget: ServicesWidget): AppWidget = AppWidget(
+  def toWidget(servicesWidget: ServicesWidget): Widget = Widget(
     id = servicesWidget.id,
     momentId = servicesWidget.momentId,
     packageName = servicesWidget.packageName,
@@ -39,22 +39,22 @@ trait WidgetConversions {
     imagePath = servicesWidget.imagePath,
     intent = servicesWidget.intent)
 
-  def toUpdatedWidget(widget: AppWidget, moveWidgetRequest: MoveWidgetRequest): AppWidget =
+  def toUpdatedWidget(widget: Widget, moveWidgetRequest: MoveWidgetRequest): Widget =
     widget.copy(
       area = widget.area.copy(
         startX = widget.area.startX + moveWidgetRequest.displaceX,
         startY = widget.area.startY + moveWidgetRequest.displaceY))
 
-  def toUpdatedWidget(widget: AppWidget, resizeWidgetRequest: ResizeWidgetRequest): AppWidget =
+  def toUpdatedWidget(widget: Widget, resizeWidgetRequest: ResizeWidgetRequest): Widget =
     widget.copy(
       area = widget.area.copy(
         spanX = widget.area.spanX + resizeWidgetRequest.increaseX,
         spanY = widget.area.spanY + resizeWidgetRequest.increaseY))
 
-  def toUpdatedWidget(widget: AppWidget, appWidgetId: Int): AppWidget =
+  def toUpdatedWidget(widget: Widget, appWidgetId: Int): Widget =
     widget.copy(appWidgetId = Option(appWidgetId))
 
-  def toServicesUpdateWidgetRequest(widget: AppWidget): ServicesUpdateWidgetRequest = ServicesUpdateWidgetRequest(
+  def toServicesUpdateWidgetRequest(widget: Widget): ServicesUpdateWidgetRequest = ServicesUpdateWidgetRequest(
     id = widget.id,
     momentId = widget.momentId,
     packageName = widget.packageName,

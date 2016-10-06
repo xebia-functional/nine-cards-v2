@@ -14,7 +14,7 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import cards.nine.commons.javaNull
-import cards.nine.models.AppWidget
+import cards.nine.models.Widget
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.theme.models.NineCardsTheme
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
@@ -82,7 +82,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ => Ui.nop
   }
 
-  def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget): Unit = getView(0) match {
+  def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget): Unit = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
       momentWorkSpace.addWidget(widgetView, cell, widget).run
     case None =>
@@ -91,7 +91,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ =>
   }
 
-  def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: AppWidget): Unit = getView(0) match {
+  def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: Widget): Unit = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
       momentWorkSpace.addNoConfiguredWidget(wCell, hCell, widget).run
     case None =>
@@ -100,7 +100,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ =>
   }
 
-  def addReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: AppWidget): Unit = getView(0) match {
+  def addReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: Widget): Unit = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
       momentWorkSpace.addReplaceWidget(widgetView, wCell, hCell, widget).run
     case _ =>

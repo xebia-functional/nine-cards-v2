@@ -5,11 +5,11 @@ import cards.nine.models.types.WidgetResizeMode
 
 trait Conversions {
 
-  def toWidget(androidAppWidgetProviderInfo: AndroidAppWidgetProviderInfo, widgetLabel: String, userHashCode: Option[Int]): Widget = {
+  def toWidget(androidAppWidgetProviderInfo: AndroidAppWidgetProviderInfo, widgetLabel: String, userHashCode: Option[Int]): AppWidget = {
 
       import androidAppWidgetProviderInfo._
 
-      Widget(
+      AppWidget(
         userHashCode = userHashCode,
         autoAdvanceViewId = autoAdvanceViewId,
         initialLayout = initialLayout,

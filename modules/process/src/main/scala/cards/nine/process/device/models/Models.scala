@@ -1,7 +1,7 @@
 package cards.nine.process.device.models
 
 import cards.nine.models.types.{DockType, EmailCategory, PhoneCategory}
-import cards.nine.models.{Call, Widget}
+import cards.nine.models.{AppWidget, Call}
 import cards.nine.process.commons.models.NineCardIntent
 
 case class LastCallsContact(
@@ -31,7 +31,7 @@ case class DockApp(
 case class AppsWithWidgets(
   packageName: String,
   name: String,
-  widgets: Seq[Widget])
+  widgets: Seq[AppWidget])
 
 case class TermCounter(
   term: String,

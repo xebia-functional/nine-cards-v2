@@ -17,8 +17,8 @@ import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
-import cards.nine.models.{AppWidget, ConditionWeather}
 import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.{ConditionWeather, Widget}
 import cards.nine.process.commons.models.{Card, Collection, MomentTimeSlot}
 import cards.nine.process.device.models.{DockApp, TermCounter}
 import cards.nine.process.theme.models.NineCardsTheme
@@ -59,13 +59,13 @@ object LauncherWorkSpacesTweaks {
     view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
   }
 
-  def lwsAddWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget) =
+  def lwsAddWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget) =
     Tweak[W] (_.addWidget(widgetView, cell, widget))
 
-  def lwsAddNoConfiguredWidget(wCell: Int, hCell: Int, widget: AppWidget) =
+  def lwsAddNoConfiguredWidget(wCell: Int, hCell: Int, widget: Widget) =
     Tweak[W] (_.addNoConfiguredWidget(wCell, hCell, widget))
 
-  def lwsReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: AppWidget) =
+  def lwsReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: Widget) =
     Tweak[W] (_.addReplaceWidget(widgetView, wCell, hCell, widget))
 
   def lwsShowRules() = Tweak[W] (_.showRulesInMoment())

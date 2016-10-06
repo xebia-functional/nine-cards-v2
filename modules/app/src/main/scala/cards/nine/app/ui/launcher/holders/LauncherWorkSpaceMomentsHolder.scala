@@ -20,7 +20,7 @@ import cards.nine.app.ui.components.widgets.LauncherWidgetView._
 import cards.nine.app.ui.components.widgets.{LauncherNoConfiguredWidgetView, LauncherWidgetView}
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons._
-import cards.nine.models.AppWidget
+import cards.nine.models.Widget
 import cards.nine.process.theme.models.NineCardsTheme
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -72,7 +72,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     case i: LauncherWidgetView if i.id == id =>
       (for {
         cell <- i.getField[Cell](cellKey)
-        widget <- i.getField[AppWidget](widgetKey)
+        widget <- i.getField[Widget](widgetKey)
       } yield {
         val newWidget = widget.copy(area = widget.area.copy(
           spanX = widget.area.spanX + resize.increaseX,
@@ -86,7 +86,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     case i: LauncherWidgetView if i.id == id =>
       (for {
         cell <- i.getField[Cell](cellKey)
-        widget <- i.getField[AppWidget](widgetKey)
+        widget <- i.getField[Widget](widgetKey)
       } yield {
         val newWidget = widget.copy(area = widget.area.copy(
           startX = widget.area.startX + move.displaceX,
@@ -96,17 +96,17 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
       }) getOrElse Ui.nop
   }
 
-  def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget): Ui[Any] = {
+  def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget): Ui[Any] = {
     val launcherWidgetView = (LauncherWidgetView(widget.id, widgetView, presenter) <~ saveInfoInTag(cell, widget)).get
     this <~ launcherWidgetView.addView(cell, widget)
   }
 
-  def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: AppWidget): Ui[Any] = {
+  def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: Widget): Ui[Any] = {
     val noConfiguredWidgetView = LauncherNoConfiguredWidgetView(widget.id, wCell, hCell, widget, presenter)
     this <~ noConfiguredWidgetView.addView()
   }
 
-  def addReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: AppWidget): Ui[Any] = {
+  def addReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: Widget): Ui[Any] = {
     val cell = Cell(widget.area.spanX, widget.area.spanY, wCell, hCell)
     (this <~ Transformer {
       case i: LauncherNoConfiguredWidgetView if i.id == widget.id => this <~ vgRemoveView(i)
@@ -154,7 +154,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     case i: ImageView if i.getTag == ruleTag => this <~ vgRemoveView(i)
   }
 
-  private[this] def saveInfoInTag(cell: Cell, widget: AppWidget) =
+  private[this] def saveInfoInTag(cell: Cell, widget: Widget) =
     vAddField(cellKey, cell) +
       vAddField(widgetKey, widget)
 

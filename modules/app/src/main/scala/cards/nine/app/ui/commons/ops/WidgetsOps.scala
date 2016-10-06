@@ -1,7 +1,7 @@
 package cards.nine.app.ui.commons.ops
 
 import android.appwidget.AppWidgetProviderInfo
-import cards.nine.models.Widget
+import cards.nine.models.AppWidget
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ContextWrapper
@@ -54,7 +54,7 @@ object WidgetsOps {
 
   }
 
-  implicit class WidgetsOp(widget: Widget) {
+  implicit class WidgetsOp(widget: AppWidget) {
 
     def getCell(widthContent: Int, heightContent: Int)(implicit contextWrapper: ContextWrapper): Cell =
       dimensionToCell(
