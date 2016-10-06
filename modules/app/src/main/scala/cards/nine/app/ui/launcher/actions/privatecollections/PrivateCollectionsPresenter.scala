@@ -45,7 +45,6 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
       moments <- di.momentProcess.getMoments
       apps <- di.deviceProcess.getSavedApps(GetByName)
       newCollections <- di.collectionProcess.generatePrivateCollections(apps)
-      newMomentCollections <- di.momentProcess.generatePrivateMoments(apps, newCollections.length)
     } yield {
       val privateCollections = newCollections filterNot { newCollection =>
         newCollection.appsCategory match {
@@ -53,10 +52,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
           case _ => false
         }
       }
-      val privateMoments = newMomentCollections filterNot { newMomentCollection =>
-        moments find (_.momentType == newMomentCollection.moment) exists (_.collectionId.isDefined)
-      }
-      privateMoments ++ privateCollections
+      privateCollections
     }
 
 }

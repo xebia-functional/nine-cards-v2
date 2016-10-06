@@ -267,15 +267,6 @@ trait CollectionProcessImplData {
         installedFromGooglePlay = installedFromGooglePlay1)
     }
 
-  def createSeqUnformedContacs(num: Int = 15) =
-    (0 until num) map { item =>
-      UnformedContact(
-        name = name,
-        lookupKey = lookupKey,
-        photoUri = photoUri,
-        info = Option(ContactInfo(Seq.empty, Seq(ContactPhone(phoneNumber, PhoneHome.toString)))))
-    }
-
   val seqCardIds = (0 until 5) map (item => cardId + item)
   val seqCard = createSeqCard()
   val servicesCard = ServicesCard(
@@ -358,16 +349,10 @@ trait CollectionProcessImplData {
   val servicesCollection = seqServicesCollection.headOption
 
   val apps = createSeqApps()
-  val unformedContacts = createSeqUnformedContacs()
 
   val categoriesApps: Seq[NineCardCategory] = allCategories flatMap { category =>
     val count = apps.count(_.category == category)
     if (count >= minAppsToAdd) Option(category) else None
-  }
-
-  val categoriesUnformedItems: Seq[NineCardCategory] = {
-    val count = unformedContacts.size
-    if (count >= minAppsToAdd) categoriesApps :+ ContactsCategory else categoriesApps
   }
 
   val collectionForUnformedItem = ServicesCollection(

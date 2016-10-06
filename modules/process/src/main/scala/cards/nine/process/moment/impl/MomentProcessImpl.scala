@@ -1,24 +1,16 @@
 package cards.nine.process.moment.impl
 
-import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.ApplicationData
-import cards.nine.models.types.NineCardsMoment._
-import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
-import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot, PrivateCollection}
-import cards.nine.process.moment.DefaultApps._
+import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}
 import cards.nine.process.moment.{UpdateMomentRequest, _}
 import cards.nine.services.persistence._
 import cards.nine.services.wifi.WifiServices
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
-
-import scala.annotation.tailrec
 
 class MomentProcessImpl(
   val momentProcessConfig: MomentProcessConfig,
@@ -37,19 +29,6 @@ class MomentProcessImpl(
   override def fetchMomentByType(momentType: NineCardsMoment) =
     (persistenceServices.fetchMomentByType(momentType.name) map (moment => moment map toMoment)).resolve[MomentException]
 
-  override def createMoments(implicit context: ContextSupport) =
-    (for {
-      collections <- persistenceServices.fetchCollections //TODO - Issue #394 - Change this service's call for a new one to be created that returns the number of created collections
-      length = collections.length
-      servicesApp <- persistenceServices.fetchApps(OrderByName, ascending = true)
-      apps = servicesApp map (_.toData)
-      collections = moments.zipWithIndex map {
-        case (moment, index) =>
-          generateAddCollection(filterAppsByMoment(apps, moment), moment, length + index)
-      }
-      moments <- persistenceServices.addCollections(collections)
-    } yield moments map toCollection).resolve[MomentException]
-
   def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport) =
     (for {
       moment <- persistenceServices.addMoment(toAddMomentRequest(None, nineCardsMoment))
@@ -64,12 +43,6 @@ class MomentProcessImpl(
     (for {
       moments <- persistenceServices.addMoments(items map toAddMomentRequest)
     } yield moments map toMoment).resolve[MomentException]
-
-  override def generatePrivateMoments(apps: Seq[ApplicationData], position: Int)(implicit context: ContextSupport) = TaskService {
-      CatchAll[MomentException] {
-        generatePrivateMomentsCollections(apps, moments, Seq.empty, position)
-    }
-  }
 
   override def deleteAllMoments() =
     (for {
@@ -162,59 +135,5 @@ class MomentProcessImpl(
 
     (fromDT, toDT)
   }
-
-  private[this] def filterAppsByMoment(apps: Seq[ApplicationData], moment: NineCardsMoment): Seq[ApplicationData] =
-    apps.filter { app =>
-      moment match {
-        case HomeMorningMoment => homeApps.contains(app.packageName)
-        case WorkMoment => workApps.contains(app.packageName)
-        case HomeNightMoment => nightApps.contains(app.packageName)
-        case WalkMoment => walkApps.contains(app.packageName)
-        case _ => false
-      }
-    }.take(numSpaces)
-
-  private[this] def generateAddCollection(items: Seq[ApplicationData], moment: NineCardsMoment, position: Int): AddCollectionRequest = {
-    val themeIndex = if (position >= numSpaces) position % numSpaces else position
-    AddCollectionRequest(
-      position = position,
-      name = momentProcessConfig.namesMoments.getOrElse(moment, moment.getStringResource),
-      collectionType = MomentCollectionType.name,
-      icon = moment.getIconResource,
-      themedColorIndex = themeIndex,
-      appsCategory = None,
-      sharedCollectionSubscribed = Option(false),
-      cards = toAddCardRequestSeq(items),
-      moment = Option(toAddMomentRequest(None, moment)))
-  }
-
-  @tailrec
-  private[this] def generatePrivateMomentsCollections(
-    items: Seq[ApplicationData],
-    moments: Seq[NineCardsMoment],
-    acc: Seq[PrivateCollection],
-    position: Int): Seq[PrivateCollection] = moments match {
-    case Nil => acc
-    case h :: t =>
-      val insert = generatePrivateMomentsCollection(items, h, acc.length + position + 1)
-      val a = if (insert.cards.nonEmpty) acc :+ insert else acc
-      generatePrivateMomentsCollections(items, t, a, position)
-  }
-
-  private[this] def generatePrivateMomentsCollection(items: Seq[ApplicationData], moment: NineCardsMoment, position: Int): PrivateCollection = {
-    val appsByMoment = filterAppsByMoment(items, moment)
-    val themeIndex = if (position >= numSpaces) position % numSpaces else position
-
-    PrivateCollection(
-      name = momentProcessConfig.namesMoments.getOrElse(moment, moment.getStringResource),
-      collectionType = MomentCollectionType,
-      icon = moment.getIconResource,
-      themedColorIndex = themeIndex,
-      appsCategory = None,
-      cards = appsByMoment map toPrivateCard,
-      moment = Some(moment)
-    )
-  }
-
 
 }

@@ -74,12 +74,12 @@ sealed trait CreateCollectionsProcess {
   val progress: Int
 }
 
-case object GettingAppsProcess
+case object LoadingConfigProcess
   extends CreateCollectionsProcess {
   override val progress: Int = 2
 }
 
-case object LoadingConfigProcess
+case object GettingAppsProcess
   extends CreateCollectionsProcess {
   override val progress: Int = 3
 }

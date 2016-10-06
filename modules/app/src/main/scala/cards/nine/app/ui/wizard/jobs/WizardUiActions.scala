@@ -112,6 +112,8 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
 
   def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast2(R.string.errorConnectingGoogle).toService
 
+  def showErrorEmptyDevice(): TaskService[Unit] = uiShortToast2(R.string.errorEmptyDevice).toService
+
   def showErrorAcceptTerms(): TaskService[Unit] =
     (dom.rootLayout <~ vSnackbarShort(R.string.messageAcceptTerms)).toService
 
