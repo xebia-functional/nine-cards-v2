@@ -2,15 +2,14 @@ package cards.nine.app.commons
 
 import android.content.Intent
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.models.ApplicationData
 import cards.nine.models.types.{AppCardType, AppsCollectionType, ContactCardType, NoInstalledAppCardType}
+import cards.nine.models.{ApplicationData, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
 import cards.nine.process.cloud.models._
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models._
 import cards.nine.process.device.SaveDockAppRequest
-import cards.nine.process.device.models.{Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
 import cards.nine.process.moment.SaveMomentRequest
 import cards.nine.process.recommendations.models.RecommendedApp
 import cards.nine.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}

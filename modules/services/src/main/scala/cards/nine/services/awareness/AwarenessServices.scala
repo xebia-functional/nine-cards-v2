@@ -2,6 +2,7 @@ package cards.nine.services.awareness
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.{Location, WeatherState, Headphones, ProbablyActivity}
 
 trait AwarenessServices {
 
@@ -11,7 +12,7 @@ trait AwarenessServices {
     * @return activity
     * @throws AwarenessException if there was an error with the request GoogleDrive api
     */
-  def getTypeActivity: TaskService[TypeActivity]
+  def getTypeActivity: TaskService[ProbablyActivity]
 
   /**
     * Return headphone state
@@ -19,7 +20,7 @@ trait AwarenessServices {
     * @return if headphone is connected
     * @throws AwarenessException if there was an error with the request GoogleDrive api
     */
-  def getHeadphonesState: TaskService[HeadphonesState]
+  def getHeadphonesState: TaskService[Headphones]
 
   /**
     * Return information about current location
@@ -27,7 +28,7 @@ trait AwarenessServices {
     * @return current location
     * @throws AwarenessException if there was an error with the request GoogleDrive api
     */
-  def getLocation(implicit contextSupport: ContextSupport): TaskService[AwarenessLocation]
+  def getLocation(implicit contextSupport: ContextSupport): TaskService[Location]
 
   /**
     * Return information about current weather

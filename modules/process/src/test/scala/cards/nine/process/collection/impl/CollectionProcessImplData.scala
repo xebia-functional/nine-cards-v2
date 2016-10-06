@@ -1,20 +1,17 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.models.ApplicationData
-import cards.nine.models.Spaces._
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
+import cards.nine.models.{Application, ApplicationData, Contact, ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, Location}
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, CollectionProcessConfig, EditCollectionRequest}
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
-import cards.nine.services.awareness.AwarenessLocation
-import cards.nine.services.contacts.models.{Contact => ServicesContact, ContactInfo => ServicesContactInfo, ContactPhone => ServicesContactPhone}
 import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
-import cards.nine.models.Application
 import cards.nine.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
 import play.api.libs.json.Json
 
@@ -403,19 +400,19 @@ trait CollectionProcessImplData {
 
   val seqFormedCollection = createSeqFormedCollection()
 
-  def createSeqServicesContact(num: Int = 10) =
+  def createSeqContact(num: Int = 10) =
     (0 until num) map { item =>
-      ServicesContact(
+      Contact(
         name = name,
         lookupKey = lookupKey,
         photoUri = photoUri,
         favorite = true)
     }
 
-  val seqContacts: Seq[ServicesContact] = createSeqServicesContact()
+  val seqContacts: Seq[Contact] = createSeqContact()
 
-  val seqContactsWithPhones: Seq[ServicesContact] = seqContacts map {
-    _.copy(info = Option(ServicesContactInfo(Seq.empty, Seq(ServicesContactPhone(phoneNumber, PhoneHome)))))
+  val seqContactsWithPhones: Seq[Contact] = seqContacts map {
+    _.copy(info = Option(ModelsContactInfo(Seq.empty, Seq(ModelsContactPhone(phoneNumber, PhoneHome)))))
   }
 
   val addCollectionRequest = AddCollectionRequest(
@@ -550,7 +547,7 @@ trait CollectionProcessImplData {
     }
 
   val awarenessLocation =
-    AwarenessLocation(
+    Location(
       latitude = latitude,
       longitude = longitude,
       countryCode = Some("ES"),

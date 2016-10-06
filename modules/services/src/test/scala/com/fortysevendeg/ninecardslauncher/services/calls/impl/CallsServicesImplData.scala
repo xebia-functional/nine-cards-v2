@@ -1,7 +1,7 @@
 package cards.nine.services.calls.impl
 
+import cards.nine.models.Call
 import cards.nine.models.types._
-import cards.nine.services.calls.models._
 
 trait CallsServicesImplData {
 
@@ -12,6 +12,7 @@ trait CallsServicesImplData {
 
   val seqPhones = Seq(phoneHome, phoneWork, phoneMobile, phoneOther)
   val seqPhoneCategory = Seq(PhoneHome, PhoneWork, PhoneMobile, PhoneOther)
+  val seqCallType = Seq(IncomingType, OutgoingType, MissedType, OtherType)
 
   val calls = generateCalls
 
@@ -22,7 +23,7 @@ trait CallsServicesImplData {
         Option(s"contact$i"),
         seqPhoneCategory(i),
         1L,
-        i)
+        seqCallType(i))
     }
 
 }

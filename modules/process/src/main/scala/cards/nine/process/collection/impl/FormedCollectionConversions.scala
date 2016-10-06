@@ -2,7 +2,7 @@ package cards.nine.process.collection.impl
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models.ApplicationData
-import cards.nine.models.Spaces._
+import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}

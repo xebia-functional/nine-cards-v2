@@ -2,10 +2,10 @@ package cards.nine.process.device.models
 
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.javaNull
-import cards.nine.models.ApplicationData
+import cards.nine.models
+import cards.nine.models.{Contact, ApplicationData}
 import cards.nine.models.types.Misc
 import cards.nine.process.device.DeviceConversions
-import cards.nine.services.contacts.models.{Contact => ServicesContact}
 import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
 
 class IterableApps(cursor: ServicesIterableApps)
@@ -29,13 +29,13 @@ class EmptyIterableApps()
 }
 
 
-class IterableContacts(cursor: IterableCursor[ServicesContact])
+class IterableContacts(cursor: IterableCursor[models.Contact])
   extends IterableCursor[Contact]
     with DeviceConversions {
 
   override def count(): Int = cursor.count()
 
-  override def moveToPosition(pos: Int): Contact = toContact(cursor.moveToPosition(pos))
+  override def moveToPosition(pos: Int): Contact = cursor.moveToPosition(pos)
 
   override def close(): Unit = cursor.close()
 

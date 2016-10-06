@@ -6,9 +6,9 @@ import cards.nine.commons.contentresolver.IterableCursor._
 import cards.nine.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models._
 import cards.nine.services.contacts.ContactsContentProvider.{allFields, _}
 import cards.nine.services.contacts._
-import cards.nine.services.contacts.models._
 import cats.syntax.either._
 import monix.eval.Task
 

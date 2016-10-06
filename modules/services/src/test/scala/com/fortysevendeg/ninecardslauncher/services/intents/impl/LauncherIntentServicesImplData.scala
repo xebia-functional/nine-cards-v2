@@ -1,6 +1,6 @@
 package cards.nine.services.intents.impl
 
-import cards.nine.services.intents.models._
+import cards.nine.models._
 
 trait LauncherIntentServicesImplData {
 

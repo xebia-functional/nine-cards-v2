@@ -11,7 +11,6 @@ import android.widget.LinearLayout
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.profile.ProfilePresenter
 import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
@@ -19,7 +18,7 @@ import macroid._
 class EditAccountDeviceDialogFragment(
   title: Int,
   maybeText: Option[String],
-  action: (Option[String] => Unit))(implicit contextWrapper: ContextWrapper, profilePresenter: ProfilePresenter)
+  action: (Option[String] => Unit))(implicit contextWrapper: ContextWrapper)
   extends DialogFragment {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {

@@ -1,9 +1,9 @@
 package cards.nine.services.calls
 
 import android.database.Cursor
-import cards.nine.services.calls.models._
-import cards.nine.services.contacts.Fields
+import cards.nine.models.Call
 import cards.nine.models.types._
+import cards.nine.services.contacts.Fields
 
 object CallsContentProvider {
 
@@ -43,6 +43,6 @@ object CallsContentProvider {
         name = Option(cursor.getString(cursor.getColumnIndex(name))),
         numberType = numberType,
         date = cursor.getLong(cursor.getColumnIndex(date)),
-        callType = cursor.getInt(cursor.getColumnIndex(callType)))
+        callType = CallType(cursor.getInt(cursor.getColumnIndex(callType))))
    }
 }
