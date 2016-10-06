@@ -126,9 +126,4 @@ trait DeviceConversions extends NineCardIntentConversions {
     label = item.label,
     preview = item.preview)
 
-  def toBitmapResize(iconResize: IconResize) =
-    BitmapResize(
-      width = iconResize.width,
-      height = iconResize.height)
-
 }

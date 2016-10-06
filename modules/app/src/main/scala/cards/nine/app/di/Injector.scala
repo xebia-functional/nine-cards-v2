@@ -1,13 +1,11 @@
 package cards.nine.app.di
 
 import android.content.res.Resources
-import android.support.v4.content.ContextCompat
 import cards.nine.api.rest.client.ServiceClient
 import cards.nine.api.rest.client.http.OkHttpClient
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.ImageServicesConfig
 import cards.nine.models.types.NineCardCategory._
 import cards.nine.models.types.NineCardsMoment._
 import cards.nine.models.types.{NineCardCategory, NineCardsMoment}
@@ -162,22 +160,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val contactsServices = new ContactsServicesImpl(contentResolverWrapper)
 
-  private[this] lazy val imageServicesConfig = {
-
-    def getColor(colorResource: Int): Int = ContextCompat.getColor(contextSupport.context, colorResource)
-
-    ImageServicesConfig(
-      colors = List(
-        getColor(R.color.background_default_1),
-        getColor(R.color.background_default_2),
-        getColor(R.color.background_default_3),
-        getColor(R.color.background_default_4),
-        getColor(R.color.background_default_5)
-      ))
-  }
-
-  private[this] lazy val imageServices = new ImageServicesImpl(
-    config = imageServicesConfig)
+  private[this] lazy val imageServices = new ImageServicesImpl()
 
   private[this] lazy val widgetsServices = new WidgetsServicesImpl()
 
