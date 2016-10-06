@@ -73,10 +73,7 @@ class WizardActivity
   override def onResume(): Unit = {
     super.onResume()
     registerDispatchers()
-    // TODO - Move to the job and use Jobs.askBroadCastTask
-    val intent = new Intent(WizardAskActionFilter.action)
-    intent.putExtra(keyType, questionType)
-    sendBroadcast(intent)
+    wizardJobs.sendAsk().resolveAsync()
   }
 
   override def onPause(): Unit = {

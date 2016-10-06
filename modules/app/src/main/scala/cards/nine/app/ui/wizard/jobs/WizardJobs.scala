@@ -8,6 +8,7 @@ import cards.nine.app.services.collections.CreateCollectionsService
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.action_filters.WizardAskActionFilter
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.wizard.models.UserCloudDevices
 import cards.nine.app.ui.wizard.{WizardGoogleTokenRequestCancelledException, WizardMarketTokenRequestCancelledException}
@@ -72,6 +73,8 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
       _ <- wizardUiActions.initialize()
       _ <- visibilityUiActions.goToUser()
     } yield()
+
+  def sendAsk(): TaskService[Unit] = askBroadCastTask(BroadAction(WizardAskActionFilter.action))
 
   def stop(): TaskService[Unit] = {
 

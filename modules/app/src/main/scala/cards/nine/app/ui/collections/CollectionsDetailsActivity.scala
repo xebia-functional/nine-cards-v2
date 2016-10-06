@@ -7,7 +7,7 @@ import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view._
-import cards.nine.app.commons.{BroadcastDispatcher$, _}
+import cards.nine.app.commons._
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.jobs._
 import cards.nine.app.ui.commons.RequestCodes._
