@@ -1,11 +1,10 @@
 package cards.nine.app.ui.profile.adapters
 
 import android.support.v7.widget.RecyclerView
-import android.view.{LayoutInflater, MenuItem, View, ViewGroup}
+import android.view.{LayoutInflater, View, ViewGroup}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.preferences.commons.{NineCardsPreferencesValue, ShowPrintInfoOptionInAccounts}
