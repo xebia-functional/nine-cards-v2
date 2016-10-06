@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/WizardNewConfigurationStepContent">
+
+    <FrameLayout
+        style="@style/WizardNewConfigurationHeaderContentStep5">
+
+        <ImageView
+            style="@style/WizardNewConfigurationHeaderImageStep5"/>
+
+    </FrameLayout>
+
+    <TextView
+        style="@style/WizardNewConfigurationTitleStep5"/>
+
+    <TextView
+        style="@style/WizardNewConfigurationDescriptionStep5"/>
+
+    <Button
+        android:id="@+id/wizard_moment_step5_go_to_9cards"
+        style="@style/WizardNewConfigurationActionStep5"/>
+
+</LinearLayout>

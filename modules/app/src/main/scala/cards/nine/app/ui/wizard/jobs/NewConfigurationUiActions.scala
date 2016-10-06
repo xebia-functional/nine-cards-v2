@@ -1,5 +1,6 @@
 package cards.nine.app.ui.wizard.jobs
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -9,6 +10,7 @@ import android.view.ViewGroup.LayoutParams._
 import android.view.{LayoutInflater, View}
 import android.widget.ImageView
 import android.widget.LinearLayout.LayoutParams
+import cards.nine.app.services.sync.SynchronizeDeviceService
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -27,6 +29,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
+import cards.nine.app.ui.commons.SafeUi._
 import macroid.FullDsl._
 import macroid._
 
@@ -190,6 +193,20 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onSaveMoments(dom.getMomentsSelected))) <~
         tvColorResource(resColor))).toService
+  }
+
+  def loadSixthStep(): TaskService[Unit] = {
+    val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_5, javaNull)
+    val resColor = R.color.wizard_new_conf_accent_4
+
+    (uiStartServiceIntent(new Intent(context.bestAvailable, classOf[SynchronizeDeviceService])) ~
+      (dom.newConfigurationStep <~
+        vgAddView(stepView)) ~
+      systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
+      systemBarsTint.defaultStatusBar() ~
+      (dom.newConfigurationStep5GoTo9Cards <~ On.click(Ui(dom.onClickFinishWizardButton()))) ~
+      (dom.newConfigurationPagers <~ vGone) ~
+      (dom.newConfigurationNext <~ vGone)).toService
   }
 
   private[this] def changeWifiName(moment: NineCardsMoment, wifi: String) = dom.newConfigurationStep3WifiContent <~ Transformer {

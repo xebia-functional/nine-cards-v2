@@ -129,6 +129,10 @@
     <string name="wizard_new_conf_title_step_4">On which moments are you interested?</string>
     <string name="wizard_new_conf_description_step_4">Select the moment where you are interested</string>
 
+    <string name="wizard_new_conf_title_step_5">Thank you!</string>
+    <string name="wizard_new_conf_desc_step_5">Remember. You can create and configure the collections and moments in the launcher. Enjoy 9Cards</string>
+    <string name="wizard_new_conf_action_step_5">Go to 9Cards</string>
+
     <!-- Moment / Widgets -->
 
     <string name="editMoment">Edit Moment</string>

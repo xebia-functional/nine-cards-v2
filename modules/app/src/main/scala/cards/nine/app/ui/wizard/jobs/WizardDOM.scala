@@ -69,6 +69,8 @@ trait WizardDOM {
 
   def newConfigurationStep4Bike = finder.findView(TR.wizard_moment_step4_bike)
 
+  def newConfigurationStep5GoTo9Cards = finder.findView(TR.wizard_moment_step5_go_to_9cards)
+
   def getWizardCheckBoxes: Seq[WizardCheckBox] = (0 to newConfigurationStep1CollectionsContent.getChildCount) flatMap { position =>
     newConfigurationStep1CollectionsContent.getChildAt(position) match {
       case widget: WizardCheckBox => Some(widget)

@@ -540,4 +540,39 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <!-- Step 5 -->
+
+    <style name="WizardNewConfigurationHeaderContentStep5" parent="WizardNewConfigurationHeaderContent">
+        <item name="android:background">@color/wizard_new_conf_accent_4</item>
+    </style>
+
+    <style name="WizardNewConfigurationHeaderImageStep5" parent="WizardNewConfigurationHeaderImage">
+        <item name="android:src">@drawable/placeholder_step_06</item>
+    </style>
+
+    <style name="WizardNewConfigurationTitleStep5" parent="WizardNewConfigurationTitle">
+        <item name="android:text">@string/wizard_new_conf_title_step_5</item>
+        <item name="android:textColor">@color/wizard_new_conf_accent_4</item>
+    </style>
+
+    <style name="WizardNewConfigurationDescriptionStep5" parent="WizardNewConfigurationDescription">
+        <item name="android:text">@string/wizard_new_conf_desc_step_5</item>
+    </style>
+
+    <style name="WizardNewConfigurationActionStep5">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/wizard_new_conf_accent_4</item>
+        <item name="android:textColor">@color/wizard_text_button_on</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:layout_marginTop">@dimen/padding_large</item>
+        <item name="android:paddingLeft">@dimen/padding_xlarge</item>
+        <item name="android:paddingRight">@dimen/padding_xlarge</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
+        <item name="android:text">@string/wizard_new_conf_action_step_5</item>
+    </style>
+
 </resources>

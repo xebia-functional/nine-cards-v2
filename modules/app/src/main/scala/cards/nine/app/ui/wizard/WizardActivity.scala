@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import cards.nine.app.commons.BroadcastDispatcher._
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import cards.nine.app.ui.commons.WizardState._
 import cards.nine.app.ui.commons.action_filters._
@@ -159,10 +158,11 @@ class WizardActivity
     newConfigurationJobs.loadMomentWithWifi().resolveAsync()
 
   override def onSaveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit =
-    newConfigurationJobs.saveMoments(infoMoment).resolveAsyncServiceOr(_ =>
+    newConfigurationJobs.saveMomentsWithWifi(infoMoment).resolveAsyncServiceOr(_ =>
       wizardUiActions.showErrorGeneral() *> newConfigurationJobs.loadMomentWithWifi())
 
-  override def onSaveMoments(moments: Seq[NineCardsMoment]): Unit = {}
+  override def onSaveMoments(moments: Seq[NineCardsMoment]): Unit =
+    newConfigurationJobs.saveMoments(moments).resolveAsyncServiceOr(_ => newConfigurationActions.loadSixthStep())
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
     case ex: SocialProfileProcessException if ex.recoverable => wizardJobs.googleSignIn()
