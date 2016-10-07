@@ -2,10 +2,9 @@ package cards.nine.process.collection
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models.types.{AppCardType, NineCardsCategory}
-import cards.nine.models.{ApplicationData, Card => ServicesCard}
+import cards.nine.models.{ApplicationData, Card}
 import cards.nine.process.collection.models._
 import cards.nine.process.commons.CommonConversions
-import cards.nine.process.commons.models.PrivateCard
 import cards.nine.services.api.RankAppsResponse
 import cards.nine.services.api.models.{PackagesByCategory => ServicesPackagesByCategory}
 
@@ -125,7 +124,7 @@ trait Conversions extends CommonConversions {
 //    imagePath = card.imagePath,
 //    notification = card.notification)
 
-  def toInstalledApp(cards: Seq[ServicesCard], app: ApplicationData)(implicit contextSupport: ContextSupport): Seq[ServicesCard] = {
+  def toInstalledApp(cards: Seq[Card], app: ApplicationData)(implicit contextSupport: ContextSupport): Seq[Card] = {
     val intent = toNineCardIntent(app)
     cards map (_.copy(
       term = app.name,
@@ -134,8 +133,8 @@ trait Conversions extends CommonConversions {
     ))
   }
 
-  def toPrivateCard(unformedApp: ApplicationData): PrivateCard =
-    PrivateCard(
+  def toPrivateCard(unformedApp: ApplicationData): Card =
+    Card(
       term = unformedApp.name,
       packageName = Some(unformedApp.packageName),
       cardType = AppCardType,

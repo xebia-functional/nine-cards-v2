@@ -2,7 +2,7 @@ package cards.nine.process.moment
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.commons.models.{Collection, Moment, MomentWithCollection}
+import cards.nine.models.{MomentWithCollection, Moment}
 import cards.nine.models.types.NineCardsMoment
 
 trait MomentProcess {

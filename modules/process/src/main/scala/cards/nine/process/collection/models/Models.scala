@@ -1,7 +1,7 @@
 package cards.nine.process.collection.models
 
 import cards.nine.models.types.{CollectionType, NineCardsCategory, NineCardsMoment}
-import cards.nine.process.commons.models.{FormedWidget, MomentTimeSlot}
+import cards.nine.models.{FormedWidget, MomentTimeSlot}
 
 case class ContactInfo(
   emails: Seq[ContactEmail],

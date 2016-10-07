@@ -2,10 +2,9 @@ package cards.nine.process.collection
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.ApplicationData
+import cards.nine.models.{Card, Collection, ApplicationData}
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.collection.models._
-import cards.nine.process.commons.models.{Card, Collection, PrivateCollection}
 
 trait CollectionProcess {
 
@@ -16,7 +15,7 @@ trait CollectionProcess {
     * @return the Seq[cards.nine.process.collection.PrivateCollection]
     * @throws CollectionException if there was an error creating the existing collections
     */
-  def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport): TaskService[Seq[PrivateCollection]]
+  def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport): TaskService[Seq[Collection]]
 
   /**
    * Creates Collections from some already formed and given Collections
@@ -184,7 +183,7 @@ trait CollectionProcess {
    * @param collectionId the Id of the Collection
    * @param cardId the Id of the Card to delete
    * @param name the new name of the Card
-   * @return the [[Card]]
+   * @return the [[cards.nine.models.Card]]
    * @throws CardException if there was an error finding the card or updating it
    */
   def editCard(collectionId: Int, cardId: Int, name: String): TaskService[Card]

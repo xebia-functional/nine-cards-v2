@@ -1,6 +1,6 @@
 package cards.nine.process.moment
 
-import cards.nine.process.commons.models.{FormedWidget, MomentTimeSlot}
+import cards.nine.models.{FormedWidget, MomentTimeSlot}
 import cards.nine.models.types.NineCardsMoment
 
 case class MomentProcessConfig(

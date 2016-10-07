@@ -4,7 +4,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Widget
 import cards.nine.process.widget.{AddWidgetRequest, _}
-import cards.nine.services.persistence.{DeleteWidgetRequest => ServicesDeleteWidgetRequest, _}
+import cards.nine.services.persistence._
 
 class WidgetProcessImpl(
   val persistenceServices: PersistenceServices)
@@ -32,12 +32,12 @@ class WidgetProcessImpl(
 
   override def addWidget(addWidgetRequest: AddWidgetRequest) =
     (for {
-      widget <- persistenceServices.addWidget(toAddWidgetRequest(addWidgetRequest))
+      widget <- persistenceServices.addWidget(addWidgetRequest)
     } yield toWidget(widget)).resolve[AppWidgetException]
 
   override def addWidgets(request: Seq[AddWidgetRequest]) =
     (for {
-      widgets <- persistenceServices.addWidgets(request map toAddWidgetRequest)
+      widgets <- persistenceServices.addWidgets(request)
     } yield widgets map toWidget).resolve[AppWidgetException]
 
   override def moveWidget(widgetId: Int, moveWidgetRequest: MoveWidgetRequest) =
@@ -69,7 +69,7 @@ class WidgetProcessImpl(
   override def deleteWidget(widgetId: Int) =
     (for {
       widget <- findWidgetById(widgetId).resolveOption()
-      _ <- persistenceServices.deleteWidget(ServicesDeleteWidgetRequest(widget))
+      _ <- persistenceServices.deleteWidget(widget)
     } yield ()).resolve[AppWidgetException]
 
   override def deleteWidgetsByMoment(momentId: Int) =
@@ -84,7 +84,7 @@ class WidgetProcessImpl(
 
   private[this] def updateWidget(widget: Widget) =
     (for {
-      _ <- persistenceServices.updateWidget(toServicesUpdateWidgetRequest(widget))
+      _ <- persistenceServices.updateWidget(widget)
     } yield ()).resolve[AppWidgetException]
 
 }

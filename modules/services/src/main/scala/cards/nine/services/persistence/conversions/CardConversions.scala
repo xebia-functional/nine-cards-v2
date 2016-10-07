@@ -3,8 +3,9 @@ package cards.nine.services.persistence.conversions
 import cards.nine.models.types.CardType
 import cards.nine.models.{Card, CardData}
 import cards.nine.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId}
+import cards.nine.models.NineCardsIntentConversions
 
-trait CardConversions {
+trait CardConversions extends NineCardsIntentConversions {
 
   def toCardsWithCollectionId(cardsByCollectionId: (Int, Seq[CardData])): CardsWithCollectionId = {
     val (collectionId, cards) = cardsByCollectionId
@@ -20,7 +21,7 @@ trait CardConversions {
       term = card.data.term,
       packageName = card.data.packageName,
       cardType = CardType(card.data.cardType),
-      intent = card.data.intent,
+      intent = jsonToNineCardIntent(card.data.intent),
       imagePath = card.data.imagePath,
       notification = card.data.notification)
   }
@@ -33,7 +34,7 @@ trait CardConversions {
         term = card.term,
         packageName = card.packageName,
         cardType = card.cardType.name,
-        intent = card.intent,
+        intent = nineCardIntentToJson(card.intent),
         imagePath = card.imagePath,
         notification = card.notification
       )
@@ -45,7 +46,7 @@ trait CardConversions {
       term = card.term,
       packageName = card.packageName,
       cardType = card.cardType.name,
-      intent = card.intent,
+      intent = nineCardIntentToJson(card.intent),
       imagePath = card.imagePath,
       notification = card.notification)
 }

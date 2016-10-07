@@ -6,10 +6,9 @@ import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models
-import cards.nine.models.Collection
+import cards.nine.models.{Card, Collection}
 import cards.nine.models.types.{CardType, NoInstalledAppCardType}
 import cards.nine.process.collection.{AddCardRequest, CardException, CollectionProcess}
-import cards.nine.process.commons.models.Card
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import monix.eval.Task
 
@@ -86,7 +85,7 @@ trait CardsProcessImpl extends CollectionProcess {
   override def editCard(collectionId: Int, cardId: Int, name: String) =
     (for {
       card <- persistenceServices.findCardById(cardId).resolveOption()
-      updatedCard = toCard(card).copy(term = name)
+      updatedCard = card.copy(term = name)
       _ <- updateCard(updatedCard)
     } yield updatedCard).resolve[CardException]
 
@@ -94,7 +93,7 @@ trait CardsProcessImpl extends CollectionProcess {
     (for {
       app <- appsServices.getApplication(packageName)
       cardList <- persistenceServices.fetchCards
-      cardsNoInstalled = cardList filter (card => CardType(card.cardType) == NoInstalledAppCardType && card.packageName.contains(packageName))
+      cardsNoInstalled = cardList filter (card => card.cardType == NoInstalledAppCardType && card.packageName.contains(packageName))
       cards = toInstalledApp(cardsNoInstalled, app)
       _ <- updateCardList(cards)
     } yield ()).resolve[CardException]

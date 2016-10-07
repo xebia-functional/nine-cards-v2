@@ -7,7 +7,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types.{OrderByCategory, NineCardsCategory, NoInstalledAppCardType}
-import cards.nine.models.{Application, ApplicationData}
+import cards.nine.models.{Collection, Application, ApplicationData}
 import cards.nine.process.collection.models.FormedCollection
 import cards.nine.process.collection.{AddCollectionRequest, _}
 import cards.nine.process.commons.models.Collection
@@ -33,7 +33,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
       apps <- appsServices.getInstalledApplications
       collectionsRequest = adaptCardsToAppsInstalled(items, apps)
       collections <- persistenceServices.addCollections(collectionsRequest)
-    } yield collections map toCollection).resolve[CollectionException]
+    } yield collections).resolve[CollectionException]
 
   def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport) = TaskService {
       CatchAll[CollectionException] {
@@ -44,25 +44,19 @@ trait CollectionsProcessImpl extends CollectionProcess {
   def getCollections = persistenceServices.fetchCollections.resolve[CollectionException]
 
   def getCollectionById(collectionId: Int) =
-    persistenceServices.findCollectionById(collectionId)
-      .map(_.map(toCollection))
-      .resolve[CollectionException]
+    persistenceServices.findCollectionById(collectionId).resolve[CollectionException]
 
   def getCollectionByCategory(category: NineCardsCategory) =
-    persistenceServices.findCollectionByCategory(category.name)
-      .map(_.map(toCollection))
-      .resolve[CollectionException]
+    persistenceServices.findCollectionByCategory(category.name).resolve[CollectionException]
 
   def getCollectionBySharedCollectionId(sharedCollectionId: String) =
-    persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId)
-      .map(_.map(toCollection))
-      .resolve[CollectionException]
+    persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId) .resolve[CollectionException]
 
   def addCollection(addCollectionRequest: AddCollectionRequest) =
     (for {
       collectionList <- persistenceServices.fetchCollections
       collection <- persistenceServices.addCollection(addCollectionRequest, collectionList.size)
-    } yield toCollection(collection)).resolve[CollectionException]
+    } yield collection).resolve[CollectionException]
 
   def deleteCollection(collectionId: Int) = {
 
@@ -191,7 +185,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =
     (for {
       collection <- findCollectionById(collectionId).resolveOption()
-      updatedCollection = f(toCollection(collection))
+      updatedCollection = f(collection)
       _ <- persistenceServices.updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 

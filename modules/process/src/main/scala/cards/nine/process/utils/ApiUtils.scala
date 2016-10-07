@@ -6,7 +6,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.User
 import cards.nine.services.api.{ApiServiceException, ImplicitsApiServiceExceptions, RequestConfig}
-import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServices}
+import cards.nine.services.persistence.PersistenceServices
 import cats.syntax.either._
 import monix.eval.Task
 
@@ -17,7 +17,7 @@ class ApiUtils(persistenceServices: PersistenceServices)
 
     def loadUser(userId: Int): TaskService[RequestConfig] =
       (for {
-        user <- persistenceServices.findUserById(FindUserByIdRequest(userId)).resolveOption()
+        user <- persistenceServices.findUserById(userId).resolveOption()
         keys <- loadTokens(user)
         (apiKey, sessionToken) = keys
         androidId <- persistenceServices.getAndroidId

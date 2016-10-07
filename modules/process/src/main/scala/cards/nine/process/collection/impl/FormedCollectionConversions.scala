@@ -1,6 +1,6 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.models.ApplicationData
+import cards.nine.models.{Collection, ApplicationData}
 import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
 import cards.nine.process.collection.models._
@@ -55,13 +55,13 @@ trait FormedCollectionConversions
   def createPrivateCollections(
     apps: Seq[ApplicationData],
     categories: Seq[NineCardsCategory],
-    minApps: Int): Seq[PrivateCollection] = generatePrivateCollections(apps, categories, Seq.empty)
+    minApps: Int): Seq[Collection] = generatePrivateCollections(apps, categories, Seq.empty)
 
   @tailrec
   private[this] def generatePrivateCollections(
     items: Seq[ApplicationData],
     categories: Seq[NineCardsCategory],
-    acc: Seq[PrivateCollection]): Seq[PrivateCollection] = categories match {
+    acc: Seq[Collection]): Seq[Collection] = categories match {
       case Nil => acc
       case h :: t =>
         val insert = generatePrivateCollection(items, h, acc.length)
@@ -69,11 +69,11 @@ trait FormedCollectionConversions
         generatePrivateCollections(items, t, a)
     }
 
-  private[this] def generatePrivateCollection(items: Seq[ApplicationData], category: NineCardsCategory, position: Int): PrivateCollection = {
+  private[this] def generatePrivateCollection(items: Seq[ApplicationData], category: NineCardsCategory, position: Int): Collection = {
     // TODO We should sort the application using an endpoint in the new sever
     val appsByCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
-    PrivateCollection(
+    Collection(
       name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
       collectionType = AppsCollectionType,
       icon = category.getStringResource,

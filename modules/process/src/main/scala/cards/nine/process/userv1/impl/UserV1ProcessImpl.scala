@@ -8,7 +8,7 @@ import cards.nine.models.User
 import cards.nine.process.userv1._
 import cards.nine.process.userv1.models.{Device, UserV1Info}
 import cards.nine.services.api._
-import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServices}
+import cards.nine.services.persistence.PersistenceServices
 import cats.syntax.either._
 import monix.eval.Task
 
@@ -49,7 +49,7 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
 
     def loadUserConfig(userId: Int): TaskService[UserV1Info] =
       (for {
-        user <- persistenceServices.findUserById(FindUserByIdRequest(userId)).resolveOption()
+        user <- persistenceServices.findUserById(userId).resolveOption()
         androidId <- persistenceServices.getAndroidId
         loginResponse <- loginV1(user, androidId)
         userConfigResponse <- requestConfig(androidId, loginResponse.sessionToken, user.marketToken)
