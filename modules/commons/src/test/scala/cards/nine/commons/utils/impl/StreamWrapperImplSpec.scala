@@ -1,6 +1,6 @@
 package cards.nine.commons.utils.impl
 
-import java.io.{ByteArrayInputStream, InputStream}
+import java.io.{FileInputStream, File, ByteArrayInputStream, InputStream}
 
 import android.content.res.AssetManager
 import cards.nine.commons.contexts.ContextSupport
@@ -11,56 +11,54 @@ import org.specs2.specification.Scope
 
 trait StreamWrapperSpecification
   extends Specification
-  with Mockito{
+  with Mockito {
 
   trait StreamWrapperScope
     extends Scope
-    with FileUtilsData {
+      with FileUtilsData {
 
     val mockContextSupport = mock[ContextSupport]
     val streamWrapper: StreamWrapper = new StreamWrapperImpl
     val mockInputStream = mock[InputStream]
-
-  }
-
-  trait OpenAssetsScope {
-
-    self: StreamWrapperScope =>
-
     val mockAssetManager = mock[AssetManager]
 
-    mockContextSupport.getAssets returns mockAssetManager
-    mockAssetManager.open(fileName) returns mockInputStream
-
-  }
-
-  trait MakeStringScope {
-
-    self: StreamWrapperScope =>
-
-    val inputStream = new ByteArrayInputStream(sourceString.getBytes)
   }
 
 }
 
-class StreamWrapperImplSpec
-  extends StreamWrapperSpecification{
+  class StreamWrapperImplSpec
+    extends StreamWrapperSpecification {
 
-  "Stream Wrapper" should {
+    "Stream Wrapper" should {
 
-    "return an InputStream when a filename is provided" in {
-      new StreamWrapperScope with OpenAssetsScope {
-        val result = streamWrapper.openAssetsFile(fileName)(mockContextSupport)
-        result mustEqual mockInputStream
+      "return an InputStream when a filename is provided" in {
+        new StreamWrapperScope {
+
+          mockContextSupport.getAssets returns mockAssetManager
+          mockAssetManager.open(any) returns mockInputStream
+
+          val result = streamWrapper.openAssetsFile(fileName)(mockContextSupport)
+          result mustEqual mockInputStream
+        }
       }
-    }
 
-    "return a String when an InputStream is provided" in {
-      new StreamWrapperScope with MakeStringScope {
-        val result = streamWrapper.makeStringFromInputStream(inputStream)
-        result mustEqual sourceString
+      "return a String when an InputStream is provided" in {
+        new StreamWrapperScope {
+
+          val inputStream = new ByteArrayInputStream(sourceString.getBytes)
+          val result = streamWrapper.makeStringFromInputStream(inputStream)
+          result mustEqual sourceString
+        }
       }
-    }
 
+      "return a file InputStream" in {
+        new StreamWrapperScope {
+
+          val result = streamWrapper.createFileInputStream(existingFile)
+          result must beAnInstanceOf[FileInputStream]
+
+        }
+      }
+
+    }
   }
-}

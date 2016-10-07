@@ -1,5 +1,7 @@
 package cards.nine.commons.utils
 
+import java.io.File
+
 trait FileUtilsData {
 
   val packageName = "com.fortysevendeg.ninecardslauncher.test"
@@ -8,7 +10,7 @@ trait FileUtilsData {
 
   val fileName = String.format("%s_%s", packageName.toLowerCase.replace(".", "_"), className.toLowerCase.replace(".", "_"))
 
-  val fileFolder = "/file/example"
+  val fileFolder = "target"
 
   val resultFilePath = s"$fileFolder/$fileName"
 
@@ -19,4 +21,7 @@ trait FileUtilsData {
                      }"""
 
   val sourceString = "Source String"
+
+  val existingFile = new File(resultFilePath)
+  existingFile.createNewFile()
 }

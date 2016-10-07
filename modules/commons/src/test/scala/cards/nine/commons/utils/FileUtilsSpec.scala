@@ -7,15 +7,15 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-import scala.util.Success
+import scala.util.{Try, Success}
 
 trait FileUtilsSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   trait FileUtilsScope
     extends Scope
-    with FileUtilsData {
+      with FileUtilsData {
 
     val mockContextSupport = mock[ContextSupport]
     val mockStreamWrapper = mock[StreamWrapper]
@@ -23,23 +23,9 @@ trait FileUtilsSpecification
 
     val fileUtils = new FileUtils(mockStreamWrapper)
 
-  }
-
-  trait ValidUtilsScope {
-    self: FileUtilsScope =>
-
-    mockStreamWrapper.openAssetsFile(fileName)(mockContextSupport) returns mockInputStream
-    mockStreamWrapper.makeStringFromInputStream(mockInputStream) returns fileJson
+    val assetException = AssetException("")
 
   }
-
-  trait ErrorUtilsScope {
-    self: FileUtilsScope =>
-
-    mockStreamWrapper.openAssetsFile(fileName)(mockContextSupport) throws new RuntimeException("")
-
-  }
-
 }
 
 class FileUtilsSpec
@@ -48,13 +34,19 @@ class FileUtilsSpec
   "File Utils" should {
 
     "returns a json string when a valid fileName is provided" in
-      new FileUtilsScope with ValidUtilsScope {
+      new FileUtilsScope {
+
+        mockStreamWrapper.openAssetsFile(fileName)(mockContextSupport) returns mockInputStream
+        mockStreamWrapper.makeStringFromInputStream(mockInputStream) returns fileJson
+
         val result = fileUtils.readFile(fileName)(mockContextSupport)
         result mustEqual Success(fileJson)
       }
 
     "returns an Exception when the file can't be opened" in
-      new FileUtilsScope with ErrorUtilsScope {
+      new FileUtilsScope {
+
+        mockStreamWrapper.openAssetsFile(fileName)(mockContextSupport) throws new AssetException("")
         val result = fileUtils.readFile(fileName)(mockContextSupport)
         result must beFailedTry
       }
