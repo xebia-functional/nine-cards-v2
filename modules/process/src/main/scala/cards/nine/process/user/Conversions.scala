@@ -1,24 +1,23 @@
 package cards.nine.process.user
 
-import cards.nine.process.user.models.{User, UserProfile}
-import cards.nine.services.persistence.UpdateUserRequest
 import cards.nine.models.{User => ServicesUser}
+import cards.nine.process.user.models.{User, UserProfile}
 
 trait Conversions {
-
-  def toUpdateRequest(id: Int, user: ServicesUser) =
-    UpdateUserRequest(
-      id = id,
-      email = user.email,
-      apiKey = user.apiKey,
-      sessionToken = user.sessionToken,
-      deviceToken = user.deviceToken,
-      marketToken = user.marketToken,
-      name = user.name,
-      avatar = user.avatar,
-      cover = user.cover,
-      deviceName = user.deviceName,
-      deviceCloudId = user.deviceCloudId)
+//
+//  def toUpdateRequest(id: Int, user: ServicesUser) =
+//    UpdateUserRequest(
+//      id = id,
+//      email = user.email,
+//      apiKey = user.apiKey,
+//      sessionToken = user.sessionToken,
+//      deviceToken = user.deviceToken,
+//      marketToken = user.marketToken,
+//      name = user.name,
+//      avatar = user.avatar,
+//      cover = user.cover,
+//      deviceName = user.deviceName,
+//      deviceCloudId = user.deviceCloudId)
 
   def toUser(user: ServicesUser): User =
     User(

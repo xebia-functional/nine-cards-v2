@@ -46,26 +46,26 @@ trait CommonConversions extends NineCardIntentConversions {
     from = servicesMomentTimeSlot.from,
     to = servicesMomentTimeSlot.to,
     days = servicesMomentTimeSlot.days)
-
-  def toAddMomentRequest(moment: SaveMomentRequest): AddMomentRequest =
-    AddMomentRequest(
-      collectionId = moment.collectionId,
-      timeslot = moment.timeslot map toServicesMomentTimeSlot,
-      wifi = moment.wifi,
-      headphone = moment.headphone,
-      momentType = moment.momentType map (_.name),
-      widgets = moment.widgets getOrElse Seq.empty map toServiceSaveWidgetRequest)
-
-  def toAddMomentRequest(moment: FormedMoment): AddMomentRequest =
-    AddMomentRequest(
-      collectionId = moment.collectionId,
-      timeslot = moment.timeslot map toServicesMomentTimeSlot,
-      wifi = moment.wifi,
-      headphone = moment.headphone,
-      momentType = moment.momentType map (_.name),
-      widgets = moment.widgets getOrElse Seq.empty map toServiceSaveWidgetRequest)
-
-  def toAddMomentRequest(collectionId: Option[Int], moment: NineCardsMoment): AddMomentRequest = {
+//
+//  def toAddMomentRequest(moment: SaveMomentRequest): AddMomentRequest =
+//    AddMomentRequest(
+//      collectionId = moment.collectionId,
+//      timeslot = moment.timeslot map toServicesMomentTimeSlot,
+//      wifi = moment.wifi,
+//      headphone = moment.headphone,
+//      momentType = moment.momentType map (_.name),
+//      widgets = moment.widgets getOrElse Seq.empty map toServiceSaveWidgetRequest)
+//
+//  def toAddMomentRequest(moment: FormedMoment): AddMomentRequest =
+//    AddMomentRequest(
+//      collectionId = moment.collectionId,
+//      timeslot = moment.timeslot map toServicesMomentTimeSlot,
+//      wifi = moment.wifi,
+//      headphone = moment.headphone,
+//      momentType = moment.momentType map (_.name),
+//      widgets = moment.widgets getOrElse Seq.empty map toServiceSaveWidgetRequest)
+//
+//  def toAddMomentRequest(collectionId: Option[Int], moment: NineCardsMoment): AddMomentRequest = {
 
     def toServicesMomentTimeSlotSeq(moment: NineCardsMoment): Seq[ServicesMomentTimeSlot] =
       moment match {
@@ -79,38 +79,38 @@ trait CommonConversions extends NineCardIntentConversions {
         case BikeMoment => Seq.empty
         case WalkMoment => Seq.empty
       }
-
-    AddMomentRequest(
-      collectionId = collectionId,
-      timeslot = toServicesMomentTimeSlotSeq(moment),
-      wifi = Seq.empty,
-      headphone = moment == MusicMoment,
-      momentType = Option(moment.name),
-      widgets = Seq.empty)
-  }
-
-  def toServiceSaveWidgetRequest(widget: FormedWidget): ServiceSaveWidgetRequest =
-    ServiceSaveWidgetRequest(
-      packageName = widget.packageName,
-      className = widget.className,
-      appWidgetId = 0,
-      startX = widget.startX,
-      startY = widget.startY,
-      spanX = widget.spanX,
-      spanY = widget.spanY,
-      widgetType = widget.widgetType.name,
-      label = widget.label,
-      imagePath = widget.imagePath,
-      intent = widget.intent)
-
-  def toServiceUpdateMomentRequest(moment: UpdateMomentRequest): ServiceUpdateMomentRequest =
-    ServiceUpdateMomentRequest(
-      id = moment.id,
-      collectionId = moment.collectionId,
-      timeslot = moment.timeslot map toServicesMomentTimeSlot,
-      wifi = moment.wifi,
-      headphone = moment.headphone,
-      momentType = moment.momentType map (_.name))
+//
+//    AddMomentRequest(
+//      collectionId = collectionId,
+//      timeslot = toServicesMomentTimeSlotSeq(moment),
+//      wifi = Seq.empty,
+//      headphone = moment == MusicMoment,
+//      momentType = Option(moment.name),
+//      widgets = Seq.empty)
+//  }
+//
+//  def toServiceSaveWidgetRequest(widget: FormedWidget): ServiceSaveWidgetRequest =
+//    ServiceSaveWidgetRequest(
+//      packageName = widget.packageName,
+//      className = widget.className,
+//      appWidgetId = 0,
+//      startX = widget.startX,
+//      startY = widget.startY,
+//      spanX = widget.spanX,
+//      spanY = widget.spanY,
+//      widgetType = widget.widgetType.name,
+//      label = widget.label,
+//      imagePath = widget.imagePath,
+//      intent = widget.intent)
+//
+//  def toServiceUpdateMomentRequest(moment: UpdateMomentRequest): ServiceUpdateMomentRequest =
+//    ServiceUpdateMomentRequest(
+//      id = moment.id,
+//      collectionId = moment.collectionId,
+//      timeslot = moment.timeslot map toServicesMomentTimeSlot,
+//      wifi = moment.wifi,
+//      headphone = moment.headphone,
+//      momentType = moment.momentType map (_.name))
 
   def toServicesMomentTimeSlot(timeSlot: MomentTimeSlot): ServicesMomentTimeSlot =
     ServicesMomentTimeSlot(

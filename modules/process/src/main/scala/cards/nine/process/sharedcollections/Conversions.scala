@@ -5,7 +5,6 @@ import cards.nine.models.types.{AppCardType, CardType, NineCardCategory}
 import cards.nine.process.commons.CommonConversions
 import cards.nine.process.sharedcollections.models._
 import cards.nine.services.api.{SharedCollection => SharedCollectionService, SharedCollectionPackageResponse}
-import cards.nine.services.persistence.UpdateCollectionRequest
 
 trait Conversions
   extends CommonConversions {
@@ -38,19 +37,19 @@ trait Conversions
       downloads = item.downloads,
       free = item.free)
 
-  def toUpdateCollectionRequest(collection: Collection, sharedCollectionSubscribed: Boolean): UpdateCollectionRequest =
-    UpdateCollectionRequest(
-      id = collection.id,
-      position = collection.position,
-      name = collection.name,
-      collectionType = collection.collectionType,
-      icon = collection.icon,
-      themedColorIndex = collection.themedColorIndex,
-      appsCategory = collection.appsCategory,
-      originalSharedCollectionId = collection.originalSharedCollectionId,
-      sharedCollectionId = collection.sharedCollectionId,
-      sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
-      cards = collection.cards)
+//  def toUpdateCollectionRequest(collection: Collection, sharedCollectionSubscribed: Boolean): UpdateCollectionRequest =
+//    UpdateCollectionRequest(
+//      id = collection.id,
+//      position = collection.position,
+//      name = collection.name,
+//      collectionType = collection.collectionType,
+//      icon = collection.icon,
+//      themedColorIndex = collection.themedColorIndex,
+//      appsCategory = collection.appsCategory,
+//      originalSharedCollectionId = collection.originalSharedCollectionId,
+//      sharedCollectionId = collection.sharedCollectionId,
+//      sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
+//      cards = collection.cards)
 
   def toSubscription(subscriptions: (String, Collection)): Subscription = {
     val (sharedCollectionId, collection) = subscriptions

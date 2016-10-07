@@ -21,7 +21,7 @@ class MomentProcessImpl(
   with ImplicitsPersistenceServiceExceptions
   with MomentConversions {
 
-  override def getMoments = (persistenceServices.fetchMoments map toMomentSeq).resolve[MomentException]
+  override def getMoments = persistenceServices.fetchMoments.resolve[MomentException]
 
   override def getMomentByType(momentType: NineCardsMoment) =
     (persistenceServices.getMomentByType(momentType.name) map toMoment).resolve[MomentException]
@@ -31,17 +31,17 @@ class MomentProcessImpl(
 
   def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport) =
     (for {
-      moment <- persistenceServices.addMoment(toAddMomentRequest(None, nineCardsMoment))
+      moment <- persistenceServices.addMoment((None, nineCardsMoment))
     } yield toMoment(moment)).resolve[MomentException]
 
   override def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport) =
     (for {
-      _ <- persistenceServices.updateMoment(toServiceUpdateMomentRequest(item))
+      _ <- persistenceServices.updateMoment(item)
     } yield ()).resolve[MomentException]
 
   override def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport) =
     (for {
-      moments <- persistenceServices.addMoments(items map toAddMomentRequest)
+      moments <- persistenceServices.addMoments(items)
     } yield moments map toMoment).resolve[MomentException]
 
   override def deleteAllMoments() =

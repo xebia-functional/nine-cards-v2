@@ -4,9 +4,7 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models.types._
 import cards.nine.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, _}
 import cards.nine.process.commons.NineCardIntentConversions
-import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
-import cards.nine.services.persistence._
 
 trait DeviceConversions extends NineCardIntentConversions {
 
@@ -18,44 +16,44 @@ trait DeviceConversions extends NineCardIntentConversions {
     case GetByCategory(_) => OrderByCategory
   }
 
-  def toAddAppRequest(item: ApplicationData, category: NineCardCategory): AddAppRequest =
-      AddAppRequest(
-        name = item.name,
-        packageName = item.packageName,
-        className = item.className,
-        category = category.name,
-        dateInstalled = item.dateInstalled,
-        dateUpdate = item.dateUpdate,
-        version = item.version,
-        installedFromGooglePlay = item.installedFromGooglePlay)
-
-  def toUpdateAppRequest(id: Int, item: ApplicationData, category: NineCardCategory): UpdateAppRequest =
-      UpdateAppRequest(
-        id = id,
-        name = item.name,
-        packageName = item.packageName,
-        className = item.className,
-        category = category.name,
-        dateInstalled = item.dateInstalled,
-        dateUpdate = item.dateUpdate,
-        version = item.version,
-        installedFromGooglePlay = item.installedFromGooglePlay)
-
-  def toCreateOrUpdateDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): CreateOrUpdateDockAppRequest =
-    CreateOrUpdateDockAppRequest(
-      name = name,
-      dockType = dockType.name,
-      intent = nineCardIntentToJson(intent),
-      imagePath = imagePath,
-      position = position)
-
-  def toCreateOrUpdateDockAppRequest(dockApp: SaveDockAppRequest): CreateOrUpdateDockAppRequest =
-    CreateOrUpdateDockAppRequest(
-      name = dockApp.name,
-      dockType = dockApp.dockType.name,
-      intent = dockApp.intent,
-      imagePath = dockApp.imagePath,
-      position = dockApp.position)
+//  def toAddAppRequest(item: ApplicationData, category: NineCardCategory): AddAppRequest =
+//      AddAppRequest(
+//        name = item.name,
+//        packageName = item.packageName,
+//        className = item.className,
+//        category = category.name,
+//        dateInstalled = item.dateInstalled,
+//        dateUpdate = item.dateUpdate,
+//        version = item.version,
+//        installedFromGooglePlay = item.installedFromGooglePlay)
+//
+//  def toUpdateAppRequest(id: Int, item: ApplicationData, category: NineCardCategory): UpdateAppRequest =
+//      UpdateAppRequest(
+//        id = id,
+//        name = item.name,
+//        packageName = item.packageName,
+//        className = item.className,
+//        category = category.name,
+//        dateInstalled = item.dateInstalled,
+//        dateUpdate = item.dateUpdate,
+//        version = item.version,
+//        installedFromGooglePlay = item.installedFromGooglePlay)
+//
+//  def toCreateOrUpdateDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): CreateOrUpdateDockAppRequest =
+//    CreateOrUpdateDockAppRequest(
+//      name = name,
+//      dockType = dockType.name,
+//      intent = nineCardIntentToJson(intent),
+//      imagePath = imagePath,
+//      position = position)
+//
+//  def toCreateOrUpdateDockAppRequest(dockApp: SaveDockAppRequest): CreateOrUpdateDockAppRequest =
+//    CreateOrUpdateDockAppRequest(
+//      name = dockApp.name,
+//      dockType = dockApp.dockType.name,
+//      intent = dockApp.intent,
+//      imagePath = dockApp.imagePath,
+//      position = dockApp.position)
 
   def toDockApp(app: ServicesDockApp): ProcessDockApp = ProcessDockApp(
     name = app.name,

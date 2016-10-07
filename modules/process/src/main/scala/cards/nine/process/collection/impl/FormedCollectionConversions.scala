@@ -1,6 +1,5 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models.ApplicationData
 import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
@@ -8,7 +7,6 @@ import cards.nine.process.collection.models._
 import cards.nine.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
 import cards.nine.process.commons.models.PrivateCollection
 import cards.nine.services.contacts.ContactsServices
-import cards.nine.services.persistence.{AddCardRequest, AddCollectionRequest}
 
 import scala.annotation.tailrec
 
@@ -23,36 +21,36 @@ trait FormedCollectionConversions
 
   self: FormedCollectionDependencies =>
 
-  def toAddCollectionRequestByFormedCollection(formedCollections: Seq[FormedCollection])(implicit context: ContextSupport): Seq[AddCollectionRequest] =
-    formedCollections.zipWithIndex.map(zipped => toAddCollectionRequestByFormedCollection(zipped._1, zipped._2))
-
-  def toAddCollectionRequestByFormedCollection(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport): AddCollectionRequest = AddCollectionRequest(
-    position = position,
-    name = formedCollection.name,
-    collectionType = formedCollection.collectionType.name,
-    icon = formedCollection.icon,
-    themedColorIndex = position % numSpaces,
-    appsCategory = formedCollection.category map(_.name),
-    originalSharedCollectionId = formedCollection.originalSharedCollectionId,
-    sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
-    sharedCollectionId = formedCollection.sharedCollectionId,
-    cards = toAddCardRequest(formedCollection.items),
-    moment = formedCollection.moment map toAddMomentRequest)
-
-  def toAddCardRequest(items: Seq[FormedItem])(implicit context: ContextSupport): Seq[AddCardRequest] =
-    items.zipWithIndex.map(zipped => toAddCardRequest(zipped._1, zipped._2))
-
-  def toAddCardRequest(item: FormedItem, position: Int)(implicit context: ContextSupport): AddCardRequest = {
-    val nineCardIntent = jsonToNineCardIntent(item.intent)
-    AddCardRequest(
-      position = position,
-      term = item.title,
-      packageName = nineCardIntent.extractPackageName(),
-      cardType = item.itemType,
-      intent = item.intent,
-      imagePath = item.uriImage
-    )
-  }
+//  def toAddCollectionRequestByFormedCollection(formedCollections: Seq[FormedCollection])(implicit context: ContextSupport): Seq[AddCollectionRequest] =
+//    formedCollections.zipWithIndex.map(zipped => toAddCollectionRequestByFormedCollection(zipped._1, zipped._2))
+//
+//  def toAddCollectionRequestByFormedCollection(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport): AddCollectionRequest = AddCollectionRequest(
+//    position = position,
+//    name = formedCollection.name,
+//    collectionType = formedCollection.collectionType.name,
+//    icon = formedCollection.icon,
+//    themedColorIndex = position % numSpaces,
+//    appsCategory = formedCollection.category map(_.name),
+//    originalSharedCollectionId = formedCollection.originalSharedCollectionId,
+//    sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
+//    sharedCollectionId = formedCollection.sharedCollectionId,
+//    cards = toAddCardRequest(formedCollection.items),
+//    moment = formedCollection.moment map toAddMomentRequest)
+//
+//  def toAddCardRequest(items: Seq[FormedItem])(implicit context: ContextSupport): Seq[AddCardRequest] =
+//    items.zipWithIndex.map(zipped => toAddCardRequest(zipped._1, zipped._2))
+//
+//  def toAddCardRequest(item: FormedItem, position: Int)(implicit context: ContextSupport): AddCardRequest = {
+//    val nineCardIntent = jsonToNineCardIntent(item.intent)
+//    AddCardRequest(
+//      position = position,
+//      term = item.title,
+//      packageName = nineCardIntent.extractPackageName(),
+//      cardType = item.itemType,
+//      intent = item.intent,
+//      imagePath = item.uriImage
+//    )
+//  }
 
   def createPrivateCollections(
     apps: Seq[ApplicationData],

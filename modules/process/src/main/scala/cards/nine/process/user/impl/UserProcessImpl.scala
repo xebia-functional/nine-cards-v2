@@ -20,20 +20,20 @@ class UserProcessImpl(
 
   private[this] val noActiveUserErrorMessage = "No active user"
 
-  val emptyUserRequest = AddUserRequest(None, None, None, None, None, None, None, None, None, None)
+  val emptyUserRequest = (None, None, None, None, None, None, None, None, None, None)
 
   override def signIn(email: String, androidMarketToken: String, emailTokenId: String)(implicit context: ContextSupport) = {
     withActiveUser { id =>
       (for {
         androidId <- persistenceServices.getAndroidId
         loginResponse <- apiServices.login(email, androidId, emailTokenId)
-        userDB <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
+        userDB <- persistenceServices.findUserById(id).resolveOption()
         updateUser = userDB.copy(
           email = Some(email),
           apiKey = Option(loginResponse.apiKey),
           sessionToken = Option(loginResponse.sessionToken),
           marketToken = Option(androidMarketToken))
-        _ <- persistenceServices.updateUser(toUpdateRequest(id, updateUser))
+        _ <- persistenceServices.updateUser(id, updateUser)
       } yield ()).resolve[UserException]
     }
   }
@@ -42,7 +42,7 @@ class UserProcessImpl(
 
     def checkOrAddUser(id: Int)(implicit context: ContextSupport): TaskService[User] =
       (for {
-        maybeUser <- persistenceServices.findUserById(FindUserByIdRequest(id))
+        maybeUser <- persistenceServices.findUserById(id)
         user <- maybeUser map (user => TaskService(Task(Either.right(user)))) getOrElse {
           persistenceServices.addUser(emptyUserRequest)
         }
@@ -71,18 +71,18 @@ class UserProcessImpl(
 
   override def unregister(implicit context: ContextSupport) =
     withActiveUser { id =>
-      val update = UpdateUserRequest(id, None, None, None, None, None, None, None, None, None, None)
+      val update = (id, None, None, None, None, None, None, None, None, None, None)
       (for {
-        user <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
+        user <- persistenceServices.findUserById(id).resolveOption()
         _ <- persistenceServices.updateUser(update)
         _ <- syncInstallation(user.apiKey, user.sessionToken, user.deviceToken, None)
       } yield ()).resolve[UserException]
     }
 
   override def getUser(implicit context: ContextSupport) =
-    withActiveUser { id =>
+    withActiveUser { userId =>
       (for {
-        user <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
+        user <- persistenceServices.findUserById(userId).resolveOption()
       } yield toUser(user)).resolve[UserException]
     }
 
@@ -90,23 +90,23 @@ class UserProcessImpl(
     deviceName: String,
     deviceCloudId: String,
     deviceToken: Option[String] = None)(implicit context: ContextSupport) =
-    withActiveUser { id =>
+    withActiveUser { userId =>
       (for {
-        user <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
+        user <- persistenceServices.findUserById(userId).resolveOption()
         newUser = user.copy(
           deviceName = Option(deviceName),
           deviceCloudId = Option(deviceCloudId),
           deviceToken = deviceToken orElse user.deviceToken)
-        _ <- persistenceServices.updateUser(toUpdateRequest(id = id,user = newUser))
+        _ <- persistenceServices.updateUser(user = newUser)
         _ <- syncInstallation(user.apiKey, user.sessionToken, user.deviceToken, newUser.deviceToken)
       } yield ()).resolve[UserException]
     }
 
   override def updateDeviceToken(deviceToken: String)(implicit context: ContextSupport) =
-    withActiveUser { id =>
+    withActiveUser { userId =>
       (for {
-        user <- persistenceServices.findUserById(FindUserByIdRequest(id)).resolveOption()
-        _ <- persistenceServices.updateUser(toUpdateRequest(id, user.copy(deviceToken = Option(deviceToken))))
+        user <- persistenceServices.findUserById(userId).resolveOption()
+        _ <- persistenceServices.updateUser(userId, user.copy(deviceToken = Option(deviceToken)))
         _ <- syncInstallation(user.apiKey, user.sessionToken, user.deviceToken, Option(deviceToken))
       } yield ()).resolve[UserException]
     }
