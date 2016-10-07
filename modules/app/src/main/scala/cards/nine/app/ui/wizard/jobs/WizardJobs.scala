@@ -25,10 +25,11 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.common.{ConnectionResult, GoogleApiAvailability}
+import com.google.android.gms.common.{AccountPicker, ConnectionResult, GoogleApiAvailability}
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 import cats.implicits._
+import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
 
 import scala.util.{Failure, Success, Try}
 
@@ -97,8 +98,13 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
 
   def connectAccount(termsAccepted: Boolean): TaskService[Unit] =
     if (termsAccepted) {
-      val intent = AccountManager
-        .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
+      val intent = Marshmallow ifSupportedThen {
+        AccountManager
+          .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
+      } getOrElse {
+        AccountPicker
+          .newChooseAccountIntent(javaNull, javaNull, Array(accountType), false, javaNull, javaNull, javaNull, javaNull)
+      }
       uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
     } else {
       wizardUiActions.showErrorAcceptTerms()
