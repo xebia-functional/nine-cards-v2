@@ -409,9 +409,9 @@ trait LauncherUiActionsImpl
     showAction(f[WidgetsFragment], None, resGetColor(R.color.primary), map)
   }
 
-  override def showSelectMomentDialog(): Ui[Any] = activityContextWrapper.original.get match {
+  override def showSelectMomentDialog(moments: Seq[Moment]): Ui[Any] = activityContextWrapper.original.get match {
     case Some(activity: Activity) => Ui {
-      val momentDialog = new MomentDialog
+      val momentDialog = new MomentDialog(moments)
       momentDialog.show()
     }
     case _ => Ui.nop

@@ -2,8 +2,8 @@ package cards.nine.app.ui.commons
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
+import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.commons.BroadcastDispatcher._
-import cards.nine.app.commons._
 import cards.nine.app.di.{Injector, InjectorImpl}
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -57,3 +57,5 @@ class Jobs(implicit contextWrapper: ContextWrapper)
     }
 
 }
+
+case class BroadAction(action: String, command: Option[String] = None)

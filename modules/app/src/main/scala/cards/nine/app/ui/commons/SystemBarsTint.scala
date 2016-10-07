@@ -1,7 +1,8 @@
 package cards.nine.app.ui.commons
 
 import android.graphics.Color
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import android.view.View
+import com.fortysevendeg.macroid.extras.DeviceVersion.{Lollipop, Marshmallow}
 import cards.nine.utils.SystemBarTintManager
 import macroid.{ActivityContextWrapper, Ui}
 
@@ -47,6 +48,14 @@ class SystemBarsTint(implicit activityContextWrapper: ActivityContextWrapper) {
         systemBarTintManager.setNavigationBarTintColor(color)
       }
     }
+
+  def lightStatusBar(): Ui[_] =
+    Ui(Marshmallow ifSupportedThen
+      activityContextWrapper.getOriginal.getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR))
+
+  def defaultStatusBar(): Ui[_] =
+    Ui(Marshmallow ifSupportedThen
+      activityContextWrapper.getOriginal.getWindow.getDecorView.setSystemUiVisibility(0))
 
   def hasNavigationBar = systemBarTintManager.getConfig.hasNavigationBar
 

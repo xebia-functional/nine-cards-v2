@@ -40,6 +40,10 @@ trait TaskServiceSpecification extends Specification {
       service.run must beLike {
         case Right(v) => f(v)
       }
+
+    def mustRightUnit: Unit = mustRight (_ shouldEqual ((): Unit))
+
+    def mustRightNone: Unit = mustRight (_ shouldEqual None)
   }
 
 }

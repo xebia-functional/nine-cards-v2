@@ -14,6 +14,7 @@
     <string name="share">Share</string>
     <string name="filter">Filter</string>
     <string name="loading">Loading</string>
+    <string name="next">Next</string>
     <string name="contactUsError">Oops! Please contact us if this problem persists</string>
     <string name="formFieldError">Is it possible to miss something in the form?</string><!-- Pending review language -->
     <string name="sendTo">Send to</string>
@@ -59,6 +60,7 @@
 
     <string name="errorLoginUser">Error accessing to server. Please try again later</string>
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
+    <string name="errorEmptyDevice">There was a problem loading the selected device. Please, select other device or create a new configuration</string>
     <string name="goTo9Cards">Dive in!</string>
     <string name="workingNotificationTitle">Wait a moment…</string>
 
@@ -71,16 +73,24 @@
     <string name="downloadingBitmapsMessage">Downloading images for apps</string>
     <string name="savingConfigurationMessage">Saving configuration to our servers</string>
 
+    <string name="wizard_loading_connecting_with_google">Connecting with Google</string>
+    <string name="wizard_loading_request_google_permission">Request Google permission</string>
+    <string name="wizard_loading_connecting_with_plus">Connecting with Google Plus</string>
+    <string name="wizard_loading_devices">Loading devices</string>
+    <string name="wizard_loading_looking_for_better_collection">Creating the better collections with your apps</string>
+    <string name="wizard_loading_saving_collections">Saving collections</string>
+    <string name="wizard_loading_saving_moments">Saving moments</string>
+
     <string name="creatingCollectionError">We could not create your collections at this time. Please try again later</string>
 
     <string name="loadUserConfigDeviceReplace">Replace <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g> with a new configuration</string>
     <string name="deviceNotFoundMessage">This device is not associated with your account. Please log in</string>
 
-    <string name="wizard_step_1">9 Cards will organize all your applications in smart collections</string> <!-- Pending review language -->
-    <string name="wizard_step_2">Share collections with friends or download collections community</string> <!-- Pending review language -->
-    <string name="wizard_step_3">9 Cards is an intelligent launcher that fits your everyday</string> <!-- Pending review language -->
-    <string name="wizard_step_4">Adjusts the widgets use by time</string> <!-- Pending review language -->
-    <string name="wizard_step_5">If you want to know more about 9Cards, visit our YouTube channel</string> <!-- Pending review language -->
+    <string name="wizard_step_1">9 Cards will organize all your applications in smart collections</string>
+    <string name="wizard_step_2">Share collections with friends or download collections community</string>
+    <string name="wizard_step_3">9 Cards is an intelligent launcher that fits your everyday</string>
+    <string name="wizard_step_4">Adjusts the widgets use by time</string>
+    <string name="wizard_step_5">If you want to know more about 9Cards, visit our YouTube channel</string>
 
     <string name="errorAndroidMarketPermissionNotAccepted">You need to accept the Android Market permission in order to use 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">You need to accept the Google permission in order to use 9Cards</string>
@@ -89,6 +99,40 @@
     <string name="newConfigurationSubtitle">We\'ll create a new configuration from your apps</string>
     <string name="deviceMigratedFromV1">Migrated from the previous version</string>
     <string name="otherDevicesLink">Other devices configurations</string>
+
+    <string name="wizard_new_conf_title_step_0">Welcome to 9 Cards</string>
+    <string name="wizard_new_conf_desc_step_0">We are looking for the better experience for you in the launcher and we would like to know the things that you are interested</string>
+
+    <string name="wizard_new_conf_title_step_1">Apps grouped by categories</string>
+    <string name="wizard_new_conf_desc_step_1">
+        <![CDATA[
+            We are categorized your <b>%1$s apps</b> in <b>%2$s categories</b> that we call <b>Collections</b>. What categories do you want to use?
+        ]]>
+    </string>
+
+    <string name="wizard_new_conf_best9_step_1">Best 9 apps</string>
+    <string name="wizard_new_conf_collection_counter_step_1">%1$s of %2$s collections</string>
+    <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
+    <string name="wizard_new_conf_collection_name_best9_step_1">%1$s (9 of %2$s apps)</string>
+
+    <string name="wizard_new_conf_title_step_2">9Cards adapts to your day</string>
+    <string name="wizard_new_conf_desc_step_2">
+        <![CDATA[
+            Do you use the same widget in your work, when you listen music or at night? Help us to discover how do you want to use 9Cards. We call <b>Moment</b> to every moment of the day that you do different things
+        ]]>
+    </string>
+
+    <string name="wizard_new_conf_title_step_3">Moments and Wifi that you use</string>
+    <string name="wizard_new_conf_description_step_3">Select the moments for you and the wifi for every moment, then we can show you the better experience</string>
+    <string name="wizard_new_conf_wifi_no_connected_step_3">No wifi in this moment</string>
+    <string name="wizard_new_conf_wifi_connected_step_3">Connected to \"%1$s\"</string>
+
+    <string name="wizard_new_conf_title_step_4">On which moments are you interested?</string>
+    <string name="wizard_new_conf_description_step_4">Select the moment where you are interested</string>
+
+    <string name="wizard_new_conf_title_step_5">Thank you!</string>
+    <string name="wizard_new_conf_desc_step_5">Remember. You can create and configure the collections and moments in the launcher. Enjoy 9Cards</string>
+    <string name="wizard_new_conf_action_step_5">Go to 9Cards</string>
 
     <!-- Moment / Widgets -->
 
@@ -310,7 +354,12 @@
     <string name="home">Home</string>
     <string name="work">Work</string>
     <string name="night">Night</string>
-    <string name="transit">Transit</string>
+    <string name="study">Study</string>
+    <string name="music">Music</string>
+    <string name="car">Car</string>
+    <string name="running">Running</string>
+    <string name="bike">Bike</string>
+    <string name="walk">Walk</string>
 
     <!-- Profile -->
     <string name="publications">Publications</string>
