@@ -193,7 +193,7 @@ trait LauncherUiActionsImpl
   override def goToCollection(collection: Collection, point: Point): Ui[Any] = {
 
     def rippleToCollection: Ui[Future[Any]] = {
-      val color = resGetColor(getIndexColor(collection.themedColorIndex))
+      val color = theme.getIndexColor(collection.themedColorIndex)
       val y = KitKat.ifSupportedThen(point.y - systemBarsTint.getStatusBarHeight) getOrElse point.y
       val background = new RippleCollectionDrawable(point.x, y, color)
       (foreground <~
@@ -410,9 +410,9 @@ trait LauncherUiActionsImpl
     showAction(f[WidgetsFragment], None, resGetColor(R.color.primary), map)
   }
 
-  override def showSelectMomentDialog(): Ui[Any] = activityContextWrapper.original.get match {
+  override def showSelectMomentDialog(moments: Seq[Moment]): Ui[Any] = activityContextWrapper.original.get match {
     case Some(activity: Activity) => Ui {
-      val momentDialog = new MomentDialog
+      val momentDialog = new MomentDialog(moments)
       momentDialog.show()
     }
     case _ => Ui.nop

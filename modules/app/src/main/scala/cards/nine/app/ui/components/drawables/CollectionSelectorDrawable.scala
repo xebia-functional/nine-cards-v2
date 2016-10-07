@@ -1,11 +1,11 @@
 package cards.nine.app.ui.components.drawables
 
-import android.graphics.drawable.Drawable
 import android.graphics._
+import android.graphics.drawable.Drawable
+import cards.nine.commons.ops.ColorOps._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
-import cards.nine.app.ui.commons.ops.ColorOps._
 
 case class CollectionSelectorDrawable(
   color: Int = Color.WHITE)(implicit contextWrapper: ContextWrapper)

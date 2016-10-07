@@ -79,7 +79,7 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
   }
 
   private[this] def getDrawable(index: Int) = {
-    val color = resGetColor(getIndexColor(index))
+    val color = theme.getIndexColor(index)
     val size = resGetDimensionPixelSize(R.dimen.size_icon_select_new_collection)
     val drawable = new ShapeDrawable(new OvalShape)
     drawable.setIntrinsicHeight(size)

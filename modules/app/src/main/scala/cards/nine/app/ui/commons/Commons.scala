@@ -4,9 +4,6 @@ import android.graphics.Color
 import android.view.View
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.process.theme.models._
-import com.fortysevendeg.ninecardslauncher2.R
-
-import scala.util.Random
 
 object Constants {
 
@@ -48,8 +45,6 @@ object RequestCodes {
 
   val goToConfigureWidgets = 11
 
-  val selectInfoWifi = 12
-
   val contactsPermission = 13
 
   val callLogPermission = 14
@@ -84,6 +79,8 @@ object WizardState {
   val stateFailure = "wizard-state-failure"
   val stateCloudIdNotSend = "wizard-state-cloud-id-not-send"
   val stateUserCloudIdPresent = "wizard-state-user-cloud-id-present"
+  val stateUserEmailNotPresent = "wizard-state-user-email-not-present"
+  val stateEmptyDevice = "wizard-state-empty-device"
 }
 
 object SyncDeviceState {
@@ -93,10 +90,10 @@ object SyncDeviceState {
 }
 
 object AppUtils {
-  def getUniqueId: Int = (System.currentTimeMillis & 0xfffffff).toInt
 
   def getDefaultTheme = NineCardsTheme(
     name = "light",
+    parent = ThemeLight,
     styles = Seq(
       ThemeStyle(PrimaryColor, Color.parseColor("#3F51B5")),
       ThemeStyle(SearchBackgroundColor, Color.parseColor("#ffffff")),
@@ -114,22 +111,8 @@ object AppUtils {
       ThemeStyle(CardBackgroundColor, Color.parseColor("#ffffff")),
       ThemeStyle(CardBackgroundPressedColor, Color.parseColor("#000000")),
       ThemeStyle(CollectionDetailTextTabSelectedColor, Color.parseColor("#ffffff")),
-      ThemeStyle(CollectionDetailTextTabDefaultColor, Color.parseColor("#80ffffff"))))
-
-  // TODO We should move this colors to theme
-  def getIndexColor(index: Int): Int = index match {
-    case 0 => R.color.collection_group_1
-    case 1 => R.color.collection_group_2
-    case 2 => R.color.collection_group_3
-    case 3 => R.color.collection_group_4
-    case 4 => R.color.collection_group_5
-    case 5 => R.color.collection_group_6
-    case 6 => R.color.collection_group_7
-    case 7 => R.color.collection_group_8
-    case _ => R.color.collection_group_9
-  }
-
-  def getRandomIndexColor: Int = getIndexColor(Random.nextInt(numSpaces))
+      ThemeStyle(CollectionDetailTextTabDefaultColor, Color.parseColor("#80ffffff"))),
+    themeColors = ThemeColors(Color.parseColor("#FF9800"), Seq.empty))
 }
 
 object AnimationsUtils {

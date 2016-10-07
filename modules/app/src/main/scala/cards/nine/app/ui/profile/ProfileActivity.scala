@@ -1,12 +1,11 @@
 package cards.nine.app.ui.profile
 
 import android.app.Activity
-import android.content.{BroadcastReceiver, Context, Intent, IntentFilter}
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.{Menu, MenuItem}
-import cards.nine.app.commons.BroadcastDispatcher._
-import cards.nine.app.commons.ContextSupportProvider
+import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -28,12 +27,13 @@ class ProfileActivity
   with TypedFindView
   with ProfileDOM
   with ProfileListener
-  with CloudStorageClientListener {
+  with CloudStorageClientListener
+  with BroadcastDispatcher {
 
   self =>
 
-  import SyncDeviceState._
   import ProfileActivity._
+  import SyncDeviceState._
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
 
@@ -45,24 +45,7 @@ class ProfileActivity
 
   val actionsFilters: Seq[String] = SyncActionFilter.cases map (_.action)
 
-  lazy val broadcast = new BroadcastReceiver {
-    override def onReceive(context: Context, intent: Intent): Unit = Option(intent) map { i =>
-      (Option(i.getAction), Option(i.getStringExtra(keyType)), Option(i.getStringExtra(keyCommand)))
-    } match {
-      case Some((Some(action: String), Some(key: String), data)) if key == commandType => manageCommand(action, data)
-      case _ =>
-    }
-  }
-
-  def registerDispatchers() = {
-    val intentFilter = new IntentFilter()
-    actionsFilters foreach intentFilter.addAction
-    registerReceiver(broadcast, intentFilter)
-  }
-
-  def unregisterDispatcher() = unregisterReceiver(broadcast)
-
-  def manageCommand(action: String, data: Option[String]): Unit = (SyncActionFilter(action), data) match {
+  override def manageCommand(action: String, data: Option[String]): Unit = (SyncActionFilter(action), data) match {
     case (SyncStateActionFilter, Some(`stateSuccess`)) =>
       jobs.accountSynced().resolveAsyncServiceOr(_ => actions.showEmptyAccountsContent(error = true))
     case (SyncStateActionFilter, Some(`stateFailure`)) =>

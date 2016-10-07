@@ -15,7 +15,6 @@ import cards.nine.app.ui.collections.CollectionAdapter
 import cards.nine.app.ui.collections.decorations.CollectionItemDecoration
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{AppUtils, ImplicitsUiExceptions, UiContext}
 import cards.nine.app.ui.components.commons._
@@ -24,6 +23,7 @@ import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.app.ui.components.layouts.{PullToCloseListener, PullingListener}
 import cards.nine.app.ui.components.widgets.tweaks.CollectionRecyclerViewTweaks._
 import cards.nine.app.ui.preferences.commons.CardPadding
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.commons.models.{Card, Collection}

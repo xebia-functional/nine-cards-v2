@@ -1,7 +1,6 @@
 package cards.nine.app.ui.launcher.actions.editmoment
 
-import cards.nine.app.commons.BroadAction
-import cards.nine.app.ui.commons.Jobs
+import cards.nine.app.ui.commons.{BroadAction, Jobs}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.action_filters.MomentConstrainsChangedActionFilter
 import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}

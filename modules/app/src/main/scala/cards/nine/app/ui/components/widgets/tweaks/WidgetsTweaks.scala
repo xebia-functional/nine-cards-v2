@@ -1,15 +1,13 @@
 package cards.nine.app.ui.components.widgets.tweaks
 
 import android.graphics.Color
-import android.support.v7.widget.RecyclerView
 import android.view.animation.AnimationUtils
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets._
-import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.models.types.NineCardsMoment
+import cards.nine.process.collection.models.PackagesByCategory
 import macroid._
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object TintableImageViewTweaks {
   type W = TintableImageView
@@ -49,14 +47,6 @@ object TintableButtonTweaks {
 
 }
 
-object RippleBackgroundViewTweaks {
-
-  def rbvColor(color: Int, forceFade: Boolean = false)(implicit contextWrapper: ContextWrapper) = Tweak[RippleBackgroundView] { view =>
-    (view <~~ ripple(color, forceFade)).run
-  }
-
-}
-
 object CollectionRecyclerViewTweaks {
   type W = CollectionRecyclerView
 
@@ -93,5 +83,58 @@ object DrawerRecyclerViewTweaks {
   }
 
   def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)
+
+}
+
+object WizardCheckBoxTweaks {
+  type W = WizardCheckBox
+
+  def wcbInitialize(resText: Int, defaultCheck: Boolean = true) = Tweak[W] (_.initialize(resText, defaultCheck).run)
+
+  def wcbInitializeCollection(packagesByCategory: PackagesByCategory, defaultCheck: Boolean = true) =
+    Tweak[W] (_.initializeCollection(packagesByCategory, defaultCheck).run)
+
+  def wcbDoCheck(doCheck: Boolean) = Tweak[W] { view => (if (doCheck) view.check() else view.uncheck()).run }
+
+  def wcbCheck() = Tweak[W] (_.check().run)
+
+  def wcbUncheck() = Tweak[W] (_.uncheck().run)
+
+  def wcbSwap() = Tweak[W] (_.swap().run)
+
+  def wcbBest9(filter9: Boolean) = Tweak[W] (_.setBest9(filter9).run)
+
+}
+
+object WizardWifiCheckBoxTweaks {
+  type W = WizardWifiCheckBox
+
+  def wwcbInitialize(moment: NineCardsMoment, onWifiClick: () => Unit, defaultCheck: Boolean = true) =
+    Tweak[W](_.initialize(moment, onWifiClick, defaultCheck).run)
+
+  def wwcbDoCheck(doCheck: Boolean) = Tweak[W] { view => (if (doCheck) view.check() else view.uncheck()).run }
+
+  def wwcbCheck() = Tweak[W] (_.check().run)
+
+  def wwcbUncheck() = Tweak[W] (_.uncheck().run)
+
+  def wwcbSwap() = Tweak[W] (_.swap().run)
+
+  def wwcbWifiName(wifi: String) = Tweak[W] (_.setWifiName(wifi).run)
+}
+
+object WizardMomentCheckBoxTweaks {
+  type W = WizardMomentCheckBox
+
+  def wmcbInitialize(moment: NineCardsMoment, defaultCheck: Boolean = true) =
+    Tweak[W](_.initialize(moment, defaultCheck).run)
+
+  def wmcbDoCheck(doCheck: Boolean) = Tweak[W] { view => (if (doCheck) view.check() else view.uncheck()).run }
+
+  def wmcbCheck() = Tweak[W] (_.check().run)
+
+  def wmcbUncheck() = Tweak[W] (_.uncheck().run)
+
+  def wmcbSwap() = Tweak[W] (_.swap().run)
 
 }
