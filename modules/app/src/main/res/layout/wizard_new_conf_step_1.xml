@@ -3,6 +3,7 @@
               style="@style/WizardNewConfigurationStepContent">
 
     <TextView
+        android:id="@+id/wizard_steps_new_configuration_step1_title"
         style="@style/WizardNewConfigurationTitleStep1"/>
 
     <TextView

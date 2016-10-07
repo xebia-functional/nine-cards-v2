@@ -11,7 +11,7 @@ import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.layouts.StepData
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
-import cards.nine.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
+import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import cards.nine.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
@@ -25,6 +25,8 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid.FullDsl._
 import macroid._
 import org.ocpsoft.prettytime.PrettyTime
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
   extends WizardStyles
@@ -92,7 +94,8 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
             swData(steps) <~
             awsAddPageChangedObserver(currentPage => {
               val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
-              ((dom.wizardRootLayout <~ rbvColor(backgroundColor)) ~
+              ((dom.wizardRootLayout <~~ ripple(backgroundColor, forceFade = false)) ~~
+                systemBarsTint.updateStatusColor(backgroundColor) ~
                 (dom.stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
                 (dom.paginationPanel <~ reloadPagers(currentPage))).run
             })

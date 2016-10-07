@@ -1,20 +1,26 @@
 package cards.nine.app.ui.wizard.jobs
 
-import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
-import cards.nine.app.ui.components.widgets.tweaks.RippleBackgroundViewTweaks._
-import cards.nine.commons.services.TaskService._
+import android.view.animation.DecelerateInterpolator
+import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
+import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_]) {
 
   lazy val systemBarsTint = new SystemBarsTint
+
+  lazy val defaultInterpolator = new DecelerateInterpolator(.7f)
 
   def goToUser(): TaskService[Unit] =
     ((dom.loadingRootLayout <~ vInvisible) ~
@@ -23,12 +29,16 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
       (dom.deviceRootLayout <~ vInvisible) ~
       (dom.newConfigurationContent <~ vInvisible)).toService
 
-  def goToWizard(): TaskService[Unit] =
+  def goToWizard(): TaskService[Unit] = {
+    val backgroundColor = resGetColor(R.color.wizard_background_step_0)
     ((dom.loadingRootLayout <~ vInvisible) ~
       (dom.userRootLayout <~ vInvisible) ~
-      (dom.wizardRootLayout <~ vVisible <~ rbvColor(resGetColor(R.color.wizard_background_step_0), forceFade = true)) ~
+      (dom.wizardRootLayout <~ vVisible <~ ripple(backgroundColor, forceFade = true)) ~
+      systemBarsTint.updateStatusColor(backgroundColor) ~
+      systemBarsTint.defaultStatusBar() ~
       (dom.deviceRootLayout <~ vInvisible) ~
       (dom.newConfigurationContent <~ vInvisible)).toService
+  }
 
   def goToNewConfiguration(): TaskService[Unit] =
     (showNewConfigurationScreen() ~
@@ -45,15 +55,21 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
   def showLoadingConnectingWithGooglePlus(): TaskService[Unit] =
     showLoading(R.string.wizard_loading_connecting_with_plus).toService
 
-  def showLoadingBetterCollections(): TaskService[Unit] =
-    (showLoading(R.string.wizard_loading_looking_for_better_collection) ~
+  def hideFistStepAndShowLoadingBetterCollections(): TaskService[Unit] =
+    (firstStepChoreographyOut ~~
+      showLoading(R.string.wizard_loading_looking_for_better_collection) ~
       updateStatusColor() ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_1)))).toService
 
-  def showLoadingSavingCollection(): TaskService[Unit] =
-    (showLoading(R.string.wizard_loading_saving_collections) ~
+  def hideSecondStepAndShowLoadingSavingCollection(): TaskService[Unit] =
+    (secondStepChoreographyOut ~~
+      showLoading(R.string.wizard_loading_saving_collections) ~
       updateStatusColor() ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_2)))).toService
+
+  def hideThirdStep(): TaskService[Unit] = thirdStepChoreographyOut.toService
+
+  def fadeOutInAllChildInStep = fadeOutAllStep.toService
 
   def showLoadingSavingMoments(): TaskService[Unit] =
     (showLoading(R.string.wizard_loading_saving_moments) ~
@@ -62,8 +78,6 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
 
   def showLoadingDevices(): TaskService[Unit] =
     showLoading(R.string.wizard_loading_devices).toService
-
-  def cleanStep(): TaskService[Unit] = (dom.newConfigurationStep <~ vgRemoveAllViews).toService
 
   private[this] def updateStatusColor(): Ui[Any] =
     systemBarsTint.lightStatusBar() ~ systemBarsTint.updateStatusColor(resGetColor(R.color.background_app))
@@ -83,5 +97,40 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
       (dom.wizardRootLayout <~ vInvisible) ~
       (dom.deviceRootLayout <~ vInvisible) ~
       (dom.newConfigurationContent <~ vVisible)
+
+  private[this] def firstStepChoreographyOut = {
+    (dom.newConfigurationStep0HeaderContent <~
+      vPivotY(0) <~
+      applyAnimation(alpha = Some(0), scaleY = Some(0), interpolator = Some(defaultInterpolator))) ~
+      (dom.newConfigurationStep0HeaderImage <~ applyFadeOut()) ~
+      (dom.newConfigurationStep0Title <~ applyFadeOut()) ~
+      (dom.newConfigurationStep0Description <~~ applyFadeOut())
+  }
+
+  private[this] def secondStepChoreographyOut = {
+    (dom.newConfigurationStep1Title <~ applyFadeOut()) ~
+      (dom.newConfigurationStep1Description <~ applyFadeOut()) ~
+      (dom.newConfigurationStep1AllApps <~ applyFadeOut()) ~
+      (dom.newConfigurationStep1Best9 <~ applyFadeOut()) ~
+      (dom.newConfigurationStep1CollectionCount <~ applyFadeOut()) ~
+      (dom.newConfigurationStep1CollectionsContent <~~ applyFadeOut())
+  }
+
+  private[this] def thirdStepChoreographyOut = {
+    (dom.newConfigurationStep2HeaderContent <~
+      vPivotY(0) <~
+      applyAnimation(alpha = Some(0), scaleY = Some(0), interpolator = Some(defaultInterpolator))) ~
+      (dom.newConfigurationStep2HeaderImage1 <~ applyFadeOut()) ~
+      (dom.newConfigurationStep2HeaderImage2 <~ applyFadeOut()) ~
+      (dom.newConfigurationStep2Title <~ applyFadeOut()) ~
+      (dom.newConfigurationStep2Description <~~ applyFadeOut())
+  }
+
+  private[this] def fadeOutAllStep = {
+    val fades = (0 to dom.newConfigurationStep.getChildCount) map { position =>
+      dom.newConfigurationStep.getChildAt(position) <~~ applyFadeOut()
+    }
+    Ui.sequence(fades: _*)
+  }
 
 }

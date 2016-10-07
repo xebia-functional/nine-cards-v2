@@ -25,14 +25,25 @@ class NewConfigurationJobs(
 
   val defaultDockAppsSize = 4
 
-  def loadBetterCollections(): TaskService[Unit] =
+  def loadBetterCollections(): TaskService[Unit] = {
+
+    // For now, we are looking the better experience and we are filtering the collections
+    // This should be implemented by the backend
+    def filterApps(collections: Seq[PackagesByCategory]) = {
+      val gamePackages = collections filter (_.category.isGameCategory) flatMap (_.packages)
+      val list = (collections filterNot (collection => collection.category.isGameCategory || collection.category == Misc)) :+ PackagesByCategory(Game, gamePackages)
+      list.filter(_.packages.length >= 4)
+    }
+
     for {
-      _ <- visibilityUiActions.showLoadingBetterCollections()
+      _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections()
       collections <- di.collectionProcess.rankApps()
+      finalCollections = filterApps(collections)
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ <- visibilityUiActions.showNewConfiguration()
-      _ <- actions.loadSecondStep(apps.length, collections)
+      _ <- actions.loadSecondStep(apps.length, finalCollections)
     } yield ()
+  }
 
   def saveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): TaskService[Unit] = {
 
@@ -62,7 +73,7 @@ class NewConfigurationJobs(
     }
 
     for {
-      _ <- visibilityUiActions.showLoadingSavingCollection()
+      _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ <- di.collectionProcess.createCollectionsFromFormedCollections(toFormedCollection(apps))
       _ <- di.deviceProcess.generateDockApps(defaultDockAppsSize)
@@ -73,7 +84,7 @@ class NewConfigurationJobs(
 
   def loadMomentWithWifi(): TaskService[Unit] =
     for {
-      _ <- visibilityUiActions.cleanStep()
+      _ <- visibilityUiActions.hideThirdStep()
       wifis <- di.deviceProcess.getConfiguredNetworks
       _ <- actions.loadFourthStep(wifis, Seq(
         (HomeMorningMoment, true),
@@ -96,9 +107,8 @@ class NewConfigurationJobs(
           widgets = None)
     }
     for {
-      _ <- visibilityUiActions.showLoadingSavingMoments()
+      _ <- visibilityUiActions.fadeOutInAllChildInStep
       _ <- di.momentProcess.saveMoments(request)
-      _ <- visibilityUiActions.showNewConfiguration()
       _ <- actions.loadFifthStep()
     } yield ()
   }
@@ -133,7 +143,7 @@ class NewConfigurationJobs(
       case CarMoment => Seq.empty
       case RunningMoment => Seq.empty
       case BikeMoment => Seq.empty
-      case WalkMoment => Seq.empty
+      case WalkMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
     }
 
 }

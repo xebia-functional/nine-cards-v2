@@ -488,7 +488,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }).run
   }
 
-  def goToChangeMoment(): Unit = actions.showSelectMomentDialog().run
+  def goToChangeMoment(): Unit = di.momentProcess.getMoments.resolveAsyncUi2(onResult = actions.showSelectMomentDialog)
 
   def changeMoment(momentType: NineCardsMoment): Unit = {
     momentPreferences.persist(momentType)
@@ -1168,7 +1168,7 @@ trait LauncherUiActions {
 
   def showWidgetsDialog(): Ui[Any]
 
-  def showSelectMomentDialog(): Ui[Any]
+  def showSelectMomentDialog(moments: Seq[Moment]): Ui[Any]
 
   def openMenu(): Ui[Any]
 

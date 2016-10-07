@@ -47,6 +47,16 @@ trait WizardDOM {
 
   lazy val newConfigurationNext = finder.findView(TR.wizard_steps_new_configuration_next)
 
+  def newConfigurationStep0HeaderContent = finder.findView(TR.wizard_steps_new_configuration_step0_header_content)
+
+  def newConfigurationStep0HeaderImage = finder.findView(TR.wizard_steps_new_configuration_step0_header_image)
+
+  def newConfigurationStep0Title = finder.findView(TR.wizard_steps_new_configuration_step0_title)
+
+  def newConfigurationStep0Description = finder.findView(TR.wizard_steps_new_configuration_step0_description)
+
+  def newConfigurationStep1Title = finder.findView(TR.wizard_steps_new_configuration_step1_title)
+
   def newConfigurationStep1Description = finder.findView(TR.wizard_steps_new_configuration_step1_description)
 
   def newConfigurationStep1AllApps = finder.findView(TR.wizard_steps_new_configuration_step1_all_apps)
@@ -56,6 +66,14 @@ trait WizardDOM {
   def newConfigurationStep1CollectionCount = finder.findView(TR.wizard_steps_new_configuration_step1_collection_count)
 
   def newConfigurationStep1CollectionsContent = finder.findView(TR.wizard_steps_new_configuration_step1_collection_content)
+
+  def newConfigurationStep2HeaderContent = finder.findView(TR.wizard_steps_new_configuration_step2_header_content)
+
+  def newConfigurationStep2HeaderImage1 = finder.findView(TR.wizard_steps_new_configuration_step2_header_image1)
+
+  def newConfigurationStep2HeaderImage2 = finder.findView(TR.wizard_steps_new_configuration_step2_header_image2)
+
+  def newConfigurationStep2Title = finder.findView(TR.wizard_steps_new_configuration_step2_title)
 
   def newConfigurationStep2Description = finder.findView(TR.wizard_steps_new_configuration_step2_description)
 
@@ -68,6 +86,14 @@ trait WizardDOM {
   def newConfigurationStep4Running = finder.findView(TR.wizard_moment_step4_running)
 
   def newConfigurationStep4Bike = finder.findView(TR.wizard_moment_step4_bike)
+
+  def newConfigurationStep5HeaderContent = finder.findView(TR.wizard_steps_new_configuration_step5_header_content)
+
+  def newConfigurationStep5HeaderImage = finder.findView(TR.wizard_steps_new_configuration_step5_header_image)
+
+  def newConfigurationStep5Title = finder.findView(TR.wizard_steps_new_configuration_step5_title)
+
+  def newConfigurationStep5Description = finder.findView(TR.wizard_steps_new_configuration_step5_description)
 
   def newConfigurationStep5GoTo9Cards = finder.findView(TR.wizard_moment_step5_go_to_9cards)
 
@@ -92,7 +118,7 @@ trait WizardDOM {
     (items count (_.isCheck), items.length)
   }
 
-  def getCollectionsSelected: Seq[PackagesByCategory] = getWizardCheckBoxes flatMap(_.getData)
+  def getCollectionsSelected: Seq[PackagesByCategory] = getWizardCheckBoxes flatMap(_.getDataIfSelected)
 
   def getWifisSelected: Seq[(NineCardsMoment, Option[String])] =
     getWizardWifiCheckBoxes flatMap (widget =>

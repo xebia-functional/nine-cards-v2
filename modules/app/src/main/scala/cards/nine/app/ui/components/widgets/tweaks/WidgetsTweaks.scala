@@ -4,13 +4,10 @@ import android.graphics.Color
 import android.view.animation.AnimationUtils
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets._
-import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.collection.models.PackagesByCategory
 import macroid._
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object TintableImageViewTweaks {
   type W = TintableImageView
@@ -47,14 +44,6 @@ object TintableButtonTweaks {
   def tbPressedColor(color: Int)(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.pressedColor = color)
 
   def tbResetColor()(implicit context: ContextWrapper): Tweak[W] = Tweak[W](_.setDefaultColor())
-
-}
-
-object RippleBackgroundViewTweaks {
-
-  def rbvColor(color: Int, forceFade: Boolean = false)(implicit contextWrapper: ContextWrapper) = Tweak[RippleBackgroundView] { view =>
-    (view <~~ ripple(color, forceFade)).run
-  }
 
 }
 

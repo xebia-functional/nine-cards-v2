@@ -121,4 +121,7 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def getData: Option[PackagesByCategory] = this.getField[PackagesByCategory](dataKey)
 
+  def getDataIfSelected: Option[PackagesByCategory] =
+    if (isCheck) this.getField[PackagesByCategory](dataKey) else None
+
 }
