@@ -8,7 +8,6 @@ class NineCardsSqlHelper(context: Context)
   extends SQLiteOpenHelper(context, NineCardsSqlHelper.databaseName, javaNull, NineCardsSqlHelper.databaseVersion) {
 
   override def onCreate(db: SQLiteDatabase) = {
-    super.onCreate(db)
     db.execSQL(AppEntity.createTableSQL)
     db.execSQL(CollectionEntity.createTableSQL)
     db.execSQL(CardEntity.createTableSQL)
@@ -18,9 +17,7 @@ class NineCardsSqlHelper(context: Context)
     db.execSQL(WidgetEntity.createTableSQL)
   }
 
-  override def onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = {
-    super.onUpgrade(db, oldVersion, newVersion)
-  }
+  override def onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = { }
 }
 
 object NineCardsSqlHelper {
