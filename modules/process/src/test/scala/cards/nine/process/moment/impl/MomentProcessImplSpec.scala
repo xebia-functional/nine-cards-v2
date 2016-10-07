@@ -5,19 +5,19 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import cards.nine.process.commons.models.NineCardIntent
+import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.models.types.NineCardsMoment
-import NineCardsMoment._
+import cards.nine.models.types.NineCardsMoment._
+import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.moment.{MomentException, MomentProcessConfig}
 import cards.nine.services.persistence.{OrderByName, PersistenceServiceException, PersistenceServices}
 import cards.nine.services.wifi.{WifiServices, WifiServicesException}
+import cats.syntax.either._
 import monix.eval.Task
 import org.joda.time.DateTime
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
 
 trait MomentProcessImplSpecification
   extends Specification
@@ -135,70 +135,6 @@ class MomentProcessImplSpec
       }
   }
 
-  "createMoments" should {
-
-    "return the MomentCollectionType of the three collections associated with the moments created" in
-      new MomentProcessScope {
-
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
-        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Either.right(seqServicesApps)))
-        mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.right(moments map (_ => servicesCollection))))
-        mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right(servicesMoment)))
-
-        val result = momentProcess.createMoments(contextSupport).value.run
-        result must beLike {
-          case Right(resultSeqMoment) =>
-            resultSeqMoment.size shouldEqual moments.size
-            resultSeqMoment map (_.name) shouldEqual seqCollection.map(_.name)
-        }
-      }
-
-    "return the MomentCollectionType of the three collections associated with the moments created" in
-      new MomentProcessScope {
-
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection10)))
-        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Either.right(seqServicesApps)))
-        mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.right(moments map (_ => servicesCollection))))
-        mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right(servicesMoment)))
-
-        val result = momentProcess.createMoments(contextSupport).value.run
-        result must beLike {
-          case Right(resultSeqMoment) =>
-            resultSeqMoment.size shouldEqual moments.size
-            resultSeqMoment map (_.name) shouldEqual seqCollection.map(_.name)
-        }
-      }
-
-    "returns a MomentException if the service throws a exception fetching the existing collections" in
-      new MomentProcessScope {
-
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = momentProcess.createMoments(contextSupport).value.run
-        result must beAnInstanceOf[Left[MomentException, _]]
-      }
-
-    "returns a MomentException if the service throws a exception fetching the apps" in
-      new MomentProcessScope {
-
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
-        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Either.left(persistenceServiceException)))
-
-        val result = momentProcess.createMoments(contextSupport).value.run
-        result must beAnInstanceOf[Left[MomentException, _]]
-      }
-
-    "returns MomentException if the service throws a exception adding the collection" in
-      new MomentProcessScope {
-
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqServicesCollection)))
-        mockPersistenceServices.fetchApps(OrderByName, ascending = true) returns TaskService(Task(Either.right(seqServicesApps)))
-        mockPersistenceServices.addCollections(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-
-        val result = momentProcess.createMoments(contextSupport).value.run
-        result must beAnInstanceOf[Left[MomentException, _]]
-      }
-  }
-
   "createMomentWithoutCollection" should {
 
     "return a new Moment without collection by type" in
@@ -260,19 +196,6 @@ class MomentProcessImplSpec
         result must beAnInstanceOf[Left[MomentException, _]]
       }
 
-  }
-
-  "generatePrivateMoments" should {
-
-    "return the three moment's collections created" in
-      new MomentProcessScope {
-        val result = momentProcess.generatePrivateMoments(seqApps, position)(contextSupport).value.run
-        result must beLike {
-          case Right(resultSeqMoment) =>
-            resultSeqMoment.size shouldEqual moments.size
-            resultSeqMoment map (_.collectionType) shouldEqual seqMomentCollections.map(_.collectionType)
-        }
-      }
   }
 
   "deleteAllMoments" should {

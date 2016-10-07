@@ -22,10 +22,9 @@ class LauncherActivity
   with TypedFindView
   with ActionsScreenListener
   with LauncherUiActionsImpl
-  with BroadcastDispatcher {
-  self =>
+  with BroadcastDispatcher { self =>
 
-  lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
+  lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
   lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
 
@@ -44,7 +43,7 @@ class LauncherActivity
       case (_, Some(AppInstalledActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
       case (_, Some(AppUninstalledActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
       case (_, Some(AppUpdatedActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
-      case (_, _, Some(CollectionAddedActionFilter), Some(collectionId)) => presenter.reloadCollection(collectionId.toInt)
+      case (_, _, Some(CollectionAddedActionFilter), Some(id)) => presenter.reloadCollection(id.toInt)
       case _ =>
     }
   }
@@ -52,7 +51,7 @@ class LauncherActivity
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     setContentView(R.layout.launcher_activity)
-    registerDispatchers
+    registerDispatchers()
     presenter.initialize()
   }
 
@@ -68,7 +67,7 @@ class LauncherActivity
 
   override def onDestroy(): Unit = {
     super.onDestroy()
-    unregisterDispatcher
+    unregisterDispatcher()
     presenter.destroy()
   }
 

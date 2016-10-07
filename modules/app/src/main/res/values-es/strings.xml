@@ -11,6 +11,7 @@
     <string name="share">Compartir</string>
     <string name="filter">Filtrar</string>
     <string name="loading">Cargando</string>
+    <string name="next">Siguiente</string>
     <string name="contactUsError">Opps! Por favor contacta con nosotros si este problema persiste</string>
     <string name="formFieldError">¿Es posible que falte algo en el formulario?</string>
     <string name="sendTo">Enviar a</string>
@@ -54,6 +55,7 @@
 
     <string name="errorLoginUser">Error al acceder al servidor. Por favor inténtelo más tarde</string>
     <string name="errorConnectingGoogle">Error conectando con Google. Por favor inténtelo más tarde</string>
+    <string name="errorEmptyDevice">Hubo un problema cargando el dispoisitvo seleccionado. Por favor, seleccione otro o cree una nueva configuración</string>
     <string name="goTo9Cards">¡Entrar en 9 Cards!</string>
     <string name="workingNotificationTitle">Espera un momento…</string>
 
@@ -65,6 +67,14 @@
 
     <string name="downloadingBitmapsMessage">Descargando imágenes de tus apps</string>
     <string name="savingConfigurationMessage">Guardando tu configuración en nuestros servidores</string>
+
+    <string name="wizard_loading_connecting_with_google">Conectando con Google</string>
+    <string name="wizard_loading_request_google_permission">Pidiendo permisos a Google</string>
+    <string name="wizard_loading_connecting_with_plus">Conectando con Google Plus</string>
+    <string name="wizard_loading_devices">Cargando dispositivos</string>
+    <string name="wizard_loading_looking_for_better_collection">Creando las mejores colecciones con tus apps</string>
+    <string name="wizard_loading_saving_collections">Guardando colecciones</string>
+    <string name="wizard_loading_saving_moments">Guardando momentos</string>
 
     <string name="creatingCollectionError">Error creando colecciones. Por favor inténtelo de nuevo</string>
 
@@ -84,6 +94,40 @@
     <string name="newConfigurationSubtitle">Crearemos una nueva configuración a partir de tus aplicaciones</string>
     <string name="deviceMigratedFromV1">Migrado de la versión anterior</string>
     <string name="otherDevicesLink">Configuraciones de otros dispositivos</string>
+
+    <string name="wizard_new_conf_title_step_0">Bienvenido a 9 Cards</string>
+    <string name="wizard_new_conf_desc_step_0">Estamos buscando la mejor experiencia para ti en el launcher y nos guataría saber en que cosas estás interesado</string>
+
+    <string name="wizard_new_conf_title_step_1">Aplicaciones agrupadas por categorías</string>
+    <string name="wizard_new_conf_desc_step_1">
+        <![CDATA[
+            Hemos categorizados tus <b>%1$s apps</b> en <b>%2$s categorías</b> que nosotros llamamos <b>Colecciones</b>. ¿Qué categorías te gustaría usar?
+        ]]>
+    </string>
+
+    <string name="wizard_new_conf_best9_step_1">Mejores 9 apps</string>
+    <string name="wizard_new_conf_collection_counter_step_1">%1$s de %2$s colecciones</string>
+    <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
+    <string name="wizard_new_conf_collection_name_best9_step_1">%1$s (9 de %2$s apps)</string>
+
+    <string name="wizard_new_conf_title_step_2">9Cards se adapta a tu día a día</string>
+    <string name="wizard_new_conf_desc_step_2">
+        <![CDATA[
+            ¿Usa los mismos widgets en el trabajo, cuando escuchas música o por la noche? Ayúdanos a descubir como quieres usar 9Cards. Llamamos <b>Momentos</b> a cada momento del día que tu haces cosas diferentes
+        ]]>
+    </string>
+
+    <string name="wizard_new_conf_title_step_3">Momentos y Wifis que usas</string>
+    <string name="wizard_new_conf_description_step_3">Selecciona los momentos y el wifi para cada uno así podremos mostrarte la mejor experiencia en 9Cards</string>
+    <string name="wizard_new_conf_wifi_no_connected_step_3">No hay wifi seleccionado</string>
+    <string name="wizard_new_conf_wifi_connected_step_3">Conectado a \"%1$s\"</string>
+
+    <string name="wizard_new_conf_title_step_4">¿En qué momentos estás interesado?</string>
+    <string name="wizard_new_conf_description_step_4">Selecciona los momentos en los que estás interesado</string>
+
+    <string name="wizard_new_conf_title_step_5">¡Gracias!</string>
+    <string name="wizard_new_conf_desc_step_5">Recuerda que puedes create o configurar tus colecciones o momentos in el launcher. Disfruta!</string>
+    <string name="wizard_new_conf_action_step_5">Entrar en 9Cards</string>
 
     <!-- Moment / Widgets -->
 
@@ -295,7 +339,12 @@
     <string name="home">Hogar</string>
     <string name="work">Trabajo</string>
     <string name="night">Noche</string>
-    <string name="transit">Tránsito</string>
+    <string name="study">Estudio</string>
+    <string name="music">Música</string>
+    <string name="car">Coche</string>
+    <string name="running">Correr</string>
+    <string name="bike">Bicicleta</string>
+    <string name="walk">Andar</string>
 
     <!-- Profile -->
     <string name="publications">Publicaciones</string>

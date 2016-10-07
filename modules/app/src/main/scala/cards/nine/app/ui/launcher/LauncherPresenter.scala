@@ -3,7 +3,7 @@ package cards.nine.app.ui.launcher
 import android.content.{ComponentName, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
-import cards.nine.app.commons.{AppNineCardIntentConversions, BroadAction, Conversions}
+import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
@@ -11,7 +11,7 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
-import cards.nine.app.ui.commons.{Jobs, RequestCodes}
+import cards.nine.app.ui.commons.{BroadAction, Jobs, RequestCodes}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.Statuses._
@@ -486,7 +486,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }).run
   }
 
-  def goToChangeMoment(): Unit = actions.showSelectMomentDialog().run
+  def goToChangeMoment(): Unit = di.momentProcess.getMoments.resolveAsyncUi2(onResult = actions.showSelectMomentDialog)
 
   def changeMoment(momentType: NineCardsMoment): Unit = {
     momentPreferences.persist(momentType)
@@ -1166,7 +1166,7 @@ trait LauncherUiActions {
 
   def showWidgetsDialog(): Ui[Any]
 
-  def showSelectMomentDialog(): Ui[Any]
+  def showSelectMomentDialog(moments: Seq[Moment]): Ui[Any]
 
   def openMenu(): Ui[Any]
 

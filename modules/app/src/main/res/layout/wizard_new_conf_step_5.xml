@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/WizardNewConfigurationStepContent">
+
+    <FrameLayout
+        android:id="@+id/wizard_steps_new_configuration_step5_header_content"
+        style="@style/WizardNewConfigurationHeaderContentStep5">
+
+        <ImageView
+            android:id="@+id/wizard_steps_new_configuration_step5_header_image"
+            style="@style/WizardNewConfigurationHeaderImageStep5"/>
+
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/wizard_steps_new_configuration_step5_title"
+        style="@style/WizardNewConfigurationTitleStep5"/>
+
+    <TextView
+        android:id="@+id/wizard_steps_new_configuration_step5_description"
+        style="@style/WizardNewConfigurationDescriptionStep5"/>
+
+    <Button
+        android:id="@+id/wizard_moment_step5_go_to_9cards"
+        style="@style/WizardNewConfigurationActionStep5"/>
+
+</LinearLayout>

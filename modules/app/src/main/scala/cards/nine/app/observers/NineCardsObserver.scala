@@ -4,11 +4,11 @@ import android.app.{AlarmManager, PendingIntent}
 import android.content.{Context, Intent}
 import android.database.ContentObserver
 import android.net.Uri
-import cards.nine.app.services.SynchronizeDeviceService
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.NotificationUri._
 import cards.nine.commons.contexts.ContextSupport
 import NineCardsObserver._
+import cards.nine.app.services.sync.SynchronizeDeviceService
 
 class NineCardsObserver(implicit contextSupport: ContextSupport)
   extends ContentObserver(javaNull) {

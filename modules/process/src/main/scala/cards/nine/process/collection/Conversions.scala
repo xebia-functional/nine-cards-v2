@@ -136,20 +136,6 @@ trait Conversions extends CommonConversions {
     ))
   }
 
-  def toAddCardRequestByContacts(items: Seq[UnformedContact]): Seq[ServicesAddCardRequest] =
-    items.zipWithIndex map (zipped => toAddCardRequestByContact(zipped._1, zipped._2))
-
-  def toAddCardRequestByContact(item: UnformedContact, position: Int): ServicesAddCardRequest = {
-    val (intent: NineCardIntent, cardType: String) = toNineCardIntent(item)
-    ServicesAddCardRequest(
-      position = position,
-      term = item.name,
-      packageName = None,
-      cardType = cardType,
-      intent = nineCardIntentToJson(intent),
-      imagePath = Option(item.photoUri))
-  }
-
   def toPrivateCard(unformedApp: ApplicationData): PrivateCard =
     PrivateCard(
       term = unformedApp.name,

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/WizardNewConfigurationStepContent">
+
+    <TextView
+        style="@style/WizardNewConfigurationTitleStep4"/>
+
+    <TextView
+        style="@style/WizardNewConfigurationDescriptionStep4"/>
+
+    <LinearLayout
+        style="@style/WizardNewConfigurationContentMomentsStep4">
+
+        <cards.nine.app.ui.components.widgets.WizardMomentCheckBox
+            android:id="@+id/wizard_moment_step4_music"
+            style="@style/WizardNewConfigurationCheckStep4" />
+
+        <cards.nine.app.ui.components.widgets.WizardMomentCheckBox
+            android:id="@+id/wizard_moment_step4_car"
+            style="@style/WizardNewConfigurationCheckStep4" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/WizardNewConfigurationContentMomentsStep4">
+
+        <cards.nine.app.ui.components.widgets.WizardMomentCheckBox
+            android:id="@+id/wizard_moment_step4_running"
+            style="@style/WizardNewConfigurationCheckStep4" />
+
+        <cards.nine.app.ui.components.widgets.WizardMomentCheckBox
+            android:id="@+id/wizard_moment_step4_bike"
+            style="@style/WizardNewConfigurationCheckStep4" />
+
+    </LinearLayout>
+
+</LinearLayout>

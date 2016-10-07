@@ -59,7 +59,7 @@ trait MomentProcessImplData {
   val nightAppPackageName = "com.Slack"
   val workAppPackageName = "com.google.android.apps.photos"
   val transitAppPackageName = "com.google.android.apps.maps"
-  val momentType = Seq("HOME", "WORK", "NIGHT", "TRANSIT")
+  val momentType = Seq("HOME", "WORK", "NIGHT", "WALK", "STUDY", "MUSIC", "CAR", "BIKE", "RUNNING")
 
   val startX: Int = Random.nextInt(8)
   val startY: Int = Random.nextInt(8)
@@ -81,7 +81,7 @@ trait MomentProcessImplData {
     )
 
   def createSeqCollection(
-    num: Int = 4,
+    num: Int = NineCardsMoment.moments.length,
     id: Int = collectionId,
     position: Int = position,
     name: String = name,
@@ -111,7 +111,7 @@ trait MomentProcessImplData {
           publicCollectionStatus = publicCollectionStatus))
 
   def createSeqMomentCollection(
-    num: Int = 4,
+    num: Int = NineCardsMoment.moments.length,
     id: Int = collectionId,
     position: Int = position,
     name: String = name,
@@ -293,7 +293,7 @@ trait MomentProcessImplData {
   val seqFormedWidgets = createSeqFormedWidgets()
 
   def createSeqMoment(
-    num: Int = 4,
+    num: Int = NineCardsMoment.moments.length,
     collectionId: Option[Int] = Option(collectionId1),
     timeslot: Seq[MomentTimeSlot] = createSeqMomentTimeSlot(),
     wifi: Seq[String] = Seq.empty,

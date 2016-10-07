@@ -10,18 +10,8 @@ import cards.nine.process.commons.models.{Card, Collection, PrivateCollection}
 trait CollectionProcess {
 
   /**
-    * Creates Collections with the apps installed in the device and their categories, finally it adds a Collection with the favourite contacts if it's possible
- *
-   * @param apps the Seq[cards.nine.process.collection.models.UnformedApp] with the apps' data
-   * @param contacts the Seq[cards.nine.process.collection.models.UnformedContact] with the contacts' data
-   * @return the List[cards.nine.process.collection.models.Collection]
-   * @throws CollectionException if there was an error creating the existing collections
-   */
-  def createCollectionsFromUnformedItems(apps: Seq[ApplicationData], contacts: Seq[UnformedContact])(implicit context: ContextSupport): TaskService[Seq[Collection]]
-
-  /**
     * Generate Private Collections with the apps installed in the device and their categories
- *
+    *
     * @param apps the Seq[cards.nine.process.collection.models.UnformedApp] with the apps' data
     * @return the Seq[cards.nine.process.collection.PrivateCollection]
     * @throws CollectionException if there was an error creating the existing collections
