@@ -2,7 +2,7 @@ package cards.nine.app.ui.preferences.animations
 
 import android.os.Bundle
 import android.preference.PreferenceFragment
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class AnimationsFragment extends PreferenceFragment {
 

@@ -17,7 +17,7 @@ import cards.nine.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransforma
 import cards.nine.app.ui.launcher.holders._
 import cards.nine.commons.javaNull
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

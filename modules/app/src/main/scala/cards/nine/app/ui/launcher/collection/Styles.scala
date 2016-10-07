@@ -11,7 +11,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.components.layouts.WorkspaceItemMenu
 import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import cards.nine.process.theme.models._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Tweak}
 
 trait Styles {

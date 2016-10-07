@@ -13,7 +13,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableButtonTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons.javaNull
 import cards.nine.process.theme.models.{NineCardsTheme, PrimaryColor}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)

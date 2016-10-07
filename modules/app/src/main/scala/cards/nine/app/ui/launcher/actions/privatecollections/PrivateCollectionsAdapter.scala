@@ -5,8 +5,8 @@ import android.view.{LayoutInflater, ViewGroup}
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.process.commons.models.PrivateCollection
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.TR
-import com.fortysevendeg.ninecardslauncher2.TypedResource._
+import com.fortysevendeg.ninecardslauncher.TR
+import com.fortysevendeg.ninecardslauncher.TypedResource._
 import macroid.ActivityContextWrapper
 
 case class PrivateCollectionsAdapter(privateCollections: Seq[PrivateCollection])

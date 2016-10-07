@@ -2,7 +2,7 @@ package cards.nine.app.ui.preferences.moments
 
 import android.os.Bundle
 import cards.nine.app.ui.preferences.commons.PreferenceChangeListenerFragment
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class MomentsFragment
   extends PreferenceChangeListenerFragment {

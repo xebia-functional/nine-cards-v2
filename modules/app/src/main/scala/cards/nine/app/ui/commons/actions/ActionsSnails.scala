@@ -11,7 +11,7 @@ import com.fortysevendeg.macroid.extras.SnailsUtils
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise

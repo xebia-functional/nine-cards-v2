@@ -10,7 +10,7 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import macroid.Contexts
 
 import UpdateSharedCollectionService._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class UpdateSharedCollectionService
   extends IntentService("updateSharedCollectionService")

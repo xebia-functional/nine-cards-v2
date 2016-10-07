@@ -11,12 +11,12 @@ trait ShortcutsServicesImplData {
   val intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
 
   val sampleShortcut1 =  Shortcut(
-    title = "Shortcut 1",
+    title = "B - Sample Name 1",
     icon = None,
     intent = intent)
 
   val sampleShortcut2 =  Shortcut(
-    title = "Shortcut 1",
+    title = "A - Sample Name 2",
     icon = None,
     intent = intent)
 

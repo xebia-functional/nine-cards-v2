@@ -3,7 +3,8 @@ package cards.nine.app.ui.commons.ops
 import android.appwidget.AppWidgetProviderInfo
 import cards.nine.models.AppWidget
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.R
+import cards.nine.process.device.models.Widget
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
 object WidgetsOps {

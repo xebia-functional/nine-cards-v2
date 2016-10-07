@@ -16,6 +16,8 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
+import cards.nine.process.widget.models.AppWidget
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 

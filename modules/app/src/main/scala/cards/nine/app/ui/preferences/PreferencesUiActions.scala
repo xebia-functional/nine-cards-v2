@@ -4,7 +4,7 @@ import android.content.Intent
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 
 class PreferencesUiActions(dom: PreferencesDOM)(implicit contextWrapper: ActivityContextWrapper) {

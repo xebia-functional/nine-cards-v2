@@ -22,6 +22,11 @@ import cards.nine.models.{ConditionWeather, Widget}
 import cards.nine.process.commons.models.{Card, Collection, MomentTimeSlot}
 import cards.nine.process.device.models.{DockApp, TermCounter}
 import cards.nine.process.theme.models.NineCardsTheme
+import com.fortysevendeg.ninecardslauncher.R
+import AnimatedWorkSpaces._
+import android.appwidget.AppWidgetHostView
+import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
+import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R

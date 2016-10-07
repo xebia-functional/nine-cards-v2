@@ -36,7 +36,7 @@ import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import cards.nine.process.moment.MomentException
 import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 

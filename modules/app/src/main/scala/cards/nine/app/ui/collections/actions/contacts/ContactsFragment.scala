@@ -13,7 +13,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.device.{AllContacts, ContactPermissionException, ContactsFilter}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
   extends BaseActionFragment

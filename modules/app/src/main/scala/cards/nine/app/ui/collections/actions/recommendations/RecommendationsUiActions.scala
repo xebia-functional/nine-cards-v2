@@ -10,7 +10,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.recommendations.models.RecommendedApp
 import cards.nine.process.theme.models.CardLayoutBackgroundColor
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 trait RecommendationsUiActions

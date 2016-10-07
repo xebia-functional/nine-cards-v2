@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
+import com.fortysevendeg.ninecardslauncher.R
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.models.Shortcut
 import com.fortysevendeg.ninecardslauncher2.R

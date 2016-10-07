@@ -3,7 +3,7 @@ package cards.nine.app.ui.profile.models
 import java.util.Date
 
 import cards.nine.commons.contexts.ContextSupport
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import org.ocpsoft.prettytime.PrettyTime
 
 

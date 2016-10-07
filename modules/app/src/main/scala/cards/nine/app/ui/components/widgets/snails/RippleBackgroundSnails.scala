@@ -9,7 +9,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.SnailsUtils
 import cards.nine.app.ui.components.widgets.RippleBackgroundView
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise

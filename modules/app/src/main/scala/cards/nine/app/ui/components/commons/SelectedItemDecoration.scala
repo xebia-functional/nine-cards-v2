@@ -11,7 +11,7 @@ import cards.nine.app.ui.components.layouts.FastScrollerView
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.process.theme.models.{CardTextColor, NineCardsTheme, SearchBackgroundColor}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
 class SelectedItemDecoration(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)

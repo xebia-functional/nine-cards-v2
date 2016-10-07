@@ -7,7 +7,7 @@ import android.widget.{FrameLayout, LinearLayout}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class StepsWorkspaces(context: Context, attr: AttributeSet, defStyleAttr: Int)

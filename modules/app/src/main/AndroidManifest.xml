@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.fortysevendeg.ninecardslauncher2"
+          package="com.fortysevendeg.ninecardslauncher"
           android:versionCode="1"
           android:versionName="1.0">
 
@@ -101,7 +101,7 @@
             android:name="cards.nine.app.services.sync.SynchronizeDeviceService"/>
 
         <provider
-            android:authorities="com.fortysevendeg.ninecardslauncher2"
+            android:authorities="com.fortysevendeg.ninecardslauncher"
             android:name="cards.nine.repository.provider.NineCardsContentProvider"
             android:exported="false"/>
 
@@ -181,4 +181,7 @@
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES"/>
     <!-- Other permissions -->
 
+    <!-- Old versions permissions -->
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <!-- Old versions permissions -->
 </manifest>

@@ -7,7 +7,7 @@ import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.ui.commons.{ActivityUiContext, AppLog, UiContext}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.Contexts
 
 class AppLinksReceiverActivity

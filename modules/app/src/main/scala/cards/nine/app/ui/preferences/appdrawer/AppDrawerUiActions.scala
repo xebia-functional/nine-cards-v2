@@ -6,7 +6,7 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Ui}
 
 class AppDrawerUiActions(dom: AppDrawerDOM)(implicit contextWrapper: ContextWrapper) {
