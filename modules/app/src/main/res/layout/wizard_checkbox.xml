@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/WizardCheckboxRoot">
+
+    <ImageView
+        android:id="@+id/wizard_check_icon"
+        style="@style/WizardCheckboxIcon"/>
+
+    <TextView
+        android:id="@+id/wizard_check_text"
+        style="@style/WizardCheckboxText"/>
+
+</LinearLayout>

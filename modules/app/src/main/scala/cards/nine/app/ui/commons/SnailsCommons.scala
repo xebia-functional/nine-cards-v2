@@ -3,11 +3,10 @@ package cards.nine.app.ui.commons
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation._
 import android.view.View
-import android.view.animation.{AccelerateDecelerateInterpolator, AccelerateInterpolator, DecelerateInterpolator}
+import android.view.animation.{AccelerateDecelerateInterpolator, AccelerateInterpolator, BaseInterpolator, DecelerateInterpolator}
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import cards.nine.commons._
-import cards.nine.commons.ops.ColorOps._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
@@ -140,35 +139,6 @@ object SnailsCommons {
       animPromise.future
   }
 
-  def fadeBackground(color: Int)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      val duration = SpeedAnimations.getDuration
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-
-      val colorFrom = color.alpha(0f)
-      val colorTo = color.alpha(1f)
-
-      val valueAnimator = ValueAnimator.ofInt(0, 100)
-      valueAnimator.setDuration(duration)
-      valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-        override def onAnimationUpdate(value: ValueAnimator) = {
-          val color = (colorFrom, colorTo).interpolateColors(value.getAnimatedFraction)
-          view.setBackgroundColor(color)
-        }
-      })
-      valueAnimator.addListener(new AnimatorListenerAdapter {
-        override def onAnimationEnd(animation: Animator): Unit = {
-          super.onAnimationEnd(animation)
-          view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-          animPromise.trySuccess(())
-        }
-      })
-      valueAnimator.start()
-      animPromise.future
-  }
-
   def applyFadeIn(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] =
     vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1), duration = duration)
 
@@ -176,6 +146,7 @@ object SnailsCommons {
     applyAnimation(alpha = Some(0), duration = duration) + vInvisible + vAlpha(1)
 
   def applyAnimation(
+    startDelay: Option[Long] = None,
     x: Option[Float] = None,
     y: Option[Float] = None,
     xBy: Option[Float] = None,
@@ -183,6 +154,7 @@ object SnailsCommons {
     alpha: Option[Float] = None,
     scaleX: Option[Float] = None,
     scaleY: Option[Float] = None,
+    interpolator: Option[BaseInterpolator] = Option(new DecelerateInterpolator()),
     duration: Option[Long] = None,
     onUpdate: (Float) => Ui[_] = (_) => Ui.nop)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
@@ -193,7 +165,6 @@ object SnailsCommons {
 
       val animator = view
         .animate
-        .setInterpolator(new AccelerateDecelerateInterpolator())
         .setUpdateListener(new AnimatorUpdateListener {
           override def onAnimationUpdate(animation: ValueAnimator): Unit =
             onUpdate(animation.getAnimatedFraction).run
@@ -206,8 +177,9 @@ object SnailsCommons {
             animPromise.trySuccess(())
           }
         })
-
       animator.setDuration(duration getOrElse SpeedAnimations.getDuration)
+      interpolator foreach animator.setInterpolator
+      startDelay foreach animator.setStartDelay
       x foreach animator.translationX
       y foreach animator.translationY
       xBy foreach animator.translationXBy

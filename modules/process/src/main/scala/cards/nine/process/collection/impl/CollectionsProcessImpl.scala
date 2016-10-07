@@ -7,15 +7,14 @@ import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardCategory._
-import cards.nine.models.types.Spaces._
-import cards.nine.models.types.{NineCardCategory, NoInstalledAppCardType, Spaces}
+import cards.nine.models.types.{NineCardCategory, NoInstalledAppCardType}
 import cards.nine.models.{Application, ApplicationData}
-import cards.nine.process.collection.models.{FormedCollection, UnformedContact}
+import cards.nine.process.collection.models.FormedCollection
 import cards.nine.process.collection.{AddCollectionRequest, _}
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.CategorizedDetailPackage
-import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, DeleteCollectionRequest => ServicesDeleteCollectionRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, OrderByCategory}
+import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, OrderByCategory, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
 import cats.syntax.either._
 import monix.eval.Task
 
@@ -29,13 +28,6 @@ trait CollectionsProcessImpl extends CollectionProcess {
   val minAppsGenerateCollections = 1
 
   val apiUtils = new ApiUtils(persistenceServices)
-
-  def createCollectionsFromUnformedItems(apps: Seq[ApplicationData], contacts: Seq[UnformedContact])(implicit context: ContextSupport) = {
-    val collections = createCollections(apps, contacts, appsCategories, minAppsToAdd)
-    (for {
-      collections <- persistenceServices.addCollections(collections)
-    } yield collections map toCollection).resolve[CollectionException]
-  }
 
   def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) =
     (for {
