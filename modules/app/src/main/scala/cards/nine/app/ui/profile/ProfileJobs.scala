@@ -4,12 +4,12 @@ import java.util.Date
 
 import android.app.Activity
 import android.content.Intent
-import cards.nine.app.commons.{BroadAction, Conversions}
-import cards.nine.app.services.SynchronizeDeviceService
+import cards.nine.app.commons.Conversions
+import cards.nine.app.services.sync.SynchronizeDeviceService
 import cards.nine.app.ui.collections.tasks.CollectionJobs
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.action_filters.{CollectionAddedActionFilter, SyncAskActionFilter}
-import cards.nine.app.ui.commons.{AppLog, JobException, Jobs, ResultCodes}
+import cards.nine.app.ui.commons._
 import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.app.ui.profile.models.AccountSync
 import cards.nine.commons.CatchAll

@@ -54,7 +54,7 @@ trait EmptyProfileAdapterStyles {
   val textAlpha = 0.8f
 
   def rootStyle(implicit context: ContextWrapper): Tweak[View] =
-    vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.padding_xxlarge))
+    vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.padding_xxxxlarge))
 
   def imageStyle(implicit context: ContextWrapper): Tweak[TintableImageView] =
     tivColor(theme.get(PrimaryColor))

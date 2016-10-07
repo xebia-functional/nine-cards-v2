@@ -95,10 +95,10 @@
         </activity>
 
         <service
-            android:name="cards.nine.app.services.CreateCollectionService"/>
+            android:name="cards.nine.app.services.collections.CreateCollectionsService"/>
 
         <service
-            android:name="cards.nine.app.services.SynchronizeDeviceService"/>
+            android:name="cards.nine.app.services.sync.SynchronizeDeviceService"/>
 
         <provider
             android:authorities="com.fortysevendeg.ninecardslauncher"

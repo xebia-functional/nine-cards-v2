@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/WizardNewConfigurationStepContent">
+
+    <TextView
+        style="@style/WizardNewConfigurationTitleStep3"/>
+
+    <TextView
+        style="@style/WizardNewConfigurationDescriptionStep3"/>
+
+    <ScrollView
+        style="@style/WizardNewConfigurationScrollStep3">
+
+        <LinearLayout
+            android:id="@+id/wizard_steps_new_configuration_step3_wifi_content"
+            style="@style/WizardNewConfigurationScrollContentStep3"/>
+
+    </ScrollView>
+
+</LinearLayout>
