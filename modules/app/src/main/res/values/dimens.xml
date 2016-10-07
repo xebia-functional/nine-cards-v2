@@ -110,7 +110,7 @@
 
     <dimen name="margin_left_subtitle">40dp</dimen>
 
-    <dimen name="wizard_height_header_steps">350dp</dimen>
+    <dimen name="wizard_height_header_steps">300dp</dimen>
 
     <dimen name="wizard_size_checkbox_title">24dp</dimen>
     <dimen name="wizard_size_checkbox_collection">38dp</dimen>

@@ -27,4 +27,6 @@
 
     <dimen name="height_search_box">48dp</dimen>
 
+    <dimen name="wizard_height_header_steps">340dp</dimen>
+
 </resources>
