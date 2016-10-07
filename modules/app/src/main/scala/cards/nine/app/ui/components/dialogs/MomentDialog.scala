@@ -33,10 +33,12 @@ class MomentDialog(moments: Seq[Moment])(implicit contextWrapper: ContextWrapper
 
   setContentView(sheetView)
 
-  val momentItems = moments flatMap (_.momentType match {
-    case Some(moment) => Some(new MomentItem(moment))
-    case _ => None
-  })
+  val momentItems = moments flatMap {
+    _.momentType match {
+      case Some(moment) => Some(new MomentItem(moment))
+      case _ => None
+    }
+  }
 
   (selectMomentList <~
     vBackgroundColor(theme.get(DrawerBackgroundColor)) <~

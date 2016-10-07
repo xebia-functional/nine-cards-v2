@@ -488,10 +488,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }).run
   }
 
-  def goToChangeMoment(): Unit = {
-    di.momentProcess.getMoments.resolveAsyncUi2(
-      onResult = actions.showSelectMomentDialog)
-  }
+  def goToChangeMoment(): Unit = di.momentProcess.getMoments.resolveAsyncUi2(onResult = actions.showSelectMomentDialog)
 
   def changeMoment(momentType: NineCardsMoment): Unit = {
     momentPreferences.persist(momentType)

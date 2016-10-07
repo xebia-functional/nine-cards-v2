@@ -32,10 +32,7 @@ class NewConfigurationJobs(
     def filterApps(collections: Seq[PackagesByCategory]) = {
       val gamePackages = collections filter (_.category.isGameCategory) flatMap (_.packages)
       val list = (collections filterNot (collection => collection.category.isGameCategory || collection.category == Misc)) :+ PackagesByCategory(Game, gamePackages)
-      list flatMap {
-        case collection if collection.packages.length >= 4 => Some(collection)
-        case _ => None
-      }
+      list.filter(_.packages.length >= 4)
     }
 
     for {
