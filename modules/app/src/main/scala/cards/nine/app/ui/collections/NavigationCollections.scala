@@ -13,7 +13,7 @@ import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SharedCollectio
 import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import cards.nine.commons._
 import cards.nine.process.commons.models.Collection
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, FragmentBuilder, FragmentManagerContext, Ui}
 

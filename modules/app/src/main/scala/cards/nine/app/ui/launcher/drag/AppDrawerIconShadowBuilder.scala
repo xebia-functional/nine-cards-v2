@@ -4,7 +4,7 @@ import android.graphics.{Canvas, Point}
 import android.view.View
 import macroid.ContextWrapper
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class AppDrawerIconShadowBuilder(view: View)(implicit contextWrapper: ContextWrapper)
   extends View.DragShadowBuilder(view) {

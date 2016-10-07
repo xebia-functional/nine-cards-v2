@@ -5,7 +5,7 @@ import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAda
 import cards.nine.app.ui.profile.adapters.SubscriptionsAdapter
 import cards.nine.app.ui.profile.models.ProfileTab
 import cards.nine.process.sharedcollections.models.SharedCollection
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
 trait ProfileDOM {
 

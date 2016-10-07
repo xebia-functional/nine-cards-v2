@@ -13,7 +13,7 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import cards.nine.models.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
 import scala.language.postfixOps

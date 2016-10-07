@@ -209,7 +209,7 @@ object Settings {
   )
 
   lazy val multiDexClasses = Seq(
-    "com/fortysevendeg/ninecardslauncher/app/NineCardsApplication.class",
+    "cards/nine/app/NineCardsApplication.class",
     "android/support/multidex/BuildConfig.class",
     "android/support/multidex/MultiDex$V14.class",
     "android/support/multidex/MultiDex$V19.class",

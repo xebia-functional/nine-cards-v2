@@ -10,7 +10,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.Misc
 import cards.nine.models.{ApplicationData, Location, WeatherState}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Ui}
 
 class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrapper) {

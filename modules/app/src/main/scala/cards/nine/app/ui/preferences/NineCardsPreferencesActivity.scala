@@ -14,7 +14,7 @@ import cards.nine.app.ui.preferences.developers.DeveloperFragment
 import cards.nine.app.ui.preferences.help.HelpFragment
 import cards.nine.app.ui.preferences.lookandfeel.LookFeelFragment
 import cards.nine.app.ui.preferences.moments.MomentsFragment
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.Contexts
 
 class NineCardsPreferencesActivity

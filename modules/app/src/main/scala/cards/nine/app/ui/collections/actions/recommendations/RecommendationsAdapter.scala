@@ -10,7 +10,7 @@ import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.styles.CollectionCardsStyles
 import cards.nine.process.recommendations.models.RecommendedApp
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

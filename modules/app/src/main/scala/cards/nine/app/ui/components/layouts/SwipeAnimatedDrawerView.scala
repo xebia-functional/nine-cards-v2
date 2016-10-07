@@ -13,7 +13,7 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.process.theme.models.{NineCardsTheme, SearchBackgroundColor, SearchIconsColor}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class SwipeAnimatedDrawerView (context: Context, attrs: AttributeSet, defStyle: Int)

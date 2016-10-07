@@ -2,7 +2,7 @@ package cards.nine.app.ui.commons.ops
 
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.process.commons.models.PrivateCollection
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
 object PrivateCollectionOps {

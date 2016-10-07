@@ -7,7 +7,7 @@ import android.graphics._
 import android.view.animation.DecelerateInterpolator
 import com.fortysevendeg.macroid.extras.SnailsUtils
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 import scala.concurrent.{Future, Promise}

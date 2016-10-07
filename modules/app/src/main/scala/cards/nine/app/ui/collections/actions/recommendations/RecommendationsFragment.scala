@@ -13,7 +13,7 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.recommendations.RecommendedAppsConfigurationException
 import cards.nine.process.recommendations.models.RecommendedApp
 import cards.nine.models.types.NineCardCategory
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
   extends BaseActionFragment
