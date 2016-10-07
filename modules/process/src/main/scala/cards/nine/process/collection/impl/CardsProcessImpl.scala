@@ -6,9 +6,9 @@ import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models
-import cards.nine.models.{Card, Collection}
-import cards.nine.models.types.{CardType, NoInstalledAppCardType}
-import cards.nine.process.collection.{AddCardRequest, CardException, CollectionProcess}
+import cards.nine.models.types.NoInstalledAppCardType
+import cards.nine.models.{CardData, Card, Collection}
+import cards.nine.process.collection.{CardException, CollectionProcess}
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import monix.eval.Task
 
@@ -18,14 +18,14 @@ trait CardsProcessImpl extends CollectionProcess {
     with FormedCollectionConversions
     with ImplicitsPersistenceServiceExceptions =>
 
-  override def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]) =
+  override def addCards(collectionId: Int, cards: Seq[CardData]) =
     (for {
       cardList <- persistenceServices.fetchCardsByCollection(collectionId)
       size = cardList.size
-      cards = addCardListRequest.zipWithIndex map {
+      cardsToAdd = cards.zipWithIndex map {
         case (item, index) => (collectionId, item, index + size)
       }
-      addedCardList <- persistenceServices.addCards(Seq((collectionId, cards)))
+      addedCardList <- persistenceServices.addCards(Seq((collectionId, cardsToAdd)))
     } yield addedCardList).resolve[CardException]
 
   override def deleteCard(collectionId: Int, cardId: Int) =

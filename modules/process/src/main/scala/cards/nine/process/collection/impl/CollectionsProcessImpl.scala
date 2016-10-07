@@ -6,11 +6,10 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardsCategory._
-import cards.nine.models.types.{OrderByCategory, NineCardsCategory, NoInstalledAppCardType}
-import cards.nine.models.{Collection, Application, ApplicationData}
+import cards.nine.models.types.{NineCardsCategory, NoInstalledAppCardType, OrderByCategory}
+import cards.nine.models.{CollectionData, Application, ApplicationData, Collection}
+import cards.nine.process.collection._
 import cards.nine.process.collection.models.FormedCollection
-import cards.nine.process.collection.{AddCollectionRequest, _}
-import cards.nine.process.commons.models.Collection
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.CategorizedDetailPackage
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
@@ -52,10 +51,10 @@ trait CollectionsProcessImpl extends CollectionProcess {
   def getCollectionBySharedCollectionId(sharedCollectionId: String) =
     persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId) .resolve[CollectionException]
 
-  def addCollection(addCollectionRequest: AddCollectionRequest) =
+  def addCollection(collection: CollectionData) =
     (for {
       collectionList <- persistenceServices.fetchCollections
-      collection <- persistenceServices.addCollection(addCollectionRequest, collectionList.size)
+      collection <- persistenceServices.addCollection(collection, collectionList.size)
     } yield collection).resolve[CollectionException]
 
   def deleteCollection(collectionId: Int) = {
@@ -91,13 +90,13 @@ trait CollectionsProcessImpl extends CollectionProcess {
       _ <- updateCollectionList(updatedCollections)
     } yield ()).resolve[CollectionException]
 
-  def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest) =
+  def editCollection(collectionId: Int, collection: CollectionData) =
     editCollectionWith(collectionId) { collection =>
       collection.copy(
-        name = editCollectionRequest.name,
-        icon = editCollectionRequest.icon,
-        themedColorIndex = editCollectionRequest.themedColorIndex,
-        appsCategory = editCollectionRequest.appsCategory)
+        name = collection.name,
+        icon = collection.icon,
+        themedColorIndex = collection.themedColorIndex,
+        appsCategory = collection.appsCategory)
     }
 
   def updateSharedCollection(collectionId: Int, sharedCollectionId: String) =

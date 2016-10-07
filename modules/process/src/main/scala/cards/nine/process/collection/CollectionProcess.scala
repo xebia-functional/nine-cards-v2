@@ -2,7 +2,7 @@ package cards.nine.process.collection
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{Card, Collection, ApplicationData}
+import cards.nine.models.{CardData, Card, Collection, ApplicationData}
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.collection.models._
 
@@ -135,11 +135,11 @@ trait CollectionProcess {
    * Adds some new Cards after the last existing one in a given Collection
    *
    * @param collectionId the Id of the Collection
-   * @param addCardListRequest the Seq[cards.nine.process.collection.AddCardRequest] includes the necessary data to create a new Card (term, packageName, intent and imagePath)
+   * @param cards the Seq[cards.nine.process.collection.AddCardRequest] includes the necessary data to create a new Card (term, packageName, intent and imagePath)
    * @return the Seq[cards.nine.process.collection.models.Card] of the new cards
    * @throws CardException if there was an error getting the existing cards or adding the new one
    */
-  def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]): TaskService[Seq[Card]]
+  def addCards(collectionId: Int, cards: Seq[CardData]): TaskService[Seq[Card]]
 
   /**
    * Deletes a Card and updates the position of the other Cards in the Collection
