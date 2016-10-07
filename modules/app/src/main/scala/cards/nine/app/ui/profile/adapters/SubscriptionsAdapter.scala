@@ -60,7 +60,7 @@ case class ViewHolderSubscriptionsAdapter(
 
   def bind(subscription: Subscription, position: Int)(implicit uiContext: UiContext[_]): Ui[_] = {
     val background = new ShapeDrawable(new OvalShape)
-    background.getPaint.setColor(resGetColor(getIndexColor(subscription.themedColorIndex)))
+    background.getPaint.setColor(theme.getIndexColor(subscription.themedColorIndex))
     (iconContent <~ vBackground(background)) ~
       (icon <~ ivSrc(subscription.getIconSubscriptionDetail)) ~
       (name <~ tvText(resGetString(subscription.name) getOrElse subscription.name)) ~

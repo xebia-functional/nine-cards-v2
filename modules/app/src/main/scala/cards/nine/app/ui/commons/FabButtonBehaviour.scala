@@ -2,16 +2,11 @@ package cards.nine.app.ui.commons
 
 import android.os.Handler
 import android.support.design.widget.FloatingActionButton
+import android.support.v7.app.AppCompatActivity
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View}
 import android.widget.LinearLayout
-import CommonsTweak._
-import android.support.v7.app.AppCompatActivity
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.FabButtonTags._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -19,6 +14,11 @@ import cards.nine.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.layouts.FabItemMenu
 import cards.nine.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
+import cards.nine.commons.ops.ColorOps._
+import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

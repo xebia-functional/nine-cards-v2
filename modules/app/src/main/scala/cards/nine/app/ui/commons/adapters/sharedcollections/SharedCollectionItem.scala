@@ -85,7 +85,7 @@ trait SharedCollectionItem
     }
 
     val background = new ShapeDrawable(new OvalShape)
-    background.getPaint.setColor(resGetColor(getRandomIndexColor))
+    background.getPaint.setColor(theme.getRandomIndexColor)
     val apps = collection.resolvedPackages
     (iconContent <~ vBackground(background)) ~
       (icon <~ ivSrc(collection.getIconCollectionDetail)) ~

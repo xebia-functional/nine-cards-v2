@@ -7,13 +7,13 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.{LinearLayout, ScrollView}
+import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.ui.commons.ops.DrawableOps._
+import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.commons.AppNineCardIntentConversions
-import cards.nine.app.ui.commons.ops.ColorOps._
-import cards.nine.process.theme.models._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

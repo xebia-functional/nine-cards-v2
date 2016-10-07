@@ -5,7 +5,7 @@ import android.widget.{ArrayAdapter, TextView}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import cards.nine.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.R

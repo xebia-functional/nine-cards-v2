@@ -6,11 +6,11 @@ import android.graphics.drawable.shapes.RectShape
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.{ItemDecoration, State}
 import android.view.View
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import cards.nine.app.ui.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.FastScrollerView
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.process.theme.models.{CardTextColor, NineCardsTheme, SearchBackgroundColor}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 

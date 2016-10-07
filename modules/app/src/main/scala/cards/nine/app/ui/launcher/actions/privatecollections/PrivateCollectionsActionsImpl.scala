@@ -108,7 +108,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
 
   def bind(privateCollection: PrivateCollection, position: Int): Ui[_] = {
     val d = new ShapeDrawable(new OvalShape)
-    d.getPaint.setColor(resGetColor(getIndexColor(privateCollection.themedColorIndex)))
+    d.getPaint.setColor(theme.getIndexColor(privateCollection.themedColorIndex))
     val cardsRow = privateCollection.cards
     (iconContent <~ vBackground(d)) ~
       (icon <~ ivSrc(privateCollection.getIconCollectionDetail)) ~

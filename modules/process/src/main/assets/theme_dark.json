@@ -1,5 +1,6 @@
 {
   "name": "dark",
+  "parent": "light",
   "styles": [
     {
       "styleType": "PrimaryColor",
@@ -69,5 +70,9 @@
       "styleType": "CollectionDetailTextTabDefaultColor",
       "color": "#80ffffff"
     }
-  ]
+  ],
+  "themeColors": {
+    "defaultColor": "#78909C",
+    "colors": ["#FFA726", "#EF5350", "#AB47BC", "#42A5F5", "#7E57C2", "#5C6BC0", "#9CCC65", "#66BB6A", "#26A69A"]
+  }
 }

@@ -48,7 +48,7 @@ class WorkSpaceButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
         (title <~ tvColorResource(R.color.widgets_text))
   }
 
-  def populateCollection(collection: Collection): Ui[Any] = {
+  def populateCollection(collection: Collection)(implicit theme: NineCardsTheme): Ui[Any] = {
     val resIcon = collection.getIconDetail
     (title <~ tvText(collection.name)) ~
       (content <~ vPaddings(padding)) ~
