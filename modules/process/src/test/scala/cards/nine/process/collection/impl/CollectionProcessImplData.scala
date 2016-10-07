@@ -3,327 +3,105 @@ package cards.nine.process.collection.impl
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardCategory._
-import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
-import cards.nine.models.{Application, ApplicationData, Contact, ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, Location}
+import cards.nine.models.{Application, ApplicationData, Location}
 import cards.nine.process.collection.models._
-import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, CollectionProcessConfig, EditCollectionRequest}
+import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, EditCollectionRequest}
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
 import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
-import cards.nine.services.persistence.{UpdateCardRequest => ServicesUpdateCardRequest, UpdateCardsRequest => ServicesUpdateCardsRequest}
 import play.api.libs.json.Json
 
 import scala.util.Random
 
 trait CollectionProcessImplData {
 
-  val collectionId = Random.nextInt(10)
-  val nonExistentCollectionId = Random.nextInt(10) + 100
-  val name: String = Random.nextString(5)
-  val collectionType: CollectionType = collectionTypes(Random.nextInt(collectionTypes.length))
-  val icon: String = Random.nextString(5)
-  val themedColorIndex: Int = Random.nextInt(10)
-  val appsCategory: NineCardCategory = appsCategories(Random.nextInt(appsCategories.length))
-  val appsCategoryName = appsCategory.name
-  val originalSharedCollectionId: String = Random.nextString(5)
-  val sharedCollectionId: String = Random.nextString(5)
+  val collectionId = 1
+  val position: Int = 1
+  val newPosition: Int = 2
+  val name: String = "name"
+  val collectionTypeAppsType: CollectionType = collectionTypes(0)
+  val icon: String = "icon"
+  val themedColorIndex: Int = 1
+  val appsCategoryGame: NineCardCategory = appsCategories(0)
+  val appsCategoryBooksAndReference: NineCardCategory = appsCategories(1)
+  val originalSharedCollectionId: String = "originalSharedCollection"
+  val originalSharedCollectionIdOption: Option[String] = Option(originalSharedCollectionId)
+  val sharedCollectionId: String = "shareCollectionId"
+  val sharedCollectionIdOption: Option[String] = Option(sharedCollectionId)
+  val sharedCollectionSubscribedFalse: Boolean = false
+  val className: String = "className"
 
-  val name1 = "Scala Android"
-  val packageName1 = "com.fortysevendeg.scala.android"
-  val className1 = "ScalaAndroidActivity"
-  val path1 = "/example/path1"
-  val category1 = "category1"
-  val dateInstalled1 = 1L
-  val dateUpdate1 = 1L
-  val version1 = "22"
-  val installedFromGooglePlay1 = true
-
-  val cardId = Random.nextInt(10)
-  val position: Int = Random.nextInt(10)
-  val newPosition: Int = position + Random.nextInt(10) + 1
-  val oldPosition: Int = Random.nextInt(10)
-  val term: String = Random.nextString(5)
-  val packageName = "package.name."
-  def generatePackageName = packageName + Random.nextInt(10)
-  val className = Random.nextString(5)
-  val cardType: CardType = cardTypes(Random.nextInt(cardTypes.length))
-  val imagePath: String = Random.nextString(5)
-  val ratingsCount = Random.nextInt()
-  val commentCount = Random.nextInt()
-  val notification: String = Random.nextString(5)
-  val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
-
-  val lookupKey: String = Random.nextString(5)
-  val photoUri: String = Random.nextString(10)
-  val phoneNumber: String = Random.nextString(5)
-
-  val collectionsRemoved = Random.nextInt(2)
-  val cardsRemoved = Random.nextInt(2)
-
-  val momentId = Random.nextInt(5)
-  val momentType = Random.nextString(5)
-
-  val startX: Int = Random.nextInt(8)
-  val startY: Int = Random.nextInt(8)
-  val spanX: Int = Random.nextInt(8)
-  val spanY: Int = Random.nextInt(8)
-
-  val statusCodeOk = 200
-
-  val latitude: Double = Random.nextDouble()
-  val longitude: Double = Random.nextDouble()
-
-  def generateOptionId(id: String) =
-    Random.nextBoolean() match {
-      case true => None
-      case false => Some(id)
-    }
-
-  val sharedCollectionIdOption = generateOptionId(sharedCollectionId)
-  val originalSharedCollectionIdOption = generateOptionId(originalSharedCollectionId)
   val sharedCollectionSubscribed: Boolean =
     if (sharedCollectionId == originalSharedCollectionId) Random.nextBoolean()
     else false
 
+  val cardId: Int = 1
+  val term: String = "term"
+  val packageName = "package.name."
+  val cardType: CardType = cardTypes(0)
+  val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val imagePath: String = "imagePath"
+  val notification: String = "notification"
+
+  def servicesCard(num: Int = 0) = ServicesCard(
+    id = cardId + num,
+    position = position + num,
+    term = term,
+    packageName = Option(packageName + num),
+    cardType = cardType.name,
+    intent = intent,
+    imagePath = Option(imagePath),
+    notification = Option(notification))
+
+  val serviceCard = servicesCard(0)
+
+  val seqServicesCards = Seq(servicesCard(0), servicesCard(1))
+
+  def servicesCollection(num: Int = 0) = ServicesCollection(
+    id = collectionId + num,
+    position = position + num,
+    name = name,
+    collectionType = collectionTypeAppsType.name,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategoryGame.name),
+    cards = seqServicesCards,
+    moment = None,
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = sharedCollectionIdOption,
+    sharedCollectionSubscribed = sharedCollectionSubscribedFalse)
+
+  val servicesCollection: ServicesCollection = servicesCollection(0)
+
+  val seqServicesCollection = Seq(servicesCollection(0), servicesCollection(1))
+
+  val collectionType: CollectionType = collectionTypes(0)
+
   def determinePublicCollectionStatus(): PublicCollectionStatus =
-    if (sharedCollectionIdOption.isDefined && sharedCollectionSubscribed) Subscribed
+    if (sharedCollectionIdOption.isDefined && sharedCollectionSubscribedFalse) Subscribed
     else if (sharedCollectionIdOption.isDefined && originalSharedCollectionIdOption == sharedCollectionIdOption) PublishedByOther
     else if (sharedCollectionIdOption.isDefined) PublishedByMe
     else NotPublished
 
   val publicCollectionStatus = determinePublicCollectionStatus()
 
-  val application1 = ApplicationData(
-    name = name1,
-    packageName = packageName1,
-    className = className1,
-    category = appsCategory,
-    dateInstalled = dateInstalled1,
-    dateUpdate = dateUpdate1,
-    version = version1,
-    installedFromGooglePlay = installedFromGooglePlay1)
-
-  val collectionId1 = 1
-
-  val collectionId2 = 2
-
-  val collection1 = ServicesCollection(
-    id = collectionId1,
+  val collection = Collection(
+    id = collectionId,
     position = position,
     name = name,
-    collectionType = collectionType.name,
+    collectionType = collectionType,
     icon = icon,
+    cards = Seq(card(0), card(1)),
     themedColorIndex = themedColorIndex,
-    cards = Seq.empty,
-    moment = None,
-    appsCategory = Option(appsCategory.name),
-    originalSharedCollectionId = originalSharedCollectionIdOption,
-    sharedCollectionId = sharedCollectionIdOption,
-    sharedCollectionSubscribed = sharedCollectionSubscribed)
+    appsCategory = Option(appsCategoryGame),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = sharedCollectionSubscribedFalse,
+    publicCollectionStatus = publicCollectionStatus)
 
-  val momentTimeSlot = MomentTimeSlot(
-    from = "8:00",
-    to = "19:00",
-    days = Seq(0, 1, 1, 1, 1, 1, 0))
-
-  def createSeqFormedWidgets(
-    num: Int = 5,
-    packageName: String = packageName,
-    className: String = className,
-    startX: Int = startX,
-    startY: Int = startX,
-    spanX: Int = startX,
-    spanY: Int = startX,
-    widgetType: WidgetType = AppWidgetType,
-    label: Option[String] = None,
-    imagePath: Option[String] = None,
-    intent: Option[String] = None) =
-    (0 until 5) map (
-      item =>
-        FormedWidget(
-          packageName = packageName + item,
-          className = className + item,
-          startX = startX + item,
-          startY = startY + item,
-          spanX = spanX + item,
-          spanY = spanY + item,
-          widgetType = widgetType,
-          label = label,
-          imagePath = imagePath,
-          intent = intent))
-
-  val seqFormedWidgets = createSeqFormedWidgets()
-
-  val formedMoment = FormedMoment(
-    collectionId = Option(collectionId1),
-    timeslot = Seq(momentTimeSlot),
-    wifi = Seq.empty,
-    headphone = false,
-    momentType = Option(HomeMorningMoment),
-    widgets = Option(seqFormedWidgets))
-
-  def createSeqCollection(
-    num: Int = 5,
-    id: Int = collectionId,
-    position: Int = position,
-    name: String = name,
-    collectionType: CollectionType = collectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: NineCardCategory = appsCategory,
-    originalSharedCollectionId: Option[String] = originalSharedCollectionIdOption,
-    sharedCollectionId: Option[String] = sharedCollectionIdOption,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    cards: Seq[Card] = seqCard,
-    publicCollectionStatus: PublicCollectionStatus = publicCollectionStatus) =
-    (0 until 5) map (
-      item =>
-        Collection(
-          id = id + item,
-          position = position,
-          name = name,
-          collectionType = collectionType,
-          icon = icon,
-          themedColorIndex = themedColorIndex,
-          appsCategory = Option(appsCategory),
-          originalSharedCollectionId = originalSharedCollectionId,
-          sharedCollectionId = sharedCollectionId,
-          sharedCollectionSubscribed = sharedCollectionSubscribed,
-          cards = cards,
-          publicCollectionStatus = publicCollectionStatus))
-
-  def createSeqServicesCollection(
-    num: Int = 5,
-    id: Int = collectionId,
-    position: Int = position,
-    name: String = name,
-    collectionType: CollectionType = collectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: NineCardCategory = appsCategory,
-    originalSharedCollectionId: Option[String] = originalSharedCollectionIdOption,
-    sharedCollectionId: Option[String] = sharedCollectionIdOption,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
-    (0 until 5) map (item =>
-      ServicesCollection(
-        id = id + item,
-        position = position,
-        name = name,
-        collectionType = collectionType.name,
-        icon = icon,
-        themedColorIndex = themedColorIndex,
-        appsCategory = Option(appsCategory.name),
-        cards = Seq.empty,
-        moment = None,
-        originalSharedCollectionId = originalSharedCollectionId,
-        sharedCollectionId = sharedCollectionId,
-        sharedCollectionSubscribed = sharedCollectionSubscribed))
-
-  def createSeqCard(
-    num: Int = 5,
-    id: Int = cardId,
-    position: Int = position,
-    term: String = term,
-    packageName: String = generatePackageName,
-    cardType: CardType = cardType,
-    intent: String = intent,
-    imagePath: String = imagePath,
-    notification: String = notification) =
-    (0 until 5) map (item =>
-      Card(
-        id = id + item,
-        position = position,
-        term = term,
-        packageName = Option(packageName),
-        cardType = cardType,
-        intent = Json.parse(intent).as[NineCardIntent],
-        imagePath = Option(imagePath),
-        notification = Option(notification)))
-
-  def createSeqServicesCard() =
-    (1 until 5) map (item =>
-      ServicesCard(
-        id = cardId + item,
-        position = position + item,
-        term = term,
-        packageName = Option(packageName + item),
-        cardType = cardType.name,
-        intent = intent,
-        imagePath = Option(imagePath),
-        notification = Option(notification)))
-
-  def createSeqApps(num: Int = 150) =
-    (0 until num) map { item =>
-      ApplicationData(
-        name = name,
-        packageName = generatePackageName,
-        className = className,
-        category = appsCategory,
-        dateInstalled = dateInstalled1,
-        dateUpdate = dateUpdate1,
-        version = version1,
-        installedFromGooglePlay = installedFromGooglePlay1)
-    }
-
-  val seqCardIds = (0 until 5) map (item => cardId + item)
-  val seqCard = createSeqCard()
-  val servicesCard = ServicesCard(
-    id = cardId,
-    position = position,
-    term = term,
-    packageName = Option(packageName),
-    cardType = cardType.name,
-    intent = intent,
-    imagePath = Option(imagePath),
-    notification = Option(notification))
-  val seqServicesCard = Seq(servicesCard) ++ createSeqServicesCard()
-
-  val seqProcessCard: Seq[Card] = seqServicesCard map {
-    case (card) =>
-      Card(
-        id = card.id,
-        position = card.position,
-        term = card.term,
-        packageName = card.packageName,
-        cardType = CardType(card.cardType),
-        intent = Json.parse(card.intent).as[NineCardIntent],
-        imagePath = card.imagePath,
-        notification = card.notification)
-  }
-
-  val seqCardPositions = (0 until seqProcessCard.size) map (item => 0 + item)
-  val seqProcessCardReload = ServicesUpdateCardsRequest(createSeqServicesUpdateCardsRequest(seqProcessCard = seqProcessCard))
-
-  def createSeqServicesUpdateCardsRequest(seqProcessCard: Seq[Card]): Seq[ServicesUpdateCardRequest] =
-    seqProcessCard.zip(seqCardPositions) map {
-      case (card, position) => ServicesUpdateCardRequest(
-        id = card.id,
-        position = position,
-        term = card.term,
-        packageName = card.packageName,
-        cardType = card.cardType.name,
-        intent = Json.toJson(card.intent).toString(),
-        imagePath = card.imagePath,
-        notification = card.notification)
-    }
-
-
-  val seqServicesApp = seqServicesCard map { card =>
-    Application(
-      id = card.id,
-      name = card.term,
-      packageName = card.packageName.getOrElse(""),
-      className = "",
-      category = NineCardCategory(appsCategoryName),
-      dateInstalled = 0,
-      dateUpdate = 0,
-      version = "",
-      installedFromGooglePlay = false)
-  }
-
-  val seqAddCardRequest = seqServicesCard map { c =>
+  val seqAddCardRequest = seqServicesCards map { c =>
     AddCardRequest(
       term = c.term,
       packageName = c.packageName,
@@ -332,184 +110,83 @@ trait CollectionProcessImplData {
       imagePath = c.imagePath)
   }
 
+  val addCollectionRequest = AddCollectionRequest(
+    name = name,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategoryGame),
+    cards = seqAddCardRequest,
+    moment = None)
+
+  def card(num: Int = 0) = Card(
+    id = cardId + num,
+    position = position + num,
+    term = term,
+    packageName = Option(packageName + num),
+    cardType = cardType,
+    intent = Json.parse(intent).as[NineCardIntent],
+    imagePath = Option(imagePath),
+    notification = Option(notification))
+
+  val card: Card = card(0)
+
+  val collectionRemoved: Int = 1
+  val collectionsRemoved = 1
+  val cardRemoved = 1
+  val cardsRemoved = 1
+  val updatedCards: Int = 1
+  val updatedCard: Int = 1
+  val updatedCollection: Int = 1
+  val updatedCollections: Int = 1
+  val nameCollectionRequest: String = "nameCollectionRequest"
+  val iconCollectionRequest: String = "iconCollectionRequest"
+  val themedColorIndexRequest: Int = 1
+
+  val editCollectionRequest = EditCollectionRequest(
+    name = nameCollectionRequest,
+    icon = iconCollectionRequest,
+    themedColorIndex = themedColorIndexRequest,
+    appsCategory = Option(appsCategoryBooksAndReference))
+
+  val newSharedCollectionId: String = "newSharedCollectionId"
+
+  val seqServicesApp = seqServicesCards map { card =>
+    Application(
+      id = card.id,
+      name = card.term,
+      packageName = card.packageName.getOrElse(""),
+      className = "",
+      category = appsCategoryGame,
+      dateInstalled = 0,
+      dateUpdate = 0,
+      version = "",
+      installedFromGooglePlay = false)
+  }
+
   val categorizedDetailPackages = seqServicesApp map { app =>
     CategorizedDetailPackage(
       packageName = app.packageName,
       title = app.name,
-      category = Some(app.category.name),
+      category = Option(app.category.name),
       icon = "",
       free = true,
       downloads = "",
       stars = 0.0)
   }
 
-  val seqCollection = createSeqCollection()
-  val collection = seqCollection.headOption
-  val seqServicesCollection = createSeqServicesCollection()
-  val servicesCollection = seqServicesCollection.headOption
+  val latitude: Double = 47
+  val longitude: Double = 36
+  val statusCodeOk = 200
 
-  val apps = createSeqApps()
-
-  val categoriesApps: Seq[NineCardCategory] = allCategories flatMap { category =>
-    val count = apps.count(_.category == category)
-    if (count >= minAppsToAdd) Option(category) else None
-  }
-
-  val collectionForUnformedItem = ServicesCollection(
-    id = position,
-    position = position,
-    name = name,
-    collectionType = collectionType.name,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory.name),
-    cards = Seq.empty,
-    moment = None,
-    originalSharedCollectionId = originalSharedCollectionIdOption,
-    sharedCollectionId = sharedCollectionIdOption,
-    sharedCollectionSubscribed = sharedCollectionSubscribed)
-
-  def createSeqFormedCollection(num: Int = 150) =
-    (0 until num) map { item =>
-      FormedCollection(
-        name = name,
-        originalSharedCollectionId = originalSharedCollectionIdOption,
-        sharedCollectionId = sharedCollectionIdOption,
-        sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
-        items = Seq.empty,
-        collectionType = collectionType,
-        icon = icon,
-        category = Option(appsCategory),
-        moment = Option(formedMoment))
-    }
-
-  val seqFormedCollection = createSeqFormedCollection()
-
-  def createSeqContact(num: Int = 10) =
-    (0 until num) map { item =>
-      Contact(
-        name = name,
-        lookupKey = lookupKey,
-        photoUri = photoUri,
-        favorite = true)
-    }
-
-  val seqContacts: Seq[Contact] = createSeqContact()
-
-  val seqContactsWithPhones: Seq[Contact] = seqContacts map {
-    _.copy(info = Option(ModelsContactInfo(Seq.empty, Seq(ModelsContactPhone(phoneNumber, PhoneHome)))))
-  }
-
-  val addCollectionRequest = AddCollectionRequest(
-    name = name,
-    collectionType = collectionType,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory),
-    cards = Seq.empty,
-    moment = None)
-
-  val servicesCollectionAdded = ServicesCollection(
-    id = seqServicesCollection.size,
-    position = seqServicesCollection.size,
-    name = name,
-    collectionType = collectionType.name,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategoryName),
-    cards = Seq.empty,
-    moment = None,
-    originalSharedCollectionId = originalSharedCollectionIdOption,
-    sharedCollectionId = sharedCollectionIdOption,
-    sharedCollectionSubscribed = sharedCollectionSubscribed)
-
-  val collectionAdded = Collection(
-    id = seqServicesCollection.size,
-    position = seqServicesCollection.size,
-    name = name,
-    collectionType = collectionType,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory),
-    originalSharedCollectionId = originalSharedCollectionIdOption,
-    sharedCollectionId = sharedCollectionIdOption,
-    sharedCollectionSubscribed = sharedCollectionSubscribed,
-    publicCollectionStatus = publicCollectionStatus)
-
-  val editCollectionRequest = EditCollectionRequest(
-    name = name,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory))
-
-  val editedCollection = Collection(
-    id = collectionId,
-    position = position,
-    name = name,
-    collectionType = collectionType,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory),
-    originalSharedCollectionId = originalSharedCollectionIdOption,
-    sharedCollectionId = sharedCollectionIdOption,
-    sharedCollectionSubscribed = sharedCollectionSubscribed,
-    publicCollectionStatus = publicCollectionStatus)
-
-  val updatedCollection = Collection(
-    id = collectionId,
-    position = position,
-    name = name,
-    collectionType = collectionType,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory),
-    originalSharedCollectionId = originalSharedCollectionIdOption,
-    sharedCollectionId = Option(sharedCollectionId),
-    sharedCollectionSubscribed = sharedCollectionSubscribed,
-    publicCollectionStatus = publicCollectionStatus)
-
-  val seqAddCardResponse = createSeqCardResponse()
-
-  def createSeqAddCardRequest(num: Int = 3) =
-    (0 until num) map { item =>
-      AddCardRequest(
-        term = term,
-        packageName = Option(packageName),
-        cardType = cardType,
-        intent = Json.parse(intent).as[NineCardIntent],
-        imagePath = Option(imagePath))
-    }
-
-  def createSeqCardResponse(
-    num: Int = 3,
-    id: Int = cardId,
-    position: Int = position,
-    term: String = term,
-    packageName: String = packageName,
-    cardType: CardType = cardType,
-    intent: String = intent,
-    imagePath: String = imagePath,
-    notification: String = notification) =
-    (0 until 3) map (item =>
-      Card(
-        id = id,
-        position = position,
-        term = term,
-        packageName = Option(packageName),
-        cardType = cardType,
-        intent = Json.parse(intent).as[NineCardIntent],
-        imagePath = Option(imagePath),
-        notification = Option(notification)))
-
-  def updatedCard = Card(
-    id = servicesCard.id,
-    position = servicesCard.position,
-    term = servicesCard.term,
-    packageName = servicesCard.packageName,
-    cardType = cardType,
-    intent = Json.parse(servicesCard.intent).as[NineCardIntent],
-    imagePath = servicesCard.imagePath,
-    notification = servicesCard.notification)
+  val awarenessLocation =
+    Location(
+      latitude = latitude,
+      longitude = longitude,
+      countryCode = Some("ES"),
+      countryName = Some("Spain"),
+      addressLines = Seq("street", "city", "postal code")
+    )
 
   val seqCategoryAndPackages =
     (seqServicesApp map (app => (app.category, app.packageName))).groupBy(_._1).mapValues(_.map(_._2)).toSeq
@@ -531,78 +208,100 @@ trait CollectionProcessImplData {
         packages = item._2)
     }
 
-  val awarenessLocation =
-    Location(
-      latitude = latitude,
-      longitude = longitude,
-      countryCode = Some("ES"),
-      countryName = Some("Spain"),
-      addressLines = Seq("street", "city", "postal code")
-    )
+  val termRequest: String = "termRequest"
+  val packageNameRequest = "package.name.request"
+  val cardTypeRequest: CardType = cardTypes(0)
+  val intentRequest = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val imagePathRequest: String = "imagePathRequest"
 
+  def addCardRequest(num: Int = 0) = AddCardRequest(
+    term = termRequest,
+    packageName = Option(packageNameRequest + num),
+    cardType = cardTypeRequest,
+    intent = Json.parse(intentRequest).as[NineCardIntent],
+    imagePath = Option(imagePathRequest))
 
-  val seqUnformedAppsForPrivateCollections: Seq[ApplicationData] =
-    Seq(
-      ApplicationData(
-        name = "nameUnformed0",
-        packageName = "package.name.0",
-        className = "classNameUnformed0",
-        category = appsCategories(0),
-        dateInstalled = dateInstalled1,
-        dateUpdate = dateUpdate1,
-        version = version1,
-        installedFromGooglePlay = installedFromGooglePlay1),
-      ApplicationData(
-        name = "nameUnformed1",
-        packageName = "package.name.1",
-        className = "classNameUnformed1",
-        category = appsCategories(1),
-        dateInstalled = dateInstalled1,
-        dateUpdate = dateUpdate1,
-        version = version1,
-        installedFromGooglePlay = installedFromGooglePlay1))
+  val seqAddCardsRequest = Seq(addCardRequest(0), addCardRequest(1))
 
-  val appsByCategory0: Seq[ApplicationData] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(0)).take(numSpaces)
-  val appsByCategory1: Seq[ApplicationData] = seqUnformedAppsForPrivateCollections.filter(_.category.toAppCategory == appsCategories(1)).take(numSpaces)
+  val seqCardIds = Seq(1)
 
-  val collectionProcessConfig: CollectionProcessConfig
+  val cardIdReorder = serviceCard.id
 
-  val seqPrivateCollection =
-    Seq(
-      PrivateCollection(
-        name = appsCategories(0).getStringResource,
-        collectionType = AppsCollectionType,
-        icon = appsCategories(0).getStringResource,
-        themedColorIndex = 0,
-        appsCategory = Some(appsCategories(0)),
-        cards = Seq(
-          PrivateCard(
-            term = "nameUnformed0",
-            packageName = Some("package.name.0"),
-            cardType = AppCardType,
-            intent = NineCardIntent(NineCardIntentExtras(
-              package_name = Option("package.name.0"),
-              class_name = Option("classNameUnformed0"))),
-            imagePath = Some("imagePathUnformed0")
-          )),
-        moment = None),
-      PrivateCollection(
-        name = appsCategories(1).getStringResource,
-        collectionType = AppsCollectionType,
-        icon = appsCategories(1).getStringResource,
-        themedColorIndex = 1,
-        appsCategory = Some(appsCategories(1)),
-        cards = Seq(
-          PrivateCard(
-            term = "nameUnformed1",
-            packageName = Some("package.name.1"),
-            cardType = AppCardType,
-            intent = NineCardIntent(NineCardIntentExtras(
-              package_name = Option("package.name.1"),
-              class_name = Option("classNameUnformed1"))),
-            imagePath = Some("imagePathUnformed1")
-          )),
-        moment = None)
-    )
+  val samePositionReorder = serviceCard.position
 
+  val newPositionReorder = serviceCard.position + 1
+
+  val newNameEditCard = "newNameEditCard"
+
+  val nameApplication = "Scala Android"
+  val packageNameApplication = "com.fortysevendeg.scala.android"
+  val classNameApplication = "ScalaAndroidActivity"
+  val pathApplication = "/example/path1"
+  val categoryApplication = "category1"
+  val dateInstalledApplication = 1L
+  val dateUpdateApplication = 1L
+  val versionApplication = "22"
+  val installedFromGooglePlayApplication = true
+
+  def applicationData(item: Int) = ApplicationData(
+    name = nameApplication,
+    packageName = packageNameApplication + item,
+    className = classNameApplication,
+    category = appsCategoryGame,
+    dateInstalled = dateInstalledApplication,
+    dateUpdate = dateUpdateApplication,
+    version = versionApplication,
+    installedFromGooglePlay = installedFromGooglePlayApplication)
+
+  val applicationData: ApplicationData = applicationData(0)
+
+  val seqApplicationData = Seq(applicationData(0), applicationData(1))
+
+  val collectionIdMoment = 1
+
+  val momentTimeSlot = MomentTimeSlot(
+    from = "8:00",
+    to = "19:00",
+    days = Seq(0, 1, 1, 1, 1, 1, 0))
+
+  val startX: Int = Random.nextInt(8)
+  val startY: Int = Random.nextInt(8)
+  val spanX: Int = Random.nextInt(8)
+  val spanY: Int = Random.nextInt(8)
+
+  def formedWidgets(item: Int) =
+    FormedWidget(
+      packageName = packageName + item,
+      className = className + item,
+      startX = startX + item,
+      startY = startY + item,
+      spanX = spanX + item,
+      spanY = spanY + item,
+      widgetType = AppWidgetType,
+      label = None,
+      imagePath = Option(imagePath),
+      intent = None)
+
+  val seqFormedWidgets = Seq(formedWidgets(0), formedWidgets(1))
+
+  val formedMoment = FormedMoment(
+    collectionId = Option(collectionIdMoment),
+    timeslot = Seq(momentTimeSlot),
+    wifi = Seq.empty,
+    headphone = false,
+    momentType = Option(HomeMorningMoment),
+    widgets = Option(seqFormedWidgets))
+
+  def formedCollection(num: Int) = FormedCollection(
+    name = name,
+    originalSharedCollectionId = originalSharedCollectionIdOption,
+    sharedCollectionId = sharedCollectionIdOption,
+    sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
+    items = Seq.empty,
+    collectionType = collectionType,
+    icon = icon,
+    category = Option(appsCategoryGame),
+    moment = Option(formedMoment))
+
+  val seqFormedCollection = Seq(formedCollection(0), formedCollection(1))
 }

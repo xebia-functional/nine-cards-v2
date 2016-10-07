@@ -45,7 +45,7 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   def populate(moment: LauncherMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = moment.collection match {
     case Some(collection: Collection) =>
       val resIcon = collection.getIconDetail
-      val color = resGetColor(getIndexColor(collection.themedColorIndex))
+      val color = theme.getIndexColor(collection.themedColorIndex)
       (this <~
         vBackgroundColor(theme.get(DrawerBackgroundColor))) ~
         (iconContent <~

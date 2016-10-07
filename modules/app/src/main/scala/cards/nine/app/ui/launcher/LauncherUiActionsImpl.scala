@@ -193,7 +193,7 @@ trait LauncherUiActionsImpl
   override def goToCollection(collection: Collection, point: Point): Ui[Any] = {
 
     def rippleToCollection: Ui[Future[Any]] = {
-      val color = resGetColor(getIndexColor(collection.themedColorIndex))
+      val color = theme.getIndexColor(collection.themedColorIndex)
       val y = KitKat.ifSupportedThen(point.y - systemBarsTint.getStatusBarHeight) getOrElse point.y
       val background = new RippleCollectionDrawable(point.x, y, color)
       (foreground <~

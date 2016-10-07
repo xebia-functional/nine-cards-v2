@@ -4,23 +4,23 @@ import android.graphics.Paint.Style
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.app.DialogFragment
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.RequestCodes
+import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
+import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.ops.DrawableOps._
+import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.commons._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.types.Communication
+import cards.nine.process.commons.models.Collection
+import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.macroid.extras.EditTextTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.AppUtils._
-import cards.nine.app.ui.commons.ops.ColorOps._
-import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.ops.CollectionOps._
-import cards.nine.app.ui.commons.RequestCodes
-import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
-import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.commons._
-import cards.nine.process.commons.models.Collection
-import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -77,7 +77,7 @@ trait CreateOrEditCollectionActionsImpl
       setIndexColor(0)
 
   override def initializeEditCollection(collection: Collection): Ui[Any] ={
-    val color = resGetColor(getIndexColor(collection.themedColorIndex))
+    val color = theme.getIndexColor(collection.themedColorIndex)
     (toolbar <~
       dtbInit(color) <~
       dtbChangeText(R.string.editCollection)) ~
@@ -135,7 +135,7 @@ trait CreateOrEditCollectionActionsImpl
       ivSrc(resGetDrawable(iconName.getIconDetail).colorize(theme.get(DrawerIconColor)))
 
   private[this] def setIndexColor(index: Int): Ui[Any] = {
-    val color = resGetColor(getIndexColor(index))
+    val color = theme.getIndexColor(index)
     val size = resGetDimensionPixelSize(R.dimen.size_icon_select_new_collection)
     val drawable = new ShapeDrawable(new OvalShape)
     drawable.setIntrinsicHeight(size)
