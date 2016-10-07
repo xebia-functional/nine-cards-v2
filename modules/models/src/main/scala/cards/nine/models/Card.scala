@@ -1,21 +1,23 @@
 package cards.nine.models
 
+import cards.nine.models.types.CardType
+
 case class Card(
   id: Int,
   position: Int,
   term: String,
   packageName: Option[String],
-  cardType: String,
-  intent: String,
+  cardType: CardType,
+  intent: NineCardsIntent,
   imagePath: Option[String],
-  notification: Option[String] = None)
+  notification: Option[String] = None) extends Serializable
 
 case class CardData(
   position: Int,
   term: String,
   packageName: Option[String],
-  cardType: String,
-  intent: String,
+  cardType: CardType,
+  intent: NineCardsIntent,
   imagePath: Option[String],
   notification: Option[String] = None)
 
@@ -33,3 +35,10 @@ object Card {
       notification = card.notification)
   }
 }
+//
+//case class PrivateCard(
+//  term: String,
+//  packageName: Option[String],
+//  cardType: CardType,
+//  intent: NineCardIntent,
+//  imagePath: Option[String])

@@ -1,6 +1,6 @@
 package cards.nine.process.collection.models
 
-import cards.nine.models.types.{CollectionType, NineCardCategory, NineCardsMoment}
+import cards.nine.models.types.{CollectionType, NineCardsCategory, NineCardsMoment}
 import cards.nine.process.commons.models.{FormedWidget, MomentTimeSlot}
 
 case class ContactInfo(
@@ -23,7 +23,7 @@ case class FormedCollection(
    items: Seq[FormedItem],
    collectionType: CollectionType,
    icon: String,
-   category: Option[NineCardCategory],
+   category: Option[NineCardsCategory],
    moment: Option[FormedMoment])
 
 case class FormedItem(
@@ -41,5 +41,5 @@ case class FormedMoment(
   widgets: Option[Seq[FormedWidget]])
 
 case class PackagesByCategory(
-  category: NineCardCategory,
+  category: NineCardsCategory,
   packages: Seq[String])

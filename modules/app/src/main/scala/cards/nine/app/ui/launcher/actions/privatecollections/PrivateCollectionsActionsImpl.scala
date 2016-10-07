@@ -13,7 +13,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
@@ -32,7 +32,7 @@ import macroid._
 trait PrivateCollectionsActionsImpl
   extends PrivateCollectionsActions
   with Styles
-  with AppNineCardIntentConversions {
+  with AppNineCardsIntentConversions {
 
   self: TypedFindView with BaseActionFragment with Contexts[Fragment] =>
 

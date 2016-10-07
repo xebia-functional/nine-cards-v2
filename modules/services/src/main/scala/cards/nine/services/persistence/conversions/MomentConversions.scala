@@ -1,5 +1,6 @@
 package cards.nine.services.persistence.conversions
 
+import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{Moment, MomentData, MomentTimeSlot}
 import cards.nine.repository.model.{Moment => RepositoryMoment, MomentData => RepositoryMomentData}
 import cards.nine.services.persistence.reads.MomentImplicits
@@ -16,7 +17,7 @@ trait MomentConversions {
       timeslot = Json.parse(moment.data.timeslot).as[Seq[MomentTimeSlot]],
       wifi = if (moment.data.wifi.isEmpty) List.empty else moment.data.wifi.split(",").toList,
       headphone = moment.data.headphone,
-      momentType = moment.data.momentType)
+      momentType = moment.data.momentType.map(NineCardsMoment(_)))
 
   def toRepositoryMoment(moment: Moment): RepositoryMoment =
     RepositoryMoment(
@@ -26,7 +27,7 @@ trait MomentConversions {
         timeslot = Json.toJson(moment.timeslot).toString,
         wifi = moment.wifi.mkString(","),
         headphone = moment.headphone,
-        momentType = moment.momentType))
+        momentType = moment.momentType map (_.name)))
 
   def toRepositoryMomentWithoutCollection(moment: Moment): RepositoryMoment =
     RepositoryMoment(
@@ -36,7 +37,7 @@ trait MomentConversions {
         timeslot = Json.toJson(moment.timeslot).toString,
         wifi = moment.wifi.mkString(","),
         headphone = moment.headphone,
-        momentType = moment.momentType))
+        momentType = moment.momentType map (_.name)))
 
   def toRepositoryMomentData(moment: MomentData): RepositoryMomentData =
     RepositoryMomentData(
@@ -44,5 +45,5 @@ trait MomentConversions {
       timeslot = Json.toJson(moment.timeslot).toString,
       wifi = moment.wifi.mkString(","),
       headphone = moment.headphone,
-      momentType = moment.momentType)
+      momentType = moment.momentType map (_.name))
 }

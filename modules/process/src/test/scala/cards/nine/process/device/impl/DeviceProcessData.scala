@@ -4,10 +4,9 @@ import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.models
 import cards.nine.models.types._
-import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, Shortcut, _}
-import cards.nine.process.commons.NineCardIntentConversions
-import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.commons.models.NineCardIntentImplicits._
+import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, _}
+import NineCardsIntent
+import NineCardIntentImplicits._
 import cards.nine.process.device.SaveDockAppRequest
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.repository.model.{App => RepositoryApp}
@@ -16,7 +15,7 @@ import cards.nine.services.persistence.models.{IterableApps => ServicesIterableA
 import play.api.libs.json.Json
 
 trait DeviceProcessData
-  extends NineCardIntentConversions {
+  extends NineCardsIntentConversions {
 
   val statusCodeOk = 200
   val items = 5
@@ -256,7 +255,7 @@ trait DeviceProcessData
     category = Some("SOCIAL"))
 
   val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
-  val intent = Json.parse(intentStr).as[NineCardIntent]
+  val intent = Json.parse(intentStr).as[NineCardsIntent]
 
   val shortcuts: Seq[Shortcut] = Seq(
     Shortcut(

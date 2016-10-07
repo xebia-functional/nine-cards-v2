@@ -1,15 +1,15 @@
 package cards.nine.app.ui.wizard.jobs
 
-import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
+import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.ApplicationData
+import cards.nine.models.{NineCardIntentImplicits, ApplicationData}
 import cards.nine.models.types._
 import cards.nine.process.collection.models.{FormedCollection, FormedItem, PackagesByCategory}
 import cards.nine.process.commons.CommonConversions
 import cards.nine.process.commons.models.MomentTimeSlot
-import cards.nine.process.commons.models.NineCardIntentImplicits._
+import NineCardIntentImplicits._
 import cards.nine.process.device.GetByName
 import cards.nine.process.moment.SaveMomentRequest
 import macroid.ActivityContextWrapper
@@ -20,7 +20,7 @@ class NewConfigurationJobs(
   visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
-  with AppNineCardIntentConversions
+  with AppNineCardsIntentConversions
   with CommonConversions {
 
   val defaultDockAppsSize = 4

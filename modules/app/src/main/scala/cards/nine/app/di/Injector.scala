@@ -6,9 +6,9 @@ import cards.nine.api.rest.client.http.OkHttpClient
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types.NineCardsMoment._
-import cards.nine.models.types.{NineCardCategory, NineCardsMoment}
+import cards.nine.models.types.{NineCardsCategory, NineCardsMoment}
 import cards.nine.process.accounts.UserAccountsProcess
 import cards.nine.process.accounts.impl.UserAccountsProcessImpl
 import cards.nine.process.cloud.CloudStorageProcess
@@ -185,7 +185,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     callsServices = callsServices,
     wifiServices = wifiServices)
 
-  private[this] lazy val nameCategories: Map[NineCardCategory, String] = (allCategories map {
+  private[this] lazy val nameCategories: Map[NineCardsCategory, String] = (allCategories map {
     category =>
       val identifier = resources.getIdentifier(category.getIconResource, "string", contextSupport.getPackageName)
       (category, if (identifier != 0) resources.getString(identifier) else category.name)

@@ -56,7 +56,7 @@ case class CloudStorageCollection(
   items: Seq[CloudStorageCollectionItem],
   collectionType: CollectionType,
   icon: String,
-  category: Option[NineCardCategory],
+  category: Option[NineCardsCategory],
   moment: Option[CloudStorageMoment])
 
 case class CloudStorageCollectionItem(

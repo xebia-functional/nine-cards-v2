@@ -2,7 +2,7 @@ package cards.nine.app.ui.collections.actions.recommendations
 
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.{Conversions, AppNineCardIntentConversions}
+import cards.nine.app.commons.{Conversions, AppNineCardsIntentConversions}
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.actions.BaseActionFragment
@@ -12,7 +12,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.recommendations.RecommendedAppsConfigurationException
 import cards.nine.process.recommendations.models.RecommendedApp
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 import com.fortysevendeg.ninecardslauncher2.R
 
 class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -21,9 +21,9 @@ class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJob
   with RecommendationsDOM
   with RecommendationsUiListener
   with Conversions
-  with AppNineCardIntentConversions { self =>
+  with AppNineCardsIntentConversions { self =>
 
-  lazy val nineCardCategory = NineCardCategory(getString(Seq(getArguments), RecommendationsFragment.categoryKey, ""))
+  lazy val nineCardCategory = NineCardsCategory(getString(Seq(getArguments), RecommendationsFragment.categoryKey, ""))
 
   lazy val packages = getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])
 

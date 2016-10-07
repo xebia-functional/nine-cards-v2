@@ -3,12 +3,12 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{Moment, PersistenceWidgetData, MomentData}
+import cards.nine.models.{Moment, MomentData, PersistenceWidgetData}
 import cards.nine.repository.RepositoryException
+import cards.nine.repository.model.{Moment => RepositoryMoment}
 import cards.nine.repository.provider.MomentEntity
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
-import cards.nine.repository.model.{Moment => RepositoryMoment}
 import monix.eval.Task
 
 trait MomentPersistenceServicesImpl extends PersistenceServices {

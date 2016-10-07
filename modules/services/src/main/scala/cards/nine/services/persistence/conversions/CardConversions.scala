@@ -1,8 +1,8 @@
 package cards.nine.services.persistence.conversions
 
-import cards.nine.models.{CardData, Card}
+import cards.nine.models.types.CardType
+import cards.nine.models.{Card, CardData}
 import cards.nine.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId}
-import cards.nine.services.persistence._
 
 trait CardConversions {
 
@@ -19,7 +19,7 @@ trait CardConversions {
       position = card.data.position,
       term = card.data.term,
       packageName = card.data.packageName,
-      cardType = card.data.cardType,
+      cardType = CardType(card.data.cardType),
       intent = card.data.intent,
       imagePath = card.data.imagePath,
       notification = card.data.notification)
@@ -32,7 +32,7 @@ trait CardConversions {
         position = card.position,
         term = card.term,
         packageName = card.packageName,
-        cardType = card.cardType,
+        cardType = card.cardType.name,
         intent = card.intent,
         imagePath = card.imagePath,
         notification = card.notification
@@ -44,7 +44,7 @@ trait CardConversions {
       position = card.position,
       term = card.term,
       packageName = card.packageName,
-      cardType = card.cardType,
+      cardType = card.cardType.name,
       intent = card.intent,
       imagePath = card.imagePath,
       notification = card.notification)

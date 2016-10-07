@@ -5,8 +5,8 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.NineCardCategory._
-import cards.nine.models.types.{OrderByCategory, NineCardCategory, NoInstalledAppCardType}
+import cards.nine.models.types.NineCardsCategory._
+import cards.nine.models.types.{OrderByCategory, NineCardsCategory, NoInstalledAppCardType}
 import cards.nine.models.{Application, ApplicationData}
 import cards.nine.process.collection.models.FormedCollection
 import cards.nine.process.collection.{AddCollectionRequest, _}
@@ -48,7 +48,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
       .map(_.map(toCollection))
       .resolve[CollectionException]
 
-  def getCollectionByCategory(category: NineCardCategory) =
+  def getCollectionByCategory(category: NineCardsCategory) =
     persistenceServices.findCollectionByCategory(category.name)
       .map(_.map(toCollection))
       .resolve[CollectionException]
@@ -170,10 +170,10 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def rankApps()(implicit context: ContextSupport) = {
 
-    def mapValues(seq: Seq[(NineCardCategory, String)]): Seq[(NineCardCategory, Seq[String])] =
+    def mapValues(seq: Seq[(NineCardsCategory, String)]): Seq[(NineCardsCategory, Seq[String])] =
       seq.groupBy(_._1).mapValues(_.map(_._2)).toSeq
 
-    def getPackagesByCategory: TaskService[Seq[(NineCardCategory, Seq[String])]] =
+    def getPackagesByCategory: TaskService[Seq[(NineCardsCategory, Seq[String])]] =
       for {
         appList <- persistenceServices.fetchApps(OrderByCategory)
       } yield mapValues(appList map (app => (app.category, app.packageName)))

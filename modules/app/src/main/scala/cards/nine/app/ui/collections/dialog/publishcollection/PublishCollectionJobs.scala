@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.dialog.publishcollection
 
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 import cats.implicits._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.{JobException, Jobs}
@@ -34,12 +34,12 @@ class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val cont
     }
   }
 
-  def publishCollection(maybeName: Option[String], maybeCategory: Option[NineCardCategory]): TaskService[Unit] = {
+  def publishCollection(maybeName: Option[String], maybeCategory: Option[NineCardsCategory]): TaskService[Unit] = {
 
     def getCollection: TaskService[Collection] =
       statuses.collection map TaskService.right getOrElse TaskService.left(SharedCollectionsException("", None))
 
-    def createPublishedCollection(name: String, category: NineCardCategory): TaskService[String] =
+    def createPublishedCollection(name: String, category: NineCardsCategory): TaskService[String] =
       for {
         user <- di.userProcess.getUser
         collection <- getCollection
@@ -70,7 +70,7 @@ class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val cont
     di.launcherExecutorProcess
       .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
 
-  def showPublishingError(maybeName: Option[String], maybeCategory: Option[NineCardCategory]): TaskService[Unit] =
+  def showPublishingError(maybeName: Option[String], maybeCategory: Option[NineCardsCategory]): TaskService[Unit] =
     (for {
       name <- maybeName
       category <- maybeCategory

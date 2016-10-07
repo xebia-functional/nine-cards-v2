@@ -4,7 +4,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Collection
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.sharedcollections._
 import cards.nine.process.sharedcollections.models._
 import cards.nine.process.utils.ApiUtils
@@ -25,7 +25,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     } yield toSharedCollection(response.sharedCollection, maybeCollection)).resolveLeft(mapLeft)
 
   override def getSharedCollectionsByCategory(
-    category: NineCardCategory,
+    category: NineCardsCategory,
     typeShareCollection: TypeSharedCollection,
     offset: Int = 0,
     limit: Int = 50)

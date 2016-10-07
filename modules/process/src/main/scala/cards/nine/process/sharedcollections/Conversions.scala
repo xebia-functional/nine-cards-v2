@@ -1,7 +1,7 @@
 package cards.nine.process.sharedcollections
 
 import cards.nine.models.Collection
-import cards.nine.models.types.{AppCardType, CardType, NineCardCategory}
+import cards.nine.models.types.{AppCardType, CardType, NineCardsCategory}
 import cards.nine.process.commons.CommonConversions
 import cards.nine.process.sharedcollections.models._
 import cards.nine.services.api.{SharedCollection => SharedCollectionService, SharedCollectionPackageResponse}
@@ -23,7 +23,7 @@ trait Conversions
       resolvedPackages = item.resolvedPackages map toSharedCollectionPackage,
       views = item.views,
       subscriptions = item.subscriptions,
-      category = NineCardCategory(item.category),
+      category = NineCardsCategory(item.category),
       icon = item.icon,
       community = item.community,
       publicCollectionStatus = determinePublicCollectionStatus(maybeLocalCollection))

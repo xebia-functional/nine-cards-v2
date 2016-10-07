@@ -3,10 +3,9 @@ package cards.nine.process.device
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models.types._
 import cards.nine.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, _}
-import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
 
-trait DeviceConversions extends NineCardIntentConversions {
+trait DeviceConversions extends NineCardsIntentConversions {
 
   val defaultDate = 0L
 

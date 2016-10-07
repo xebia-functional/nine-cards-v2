@@ -6,9 +6,9 @@ import android.content.res.Resources
 import android.util.DisplayMetrics
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.models.NineCardsIntent
 import cards.nine.models.types.NoInstalledAppCardType
 import cards.nine.process.collection.{CardException, CollectionException, CollectionProcessConfig}
-import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.{ApiServiceException, ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}
 import cards.nine.services.apps.{AppsInstalledException, AppsServices}
@@ -45,7 +45,7 @@ trait CollectionProcessImplSpecification
 
     val mockPersistenceServices = mock[PersistenceServices]
     val mockIntent = mock[Intent]
-    val mockNineCardIntent = mock[NineCardIntent]
+    val mockNineCardIntent = mock[NineCardsIntent]
 
     val mockAppsServices = mock[AppsServices]
     mockAppsServices.getInstalledApplications(contextSupport) returns serviceRight(Seq.empty)

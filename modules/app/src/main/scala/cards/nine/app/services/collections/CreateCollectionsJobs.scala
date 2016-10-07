@@ -1,7 +1,7 @@
 package cards.nine.app.services.collections
 
 import android.content.Intent
-import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
+import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.services.commons.FirebaseExtensions._
 import cards.nine.app.ui.commons.WizardState._
 import cards.nine.app.ui.commons.action_filters.{WizardAnswerActionFilter, WizardStateActionFilter}
@@ -18,7 +18,7 @@ import macroid.ContextWrapper
 class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contextWrapper: ContextWrapper)
   extends Jobs
   with Conversions
-  with AppNineCardIntentConversions
+  with AppNineCardsIntentConversions
   with ImplicitsJobExceptions {
 
   import CreateCollectionsService._

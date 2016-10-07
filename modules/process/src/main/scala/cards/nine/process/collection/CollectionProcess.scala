@@ -3,7 +3,7 @@ package cards.nine.process.collection
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.ApplicationData
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.collection.models._
 import cards.nine.process.commons.models.{Card, Collection, PrivateCollection}
 
@@ -50,7 +50,7 @@ trait CollectionProcess {
     * @return the Option[cards.nine.process.collection.models.Collection]
     * @throws CollectionException if there was an error getting the existing collections
     */
-  def getCollectionByCategory(category: NineCardCategory): TaskService[Option[Collection]]
+  def getCollectionByCategory(category: NineCardsCategory): TaskService[Option[Collection]]
 
   /**
     * Get collection by his shared collection id if exists

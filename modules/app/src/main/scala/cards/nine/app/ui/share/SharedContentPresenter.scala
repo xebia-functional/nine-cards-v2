@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.webkit.URLUtil
+import cards.nine.models.{NineCardsIntentExtras$, NineCardsIntent}
 import cards.nine.models.types.ShortcutCardType
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.AppLog._
@@ -13,7 +14,7 @@ import cards.nine.app.ui.share.models.{SharedContent, Web}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.commons.models.{Collection, NineCardIntent, NineCardIntentExtras}
+import cards.nine.process.commons.models.Collection
 import cards.nine.process.device.IconResize
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
@@ -75,7 +76,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
 
       val intent = new Intent(Intent.ACTION_VIEW, Uri.parse(sharedContent.content))
 
-      val nineCardIntent = NineCardIntent(NineCardIntentExtras())
+      val nineCardIntent = NineCardsIntent(NineCardsIntentExtras())
       nineCardIntent.fill(intent)
 
       AddCardRequest(

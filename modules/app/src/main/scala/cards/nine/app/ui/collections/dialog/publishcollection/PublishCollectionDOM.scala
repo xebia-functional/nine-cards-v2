@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.dialog.publishcollection
 
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 
 trait PublishCollectionDOM {
@@ -69,9 +69,9 @@ trait PublishCollectionDOM {
       case _ => None
     }
 
-  def getCategory: Option[NineCardCategory] =
+  def getCategory: Option[NineCardsCategory] =
     categorySpinner.getTag match {
-      case category: NineCardCategory => Option(category)
+      case category: NineCardsCategory => Option(category)
       case _ => None
     }
 
@@ -85,7 +85,7 @@ trait PublishCollectionUiListener {
 
   def reloadSharedCollectionId(): Unit
 
-  def publishCollection(name: Option[String], category: Option[NineCardCategory]): Unit
+  def publishCollection(name: Option[String], category: Option[NineCardsCategory]): Unit
 
   def dismiss(): Unit
 

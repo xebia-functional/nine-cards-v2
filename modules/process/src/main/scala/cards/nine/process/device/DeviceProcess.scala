@@ -3,9 +3,8 @@ package cards.nine.process.device
 import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{Shortcut, Contact, ApplicationData}
+import cards.nine.models.{NineCardsIntent, Shortcut, Contact, ApplicationData}
 import cards.nine.models.types.DockType
-import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models._
 
 trait DeviceProcess {
@@ -221,7 +220,7 @@ trait DeviceProcess {
     * @param position new position
     * @throws DockAppException if exist some problem getting the app or storing it
     */
-  def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): TaskService[Unit]
+  def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardsIntent, imagePath: String, position: Int): TaskService[Unit]
 
   /**
     * Creates DockApps from some already formed and given DockApps

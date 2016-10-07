@@ -1,8 +1,7 @@
 package cards.nine.process.device.models
 
 import cards.nine.models.types.{DockType, EmailCategory, PhoneCategory}
-import cards.nine.models.{AppWidget, Call}
-import cards.nine.process.commons.models.NineCardIntent
+import cards.nine.models.{NineCardsIntent, AppWidget, Call}
 
 case class LastCallsContact(
   hasContact: Boolean,
@@ -24,7 +23,7 @@ case class ContactPhone(
 case class ProcessDockApp(
   name: String,
   dockType: DockType,
-  intent: NineCardIntent,
+  intent: NineCardsIntent,
   imagePath: String,
   position: Int)
 

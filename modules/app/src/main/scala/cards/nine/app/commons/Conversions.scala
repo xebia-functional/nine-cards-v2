@@ -2,12 +2,12 @@ package cards.nine.app.commons
 
 import android.content.Intent
 import cards.nine.app.ui.commons.Constants._
+import cards.nine.models
 import cards.nine.models.types.{AppCardType, AppsCollectionType, ContactCardType, NoInstalledAppCardType}
-import cards.nine.models.{ApplicationData, Contact, ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone}
+import cards.nine.models.{ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone, NineCardsIntentConversions, ApplicationData, Contact}
 import cards.nine.process.cloud.models._
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest}
-import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models._
 import cards.nine.process.device.SaveDockAppRequest
 import cards.nine.process.moment.SaveMomentRequest
@@ -17,7 +17,7 @@ import cards.nine.process.sharedcollections.models.{SharedCollection, SharedColl
 import scala.util.Random
 
 trait Conversions
-  extends AppNineCardIntentConversions {
+  extends AppNineCardsIntentConversions {
 
   def toContactInfo(item: ProcessContactInfo): ContactInfo = ContactInfo(
     emails = item.emails map toContactEmail,
@@ -129,64 +129,64 @@ trait Conversions
 
 }
 
-trait AppNineCardIntentConversions extends NineCardIntentConversions {
+trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
 
-  def toNineCardIntent(app: SharedCollectionPackage): NineCardIntent = {
-    val intent = NineCardIntent(NineCardIntentExtras(
+  def toNineCardIntent(app: SharedCollectionPackage): models.NineCardsIntent = {
+    val intent = models.NineCardsIntent(models.NineCardsIntentExtras(
       package_name = Option(app.packageName)))
-    intent.setAction(NineCardIntentExtras.openNoInstalledApp)
+    intent.setAction(models.NineCardsIntentExtras.openNoInstalledApp)
     intent
   }
 
-  def toNineCardIntent(app: RecommendedApp): NineCardIntent = {
-    val intent = NineCardIntent(NineCardIntentExtras(
+  def toNineCardIntent(app: RecommendedApp): models.NineCardsIntent = {
+    val intent = models.NineCardsIntent(models.NineCardsIntentExtras(
       package_name = Option(app.packageName)))
-    intent.setAction(NineCardIntentExtras.openNoInstalledApp)
+    intent.setAction(models.NineCardsIntentExtras.openNoInstalledApp)
     intent
   }
 
-  def phoneToNineCardIntent(lookupKey: Option[String], tel: String): NineCardIntent = {
-    val intent = NineCardIntent(NineCardIntentExtras(
+  def phoneToNineCardIntent(lookupKey: Option[String], tel: String): models.NineCardsIntent = {
+    val intent = models.NineCardsIntent(models.NineCardsIntentExtras(
       contact_lookup_key = lookupKey,
       tel = Option(tel)))
-    intent.setAction(NineCardIntentExtras.openPhone)
+    intent.setAction(models.NineCardsIntentExtras.openPhone)
     intent
   }
 
-  def smsToNineCardIntent(lookupKey: Option[String], tel: String): NineCardIntent = {
-    val intent = NineCardIntent(NineCardIntentExtras(
+  def smsToNineCardIntent(lookupKey: Option[String], tel: String): models.NineCardsIntent = {
+    val intent = models.NineCardsIntent(models.NineCardsIntentExtras(
       contact_lookup_key = lookupKey,
       tel = Option(tel)))
-    intent.setAction(NineCardIntentExtras.openSms)
+    intent.setAction(models.NineCardsIntentExtras.openSms)
     intent
   }
 
-  def emailToNineCardIntent(lookupKey: Option[String], email: String): NineCardIntent = {
-    val intent = NineCardIntent(NineCardIntentExtras(
+  def emailToNineCardIntent(lookupKey: Option[String], email: String): models.NineCardsIntent = {
+    val intent = models.NineCardsIntent(models.NineCardsIntentExtras(
       contact_lookup_key = lookupKey,
       email = Option(email)))
-    intent.setAction(NineCardIntentExtras.openEmail)
+    intent.setAction(models.NineCardsIntentExtras.openEmail)
     intent
   }
 
-  def contactToNineCardIntent(lookupKey: String): NineCardIntent = {
-    val intent = NineCardIntent(NineCardIntentExtras(
+  def contactToNineCardIntent(lookupKey: String): models.NineCardsIntent = {
+    val intent = models.NineCardsIntent(models.NineCardsIntentExtras(
       contact_lookup_key = Option(lookupKey)))
-    intent.setAction(NineCardIntentExtras.openContact)
+    intent.setAction(models.NineCardsIntentExtras.openContact)
     intent
   }
 
-  def toNineCardIntent(intent: Intent): NineCardIntent = {
-    val i = NineCardIntent(NineCardIntentExtras())
+  def toNineCardIntent(intent: Intent): models.NineCardsIntent = {
+    val i = models.NineCardsIntent(models.NineCardsIntentExtras())
     i.fill(intent)
     i
   }
 
-  def toNineCardIntent(packageName: String, className: String): NineCardIntent = {
-    val intent = NineCardIntent(NineCardIntentExtras(
+  def toNineCardIntent(packageName: String, className: String): models.NineCardsIntent = {
+    val intent = models.NineCardsIntent(models.NineCardsIntentExtras(
       package_name = Option(packageName),
       class_name = Option(className)))
-    intent.setAction(NineCardIntentExtras.openApp)
+    intent.setAction(models.NineCardsIntentExtras.openApp)
     intent.setClassName(packageName, className)
     intent
   }

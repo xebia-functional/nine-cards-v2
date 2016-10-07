@@ -3,10 +3,10 @@ package cards.nine.process.moment.impl
 import cards.nine.models
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
-import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types._
-import cards.nine.models.{Application, ApplicationData}
-import cards.nine.process.commons.models.NineCardIntentImplicits._
+import cards.nine.models.{NineCardsIntent, NineCardIntentImplicits, Application, ApplicationData}
+import NineCardIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.process.moment.{SaveMomentRequest, UpdateMomentRequest}
 import org.joda.time.DateTime
@@ -21,7 +21,7 @@ trait MomentProcessImplData {
   val collectionType: CollectionType = collectionTypes(Random.nextInt(collectionTypes.length))
   val icon: String = Random.nextString(5)
   val themedColorIndex: Int = Random.nextInt(10)
-  val appsCategory: NineCardCategory = appsCategories(Random.nextInt(appsCategories.length))
+  val appsCategory: NineCardsCategory = appsCategories(Random.nextInt(appsCategories.length))
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
   val sharedCollectionSubscribed: Boolean = Random.nextBoolean()
@@ -88,7 +88,7 @@ trait MomentProcessImplData {
     collectionType: CollectionType = collectionType,
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
-    appsCategory: NineCardCategory = appsCategory,
+    appsCategory: NineCardsCategory = appsCategory,
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
@@ -118,7 +118,7 @@ trait MomentProcessImplData {
     collectionType: CollectionType = MomentCollectionType,
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
-    appsCategory: NineCardCategory = appsCategory,
+    appsCategory: NineCardsCategory = appsCategory,
     cards: Seq[Card] = seqCard,
     moment: Option[Moment] = Option(processMoment),
     originalSharedCollectionId: String = originalSharedCollectionId,
@@ -150,7 +150,7 @@ trait MomentProcessImplData {
     collectionType: CollectionType = collectionType,
     icon: String = icon,
     themedColorIndex: Int = themedColorIndex,
-    appsCategory: NineCardCategory = appsCategory,
+    appsCategory: NineCardsCategory = appsCategory,
     cards: Seq[models.Card] = seqServicesCard,
     moment: Option[models.Moment] = Option(servicesMoment),
     originalSharedCollectionId: String = originalSharedCollectionId,
@@ -188,7 +188,7 @@ trait MomentProcessImplData {
         term = term,
         packageName = Option(packageName),
         cardType = cardType,
-        intent = Json.parse(intent).as[NineCardIntent],
+        intent = Json.parse(intent).as[NineCardsIntent],
         imagePath = Option(imagePath),
         notification = Option(notification)))
 
@@ -231,7 +231,7 @@ trait MomentProcessImplData {
         name = name,
         packageName = packageName,
         className = className,
-        category = NineCardCategory(category),
+        category = NineCardsCategory(category),
         dateInstalled = dateInstalled,
         dateUpdate = dateUpdate,
         version = version,
@@ -323,7 +323,7 @@ trait MomentProcessImplData {
       name = name,
       packageName = homeAppPackageName,
       className = className1,
-      category = NineCardCategory(category1),
+      category = NineCardsCategory(category1),
       dateInstalled = dateInstalled1,
       dateUpdate = dateUpdate1,
       version = version1,

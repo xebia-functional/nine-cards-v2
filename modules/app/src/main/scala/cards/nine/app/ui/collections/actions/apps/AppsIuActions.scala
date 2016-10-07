@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.actions.apps
 
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
@@ -17,7 +17,7 @@ import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, Ni
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.ApplicationData
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.device.models.{IterableApps, TermCounter}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -26,7 +26,7 @@ import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 
 trait AppsIuActions
-  extends AppNineCardIntentConversions
+  extends AppNineCardsIntentConversions
   with Styles {
 
   self: BaseActionFragment with AppsDOM with AppsUiListener =>
@@ -35,7 +35,7 @@ trait AppsIuActions
 
   lazy val preferences = new NineCardsPreferencesValue
 
-  def initialize(onlyAllApps: Boolean, category: NineCardCategory): TaskService[Unit] = {
+  def initialize(onlyAllApps: Boolean, category: NineCardsCategory): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferences)
     val pullToTabsTweaks = if (onlyAllApps) {
       pdvEnable(false)
@@ -91,7 +91,7 @@ trait AppsIuActions
     showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps(filter)).toService
 
   def showApps(
-    category: NineCardCategory,
+    category: NineCardsCategory,
     filter: AppsFilter,
     apps: IterableApps,
     counters: Seq[TermCounter],
@@ -114,7 +114,7 @@ trait AppsIuActions
     apps: IterableApps,
     counters: Seq[TermCounter],
     filter: AppsFilter,
-    category: NineCardCategory,
+    category: NineCardsCategory,
     clickListener: (ApplicationData) => Unit) = {
     val categoryName = resGetString(category.getStringResource) getOrElse category.getStringResource
     val adapter = AppsAdapter(
@@ -136,7 +136,7 @@ trait AppsIuActions
     apps: IterableApps,
     counters: Seq[TermCounter],
     filter: AppsFilter,
-    category: NineCardCategory): Ui[_] = {
+    category: NineCardsCategory): Ui[_] = {
     val categoryName = resGetString(category.getStringResource) getOrElse category.getStringResource
     showData ~
       (getAdapter map { adapter =>
@@ -150,7 +150,7 @@ trait AppsIuActions
       } getOrElse showGeneralError)
   }
 
-  private[this] def generateTabs(category: NineCardCategory) = Seq(
+  private[this] def generateTabs(category: NineCardsCategory) = Seq(
     TabInfo(
       category.getIconCollectionDetail,
       resGetString(category.getStringResource) getOrElse getString(R.string.appsByCategory)),

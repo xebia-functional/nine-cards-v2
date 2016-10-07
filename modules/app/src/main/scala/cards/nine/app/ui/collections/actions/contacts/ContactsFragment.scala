@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view._
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -20,7 +20,7 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
   with ContactsUiActions
   with ContactsDOM
   with ContactsUiListener
-  with AppNineCardIntentConversions { self =>
+  with AppNineCardsIntentConversions { self =>
 
   lazy val contactsJobs = new ContactsJobs(self)
 

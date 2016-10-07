@@ -1,6 +1,6 @@
 package cards.nine.models
 
-import cards.nine.models.types.{WidgetType, WidgetResizeMode}
+import cards.nine.models.types.{AppWidgetType, WidgetType, WidgetResizeMode}
 
 case class AppWidget (
   userHashCode: Option[Int],
@@ -81,3 +81,15 @@ case class PersistenceWidgetData(
   label: Option[String],
   imagePath: Option[String],
   intent: Option[String])
+
+case class FormedWidget(
+  packageName: String,
+  className: String,
+  startX: Int,
+  startY: Int,
+  spanX: Int,
+  spanY: Int,
+  widgetType: WidgetType = AppWidgetType,
+  label: Option[String] = None,
+  imagePath: Option[String] = None,
+  intent: Option[String] = None)

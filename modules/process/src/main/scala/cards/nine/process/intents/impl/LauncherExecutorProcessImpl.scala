@@ -4,8 +4,8 @@ import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models._
-import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.commons.models.NineCardIntentExtras._
+import NineCardsIntent
+import NineCardsIntentExtras._
 import cards.nine.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig, LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
 import cards.nine.services.intents.{IntentLauncherServicesPermissionException, LauncherIntentServices}
 import cats.data.EitherT
@@ -17,7 +17,7 @@ class LauncherExecutorProcessImpl(
   launcherIntentServices: LauncherIntentServices)
   extends LauncherExecutorProcess {
 
-  override def execute(intent: NineCardIntent)(implicit activityContext: ActivityContextSupport) = {
+  override def execute(intent: NineCardsIntent)(implicit activityContext: ActivityContextSupport) = {
 
     def createAppAction: Option[IntentAction] = for {
       packageName <- intent.extractPackageName()

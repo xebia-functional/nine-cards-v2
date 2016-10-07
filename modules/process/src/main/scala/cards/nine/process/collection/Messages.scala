@@ -1,17 +1,17 @@
 package cards.nine.process.collection
 
-import cards.nine.models.types.{CardType, CollectionType, NineCardCategory, NineCardsMoment}
-import cards.nine.process.commons.models.NineCardIntent
+import cards.nine.models.NineCardsIntent
+import cards.nine.models.types.{CardType, CollectionType, NineCardsCategory, NineCardsMoment}
 
 case class CollectionProcessConfig(
-  namesCategories: Map[NineCardCategory, String])
+  namesCategories: Map[NineCardsCategory, String])
 
 case class AddCollectionRequest(
   name: String,
   collectionType: CollectionType,
   icon: String,
   themedColorIndex: Int,
-  appsCategory: Option[NineCardCategory] = None,
+  appsCategory: Option[NineCardsCategory] = None,
   cards: Seq[AddCardRequest],
   moment: Option[NineCardsMoment],
   originalSharedCollectionId: Option[String] = None,
@@ -22,12 +22,12 @@ case class AddCardRequest(
   term: String,
   packageName: Option[String],
   cardType: CardType,
-  intent: NineCardIntent,
+  intent: NineCardsIntent,
   imagePath: Option[String]) extends Serializable
 
 case class EditCollectionRequest(
   name: String,
   icon: String,
   themedColorIndex: Int,
-  appsCategory: Option[NineCardCategory] = None)
+  appsCategory: Option[NineCardsCategory] = None)
 

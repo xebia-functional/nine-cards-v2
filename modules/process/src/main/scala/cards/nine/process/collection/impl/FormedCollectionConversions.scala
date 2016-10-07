@@ -54,13 +54,13 @@ trait FormedCollectionConversions
 
   def createPrivateCollections(
     apps: Seq[ApplicationData],
-    categories: Seq[NineCardCategory],
+    categories: Seq[NineCardsCategory],
     minApps: Int): Seq[PrivateCollection] = generatePrivateCollections(apps, categories, Seq.empty)
 
   @tailrec
   private[this] def generatePrivateCollections(
     items: Seq[ApplicationData],
-    categories: Seq[NineCardCategory],
+    categories: Seq[NineCardsCategory],
     acc: Seq[PrivateCollection]): Seq[PrivateCollection] = categories match {
       case Nil => acc
       case h :: t =>
@@ -69,7 +69,7 @@ trait FormedCollectionConversions
         generatePrivateCollections(items, t, a)
     }
 
-  private[this] def generatePrivateCollection(items: Seq[ApplicationData], category: NineCardCategory, position: Int): PrivateCollection = {
+  private[this] def generatePrivateCollection(items: Seq[ApplicationData], category: NineCardsCategory, position: Int): PrivateCollection = {
     // TODO We should sort the application using an endpoint in the new sever
     val appsByCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position

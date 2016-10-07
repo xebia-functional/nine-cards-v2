@@ -3,7 +3,7 @@ package cards.nine.process.device.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.{OrderByName, Misc, NineCardCategory}
+import cards.nine.models.types.{OrderByName, Misc, NineCardsCategory}
 import cards.nine.process.device._
 import cards.nine.process.device.models.IterableApps
 import cards.nine.process.device.utils.KnownCategoriesUtil
@@ -63,7 +63,7 @@ trait AppsDeviceProcessImpl
         val knownCategory = findCategory(app.packageName)
         val category = knownCategory getOrElse {
           val categoryName = googlePlayPackagesResponse.packages find(_.packageName == app.packageName) flatMap (_.category)
-          categoryName map (NineCardCategory(_)) getOrElse Misc
+          categoryName map (NineCardsCategory(_)) getOrElse Misc
         }
         (app, category)
       }
@@ -97,7 +97,7 @@ trait AppsDeviceProcessImpl
         .map(_.app.category)
         .resolveLeftTo(None)
     } yield {
-      appCategory map (NineCardCategory(_)) getOrElse Misc
+      appCategory map (NineCardsCategory(_)) getOrElse Misc
     }
 
 }

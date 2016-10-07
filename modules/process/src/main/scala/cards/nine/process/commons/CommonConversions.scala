@@ -4,48 +4,24 @@ import cards.nine.models.types._
 import cards.nine.process.collection.models.FormedMoment
 import cards.nine.process.commons.models.{Moment, MomentTimeSlot, _}
 import cards.nine.process.moment.{SaveMomentRequest, UpdateMomentRequest}
-import cards.nine.models.{Card => ServicesCard, Collection => ServicesCollection, Moment => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot}
+import cards.nine.models.{Card => ServicesCard, Collection => ServicesCollection, PersistenceMoment$ => ServicesMoment, MomentTimeSlot => ServicesMomentTimeSlot, NineCardsIntentConversions}
 import cards.nine.services.persistence.{AddMomentRequest, SaveWidgetRequest => ServiceSaveWidgetRequest, UpdateMomentRequest => ServiceUpdateMomentRequest}
 
-trait CommonConversions extends NineCardIntentConversions {
+trait CommonConversions extends NineCardsIntentConversions {
 
-  def toCollection(servicesCollection: ServicesCollection): Collection = Collection(
-    id = servicesCollection.id,
-    position = servicesCollection.position,
-    name = servicesCollection.name,
-    collectionType = CollectionType(servicesCollection.collectionType),
-    icon = servicesCollection.icon,
-    themedColorIndex = servicesCollection.themedColorIndex,
-    appsCategory = servicesCollection.appsCategory map (NineCardCategory(_)),
-    originalSharedCollectionId = servicesCollection.originalSharedCollectionId,
-    sharedCollectionId = servicesCollection.sharedCollectionId,
-    sharedCollectionSubscribed = servicesCollection.sharedCollectionSubscribed,
-    cards = servicesCollection.cards map toCard,
-    moment = servicesCollection.moment map toMoment,
-    publicCollectionStatus = determinePublicCollectionStatus(Some(servicesCollection)))
 
-  def toCard(servicesCard: ServicesCard): Card = Card(
-    id = servicesCard.id,
-    position = servicesCard.position,
-    term = servicesCard.term,
-    packageName = servicesCard.packageName,
-    cardType = CardType(servicesCard.cardType),
-    intent = jsonToNineCardIntent(servicesCard.intent),
-    imagePath = servicesCard.imagePath,
-    notification = servicesCard.notification)
-
-  def toMoment(servicesMoment: ServicesMoment): Moment = Moment(
-    id = servicesMoment.id,
-    collectionId = servicesMoment.collectionId,
-    timeslot = servicesMoment.timeslot map toTimeSlot,
-    wifi = servicesMoment.wifi,
-    headphone = servicesMoment.headphone,
-    momentType = servicesMoment.momentType map (NineCardsMoment(_)))
-
-  def toTimeSlot(servicesMomentTimeSlot:  ServicesMomentTimeSlot): MomentTimeSlot = MomentTimeSlot(
-    from = servicesMomentTimeSlot.from,
-    to = servicesMomentTimeSlot.to,
-    days = servicesMomentTimeSlot.days)
+//  def toMoment(servicesMoment: ServicesMoment): Moment = Moment(
+//    id = servicesMoment.id,
+//    collectionId = servicesMoment.collectionId,
+//    timeslot = servicesMoment.timeslot map toTimeSlot,
+//    wifi = servicesMoment.wifi,
+//    headphone = servicesMoment.headphone,
+//    momentType = servicesMoment.momentType map (NineCardsMoment(_)))
+//
+//  def toTimeSlot(servicesMomentTimeSlot:  ServicesMomentTimeSlot): MomentTimeSlot = MomentTimeSlot(
+//    from = servicesMomentTimeSlot.from,
+//    to = servicesMomentTimeSlot.to,
+//    days = servicesMomentTimeSlot.days)
 //
 //  def toAddMomentRequest(moment: SaveMomentRequest): AddMomentRequest =
 //    AddMomentRequest(
@@ -112,11 +88,6 @@ trait CommonConversions extends NineCardIntentConversions {
 //      headphone = moment.headphone,
 //      momentType = moment.momentType map (_.name))
 
-  def toServicesMomentTimeSlot(timeSlot: MomentTimeSlot): ServicesMomentTimeSlot =
-    ServicesMomentTimeSlot(
-      from = timeSlot.from,
-      to = timeSlot.to,
-      days = timeSlot.days)
 
   def determinePublicCollectionStatus(maybeCollection: Option[ServicesCollection]): PublicCollectionStatus =
     maybeCollection match {

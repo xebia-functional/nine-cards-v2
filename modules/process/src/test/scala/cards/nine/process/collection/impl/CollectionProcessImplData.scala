@@ -2,12 +2,13 @@ package cards.nine.process.collection.impl
 
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
-import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types._
-import cards.nine.models.{Application, ApplicationData, Location}
+import cards.nine.models._
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, EditCollectionRequest}
-import cards.nine.process.commons.models.NineCardIntentImplicits._
+import NineCardIntentImplicits._
+import cards.nine.process.commons.models.MomentTimeSlot
 import cards.nine.process.commons.models._
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
 import cards.nine.services.persistence.models.{Card => ServicesCard, Collection => ServicesCollection}
@@ -24,8 +25,8 @@ trait CollectionProcessImplData {
   val collectionTypeAppsType: CollectionType = collectionTypes(0)
   val icon: String = "icon"
   val themedColorIndex: Int = 1
-  val appsCategoryGame: NineCardCategory = appsCategories(0)
-  val appsCategoryBooksAndReference: NineCardCategory = appsCategories(1)
+  val appsCategoryGame: NineCardsCategory = appsCategories(0)
+  val appsCategoryBooksAndReference: NineCardsCategory = appsCategories(1)
   val originalSharedCollectionId: String = "originalSharedCollection"
   val originalSharedCollectionIdOption: Option[String] = Option(originalSharedCollectionId)
   val sharedCollectionId: String = "shareCollectionId"
@@ -106,7 +107,7 @@ trait CollectionProcessImplData {
       term = c.term,
       packageName = c.packageName,
       cardType = CardType(c.cardType),
-      intent = Json.parse(c.intent).as[NineCardIntent],
+      intent = Json.parse(c.intent).as[NineCardsIntent],
       imagePath = c.imagePath)
   }
 
@@ -125,7 +126,7 @@ trait CollectionProcessImplData {
     term = term,
     packageName = Option(packageName + num),
     cardType = cardType,
-    intent = Json.parse(intent).as[NineCardIntent],
+    intent = Json.parse(intent).as[NineCardsIntent],
     imagePath = Option(imagePath),
     notification = Option(notification))
 
@@ -218,7 +219,7 @@ trait CollectionProcessImplData {
     term = termRequest,
     packageName = Option(packageNameRequest + num),
     cardType = cardTypeRequest,
-    intent = Json.parse(intentRequest).as[NineCardIntent],
+    intent = Json.parse(intentRequest).as[NineCardsIntent],
     imagePath = Option(imagePathRequest))
 
   val seqAddCardsRequest = Seq(addCardRequest(0), addCardRequest(1))

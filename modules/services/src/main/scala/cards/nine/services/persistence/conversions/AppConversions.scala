@@ -1,6 +1,6 @@
 package cards.nine.services.persistence.conversions
 
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.models.{Application, ApplicationData}
 import cards.nine.repository.model.{App => RepositoryApp, AppData => RepositoryAppData}
 
@@ -12,7 +12,7 @@ trait AppConversions {
       name = app.data.name,
       packageName = app.data.packageName,
       className = app.data.className,
-      category = NineCardCategory(app.data.category),
+      category = NineCardsCategory(app.data.category),
       dateInstalled = app.data.dateInstalled,
       dateUpdate = app.data.dateUpdate,
       version = app.data.version,

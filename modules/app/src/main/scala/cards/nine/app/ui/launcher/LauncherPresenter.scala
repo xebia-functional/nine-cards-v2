@@ -3,7 +3,7 @@ package cards.nine.app.ui.launcher
 import android.content.{ComponentName, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
-import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
+import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
@@ -45,7 +45,7 @@ import scala.language.postfixOps
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
-  with AppNineCardIntentConversions {
+  with AppNineCardsIntentConversions {
 
   val tagDialog = "dialog"
 
@@ -276,7 +276,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     launcherCallService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, number)), Some(number))
   }
 
-  def execute(intent: NineCardIntent): Unit =
+  def execute(intent: NineCardsIntent): Unit =
     launcherCallService(di.launcherExecutorProcess.execute(intent), intent.extractPhone())
 
   def launchSearch(): Unit = launcherService(di.launcherExecutorProcess.launchSearch)

@@ -3,9 +3,8 @@ package cards.nine.process.device.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.ApplicationData
+import cards.nine.models.{NineCardsIntent, ApplicationData}
 import cards.nine.models.types.{AppDockType, DockType}
-import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device._
 import cards.nine.process.device.models.ProcessDockApp
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
@@ -27,7 +26,7 @@ trait DockAppsDeviceProcessImpl extends DeviceProcess {
       dockApps <- persistenceServices.createOrUpdateDockApp(requests)
     } yield dockApps map toDockApp).resolve[DockAppException]
 
-  def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int) =
+  def createOrUpdateDockApp(name: String, dockType: DockType, intent: NineCardsIntent, imagePath: String, position: Int) =
     (for {
       _ <- persistenceServices.createOrUpdateDockApp(Seq((name, dockType, intent, imagePath, position)))
     } yield ()).resolve[DockAppException]

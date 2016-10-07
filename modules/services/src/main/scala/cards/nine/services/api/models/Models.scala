@@ -1,7 +1,7 @@
 package cards.nine.services.api.models
 
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 
 case class PackagesByCategory(
-  category: NineCardCategory,
+  category: NineCardsCategory,
   packages: Seq[String])

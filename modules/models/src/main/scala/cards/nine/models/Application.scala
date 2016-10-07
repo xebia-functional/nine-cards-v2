@@ -1,13 +1,13 @@
 package cards.nine.models
 
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 
 case class Application(
   id: Int,
   name: String,
   packageName: String,
   className: String,
-  category: NineCardCategory,
+  category: NineCardsCategory,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
@@ -17,7 +17,7 @@ case class ApplicationData(
   name: String,
   packageName: String,
   className: String,
-  category: NineCardCategory,
+  category: NineCardsCategory,
   dateInstalled: Long,
   dateUpdate: Long,
   version: String,
