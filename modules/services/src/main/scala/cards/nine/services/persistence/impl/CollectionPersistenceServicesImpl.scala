@@ -3,7 +3,7 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{CollectionData, Collection, Moment}
+import cards.nine.models.{MomentData, CollectionData, Collection, Moment}
 import cards.nine.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, Moment => RepositoryMoment}
 import cards.nine.repository.provider.{CardEntity, MomentEntity}
 import cards.nine.services.persistence._
@@ -142,29 +142,30 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     }
   }
 
-  private[this] def createOrUpdateMoments(requests: Seq[AddMomentRequest]): TaskService[Unit] = {
+  private[this] def createOrUpdateMoments(moments: Seq[MomentData]): TaskService[Unit] = {
 
-    def createOrUpdateMoment(request: AddMomentRequest) = {
+    def createOrUpdateMoment(momentData: MomentData) = {
 
       def createOrUpdate(maybeMoment: Option[Moment]) = maybeMoment match {
-        case Some(moment) => updateMoment(UpdateMomentRequest(
-          id = moment.id,
-          collectionId = request.collectionId,
-          timeslot = moment.timeslot,
-          wifi = moment.wifi,
-          headphone = moment.headphone,
-          momentType = moment.momentType
-        ))
-        case None => addMoment(request)
+        case Some(moment) => updateMoment(
+          moment.copy(
+            id = moment.id,
+            collectionId = momentData.collectionId,
+            timeslot = moment.timeslot,
+            wifi = moment.wifi,
+            headphone = moment.headphone,
+            momentType = moment.momentType
+          ))
+        case None => addMoment(momentData, Seq.empty)
       }
 
       for {
         moments <- fetchMoments
-        _ <- createOrUpdate(moments find (_.momentType == request.momentType))
+        _ <- createOrUpdate(moments find (_.momentType == momentData.momentType))
       } yield ()
     }
 
-    val tasks = requests map (r => createOrUpdateMoment(r).value)
+    val tasks = moments map (r => createOrUpdateMoment(r).value)
 
     TaskService(Task.gatherUnordered(tasks) map (_ => Right((): Unit)))
 

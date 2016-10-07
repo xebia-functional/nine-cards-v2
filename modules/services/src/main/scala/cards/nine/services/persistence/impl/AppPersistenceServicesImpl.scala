@@ -1,7 +1,8 @@
 package cards.nine.services.persistence.impl
 
-import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.{FetchAppOrder, OrderByCategory, OrderByInstallDate, OrderByName}
 import cards.nine.models.{Application, ApplicationData}
 import cards.nine.repository.provider.AppEntity
 import cards.nine.services.persistence._

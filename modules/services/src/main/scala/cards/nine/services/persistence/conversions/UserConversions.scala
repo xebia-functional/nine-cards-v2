@@ -35,21 +35,6 @@ trait UserConversions {
         deviceName = user.deviceName,
         deviceCloudId = user.deviceCloudId))
 
-  def toRepositoryUser(request: UpdateUserRequest): RepositoryUser =
-    RepositoryUser(
-      id = request.id,
-      data = RepositoryUserData(
-        email = request.email,
-        apiKey = request.apiKey,
-        sessionToken = request.sessionToken,
-        deviceToken = request.deviceToken,
-        marketToken = request.marketToken,
-        name = request.name,
-        avatar = request.avatar,
-        cover = request.cover,
-        deviceName = request.deviceName,
-        deviceCloudId = request.deviceCloudId))
-
   def toRepositoryUserData(user: UserData): RepositoryUserData =
     RepositoryUserData(
       email = user.email,

@@ -12,14 +12,14 @@ trait DockAppPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 
-  def createOrUpdateDockApp(dockApps: Seq[DockAppData]) =
+  def createOrUpdateDockApp(dockAppDataSeq: Seq[DockAppData]) =
     (for {
-      fetchedDockApps <- dockAppRepository.fetchDockApps(where = s"${DockAppEntity.position} IN (${dockApps.map(_.position).mkString("\"", ",", "\"")})")
-      items = dockApps map { dockApp =>
-        fetchedDockApps.find(_.data.position == dockApp.position) map { dockApp =>
-          (dockApp, Some(dockApp.id))
+      fetchedDockApps <- dockAppRepository.fetchDockApps(where = s"${DockAppEntity.position} IN (${dockAppDataSeq.map(_.position).mkString("\"", ",", "\"")})")
+      items = dockAppDataSeq map { dockAppData =>
+        fetchedDockApps.find(_.data.position == dockAppData.position) map { dockApp =>
+          (dockAppData, Some(dockApp.id))
         } getOrElse {
-          (dockApp, None)
+          (dockAppData, None)
         }
       }
       (toAdd, toUpdate) = items.partition(_._2.isEmpty)
