@@ -1,6 +1,6 @@
 package cards.nine.services.persistence.data
 
-import cards.nine.models.PersistenceWidget
+import cards.nine.models.Widget
 import cards.nine.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
 import cards.nine.services.persistence._
 
@@ -27,7 +27,7 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
     imagePath: Option[String] = widgetImagePathOption,
     intent: Option[String] = widgetIntentOption) = List.tabulate(num)(
     item =>
-      PersistenceWidget(
+      Widget(
         id = id + item,
         momentId = momentId,
         packageName = packageName,
@@ -42,8 +42,8 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
         imagePath = imagePath,
         intent = intent))
 
-  val seqWidget: Seq[PersistenceWidget] = createSeqWidget()
-  val servicesWidget: PersistenceWidget = seqWidget(0)
+  val seqWidget: Seq[Widget] = createSeqWidget()
+  val servicesWidget: Widget = seqWidget(0)
   val repoWidget: RepositoryWidget = seqRepoWidget(0)
   val repoWidgetNone: RepositoryWidget = seqRepoWidgetNone(0)
 
@@ -74,7 +74,7 @@ trait WidgetPersistenceServicesData extends PersistenceServicesData {
       imagePath = imagePath,
       intent = intent)
 
-  def createDeleteWidgetRequest(widget: PersistenceWidget): DeleteWidgetRequest = DeleteWidgetRequest(widget = widget)
+  def createDeleteWidgetRequest(widget: Widget): DeleteWidgetRequest = DeleteWidgetRequest(widget = widget)
 
   def createUpdateWidgetsRequest(
     num: Int = 5,

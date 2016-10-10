@@ -2,7 +2,7 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.models.PersistenceWidget
+import cards.nine.models.Widget
 import cards.nine.repository.RepositoryException
 import cards.nine.services.persistence.data.WidgetPersistenceServicesData
 import cats.syntax.either._
@@ -196,7 +196,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
       result must beLike {
         case Right(maybeWidget) =>
-          maybeWidget must beSome[PersistenceWidget].which { widget =>
+          maybeWidget must beSome[Widget].which { widget =>
             widget.id shouldEqual widgetId
           }
       }

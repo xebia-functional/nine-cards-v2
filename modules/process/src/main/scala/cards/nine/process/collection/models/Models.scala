@@ -1,7 +1,7 @@
 package cards.nine.process.collection.models
 
 import cards.nine.models.types.{CollectionType, NineCardsCategory, NineCardsMoment}
-import cards.nine.models.{FormedWidget, MomentTimeSlot}
+import cards.nine.models.{WidgetData, MomentTimeSlot}
 
 case class ContactInfo(
   emails: Seq[ContactEmail],
@@ -38,7 +38,7 @@ case class FormedMoment(
   wifi: Seq[String],
   headphone: Boolean,
   momentType: Option[NineCardsMoment],
-  widgets: Option[Seq[FormedWidget]])
+  widgets: Option[Seq[WidgetData]])
 
 case class PackagesByCategory(
   category: NineCardsCategory,

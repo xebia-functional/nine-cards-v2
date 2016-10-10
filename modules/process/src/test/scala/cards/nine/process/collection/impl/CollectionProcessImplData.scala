@@ -271,7 +271,7 @@ trait CollectionProcessImplData {
   val spanY: Int = Random.nextInt(8)
 
   def formedWidgets(item: Int) =
-    FormedWidget(
+    WidgetData(
       packageName = packageName + item,
       className = className + item,
       startX = startX + item,

@@ -1,7 +1,7 @@
 package cards.nine.process.sharedcollections
 
 import cards.nine.models.Collection
-import cards.nine.models.types.{AppCardType, CardType, NineCardsCategory}
+import cards.nine.models.types._
 import cards.nine.process.commons.CommonConversions
 import cards.nine.process.sharedcollections.models._
 import cards.nine.services.api.{SharedCollection => SharedCollectionService, SharedCollectionPackageResponse}
@@ -57,10 +57,21 @@ trait Conversions
       id = collection.id,
       sharedCollectionId = sharedCollectionId,
       name = collection.name,
-      apps = collection.cards.count(card => CardType(card.cardType) == AppCardType),
+      apps = collection.cards.count(card => card.cardType == AppCardType),
       icon = collection.icon,
       themedColorIndex = collection.themedColorIndex,
       subscribed = collection.sharedCollectionSubscribed)
   }
+
+  def determinePublicCollectionStatus(maybeCollection: Option[Collection]): PublicCollectionStatus =
+    maybeCollection match {
+      case Some(c) if c.sharedCollectionId.isDefined && c.sharedCollectionSubscribed => Subscribed
+      case Some(c) if c.sharedCollectionId.isDefined && c.originalSharedCollectionId == c.sharedCollectionId =>
+        PublishedByOther
+      case Some(c) if c.sharedCollectionId.isDefined =>
+        PublishedByMe
+      case _ => NotPublished
+    }
+
 
 }

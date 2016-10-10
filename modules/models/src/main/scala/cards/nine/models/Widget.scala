@@ -1,6 +1,6 @@
 package cards.nine.models
 
-import cards.nine.models.types.{AppWidgetType, WidgetType, WidgetResizeMode}
+import cards.nine.models.types.{WidgetResizeMode, WidgetType}
 
 case class AppWidget (
   userHashCode: Option[Int],
@@ -19,6 +19,17 @@ case class AppWidget (
 
 case class Widget (
   id: Int,
+  momentId: Int,
+  packageName: String,
+  className: String,
+  appWidgetId: Option[Int],
+  area: WidgetArea,
+  widgetType: WidgetType,
+  label: Option[String],
+  imagePath: Option[String],
+  intent: Option[String])
+
+case class WidgetData(
   momentId: Int,
   packageName: String,
   className: String,
@@ -52,44 +63,3 @@ case class WidgetArea (
   }
 
 }
-
-case class PersistenceWidget(
-  id: Int,
-  momentId: Int,
-  packageName: String,
-  className: String,
-  appWidgetId: Option[Int],
-  startX: Int,
-  startY: Int,
-  spanX: Int,
-  spanY: Int,
-  widgetType: String,
-  label: Option[String],
-  imagePath: Option[String],
-  intent: Option[String])
-
-case class PersistenceWidgetData(
-  momentId: Int,
-  packageName: String,
-  className: String,
-  appWidgetId: Option[Int],
-  startX: Int,
-  startY: Int,
-  spanX: Int,
-  spanY: Int,
-  widgetType: String,
-  label: Option[String],
-  imagePath: Option[String],
-  intent: Option[String])
-
-case class FormedWidget(
-  packageName: String,
-  className: String,
-  startX: Int,
-  startY: Int,
-  spanX: Int,
-  spanY: Int,
-  widgetType: WidgetType = AppWidgetType,
-  label: Option[String] = None,
-  imagePath: Option[String] = None,
-  intent: Option[String] = None)

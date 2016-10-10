@@ -60,3 +60,23 @@ object Collection {
 //  appsCategory: Option[NineCardCategory] = None,
 //  cards: Seq[PrivateCard],
 //  moment: Option[NineCardsMoment])
+
+
+//case class AddCollectionRequest(
+//  name: String,
+//  collectionType: CollectionType,
+//  icon: String,
+//  themedColorIndex: Int,
+//  appsCategory: Option[NineCardsCategory] = None,
+//  cards: Seq[AddCardRequest],
+//  moment: Option[NineCardsMoment],
+//  originalSharedCollectionId: Option[String] = None,
+//  sharedCollectionId: Option[String] = None,
+//  sharedCollectionSubscribed: Option[Boolean] = None)
+//
+//
+//case class EditCollectionRequest(
+//  name: String,
+//  icon: String,
+//  themedColorIndex: Int,
+//  appsCategory: Option[NineCardsCategory] = None)

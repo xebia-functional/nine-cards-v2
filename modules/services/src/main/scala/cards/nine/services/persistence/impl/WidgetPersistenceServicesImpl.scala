@@ -2,7 +2,7 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{PersistenceWidget, PersistenceWidgetData}
+import cards.nine.models.{Widget, WidgetData}
 import cards.nine.repository.provider.WidgetEntity
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
@@ -11,12 +11,12 @@ trait WidgetPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 
-  def addWidget(widget: PersistenceWidgetData) =
+  def addWidget(widget: WidgetData) =
     (for {
       widgetAdded <- widgetRepository.addWidget(toRepositoryWidgetData(widget))
     } yield toWidget(widgetAdded)).resolve[PersistenceServiceException]
 
-  def addWidgets(widgets: Seq[PersistenceWidgetData]) =
+  def addWidgets(widgets: Seq[WidgetData]) =
     (for {
       widgetsAdded <- widgetRepository.addWidgets(widgets map toRepositoryWidgetData)
     } yield widgetsAdded map toWidget).resolve[PersistenceServiceException]
@@ -26,7 +26,7 @@ trait WidgetPersistenceServicesImpl extends PersistenceServices {
       deleted <- widgetRepository.deleteWidgets()
     } yield deleted).resolve[PersistenceServiceException]
 
-  def deleteWidget(widget: PersistenceWidget) =
+  def deleteWidget(widget: Widget) =
     (for {
       deleted <- widgetRepository.deleteWidget(toRepositoryWidget(widget))
     } yield deleted).resolve[PersistenceServiceException]
@@ -56,12 +56,12 @@ trait WidgetPersistenceServicesImpl extends PersistenceServices {
       maybeWidget <- widgetRepository.findWidgetById(widgetId)
     } yield maybeWidget map toWidget).resolve[PersistenceServiceException]
 
-  def updateWidget(widget: PersistenceWidget) =
+  def updateWidget(widget: Widget) =
     (for {
       updated <- widgetRepository.updateWidget(toRepositoryWidget(widget))
     } yield updated).resolve[PersistenceServiceException]
 
-  def updateWidgets(widgets: Seq[PersistenceWidget]) =
+  def updateWidgets(widgets: Seq[Widget]) =
     (for {
       updated <- widgetRepository.updateWidgets(widgets map toRepositoryWidget)
     } yield updated).resolve[PersistenceServiceException]

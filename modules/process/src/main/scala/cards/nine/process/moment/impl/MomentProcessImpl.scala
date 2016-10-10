@@ -3,9 +3,9 @@ package cards.nine.process.moment.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{MomentTimeSlot, Collection, Moment}
+import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.process.moment.{UpdateMomentRequest, _}
+import cards.nine.process.moment._
 import cards.nine.services.persistence._
 import cards.nine.services.wifi.WifiServices
 import org.joda.time.DateTime
@@ -13,13 +13,11 @@ import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
 
 class MomentProcessImpl(
-  val momentProcessConfig: MomentProcessConfig,
   val persistenceServices: PersistenceServices,
   val wifiServices: WifiServices)
   extends MomentProcess
   with ImplicitsMomentException
-  with ImplicitsPersistenceServiceExceptions
-  with MomentConversions {
+  with ImplicitsPersistenceServiceExceptions {
 
   override def getMoments = persistenceServices.fetchMoments.resolve[MomentException]
 
@@ -34,14 +32,14 @@ class MomentProcessImpl(
       moment <- persistenceServices.addMoment((None, nineCardsMoment))
     } yield moment).resolve[MomentException]
 
-  override def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport) =
+  override def updateMoment(moment: Moment)(implicit context: ContextSupport) =
     (for {
-      _ <- persistenceServices.updateMoment(item)
+      _ <- persistenceServices.updateMoment(moment)
     } yield ()).resolve[MomentException]
 
-  override def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport) =
+  override def saveMoments(momentsWithWidgets: Seq[(MomentData, Seq[WidgetData])])(implicit context: ContextSupport) =
     (for {
-      moments <- persistenceServices.addMoments(items)
+      moments <- persistenceServices.addMoments(momentsWithWidgets)
     } yield moments).resolve[MomentException]
 
   override def deleteAllMoments() =
@@ -68,7 +66,7 @@ class MomentProcessImpl(
         case moment @ Moment(_, Some(collectionId), _, _, _, _) =>
           collections find (_.id == collectionId) match {
             case Some(collection: Collection) =>
-              Some(toMomentWithCollection(moment, collection))
+              Some((moment.toData, collection))
             case _ => None
           }
         case _ => None

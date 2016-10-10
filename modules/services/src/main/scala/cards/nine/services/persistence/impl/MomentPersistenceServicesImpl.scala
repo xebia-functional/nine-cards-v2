@@ -3,7 +3,7 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{Moment, MomentData, PersistenceWidgetData}
+import cards.nine.models.{Moment, MomentData, WidgetData}
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.model.{Moment => RepositoryMoment}
 import cards.nine.repository.provider.MomentEntity
@@ -18,13 +18,13 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
     with WidgetPersistenceServicesImpl
     with ImplicitsPersistenceServiceExceptions =>
 
-  def addMoment(moment: MomentData, widgets: Seq[PersistenceWidgetData]) =
+  def addMoment(moment: MomentData, widgets: Seq[WidgetData]) =
     (for {
       moment <- momentRepository.addMoment(toRepositoryMomentData(moment))
       _ <- addWidgets(widgets map (widget => widget.copy(momentId = moment.id)))
     } yield toMoment(moment)).resolve[PersistenceServiceException]
 
-  def addMoments(momentsWithWidgets: Seq[(MomentData, Seq[PersistenceWidgetData])]) = {
+  def addMoments(momentsWithWidgets: Seq[(MomentData, Seq[WidgetData])]) = {
     val moments = momentsWithWidgets map (_._1)
     val widgetsData = momentsWithWidgets flatMap (_._2)
     (for {

@@ -34,10 +34,3 @@ object Moment {
       momentType = moment.momentType)
   }
 }
-
-case class MomentWithCollection(
-  collection: Collection,
-  timeslot: Seq[MomentTimeSlot],
-  wifi: Seq[String],
-  headphone: Boolean,
-  momentType: Option[NineCardsMoment])
