@@ -53,11 +53,11 @@ trait MomentProcess {
   /**
     * Creates Moments from some already formed and given Moments
     *
-    * @param momentsWithWidgets sequence of tuples of cards.nine.models.MomentData with the cards.nine.models.WidgetData
+    * @param moments sequence of of cards.nine.models.MomentData
     * @return the List[cards.nine.models.Moment]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def saveMoments(momentsWithWidgets: Seq[(MomentData,  Seq[WidgetData])])(implicit context: ContextSupport): TaskService[Seq[Moment]]
+  def saveMoments(moments: Seq[MomentData])(implicit context: ContextSupport): TaskService[Seq[Moment]]
 
   /**
     * Delete all moments in database

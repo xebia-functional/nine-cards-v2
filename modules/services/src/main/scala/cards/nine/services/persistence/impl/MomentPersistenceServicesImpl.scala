@@ -18,19 +18,24 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
     with WidgetPersistenceServicesImpl
     with ImplicitsPersistenceServiceExceptions =>
 
-  def addMoment(moment: MomentData, widgets: Seq[WidgetData]) =
+  def addMoment(momentData: MomentData) =
     (for {
-      moment <- momentRepository.addMoment(toRepositoryMomentData(moment))
-      _ <- addWidgets(widgets map (widget => widget.copy(momentId = moment.id)))
+      moment <- momentRepository.addMoment(toRepositoryMomentData(momentData))
+      _ <- addWidgets(getWidgets(momentData.widgets) map (widget => widget.copy(momentId = moment.id)))
     } yield toMoment(moment)).resolve[PersistenceServiceException]
 
-  def addMoments(momentsWithWidgets: Seq[(MomentData, Seq[WidgetData])]) = {
-    val moments = momentsWithWidgets map (_._1)
-    val widgetsData = momentsWithWidgets flatMap (_._2)
+  private[this] def getWidgets(maybeWidgets: Option[Seq[WidgetData]]) =
+    maybeWidgets match {
+      case Some(widgets) => widgets
+      case None => Seq.empty
+    }
+
+  def addMoments(moments: Seq[MomentData]) = {
+    val widgetsData = moments map (moment => getWidgets(moment.widgets))
     (for {
       momentsAdded <- momentRepository.addMoments(moments map toRepositoryMomentData)
-      widgets = momentsAdded.zip(widgetsData) map {
-        case (moment, widgetRequest) => widgetRequest.copy(momentId = moment.id)
+      widgets = momentsAdded.zip(widgetsData) flatMap {
+        case (moment, widgetRequest) => widgetRequest map (widget => widget.copy(momentId = moment.id))
       }
       _ <- addWidgets(widgets)
     } yield momentsAdded map toMoment).resolve[PersistenceServiceException]

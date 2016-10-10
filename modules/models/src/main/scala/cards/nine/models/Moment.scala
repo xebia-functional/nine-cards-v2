@@ -9,7 +9,7 @@ case class Moment(
   wifi: Seq[String],
   headphone: Boolean,
   momentType: Option[NineCardsMoment],
-  widgets: Option[Seq[WidgetData]])
+  widgets: Option[Seq[WidgetData]] = None)
 
 case class MomentData(
   collectionId: Option[Int],
@@ -17,7 +17,7 @@ case class MomentData(
   wifi: Seq[String],
   headphone: Boolean,
   momentType: Option[NineCardsMoment],
-  widgets: Option[Seq[WidgetData]])
+  widgets: Option[Seq[WidgetData]] = None)
 
 case class MomentTimeSlot(
   from: String,

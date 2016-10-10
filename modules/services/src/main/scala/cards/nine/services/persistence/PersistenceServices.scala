@@ -470,11 +470,10 @@ trait PersistenceServices {
     * Adds an moment to the repository
     *
     * @param moment includes the necessary data to create a new moment in the repository
-    * @param widgets includes the necessary data to create the widgets associates with that moment
     * @return the cards.nine.models.Moment
     * @throws PersistenceServiceException if exist some problem creating the moment
     */
-  def addMoment(moment: MomentData, widgets: Seq[WidgetData]): TaskService[Moment]
+  def addMoment(moment: MomentData): TaskService[Moment]
 
   /**
     * Adds moments to the repository
@@ -484,7 +483,7 @@ trait PersistenceServices {
     * @return the Seq[cards.nine.models.Moment]
     * @throws PersistenceServiceException if exist some problem creating the moments
     */
-  def addMoments(momentsWithWidgets: Seq[(MomentData, Seq[WidgetData])]): TaskService[Seq[Moment]]
+  def addMoments(momentsWithWidgets: Seq[MomentData]): TaskService[Seq[Moment]]
 
   /**
     * Deletes all moments from the repository by the where clause

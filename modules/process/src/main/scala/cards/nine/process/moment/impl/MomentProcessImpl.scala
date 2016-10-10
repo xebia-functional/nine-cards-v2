@@ -54,7 +54,7 @@ class MomentProcessImpl(
     }
 
     (for {
-      moment <- persistenceServices.addMoment(toMomentData(None, nineCardsMoment), Seq.empty)
+      moment <- persistenceServices.addMoment(toMomentData(None, nineCardsMoment))
     } yield moment).resolve[MomentException]
 
   }
@@ -64,9 +64,9 @@ class MomentProcessImpl(
       _ <- persistenceServices.updateMoment(moment)
     } yield ()).resolve[MomentException]
 
-  override def saveMoments(momentsWithWidgets: Seq[(MomentData, Seq[WidgetData])])(implicit context: ContextSupport) =
+  override def saveMoments(moments: Seq[MomentData])(implicit context: ContextSupport) =
     (for {
-      moments <- persistenceServices.addMoments(momentsWithWidgets)
+      moments <- persistenceServices.addMoments(moments)
     } yield moments).resolve[MomentException]
 
   override def deleteAllMoments() =

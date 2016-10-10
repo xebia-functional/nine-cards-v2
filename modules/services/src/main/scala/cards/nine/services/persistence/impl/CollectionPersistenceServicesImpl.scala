@@ -156,7 +156,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
             headphone = moment.headphone,
             momentType = moment.momentType
           ))
-        case None => addMoment(momentData, Seq.empty)
+        case None => addMoment(momentData)
       }
 
       for {
