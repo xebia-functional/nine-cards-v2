@@ -8,14 +8,16 @@ case class Moment(
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
   headphone: Boolean,
-  momentType: Option[NineCardsMoment])
+  momentType: Option[NineCardsMoment],
+  widgets: Option[Seq[WidgetData]])
 
 case class MomentData(
   collectionId: Option[Int],
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
   headphone: Boolean,
-  momentType: Option[NineCardsMoment])
+  momentType: Option[NineCardsMoment],
+  widgets: Option[Seq[WidgetData]])
 
 case class MomentTimeSlot(
   from: String,
@@ -31,6 +33,7 @@ object Moment {
       timeslot = moment.timeslot,
       wifi = moment.wifi,
       headphone = moment.headphone,
-      momentType = moment.momentType)
+      momentType = moment.momentType,
+      widgets = moment.widgets)
   }
 }

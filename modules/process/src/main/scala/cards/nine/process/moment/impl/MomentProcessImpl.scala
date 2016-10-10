@@ -27,10 +27,37 @@ class MomentProcessImpl(
   override def fetchMomentByType(momentType: NineCardsMoment) =
     persistenceServices.fetchMomentByType(momentType.name).resolve[MomentException]
 
-  def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport) =
+  def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport) = {
+
+    def toMomentData(collectionId: Option[Int], moment: NineCardsMoment): MomentData = {
+
+      def toServicesMomentTimeSlotSeq(moment: NineCardsMoment): Seq[MomentTimeSlot] =
+        moment match {
+          case HomeMorningMoment => Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+          case WorkMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
+          case HomeNightMoment => Seq(MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+          case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
+          case MusicMoment => Seq.empty
+          case CarMoment => Seq.empty
+          case RunningMoment => Seq.empty
+          case BikeMoment => Seq.empty
+          case WalkMoment => Seq.empty
+        }
+
+      MomentData(
+        collectionId = collectionId,
+        timeslot = toServicesMomentTimeSlotSeq(moment),
+        wifi = Seq.empty,
+        headphone = moment == MusicMoment,
+        momentType = Option(moment),
+        widgets = None)
+    }
+
     (for {
-      moment <- persistenceServices.addMoment((None, nineCardsMoment))
+      moment <- persistenceServices.addMoment(toMomentData(None, nineCardsMoment), Seq.empty)
     } yield moment).resolve[MomentException]
+
+  }
 
   override def updateMoment(moment: Moment)(implicit context: ContextSupport) =
     (for {
@@ -63,7 +90,7 @@ class MomentProcessImpl(
       collections = serviceCollections
       moments = serviceMoments
       momentWithCollection = moments flatMap {
-        case moment @ Moment(_, Some(collectionId), _, _, _, _) =>
+        case moment @ Moment(_, Some(collectionId), _, _, _, _, _) =>
           collections find (_.id == collectionId) match {
             case Some(collection: Collection) =>
               Some((moment.toData, collection))

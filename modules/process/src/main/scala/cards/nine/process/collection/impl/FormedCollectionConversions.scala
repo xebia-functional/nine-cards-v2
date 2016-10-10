@@ -1,11 +1,10 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.models.{Collection, ApplicationData}
+import cards.nine.commons.contexts.ContextSupport
+import cards.nine.models._
 import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
-import cards.nine.process.collection.models._
-import cards.nine.process.collection.{CollectionProcessConfig, Conversions, ImplicitsCollectionException}
-import cards.nine.process.commons.models.PrivateCollection
+import cards.nine.process.collection.ImplicitsCollectionException
 import cards.nine.services.contacts.ContactsServices
 
 import scala.annotation.tailrec
@@ -17,51 +16,61 @@ trait FormedCollectionDependencies {
 
 trait FormedCollectionConversions
   extends Conversions
+  with NineCardsIntentConversions
   with ImplicitsCollectionException {
 
   self: FormedCollectionDependencies =>
 
-//  def toAddCollectionRequestByFormedCollection(formedCollections: Seq[FormedCollection])(implicit context: ContextSupport): Seq[AddCollectionRequest] =
-//    formedCollections.zipWithIndex.map(zipped => toAddCollectionRequestByFormedCollection(zipped._1, zipped._2))
-//
-//  def toAddCollectionRequestByFormedCollection(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport): AddCollectionRequest = AddCollectionRequest(
-//    position = position,
-//    name = formedCollection.name,
-//    collectionType = formedCollection.collectionType.name,
-//    icon = formedCollection.icon,
-//    themedColorIndex = position % numSpaces,
-//    appsCategory = formedCollection.category map(_.name),
-//    originalSharedCollectionId = formedCollection.originalSharedCollectionId,
-//    sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed,
-//    sharedCollectionId = formedCollection.sharedCollectionId,
-//    cards = toAddCardRequest(formedCollection.items),
-//    moment = formedCollection.moment map toAddMomentRequest)
-//
-//  def toAddCardRequest(items: Seq[FormedItem])(implicit context: ContextSupport): Seq[AddCardRequest] =
-//    items.zipWithIndex.map(zipped => toAddCardRequest(zipped._1, zipped._2))
-//
-//  def toAddCardRequest(item: FormedItem, position: Int)(implicit context: ContextSupport): AddCardRequest = {
-//    val nineCardIntent = jsonToNineCardIntent(item.intent)
-//    AddCardRequest(
-//      position = position,
-//      term = item.title,
-//      packageName = nineCardIntent.extractPackageName(),
-//      cardType = item.itemType,
-//      intent = item.intent,
-//      imagePath = item.uriImage
-//    )
-//  }
+  def toCollectionDataByFormedCollection(formedCollections: Seq[FormedCollection])(implicit context: ContextSupport): Seq[CollectionData] =
+    formedCollections.zipWithIndex.map(zipped => toCollectionDataByFormedCollection(zipped._1, zipped._2))
+
+  def toCollectionDataByFormedCollection(formedCollection: FormedCollection, position: Int)(implicit context: ContextSupport): CollectionData = CollectionData(
+    position = position,
+    name = formedCollection.name,
+    collectionType = formedCollection.collectionType,
+    icon = formedCollection.icon,
+    themedColorIndex = position % numSpaces,
+    appsCategory = formedCollection.category,
+    originalSharedCollectionId = formedCollection.originalSharedCollectionId,
+    sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed getOrElse false,
+    sharedCollectionId = formedCollection.sharedCollectionId,
+    cards = toCardData(formedCollection.items),
+    moment = formedCollection.moment map toMomentData,
+    publicCollectionStatus = NotPublished)
+
+  def toCardData(items: Seq[FormedItem])(implicit context: ContextSupport): Seq[CardData] =
+    items.zipWithIndex.map(zipped => toCardData(zipped._1, zipped._2))
+
+  def toCardData(item: FormedItem, position: Int)(implicit context: ContextSupport): CardData = {
+    val nineCardIntent = jsonToNineCardIntent(item.intent)
+    CardData(
+      position = position,
+      term = item.title,
+      packageName = nineCardIntent.extractPackageName(),
+      cardType = CardType(item.itemType),
+      intent = nineCardIntent,
+      imagePath = item.uriImage)
+  }
+
+  def toMomentData(moment: FormedMoment): MomentData =
+    MomentData(
+      collectionId = moment.collectionId,
+      timeslot = moment.timeslot,
+      wifi = moment.wifi,
+      headphone = moment.headphone,
+      momentType = moment.momentType,
+      widgets = moment.widgets)
 
   def createPrivateCollections(
     apps: Seq[ApplicationData],
     categories: Seq[NineCardsCategory],
-    minApps: Int): Seq[Collection] = generatePrivateCollections(apps, categories, Seq.empty)
+    minApps: Int): Seq[CollectionData] = generatePrivateCollections(apps, categories, Seq.empty)
 
   @tailrec
   private[this] def generatePrivateCollections(
     items: Seq[ApplicationData],
     categories: Seq[NineCardsCategory],
-    acc: Seq[Collection]): Seq[Collection] = categories match {
+    acc: Seq[CollectionData]): Seq[CollectionData] = categories match {
       case Nil => acc
       case h :: t =>
         val insert = generatePrivateCollection(items, h, acc.length)
@@ -69,19 +78,24 @@ trait FormedCollectionConversions
         generatePrivateCollections(items, t, a)
     }
 
-  private[this] def generatePrivateCollection(items: Seq[ApplicationData], category: NineCardsCategory, position: Int): Collection = {
+  private[this] def generatePrivateCollection(items: Seq[ApplicationData], category: NineCardsCategory, position: Int): CollectionData = {
     // TODO We should sort the application using an endpoint in the new sever
     val appsByCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
     val themeIndex = if (position >= numSpaces) position % numSpaces else position
-    Collection(
+    CollectionData (
+      position = position,
       name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
       collectionType = AppsCollectionType,
       icon = category.getStringResource,
       themedColorIndex = themeIndex,
       appsCategory = Some(category),
-      cards = appsByCategory map toPrivateCard,
-      moment = None
-    )
+      cards = Seq.empty,
+      moment = None,
+      originalSharedCollectionId = None,
+      sharedCollectionId = None,
+      sharedCollectionSubscribed = false,
+      publicCollectionStatus = NotPublished)
+
   }
 
   def adaptCardsToAppsInstalled(formedCollections: Seq[FormedCollection], apps: Seq[ApplicationData]): Seq[FormedCollection] =

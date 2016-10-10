@@ -6,8 +6,8 @@ import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models
-import cards.nine.models.types.NoInstalledAppCardType
-import cards.nine.models.{CardData, Card, Collection}
+import cards.nine.models._
+import cards.nine.models.types.{AppCardType, NoInstalledAppCardType}
 import cards.nine.process.collection.{CardException, CollectionProcess}
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import monix.eval.Task
@@ -23,7 +23,7 @@ trait CardsProcessImpl extends CollectionProcess {
       cardList <- persistenceServices.fetchCardsByCollection(collectionId)
       size = cardList.size
       cardsToAdd = cards.zipWithIndex map {
-        case (item, index) => (collectionId, item, index + size)
+        case (card, index) => card.copy(position = index + size)
       }
       addedCardList <- persistenceServices.addCards(Seq((collectionId, cardsToAdd)))
     } yield addedCardList).resolve[CardException]
@@ -89,14 +89,25 @@ trait CardsProcessImpl extends CollectionProcess {
       _ <- updateCard(updatedCard)
     } yield updatedCard).resolve[CardException]
 
-  override def updateNoInstalledCardsInCollections(packageName: String)(implicit contextSupport: ContextSupport) =
+  override def updateNoInstalledCardsInCollections(packageName: String)(implicit contextSupport: ContextSupport) = {
+
+    def toCard(cards: Seq[Card], app: ApplicationData)(implicit contextSupport: ContextSupport): Seq[Card] = {
+      val intent = toNineCardIntent(app)
+      cards map (_.copy(
+        term = app.name,
+        cardType = AppCardType,
+        intent = intent))
+    }
+
     (for {
       app <- appsServices.getApplication(packageName)
       cardList <- persistenceServices.fetchCards
       cardsNoInstalled = cardList filter (card => card.cardType == NoInstalledAppCardType && card.packageName.contains(packageName))
-      cards = toInstalledApp(cardsNoInstalled, app)
+      cards = toCard(cardsNoInstalled, app)
       _ <- updateCardList(cards)
     } yield ()).resolve[CardException]
+
+  }
 
   private[this] def reloadPositions(cardList: Seq[Card]) = cardList.zipWithIndex flatMap {
     case (card, position) if card.position != position => Option(card.copy(position = position))

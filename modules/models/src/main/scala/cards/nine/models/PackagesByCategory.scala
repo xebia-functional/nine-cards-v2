@@ -1,4 +1,4 @@
-package cards.nine.services.api.models
+package cards.nine.models
 
 import cards.nine.models.types.NineCardsCategory
 

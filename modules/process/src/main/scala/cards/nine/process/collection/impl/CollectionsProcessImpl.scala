@@ -3,20 +3,20 @@ package cards.nine.process.collection.impl
 import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models._
 import cards.nine.models.types.NineCardsCategory._
-import cards.nine.models.types.{NineCardsCategory, NoInstalledAppCardType, OrderByCategory}
-import cards.nine.models.{CollectionData, Application, ApplicationData, Collection}
+import cards.nine.models.types._
 import cards.nine.process.collection._
-import cards.nine.process.collection.models.FormedCollection
 import cards.nine.process.utils.ApiUtils
-import cards.nine.services.api.CategorizedDetailPackage
+import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse}
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import cats.syntax.either._
 import monix.eval.Task
 
-trait CollectionsProcessImpl extends CollectionProcess {
+trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConversions {
 
   self: CollectionProcessDependencies
     with FormedCollectionConversions
@@ -27,10 +27,48 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   val apiUtils = new ApiUtils(persistenceServices)
 
+//  def createCollectionsFromFormedCollections(collections: Seq[CollectionData])(implicit context: ContextSupport) = {
+//
+//    def adaptCardsToAppsInstalled(collections: Seq[CollectionData], apps: Seq[ApplicationData]): Seq[CollectionData] =
+//      collections map { collection =>
+//        val cardsWithPath = collection.cards map { card =>
+//          val nineCardIntent = card.intent
+//
+//          // We need adapt items to apps installed in cell phone
+//          val itemAdapted: CardData = card.cardType match {
+//            case AppCardType | RecommendedAppCardType =>
+//              (for {
+//                packageName <- nineCardIntent.extractPackageName()
+//                className <- nineCardIntent.extractClassName()
+//              } yield {
+//                val maybeAppInstalled = apps find (_.packageName == packageName)
+//                maybeAppInstalled map { appInstalled =>
+//                  val classChanged = !(appInstalled.className == className)
+//                  if (classChanged) {
+//                    card.copy(intent = toNineCardIntent(appInstalled), cardType = AppCardType)
+//                  } else {
+//                    card.copy(cardType = AppCardType)
+//                  }
+//                } getOrElse card.copy(cardType = NoInstalledAppCardType)
+//              }) getOrElse card.copy(cardType = NoInstalledAppCardType)
+//            case _ => card
+//          }
+//          itemAdapted
+//        }
+//        collection.copy(cards = cardsWithPath)
+//      }
+//
+//    (for {
+//      apps <- appsServices.getInstalledApplications
+//      collectionsRequest = adaptCardsToAppsInstalled(collections, apps)
+//      collections <- persistenceServices.addCollections(collectionsRequest)
+//    } yield collections).resolve[CollectionException]
+//  }
+
   def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) =
     (for {
       apps <- appsServices.getInstalledApplications
-      collectionsRequest = adaptCardsToAppsInstalled(items, apps)
+      collectionsRequest = toCollectionDataByFormedCollection(adaptCardsToAppsInstalled(items, apps))
       collections <- persistenceServices.addCollections(collectionsRequest)
     } yield collections).resolve[CollectionException]
 
@@ -54,7 +92,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
   def addCollection(collection: CollectionData) =
     (for {
       collectionList <- persistenceServices.fetchCollections
-      collection <- persistenceServices.addCollection(collection, collectionList.size)
+      collection <- persistenceServices.addCollection(collection.copy(position = collectionList.size))
     } yield collection).resolve[CollectionException]
 
   def deleteCollection(collectionId: Int) = {
@@ -135,21 +173,38 @@ trait CollectionsProcessImpl extends CollectionProcess {
       installedApps: Seq[Application],
       categorizedPackages: Seq[CategorizedDetailPackage]): TaskService[Unit] = {
 
+      def toCardDataFromInstalled(app: Application, position: Int) =
+        CardData (
+          position = position,
+          term = app.name,
+          packageName = Option(app.packageName),
+          cardType = AppCardType,
+          intent = toNineCardIntent(app),
+          imagePath = None)
+
+      def toCardDataFromNotInstalled(categorizedPackage: CategorizedDetailPackage, cardType: CardType, position: Int) =
+        CardData (
+          term = categorizedPackage.title,
+          position = position,
+          packageName = Option(categorizedPackage.packageName),
+          cardType = cardType,
+          intent = packageToNineCardIntent(categorizedPackage.packageName),
+          imagePath = None)
+
       if (installedApps.isEmpty && categorizedPackages.isEmpty) {
         TaskService(Task(Either.right((): Unit)))
       } else {
-        val installedRequests = installedApps map (app => collectionId, app, 0)
+        val installedRequests = installedApps map (app => (collectionId, toCardDataFromInstalled(app, 0)))
         val notInstalledRequests = categorizedPackages map { detailPackage =>
-          (collectionId, detailPackage, NoInstalledAppCardType, 0)
+          (collectionId, toCardDataFromNotInstalled(detailPackage, NoInstalledAppCardType, 0))
         }
-        val addCardsRequests = (installedRequests ++ notInstalledRequests).zipWithIndex.map {
-          case (request, index) => request.copy(position = actualCollectionSize + index)
+        val cardsToAdd = (installedRequests ++ notInstalledRequests).zipWithIndex.map {
+          case ((_, card), index) => card.copy(position = actualCollectionSize + index)
         }
 
-        persistenceServices.addCards(Seq(collectionId, addCardsRequests)).map(_ => ())
+        persistenceServices.addCards(Seq((collectionId, cardsToAdd))).map(_ => ())
       }
     }
-
 
     (for {
       _ <- persistenceServices.findCollectionById(collectionId).resolveOption()
@@ -166,6 +221,18 @@ trait CollectionsProcessImpl extends CollectionProcess {
     def mapValues(seq: Seq[(NineCardsCategory, String)]): Seq[(NineCardsCategory, Seq[String])] =
       seq.groupBy(_._1).mapValues(_.map(_._2)).toSeq
 
+    def generatePackagesByCategory(packagesByCategory: (NineCardsCategory, Seq[String])) = {
+      val (category, packages) = packagesByCategory
+      PackagesByCategory(
+        category = category,
+        packages = packages)
+    }
+
+    def generatePackagesByCategoryFromRankApps(item: RankAppsResponse) =
+      PackagesByCategory(
+        category = NineCardsCategory(item.category),
+        packages = item.packages)
+
     def getPackagesByCategory: TaskService[Seq[(NineCardsCategory, Seq[String])]] =
       for {
         appList <- persistenceServices.fetchApps(OrderByCategory)
@@ -176,9 +243,9 @@ trait CollectionsProcessImpl extends CollectionProcess {
         packagesByCategory <- getPackagesByCategory
         location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
         result <- apiServices.rankApps(
-          packagesByCategory map toServicesPackagesByCategory,
+          packagesByCategory map generatePackagesByCategory,
           location flatMap (_.countryCode))(requestConfig)
-      } yield result.items map toPackagesByCategory).resolve[CollectionException]
+      } yield result.items map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
   }
 
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =

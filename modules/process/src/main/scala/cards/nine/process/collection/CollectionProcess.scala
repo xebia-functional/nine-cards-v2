@@ -2,9 +2,8 @@ package cards.nine.process.collection
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{CardData, Card, Collection, ApplicationData}
 import cards.nine.models.types.NineCardsCategory
-import cards.nine.process.collection.models._
+import cards.nine.models._
 
 trait CollectionProcess {
 
@@ -12,10 +11,10 @@ trait CollectionProcess {
     * Generate Private Collections with the apps installed in the device and their categories
     *
     * @param apps the Seq[cards.nine.process.collection.models.UnformedApp] with the apps' data
-    * @return the Seq[cards.nine.process.collection.PrivateCollection]
+    * @return the Seq[cards.nine.models.CollectionData]
     * @throws CollectionException if there was an error creating the existing collections
     */
-  def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport): TaskService[Seq[Collection]]
+  def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport): TaskService[Seq[CollectionData]]
 
   /**
    * Creates Collections from some already formed and given Collections
@@ -63,11 +62,11 @@ trait CollectionProcess {
   /**
    * Adds a new Collection after the last existing one
    *
-   * @param addCollectionRequest includes the necessary data to create a new collection (name, collectionType, icon, themedColorIndex and appsCategory(optional))
+   * @param collection includes the necessary data to create a new collection (name, collectionType, icon, themedColorIndex and appsCategory(optional))
     * @return the [[Collection]]
    * @throws CollectionException if there was an error getting the existing collections or adding the new one
    */
-  def addCollection(addCollectionRequest: AddCollectionRequest): TaskService[Collection]
+  def addCollection(collection: CollectionData): TaskService[Collection]
 
   /**
     * Deletes a Collection and updates the position of the other Collections
@@ -97,11 +96,11 @@ trait CollectionProcess {
    * Edits a Collection and allows to change the name and the appsCategory of the Collection
    *
    * @param collectionId the Id of the Collection
-   * @param editCollectionRequest includes the data that can be edit in a collection (name, icon, themedColorIndex and appsCategory)
+   * @param collection includes the data that can be edit in a collection (name, icon, themedColorIndex and appsCategory)
    * @return the [[Collection]]
    * @throws CollectionException if there was an error finding the collection or updating it
    */
-  def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest): TaskService[Collection]
+  def editCollection(collectionId: Int, collection: CollectionData): TaskService[Collection]
 
   /**
     * Updates a Collection with the sharedCollectionId
@@ -126,7 +125,7 @@ trait CollectionProcess {
   /**
     * Rank all the packages grouped by its category
     *
-    * @return the Seq[cards.nine.process.collection.models.PackagesByCategory] with the packages already ordered
+    * @return the Seq[cards.nine.models.PackagesByCategory] with the packages already ordered
     * @throws CollectionException if there was an error getting the existing collections or getting the packages ordered
     */
   def rankApps()(implicit context: ContextSupport): TaskService[Seq[PackagesByCategory]]
