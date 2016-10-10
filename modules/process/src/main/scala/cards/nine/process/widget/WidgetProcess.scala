@@ -1,7 +1,7 @@
 package cards.nine.process.widget
 
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.Widget
+import cards.nine.models.{WidgetData, Widget}
 
 trait WidgetProcess {
 
@@ -47,7 +47,7 @@ trait WidgetProcess {
     * @return the new [[Widget]] added
     * @throws AppWidgetException if there was an error adding the new widget
     */
-  def addWidget(addWidgetRequest: AddWidgetRequest): TaskService[Widget]
+  def addWidget(addWidgetRequest: WidgetData): TaskService[Widget]
 
   /**
     * Adds a sequence of new widgets
@@ -56,27 +56,27 @@ trait WidgetProcess {
     * @return the Seq[Widget] of new widgets added
     * @throws AppWidgetException if there was an error adding the new widget
     */
-  def addWidgets(request: Seq[AddWidgetRequest]): TaskService[Seq[Widget]]
+  def addWidgets(request: Seq[WidgetData]): TaskService[Seq[Widget]]
 
   /**
     * Moves an existing widget in the workspace
     *
     * @param widgetId the Id of the Widget
-    * @param moveWidgetRequest includes the new startX and startY coordenates
+    * @param displaceX includes the new startX and startY coordenates
     * @return the [[Widget]] with the new position
     * @throws AppWidgetException if there was an error finding the widget or moving it
     */
-  def moveWidget(widgetId: Int, moveWidgetRequest: MoveWidgetRequest): TaskService[Widget]
+  def moveWidget(widgetId: Int, displaceX: Int, displaceY: Int): TaskService[Widget]
 
   /**
     * Resizes an existing widget in the workspace
     *
     * @param widgetId the Id of the Widget
-    * @param resizeWidgetRequest includes the new spanX and spanY coordenates
+    * @param increaseX includes the new spanX and spanY coordenates
     * @return the [[Widget]] with the new position
     * @throws AppWidgetException if there was an error finding the widget or resizing it
     */
-  def resizeWidget(widgetId: Int, resizeWidgetRequest: ResizeWidgetRequest): TaskService[Widget]
+  def resizeWidget(widgetId: Int, increaseX: Int, increaseY: Int): TaskService[Widget]
 
   /**
     * Update app widget id of Android SDK in database

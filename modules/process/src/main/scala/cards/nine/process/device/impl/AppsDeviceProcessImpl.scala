@@ -3,7 +3,8 @@ package cards.nine.process.device.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.{OrderByName, Misc, NineCardsCategory}
+import cards.nine.models.Application.ApplicationDataOps
+import cards.nine.models.types._
 import cards.nine.process.device._
 import cards.nine.process.device.models.IterableApps
 import cards.nine.process.device.utils.KnownCategoriesUtil
@@ -65,7 +66,7 @@ trait AppsDeviceProcessImpl
           val categoryName = googlePlayPackagesResponse.packages find(_.packageName == app.packageName) flatMap (_.category)
           categoryName map (NineCardsCategory(_)) getOrElse Misc
         }
-        (app, category)
+        app.copy(category = category)
       }
       _ <- persistenceServices.addApps(apps)
     } yield ()).resolve[AppException]
@@ -74,12 +75,13 @@ trait AppsDeviceProcessImpl
     (for {
       application <- appsServices.getApplication(packageName)
       appCategory <- getAppCategory(packageName)
-      applicationAdded <- persistenceServices.addApp((application, appCategory))
+      applicationAdded <- persistenceServices.addApp(application.copy(category = appCategory))
     } yield applicationAdded.toData).resolve[AppException]
 
   def deleteApp(packageName: String)(implicit context: ContextSupport) =
     (for {
       _ <- persistenceServices.deleteAppByPackage(packageName)
+
     } yield ()).resolve[AppException]
 
   def updateApp(packageName: String)(implicit context: ContextSupport) =
@@ -87,7 +89,7 @@ trait AppsDeviceProcessImpl
       app <- appsServices.getApplication(packageName)
       appPersistence <- persistenceServices.findAppByPackage(packageName).resolveOption()
       appCategory <- getAppCategory(packageName)
-      _ <- persistenceServices.updateApp((appPersistence.id, app, appCategory))
+      _ <- persistenceServices.updateApp(app.copy(category = appCategory).toApp(appPersistence.id))
     } yield ()).resolve[AppException]
 
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =

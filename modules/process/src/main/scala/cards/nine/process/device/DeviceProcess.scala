@@ -3,8 +3,8 @@ package cards.nine.process.device
 import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{NineCardsIntent, Shortcut, Contact, ApplicationData}
-import cards.nine.models.types.DockType
+import cards.nine.models._
+import cards.nine.models.types.{AllContacts, ContactsFilter, GetAppOrder, DockType}
 import cards.nine.process.device.models._
 
 trait DeviceProcess {
@@ -208,7 +208,7 @@ trait DeviceProcess {
     * @return the Seq[cards.nine.process.device.models.DockApp]
     * @throws DockAppException if exist some problem getting the app or storing it
     */
-  def generateDockApps(size: Int)(implicit context: ContextSupport): TaskService[Seq[ProcessDockApp]]
+  def generateDockApps(size: Int)(implicit context: ContextSupport): TaskService[Seq[DockApp]]
 
   /**
     * Create or update a dock app
@@ -226,10 +226,10 @@ trait DeviceProcess {
     * Creates DockApps from some already formed and given DockApps
     *
     * @param items the Seq[cards.nine.process.device.models.DockApp] of DockApps
-    * @return the Seq[cards.nine.process.device.SaveDockAppRequest]
+    * @return the Seq[cards.nine.models.DockAppData]
     * @throws DockAppException if there was an error creating the moments' collections
     */
-  def saveDockApps(items: Seq[SaveDockAppRequest]): TaskService[Seq[ProcessDockApp]]
+  def saveDockApps(items: Seq[DockAppData]): TaskService[Seq[DockApp]]
 
   /**
     * Get the docks apps available for user
@@ -237,7 +237,7 @@ trait DeviceProcess {
     * @return the Seq[cards.nine.process.device.models.DockApp]
     * @throws DockAppException if exist some problem getting the app or storing it
     */
-  def getDockApps: TaskService[Seq[ProcessDockApp]]
+  def getDockApps: TaskService[Seq[DockApp]]
 
   /**
     * Delete all dock apps in database

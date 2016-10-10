@@ -2,8 +2,8 @@ package cards.nine.process.widget.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.Widget
-import cards.nine.process.widget.{AddWidgetRequest, _}
+import cards.nine.models.{WidgetData, Widget}
+import cards.nine.process.widget._
 import cards.nine.services.persistence._
 
 class WidgetProcessImpl(
@@ -28,36 +28,59 @@ class WidgetProcessImpl(
       widgets <- persistenceServices.fetchWidgetsByMoment(momentId)
     } yield widgets).resolve[AppWidgetException]
 
-  override def addWidget(addWidgetRequest: AddWidgetRequest) =
+  override def addWidget(addWidgetRequest: WidgetData) =
     (for {
       widget <- persistenceServices.addWidget(addWidgetRequest)
     } yield widget).resolve[AppWidgetException]
 
-  override def addWidgets(request: Seq[AddWidgetRequest]) =
+  override def addWidgets(request: Seq[WidgetData]) =
     (for {
       widgets <- persistenceServices.addWidgets(request)
     } yield widgets).resolve[AppWidgetException]
 
-  override def moveWidget(widgetId: Int, moveWidgetRequest: MoveWidgetRequest) =
+  override def moveWidget(widgetId: Int, displaceX: Int, displaceY: Int) = {
+
+    def toUpdatedWidget(widget: Widget, displaceX: Int, displaceY: Int): Widget =
+      widget.copy(
+        area = widget.area.copy(
+          startX = widget.area.startX + displaceX,
+          startY = widget.area.startY + displaceY))
+
     (for {
       widget <- findWidgetById(widgetId).resolveOption()
-      updatedWidget = toUpdatedWidget(widget, moveWidgetRequest)
+      updatedWidget = toUpdatedWidget(widget, displaceX, displaceY)
       _ <- updateWidget(updatedWidget)
     } yield updatedWidget).resolve[AppWidgetException]
 
-  override def resizeWidget(widgetId: Int, resizeWidgetRequest: ResizeWidgetRequest) =
+  }
+
+  override def resizeWidget(widgetId: Int, increaseX: Int, increaseY: Int) = {
+
+    def toUpdatedWidget(widget: Widget, increaseX: Int, increaseY: Int): Widget =
+      widget.copy(
+        area = widget.area.copy(
+          spanX = widget.area.spanX + increaseX,
+          spanY = widget.area.spanY + increaseY))
+
     (for {
       widget <- findWidgetById(widgetId).resolveOption()
-      updatedWidget = toUpdatedWidget(widget, resizeWidgetRequest)
+      updatedWidget = toUpdatedWidget(widget, increaseX, increaseY)
       _ <- updateWidget(updatedWidget)
     } yield updatedWidget).resolve[AppWidgetException]
 
-  override def updateAppWidgetId(widgetId: Int, appWidgetId: Int) =
+  }
+
+  override def updateAppWidgetId(widgetId: Int, appWidgetId: Int) = {
+
+    def toUpdatedWidget(widget: Widget, appWidgetId: Int): Widget =
+      widget.copy(appWidgetId = Option(appWidgetId))
+
     (for {
       widget <- findWidgetById(widgetId).resolveOption()
       updatedWidget = toUpdatedWidget(widget, appWidgetId)
       _ <- updateWidget(updatedWidget)
     } yield updatedWidget).resolve[AppWidgetException]
+  }
 
   override def deleteAllWidgets() =
     (for {
@@ -84,20 +107,5 @@ class WidgetProcessImpl(
     (for {
       _ <- persistenceServices.updateWidget(widget)
     } yield ()).resolve[AppWidgetException]
-
-  def toUpdatedWidget(widget: Widget, moveWidgetRequest: MoveWidgetRequest): Widget =
-    widget.copy(
-      area = widget.area.copy(
-        startX = widget.area.startX + moveWidgetRequest.displaceX,
-        startY = widget.area.startY + moveWidgetRequest.displaceY))
-
-  def toUpdatedWidget(widget: Widget, resizeWidgetRequest: ResizeWidgetRequest): Widget =
-    widget.copy(
-      area = widget.area.copy(
-        spanX = widget.area.spanX + resizeWidgetRequest.increaseX,
-        spanY = widget.area.spanY + resizeWidgetRequest.increaseY))
-
-  def toUpdatedWidget(widget: Widget, appWidgetId: Int): Widget =
-    widget.copy(appWidgetId = Option(appWidgetId))
 
 }

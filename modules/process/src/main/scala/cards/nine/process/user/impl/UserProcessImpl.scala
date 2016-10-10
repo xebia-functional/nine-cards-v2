@@ -4,7 +4,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.User
+import cards.nine.models.{UserData, User}
 import cards.nine.process.user._
 import cards.nine.services.api.{ApiServices, RequestConfig}
 import cards.nine.services.persistence._
@@ -20,7 +20,7 @@ class UserProcessImpl(
 
   private[this] val noActiveUserErrorMessage = "No active user"
 
-  val emptyUserRequest = (None, None, None, None, None, None, None, None, None, None)
+  val emptyUser = UserData(None, None, None, None, None, None, None, None, None, None)
 
   override def signIn(email: String, androidMarketToken: String, emailTokenId: String)(implicit context: ContextSupport) = {
     withActiveUser { id =>
@@ -29,11 +29,12 @@ class UserProcessImpl(
         loginResponse <- apiServices.login(email, androidId, emailTokenId)
         userDB <- persistenceServices.findUserById(id).resolveOption()
         updateUser = userDB.copy(
+          id = id,
           email = Some(email),
           apiKey = Option(loginResponse.apiKey),
           sessionToken = Option(loginResponse.sessionToken),
           marketToken = Option(androidMarketToken))
-        _ <- persistenceServices.updateUser(id, updateUser)
+        _ <- persistenceServices.updateUser(updateUser)
       } yield ()).resolve[UserException]
     }
   }
@@ -44,7 +45,7 @@ class UserProcessImpl(
       (for {
         maybeUser <- persistenceServices.findUserById(id)
         user <- maybeUser map (user => TaskService(Task(Either.right(user)))) getOrElse {
-          persistenceServices.addUser(emptyUserRequest)
+          persistenceServices.addUser(emptyUser)
         }
       } yield user).resolve[UserException]
 
@@ -52,7 +53,7 @@ class UserProcessImpl(
       (for {
         maybeUsers <- persistenceServices.fetchUsers
         user <- maybeUsers.headOption map (user => TaskService(Task(Either.right(user)))) getOrElse {
-          persistenceServices.addUser(emptyUserRequest)
+          persistenceServices.addUser(emptyUser)
         }
       } yield user).resolve[UserException]
 
@@ -71,7 +72,7 @@ class UserProcessImpl(
 
   override def unregister(implicit context: ContextSupport) =
     withActiveUser { id =>
-      val update = (id, None, None, None, None, None, None, None, None, None, None)
+      val update = User(id, None, None, None, None, None, None, None, None, None, None)
       (for {
         user <- persistenceServices.findUserById(id).resolveOption()
         _ <- persistenceServices.updateUser(update)
@@ -106,7 +107,7 @@ class UserProcessImpl(
     withActiveUser { userId =>
       (for {
         user <- persistenceServices.findUserById(userId).resolveOption()
-        _ <- persistenceServices.updateUser(userId, user.copy(deviceToken = Option(deviceToken)))
+        _ <- persistenceServices.updateUser(user.copy(id = userId, deviceToken = Option(deviceToken)))
         _ <- syncInstallation(user.apiKey, user.sessionToken, user.deviceToken, Option(deviceToken))
       } yield ()).resolve[UserException]
     }

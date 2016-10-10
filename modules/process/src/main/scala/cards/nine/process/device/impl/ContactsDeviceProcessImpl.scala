@@ -5,11 +5,11 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.ContactCounter
+import cards.nine.models.types.{ContactsWithPhoneNumber, FavoriteContacts, AllContacts, ContactsFilter}
 import cards.nine.process.device._
 import cards.nine.process.device.models.IterableContacts
 import cards.nine.services.contacts.ContactsServicePermissionException
 import monix.eval.Task
-import cats.syntax.either._
 
 trait ContactsDeviceProcessImpl extends DeviceProcess {
 

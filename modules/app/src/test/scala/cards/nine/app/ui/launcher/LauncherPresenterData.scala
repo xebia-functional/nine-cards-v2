@@ -7,7 +7,7 @@ import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types._
 import NineCardIntentImplicits._
 import cards.nine.process.commons.models._
-import cards.nine.process.device.models.ProcessDockApp
+import cards.nine.process.device.models.DockApp
 import cards.nine.process.user.models.{User, UserProfile}
 import play.api.libs.json.Json
 
@@ -93,7 +93,7 @@ trait LauncherPresenterData {
   val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val intent = Json.parse(intentStr).as[models.NineCardsIntent]
 
-  val dockApp = ProcessDockApp(
+  val dockApp = DockApp(
     name = packageName,
     dockType = AppDockType,
     intent = intent,

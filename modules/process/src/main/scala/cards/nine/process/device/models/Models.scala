@@ -20,13 +20,6 @@ case class ContactPhone(
   number: String,
   category: PhoneCategory)
 
-case class ProcessDockApp(
-  name: String,
-  dockType: DockType,
-  intent: NineCardsIntent,
-  imagePath: String,
-  position: Int)
-
 case class AppsWithWidgets(
   packageName: String,
   name: String,

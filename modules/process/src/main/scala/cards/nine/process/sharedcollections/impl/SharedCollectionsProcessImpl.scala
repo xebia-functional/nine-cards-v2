@@ -95,7 +95,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       userConfig <- apiUtils.getRequestConfig
       _ <- apiServices.subscribe(sharedCollectionId)(userConfig)
       collection <- getCollectionBySharedCollectionId(sharedCollectionId)
-      _ <- persistenceServices.updateCollection((collection, sharedCollectionSubscribed = true))
+      _ <- persistenceServices.updateCollection(collection.copy(sharedCollectionSubscribed = true))
     } yield ()).resolveLeft(mapLeft)
 
   override def unsubscribe(sharedCollectionId: String)(implicit context: ContextSupport) =
@@ -103,7 +103,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       userConfig <- apiUtils.getRequestConfig
       _ <- apiServices.unsubscribe(sharedCollectionId)(userConfig)
       collection <- getCollectionBySharedCollectionId(sharedCollectionId)
-      _ <- persistenceServices.updateCollection((collection, sharedCollectionSubscribed = false))
+      _ <- persistenceServices.updateCollection(collection.copy(sharedCollectionSubscribed = false))
     } yield ()).resolveLeft(mapLeft)
 
   private[this] def getCollectionBySharedCollectionId(sharedCollectionId: String) =
