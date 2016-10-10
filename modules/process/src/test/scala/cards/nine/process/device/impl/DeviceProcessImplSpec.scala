@@ -113,7 +113,6 @@ class DeviceProcessImplSpec
     "deletes all apps, cards, collections and dockApps" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAllApps() returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllCollections() returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllCards() returns TaskService(Task(Either.right(items)))
@@ -123,18 +122,9 @@ class DeviceProcessImplSpec
         result shouldEqual Right((): Unit)
       }
 
-    "returns ResetException when persistence service fails deleting the apps" in
-      new DeviceProcessScope {
-
-        mockPersistenceServices.deleteAllApps returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = deviceProcess.resetSavedItems().value.run
-        result must beAnInstanceOf[Left[ResetException, _]]
-      }
-
     "returns ResetException when persistence service fails deleting widgets" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAllApps returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = deviceProcess.resetSavedItems().value.run
@@ -144,7 +134,6 @@ class DeviceProcessImplSpec
     "returns ResetException when persistence service fails deleting the collections" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAllApps returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllCollections returns TaskService(Task(Either.left(persistenceServiceException)))
 
@@ -155,7 +144,6 @@ class DeviceProcessImplSpec
     "returns ResetException when persistence service fails deleting the cards" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAllApps returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllCollections returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllCards returns TaskService(Task(Either.left(persistenceServiceException)))
@@ -167,7 +155,6 @@ class DeviceProcessImplSpec
     "returns ResetException when persistence service fails deleting the dock apps" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAllApps() returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllCollections() returns TaskService(Task(Either.right(items)))
         mockPersistenceServices.deleteAllCards() returns TaskService(Task(Either.right(items)))
