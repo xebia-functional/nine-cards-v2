@@ -289,7 +289,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     for {
       result <- di.userAccountsProcess.havePermission(FineLocation)
       _ <- if (result.hasPermission(FineLocation)) {
-        di.launcherExecutorProcess.launchGoogleWeather
+        for {
+          _ <- updateWeather()
+          _ <- di.launcherExecutorProcess.launchGoogleWeather
+        } yield ()
       } else {
         di.userAccountsProcess.requestPermission(RequestCodes.locationPermission, FineLocation)
       }
