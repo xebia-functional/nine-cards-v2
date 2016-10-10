@@ -55,7 +55,7 @@ trait AppsDeviceProcessImpl
       iter <- persistenceServices.fetchIterableAppsByKeyword(keyword, toFetchAppOrder(orderBy), orderBy.ascending)
     } yield new IterableApps(iter)).resolve[AppException]
 
-  def saveInstalledApps(implicit context: ContextSupport) = {
+  def synchronizeInstalledApps(implicit context: ContextSupport) = {
 
     def deleteAndFilter(existingApps: Seq[Application], duplicatedIds: Seq[Int]): TaskService[Seq[Application]] =
       if (duplicatedIds.nonEmpty) {

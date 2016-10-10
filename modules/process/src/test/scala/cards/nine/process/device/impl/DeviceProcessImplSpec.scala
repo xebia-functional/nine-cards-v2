@@ -685,7 +685,7 @@ class DeviceProcessImplSpec
       }
   }
 
-  "Getting and saving installed apps" should {
+  "Synchronize installed apps" should {
 
     "gets and saves installed apps" in
       new DeviceProcessScope {
@@ -695,7 +695,7 @@ class DeviceProcessImplSpec
         mockApiServices.googlePlayPackages(any)(any) returns TaskService(Task(Either.right(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
         mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns TaskService(Task(Either.right(applicationSeq.head)))
 
-        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
+        val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result shouldEqual Right((): Unit)
       }
 
@@ -705,7 +705,7 @@ class DeviceProcessImplSpec
         mockAppsServices.getInstalledApplications(any) returns TaskService.right(applicationDataSeq)
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(applicationSeq)
 
-        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
+        val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result shouldEqual Right((): Unit)
 
         there was no(mockApiServices).googlePlayPackages(any)(any)
@@ -724,7 +724,7 @@ class DeviceProcessImplSpec
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app1, app2, app3, app4))
         mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
 
-        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
+        val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result shouldEqual Right((): Unit)
 
         there was one(mockPersistenceServices).deleteAppsByIds(Seq(app4.id))
@@ -755,7 +755,7 @@ class DeviceProcessImplSpec
           Seq(CategorizedPackage(app1.packageName, Some(app1.category.name)))))
         mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns TaskService.right(applicationSeq.head)
 
-        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
+        val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result shouldEqual Right((): Unit)
 
         there was one(mockApiServices).googlePlayPackages(===(Seq(app1.packageName)))(any)
@@ -769,7 +769,7 @@ class DeviceProcessImplSpec
         mockAppsServices.getApplication(any)(any) returns TaskService(Task(Either.left(appInstalledException)))
         mockAppsServices.getDefaultApps(any) returns TaskService(Task(Either.left(appInstalledException)))
 
-        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
+        val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result must beAnInstanceOf[Left[AppException, _]]
       }
 
@@ -781,7 +781,7 @@ class DeviceProcessImplSpec
         mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns TaskService(Task(Either.right(applicationSeq.head)))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq.empty)
 
-        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
+        val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result shouldEqual Right((): Unit)
       }
 
@@ -791,7 +791,7 @@ class DeviceProcessImplSpec
         mockAppsServices.getInstalledApplications(any) returns TaskService(Task(Either.right(applicationDataSeq)))
         mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
-        val result = deviceProcess.saveInstalledApps(contextSupport).value.run
+        val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result must beAnInstanceOf[Left[AppException, _]]
       }
 

@@ -37,6 +37,7 @@ class NewConfigurationJobs(
 
     for {
       _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections()
+      _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.saveInstalledApps
       collections <- di.collectionProcess.rankApps()
       finalCollections = filterApps(collections)

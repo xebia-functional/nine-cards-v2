@@ -61,6 +61,7 @@ class SynchronizeDeviceJobs(actions: SynchronizeDeviceUiActions)(implicit contex
 
     for {
       _ <- setState(stateSyncing, close = false)
+      _ <- di.deviceProcess.saveInstalledApps
       _ <- updateCollections()
       _ <- tryToConnect()
     } yield ()
