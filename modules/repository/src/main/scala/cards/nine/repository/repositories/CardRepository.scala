@@ -67,13 +67,17 @@ class CardRepository(
       }
     }
 
-  def deleteCards(where: String = ""): TaskService[Int] =
+  def deleteCards(maybeCollectionId: Option[Int] = None, where: String = ""): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
+        val collectionUri = maybeCollectionId match {
+          case Some(id) if id != 0 => uriCreator.withAppendedPath(collectionNotificationUri, id.toString)
+          case _ => collectionNotificationUri
+        }
         contentResolverWrapper.delete(
           uri = cardUri,
           where = where,
-          notificationUris = Seq(cardNotificationUri, collectionNotificationUri))
+          notificationUris = Seq(cardNotificationUri, collectionUri))
       }
     }
 
