@@ -129,6 +129,15 @@ trait PersistenceServices {
   def deleteAllApps(): TaskService[Int]
 
   /**
+    * Deletes some apps from the repository by the id
+    *
+    * @param ids the ids of the apps to delete
+    * @return an Int if the app has been deleted correctly
+    * @throws PersistenceServiceException if exist some problem deleting the app
+    */
+  def deleteAppsByIds(ids: Seq[Int]): TaskService[Int]
+
+  /**
     * Deletes an app from the repository by the package name
     *
     * @param packageName the package name of the app to delete
