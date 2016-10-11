@@ -10,9 +10,9 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.collections.jobs.SharedCollectionJobs
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.process.commons.models.Collection
-import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
+import cards.nine.models.Collection
 import cards.nine.models.types.NineCardsCategory
+import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
 import macroid._
 

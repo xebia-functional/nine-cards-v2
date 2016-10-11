@@ -11,10 +11,10 @@ import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.{CardData, Collection, Card}
+import cards.nine.models.Card._
 import cards.nine.models.types._
 import cards.nine.process.accounts.CallPhone
-import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.commons.models.{Card, Collection}
 import macroid.ActivityContextWrapper
 
 class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
@@ -94,7 +94,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       // TODO We must to create a new methods for moving cards to collection in #828
       // We should change this calls when the method will be ready
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
-      _ <- di.collectionProcess.addCards(toCollectionId, cards map toAddCardRequest)
+      _ <- di.collectionProcess.addCards(toCollectionId, cards map (_.toData))
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment || otherIsMoment, ())
       _ <- actions.removeCards(cards)
       _ <- actions.addCardsToCollection(collectionPosition, cards)
@@ -150,7 +150,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       TaskService.empty
     }
 
-  def addCards(cardsRequest: Seq[AddCardRequest]): TaskService[Seq[Card]] =
+  def addCards(cardsRequest: Seq[CardData]): TaskService[Seq[Card]] =
     for {
       currentCollection <- actions.getCurrentCollection.resolveOption()
       currentCollectionId = currentCollection.id
@@ -164,13 +164,15 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
     def createShortcut(collectionId: Int): TaskService[Seq[Card]] = for {
       path <- bitmap map (di.deviceProcess.saveShortcutIcon(_).map(Option(_))) getOrElse TaskService.right(None)
-      addCardRequest = AddCardRequest(
+      cardData = CardData(
+        position = 0, //TODO review this position
         term = name,
         packageName = None,
         cardType = ShortcutCardType,
         intent = toNineCardIntent(shortcutIntent),
-        imagePath = path)
-      cards <- di.collectionProcess.addCards(collectionId, Seq(addCardRequest))
+        imagePath = path,
+        notification = None)
+      cards <- di.collectionProcess.addCards(collectionId, Seq(cardData))
     } yield cards
 
     for {

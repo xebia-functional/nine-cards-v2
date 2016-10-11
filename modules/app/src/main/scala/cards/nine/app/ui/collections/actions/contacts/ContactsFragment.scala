@@ -11,8 +11,9 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{JobException, RequestCodes}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.device.{AllContacts, ContactPermissionException, ContactsFilter}
+import cards.nine.models.CardData
+import cards.nine.models.types.{AllContacts, ContactsFilter}
+import cards.nine.process.device.ContactPermissionException
 import com.fortysevendeg.ninecardslauncher2.R
 
 class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -47,7 +48,7 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
       case (RequestCodes.selectInfoContact, Activity.RESULT_OK) =>
         val maybeRequest = readExtras flatMap { extras =>
           readExtraProperty(extras, ContactsFragment.addCardRequest) match {
-            case Some(card: AddCardRequest) => Some(card)
+            case Some(card: CardData) => Some(card)
             case _ => None
           }
         }

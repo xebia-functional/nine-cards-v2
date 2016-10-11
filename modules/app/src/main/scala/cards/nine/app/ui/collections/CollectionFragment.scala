@@ -14,7 +14,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{PhoneCardType, PublishedByMe}
-import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.models.{Card, Collection}
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.TypedResource._

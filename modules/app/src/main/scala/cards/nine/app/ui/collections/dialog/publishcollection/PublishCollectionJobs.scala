@@ -7,9 +7,11 @@ import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.sharedcollections.SharedCollectionsException
 import cards.nine.process.sharedcollections.models.CreateSharedCollection
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.ActivityContextWrapper
 

@@ -14,7 +14,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.sharedcollections.{LatestSharedCollection, TopSharedCollection, TypeSharedCollection}
 import cards.nine.process.theme.models.CardLayoutBackgroundColor

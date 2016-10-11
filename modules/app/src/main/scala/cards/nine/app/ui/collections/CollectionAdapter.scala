@@ -13,7 +13,7 @@ import cards.nine.app.ui.components.drawables.{BackgroundSelectedDrawable, IconT
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, NineCardsPreferencesValue, ShowPositionInCards}
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.models.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
-import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.models.{Card, Collection}
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

@@ -5,8 +5,8 @@ import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.ApplicationData
-import cards.nine.process.commons.models.Collection
-import cards.nine.process.device.GetByName
+import cards.nine.models.Collection
+import cards.nine.models.types.GetByName
 import cards.nine.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 
 trait CollectionJobs {
@@ -18,8 +18,8 @@ trait CollectionJobs {
     def getCards(appsInstalled: Seq[ApplicationData], packages: Seq[SharedCollectionPackage]) =
       packages map { pck =>
         appsInstalled find (_.packageName == pck.packageName) map { app =>
-          toAddCardRequest(app)
-        } getOrElse toAddCardRequest(pck)
+          toCardData(app)
+        } getOrElse toCardData(pck)
       }
 
     for {

@@ -10,9 +10,8 @@ import android.widget.{LinearLayout, ScrollView}
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
-import cards.nine.models.Contact
 import cards.nine.models.types._
-import cards.nine.process.collection.AddCardRequest
+import cards.nine.models.{CardData, Contact}
 import cards.nine.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -173,7 +172,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       case (PhoneCardType, Some(data)) => (phoneToNineCardIntent(Option(lookupKey), data), cardType)
       case _ => (contactToNineCardIntent(lookupKey), ContactCardType)
     }
-    val card = AddCardRequest(
+    val card = CardData(
       term = contact.name,
       packageName = None,
       cardType = lastCardType,

@@ -17,8 +17,8 @@ import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, Ni
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.Contact
+import cards.nine.models.types.{FavoriteContacts, AllContacts, ContactsFilter}
 import cards.nine.process.device.models.{IterableContacts, TermCounter}
-import cards.nine.process.device.{AllContacts, ContactsFilter, FavoriteContacts}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R

@@ -6,7 +6,7 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{AppLog, Jobs}
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{Communication, NineCardsCategory}
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

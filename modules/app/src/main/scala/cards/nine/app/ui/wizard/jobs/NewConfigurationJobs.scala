@@ -5,11 +5,7 @@ import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types._
-import cards.nine.models.{MomentTimeSlot, ApplicationData, MomentData}
-import cards.nine.process.collection.models.{FormedCollection, FormedItem, PackagesByCategory}
-import cards.nine.process.commons.CommonConversions
-import cards.nine.process.device.GetByName
-import cards.nine.process.moment.SaveMomentRequest
+import cards.nine.models._
 import macroid.ActivityContextWrapper
 import play.api.libs.json.Json
 
@@ -18,8 +14,7 @@ class NewConfigurationJobs(
   visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
-  with AppNineCardsIntentConversions
-  with CommonConversions {
+  with AppNineCardsIntentConversions {
 
   val defaultDockAppsSize = 4
 

@@ -18,7 +18,7 @@ import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.types.{AppDockType, ContactDockType}
-import cards.nine.process.device.models.DockApp
+import cards.nine.models.DockApp
 import cards.nine.process.theme.models.{DockPressedColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

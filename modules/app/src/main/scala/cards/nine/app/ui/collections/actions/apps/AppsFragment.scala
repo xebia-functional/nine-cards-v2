@@ -44,7 +44,7 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 
   override def addApp(app: ApplicationData): Unit =
     (for {
-      cards <- groupCollectionsJobs.addCards(Seq(toAddCardRequest(app)))
+      cards <- groupCollectionsJobs.addCards(Seq(toCardData(app)))
       _ <- singleCollectionJobs match {
         case Some(job) => job.addCards(cards)
         case _ => TaskService.empty

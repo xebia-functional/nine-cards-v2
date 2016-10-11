@@ -2,8 +2,7 @@ package cards.nine.app.ui.launcher.actions.createoreditcollection
 
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.process.collection.{AddCollectionRequest, EditCollectionRequest}
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.{CollectionData, Collection}
 import cards.nine.models.types.FreeCollectionType
 import macroid.{ActivityContextWrapper, Ui}
 
@@ -34,7 +33,7 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
       icon <- maybeIcon
       index <- maybeIndex
     } yield {
-      val request = EditCollectionRequest(
+      val request = CollectionData(
         name = name,
         icon = icon,
         themedColorIndex = index,
@@ -52,7 +51,7 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
       icon <- maybeIcon
       index <- maybeIndex
     } yield {
-      val request = AddCollectionRequest(
+      val request = CollectionData(
         name = name,
         collectionType = FreeCollectionType,
         icon = icon,

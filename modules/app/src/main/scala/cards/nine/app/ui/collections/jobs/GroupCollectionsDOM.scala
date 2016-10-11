@@ -6,8 +6,7 @@ import android.view.View
 import cards.nine.app.ui.collections.{CollectionAdapter, CollectionsPagerAdapter}
 import cards.nine.app.ui.commons.FabButtonTags._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.models.{CardData, Card, Collection}
 import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
 import macroid.{ActivityContextWrapper, Ui}
 
@@ -101,7 +100,7 @@ trait GroupCollectionsUiListener {
 
   def showEditCollectionDialog(cardName: String, onChangeName: (Option[String]) => Unit): Unit
 
-  def addCards(cards: Seq[AddCardRequest]): Unit
+  def addCards(cards: Seq[CardData]): Unit
 
   def bindAnimatedAdapter(): Unit
 

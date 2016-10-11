@@ -1,35 +1,15 @@
 package cards.nine.app.commons
 
 import android.content.Intent
-import cards.nine.app.ui.commons.Constants._
 import cards.nine.models
-import cards.nine.models.types.{AppCardType, AppsCollectionType, ContactCardType, NoInstalledAppCardType}
-import cards.nine.models.{ContactEmail => ProcessContactEmail, ContactInfo => ProcessContactInfo, ContactPhone => ProcessContactPhone, NineCardsIntentConversions, ApplicationData, Contact}
+import cards.nine.models._
+import cards.nine.models.types.WidgetType
 import cards.nine.process.cloud.models._
-import cards.nine.process.collection.models._
-import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest}
-import cards.nine.process.commons.models._
-import cards.nine.process.device.SaveDockAppRequest
-import cards.nine.process.moment.SaveMomentRequest
 import cards.nine.process.recommendations.models.RecommendedApp
-import cards.nine.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
-
-import scala.util.Random
+import cards.nine.process.sharedcollections.models.SharedCollectionPackage
 
 trait Conversions
   extends AppNineCardsIntentConversions {
-
-  def toContactInfo(item: ProcessContactInfo): ContactInfo = ContactInfo(
-    emails = item.emails map toContactEmail,
-    phones = item.phones map toContactPhone)
-
-  def toContactEmail(item: ProcessContactEmail): ContactEmail = ContactEmail(
-    address = item.address,
-    category = item.category.toString)
-
-  def toContactPhone(item: ProcessContactPhone): ContactPhone = ContactPhone(
-    number = item.number,
-    category = item.category.toString)
 
   def toSeqFormedCollection(collections: Seq[CloudStorageCollection]): Seq[FormedCollection] = collections map toFormedCollection
 
@@ -49,83 +29,83 @@ trait Conversions
     title = item.title,
     intent = item.intent)
 
-  def toAddCollectionRequest(privateCollection: PrivateCollection): AddCollectionRequest =
-    AddCollectionRequest(
-      name = privateCollection.name,
-      collectionType = privateCollection.collectionType,
-      icon = privateCollection.icon,
-      themedColorIndex = privateCollection.themedColorIndex,
-      appsCategory = privateCollection.appsCategory,
-      cards = privateCollection.cards map toAddCardRequest,
-      moment = privateCollection.moment)
-
-  def toAddCardRequest(privateCard: PrivateCard): AddCardRequest =
-    AddCardRequest(
-      term = privateCard.term,
-      packageName = privateCard.packageName,
-      cardType = privateCard.cardType,
-      intent = privateCard.intent,
-      imagePath = privateCard.imagePath)
-
-  def toAddCardRequest(card: Card): AddCardRequest =
-    AddCardRequest(
-      term = card.term,
-      packageName = card.packageName,
-      cardType = card.cardType,
-      intent = card.intent,
-      imagePath = card.imagePath)
-
-  def toAddCardRequest(contact: Contact): AddCardRequest =
-    AddCardRequest(
-      term = contact.name,
-      packageName = None,
-      cardType = ContactCardType,
-      intent = contactToNineCardIntent(contact.lookupKey),
-      imagePath = Option(contact.photoUri))
-
-  def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
-    AddCollectionRequest(
-      name = collection.name,
-      collectionType = AppsCollectionType,
-      icon = collection.icon,
-      themedColorIndex = Random.nextInt(numSpaces),
-      appsCategory = Option(collection.category),
-      cards = cards,
-      moment = None,
-      sharedCollectionId = Option(collection.sharedCollectionId),
-      originalSharedCollectionId = Option(collection.sharedCollectionId))
-
-  def toAddCardRequest(app: SharedCollectionPackage): AddCardRequest =
-    AddCardRequest(
-      term = app.title,
-      packageName = Option(app.packageName),
-      cardType = NoInstalledAppCardType,
-      intent = toNineCardIntent(app),
-      imagePath = None)
-
-  def toAddCardRequest(app: ApplicationData): AddCardRequest =
-    AddCardRequest(
-      term = app.name,
-      packageName = Option(app.packageName),
-      cardType = AppCardType,
-      intent = toNineCardIntent(app),
-      imagePath = None)
-
-  def toAddCardRequest(app: RecommendedApp): AddCardRequest =
-    AddCardRequest(
-      term = app.title,
-      packageName = Option(app.packageName),
-      cardType = AppCardType,
-      intent = toNineCardIntent(app),
-      imagePath = None)
-
-  def toSaveDockAppRequest(cloudStorageDockApp: CloudStorageDockApp): SaveDockAppRequest =
-    SaveDockAppRequest(
-      name = cloudStorageDockApp.name,
-      dockType = cloudStorageDockApp.dockType,
-      intent = cloudStorageDockApp.intent,
-      imagePath = cloudStorageDockApp.imagePath,
-      position = cloudStorageDockApp.position)
+//  def toAddCollectionRequest(privateCollection: PrivateCollection): AddCollectionRequest =
+//    AddCollectionRequest(
+//      name = privateCollection.name,
+//      collectionType = privateCollection.collectionType,
+//      icon = privateCollection.icon,
+//      themedColorIndex = privateCollection.themedColorIndex,
+//      appsCategory = privateCollection.appsCategory,
+//      cards = privateCollection.cards map toAddCardRequest,
+//      moment = privateCollection.moment)
+//
+//  def toAddCardRequest(privateCard: PrivateCard): AddCardRequest =
+//    AddCardRequest(
+//      term = privateCard.term,
+//      packageName = privateCard.packageName,
+//      cardType = privateCard.cardType,
+//      intent = privateCard.intent,
+//      imagePath = privateCard.imagePath)
+//
+//  def toAddCardRequest(card: Card): AddCardRequest =
+//    AddCardRequest(
+//      term = card.term,
+//      packageName = card.packageName,
+//      cardType = card.cardType,
+//      intent = card.intent,
+//      imagePath = card.imagePath)
+//
+//  def toAddCardRequest(contact: Contact): AddCardRequest =
+//    AddCardRequest(
+//      term = contact.name,
+//      packageName = None,
+//      cardType = ContactCardType,
+//      intent = contactToNineCardIntent(contact.lookupKey),
+//      imagePath = Option(contact.photoUri))
+//
+//  def toAddCollectionRequestFromSharedCollection(collection: SharedCollection, cards: Seq[AddCardRequest]): AddCollectionRequest =
+//    AddCollectionRequest(
+//      name = collection.name,
+//      collectionType = AppsCollectionType,
+//      icon = collection.icon,
+//      themedColorIndex = Random.nextInt(numSpaces),
+//      appsCategory = Option(collection.category),
+//      cards = cards,
+//      moment = None,
+//      sharedCollectionId = Option(collection.sharedCollectionId),
+//      originalSharedCollectionId = Option(collection.sharedCollectionId))
+//
+//  def toAddCardRequest(app: SharedCollectionPackage): AddCardRequest =
+//    AddCardRequest(
+//      term = app.title,
+//      packageName = Option(app.packageName),
+//      cardType = NoInstalledAppCardType,
+//      intent = toNineCardIntent(app),
+//      imagePath = None)
+//
+//  def toAddCardRequest(app: ApplicationData): AddCardRequest =
+//    AddCardRequest(
+//      term = app.name,
+//      packageName = Option(app.packageName),
+//      cardType = AppCardType,
+//      intent = toNineCardIntent(app),
+//      imagePath = None)
+//
+//  def toAddCardRequest(app: RecommendedApp): AddCardRequest =
+//    AddCardRequest(
+//      term = app.title,
+//      packageName = Option(app.packageName),
+//      cardType = AppCardType,
+//      intent = toNineCardIntent(app),
+//      imagePath = None)
+//
+//  def toSaveDockAppRequest(cloudStorageDockApp: CloudStorageDockApp): SaveDockAppRequest =
+//    SaveDockAppRequest(
+//      name = cloudStorageDockApp.name,
+//      dockType = cloudStorageDockApp.dockType,
+//      intent = cloudStorageDockApp.intent,
+//      imagePath = cloudStorageDockApp.imagePath,
+//      position = cloudStorageDockApp.position)
 
 }
 
@@ -198,28 +178,44 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
       wifi = cloudStorageMoment.wifi,
       headphone = cloudStorageMoment.headphones,
       momentType = cloudStorageMoment.momentType,
-      widgets = cloudStorageMoment.widgets map toFormedWidgetSeq)
+      widgets = cloudStorageMoment.widgets map toWidgetDataSeq)
 
-  def toSaveMomentRequest(cloudStorageMoment: CloudStorageMoment): SaveMomentRequest =
-    SaveMomentRequest(
-      collectionId = None,
-      timeslot = cloudStorageMoment.timeslot map toTimeSlot,
-      wifi = cloudStorageMoment.wifi,
-      headphone = cloudStorageMoment.headphones,
-      momentType = cloudStorageMoment.momentType,
-      widgets = cloudStorageMoment.widgets map toFormedWidgetSeq)
+//  def toSaveMomentRequest(cloudStorageMoment: CloudStorageMoment): SaveMomentRequest =
+//    SaveMomentRequest(
+//      collectionId = None,
+//      timeslot = cloudStorageMoment.timeslot map toTimeSlot,
+//      wifi = cloudStorageMoment.wifi,
+//      headphone = cloudStorageMoment.headphones,
+//      momentType = cloudStorageMoment.momentType,
+//      widgets = cloudStorageMoment.widgets map toFormedWidgetSeq)
+//
+  def toWidgetDataSeq(widgets: Seq[CloudStorageWidget]) =
+    widgets map toWidgetData
 
-  def toFormedWidgetSeq(widgets: Seq[CloudStorageWidget]) =
-    widgets map toFormedWidget
+//  def toFormedWidget(widget: CloudStorageWidget): WidgetData =
+//    WidgetData(
+//      packageName = widget.packageName,
+//      className = widget.className,
+//      startX = widget.area.startX,
+//      startY = widget.area.startY,
+//      spanX = widget.area.spanX,
+//      spanY = widget.area.spanY,
+//      widgetType = widget.widgetType,
+//      label = widget.label,
+//      imagePath = widget.imagePath,
+//      intent = widget.intent)
 
-  def toFormedWidget(widget: CloudStorageWidget): FormedWidget =
-    FormedWidget(
+  def toWidgetData(widget: CloudStorageWidget): WidgetData =
+    WidgetData(
+      momentId = 0, //TODO review this value
       packageName = widget.packageName,
       className = widget.className,
-      startX = widget.area.startX,
-      startY = widget.area.startY,
-      spanX = widget.area.spanX,
-      spanY = widget.area.spanY,
+      appWidgetId = None,
+      area = WidgetArea(
+        startX = widget.area.startX,
+        startY = widget.area.startY,
+        spanX = widget.area.spanX,
+        spanY = widget.area.spanY),
       widgetType = widget.widgetType,
       label = widget.label,
       imagePath = widget.imagePath,

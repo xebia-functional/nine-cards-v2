@@ -5,12 +5,6 @@ import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.helper.ItemTouchHelper
 import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
 import android.text.Html
-import com.fortysevendeg.macroid.extras.CardViewTweaks._
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.collections.CollectionAdapter
 import cards.nine.app.ui.collections.decorations.CollectionItemDecoration
 import cards.nine.app.ui.commons.Constants._
@@ -26,8 +20,14 @@ import cards.nine.app.ui.preferences.commons.CardPadding
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.models.{Card, Collection}
 import cards.nine.process.theme.models.{CardBackgroundColor, DrawerTextColor, NineCardsTheme}
+import com.fortysevendeg.macroid.extras.CardViewTweaks._
+import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid._
 

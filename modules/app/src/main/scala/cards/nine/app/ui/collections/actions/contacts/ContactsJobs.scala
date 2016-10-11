@@ -6,8 +6,8 @@ import cards.nine.app.ui.commons.{Jobs, RequestCodes}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.{AllContacts, ContactsFilter}
 import cards.nine.process.device.models.{IterableContacts, TermCounter}
-import cards.nine.process.device.{AllContacts, ContactsFilter}
 import macroid.ActivityContextWrapper
 
 class ContactsJobs(actions: ContactsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)

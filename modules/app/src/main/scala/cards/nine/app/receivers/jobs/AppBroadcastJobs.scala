@@ -6,7 +6,7 @@ import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppUn
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.ApplicationData
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import cats.implicits._
 import macroid.ContextWrapper
 import monix.eval.Task

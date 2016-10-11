@@ -12,7 +12,7 @@ import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons._
-import cards.nine.process.collection.models.PackagesByCategory
+import cards.nine.models.PackagesByCategory
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

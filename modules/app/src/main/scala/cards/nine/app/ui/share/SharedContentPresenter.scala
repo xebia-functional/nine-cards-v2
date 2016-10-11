@@ -4,22 +4,19 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.webkit.URLUtil
-import cards.nine.models.{NineCardsIntentExtras$, NineCardsIntent}
-import cards.nine.models.types.ShortcutCardType
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.share.models.{SharedContent, Web}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.commons.models.Collection
-import cards.nine.process.device.IconResize
+import cards.nine.models._
+import cards.nine.models.types.ShortcutCardType
+import cats.syntax.either._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher2.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
-import cats.syntax.either._
 
 
 class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -72,14 +69,14 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
 
   def collectionChosen(collectionId: Int): Unit = {
 
-    def createRequest(sharedContent: SharedContent, imagePath: String): AddCardRequest = {
+    def createRequest(sharedContent: SharedContent, imagePath: String): CardData = {
 
       val intent = new Intent(Intent.ACTION_VIEW, Uri.parse(sharedContent.content))
 
       val nineCardIntent = NineCardsIntent(NineCardsIntentExtras())
       nineCardIntent.fill(intent)
 
-      AddCardRequest(
+      CardData(
         term = sharedContent.title,
         packageName = None,
         cardType = ShortcutCardType,

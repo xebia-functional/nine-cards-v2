@@ -5,18 +5,18 @@ import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.ImageView.ScaleType
 import android.widget.LinearLayout
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.{GenericUiContext, UiContext}
+import cards.nine.commons._
+import cards.nine.models.{Card, Collection}
 import cards.nine.models.types.AppCardType
+import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.{GenericUiContext, UiContext}
-import cards.nine.commons._
-import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
-import cards.nine.app.ui.commons.ops.CollectionOps._
 import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import macroid._
 
@@ -58,7 +58,7 @@ class WorkSpaceButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
         ivSrc(resIcon))
   }
 
-  def populateCard(card: Card): Ui[Any] =
+  def zxpopulateCard(card: Card): Ui[Any] =
     (title <~ tvText(card.term)) ~
       (icon <~
         (card.cardType match {

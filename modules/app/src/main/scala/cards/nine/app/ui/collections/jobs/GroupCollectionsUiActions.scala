@@ -15,7 +15,6 @@ import cards.nine.app.ui.collections.CollectionsPagerAdapter
 import cards.nine.app.ui.collections.actions.apps.AppsFragment
 import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
-import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.FabButtonTags._
@@ -34,9 +33,9 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.theme.models.{CardLayoutBackgroundColor, CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor, NineCardsTheme}
 import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.{Card, Collection}
+import cards.nine.process.theme.models.{CardLayoutBackgroundColor, CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

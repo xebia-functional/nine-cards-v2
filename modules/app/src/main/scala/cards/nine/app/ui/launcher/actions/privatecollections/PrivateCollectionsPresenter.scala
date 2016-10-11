@@ -4,15 +4,11 @@ import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.models._
-import cards.nine.process.device.GetByName
-import cards.nine.process.moment.MomentConversions
 import macroid.{ActivityContextWrapper, Ui}
 
 class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with Conversions
-  with MomentConversions {
+  with Conversions {
 
   def initialize(): Unit = {
     loadPrivateCollections()
@@ -22,7 +18,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   def loadPrivateCollections(): Unit = {
     getPrivateCollections.resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
-      onResult = (privateCollections: Seq[PrivateCollection]) => {
+      onResult = (privateCollections: Seq[Collection]) => {
         if (privateCollections.isEmpty) {
           actions.showEmptyMessageInScreen()
         } else {
