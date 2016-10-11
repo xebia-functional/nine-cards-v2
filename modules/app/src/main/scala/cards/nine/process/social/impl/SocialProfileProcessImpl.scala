@@ -7,7 +7,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.User
 import cards.nine.process.social._
-import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
+import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
 import cards.nine.services.plus.models.GooglePlusProfile
 import cards.nine.services.plus.{GooglePlusServices, GooglePlusServicesException}
 import cats.syntax.either._
@@ -18,8 +18,7 @@ import monix.eval.Task
 class SocialProfileProcessImpl(
   googlePlusServices: GooglePlusServices,
   persistenceServices: PersistenceServices)
-  extends SocialProfileProcess
-  with Conversions {
+  extends SocialProfileProcess {
 
   val me = "me"
 
@@ -52,16 +51,33 @@ class SocialProfileProcessImpl(
 
   override def updateUserProfile(client: GoogleApiClient)(implicit context: ContextSupport) = {
 
-    def updateUser(maybeUser: Option[User], googlePlusProfile: GooglePlusProfile) =
+    def updateUser(maybeUser: Option[User], googlePlusProfile: GooglePlusProfile) ={
+
+      def toUser(user: User, googlePlusProfile: GooglePlusProfile) =
+        User(
+          id = user.id,
+          email = user.email,
+          apiKey = user.apiKey,
+          sessionToken = user.sessionToken,
+          deviceToken = user.deviceToken,
+          marketToken = user.marketToken,
+          name = googlePlusProfile.name,
+          avatar = googlePlusProfile.avatarUrl,
+          cover = googlePlusProfile.coverUrl,
+          deviceName = user.deviceName,
+          deviceCloudId = user.deviceCloudId)
+
       maybeUser match {
-        case Some(user) => persistenceServices.updateUser(toUpdateRequest(user, googlePlusProfile))
+        case Some(user) => persistenceServices.updateUser(toUser(user, googlePlusProfile))
         case None => TaskService(Task(Either.left(PersistenceServiceException(noActiveUserErrorMessage))))
       }
 
+    }
+
     def findAndUpdateUserProfile(googlePlusProfile: GooglePlusProfile)(implicit context: ContextSupport) =
-      context.getActiveUserId map { id =>
+      context.getActiveUserId map { userId =>
         (for {
-          maybeUser <- persistenceServices.findUserById(FindUserByIdRequest(id))
+          maybeUser <- persistenceServices.findUserById(userId)
           _ <- updateUser(maybeUser, googlePlusProfile)
         } yield ()).leftMap(onException)
       } getOrElse {

@@ -35,10 +35,3 @@ object Card {
       notification = card.notification)
   }
 }
-//
-//case class PrivateCard(
-//  term: String,
-//  packageName: Option[String],
-//  cardType: CardType,
-//  intent: NineCardIntent,
-//  imagePath: Option[String])

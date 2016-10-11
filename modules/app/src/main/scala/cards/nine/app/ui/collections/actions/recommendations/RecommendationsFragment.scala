@@ -2,17 +2,16 @@ package cards.nine.app.ui.collections.actions.recommendations
 
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.{Conversions, AppNineCardsIntentConversions}
+import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
-import cards.nine.commons.services.TaskService._
-import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.recommendations.RecommendedAppsConfigurationException
 import cards.nine.process.recommendations.models.RecommendedApp
-import cards.nine.models.types.NineCardsCategory
 import com.fortysevendeg.ninecardslauncher2.R
 
 class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -42,7 +41,7 @@ class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJob
 
   override def addApp(app: RecommendedApp): Unit =
     (for {
-      cards <- groupCollectionsJobs.addCards(Seq(toAddCardRequest(app)))
+      cards <- groupCollectionsJobs.addCards(Seq(toCardData(app)))
       _ <- singleCollectionJobs match {
         case Some(job) => job.addCards(cards)
         case _ => TaskService.empty

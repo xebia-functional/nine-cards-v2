@@ -2,10 +2,9 @@ package cards.nine.app.ui.launcher.actions.createoreditcollection
 
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.models.{CollectionData, Collection}
-import cards.nine.models.types.FreeCollectionType
+import cards.nine.models._
+import cards.nine.models.types._
 import macroid.{ActivityContextWrapper, Ui}
-
 
 class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
@@ -34,11 +33,19 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
       index <- maybeIndex
     } yield {
       val request = CollectionData(
+        position = collection.position,
         name = name,
+        collectionType = collection.collectionType,
         icon = icon,
         themedColorIndex = index,
-        appsCategory = collection.appsCategory
-      )
+        appsCategory = collection.appsCategory,
+        cards = collection.cards map (_.toData),
+        moment = collection.moment map (_.toData),
+        originalSharedCollectionId = None,
+        sharedCollectionId = None,
+        sharedCollectionSubscribed = false,
+        publicCollectionStatus = NotPublished)
+
       di.collectionProcess.editCollection(collection.id, request).resolveAsyncUi2(
         onResult = (c) => actions.editCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError
@@ -52,14 +59,19 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
       index <- maybeIndex
     } yield {
       val request = CollectionData(
+        position = 0, //TODO Review this value
         name = name,
         collectionType = FreeCollectionType,
         icon = icon,
         themedColorIndex = index,
         appsCategory = None,
         cards = Seq.empty,
-        moment = None
-      )
+        moment = None,
+        originalSharedCollectionId = None,
+        sharedCollectionId = None,
+        sharedCollectionSubscribed = false,
+        publicCollectionStatus = NotPublished)
+
       di.collectionProcess.addCollection(request).resolveAsyncUi2(
         onResult = (c) => actions.addCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError

@@ -24,9 +24,8 @@ trait CollectionJobs {
 
     for {
       appsInstalled <- di.deviceProcess.getSavedApps(GetByName)
-      collection <- di.collectionProcess.addCollection(toAddCollectionRequestFromSharedCollection(sharedCollection, getCards(appsInstalled, sharedCollection.resolvedPackages)))
+      collection <- di.collectionProcess.addCollection(toCollectionDataFromSharedCollection(sharedCollection, getCards(appsInstalled, sharedCollection.resolvedPackages)))
     } yield collection
   }
-
 
 }

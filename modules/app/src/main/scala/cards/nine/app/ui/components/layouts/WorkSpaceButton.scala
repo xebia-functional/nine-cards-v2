@@ -58,7 +58,7 @@ class WorkSpaceButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
         ivSrc(resIcon))
   }
 
-  def zxpopulateCard(card: Card): Ui[Any] =
+  def populateCard(card: Card): Ui[Any] =
     (title <~ tvText(card.term)) ~
       (icon <~
         (card.cardType match {

@@ -77,6 +77,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
       nineCardIntent.fill(intent)
 
       CardData(
+        position = 0, //TODO Review this value
         term = sharedContent.title,
         packageName = None,
         cardType = ShortcutCardType,

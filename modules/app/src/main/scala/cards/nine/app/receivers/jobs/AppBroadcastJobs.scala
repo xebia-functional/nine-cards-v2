@@ -18,7 +18,7 @@ class AppBroadcastJobs(implicit contextWrapper: ContextWrapper)
   def addApp(packageName: String) = {
 
     def insertAppInCollectionIfExist(maybeCollection: Option[Collection], app: ApplicationData) = maybeCollection match {
-      case Some(collection) => di.collectionProcess.addCards(collection.id, Seq(toAddCardRequest(app)))
+      case Some(collection) => di.collectionProcess.addCards(collection.id, Seq(toCardData(app)))
       case _ => TaskService(Task(Either.right((): Unit)))
     }
 

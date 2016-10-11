@@ -91,13 +91,12 @@ class NewConfigurationJobs(
 
     val momentsWithWifi = momentsToAdd map {
       case (moment, wifi) =>
-        (MomentData(
+        MomentData(
           collectionId = None,
           timeslot = toMomentTimeSlotSeq(moment),
           wifi = wifi.toSeq,
           headphone = false,
-          momentType = Option(moment)),
-          Seq.empty)
+          momentType = Option(moment))
     }
     for {
       _ <- visibilityUiActions.fadeOutInAllChildInStep
@@ -109,13 +108,12 @@ class NewConfigurationJobs(
   def saveMoments(moments: Seq[NineCardsMoment]): TaskService[Unit] = {
 
     val momentsWithoutWifi = moments map { moment =>
-      (MomentData(
+      MomentData(
         collectionId = None,
         timeslot = toMomentTimeSlotSeq(moment),
         wifi = Seq.empty,
         headphone = false,
-        momentType = Option(moment)),
-        Seq.empty)
+        momentType = Option(moment))
     }
 
     for {

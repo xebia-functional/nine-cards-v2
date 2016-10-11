@@ -438,6 +438,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case ArrowLeft => 1 to area.startX map (p => (-p, 0))
     }).toList
 
+    case class ResizeWidgetRequest(
+      increaseX: Int,
+      increaseY: Int)
+
     (statuses.idWidget, statuses.transformation) match {
       case (Some(id), Some(ResizeTransformation)) =>
         resizeIntersect(id).resolveAsync2(
@@ -455,7 +459,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case (Some(id), Some(MoveTransformation)) =>
         moveIntersect(id).resolveAsync2(
           onResult = {
-            case Some((idWidget, displaceX, displaceY)) =>
+            case Some((idWidget, (displaceX, displaceY))) =>
               di.widgetsProcess.moveWidget(id, displaceX, displaceY).resolveAsyncUi2(
                 onResult = (_) => actions.moveWidgetById(idWidget, displaceX, displaceY),
                 onException = (_) => actions.showContactUsError())
