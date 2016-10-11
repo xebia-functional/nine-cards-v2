@@ -32,7 +32,7 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
 
     def readCloudId: TaskService[Unit] = TaskService {
       CatchAll[JobException] {
-        val cloudId = Option(intent) flatMap (i => Option(i.getStringExtra(cloudIdKey)))
+        val cloudId = Option(intent) flatMap (readStringValue(_, cloudIdKey))
         statuses = statuses.copy(selectedCloudId = cloudId)
       }
     }
