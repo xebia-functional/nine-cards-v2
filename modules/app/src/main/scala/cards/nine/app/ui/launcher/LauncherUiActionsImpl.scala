@@ -65,8 +65,8 @@ import scala.concurrent.Future
 
 trait LauncherUiActionsImpl
   extends LauncherUiActions
-    with CollectionsUiActions
-    with DrawerUiActions {
+  with CollectionsUiActions
+  with DrawerUiActions {
 
   self: TypedFindView with Contexts[AppCompatActivity] =>
 

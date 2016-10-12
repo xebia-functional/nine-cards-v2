@@ -47,8 +47,8 @@ import scala.language.postfixOps
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-    with Conversions
-    with AppNineCardIntentConversions {
+  with Conversions
+  with AppNineCardIntentConversions {
 
   val tagDialog = "dialog"
 
@@ -78,7 +78,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   private[this] def updateWeather(): TaskService[Unit] =
     for {
       maybeCondition <- di.recognitionProcess.getWeather.map(_.conditions.headOption).resolveLeftTo(None)
-      _ = momentPreferences.weatherLoaded(maybeCondition.isEmpty || maybeCondition.contains(UnknownCondition) )
+      _ = momentPreferences.weatherLoaded(maybeCondition.isEmpty || maybeCondition.contains(UnknownCondition))
       _ <- actions.showWeather(maybeCondition).toService
     } yield ()
 
@@ -528,7 +528,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def getCollectionById(collectionId: Option[Int]): TaskService[Option[Collection]] =
       collectionId match {
         case Some(id) => di.collectionProcess.getCollectionById(id)
-        case _ => right(None)
+        case _ => TaskService.right(None)
       }
 
     def getCollection: TaskService[LauncherMoment] = for {
@@ -701,8 +701,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     def getWidgetInfoById(appWidgetId: Int): TaskService[(ComponentName, Cell)] =
       actions.getWidgetInfoById(appWidgetId) match {
-        case Some(info) => right(info)
-        case _ => left(MomentException("Info widget not found"))
+        case Some(info) => TaskService.right(info)
+        case _ => TaskService.left(MomentException("Info widget not found"))
       }
 
     def createWidget(appWidgetId: Int, nineCardsMoment: NineCardsMoment) = for {
@@ -823,7 +823,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
       def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
         val collectionId = moment flatMap (_.collectionId)
-        collectionId map di.collectionProcess.getCollectionById getOrElse right(None)
+        collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
       }
 
       for {
@@ -864,7 +864,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           case Some(phone) =>
             statuses = statuses.copy(lastPhone = None)
             di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, phone))
-          case _ => TaskService(Task(Right((): Unit)))
+          case _ => TaskService.right((): Unit)
         }
       case RequestCodes.contactsPermission =>
         (actions.reloadDrawerApps() ~
@@ -880,7 +880,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
               _ <- di.launcherExecutorProcess.launchDial(Some(phone))
               _ <- actions.showNoPhoneCallPermissionError().toService
             } yield ()
-          case _ => TaskService(Task(Right((): Unit)))
+          case _ => TaskService.right((): Unit)
         }
       case RequestCodes.locationPermission if result.exists(_.hasPermission(FineLocation)) =>
         for {
@@ -888,7 +888,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           _ <- di.launcherExecutorProcess.launchGoogleWeather
         } yield ()
       case _ =>
-        TaskService(Task(Right((): Unit)))
+        TaskService.right((): Unit)
     }
 
     launcherService {
@@ -1026,8 +1026,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         if (hasConflict.isEmpty) Some(area) else None
       }).flatten
       emptySpaces.headOption match {
-        case Some(space) => right(space)
-        case _ => left(SpaceException("Widget don't have space"))
+        case Some(space) => TaskService.right(space)
+        case _ => TaskService.left(SpaceException("Widget don't have space"))
       }
     }
 
