@@ -4,7 +4,7 @@ import android.graphics._
 import android.graphics.drawable.Drawable
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.process.theme.models.{CardBackgroundColor, NineCardsTheme, PrimaryColor}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
 class BackgroundSelectedDrawable(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme) extends Drawable {

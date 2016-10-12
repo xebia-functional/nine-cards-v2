@@ -18,7 +18,7 @@ import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProc
 import cards.nine.process.user.UserException
 import cards.nine.process.userv1.UserV1Exception
 import cats.implicits._
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult
 import macroid.Contexts
 

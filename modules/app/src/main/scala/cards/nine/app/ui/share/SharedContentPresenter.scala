@@ -14,7 +14,7 @@ import cards.nine.models._
 import cards.nine.models.types.ShortcutCardType
 import cats.syntax.either._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 

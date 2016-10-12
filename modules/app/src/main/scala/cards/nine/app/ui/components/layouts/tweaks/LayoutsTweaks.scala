@@ -22,7 +22,7 @@ import cards.nine.models._
 import cards.nine.process.device.models.TermCounter
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global

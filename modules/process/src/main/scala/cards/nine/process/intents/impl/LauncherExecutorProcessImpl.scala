@@ -59,7 +59,7 @@ class LauncherExecutorProcessImpl(
           case None => TaskService(Task(Either.left(LauncherExecutorProcessException("Contact lookup not found", None))))
         }
       case _ =>
-        launcherIntentServices.launchIntent(intent).leftMap(mapServicesException)
+        launcherIntentServices.launchIntent(intent.toIntent).leftMap(mapServicesException)
     }
   }
 

@@ -9,7 +9,7 @@ import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, LayoutInflater, View}
 import android.widget.{LinearLayout, FrameLayout, HorizontalScrollView, TextView}
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 /**
  * Inspired in https://developer.android.com/samples/SlidingTabsBasic/index.html

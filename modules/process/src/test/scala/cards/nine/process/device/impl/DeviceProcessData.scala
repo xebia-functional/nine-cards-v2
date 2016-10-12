@@ -149,67 +149,7 @@ trait DeviceProcessData
     version = version4,
     installedFromGooglePlay = installedFromGooglePlay4)
 
-  val applications: Seq[ApplicationData] = Seq(
-    ApplicationData(
-      name = name1,
-      packageName = packageName1,
-      className = className1,
-      category = category1,
-      dateInstalled = dateInstalled1,
-      dateUpdate = dateUpdate1,
-      version = version1,
-      installedFromGooglePlay = installedFromGooglePlay1),
-    ApplicationData(
-      name = name2,
-      packageName = packageName2,
-      className = className2,
-      category = category2,
-      dateInstalled = dateInstalled2,
-      dateUpdate = dateUpdate2,
-      version = version2,
-      installedFromGooglePlay = installedFromGooglePlay2),
-    ApplicationData(
-      name = name3,
-      packageName = packageName3,
-      className = className3,
-      category = category3,
-      dateInstalled = dateInstalled3,
-      dateUpdate = dateUpdate3,
-      version = version3,
-      installedFromGooglePlay = installedFromGooglePlay3)
-  )
-  
-  val apps: Seq[ApplicationData] = Seq(
-    ApplicationData(
-      name = name1,
-      packageName = packageName1,
-      className = className1,
-      category = category1,
-      dateInstalled = dateInstalled1,
-      dateUpdate = dateUpdate1,
-      version = version1,
-      installedFromGooglePlay = installedFromGooglePlay1),
-    ApplicationData(
-      name = name2,
-      packageName = packageName2,
-      className = className2,
-      category = category2,
-      dateInstalled = dateInstalled2,
-      dateUpdate = dateUpdate2,
-      version = version2,
-      installedFromGooglePlay = installedFromGooglePlay2),
-    ApplicationData(
-      name = name3,
-      packageName = packageName3,
-      className = className3,
-      category = category3,
-      dateInstalled = dateInstalled3,
-      dateUpdate = dateUpdate3,
-      version = version3,
-      installedFromGooglePlay = installedFromGooglePlay3)
-  )
-
-  val appsPersistence: Seq[Application] = Seq(
+  val applicationSeq: Seq[Application] = Seq(
     Application(
       id = 1,
       name = name1,
@@ -221,7 +161,7 @@ trait DeviceProcessData
       version = version1,
       installedFromGooglePlay = installedFromGooglePlay1),
     Application(
-      id = 2,
+      id = 1,
       name = name2,
       packageName = packageName2,
       className = className2,
@@ -231,7 +171,7 @@ trait DeviceProcessData
       version = version2,
       installedFromGooglePlay = installedFromGooglePlay2),
     Application(
-      id = 3,
+      id = 1,
       name = name3,
       packageName = packageName3,
       className = className3,
@@ -241,6 +181,8 @@ trait DeviceProcessData
       version = version3,
       installedFromGooglePlay = installedFromGooglePlay3)
   )
+
+  val applicationDataSeq: Seq[ApplicationData] = applicationSeq map (_.toData)
 
   val requestConfig = RequestConfig("fake-api-key", "fake-session-token", "fake-android-id", Some("fake-android-token"))
 
@@ -575,9 +517,9 @@ trait DeviceProcessData
   }
 
   val iterableCursorApps = new ServicesIterableApps(mockIterableCursor) {
-    override def count(): Int = appsPersistence.length
+    override def count(): Int = applicationSeq.length
 
-    override def moveToPosition(pos: Int): Application = appsPersistence(pos)
+    override def moveToPosition(pos: Int): Application = applicationSeq(pos)
 
     override def close(): Unit = ()
   }

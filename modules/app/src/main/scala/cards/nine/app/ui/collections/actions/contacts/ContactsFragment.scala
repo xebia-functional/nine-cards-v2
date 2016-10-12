@@ -14,7 +14,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.CardData
 import cards.nine.models.types.{AllContacts, ContactsFilter}
 import cards.nine.process.device.ContactPermissionException
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
   extends BaseActionFragment

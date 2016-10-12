@@ -5,8 +5,8 @@ import android.view.{LayoutInflater, ViewGroup}
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.models.AppWidget
-import com.fortysevendeg.ninecardslauncher2.TR
-import com.fortysevendeg.ninecardslauncher2.TypedResource._
+import com.fortysevendeg.ninecardslauncher.TR
+import com.fortysevendeg.ninecardslauncher.TypedResource._
 import macroid.ActivityContextWrapper
 
 case class WidgetsAdapter(widgets: Seq[AppWidget], widgetContentWidth: Int, widgetContentHeight: Int)
@@ -28,4 +28,3 @@ case class WidgetsAdapter(widgets: Seq[AppWidget], widgetContentWidth: Int, widg
   def getLayoutManager = new LinearLayoutManager(activityContext.application)
 
 }
-

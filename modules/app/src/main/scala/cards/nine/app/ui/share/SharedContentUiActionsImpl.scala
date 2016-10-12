@@ -7,7 +7,7 @@ import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.components.dialogs.CollectionDialog
 import cards.nine.models.Collection
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid.{Contexts, Ui}
 
 trait SharedContentUiActionsImpl

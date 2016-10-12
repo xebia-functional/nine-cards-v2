@@ -18,7 +18,7 @@ import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons.javaNull
 import cards.nine.models.{Card, Collection}
 import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._
 import macroid._

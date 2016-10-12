@@ -3,7 +3,7 @@ package cards.nine.app.ui.collections.actions.shortcuts
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.models.Shortcut
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.{ActivityContextWrapper, Ui}
 
 trait ShortcutsDOM {

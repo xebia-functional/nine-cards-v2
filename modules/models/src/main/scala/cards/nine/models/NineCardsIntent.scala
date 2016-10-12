@@ -42,6 +42,7 @@ case class NineCardsIntent(intentExtras: NineCardsIntentExtras) extends Intent {
     extractPhone() map (phone => intent.putExtra(nineCardExtraPhone, phone))
     extractEmail() map (email => intent.putExtra(nineCardExtraEmail, email))
     extractUrlAd() map (urlAd => intent.putExtra(nineCardExtraUrlAd, urlAd))
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     intent
   }
 }
@@ -61,12 +62,12 @@ object NineCardsIntentExtras {
   val nineCardExtraUrlAd: String = "url_ad"
   val nineCardExtraPackageName: String = "package_name"
   val nineCardExtraClassName: String = "class_name"
-  val openApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_APP"
-  val openNoInstalledApp: String = "com.fortysevendeg.ninecardslauncher.OPEN_RECOMMENDED_APP"
-  val openSms: String = "com.fortysevendeg.ninecardslauncher.OPEN_SMS"
-  val openPhone: String = "com.fortysevendeg.ninecardslauncher.OPEN_PHONE"
-  val openEmail: String = "com.fortysevendeg.ninecardslauncher.OPEN_EMAIL"
-  val openContact: String = "com.fortysevendeg.ninecardslauncher.OPEN_CONTACT"
+  val openApp: String = "cards.nine.OPEN_APP"
+  val openNoInstalledApp: String = "cards.nine.OPEN_RECOMMENDED_APP"
+  val openSms: String = "cards.nine.OPEN_SMS"
+  val openPhone: String = "cards.nine.OPEN_PHONE"
+  val openEmail: String = "cards.nine.OPEN_EMAIL"
+  val openContact: String = "cards.nine.OPEN_CONTACT"
 }
 
 object NineCardIntentImplicits {
@@ -82,8 +83,8 @@ object NineCardIntentImplicits {
         packageName <- (js \ "packageName").asOpt[String]
         className <- (js \ "className").asOpt[String]
       } yield {
-          intent.setClassName(packageName, className)
-        }) getOrElse {
+        intent.setClassName(packageName, className)
+      }) getOrElse {
         (js \ "packageName").asOpt[String] foreach intent.setPackage
       }
       // We have to set data and type values together because Android SDK
@@ -92,20 +93,25 @@ object NineCardIntentImplicits {
         dataString <- (js \ "dataString").asOpt[String]
         typeString <- (js \ "type").asOpt[String]
       } yield {
-          intent.setDataAndTypeAndNormalize(Uri.parse(dataString), typeString)
-        }) getOrElse {
+        intent.setDataAndTypeAndNormalize(Uri.parse(dataString), typeString)
+      }) getOrElse {
         (js \ "dataString").asOpt[String] map (dataString => intent.setDataAndNormalize(Uri.parse(dataString))) getOrElse {
           (js \ "type").asOpt[String] foreach intent.setTypeAndNormalize
         }
       }
       (js \ "categories").asOpt[List[String]] foreach (_ foreach intent.addCategory)
-      (js \ "action").asOpt[String] map intent.setAction
+      (js \ "action").asOpt[String] map fixActionPackage foreach intent.setAction
       (js \ "extras").asOpt[JsObject] foreach (_.value map {
         case (name, value) => matchExtras(intent, name, value)
       })
       (js \ "flags").asOpt[Int] foreach intent.setFlags
       JsSuccess(intent)
     }
+
+    val legacyPackage = "com.fortysevendeg.ninecardslauncher."
+
+    def fixActionPackage(action: String): String =
+      if (action.startsWith(legacyPackage)) action.replace(legacyPackage, "cards.nine.") else action
 
     def matchExtras(intent: NineCardsIntent, name: String, value: JsValue) = value match {
       case s:JsString => intent.putExtra(name, s.as[String])

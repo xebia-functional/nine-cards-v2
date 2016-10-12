@@ -3,7 +3,7 @@ package cards.nine.app.ui.wizard.jobs
 import cards.nine.app.ui.components.widgets.{WizardCheckBox, WizardWifiCheckBox}
 import cards.nine.models.PackagesByCategory
 import cards.nine.models.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
 trait WizardDOM {
 

@@ -1,5 +1,6 @@
 package cards.nine.process.intents.impl
 
+import android.content.Intent
 import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
@@ -412,35 +413,41 @@ class LauncherExecutorProcessImplSpec
     "call to the services with the right parameters" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns unknownAction
+        val androidIntent = mock[Intent]
+        mockIntent.toIntent returns androidIntent
         mockServices.launchIntent(any)(any) returns serviceRight
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
         result shouldEqual Right((): Unit)
 
-        there was one(mockServices).launchIntent(mockIntent)(mockActivityContext)
+        there was one(mockServices).launchIntent(androidIntent)(mockActivityContext)
 
       }
 
     "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns unknownAction
+        val androidIntent = mock[Intent]
+        mockIntent.toIntent returns androidIntent
         mockServices.launchIntent(any)(any) returns servicePermissionException
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
         result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
-        there was one(mockServices).launchIntent(mockIntent)(mockActivityContext)
+        there was one(mockServices).launchIntent(androidIntent)(mockActivityContext)
       }
 
     "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
         mockIntent.getAction returns unknownAction
+        val androidIntent = mock[Intent]
+        mockIntent.toIntent returns androidIntent
         mockServices.launchIntent(any)(any) returns serviceException
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
         result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
-        there was one(mockServices).launchIntent(mockIntent)(mockActivityContext)
+        there was one(mockServices).launchIntent(androidIntent)(mockActivityContext)
       }
 
   }

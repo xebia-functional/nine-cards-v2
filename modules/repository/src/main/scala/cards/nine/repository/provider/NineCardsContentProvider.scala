@@ -140,8 +140,8 @@ object NineCardsContentProvider {
   val codeUserSingleItem = 12
   val codeWidgetAllItems = 13
   val codeWidgetSingleItem = 14
-  val mimeTypeAllItemsValue = "vnd.android.cursor.dir/vnd.com.fortysevendeg.ninecardslauncher"
-  val mimeTypeSingleItemValue = "vnd.android.cursor.item/vnd.com.fortysevendeg.ninecardslauncher"
+  val mimeTypeAllItemsValue = "vnd.android.cursor.dir/vnd.cards.nine"
+  val mimeTypeSingleItemValue = "vnd.android.cursor.item/vnd.cards.nine"
 
   val uriMatcher = new UriMatcher(UriMatcher.NO_MATCH)
   uriMatcher.addURI(authorityPart, AppEntity.table, codeAppAllItems)

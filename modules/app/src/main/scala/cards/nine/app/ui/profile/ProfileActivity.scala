@@ -15,7 +15,7 @@ import cards.nine.process.cloud.CloudStorageClientListener
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cats.implicits._
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts

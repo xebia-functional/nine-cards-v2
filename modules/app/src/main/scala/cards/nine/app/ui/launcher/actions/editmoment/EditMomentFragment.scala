@@ -6,7 +6,7 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.commons.javaNull
 import cards.nine.models.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class EditMomentFragment
   extends BaseActionFragment

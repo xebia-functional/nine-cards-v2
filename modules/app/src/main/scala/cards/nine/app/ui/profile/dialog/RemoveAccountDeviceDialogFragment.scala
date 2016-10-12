@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
 class RemoveAccountDeviceDialogFragment(resourceId: String, action: (String) => Unit)(implicit contextWrapper: ContextWrapper)

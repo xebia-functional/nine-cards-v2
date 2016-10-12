@@ -7,7 +7,7 @@ import cards.nine.app.ui.collections.{CollectionAdapter, CollectionsPagerAdapter
 import cards.nine.app.ui.commons.FabButtonTags._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.models.{CardData, Card, Collection}
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.{ActivityContextWrapper, Ui}
 
 trait GroupCollectionsDOM {

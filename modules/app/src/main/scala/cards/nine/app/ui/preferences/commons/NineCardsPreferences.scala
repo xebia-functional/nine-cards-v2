@@ -5,7 +5,7 @@ import android.preference.PreferenceManager
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.preferences.commons.PreferencesKeys._
 import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
 sealed trait NineCardsPreferences {

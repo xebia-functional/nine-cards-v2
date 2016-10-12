@@ -17,8 +17,8 @@ import cards.nine.models.types.{PhoneCardType, PublishedByMe}
 import cards.nine.models.{Card, Collection}
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.TypedResource._
-import com.fortysevendeg.ninecardslauncher2.{TR, _}
+import com.fortysevendeg.ninecardslauncher.TypedResource._
+import com.fortysevendeg.ninecardslauncher.{TR, _}
 import macroid.Contexts
 
 import scala.language.postfixOps

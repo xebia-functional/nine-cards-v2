@@ -74,7 +74,7 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
       deviceToken: Option[String]): TaskService[Unit] = {
       for {
         _ <- actions.setProcess(statuses.selectedCloudId, GettingAppsProcess)
-        _ <- di.deviceProcess.saveInstalledApps
+        _ <- di.deviceProcess.synchronizeInstalledApps
         apps <- di.deviceProcess.getSavedApps(GetByName)
         _ <- actions.setProcess(statuses.selectedCloudId, CreatingCollectionsProcess)
         _ <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))

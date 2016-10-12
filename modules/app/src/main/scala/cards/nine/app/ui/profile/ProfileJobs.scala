@@ -20,7 +20,7 @@ import cards.nine.process.cloud.models.{CloudStorageDeviceSummary, RawCloudStora
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.user.models.User
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
