@@ -12,20 +12,7 @@ case class LastCallsContact(
   lastCallDate: Long,
   calls: Seq[Call])
 
-case class ContactEmail(
-  address: String,
-  category: EmailCategory)
-
-case class ContactPhone(
-  number: String,
-  category: PhoneCategory)
-
 case class AppsWithWidgets(
   packageName: String,
   name: String,
   widgets: Seq[AppWidget])
-
-case class TermCounter(
-  term: String,
-  count: Int)
-

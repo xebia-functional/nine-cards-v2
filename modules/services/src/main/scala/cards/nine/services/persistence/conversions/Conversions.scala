@@ -1,6 +1,6 @@
 package cards.nine.services.persistence.conversions
 
-import cards.nine.models.DataCounter
+import cards.nine.models.TermCounter
 import cards.nine.repository.model.{DataCounter => RepoDataCounter}
 
 trait Conversions
@@ -12,10 +12,10 @@ trait Conversions
   with DockAppConversions
   with WidgetConversions {
 
-  def toDataCounterSeq(items: Seq[RepoDataCounter]): Seq[DataCounter] = items map toDataCounter
+  def toDataCounterSeq(items: Seq[RepoDataCounter]): Seq[TermCounter] = items map toDataCounter
 
-  def toDataCounter(item: RepoDataCounter): DataCounter =
-    DataCounter(
+  def toDataCounter(item: RepoDataCounter): TermCounter =
+    TermCounter(
       term = item.term,
       count = item.count)
 

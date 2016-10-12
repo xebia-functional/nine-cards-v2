@@ -541,11 +541,11 @@ trait DeviceProcessData
     ServicesDataCounter("WEATHER", 3))
 
   val contactsCounters = Seq(
-    ContactCounter("#", 4),
-    ContactCounter("B", 1),
-    ContactCounter("E", 6),
-    ContactCounter("F", 5),
-    ContactCounter("Z", 3))
+    TermCounter("#", 4),
+    TermCounter("B", 1),
+    TermCounter("E", 6),
+    TermCounter("F", 5),
+    TermCounter("Z", 3))
 
   val installationAppsCounters = Seq(
     ServicesDataCounter("oneWeek", 4),

@@ -22,7 +22,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.commons._
-import cards.nine.process.device.models.TermCounter
+import cards.nine.models.TermCounter
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

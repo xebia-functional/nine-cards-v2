@@ -1,8 +1,8 @@
 package cards.nine.process.device
 
+import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.models.{DataCounter => ServicesDataCounter, _}
-import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
+import cards.nine.process.device.models.{AppsWithWidgets, LastCallsContact}
 
 trait DeviceConversions extends NineCardsIntentConversions {
 
@@ -25,14 +25,6 @@ trait DeviceConversions extends NineCardsIntentConversions {
       lastCallDate = date,
       calls = calls)
   }
-
-  def toTermCounter(item: ContactCounter): TermCounter = TermCounter(
-    term = item.term,
-    count = item.count)
-
-  def toTermCounter(item: ServicesDataCounter): TermCounter = TermCounter(
-    term = item.term,
-    count = item.count)
 
   def toContactEmail(item: ContactEmail): ContactEmail = ContactEmail(
     address = item.address,

@@ -15,7 +15,7 @@ import com.fortysevendeg.ninecardslauncher.R
 
 class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
   extends BaseActionFragment
-  with AppsIuActions
+  with AppsUiActions
   with AppsDOM
   with AppsUiListener
   with Conversions

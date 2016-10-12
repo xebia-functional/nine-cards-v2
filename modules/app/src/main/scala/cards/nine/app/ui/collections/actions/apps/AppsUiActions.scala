@@ -16,16 +16,16 @@ import cards.nine.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.ApplicationData
+import cards.nine.models.{TermCounter, ApplicationData}
 import cards.nine.models.types.NineCardsCategory
-import cards.nine.process.device.models.{IterableApps, TermCounter}
+import cards.nine.process.device.models.IterableApps
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
-trait AppsIuActions
+trait AppsUiActions
   extends AppNineCardsIntentConversions
   with Styles {
 

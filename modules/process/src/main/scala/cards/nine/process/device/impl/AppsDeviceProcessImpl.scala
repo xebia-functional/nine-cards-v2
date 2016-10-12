@@ -49,7 +49,7 @@ trait AppsDeviceProcessImpl
         case GetByCategory => persistenceServices.fetchCategorizedAppsCounter
         case _ => persistenceServices.fetchInstallationDateAppsCounter
       }
-    } yield counters map toTermCounter).resolve[AppException]
+    } yield counters).resolve[AppException]
 
   def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport)  =
     (for {

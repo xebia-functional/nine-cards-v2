@@ -2,7 +2,7 @@ package cards.nine.services.contacts
 
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{ContactCounter, Contact}
+import cards.nine.models.{TermCounter, Contact}
 
 trait ContactsServices {
 
@@ -24,7 +24,7 @@ trait ContactsServices {
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getAlphabeticalCounterContacts: TaskService[Seq[ContactCounter]]
+  def getAlphabeticalCounterContacts: TaskService[Seq[TermCounter]]
 
   /**
     * Get iterable contacts sort by name. The info field is not filled

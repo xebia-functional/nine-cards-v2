@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models._
-import cards.nine.models.types.{AllContacts, ContactsFilter, GetAppOrder, DockType}
+import cards.nine.models.types.{AllContacts, ContactsFilter, DockType, GetAppOrder}
 import cards.nine.process.device.models._
 
 trait DeviceProcess {

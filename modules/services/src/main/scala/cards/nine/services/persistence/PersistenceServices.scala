@@ -64,26 +64,26 @@ trait PersistenceServices {
   /**
     * Returns the number of times the first letter of a app is repeated alphabetically
     *
-    * @return the Seq[cards.nine.models.DataCounter]
+    * @return the Seq[cards.nine.models.TermCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchAlphabeticalAppsCounter: TaskService[Seq[DataCounter]]
+  def fetchAlphabeticalAppsCounter: TaskService[Seq[TermCounter]]
 
   /**
     * Returns the number of times in every category alphabetically
     *
-    * @return the Seq[cards.nine.models.DataCounter]
+    * @return the Seq[cards.nine.models.TermCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchCategorizedAppsCounter: TaskService[Seq[DataCounter]]
+  def fetchCategorizedAppsCounter: TaskService[Seq[TermCounter]]
 
   /**
     * Returns the number of times by installation date
     *
-    * @return the Seq[cards.nine.models.DataCounter]
+    * @return the Seq[cards.nine.models.TermCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchInstallationDateAppsCounter: TaskService[Seq[DataCounter]]
+  def fetchInstallationDateAppsCounter: TaskService[Seq[TermCounter]]
 
   /**
     * Obtains an app from the repository by the package name
