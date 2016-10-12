@@ -7,7 +7,7 @@ import cards.nine.models.types._
 import cards.nine.models._
 import cards.nine.process.collection.models._
 import cards.nine.process.collection.{AddCardRequest, AddCollectionRequest, EditCollectionRequest}
-import NineCardIntentImplicits._
+import NineCardsIntentImplicits._
 import cards.nine.process.commons.models.MomentTimeSlot
 import cards.nine.process.commons.models._
 import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}

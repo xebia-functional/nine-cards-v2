@@ -1,8 +1,8 @@
 package cards.nine.process.cloud
 
 import cards.nine.app.ui.wizard.models.UserCloudDevice
-import cards.nine.models.NineCardIntentImplicits._
-import cards.nine.models.{Card, Collection, DockApp, Moment, MomentTimeSlot, NineCardIntentImplicits, Widget, WidgetArea}
+import cards.nine.models.NineCardsIntentImplicits._
+import cards.nine.models.{Card, Collection, DockApp, Moment, MomentTimeSlot, NineCardsIntentImplicits, Widget, WidgetArea}
 import cards.nine.process.cloud.models._
 import cards.nine.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
 import cards.nine.services.drive.models.DriveServiceFileSummary

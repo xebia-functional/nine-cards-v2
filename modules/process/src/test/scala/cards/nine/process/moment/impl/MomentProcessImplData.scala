@@ -5,8 +5,8 @@ import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types._
-import cards.nine.models.{NineCardsIntent, NineCardIntentImplicits, Application, ApplicationData}
-import NineCardIntentImplicits._
+import cards.nine.models.{NineCardsIntent, NineCardsIntentImplicits, Application, ApplicationData}
+import NineCardsIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.process.moment.{SaveMomentRequest, UpdateMomentRequest}
 import org.joda.time.DateTime

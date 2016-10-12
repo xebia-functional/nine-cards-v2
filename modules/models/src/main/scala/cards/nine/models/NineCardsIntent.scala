@@ -70,7 +70,7 @@ object NineCardsIntentExtras {
   val openContact: String = "cards.nine.OPEN_CONTACT"
 }
 
-object NineCardIntentImplicits {
+object NineCardsIntentImplicits {
 
   implicit val extrasReads = Json.reads[NineCardsIntentExtras]
 
@@ -122,7 +122,7 @@ object NineCardIntentImplicits {
 
   }
 
-  implicit val nineCardIntentWrites = new Writes[NineCardsIntent] {
+  implicit val nineCardsIntentWrites = new Writes[NineCardsIntent] {
     def writes(intent: NineCardsIntent): JsValue = {
       val jsExtras = Option(intent.getExtras) map { extras =>
         (extras.keySet() flatMap { key =>

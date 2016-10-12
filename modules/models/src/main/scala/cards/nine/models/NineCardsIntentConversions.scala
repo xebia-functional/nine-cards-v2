@@ -1,7 +1,7 @@
 package cards.nine.models
 
 import cards.nine.models.NineCardsIntentExtras._
-import cards.nine.models.NineCardIntentImplicits._
+import cards.nine.models.NineCardsIntentImplicits._
 import play.api.libs.json.Json
 
 trait NineCardsIntentConversions {

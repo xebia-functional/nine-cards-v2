@@ -6,7 +6,7 @@ import cards.nine.models
 import cards.nine.models.types._
 import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, _}
 import NineCardsIntent
-import NineCardIntentImplicits._
+import NineCardsIntentImplicits._
 import cards.nine.process.device.SaveDockAppRequest
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.repository.model.{App => RepositoryApp}

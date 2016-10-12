@@ -31,32 +31,6 @@ trait Conversions
     title = item.title,
     intent = item.intent)
 
-//  def toAddCollectionRequest(privateCollection: PrivateCollection): AddCollectionRequest =
-//    AddCollectionRequest(
-//      name = privateCollection.name,
-//      collectionType = privateCollection.collectionType,
-//      icon = privateCollection.icon,
-//      themedColorIndex = privateCollection.themedColorIndex,
-//      appsCategory = privateCollection.appsCategory,
-//      cards = privateCollection.cards map toAddCardRequest,
-//      moment = privateCollection.moment)
-//
-//  def toAddCardRequest(privateCard: PrivateCard): AddCardRequest =
-//    AddCardRequest(
-//      term = privateCard.term,
-//      packageName = privateCard.packageName,
-//      cardType = privateCard.cardType,
-//      intent = privateCard.intent,
-//      imagePath = privateCard.imagePath)
-//
-//  def toAddCardRequest(card: Card): AddCardRequest =
-//    AddCardRequest(
-//      term = card.term,
-//      packageName = card.packageName,
-//      cardType = card.cardType,
-//      intent = card.intent,
-//      imagePath = card.imagePath)
-//
   def toCardData(contact: Contact): CardData =
     CardData(
       position = 0, //TODO review this value

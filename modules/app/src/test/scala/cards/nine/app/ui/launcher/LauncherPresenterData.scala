@@ -1,11 +1,11 @@
 package cards.nine.app.ui.launcher
 
 import cards.nine.models
-import cards.nine.models.NineCardIntentImplicits
+import cards.nine.models.NineCardsIntentImplicits
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types._
-import NineCardIntentImplicits._
+import NineCardsIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.process.device.models.DockApp
 import cards.nine.process.user.models.{User, UserProfile}
