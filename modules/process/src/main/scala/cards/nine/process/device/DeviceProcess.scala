@@ -155,11 +155,12 @@ trait DeviceProcess {
   def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport): TaskService[IterableContacts]
 
   /**
-    * Get the installed apps and store them in the repository
+    * Fetches the installed apps in the device and synchronizes them with the database, categorizing the apps not
+    * stored in the database
     *
-    * @throws AppException if exist some problem getting the apps or storing them
+    * @throws AppException if exist some problem
     */
-  def saveInstalledApps(implicit context: ContextSupport): TaskService[Unit]
+  def synchronizeInstalledApps(implicit context: ContextSupport): TaskService[Unit]
 
   /**
     * Get an installed app and store it in the repository
