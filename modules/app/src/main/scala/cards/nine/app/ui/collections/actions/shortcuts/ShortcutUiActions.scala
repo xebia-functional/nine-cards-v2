@@ -6,10 +6,9 @@ import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.Shortcut
 import cards.nine.process.theme.models.DrawerBackgroundColor
-import com.fortysevendeg.ninecardslauncher.R
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 import scala.math.Ordering.Implicits._

@@ -6,9 +6,7 @@ import cards.nine.models.Shortcut
 import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
-import macroid._
 import macroid.FullDsl._
 import macroid._
 

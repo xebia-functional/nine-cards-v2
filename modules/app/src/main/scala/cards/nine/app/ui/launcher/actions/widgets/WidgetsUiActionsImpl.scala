@@ -17,12 +17,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
-import cards.nine.process.device.models.{AppsWithWidgets, Widget}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
-import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.commons.UiContext
-import macroid._
 import macroid.FullDsl._
 import macroid._
 
