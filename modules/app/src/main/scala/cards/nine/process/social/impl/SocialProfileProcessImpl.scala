@@ -5,7 +5,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.User
+import cards.nine.models.{UserProfile, User}
 import cards.nine.process.social._
 import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
 import cards.nine.services.plus.models.GooglePlusProfile
@@ -61,11 +61,12 @@ class SocialProfileProcessImpl(
           sessionToken = user.sessionToken,
           deviceToken = user.deviceToken,
           marketToken = user.marketToken,
-          name = googlePlusProfile.name,
-          avatar = googlePlusProfile.avatarUrl,
-          cover = googlePlusProfile.coverUrl,
           deviceName = user.deviceName,
-          deviceCloudId = user.deviceCloudId)
+          deviceCloudId = user.deviceCloudId,
+          userProfile = UserProfile(
+            name = googlePlusProfile.name,
+            avatar = googlePlusProfile.avatarUrl,
+            cover = googlePlusProfile.coverUrl))
 
       maybeUser match {
         case Some(user) => persistenceServices.updateUser(toUser(user, googlePlusProfile))

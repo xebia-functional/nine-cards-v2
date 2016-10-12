@@ -30,7 +30,7 @@ case class Widget (
   intent: Option[String])
 
 case class WidgetData(
-  momentId: Int,
+  momentId: Int = 0,
   packageName: String,
   className: String,
   appWidgetId: Option[Int],

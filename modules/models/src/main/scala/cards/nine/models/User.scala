@@ -7,11 +7,9 @@ case class User(
   sessionToken: Option[String],
   deviceToken: Option[String],
   marketToken: Option[String],
-  name: Option[String],
-  avatar: Option[String],
-  cover: Option[String],
   deviceName: Option[String],
-  deviceCloudId: Option[String])
+  deviceCloudId: Option[String],
+  userProfile: UserProfile)
 
 case class UserData(
   email: Option[String],
@@ -19,11 +17,14 @@ case class UserData(
   sessionToken: Option[String],
   deviceToken: Option[String],
   marketToken: Option[String],
+  deviceName: Option[String],
+  deviceCloudId: Option[String],
+  userProfile: UserProfile)
+
+case class UserProfile(
   name: Option[String],
   avatar: Option[String],
-  cover: Option[String],
-  deviceName: Option[String],
-  deviceCloudId: Option[String])
+  cover: Option[String])
 
 object User {
 
@@ -35,11 +36,9 @@ object User {
       sessionToken = user.sessionToken,
       deviceToken = user.deviceToken,
       marketToken = user.marketToken,
-      name = user.name,
-      avatar = user.avatar,
-      cover = user.cover,
       deviceName = user.deviceName,
-      deviceCloudId = user.deviceCloudId)
+      deviceCloudId = user.deviceCloudId,
+      userProfile = user.userProfile)
 
   }
 }

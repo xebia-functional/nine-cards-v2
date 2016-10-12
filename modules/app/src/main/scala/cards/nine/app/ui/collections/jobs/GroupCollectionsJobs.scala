@@ -165,13 +165,11 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
     def createShortcut(collectionId: Int): TaskService[Seq[Card]] = for {
       path <- bitmap map (di.deviceProcess.saveShortcutIcon(_).map(Option(_))) getOrElse TaskService.right(None)
       cardData = CardData(
-        position = 0, //TODO review this position
         term = name,
         packageName = None,
         cardType = ShortcutCardType,
         intent = toNineCardIntent(shortcutIntent),
-        imagePath = path,
-        notification = None)
+        imagePath = path)
       cards <- di.collectionProcess.addCards(collectionId, Seq(cardData))
     } yield cards
 

@@ -1,6 +1,6 @@
 package cards.nine.services.persistence.conversions
 
-import cards.nine.models.{UserData, User}
+import cards.nine.models.{UserProfile, UserData, User}
 import cards.nine.repository.model.{User => RepositoryUser, UserData => RepositoryUserData}
 import cards.nine.services.persistence._
 
@@ -14,11 +14,12 @@ trait UserConversions {
       sessionToken = user.data.sessionToken,
       deviceToken = user.data.deviceToken,
       marketToken = user.data.marketToken,
-      name = user.data.name,
-      avatar = user.data.avatar,
-      cover = user.data.cover,
       deviceName = user.data.deviceName,
-      deviceCloudId = user.data.deviceCloudId)
+      deviceCloudId = user.data.deviceCloudId,
+      userProfile = UserProfile(
+        name = user.data.name,
+        avatar = user.data.avatar,
+        cover = user.data.cover))
 
   def toRepositoryUser(user: User): RepositoryUser =
     RepositoryUser(
@@ -29,9 +30,9 @@ trait UserConversions {
         sessionToken = user.sessionToken,
         deviceToken = user.deviceToken,
         marketToken = user.marketToken,
-        name = user.name,
-        avatar = user.avatar,
-        cover = user.cover,
+        name = user.userProfile.name,
+        avatar = user.userProfile.avatar,
+        cover = user.userProfile.cover,
         deviceName = user.deviceName,
         deviceCloudId = user.deviceCloudId))
 
@@ -42,9 +43,9 @@ trait UserConversions {
       sessionToken = user.sessionToken,
       deviceToken = user.deviceToken,
       marketToken = user.marketToken,
-      name = user.name,
-      avatar = user.avatar,
-      cover = user.cover,
+      name = user.userProfile.name,
+      avatar = user.userProfile.avatar,
+      cover = user.userProfile.cover,
       deviceName = user.deviceName,
       deviceCloudId = user.deviceCloudId)
 }

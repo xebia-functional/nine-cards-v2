@@ -167,7 +167,6 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
 
   def toWidgetData(widget: CloudStorageWidget): WidgetData =
     WidgetData(
-      momentId = 0, //TODO review this value
       packageName = widget.packageName,
       className = widget.className,
       appWidgetId = None,

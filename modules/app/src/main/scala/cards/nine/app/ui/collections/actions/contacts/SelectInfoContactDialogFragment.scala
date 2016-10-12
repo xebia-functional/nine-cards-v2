@@ -173,7 +173,6 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
       case _ => (contactToNineCardIntent(lookupKey), ContactCardType)
     }
     val card = CardData(
-      position = 0, //TODO review this value
       term = contact.name,
       packageName = None,
       cardType = lastCardType,

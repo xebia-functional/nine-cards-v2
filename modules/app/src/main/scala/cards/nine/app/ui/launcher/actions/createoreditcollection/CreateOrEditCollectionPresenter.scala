@@ -32,7 +32,7 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
       icon <- maybeIcon
       index <- maybeIndex
     } yield {
-      val request = CollectionData(
+      val collectionData = CollectionData(
         position = collection.position,
         name = name,
         collectionType = collection.collectionType,
@@ -40,13 +40,9 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
         themedColorIndex = index,
         appsCategory = collection.appsCategory,
         cards = collection.cards map (_.toData),
-        moment = collection.moment map (_.toData),
-        originalSharedCollectionId = None,
-        sharedCollectionId = None,
-        sharedCollectionSubscribed = false,
-        publicCollectionStatus = NotPublished)
+        moment = collection.moment map (_.toData))
 
-      di.collectionProcess.editCollection(collection.id, request).resolveAsyncUi2(
+      di.collectionProcess.editCollection(collection.id, collectionData).resolveAsyncUi2(
         onResult = (c) => actions.editCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError
       )
@@ -58,21 +54,13 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
       icon <- maybeIcon
       index <- maybeIndex
     } yield {
-      val request = CollectionData(
-        position = 0, //TODO Review this value
+      val collection = CollectionData(
         name = name,
         collectionType = FreeCollectionType,
         icon = icon,
-        themedColorIndex = index,
-        appsCategory = None,
-        cards = Seq.empty,
-        moment = None,
-        originalSharedCollectionId = None,
-        sharedCollectionId = None,
-        sharedCollectionSubscribed = false,
-        publicCollectionStatus = NotPublished)
+        themedColorIndex = index)
 
-      di.collectionProcess.addCollection(request).resolveAsyncUi2(
+      di.collectionProcess.addCollection(collection).resolveAsyncUi2(
         onResult = (c) => actions.addCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError
       )

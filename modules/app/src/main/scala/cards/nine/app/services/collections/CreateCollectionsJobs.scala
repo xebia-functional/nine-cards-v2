@@ -11,7 +11,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.GetByName
 import cards.nine.process.cloud.models.CloudStorageDevice
-import cards.nine.process.user.models.User
+import cards.nine.models.User
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ContextWrapper
 

@@ -4,7 +4,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{UserData, User}
+import cards.nine.models.{User, UserData, UserProfile}
 import cards.nine.process.user._
 import cards.nine.services.api.{ApiServices, RequestConfig}
 import cards.nine.services.persistence._
@@ -15,12 +15,11 @@ class UserProcessImpl(
   apiServices: ApiServices,
   persistenceServices: PersistenceServices)
   extends UserProcess
-  with ImplicitsUserException
-  with Conversions {
+  with ImplicitsUserException {
 
   private[this] val noActiveUserErrorMessage = "No active user"
 
-  val emptyUser = UserData(None, None, None, None, None, None, None, None, None, None)
+  val emptyUser = UserData(None, None, None, None, None, None, None, UserProfile(None, None, None))
 
   override def signIn(email: String, androidMarketToken: String, emailTokenId: String)(implicit context: ContextSupport) = {
     withActiveUser { id =>
@@ -72,7 +71,7 @@ class UserProcessImpl(
 
   override def unregister(implicit context: ContextSupport) =
     withActiveUser { id =>
-      val update = User(id, None, None, None, None, None, None, None, None, None, None)
+      val update = User(id, None, None, None, None, None, None, None, UserProfile(None, None, None))
       (for {
         user <- persistenceServices.findUserById(id).resolveOption()
         _ <- persistenceServices.updateUser(update)
@@ -84,7 +83,7 @@ class UserProcessImpl(
     withActiveUser { userId =>
       (for {
         user <- persistenceServices.findUserById(userId).resolveOption()
-      } yield toUser(user)).resolve[UserException]
+      } yield user).resolve[UserException]
     }
 
   override def updateUserDevice(

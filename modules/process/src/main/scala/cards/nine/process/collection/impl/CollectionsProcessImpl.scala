@@ -27,44 +27,6 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-//  def createCollectionsFromFormedCollections(collections: Seq[CollectionData])(implicit context: ContextSupport) = {
-//
-//    def adaptCardsToAppsInstalled(collections: Seq[CollectionData], apps: Seq[ApplicationData]): Seq[CollectionData] =
-//      collections map { collection =>
-//        val cardsWithPath = collection.cards map { card =>
-//          val nineCardIntent = card.intent
-//
-//          // We need adapt items to apps installed in cell phone
-//          val itemAdapted: CardData = card.cardType match {
-//            case AppCardType | RecommendedAppCardType =>
-//              (for {
-//                packageName <- nineCardIntent.extractPackageName()
-//                className <- nineCardIntent.extractClassName()
-//              } yield {
-//                val maybeAppInstalled = apps find (_.packageName == packageName)
-//                maybeAppInstalled map { appInstalled =>
-//                  val classChanged = !(appInstalled.className == className)
-//                  if (classChanged) {
-//                    card.copy(intent = toNineCardIntent(appInstalled), cardType = AppCardType)
-//                  } else {
-//                    card.copy(cardType = AppCardType)
-//                  }
-//                } getOrElse card.copy(cardType = NoInstalledAppCardType)
-//              }) getOrElse card.copy(cardType = NoInstalledAppCardType)
-//            case _ => card
-//          }
-//          itemAdapted
-//        }
-//        collection.copy(cards = cardsWithPath)
-//      }
-//
-//    (for {
-//      apps <- appsServices.getInstalledApplications
-//      collectionsRequest = adaptCardsToAppsInstalled(collections, apps)
-//      collections <- persistenceServices.addCollections(collectionsRequest)
-//    } yield collections).resolve[CollectionException]
-//  }
-
   def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) =
     (for {
       apps <- appsServices.getInstalledApplications
