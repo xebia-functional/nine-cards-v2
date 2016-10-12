@@ -1,6 +1,6 @@
 package cards.nine.models
 
-import cards.nine.models.types.{NineCardsMoment, CollectionType, NineCardsCategory, PublicCollectionStatus}
+import cards.nine.models.types._
 
 case class Collection(
   id: Int,
@@ -18,7 +18,7 @@ case class Collection(
   publicCollectionStatus: PublicCollectionStatus) extends Serializable
 
 case class CollectionData(
-  position: Int,
+  position: Int = 0,
   name: String,
   collectionType: CollectionType,
   icon: String,
@@ -28,8 +28,8 @@ case class CollectionData(
   moment: Option[MomentData] = None,
   originalSharedCollectionId: Option[String] = None,
   sharedCollectionId: Option[String] = None,
-  sharedCollectionSubscribed: Boolean,
-  publicCollectionStatus: PublicCollectionStatus) extends Serializable
+  sharedCollectionSubscribed: Boolean = false,
+  publicCollectionStatus: PublicCollectionStatus = NotPublished) extends Serializable
 
 object Collection {
 
@@ -76,32 +76,3 @@ case class FormedMoment(
   headphone: Boolean,
   momentType: Option[NineCardsMoment],
   widgets: Option[Seq[WidgetData]])
-
-//case class PrivateCollection(
-//  name: String,
-//  collectionType: CollectionType,
-//  icon: String,
-//  themedColorIndex: Int,
-//  appsCategory: Option[NineCardCategory] = None,
-//  cards: Seq[PrivateCard],
-//  moment: Option[NineCardsMoment])
-
-
-//case class AddCollectionRequest(
-//  name: String,
-//  collectionType: CollectionType,
-//  icon: String,
-//  themedColorIndex: Int,
-//  appsCategory: Option[NineCardsCategory] = None,
-//  cards: Seq[AddCardRequest],
-//  moment: Option[NineCardsMoment],
-//  originalSharedCollectionId: Option[String] = None,
-//  sharedCollectionId: Option[String] = None,
-//  sharedCollectionSubscribed: Option[Boolean] = None)
-//
-//
-//case class EditCollectionRequest(
-//  name: String,
-//  icon: String,
-//  themedColorIndex: Int,
-//  appsCategory: Option[NineCardsCategory] = None)

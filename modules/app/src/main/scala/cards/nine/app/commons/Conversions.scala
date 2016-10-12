@@ -33,7 +33,6 @@ trait Conversions
 
   def toCardData(contact: Contact): CardData =
     CardData(
-      position = 0, //TODO review this value
       term = contact.name,
       packageName = None,
       cardType = ContactCardType,
@@ -42,45 +41,36 @@ trait Conversions
 
   def toCollectionDataFromSharedCollection(collection: SharedCollection, cards: Seq[CardData]): CollectionData =
     CollectionData(
-      position = 0, //TODO review this value
       name = collection.name,
       collectionType = AppsCollectionType,
       icon = collection.icon,
       themedColorIndex = Random.nextInt(numSpaces),
       appsCategory = Option(collection.category),
       cards = cards,
-      moment = None,
       originalSharedCollectionId = Option(collection.sharedCollectionId),
       sharedCollectionId = Option(collection.sharedCollectionId),
-      sharedCollectionSubscribed = false,
       publicCollectionStatus = collection.publicCollectionStatus)
 
   def toCardData(app: SharedCollectionPackage): CardData =
     CardData(
-      position = 0, //TODO review this value
       term = app.title,
       packageName = Option(app.packageName),
       cardType = NoInstalledAppCardType,
-      intent = toNineCardIntent(app),
-      imagePath = None)
+      intent = toNineCardIntent(app))
 
   def toCardData(app: ApplicationData): CardData =
     CardData(
-      position = 0, //TODO review this value
       term = app.name,
       packageName = Option(app.packageName),
       cardType = AppCardType,
-      intent = toNineCardIntent(app),
-      imagePath = None)
+      intent = toNineCardIntent(app))
 
   def toCardData(app: RecommendedApp): CardData =
     CardData(
-      position = 0, //TODO review this value
       term = app.title,
       packageName = Option(app.packageName),
       cardType = AppCardType,
-      intent = toNineCardIntent(app),
-      imagePath = None)
+      intent = toNineCardIntent(app))
 
   def toDockAppData(cloudStorageDockApp: CloudStorageDockApp): DockAppData =
     DockAppData(

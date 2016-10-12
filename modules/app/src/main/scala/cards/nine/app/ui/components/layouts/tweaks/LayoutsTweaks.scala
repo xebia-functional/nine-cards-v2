@@ -377,12 +377,12 @@ object SwipeAnimatedDrawerViewTweaks {
 object DockAppsPanelLayoutTweaks {
   type W = DockAppsPanelLayout
 
-  def daplInit(dockApps: Seq[DockApp])(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplInit(dockApps: Seq[DockAppData])(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.init(dockApps).run)
 
   def daplDragDispatcher(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) = Tweak[W] (_.dragAddItemController(action, x, y))
 
-  def daplReload(dockApp: DockApp)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplReload(dockApp: DockAppData)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.reload(dockApp).run)
 
 }

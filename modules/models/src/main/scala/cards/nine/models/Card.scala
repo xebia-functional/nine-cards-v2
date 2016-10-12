@@ -13,13 +13,13 @@ case class Card(
   notification: Option[String] = None) extends Serializable
 
 case class CardData(
-  position: Int,
+  position: Int = 0,
   term: String,
   packageName: Option[String],
   cardType: CardType,
   intent: NineCardsIntent,
-  imagePath: Option[String],
-  notification: Option[String] = None)
+  imagePath: Option[String] = None,
+  notification: Option[String] = None) extends Serializable
 
 object Card {
 

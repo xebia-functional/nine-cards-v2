@@ -132,11 +132,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         card.cardType match {
           case AppCardType =>
             createOrUpdateDockApp(card, AppDockType, position).resolveAsyncUi2(
-              onResult = (_) => actions.reloadDockApps(DockApp(card.term, AppDockType, card.intent, card.imagePath getOrElse "", position)),
+              onResult = (_) => actions.reloadDockApps(DockAppData(card.term, AppDockType, card.intent, card.imagePath getOrElse "", position)),
               onException = (_) => actions.showContactUsError())
           case ContactCardType =>
             createOrUpdateDockApp(card, ContactDockType, position).resolveAsyncUi2(
-              onResult = (_) => actions.reloadDockApps(DockApp(card.term, ContactDockType, card.intent, card.imagePath getOrElse "", position)),
+              onResult = (_) => actions.reloadDockApps(DockAppData(card.term, ContactDockType, card.intent, card.imagePath getOrElse "", position)),
               onException = (_) => actions.showContactUsError())
           case _ =>
             actions.showContactUsError()
@@ -375,10 +375,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def resizeIntersect(idWidget: Int): TaskService[Boolean] = {
 
       def convertSpace(widgetArea: WidgetArea) = {
-        val r = ResizeWidgetRequest.tupled(operationArgs)
+        val (increaseX, increaseY) = operationArgs
         widgetArea.copy(
-          spanX = widgetArea.spanX + r.increaseX,
-          spanY = widgetArea.spanY + r.increaseY)
+          spanX = widgetArea.spanX + increaseX,
+          spanY = widgetArea.spanY + increaseY)
       }
 
       for {
@@ -438,10 +438,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case ArrowLeft => 1 to area.startX map (p => (-p, 0))
     }).toList
 
-    case class ResizeWidgetRequest(
-      increaseX: Int,
-      increaseY: Int)
-
     (statuses.idWidget, statuses.transformation) match {
       case (Some(id), Some(ResizeTransformation)) =>
         resizeIntersect(id).resolveAsync2(
@@ -449,9 +445,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
             if (intersect) {
               actions.showWidgetCantResizeMessage().run
             } else {
-              val resizeRequest = ResizeWidgetRequest.tupled(operationArgs)
-              di.widgetsProcess.resizeWidget(id, resizeRequest).resolveAsyncUi2(
-                onResult = (_) => actions.resizeWidgetById(id, resizeRequest),
+              val (increaseX, increaseY) = operationArgs
+              di.widgetsProcess.resizeWidget(id, increaseX, increaseY).resolveAsyncUi2(
+                onResult = (_) => actions.resizeWidgetById(id, increaseX, increaseY),
                 onException = (_) => actions.showContactUsError())
             }
           },
@@ -575,7 +571,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           } yield collection
           val launcherMoment = LauncherMoment(moment flatMap (_.momentType), collectionMoment)
           val data = LauncherData(MomentWorkSpace, Some(launcherMoment)) +: createLauncherDataCollections(collections)
-          actions.loadLauncherInfo(data, apps)
+          actions.loadLauncherInfo(data, apps map (_.toData))
       },
       onException = (ex: Throwable) => Ui(goToWizard()),
       onPreTask = () => actions.showLoading()
@@ -1079,7 +1075,7 @@ trait LauncherUiActions {
 
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): Ui[Any]
 
-  def reloadDockApps(dockApp: DockApp): Ui[Any]
+  def reloadDockApps(dockApp: DockAppData): Ui[Any]
 
   def openModeEditWidgets(): Ui[Any]
 
@@ -1123,7 +1119,7 @@ trait LauncherUiActions {
 
   def goToCollection(collection: Collection, point: Point): Ui[Any]
 
-  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
+  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockAppData]): Ui[Any]
 
   def reloadCurrentMoment(): Ui[Any]
 

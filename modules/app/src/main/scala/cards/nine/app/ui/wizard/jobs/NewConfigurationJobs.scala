@@ -1,20 +1,18 @@
 package cards.nine.app.ui.wizard.jobs
 
-import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
+import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types._
 import cards.nine.models._
+import cards.nine.models.types._
 import macroid.ActivityContextWrapper
-import play.api.libs.json.Json
 
 class NewConfigurationJobs(
   actions: NewConfigurationUiActions,
   visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with Conversions
-  with AppNineCardsIntentConversions {
+  with Conversions {
 
   val defaultDockAppsSize = 4
 
@@ -51,7 +49,7 @@ class NewConfigurationJobs(
           FormedItem(
             itemType = AppCardType.name,
             title = app.name,
-            intent = Json.toJson(toNineCardIntent(app)).toString(),
+            intent = nineCardIntentToJson(toNineCardIntent(app)),
             uriImage = None)
         }
         FormedCollection(
