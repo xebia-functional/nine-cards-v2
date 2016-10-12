@@ -30,7 +30,7 @@ trait RecognitionProcess {
   /**
     * Get the current weather
     *
-    * @return Weather
+    * @return WeatherState
     */
   def getWeather: TaskService[WeatherState]
 

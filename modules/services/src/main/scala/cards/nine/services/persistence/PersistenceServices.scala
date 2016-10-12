@@ -116,7 +116,6 @@ trait PersistenceServices {
     * Adds a sequence of apps to the repository
     *
     * @param app includes the necessary data to create new apps in the repository
-    * @return Unit
     * @throws PersistenceServiceException if exist some problem creating apps
     */
   def addApps(app: Seq[ApplicationData]): TaskService[Unit]
@@ -260,7 +259,7 @@ trait PersistenceServices {
     * Adds an collection to the repository
     *
     * @param collection includes the necessary data to create a new collection in the repository
-    * @return the cards.nine.models.Collection
+    * @return the [cards.nine.models.Collection]
     * @throws PersistenceServiceException if exist some problem creating the collection
     */
   def addCollection(collection: CollectionData): TaskService[Collection]

@@ -20,7 +20,7 @@ trait DeviceProcess {
     * Get the saved apps from the database
     *
     * @param orderBy indicates the order to fetch the apps
-    * @return the Seq[cards.nine.process.device.models.App]
+    * @return the Seq[cards.nine.models.ApplicationData]
     * @throws AppException if exist some problem getting the apps
     */
   def getSavedApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[Seq[ApplicationData]]
@@ -50,7 +50,7 @@ trait DeviceProcess {
     * starts with this letter
     *
     * @param orderBy indicates the order to fetch the apps
-    * @return the Seq[cards.nine.process.device.models.TermCounter] contains
+    * @return the Seq[cards.nine.models.TermCounter] contains
     *         information about the times is repeated an apps
     * @throws AppException if exist some problem getting the contacts
     */
@@ -89,7 +89,7 @@ trait DeviceProcess {
   /**
     * Get the favorite contacts if they exist and fill all their data
     *
-    * @return the Seq[cards.nine.process.device.models.Contact] contains
+    * @return the Seq[cards.nine.models.Contact] contains
     *         information about the contact including its ContactInfo (if it exists)
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
     * @throws ContactException if exist some problem getting the favorite contacts
@@ -101,7 +101,7 @@ trait DeviceProcess {
     * and contacts with phone number
     *
     * @param filter specify the filter in the query
-    * @return the Seq[cards.nine.process.device.models.Contact] contains
+    * @return the Seq[cards.nine.models.Contact] contains
     *         information about the contact
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
     * @throws ContactException if exist some problem getting the contacts
@@ -113,7 +113,7 @@ trait DeviceProcess {
     * starts with this letter
     *
     * @param filter specify the filter in the query
-    * @return the Seq[cards.nine.process.device.models.TermCounter]
+    * @return the Seq[cards.nine.models.TermCounter]
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
     * @throws ContactException if exist some problem getting the contacts
     */
@@ -135,7 +135,7 @@ trait DeviceProcess {
     * Get the contact and fill all their data
     *
     * @param lookupKey the contact lookup key
-    * @return the cards.nine.process.device.models.Contact contains
+    * @return the cards.nine.models.Contact contains
     *         information about the contact
     * @throws ContactPermissionException if the permission to read contacts hasn't been granted
     * @throws ContactException if exist some problem getting the contacts
@@ -188,7 +188,7 @@ trait DeviceProcess {
   /**
     * Get the widgets available on the phone
     *
-    * @return the Seq[cards.nine.process.device.models.AppsWithWidgets]
+    * @return the Seq[cards.nine.models.AppsWithWidgets]
     * @throws WidgetException if exist some problem getting the widgets
     */
   def getWidgets(implicit context: ContextSupport): TaskService[Seq[AppsWithWidgets]]
@@ -196,7 +196,7 @@ trait DeviceProcess {
   /**
     * Get the last calls available on the phone
     *
-    * @return the Seq[cards.nine.process.device.models.Call]
+    * @return the Seq[cards.nine.models.LastCallsContact]
     * @throws CallPermissionException if the permission to read calls hasn't been granted
     * @throws CallException if exist some problem getting the last calls
     */
@@ -206,7 +206,7 @@ trait DeviceProcess {
     * Generate the docks apps available for user
     *
     * @param size of the dock apps needed
-    * @return the Seq[cards.nine.process.device.models.DockApp]
+    * @return the Seq[cards.nine.models.DockApp]
     * @throws DockAppException if exist some problem getting the app or storing it
     */
   def generateDockApps(size: Int)(implicit context: ContextSupport): TaskService[Seq[DockApp]]
@@ -226,7 +226,7 @@ trait DeviceProcess {
   /**
     * Creates DockApps from some already formed and given DockApps
     *
-    * @param items the Seq[cards.nine.process.device.models.DockApp] of DockApps
+    * @param items the Seq[cards.nine.models.DockApp] of DockApps
     * @return the Seq[cards.nine.models.DockAppData]
     * @throws DockAppException if there was an error creating the moments' collections
     */
@@ -235,7 +235,7 @@ trait DeviceProcess {
   /**
     * Get the docks apps available for user
     *
-    * @return the Seq[cards.nine.process.device.models.DockApp]
+    * @return the Seq[cards.nine.models.DockApp]
     * @throws DockAppException if exist some problem getting the app or storing it
     */
   def getDockApps: TaskService[Seq[DockApp]]

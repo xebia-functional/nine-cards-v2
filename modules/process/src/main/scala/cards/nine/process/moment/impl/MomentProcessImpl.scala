@@ -93,7 +93,7 @@ class MomentProcessImpl(
         case moment @ Moment(_, Some(collectionId), _, _, _, _, _) =>
           collections find (_.id == collectionId) match {
             case Some(collection: Collection) =>
-              Some((moment.toData, collection))
+              Some((moment, collection))
             case _ => None
           }
         case _ => None
