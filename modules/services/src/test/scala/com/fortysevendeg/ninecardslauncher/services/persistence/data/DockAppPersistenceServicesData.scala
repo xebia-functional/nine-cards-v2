@@ -1,10 +1,10 @@
 package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.models.DockApp
+import cards.nine.models.{DockAppData, DockApp}
+import cards.nine.models.types.DockType
 import cards.nine.repository.model.{DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData}
 import cards.nine.services.persistence.models.IterableDockApps
-import cards.nine.services.persistence.{CreateOrUpdateDockAppRequest, DeleteDockAppRequest, FindDockAppByIdRequest}
 
 import scala.util.Random
 
@@ -26,8 +26,8 @@ trait DockAppPersistenceServicesData extends PersistenceServicesData {
       DockApp(
         id = id + item,
         name = name,
-        dockType = dockType,
-        intent = intent,
+        dockType = DockType(dockType),
+        intent = jsonToNineCardIntent(intent),
         imagePath = imagePath,
         position = position))
 
@@ -61,19 +61,13 @@ trait DockAppPersistenceServicesData extends PersistenceServicesData {
     dockType: String = dockType,
     intent: String = intent,
     imagePath: String = imagePath,
-    position: Int = position): CreateOrUpdateDockAppRequest =
-    CreateOrUpdateDockAppRequest(
+    position: Int = position): DockAppData =
+    DockAppData(
       name = name,
-      dockType = dockType,
-      intent = intent,
+      dockType = DockType(dockType),
+      intent = jsonToNineCardIntent(intent),
       imagePath = imagePath,
       position = position)
-
-  def createDeleteDockAppRequest(dockApp: DockApp): DeleteDockAppRequest =
-    DeleteDockAppRequest(dockApp = dockApp)
-
-  def createFindDockAppByIdRequest(id: Int): FindDockAppByIdRequest =
-    FindDockAppByIdRequest(id = id)
 
   val iterableCursorDockApps = new IterableCursor[RepositoryDockApp] {
     override def count(): Int = seqRepoDockApp.length

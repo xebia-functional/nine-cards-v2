@@ -2,10 +2,9 @@ package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, DataCounter => RepositoryDataCounter}
 import cards.nine.services.persistence.models._
-import cards.nine.models.Application
-import cards.nine.services.persistence.{AddAppRequest, UpdateAppRequest}
 
 import scala.util.Random
 
@@ -75,12 +74,12 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): AddAppRequest =
-    AddAppRequest(
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): ApplicationData =
+    ApplicationData(
       name = name,
       packageName = packageName,
       className = className,
-      category = category,
+      category = NineCardsCategory(category),
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,
@@ -95,13 +94,13 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
     dateInstalled: Long = dateInstalled,
     dateUpdate: Long = dateUpdate,
     version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): UpdateAppRequest =
-    UpdateAppRequest(
+    installedFromGooglePlay: Boolean = installedFromGooglePlay): Application =
+    Application(
       id = id,
       name = name,
       packageName = packageName,
       className = className,
-      category = category,
+      category = NineCardsCategory(category),
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,

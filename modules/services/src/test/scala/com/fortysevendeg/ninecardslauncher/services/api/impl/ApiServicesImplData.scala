@@ -2,9 +2,9 @@ package cards.nine.services.api.impl
 
 import cards.nine.api._
 import cards.nine.api.version2.CollectionUpdateInfo
+import cards.nine.models.PackagesByCategory
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.services.api.CategorizedDetailPackage
-import cards.nine.services.api.models.PackagesByCategory
 
 import scala.util.Random
 

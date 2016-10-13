@@ -38,7 +38,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       mockMomentRepository.fetchMoments() returns TaskService(Task(Either.right(seqRepoMoment)))
       mockMomentRepository.updateMoment(repoMoment) returns TaskService(Task(Either.right(item)))
 
-      val result = persistenceServices.addCollection(addCollectionRequest).value.run
+      val result = persistenceServices.addCollection(collectionData).value.run
 
       result must beLike {
         case Right(collection) =>
@@ -50,7 +50,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.addCollection(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.addCollection(addCollectionRequest).value.run
+      val result = persistenceServices.addCollection(collectionData).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -64,16 +64,16 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       mockMomentRepository.fetchMoments() returns TaskService(Task(Either.right(seqRepoMoment)))
       mockMomentRepository.updateMoment(any) returns TaskService(Task(Either.right(item)))
 
-      val result = persistenceServices.addCollections(seqAddCollectionRequest).value.run
+      val result = persistenceServices.addCollections(seqCollectionData).value.run
       result must beLike {
-        case Right(collections) => collections.size shouldEqual seqAddCollectionRequest.size
+        case Right(collections) => collections.size shouldEqual seqCollectionData.size
       }
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.addCollections(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.addCollections(seqAddCollectionRequest).value.run
+      val result = persistenceServices.addCollections(seqCollectionData).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
 

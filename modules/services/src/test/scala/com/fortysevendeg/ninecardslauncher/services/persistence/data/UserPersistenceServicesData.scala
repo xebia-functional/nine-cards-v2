@@ -1,8 +1,7 @@
 package cards.nine.services.persistence.data
 
-import cards.nine.models.User
+import cards.nine.models.{User, UserData, UserProfile}
 import cards.nine.repository.model.{User => RepositoryUser, UserData => RepositoryUserData}
-import cards.nine.services.persistence.{AddUserRequest, DeleteUserRequest, FindUserByIdRequest, UpdateUserRequest}
 
 import scala.util.Random
 
@@ -41,11 +40,12 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
       apiKey = Option(apiKey),
       deviceToken = Option(deviceToken),
       marketToken = Option(marketToken),
-      name = Option(name),
-      avatar = Option(avatar),
-      cover = Option(cover),
       deviceName = Option(deviceName),
-      deviceCloudId = Option(deviceCloudId)))
+      deviceCloudId = Option(deviceCloudId),
+      userProfile = UserProfile(
+        name = Option(name),
+        avatar = Option(avatar),
+        cover = Option(cover))))
 
   def createSeqRepoUser(
     num: Int = 5,
@@ -82,7 +82,7 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
   val seqRepoUser: Seq[RepositoryUser] = createSeqRepoUser(data = repoUserData)
   val repoUser: RepositoryUser = seqRepoUser(0)
 
-  def createAddUserRequest(
+  def createUserData(
     email: String = email,
     sessionToken: String = sessionToken,
     apiKey: String = apiKey,
@@ -92,48 +92,43 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
     avatar: String = avatar,
     cover: String = cover,
     deviceName: String = deviceName,
-    deviceCloudId: String = deviceCloudId): AddUserRequest =
-    AddUserRequest(
+    deviceCloudId: String = deviceCloudId): UserData =
+    UserData(
       email = Option(email),
       sessionToken = Option(sessionToken),
       apiKey = Option(apiKey),
       deviceToken = Option(deviceToken),
       marketToken = Option(marketToken),
-      name = Option(name),
-      avatar = Option(avatar),
-      cover = Option(cover),
       deviceName = Option(deviceName),
-      deviceCloudId = Option(deviceCloudId))
+      deviceCloudId = Option(deviceCloudId),
+      userProfile = UserProfile(
+        name = Option(name),
+        avatar = Option(avatar),
+        cover = Option(cover)))
 
-  def createDeleteUserRequest(user: User): DeleteUserRequest =
-    DeleteUserRequest(user = user)
-
-  def createFindUserByIdRequest(id: Int): FindUserByIdRequest =
-    FindUserByIdRequest(id = id)
-
-  def createUpdateUserRequest(
-    id: Int = uId,
-    email: String = email,
-    sessionToken: String = sessionToken,
-    apiKey: String = apiKey,
-    deviceToken: String = deviceToken,
-    marketToken: String = marketToken,
-    name: String = nameUser,
-    avatar: String = avatar,
-    cover: String = cover,
-    deviceName: String = deviceName,
-    deviceCloudId: String = deviceCloudId): UpdateUserRequest =
-    UpdateUserRequest(
-      id = id,
-      email = Option(email),
-      sessionToken = Option(sessionToken),
-      apiKey = Option(apiKey),
-      deviceToken = Option(deviceToken),
-      marketToken = Option(marketToken),
-      name = Option(name),
-      avatar = Option(avatar),
-      cover = Option(cover),
-      deviceName = Option(deviceName),
-      deviceCloudId = Option(deviceCloudId))
+//  def createUpdateUserRequest(
+//    id: Int = uId,
+//    email: String = email,
+//    sessionToken: String = sessionToken,
+//    apiKey: String = apiKey,
+//    deviceToken: String = deviceToken,
+//    marketToken: String = marketToken,
+//    name: String = nameUser,
+//    avatar: String = avatar,
+//    cover: String = cover,
+//    deviceName: String = deviceName,
+//    deviceCloudId: String = deviceCloudId): UpdateUserRequest =
+//    UpdateUserRequest(
+//      id = id,
+//      email = Option(email),
+//      sessionToken = Option(sessionToken),
+//      apiKey = Option(apiKey),
+//      deviceToken = Option(deviceToken),
+//      marketToken = Option(marketToken),
+//      name = Option(name),
+//      avatar = Option(avatar),
+//      cover = Option(cover),
+//      deviceName = Option(deviceName),
+//      deviceCloudId = Option(deviceCloudId))
 
 }
