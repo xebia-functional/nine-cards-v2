@@ -12,7 +12,6 @@ import cards.nine.process.commons.models.{Card, Collection}
 import cards.nine.process.trackevent.models._
 import cards.nine.models.types.AppCardType
 import cats.syntax.either._
-import cards.nine.app.ui.preferences.commons.Theme
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 
@@ -27,7 +26,7 @@ class SingleCollectionJobs(
   def initialize(sType: ScrollType): TaskService[Unit] = {
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
     for {
-      theme <- di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues))
+      theme <- getThemeTask
       _ <- actions.loadTheme(theme)
       _ <- actions.updateStatus(canScroll, sType)
       _ <- maybeCollection match {

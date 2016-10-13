@@ -26,7 +26,7 @@ import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.{AccountPicker, ConnectionResult, GoogleApiAvailability}
-import macroid.ActivityContextWrapper
+import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 import cats.implicits._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
@@ -302,13 +302,13 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
   private[this] def onConnectionFailed(connectionResult: ConnectionResult): TaskService[Unit] = {
 
     def showErrorDialog(): TaskService[Unit] = withActivity { activity =>
-      GoogleApiAvailability.getInstance()
+      Ui(GoogleApiAvailability.getInstance()
         .getErrorDialog(activity, connectionResult.getErrorCode, resolveGooglePlayConnection)
-        .show()
+        .show()).toService
     }
 
     if (connectionResult.hasResolution) {
-      withActivity { activity =>
+      withActivityTask { activity =>
         connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)
       }
     } else if (
