@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.javaNull
@@ -27,6 +28,8 @@ import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
+
+import scala.util.Right
 
 trait DeviceProcessSpecification
   extends Specification
@@ -65,6 +68,8 @@ trait DeviceProcessSpecification
     contextSupport.getResources returns resources
 
     val mockBitmap = mock[Bitmap]
+
+    val mockIcon = mock[Drawable]
 
     val mockAppsServices = mock[AppsServices]
 
@@ -170,10 +175,12 @@ class DeviceProcessImplSpec
     "get available Shortcuts" in
       new DeviceProcessScope {
 
-        mockShortcutsServices.getShortcuts(contextSupport) returns TaskService(Task(Either.right(shortcuts)))
+        val shortcutsWithIcon = shortcuts.map(_.copy(icon = Option(mockIcon)))
+
+        mockShortcutsServices.getShortcuts(contextSupport) returns TaskService(Task(Either.right(shortcutsWithIcon)))
         val result = deviceProcess.getAvailableShortcuts(contextSupport).value.run
         result must beLike {
-          case Right(r) => r.map(_.title) shouldEqual shortcuts.map(_.title)
+          case Right(r) => r shouldEqual shortcutsWithIcon
         }
       }
 

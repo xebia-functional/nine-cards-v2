@@ -1,14 +1,15 @@
-package cards.nine.services.widgets.models
+package cards.nine.models
 
 import android.appwidget.{AppWidgetProviderInfo => AndroidAppWidgetProviderInfo}
+import cards.nine.models.types.WidgetResizeMode
 
 trait Conversions {
 
-  def toWidget(androidAppWidgetProviderInfo: AndroidAppWidgetProviderInfo, widgetLabel: String, userHashCode: Option[Int]): Widget = {
+  def toWidget(androidAppWidgetProviderInfo: AndroidAppWidgetProviderInfo, widgetLabel: String, userHashCode: Option[Int]): AppWidget = {
 
       import androidAppWidgetProviderInfo._
 
-      Widget(
+      AppWidget(
         userHashCode = userHashCode,
         autoAdvanceViewId = autoAdvanceViewId,
         initialLayout = initialLayout,
@@ -18,7 +19,7 @@ trait Conversions {
         minWidth = minWidth,
         className = provider.getClassName,
         packageName = provider.getPackageName,
-        resizeMode = resizeMode,
+        resizeMode = WidgetResizeMode(resizeMode),
         updatePeriodMillis = updatePeriodMillis,
         label = widgetLabel,
         preview = previewImage)

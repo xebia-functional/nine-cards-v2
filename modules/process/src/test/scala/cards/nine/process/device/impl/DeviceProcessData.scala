@@ -1,20 +1,20 @@
 package cards.nine.process.device.impl
 
+import android.content.Intent
+import android.graphics.drawable.Drawable
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
+import cards.nine.models
 import cards.nine.models.types._
-import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, _}
+import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, Shortcut, _}
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.device.SaveDockAppRequest
-import cards.nine.process.device.models.{LastCallsContact, Widget, _}
-import cards.nine.process.device.types._
+import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
-import cards.nine.services.shortcuts.models.Shortcut
-import cards.nine.services.widgets.models.{Widget => ServicesWidget}
 import play.api.libs.json.Json
 
 trait DeviceProcessData
@@ -199,22 +199,22 @@ trait DeviceProcessData
     packageName = packageNameForCreateImage,
     category = Some("SOCIAL"))
 
+  val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val intent = Json.parse(intentStr).as[NineCardIntent]
+
   val shortcuts: Seq[Shortcut] = Seq(
     Shortcut(
       title = "Shortcut 1",
-      icon = 0,
-      name = "Shortcut 1",
-      packageName = "com.example.shortcut1"),
+      icon = None,
+      intent = intent),
     Shortcut(
-      title = "Shortcut 2",
-      icon = 0,
-      name = "Shortcut 2",
-      packageName = "com.example.shortcut2"),
+      title = "Shortcut 1",
+      icon = None,
+      intent = intent),
     Shortcut(
-      title = "Shortcut 3",
-      icon = 0,
-      name = "Shortcut 3",
-      packageName = "com.example.shortcut3"))
+      title = "Shortcut 1",
+      icon = None,
+      intent = intent))
 
   val contacts: Seq[Contact] = Seq(
    Contact(
@@ -276,8 +276,8 @@ trait DeviceProcessData
       )
     ))
 
-  val widgetsServices: Seq[ServicesWidget] = Seq(
-    ServicesWidget(
+  val widgetsServices: Seq[models.AppWidget] = Seq(
+    AppWidget(
       userHashCode = userHashCodeOption1,
       autoAdvanceViewId = autoAdvanceViewId1,
       initialLayout = initialLayout1,
@@ -287,11 +287,11 @@ trait DeviceProcessData
       minWidth = minWidth1,
       className = className1,
       packageName = packageName1,
-      resizeMode = resizeMode1,
+      resizeMode = WidgetResizeMode(resizeMode1),
       updatePeriodMillis = updatePeriodMillis1,
       label = label1,
       preview = preview1),
-    ServicesWidget(
+    AppWidget(
       userHashCode = userHashCodeOption2,
       autoAdvanceViewId = autoAdvanceViewId2,
       initialLayout = initialLayout2,
@@ -301,11 +301,11 @@ trait DeviceProcessData
       minWidth = minWidth2,
       className = className2,
       packageName = packageName2,
-      resizeMode = resizeMode2,
+      resizeMode = WidgetResizeMode(resizeMode2),
       updatePeriodMillis = updatePeriodMillis2,
       label = label2,
       preview = preview2),
-    ServicesWidget(
+    AppWidget(
       userHashCode = userHashCodeOption3,
       autoAdvanceViewId = autoAdvanceViewId3,
       initialLayout = initialLayout3,
@@ -315,14 +315,14 @@ trait DeviceProcessData
       minWidth = minWidth3,
       className = className3,
       packageName = packageName3,
-      resizeMode = resizeMode3,
+      resizeMode = WidgetResizeMode(resizeMode3),
       updatePeriodMillis = updatePeriodMillis3,
       label = label3,
       preview = preview3)
   )
 
-  val widgets: Seq[Widget] = Seq(
-    Widget(
+  val widgets: Seq[AppWidget] = Seq(
+    AppWidget(
       userHashCode = userHashCodeOption1,
       autoAdvanceViewId = autoAdvanceViewId1,
       initialLayout = initialLayout1,
@@ -336,7 +336,7 @@ trait DeviceProcessData
       updatePeriodMillis = updatePeriodMillis1,
       label = label1,
       preview = preview1),
-    Widget(
+    AppWidget(
       userHashCode = userHashCodeOption2,
       autoAdvanceViewId = autoAdvanceViewId2,
       initialLayout = initialLayout2,
@@ -350,7 +350,7 @@ trait DeviceProcessData
       updatePeriodMillis = updatePeriodMillis2,
       label = label2,
       preview = preview2),
-    Widget(
+    AppWidget(
       userHashCode = userHashCodeOption3,
       autoAdvanceViewId = autoAdvanceViewId3,
       initialLayout = initialLayout3,
@@ -447,9 +447,6 @@ trait DeviceProcessData
       lookupKey = Some(lookupKey3),
       lastCallDate = date3,
       calls = Seq(call3)))
-
-  val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
-  val intent = Json.parse(intentStr).as[NineCardIntent]
 
   def createDockAppServiceSeq(
     num: Int = 4,

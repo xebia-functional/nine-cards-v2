@@ -1,9 +1,9 @@
 package cards.nine.services.widgets.utils
 
-import cards.nine.services.widgets.models.Widget
+import cards.nine.models.AppWidget
 
 trait AppWidgetManagerCompat {
 
-  def getAllProviders: Seq[Widget]
+  def getAllProviders: Seq[AppWidget]
 
 }

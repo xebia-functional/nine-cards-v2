@@ -1,6 +1,6 @@
-package cards.nine.process.trackevent.models
+package cards.nine.models.types
 
-import Screen._
+import cards.nine.models.types.Screen._
 
 sealed trait Screen {
   def name: String
