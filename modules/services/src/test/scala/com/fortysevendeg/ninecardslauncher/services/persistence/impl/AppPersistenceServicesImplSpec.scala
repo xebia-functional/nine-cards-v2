@@ -12,7 +12,6 @@ import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
 
-
 trait AppPersistenceServicesSpecSpecification
   extends Specification
   with DisjunctionMatchers
@@ -129,8 +128,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a App value for a valid request" in new AppPersistenceServicesScope {
 
-      mockAppRepository.addApp(repoAppData) returns TaskService(Task(Either.right(repoApp)))
-      val result = persistenceServices.addApp(createAddAppRequest()).value.run
+      mockAppRepository.addApp(any) returns TaskService(Task(Either.right(repoApp)))
+      val result = persistenceServices.addApp(createApplicationData()).value.run
 
       result must beLike {
         case Right(app) =>
@@ -142,7 +141,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
       mockAppRepository.addApp(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.addApp(createAddAppRequest()).value.run
+      val result = persistenceServices.addApp(createApplicationData()).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -151,15 +150,15 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return Unit for a valid request" in new AppPersistenceServicesScope {
 
-      mockAppRepository.addApps(Seq(repoAppData)) returns TaskService(Task(Either.right(())))
-      val result = persistenceServices.addApps(Seq(createAddAppRequest())).value.run
+      mockAppRepository.addApps(any) returns TaskService(Task(Either.right(())))
+      val result = persistenceServices.addApps(Seq(createApplicationData())).value.run
       result shouldEqual Right((): Unit)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
       mockAppRepository.addApps(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.addApps(Seq(createAddAppRequest())).value.run
+      val result = persistenceServices.addApps(Seq(createApplicationData())).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -220,18 +219,17 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     "return the number of elements updated for a valid request" in new AppPersistenceServicesScope {
 
       mockAppRepository.updateApp(any) returns TaskService(Task(Either.right(item)))
-      val result = persistenceServices.updateApp(createUpdateAppRequest()).value.run
+      val result = persistenceServices.updateApp(createApplication()).value.run
       result shouldEqual Right(1)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
       mockAppRepository.updateApp(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.updateApp(createUpdateAppRequest()).value.run
+      val result = persistenceServices.updateApp(createApplication()).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
-
 
   "fetchIterableApps" should {
 

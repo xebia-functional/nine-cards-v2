@@ -66,7 +66,7 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
   val seqRepoApp: Seq[RepositoryApp] = createSeqRepoApp(data = repoAppData)
   val repoApp: RepositoryApp = seqRepoApp(0)
 
-  def createAddAppRequest(
+  def createApplicationData(
     name: String = name,
     packageName: String = packageName,
     className: String = className,
@@ -85,7 +85,7 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
       version = version,
       installedFromGooglePlay = installedFromGooglePlay)
 
-  def createUpdateAppRequest(
+  def createApplication(
     id: Int = appId,
     name: String = name,
     packageName: String = packageName,

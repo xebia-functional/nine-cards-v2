@@ -12,7 +12,7 @@ trait DockAppPersistenceServicesData extends PersistenceServicesData {
 
   val dockAppId: Int = Random.nextInt(10)
   val nonExistentDockAppId: Int = Random.nextInt(10) + 100
-  val dockType: String = Random.nextString(5)
+  val dockType: String = "APP"
 
   def createSeqDockApp(
     num: Int = 5,

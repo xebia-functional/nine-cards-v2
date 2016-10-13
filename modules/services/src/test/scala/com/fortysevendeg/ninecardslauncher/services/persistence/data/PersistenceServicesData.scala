@@ -47,7 +47,7 @@ trait PersistenceServicesData extends Conversions {
   val position: Int = Random.nextInt(10)
   val nonExistentPosition: Int = Random.nextInt(10) + 100
   val term: String = Random.nextString(5)
-  val cardType: String = Random.nextString(5)
+  val cardType: String = "APP"
   val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val imagePath: String = Random.nextString(5)
   val notification: String = Random.nextString(5)
@@ -65,7 +65,8 @@ trait PersistenceServicesData extends Conversions {
 
   val termDataCounter: String = Random.nextString(1)
   val countDataCounter: Int = Random.nextInt(2)
-  val momentType1: NineCardsMoment = HomeMorningMoment
+  val momentType: NineCardsMoment = HomeMorningMoment
+  val momentTypeStr: String = "HOME"
 
   val widgetId: Int = Random.nextInt(10)
   val widgetType: String = "APP"
@@ -76,10 +77,9 @@ trait PersistenceServicesData extends Conversions {
   val spanY: Int = Random.nextInt(8)
   val label: String = Random.nextString(5)
   val widgetImagePath: String = Random.nextString(5)
-  val widgetIntent: String = Random.nextString(5)
   val labelOption = Option(label)
   val widgetImagePathOption = Option(widgetImagePath)
-  val widgetIntentOption = Option(widgetIntent)
+  val widgetIntentOption = Option(intent)
 
   val nonExistentWidgetId: Int = Random.nextInt(10) + 100
   val nonExistentAppWidgetId: Int = Random.nextInt(10) + 100
@@ -195,31 +195,31 @@ trait PersistenceServicesData extends Conversions {
     className: String = className,
     appWidgetId: Int = appWidgetId,
     startX: Int = startX,
-    startY: Int = startX,
-    spanX: Int = startX,
-    spanY: Int = startX,
+    startY: Int = startY,
+    spanX: Int = spanX,
+    spanY: Int = spanY,
     widgetType: String = widgetType,
-    label: Option[String] = None,
-    imagePath: Option[String] = None,
-    intent: Option[String] = None) =
+    label: Option[String] = labelOption,
+    imagePath: Option[String] = widgetImagePathOption,
+    intent: Option[String] = widgetIntentOption) =
     (0 until 5) map (
       item =>
         Widget(
           id = id + item,
           momentId = momentId,
-          packageName = packageName + item,
-          className = className + item,
+          packageName = packageName,
+          className = className,
           appWidgetId = Option(appWidgetId),
           area =
             WidgetArea(
-              startX = startX + item,
-              startY = startY + item,
-              spanX = spanX + item,
-              spanY = spanY + item),
+              startX = startX,
+              startY = startY,
+              spanX = spanX,
+              spanY = spanY),
           widgetType = WidgetType(widgetType),
           label = label,
           imagePath = imagePath,
-          intent = intent))
+          intent = intent map jsonToNineCardIntent))
 
   def createSeqWidgetData(
     num: Int = 5,
@@ -228,30 +228,30 @@ trait PersistenceServicesData extends Conversions {
     className: String = className,
     appWidgetId: Int = appWidgetId,
     startX: Int = startX,
-    startY: Int = startX,
-    spanX: Int = startX,
-    spanY: Int = startX,
+    startY: Int = startY,
+    spanX: Int = spanX,
+    spanY: Int = spanY,
     widgetType: String = widgetType,
-    label: Option[String] = None,
-    imagePath: Option[String] = None,
-    intent: Option[String] = None) =
+    label: Option[String] = labelOption,
+    imagePath: Option[String] = widgetImagePathOption,
+    intent: Option[String] = widgetIntentOption) =
     (0 until 5) map (
       item =>
         WidgetData(
           momentId = momentId,
-          packageName = packageName + item,
-          className = className + item,
+          packageName = packageName,
+          className = className,
           appWidgetId = Option(appWidgetId),
           area =
             WidgetArea(
-              startX = startX + item,
-              startY = startY + item,
-              spanX = spanX + item,
-              spanY = spanY + item),
+              startX = startX,
+              startY = startY,
+              spanX = spanX,
+              spanY = spanY),
           widgetType = WidgetType(widgetType),
           label = label,
           imagePath = imagePath,
-          intent = intent))
+          intent = intent map jsonToNineCardIntent))
 
   val repoWidgetData: RepositoryWidgetData = createRepoWidgetData()
   val seqRepoWidget: Seq[RepositoryWidget] = createSeqRepoWidget(data = repoWidgetData)
@@ -269,13 +269,13 @@ trait PersistenceServicesData extends Conversions {
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi: Seq[String] = wifiSeq,
     headphone: Boolean = headphone,
-    momentType: Option[NineCardsMoment] = Option(momentType1)): MomentData =
+    momentType: NineCardsMoment = momentType): MomentData =
     MomentData(
       collectionId = collectionId,
       timeslot = timeslot,
       wifi = wifi,
       headphone = headphone,
-      momentType = momentType,
+      momentType = Option(momentType),
       widgets = Option(seqWidgetData))
 
   def createRepoMomentData(
@@ -283,13 +283,13 @@ trait PersistenceServicesData extends Conversions {
     timeslot: String = timeslotJson,
     wifiString: String = wifiString,
     headphone: Boolean = headphone,
-    momentType: Option[NineCardsMoment] = Option(momentType1)): RepositoryMomentData =
+    momentType: String = momentTypeStr): RepositoryMomentData =
     RepositoryMomentData(
       collectionId = collectionId,
       timeslot = timeslot,
       wifi = wifiString,
       headphone = headphone,
-      momentType = momentType map (_.name))
+      momentType = Option(momentType))
 
   def createSeqMoment(
     num: Int = 5,
@@ -298,7 +298,7 @@ trait PersistenceServicesData extends Conversions {
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi: Seq[String] = wifiSeq,
     headphone: Boolean = headphone,
-    momentType: Option[NineCardsMoment] = Option(momentType1)): Seq[Moment] = List.tabulate(num)(
+    momentType: NineCardsMoment = momentType): Seq[Moment] = List.tabulate(num)(
     item =>
       Moment(
         id = id + item,
@@ -306,7 +306,7 @@ trait PersistenceServicesData extends Conversions {
         timeslot = timeslot,
         wifi = wifi,
         headphone = headphone,
-        momentType = momentType,
+        momentType = Option(momentType),
         widgets = Option(seqWidgetData)))
 
   def createSeqRepoMoment(

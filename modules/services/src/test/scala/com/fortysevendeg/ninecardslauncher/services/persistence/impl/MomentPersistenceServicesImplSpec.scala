@@ -197,26 +197,26 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
     "return a Moment by Type for a valid request" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType1)) returns TaskService(Task(Either.right(seqRepoMoment)))
+      mockMomentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentTypeStr)) returns TaskService(Task(Either.right(seqRepoMoment)))
 
-      val result = persistenceServices.getMomentByType(momentType = momentType1).value.run
+      val result = persistenceServices.getMomentByType(momentType).value.run
       result must beLike {
-        case Right(moment) => moment.momentType shouldEqual Some(momentType1)
+        case Right(moment) => moment.momentType shouldEqual Some(momentType)
       }
     }
 
     "return a  PersistenceServiceException if the service return a Seq empty." in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType1)) returns TaskService(Task(Either.right(Seq.empty)))
+      mockMomentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentTypeStr)) returns TaskService(Task(Either.right(Seq.empty)))
 
-      val result = persistenceServices.getMomentByType(momentType = momentType1).value.run
+      val result = persistenceServices.getMomentByType(momentType).value.run
       result must beAnInstanceOf[Left[RepositoryException,  _]]
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType1)) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.getMomentByType(momentType = momentType1).value.run
+      mockMomentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentTypeStr)) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.getMomentByType(momentType).value.run
       result must beAnInstanceOf[Left[RepositoryException,  _]]
     }
 
@@ -228,26 +228,26 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.right(seqRepoMoment)))
 
-      val result = persistenceServices.fetchMomentByType(momentType = momentType1).value.run
+      val result = persistenceServices.fetchMomentByType(momentType = momentTypeStr).value.run
       result must beLike {
         case Right(maybeMoment) =>
           maybeMoment must beSome[Moment].which { moment =>
-            moment.momentType shouldEqual Some(momentType1)
+            moment.momentType shouldEqual Some(momentType)
           }
       }
     }
 
     "return a None if the service return a Seq empty" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType1)) returns TaskService(Task(Either.right(Seq.empty)))
-      val result = persistenceServices.fetchMomentByType(momentType = momentType1).value.run
+      mockMomentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentTypeStr)) returns TaskService(Task(Either.right(Seq.empty)))
+      val result = persistenceServices.fetchMomentByType(momentType = momentTypeStr).value.run
       result shouldEqual Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType1)) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.fetchMomentByType(momentType = momentType1).value.run
+      mockMomentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentTypeStr)) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.fetchMomentByType(momentType = momentTypeStr).value.run
       result must beAnInstanceOf[Left[RepositoryException,  _]]
     }
 
