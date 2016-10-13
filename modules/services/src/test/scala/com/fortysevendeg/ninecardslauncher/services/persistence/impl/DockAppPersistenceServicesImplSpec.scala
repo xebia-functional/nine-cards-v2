@@ -109,7 +109,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
     "return the number of elements deleted for a valid request" in new DockAppPersistenceServices {
 
       mockDockAppRepository.deleteDockApp(any) returns TaskService(Task(Either.right(item)))
-      val result = persistenceServices.deleteDockApp(createDeleteDockAppRequest(dockApp = dockApp)).value.run
+      val result = persistenceServices.deleteDockApp(dockApp).value.run
       result shouldEqual Right(item)
 
     }
@@ -117,7 +117,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
     "return a PersistenceServiceException if the service throws a exception" in new DockAppPersistenceServices {
 
       mockDockAppRepository.deleteDockApp(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.deleteDockApp(createDeleteDockAppRequest(dockApp = dockApp)).value.run
+      val result = persistenceServices.deleteDockApp(dockApp).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -168,7 +168,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
     "return a DockApp for a valid request" in new DockAppPersistenceServices {
 
       mockDockAppRepository.findDockAppById(any) returns TaskService(Task(Either.right(Option(repoDockApp))))
-      val result = persistenceServices.findDockAppById(createFindDockAppByIdRequest(id = dockAppId)).value.run
+      val result = persistenceServices.findDockAppById(dockAppId).value.run
 
       result must beLike {
         case Right(maybeDockApp) =>
@@ -181,14 +181,14 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
     "return None when a non-existent id is given" in new DockAppPersistenceServices {
 
       mockDockAppRepository.findDockAppById(any) returns TaskService(Task(Either.right(None)))
-      val result = persistenceServices.findDockAppById(createFindDockAppByIdRequest(id = nonExistentDockAppId)).value.run
+      val result = persistenceServices.findDockAppById(nonExistentDockAppId).value.run
       result shouldEqual Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new DockAppPersistenceServices {
 
       mockDockAppRepository.findDockAppById(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.findDockAppById(createFindDockAppByIdRequest(id = dockAppId)).value.run
+      val result = persistenceServices.findDockAppById(dockAppId).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

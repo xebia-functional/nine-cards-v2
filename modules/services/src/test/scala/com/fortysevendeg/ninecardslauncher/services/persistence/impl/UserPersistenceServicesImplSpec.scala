@@ -32,7 +32,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
     "return a User value for a valid request" in new UserPersistenceServicesScope {
 
       mockUserRepository.addUser(any) returns TaskService(Task(Either.right(repoUser)))
-      val result = persistenceServices.addUser(createAddUserRequest()).value.run
+      val result = persistenceServices.addUser(userData).value.run
 
       result must beLike {
         case Right(user) => user.id shouldEqual uId
@@ -42,7 +42,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
       mockUserRepository.addUser(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.addUser(createAddUserRequest()).value.run
+      val result = persistenceServices.addUser(userData).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -68,14 +68,14 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
 
     "return the number of elements deleted for a valid request" in new UserPersistenceServicesScope {
       mockUserRepository.deleteUser(any) returns TaskService(Task(Either.right(item)))
-      val result = persistenceServices.deleteUser(createDeleteUserRequest(user = user)).value.run
+      val result = persistenceServices.deleteUser(user).value.run
       result shouldEqual Right(item)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
       mockUserRepository.deleteUser(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.deleteUser(createDeleteUserRequest(user = user)).value.run
+      val result = persistenceServices.deleteUser(user).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -105,7 +105,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
     "return a User for a valid request" in new UserPersistenceServicesScope {
 
       mockUserRepository.findUserById(any) returns TaskService(Task(Either.right(Option(repoUser))))
-      val result = persistenceServices.findUserById(createFindUserByIdRequest(id = uId)).value.run
+      val result = persistenceServices.findUserById(uId).value.run
 
       result must beLike {
         case Right(maybeUser) =>
@@ -118,14 +118,14 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
     "return None when a non-existent id is given" in new UserPersistenceServicesScope {
 
       mockUserRepository.findUserById(any) returns TaskService(Task(Either.right(None)))
-      val result = persistenceServices.findUserById(createFindUserByIdRequest(id = nonExistentUserId)).value.run
+      val result = persistenceServices.findUserById(nonExistentUserId).value.run
       result shouldEqual Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
       mockUserRepository.findUserById(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.findUserById(createFindUserByIdRequest(id = uId)).value.run
+      val result = persistenceServices.findUserById(uId).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -135,14 +135,14 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
     "return the number of elements updated for a valid request" in new UserPersistenceServicesScope {
 
       mockUserRepository.updateUser(any) returns TaskService(Task(Either.right(item)))
-      val result = persistenceServices.updateUser(createUpdateUserRequest()).value.run
+      val result = persistenceServices.updateUser(user).value.run
       result shouldEqual Right(item)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
       mockUserRepository.updateUser(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.updateUser(createUpdateUserRequest()).value.run
+      val result = persistenceServices.updateUser(user).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

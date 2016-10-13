@@ -1,16 +1,16 @@
 package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.Application
+import cards.nine.models.types.{OrderByCategory, OrderByInstallDate, OrderByName}
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.AppEntity
-import cards.nine.models.Application
-import cards.nine.services.persistence.{OrderByCategory, OrderByInstallDate, OrderByName}
 import cards.nine.services.persistence.data.AppPersistenceServicesData
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
-import cards.nine.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
 
 
 trait AppPersistenceServicesSpecSpecification

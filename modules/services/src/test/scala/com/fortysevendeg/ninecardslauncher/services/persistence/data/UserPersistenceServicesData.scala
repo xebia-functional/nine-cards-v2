@@ -76,11 +76,6 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
       deviceName = Option(deviceName),
       deviceCloudId = Option(deviceCloudId))
 
-  val seqUser: Seq[User] = createSeqUser()
-  val user: User = seqUser(0)
-  val repoUserData: RepositoryUserData = createRepoUserData()
-  val seqRepoUser: Seq[RepositoryUser] = createSeqRepoUser(data = repoUserData)
-  val repoUser: RepositoryUser = seqRepoUser(0)
 
   def createUserData(
     email: String = email,
@@ -106,29 +101,12 @@ trait UserPersistenceServicesData extends PersistenceServicesData {
         avatar = Option(avatar),
         cover = Option(cover)))
 
-//  def createUpdateUserRequest(
-//    id: Int = uId,
-//    email: String = email,
-//    sessionToken: String = sessionToken,
-//    apiKey: String = apiKey,
-//    deviceToken: String = deviceToken,
-//    marketToken: String = marketToken,
-//    name: String = nameUser,
-//    avatar: String = avatar,
-//    cover: String = cover,
-//    deviceName: String = deviceName,
-//    deviceCloudId: String = deviceCloudId): UpdateUserRequest =
-//    UpdateUserRequest(
-//      id = id,
-//      email = Option(email),
-//      sessionToken = Option(sessionToken),
-//      apiKey = Option(apiKey),
-//      deviceToken = Option(deviceToken),
-//      marketToken = Option(marketToken),
-//      name = Option(name),
-//      avatar = Option(avatar),
-//      cover = Option(cover),
-//      deviceName = Option(deviceName),
-//      deviceCloudId = Option(deviceCloudId))
+  val seqUser: Seq[User] = createSeqUser()
+  val user: User = seqUser(0)
+  val userData: UserData = createUserData()
+  val repoUserData: RepositoryUserData = createRepoUserData()
+  val seqRepoUser: Seq[RepositoryUser] = createSeqRepoUser(data = repoUserData)
+  val repoUser: RepositoryUser = seqRepoUser(0)
+
 
 }

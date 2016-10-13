@@ -32,10 +32,10 @@ trait PersistenceServicesData extends Conversions {
   val collectionId: Int = Random.nextInt(10)
   val nonExistentCollectionId: Int = Random.nextInt(10) + 100
   val name: String = Random.nextString(5)
-  val collectionType: String = Random.nextString(5)
+  val collectionType: CollectionType = FreeCollectionType
   val icon: String = Random.nextString(5)
   val themedColorIndex: Int = Random.nextInt(10)
-  val appsCategory: String = Random.nextString(5)
+  val appsCategory: String = "MISC"
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
   val nonExistentSharedCollectionId: String = Random.nextString(5)
@@ -48,7 +48,7 @@ trait PersistenceServicesData extends Conversions {
   val nonExistentPosition: Int = Random.nextInt(10) + 100
   val term: String = Random.nextString(5)
   val cardType: String = Random.nextString(5)
-  val intent: String = Random.nextString(5)
+  val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val imagePath: String = Random.nextString(5)
   val notification: String = Random.nextString(5)
 
@@ -65,10 +65,10 @@ trait PersistenceServicesData extends Conversions {
 
   val termDataCounter: String = Random.nextString(1)
   val countDataCounter: Int = Random.nextInt(2)
-  val momentType1: String = "HOME"
+  val momentType1: NineCardsMoment = HomeMorningMoment
 
   val widgetId: Int = Random.nextInt(10)
-  val widgetType: String = Random.nextString(5)
+  val widgetType: String = "APP"
   val appWidgetId: Int = Random.nextInt(10) + 1
   val startX: Int = Random.nextInt(8)
   val startY: Int = Random.nextInt(8)
@@ -81,69 +81,8 @@ trait PersistenceServicesData extends Conversions {
   val widgetImagePathOption = Option(widgetImagePath)
   val widgetIntentOption = Option(widgetIntent)
 
-  val seqMoment: Seq[Moment] = createSeqMoment()
-  val servicesMoment: Moment = seqMoment(0)
-  val repoMomentData: RepositoryMomentData = createRepoMomentData()
-  val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
-  val repoMoment: RepositoryMoment = seqRepoMoment(0)
-
-  def createSeqCollection(
-    num: Int = 5,
-    id: Int = collectionId,
-    position: Int = position,
-    name: String = name,
-    collectionType: String = collectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: String = appsCategory,
-    cards: Seq[Card] = seqCard,
-    moment: Option[Moment] = Some(servicesMoment),
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    publicCollectionStatus: PublicCollectionStatus = publicCollectionStatus): Seq[Collection] = List.tabulate(num)(
-    item =>
-      Collection(
-        id = id + item,
-        position = position,
-        name = name,
-        collectionType = CollectionType(collectionType),
-        icon = icon,
-        themedColorIndex = themedColorIndex,
-        appsCategory = Option(NineCardsCategory(appsCategory)),
-        cards = cards,
-        moment = moment,
-        originalSharedCollectionId = Option(originalSharedCollectionId),
-        sharedCollectionId = Option(sharedCollectionId),
-        sharedCollectionSubscribed = sharedCollectionSubscribed,
-        publicCollectionStatus = publicCollectionStatus))
-
-  def createSeqRepoCollection(
-    num: Int = 5,
-    id: Int = collectionId,
-    data: RepositoryCollectionData = createRepoCollectionData()): Seq[RepositoryCollection] =
-    List.tabulate(num)(item => RepositoryCollection(id = id + item, data = data))
-
-  def createRepoCollectionData(
-    position: Int = position,
-    name: String = name,
-    collectionType: String = collectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: String = appsCategory,
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): RepositoryCollectionData =
-    RepositoryCollectionData(
-      position = position,
-      name = name,
-      collectionType = collectionType,
-      icon = icon,
-      themedColorIndex = themedColorIndex,
-      appsCategory = Option(appsCategory),
-      originalSharedCollectionId = Option(originalSharedCollectionId),
-      sharedCollectionId = Option(sharedCollectionId),
-      sharedCollectionSubscribed = Option(sharedCollectionSubscribed))
+  val nonExistentWidgetId: Int = Random.nextInt(10) + 100
+  val nonExistentAppWidgetId: Int = Random.nextInt(10) + 100
 
   def createSeqCardData(
     num: Int = 5,
@@ -207,170 +146,13 @@ trait PersistenceServicesData extends Conversions {
       imagePath = Option(imagePath),
       notification = Option(notification))
 
-  def createSeqMoment(
-    num: Int = 5,
-    id: Int = momentId,
-    collectionId: Option[Int] = collectionIdOption,
-    timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
-    wifi: Seq[String] = wifiSeq,
-    headphone: Boolean = headphone,
-    momentType: Option[String] = Option(momentType1)): Seq[Moment] = List.tabulate(num)(
-    item =>
-      Moment(
-        id = id + item,
-        collectionId = collectionId,
-        timeslot = timeslot,
-        wifi = wifi,
-        headphone = headphone,
-        momentType = momentType.map(NineCardsMoment(_)),
-        widgets = Option(widgetData)))
-
-  def createSeqRepoMoment(
-    num: Int = 5,
-    id: Int = momentId,
-    data: RepositoryMomentData = createRepoMomentData()): Seq[RepositoryMoment] =
-    List.tabulate(num)(item => RepositoryMoment(id = id + item, data = data))
-
-  def createRepoMomentData(
-    collectionId: Option[Int] = collectionIdOption,
-    timeslot: String = timeslotJson,
-    wifiString: String = wifiString,
-    headphone: Boolean = headphone,
-    momentType: Option[String] = Option(momentType1)): RepositoryMomentData =
-    RepositoryMomentData(
-      collectionId = collectionId,
-      timeslot = timeslot,
-      wifi = wifiString,
-      headphone = headphone,
-      momentType = momentType)
-
   val seqCard: Seq[Card] = createSeqCard()
   val card: Card = seqCard(0)
+  val seqCardData: Seq[CardData] = createSeqCardData()
+  val cardData: CardData = seqCardData(0)
   val repoCardData: RepositoryCardData = createRepoCardData()
   val seqRepoCard: Seq[RepositoryCard] = createSeqRepoCard(data = repoCardData)
   val repoCard: RepositoryCard = seqRepoCard(0)
-
-  val seqCollection: Seq[Collection] = createSeqCollection()
-  val seqCollectionWithoutMoment: Seq[Collection] = createSeqCollection(moment = None)
-  val collection: Collection = seqCollection(0)
-  val collectionWithoutMoment: Collection = seqCollectionWithoutMoment(0)
-  val repoCollectionData: RepositoryCollectionData = createRepoCollectionData()
-  val seqRepoCollection: Seq[RepositoryCollection] = createSeqRepoCollection(data = repoCollectionData)
-  val repoCollection: RepositoryCollection = seqRepoCollection(0)
-
-  val where: String = ""
-
-//  def createAddCardRequest(
-//    collectionId: Int = collectionId,
-//    position: Int = position,
-//    term: String = term,
-//    packageName: String = packageName,
-//    cardType: String = cardType,
-//    intent: String = intent,
-//    imagePath: String = imagePath,
-//    notification: String = notification): CardData =
-//    CardData(
-//      position = position,
-//      term = term,
-//      packageName = Option(packageName),
-//      cardType = CardType(cardType),
-//      intent = jsonToNineCardIntent(intent),
-//      imagePath = Option(imagePath),
-//      notification = Option(notification))
-//
-//  def createAddCardRequestWithoutCollectionId =
-//    CardData(
-//      position = position,
-//      term = term,
-//      packageName = Option(packageName),
-//      cardType = CardType(cardType),
-//      intent = jsonToNineCardIntent(intent),
-//      imagePath = Option(imagePath),
-//      notification = Option(notification))
-//
-//  def createUpdateCardsRequest(
-//    num: Int = 5,
-//    id: Int = cardId) =
-//    UpdateCardsRequest(
-//      List.tabulate(num)(item => createUpdateCardRequest(id = id + item)))
-//
-//  def createUpdateCardRequest(
-//    id: Int = cardId,
-//    position: Int = position,
-//    term: String = term,
-//    packageName: String = packageName,
-//    cardType: String = cardType,
-//    intent: String = intent,
-//    imagePath: String = imagePath,
-//    notification: String = notification): Card =
-//    Card(
-//      id = id,
-//      position = position,
-//      term = term,
-//      packageName = Option(packageName),
-//      cardType = cardType,
-//      intent = intent,
-//      imagePath = Option(imagePath),
-//      notification = Option(notification))
-
-  def createCollectionData(
-    position: Int = position,
-    name: String = name,
-    collectionType: String = collectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: String = appsCategory,
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    cards: Seq[Card] = seqCard): CollectionData =
-    CollectionData(
-      position = position,
-      name = name,
-      collectionType = CollectionType(collectionType),
-      icon = icon,
-      themedColorIndex = themedColorIndex,
-      appsCategory = Option(NineCardsCategory(appsCategory)),
-      cards = createSeqCardData(),
-      moment = Option(createMomentData()),
-      originalSharedCollectionId = Option(originalSharedCollectionId),
-      sharedCollectionId = Option(sharedCollectionId),
-      sharedCollectionSubscribed = sharedCollectionSubscribed)
-
-  def createSeqCollectionData(
-    num: Int = 5) :Seq[CollectionData]  =
-    List.tabulate(num)(item => createCollectionData())
-
-//  def createUpdateCollectionRequest(
-//    id: Int = collectionId,
-//    position: Int = position,
-//    name: String = name,
-//    collectionType: String = collectionType,
-//    icon: String = icon,
-//    themedColorIndex: Int = themedColorIndex,
-//    appsCategory: String = appsCategory,
-//    originalSharedCollectionId: String = originalSharedCollectionId,
-//    sharedCollectionId: String = sharedCollectionId,
-//    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-//    cards: Seq[Card] = seqCard): Collection =
-//    Collection(
-//      id = id,
-//      position = position,
-//      name = name,
-//      collectionType = CollectionType(collectionType),
-//      icon = icon,
-//      themedColorIndex = themedColorIndex,
-//      appsCategory = Option(NineCardsCategory(appsCategory)),
-//      cards = seqCard,
-//      originalSharedCollectionId = Option(originalSharedCollectionId),
-//      sharedCollectionId = Option(sharedCollectionId),
-//      sharedCollectionSubscribed = sharedCollectionSubscribed)
-//
-//  def createUpdateCollectionsRequest(
-//    num: Int = 5 ): Collection = Collection(
-//    List.tabulate(num)(item => createUpdateCollectionRequest()))
-//
-//  val updateCollectionsRequest = createUpdateCollectionsRequest()
 
   def createSeqRepoWidget(
     num: Int = 5,
@@ -405,8 +187,43 @@ trait PersistenceServicesData extends Conversions {
       imagePath = imagePath,
       intent = intent)
 
-  def createWidgetData(
+  def createSeqWidget(
     num: Int = 5,
+    id: Int = widgetId,
+    momentId: Int = momentId,
+    packageName: String = packageName,
+    className: String = className,
+    appWidgetId: Int = appWidgetId,
+    startX: Int = startX,
+    startY: Int = startX,
+    spanX: Int = startX,
+    spanY: Int = startX,
+    widgetType: String = widgetType,
+    label: Option[String] = None,
+    imagePath: Option[String] = None,
+    intent: Option[String] = None) =
+    (0 until 5) map (
+      item =>
+        Widget(
+          id = id + item,
+          momentId = momentId,
+          packageName = packageName + item,
+          className = className + item,
+          appWidgetId = Option(appWidgetId),
+          area =
+            WidgetArea(
+              startX = startX + item,
+              startY = startY + item,
+              spanX = spanX + item,
+              spanY = spanY + item),
+          widgetType = WidgetType(widgetType),
+          label = label,
+          imagePath = imagePath,
+          intent = intent))
+
+  def createSeqWidgetData(
+    num: Int = 5,
+    momentId: Int = momentId,
     packageName: String = packageName,
     className: String = className,
     appWidgetId: Int = appWidgetId,
@@ -421,6 +238,7 @@ trait PersistenceServicesData extends Conversions {
     (0 until 5) map (
       item =>
         WidgetData(
+          momentId = momentId,
           packageName = packageName + item,
           className = className + item,
           appWidgetId = Option(appWidgetId),
@@ -439,45 +257,174 @@ trait PersistenceServicesData extends Conversions {
   val seqRepoWidget: Seq[RepositoryWidget] = createSeqRepoWidget(data = repoWidgetData)
   val repoWidgetDataNone: RepositoryWidgetData = createRepoWidgetData(appWidgetId = 0)
   val seqRepoWidgetNone: Seq[RepositoryWidget] = createSeqRepoWidget(data = repoWidgetDataNone)
-  val widgetData = createWidgetData()
+  val seqWidget: Seq[Widget] = createSeqWidget()
+  val seqWidgetData: Seq[WidgetData] = createSeqWidgetData()
+  val repoWidget = seqRepoWidget(0)
+  val repoWidgetNone = seqRepoWidgetNone(0)
+  val widget = seqWidget(0)
+  val widgetData = seqWidgetData(0)
 
   def createMomentData(
     collectionId: Option[Int] = collectionIdOption,
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi: Seq[String] = wifiSeq,
     headphone: Boolean = headphone,
-    momentType: Option[String] = Option(momentType1)): MomentData =
+    momentType: Option[NineCardsMoment] = Option(momentType1)): MomentData =
     MomentData(
       collectionId = collectionId,
       timeslot = timeslot,
       wifi = wifi,
       headphone = headphone,
-      momentType = momentType.map(NineCardsMoment(_)),
-      widgets = Option(widgetData))
+      momentType = momentType,
+      widgets = Option(seqWidgetData))
+
+  def createRepoMomentData(
+    collectionId: Option[Int] = collectionIdOption,
+    timeslot: String = timeslotJson,
+    wifiString: String = wifiString,
+    headphone: Boolean = headphone,
+    momentType: Option[NineCardsMoment] = Option(momentType1)): RepositoryMomentData =
+    RepositoryMomentData(
+      collectionId = collectionId,
+      timeslot = timeslot,
+      wifi = wifiString,
+      headphone = headphone,
+      momentType = momentType map (_.name))
+
+  def createSeqMoment(
+    num: Int = 5,
+    id: Int = momentId,
+    collectionId: Option[Int] = collectionIdOption,
+    timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
+    wifi: Seq[String] = wifiSeq,
+    headphone: Boolean = headphone,
+    momentType: Option[NineCardsMoment] = Option(momentType1)): Seq[Moment] = List.tabulate(num)(
+    item =>
+      Moment(
+        id = id + item,
+        collectionId = collectionId,
+        timeslot = timeslot,
+        wifi = wifi,
+        headphone = headphone,
+        momentType = momentType,
+        widgets = Option(seqWidgetData)))
+
+  def createSeqRepoMoment(
+    num: Int = 5,
+    id: Int = momentId,
+    data: RepositoryMomentData = createRepoMomentData()): Seq[RepositoryMoment] =
+    List.tabulate(num)(item => RepositoryMoment(id = id + item, data = data))
 
   def createSeqMomentData(
     num: Int = 5) :Seq[MomentData]  =
     List.tabulate(num)(item => createMomentData())
-//
-//  def createUpdateMomentRequest(
-//    id: Int = momentId,
-//    collectionId: Option[Int] = collectionIdOption,
-//    timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
-//    wifi: Seq[String] = wifiSeq,
-//    headphone: Boolean = headphone,
-//    momentType: Option[String] = Option(momentType1)): Moment =
-//    Moment(
-//      id = id,
-//      collectionId = collectionId,
-//      timeslot = timeslot,
-//      wifi = wifi,
-//      headphone = headphone,
-//      momentType = momentType)
+
+
+  val seqMoment: Seq[Moment] = createSeqMoment()
+  val repoMomentData: RepositoryMomentData = createRepoMomentData()
+  val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
+  val repoMoment: RepositoryMoment = seqRepoMoment(0)
+
+  val moment = seqMoment(0)
+  val momentData = createMomentData()
+  val seqMomentData = createSeqMomentData()
+
+  val where: String = ""
+
+  def createSeqCollection(
+    num: Int = 5,
+    id: Int = collectionId,
+    position: Int = position,
+    name: String = name,
+    collectionType: CollectionType = collectionType,
+    icon: String = icon,
+    themedColorIndex: Int = themedColorIndex,
+    appsCategory: String = appsCategory,
+    cards: Seq[Card] = seqCard,
+    moment: Moment = moment,
+    originalSharedCollectionId: String = originalSharedCollectionId,
+    sharedCollectionId: String = sharedCollectionId,
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
+    publicCollectionStatus: PublicCollectionStatus = publicCollectionStatus): Seq[Collection] = List.tabulate(num)(
+    item =>
+      Collection(
+        id = id + item,
+        position = position,
+        name = name,
+        collectionType = collectionType,
+        icon = icon,
+        themedColorIndex = themedColorIndex,
+        appsCategory = Option(NineCardsCategory(appsCategory)),
+        cards = cards,
+        moment = Option(moment),
+        originalSharedCollectionId = Option(originalSharedCollectionId),
+        sharedCollectionId = Option(sharedCollectionId),
+        sharedCollectionSubscribed = sharedCollectionSubscribed,
+        publicCollectionStatus = publicCollectionStatus))
+
+  def createSeqRepoCollection(
+    num: Int = 5,
+    id: Int = collectionId,
+    data: RepositoryCollectionData = createRepoCollectionData()): Seq[RepositoryCollection] =
+    List.tabulate(num)(item => RepositoryCollection(id = id + item, data = data))
+
+  def createRepoCollectionData(
+    position: Int = position,
+    name: String = name,
+    collectionType: CollectionType = collectionType,
+    icon: String = icon,
+    themedColorIndex: Int = themedColorIndex,
+    appsCategory: String = appsCategory,
+    originalSharedCollectionId: String = originalSharedCollectionId,
+    sharedCollectionId: String = sharedCollectionId,
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): RepositoryCollectionData =
+    RepositoryCollectionData(
+      position = position,
+      name = name,
+      collectionType = collectionType.name,
+      icon = icon,
+      themedColorIndex = themedColorIndex,
+      appsCategory = Option(appsCategory),
+      originalSharedCollectionId = Option(originalSharedCollectionId),
+      sharedCollectionId = Option(sharedCollectionId),
+      sharedCollectionSubscribed = Option(sharedCollectionSubscribed))
+
+  def createCollectionData(
+    position: Int = position,
+    name: String = name,
+    collectionType: CollectionType = collectionType,
+    icon: String = icon,
+    themedColorIndex: Int = themedColorIndex,
+    appsCategory: String = appsCategory,
+    originalSharedCollectionId: String = originalSharedCollectionId,
+    sharedCollectionId: String = sharedCollectionId,
+    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
+    cards: Seq[Card] = seqCard): CollectionData =
+    CollectionData(
+      position = position,
+      name = name,
+      collectionType = collectionType,
+      icon = icon,
+      themedColorIndex = themedColorIndex,
+      appsCategory = Option(NineCardsCategory(appsCategory)),
+      cards = seqCardData,
+      moment = Option(createMomentData()),
+      originalSharedCollectionId = Option(originalSharedCollectionId),
+      sharedCollectionId = Option(sharedCollectionId),
+      sharedCollectionSubscribed = sharedCollectionSubscribed)
+
+  def createSeqCollectionData(
+    num: Int = 5) :Seq[CollectionData]  =
+    List.tabulate(num)(item => createCollectionData())
+
+  val seqCollection: Seq[Collection] = createSeqCollection()
+  val collection: Collection = seqCollection(0)
+  val repoCollectionData: RepositoryCollectionData = createRepoCollectionData()
+  val seqRepoCollection: Seq[RepositoryCollection] = createSeqRepoCollection(data = repoCollectionData)
+  val repoCollection: RepositoryCollection = seqRepoCollection(0)
 
   val collectionData = createCollectionData()
-
   val seqCollectionData = createSeqCollectionData()
-
   val seqAddCardWithCollectionIdRequest = Seq(CardsWithCollectionId(collection.id, Seq.empty))
 
 }
