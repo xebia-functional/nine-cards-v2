@@ -178,7 +178,7 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
       widgetType = widget.widgetType,
       label = widget.label,
       imagePath = widget.imagePath,
-      intent = widget.intent)
+      intent = widget.intent map jsonToNineCardIntent)
 
   def toTimeSlot(cloudStorageMomentTimeSlot: CloudStorageMomentTimeSlot): MomentTimeSlot =
     MomentTimeSlot(

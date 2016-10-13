@@ -3,7 +3,7 @@ package cards.nine.services.persistence
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models._
-import cards.nine.models.types.FetchAppOrder
+import cards.nine.models.types.{NineCardsMoment, FetchAppOrder}
 import cards.nine.services.persistence.models.{IterableDockApps, IterableApps}
 
 trait PersistenceServices {
@@ -534,7 +534,7 @@ trait PersistenceServices {
     * @return an cards.nine.models.Moment
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
-  def getMomentByType(momentType: String): TaskService[Moment]
+  def getMomentByType(momentType: NineCardsMoment): TaskService[Moment]
 
   /**
     * Obtains an moment from the repository by type. Return None if the type doesn't exist
