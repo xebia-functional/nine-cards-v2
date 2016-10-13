@@ -2,7 +2,6 @@ package cards.nine.app.ui.wizard.jobs
 
 import android.view.{Gravity, ViewGroup}
 import android.widget.{Button, ImageView, RadioButton, TextView}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -22,7 +21,7 @@ trait WizardStyles {
       vEnabled(false)
 
   def radioStyle(implicit context: ActivityContextWrapper): Tweak[RadioButton] = {
-    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
+    val padding = resGetDimensionPixelSize(R.dimen.padding_checkbox)
     vWrapContent +
       vPadding(paddingLeft = padding, paddingRight = padding) +
       tvGravity(Gravity.CENTER_VERTICAL)
