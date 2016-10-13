@@ -2,7 +2,7 @@ package cards.nine.process.trackevent.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.services.track.{TrackServices, TrackServicesException}
-import cards.nine.models.types.Game
+import cards.nine.models.types.{AppCategory, Game}
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -50,7 +50,7 @@ class TrackEventProcessImplSpec
       result shouldEqual Right((): Unit)
 
       there was one(mockServices).trackEvent(openAppGameEvent)
-      there was one(mockServices).trackEvent(openAppGameEvent.copy(category = Game.name))
+      there was one(mockServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackEventProcessScope {
@@ -76,7 +76,7 @@ class TrackEventProcessImplSpec
       }
 
       there was one(mockServices).trackEvent(openAppGameEvent)
-      there was one(mockServices).trackEvent(openAppGameEvent.copy(category = Game.name))
+      there was one(mockServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
     }
 
   }

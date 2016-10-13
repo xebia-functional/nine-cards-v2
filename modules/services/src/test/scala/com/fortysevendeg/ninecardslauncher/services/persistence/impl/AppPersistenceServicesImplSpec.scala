@@ -181,6 +181,23 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     }
   }
 
+  "deleteAppsById" should {
+
+    "return the number of elements deleted for a valid request" in new AppPersistenceServicesScope {
+
+      mockAppRepository.deleteApps(any) returns TaskService(Task(Either.right(item)))
+      val result = persistenceServices.deleteAppsByIds(Seq.empty).value.run
+      result shouldEqual Right(item)
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
+
+      mockAppRepository.deleteApps(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.deleteAppsByIds(Seq.empty).value.run
+      result must beAnInstanceOf[Left[RepositoryException, _]]
+    }
+  }
+
   "deleteAppByPackage" should {
 
     "return the number of elements deleted for a valid request" in new AppPersistenceServicesScope {

@@ -62,6 +62,15 @@ class Jobs(implicit contextWrapper: ContextWrapper)
       case _ => TaskService.empty
     }
 
+  def readIntValue(i: Intent, key: String): Option[Int] =
+    if (i.hasExtra(key)) Option(i.getIntExtra(key, 0)) else None
+
+  def readStringValue(i: Intent, key: String): Option[String] =
+    if (i.hasExtra(key)) Option(i.getStringExtra(key)) else None
+
+  def readArrayValue(i: Intent, key: String): Option[Array[String]] =
+    if (i.hasExtra(key)) Option(i.getStringArrayExtra(key)) else None
+
 }
 
 case class BroadAction(action: String, command: Option[String] = None)

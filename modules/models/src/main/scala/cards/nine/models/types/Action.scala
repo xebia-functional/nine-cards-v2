@@ -1,6 +1,6 @@
-package cards.nine.process.trackevent.models
+package cards.nine.models.types
 
-import Action._
+import cards.nine.models.types.Action._
 
 sealed trait Action {
   def name: String

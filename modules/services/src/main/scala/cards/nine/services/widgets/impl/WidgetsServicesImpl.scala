@@ -4,7 +4,7 @@ import android.os.Build
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import cards.nine.services.widgets.models.Conversions
+import cards.nine.models.Conversions
 import cards.nine.services.widgets.utils.AppWidgetManagerCompat
 import cards.nine.services.widgets.utils.impl.{AppWidgetManagerImplDefault, AppWidgetManagerImplLollipop}
 import cards.nine.services.widgets.{ImplicitsWidgetsExceptions, WidgetServicesException, WidgetsServices}

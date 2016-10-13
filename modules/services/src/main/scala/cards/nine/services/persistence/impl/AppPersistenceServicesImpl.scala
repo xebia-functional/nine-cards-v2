@@ -2,7 +2,7 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
-import cards.nine.repository.provider.AppEntity
+import cards.nine.repository.provider.{AppEntity, NineCardsSqlHelper}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
 import cards.nine.services.persistence.models.IterableApps
@@ -44,6 +44,11 @@ trait AppPersistenceServicesImpl extends PersistenceServices {
   def deleteAllApps() =
     (for {
       deleted <- appRepository.deleteApps()
+    } yield deleted).resolve[PersistenceServiceException]
+
+  def deleteAppsByIds(ids: Seq[Int]) =
+    (for {
+      deleted <- appRepository.deleteApps(s"${NineCardsSqlHelper.id} IN (${ids.mkString(",")})")
     } yield deleted).resolve[PersistenceServiceException]
 
   def deleteAppByPackage(packageName: String) =

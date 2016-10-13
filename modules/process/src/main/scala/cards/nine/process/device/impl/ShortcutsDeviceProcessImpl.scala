@@ -15,7 +15,7 @@ trait ShortcutsDeviceProcessImpl extends DeviceProcess {
   def getAvailableShortcuts(implicit context: ContextSupport) =
     (for {
       shortcuts <- shortcutsServices.getShortcuts
-    } yield toShortcutSeq(shortcuts)).resolve[ShortcutException]
+    } yield shortcuts).resolve[ShortcutException]
 
   def saveShortcutIcon(bitmap: Bitmap, iconResize: Option[IconResize] = None)(implicit context: ContextSupport) =
     (for {
