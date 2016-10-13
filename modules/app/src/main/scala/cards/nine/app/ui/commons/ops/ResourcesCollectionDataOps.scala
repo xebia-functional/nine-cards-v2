@@ -5,9 +5,9 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
-object PrivateCollectionOps {
+object ResourcesCollectionDataOps {
 
-  implicit class PrivateCollectionOp(privateCollection: CollectionData) {
+  implicit class ResourcesCollectionDataOp(privateCollection: CollectionData) {
 
     def getIconCollectionWorkspace(implicit context: ContextWrapper): Int =
       resGetDrawableIdentifier(s"icon_collection_${privateCollection.icon.toLowerCase}") getOrElse R.drawable.icon_collection_default

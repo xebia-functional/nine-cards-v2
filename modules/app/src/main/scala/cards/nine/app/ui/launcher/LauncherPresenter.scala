@@ -399,7 +399,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       movements match {
         case Nil => None
         case head :: tail =>
-          val (displaceX, displaceY) = movements.head
+          val (displaceX, displaceY) = head
           val newPosition = widget.area.copy(
             startX = widget.area.startX + displaceX,
             startY = widget.area.startY + displaceY)
