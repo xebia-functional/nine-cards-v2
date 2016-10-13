@@ -30,8 +30,8 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen())
   }
 
-  def saveCollection(privateCollection: CollectionData): Unit = {
-    di.collectionProcess.addCollection(privateCollection).resolveAsyncUi2(
+  def saveCollection(collection: CollectionData): Unit = {
+    di.collectionProcess.addCollection(collection).resolveAsyncUi2(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
       onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }

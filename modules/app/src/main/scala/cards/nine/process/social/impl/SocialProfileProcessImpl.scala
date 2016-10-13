@@ -54,15 +54,7 @@ class SocialProfileProcessImpl(
     def updateUser(maybeUser: Option[User], googlePlusProfile: GooglePlusProfile) ={
 
       def toUser(user: User, googlePlusProfile: GooglePlusProfile) =
-        User(
-          id = user.id,
-          email = user.email,
-          apiKey = user.apiKey,
-          sessionToken = user.sessionToken,
-          deviceToken = user.deviceToken,
-          marketToken = user.marketToken,
-          deviceName = user.deviceName,
-          deviceCloudId = user.deviceCloudId,
+        user.copy(
           userProfile = UserProfile(
             name = googlePlusProfile.name,
             avatar = googlePlusProfile.avatarUrl,

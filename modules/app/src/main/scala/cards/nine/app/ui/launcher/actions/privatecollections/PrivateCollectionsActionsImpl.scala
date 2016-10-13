@@ -11,7 +11,7 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
-import cards.nine.app.ui.commons.ops.PrivateCollectionOps._
+import cards.nine.app.ui.commons.ops.ResourcesCollectionDataOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
