@@ -159,7 +159,7 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): TaskService[Unit] =
     (requestCode, resultCode) match {
       case (RequestCodes.selectAccount, Activity.RESULT_OK) =>
-        clientStatuses = clientStatuses.copy(email = Option(data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME)))
+        clientStatuses = clientStatuses.copy(email = readStringValue(data, AccountManager.KEY_ACCOUNT_NAME))
         requestAndroidMarketPermission()
       case (RequestCodes.selectAccount, _) =>
         wizardUiActions.showSelectAccountDialog()
