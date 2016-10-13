@@ -1,11 +1,12 @@
 package cards.nine.app.services.sync
 
-import android.app.{IntentService, Service}
+import android.app.{IntentService, PendingIntent, Service}
 import android.content.Intent
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.commons.contexts.ContextSupport
 import cards.nine.process.cloud.CloudStorageClientListener
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import com.google.android.gms.common.ConnectionResult
@@ -28,7 +29,6 @@ class SynchronizeDeviceService
     case SyncAskActionFilter => jobs.sendActualState.resolveAsync()
     case _ =>
   }
-
 
   override def onHandleIntent(intent: Intent): Unit = {
     registerDispatchers()
@@ -56,5 +56,18 @@ class SynchronizeDeviceService
 
   override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit =
     jobs.closeServiceWithError().resolveAsync()
+
+}
+
+object SynchronizeDeviceService {
+
+  val requestCode = 5001
+
+  def pendingIntent(implicit contextSupport: ContextSupport): PendingIntent =
+    PendingIntent.getService(
+      contextSupport.context,
+      requestCode,
+      new Intent(contextSupport.context, classOf[SynchronizeDeviceService]),
+      PendingIntent.FLAG_CANCEL_CURRENT)
 
 }

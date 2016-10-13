@@ -1,14 +1,14 @@
 package cards.nine.app.observers
 
-import android.app.{AlarmManager, PendingIntent}
-import android.content.{Context, Intent}
+import android.app.AlarmManager
+import android.content.Context
 import android.database.ContentObserver
 import android.net.Uri
+import cards.nine.app.observers.NineCardsObserver._
+import cards.nine.app.services.sync.SynchronizeDeviceService
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.NotificationUri._
 import cards.nine.commons.contexts.ContextSupport
-import NineCardsObserver._
-import cards.nine.app.services.sync.SynchronizeDeviceService
 
 class NineCardsObserver(implicit contextSupport: ContextSupport)
   extends ContentObserver(javaNull) {
@@ -34,24 +34,12 @@ class NineCardsObserver(implicit contextSupport: ContextSupport)
     }
 
   private[this] def createAlarm(): Unit =
-    maybeAlarmManager foreach { alarmManager =>
+    contextSupport.getAlarmManager foreach { alarmManager =>
       val nextAlarm = System.currentTimeMillis() + nextAlarmTime
-      val pendingIntent = PendingIntent.getService(
-        contextSupport.context,
-        0,
-        new Intent(contextSupport.context, classOf[SynchronizeDeviceService]),
-        PendingIntent.FLAG_CANCEL_CURRENT)
-
       alarmManager.set(
         AlarmManager.RTC,
         nextAlarm,
-        pendingIntent)
-    }
-
-  private[this] def maybeAlarmManager: Option[AlarmManager] =
-    contextSupport.context.getSystemService(Context.ALARM_SERVICE) match {
-      case a: AlarmManager => Some(a)
-      case _ => None
+        SynchronizeDeviceService.pendingIntent)
     }
 }
 
