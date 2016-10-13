@@ -42,8 +42,8 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
 
       val action = Option(i.getAction)
       val intentType = Option(i.getType)
-      val extra = Option(i.getStringExtra(Intent.EXTRA_TEXT))
-      val subject = Option(i.getStringExtra(Intent.EXTRA_SUBJECT))
+      val extra = readStringValue(i, Intent.EXTRA_TEXT)
+      val subject = readStringValue(i, Intent.EXTRA_SUBJECT)
 
       (action, intentType, extra) match {
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) if isLink(content) =>

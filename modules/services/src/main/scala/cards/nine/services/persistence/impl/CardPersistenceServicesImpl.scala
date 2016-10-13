@@ -34,13 +34,13 @@ trait CardPersistenceServicesImpl extends PersistenceServices {
   def deleteCards(collectionId: Int, cardIds: Seq[Int]) = {
     val where = s"${NineCardsSqlHelper.id} IN (${cardIds.mkString(",")})"
     (for {
-      deleted <- cardRepository.deleteCards(where)
+      deleted <- cardRepository.deleteCards(Some(collectionId), where)
     } yield deleted).resolve[PersistenceServiceException]
   }
 
   def deleteCardsByCollection(collectionId: Int) =
     (for {
-      deleted <- cardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId")
+      deleted <- cardRepository.deleteCards(maybeCollectionId = None, where = s"${CardEntity.collectionId} = $collectionId")
     } yield deleted).resolve[PersistenceServiceException]
 
   def fetchCardsByCollection(collectionId: Int) =
