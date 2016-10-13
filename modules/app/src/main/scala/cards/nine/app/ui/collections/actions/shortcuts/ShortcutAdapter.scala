@@ -2,13 +2,13 @@ package cards.nine.app.ui.collections.actions.shortcuts
 
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import cards.nine.process.device.models.Shortcut
+import cards.nine.models.Shortcut
 import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
-import macroid._
 import macroid.FullDsl._
+import macroid._
 
 case class ShortcutAdapter(shortcuts: Seq[Shortcut], onConfigure: (Shortcut) => Unit)
   (implicit activityContext: ActivityContextWrapper, theme: NineCardsTheme)

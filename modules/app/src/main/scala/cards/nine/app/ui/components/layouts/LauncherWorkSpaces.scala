@@ -3,23 +3,23 @@ package cards.nine.app.ui.components.layouts
 import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.util.AttributeSet
-import android.view.{MotionEvent, View}
+import android.view.MotionEvent
 import android.view.MotionEvent._
 import android.widget.FrameLayout
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.AnimationsUtils._
+import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.commons.TranslationAnimator
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.app.ui.launcher.holders.{Arrow, LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
+import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import cards.nine.commons.javaNull
+import cards.nine.models.Widget
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
-import cards.nine.process.widget.models.AppWidget
+import com.fortysevendeg.macroid.extras.UIActionsExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -82,7 +82,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ => Ui.nop
   }
 
-  def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: AppWidget): Unit = getView(0) match {
+  def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget): Unit = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
       momentWorkSpace.addWidget(widgetView, cell, widget).run
     case None =>
@@ -91,7 +91,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ =>
   }
 
-  def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: AppWidget): Unit = getView(0) match {
+  def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: Widget): Unit = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
       momentWorkSpace.addNoConfiguredWidget(wCell, hCell, widget).run
     case None =>
@@ -100,7 +100,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ =>
   }
 
-  def addReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: AppWidget): Unit = getView(0) match {
+  def addReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: Widget): Unit = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
       momentWorkSpace.addReplaceWidget(widgetView, wCell, hCell, widget).run
     case _ =>

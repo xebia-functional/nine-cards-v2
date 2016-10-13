@@ -6,6 +6,7 @@ import android.support.v4.app.NotificationCompat
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.InjectorImpl
 import cards.nine.app.services.payloads.SharedCollectionPayload
+import cards.nine.app.services.sharedcollections.UpdateSharedCollectionService
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.CommonsResourcesExtras._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._

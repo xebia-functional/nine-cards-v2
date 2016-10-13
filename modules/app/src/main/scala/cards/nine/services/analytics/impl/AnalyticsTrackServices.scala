@@ -2,7 +2,8 @@ package cards.nine.services.analytics.impl
 
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
-import cards.nine.services.track.{TrackEvent, TrackServicesException, ImplicitsTrackServicesException, TrackServices}
+import cards.nine.models.TrackEvent
+import cards.nine.services.track.{ImplicitsTrackServicesException, TrackServices, TrackServicesException}
 import com.google.android.gms.analytics.{HitBuilders, Tracker}
 
 class AnalyticsTrackServices(tracker: Tracker)
@@ -11,12 +12,12 @@ class AnalyticsTrackServices(tracker: Tracker)
 
   override def trackEvent(event: TrackEvent) = TaskService {
     CatchAll[TrackServicesException] {
-      tracker.setScreenName(event.screen)
+      tracker.setScreenName(event.screen.name)
       val eventBuilder = new HitBuilders.EventBuilder()
-      eventBuilder.setCategory(event.category)
-      eventBuilder.setAction(event.action)
+      eventBuilder.setCategory(event.category.name)
+      eventBuilder.setAction(event.action.name)
       event.label foreach eventBuilder.setLabel
-      event.value foreach eventBuilder.setValue
+      event.value.map(_.value) foreach eventBuilder.setValue
       tracker.send(eventBuilder.build())
     }
   }

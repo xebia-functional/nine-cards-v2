@@ -53,7 +53,7 @@ class SynchronizeDeviceJobs(actions: SynchronizeDeviceUiActions)(implicit contex
       val updateServices = ids filterNot (_.isEmpty) map (id => updateCollection(id.toInt).value)
       preferences.edit().remove(collectionIdsKey).apply()
 
-      TaskService{
+      TaskService {
         Task.gatherUnordered(updateServices) map (_ => Right((): Unit))
       }
 
@@ -61,6 +61,7 @@ class SynchronizeDeviceJobs(actions: SynchronizeDeviceUiActions)(implicit contex
 
     for {
       _ <- setState(stateSyncing, close = false)
+      _ <- di.deviceProcess.synchronizeInstalledApps
       _ <- updateCollections()
       _ <- tryToConnect()
     } yield ()
@@ -92,10 +93,17 @@ class SynchronizeDeviceJobs(actions: SynchronizeDeviceUiActions)(implicit contex
       } yield ()
     }
 
+    def cancelAlarm(): TaskService[Unit] = TaskService {
+      CatchAll[JobException] {
+        contextSupport.getAlarmManager foreach (_.cancel(SynchronizeDeviceService.pendingIntent))
+      }
+    }
+
     statuses.apiClient match {
       case Some(apiClient) =>
         for {
           _ <- sync(apiClient)
+          _ <- cancelAlarm().resolveLeftTo((): Unit)
           _ <- setState(stateSuccess, close = true)
         } yield ()
       case None => tryToConnect()

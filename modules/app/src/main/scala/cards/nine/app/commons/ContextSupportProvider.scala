@@ -1,7 +1,7 @@
 package cards.nine.app.commons
 
 import android.accounts.AccountManager
-import android.app.Activity
+import android.app.{Activity, AlarmManager}
 import android.content.{Context, Intent}
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import macroid.{ActivityContextWrapper, ContextWrapper}
@@ -25,6 +25,11 @@ trait ContextSupportImpl extends ContextSupport {
   override def getAccountManager: AccountManager = AccountManager.get(context)
 
   override def createIntent(classOf: Class[_]): Intent = new Intent(context, classOf)
+
+  override def getAlarmManager: Option[AlarmManager] = context.getSystemService(Context.ALARM_SERVICE) match {
+    case a: AlarmManager => Some(a)
+    case _ => None
+  }
 }
 
 trait ContextSupportProvider {

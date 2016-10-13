@@ -1,8 +1,23 @@
-package cards.nine.process.widget.models
+package cards.nine.models
 
-import cards.nine.models.types.WidgetType
+import cards.nine.models.types.{WidgetType, WidgetResizeMode}
 
-case class AppWidget(
+case class AppWidget (
+  userHashCode: Option[Int],
+  autoAdvanceViewId: Int,
+  initialLayout: Int,
+  minHeight: Int,
+  minResizeHeight: Int,
+  minResizeWidth: Int,
+  minWidth: Int,
+  className: String,
+  packageName: String,
+  resizeMode: WidgetResizeMode,
+  updatePeriodMillis: Int,
+  label: String,
+  preview: Int)
+
+case class Widget (
   id: Int,
   momentId: Int,
   packageName: String,

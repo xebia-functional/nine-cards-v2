@@ -1,4 +1,4 @@
-package cards.nine.process.trackevent.models
+package cards.nine.models.types
 
 sealed trait Value {
   def value: Long

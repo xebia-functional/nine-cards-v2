@@ -1,18 +1,16 @@
 package cards.nine.app.ui.collections.jobs
 
 import android.support.v7.widget.RecyclerView.ViewHolder
-import cards.nine.app.commons.{Conversions, AppNineCardIntentConversions}
+import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.commons.NineCardExtensions._
 import cards.nine.app.ui.commons.{JobException, Jobs}
-import cards.nine.commons.services.TaskService
-import cards.nine.commons.services.TaskService._
-import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.commons.models.{Card, Collection}
-import cards.nine.process.trackevent.models._
-import cards.nine.models.types.AppCardType
-import cats.syntax.either._
 import cards.nine.app.ui.preferences.commons.Theme
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.types._
+import cards.nine.process.commons.models.{Card, Collection}
+import cats.syntax.either._
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 

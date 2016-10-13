@@ -1,19 +1,13 @@
 package cards.nine.process.device
 
-import android.content.{ComponentName, Intent}
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.process.commons.NineCardIntentConversions
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
-import cards.nine.process.device.types.WidgetResizeMode
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
-import cards.nine.services.shortcuts.models.{Shortcut => ServicesShortcut}
-import cards.nine.services.widgets.models.{Widget => ServicesWidget}
-
-import scala.util.Try
 
 trait DeviceConversions extends NineCardIntentConversions {
 
@@ -79,20 +73,6 @@ trait DeviceConversions extends NineCardIntentConversions {
     imagePath = imagePath,
     position = position)
 
-  def toShortcutSeq(items: Seq[ServicesShortcut])(implicit context: ContextSupport): Seq[Shortcut] = items map toShortcut
-
-  def toShortcut(item: ServicesShortcut)(implicit context: ContextSupport): Shortcut = {
-    val componentName = new ComponentName(item.packageName, item.name)
-    val drawable = Try(context.getPackageManager.getActivityIcon(componentName)).toOption
-    val intent = new Intent(Intent.ACTION_CREATE_SHORTCUT)
-    intent.addCategory(Intent.CATEGORY_DEFAULT)
-    intent.setComponent(componentName)
-    Shortcut(
-      title = item.title,
-      icon = drawable,
-      intent = intent)
-  }
-
   def toSimpleLastCallsContact(number: String, calls: Seq[Call]): LastCallsContact = {
     val (hasContact, name, date) = calls.headOption map { call =>
       (call.name.isDefined, call.name getOrElse number, call.date)
@@ -121,27 +101,12 @@ trait DeviceConversions extends NineCardIntentConversions {
     number = item.number,
     category = item.category)
 
-  def toAppsWithWidgets(apps: Seq[Application], widgets: Seq[ServicesWidget]): Seq[AppsWithWidgets] = apps map { app =>
+  def toAppsWithWidgets(apps: Seq[Application], widgets: Seq[AppWidget]): Seq[AppsWithWidgets] = apps map { app =>
     AppsWithWidgets(
       packageName = app.packageName,
       name = app.name,
-      widgets = widgets filter(_.packageName == app.packageName) map toWidget
+      widgets = widgets filter(_.packageName == app.packageName)
     )
   }
-
-  def toWidget(item: ServicesWidget): Widget = Widget(
-    userHashCode = item.userHashCode,
-    autoAdvanceViewId = item.autoAdvanceViewId,
-    initialLayout = item.initialLayout,
-    minWidth = item.minWidth,
-    minHeight = item.minHeight,
-    minResizeWidth = item.minResizeWidth,
-    minResizeHeight = item.minResizeHeight,
-    className = item.className,
-    packageName = item.packageName,
-    resizeMode = WidgetResizeMode(item.resizeMode),
-    updatePeriodMillis = item.updatePeriodMillis,
-    label = item.label,
-    preview = item.preview)
 
 }

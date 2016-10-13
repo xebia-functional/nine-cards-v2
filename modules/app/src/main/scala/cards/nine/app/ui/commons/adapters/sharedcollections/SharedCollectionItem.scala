@@ -95,7 +95,9 @@ trait SharedCollectionItem
       (name <~ tvText(resGetString(collection.name) getOrElse collection.name)) ~
       (author <~ tvText(collection.author)) ~
       (subscriptions <~
-        (if (collection.subscriptions.isDefined) vVisible + tvText(resGetString(R.string.subscriptions_number, collection.views.toString)) else vGone)) ~
+        (if (collection.subscriptions.isDefined) vVisible +
+          tvText(resGetString(R.string.subscriptions_number,
+            (collection.subscriptions getOrElse 0).toString)) else vGone)) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (addCollection <~ addCollectionTweak()) ~
       (shareCollection <~ On.click(Ui(onShareCollection)))

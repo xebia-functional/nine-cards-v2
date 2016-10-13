@@ -1,13 +1,13 @@
 package cards.nine.app.ui.collections.actions.shortcuts
 
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.device.models.Shortcut
+import cards.nine.models.Shortcut
 import cards.nine.process.theme.models.DrawerBackgroundColor
+import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
