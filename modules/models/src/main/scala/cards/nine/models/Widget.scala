@@ -17,7 +17,7 @@ case class AppWidget (
   label: String,
   preview: Int)
 
-case class Widget (
+case class Widget(
   id: Int,
   momentId: Int,
   packageName: String,
@@ -27,7 +27,7 @@ case class Widget (
   widgetType: WidgetType,
   label: Option[String],
   imagePath: Option[String],
-  intent: Option[String])
+  intent: Option[NineCardsIntent])
 
 case class WidgetData(
   momentId: Int = 0,
@@ -38,7 +38,7 @@ case class WidgetData(
   widgetType: WidgetType,
   label: Option[String],
   imagePath: Option[String],
-  intent: Option[String])
+  intent: Option[NineCardsIntent])
 
 case class WidgetArea (
   startX: Int,

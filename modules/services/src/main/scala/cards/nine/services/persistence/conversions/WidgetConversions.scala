@@ -1,10 +1,10 @@
 package cards.nine.services.persistence.conversions
 
 import cards.nine.models.types.WidgetType
-import cards.nine.models.{Widget, WidgetArea, WidgetData}
+import cards.nine.models.{NineCardsIntentConversions, Widget, WidgetArea, WidgetData}
 import cards.nine.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
 
-trait WidgetConversions {
+trait WidgetConversions extends NineCardsIntentConversions {
 
   def toWidget(widget: RepositoryWidget): Widget =
     Widget(
@@ -21,7 +21,7 @@ trait WidgetConversions {
       widgetType = WidgetType(widget.data.widgetType),
       label = widget.data.label,
       imagePath = widget.data.imagePath,
-      intent = widget.data.intent)
+      intent = widget.data.intent map jsonToNineCardIntent)
 
   def toRepositoryWidget(widget: Widget): RepositoryWidget =
     RepositoryWidget(
@@ -38,7 +38,7 @@ trait WidgetConversions {
         widgetType = widget.widgetType.name,
         label = widget.label,
         imagePath = widget.imagePath,
-        intent = widget.intent))
+        intent = widget.intent map nineCardIntentToJson))
 
   def toRepositoryWidgetData(widget: WidgetData): RepositoryWidgetData =
     RepositoryWidgetData(
@@ -53,6 +53,6 @@ trait WidgetConversions {
       widgetType = widget.widgetType.name,
       label = widget.label,
       imagePath = widget.imagePath,
-      intent = widget.intent)
+      intent = widget.intent map nineCardIntentToJson)
 
 }

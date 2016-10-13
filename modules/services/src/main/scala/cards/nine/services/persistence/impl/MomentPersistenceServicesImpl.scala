@@ -3,6 +3,7 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{Moment, MomentData, WidgetData}
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.model.{Moment => RepositoryMoment}
@@ -61,9 +62,9 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
       maybeMoment <- momentRepository.findMomentById(momentId)
     } yield maybeMoment map toMoment).resolve[PersistenceServiceException]
 
-  def getMomentByType(momentType: String) =
+  def getMomentByType(momentType: NineCardsMoment) =
     (for {
-      moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType))
+      moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType.name))
       moment <- getHead(moments.headOption)
     } yield toMoment(moment)).resolve[PersistenceServiceException]
 

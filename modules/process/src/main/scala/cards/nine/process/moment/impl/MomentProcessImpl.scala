@@ -22,7 +22,7 @@ class MomentProcessImpl(
   override def getMoments = persistenceServices.fetchMoments.resolve[MomentException]
 
   override def getMomentByType(momentType: NineCardsMoment) =
-    persistenceServices.getMomentByType(momentType.name).resolve[MomentException]
+    persistenceServices.getMomentByType(momentType).resolve[MomentException]
 
   override def fetchMomentByType(momentType: NineCardsMoment) =
     persistenceServices.fetchMomentByType(momentType.name).resolve[MomentException]
