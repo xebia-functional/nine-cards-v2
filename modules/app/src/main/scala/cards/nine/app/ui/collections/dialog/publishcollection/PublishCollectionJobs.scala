@@ -4,7 +4,6 @@ import cards.nine.models.types.NineCardsCategory
 import cats.implicits._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.{JobException, Jobs}
-import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Collection
@@ -23,7 +22,7 @@ class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val cont
   def initialize(collection: Collection): TaskService[Unit] = {
     statuses = statuses.copy(collection = Some(collection))
     for {
-      theme <- di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues))
+      theme <- getThemeTask
       _ <- actions.loadTheme(theme)
       _ <- actions.initialize()
     } yield ()

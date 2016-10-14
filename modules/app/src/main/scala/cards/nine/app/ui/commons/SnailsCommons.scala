@@ -7,6 +7,7 @@ import android.view.animation.{AccelerateDecelerateInterpolator, AccelerateInter
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import cards.nine.commons._
+import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
@@ -165,10 +166,6 @@ object SnailsCommons {
 
       val animator = view
         .animate
-        .setUpdateListener(new AnimatorUpdateListener {
-          override def onAnimationUpdate(animation: ValueAnimator): Unit =
-            onUpdate(animation.getAnimatedFraction).run
-        })
         .setListener(new AnimatorListenerAdapter {
           override def onAnimationEnd(animation: Animator): Unit = {
             super.onAnimationEnd(animation)
@@ -177,6 +174,11 @@ object SnailsCommons {
             animPromise.trySuccess(())
           }
         })
+      KitKat.ifSupportedThen(animator
+        .setUpdateListener(new AnimatorUpdateListener {
+          override def onAnimationUpdate(animation: ValueAnimator): Unit =
+            onUpdate(animation.getAnimatedFraction).run
+        }))
       animator.setDuration(duration getOrElse SpeedAnimations.getDuration)
       interpolator foreach animator.setInterpolator
       startDelay foreach animator.setStartDelay
