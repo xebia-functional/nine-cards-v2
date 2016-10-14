@@ -25,8 +25,8 @@ import cards.nine.commons._
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.models.{Contact, ApplicationData, ConditionWeather, UnknownCondition}
 import cards.nine.process.accounts._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection, Moment, _}
@@ -34,11 +34,9 @@ import cards.nine.process.device._
 import cards.nine.process.device.models._
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import cards.nine.process.moment.MomentException
-import cards.nine.process.trackevent.models.{AppCategory, FreeCategory, MomentCategory}
-import cards.nine.process.widget.models.{AppWidget, WidgetArea}
 import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 
@@ -399,8 +397,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     @scala.annotation.tailrec
     def searchSpaceForMoveWidget(
       movements: List[MoveWidgetRequest],
-      widget: AppWidget,
-      otherWidgets: Seq[AppWidget]): Option[WidgetMovement] =
+      widget: Widget,
+      otherWidgets: Seq[Widget]): Option[WidgetMovement] =
       movements match {
         case Nil => None
         case head :: tail =>
@@ -739,7 +737,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         case _ => createWidget(appWidgetId, nineCardMoment)
       }
       task.resolveAsyncUi2(
-        onResult = (widget: AppWidget) => {
+        onResult = (widget: Widget) => {
           hostingWidgetId match {
             case Some(_) =>
               statuses = statuses.copy(hostingNoConfiguredWidget = None)
@@ -755,12 +753,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }) getOrElse actions.showContactUsError().run
   }
 
-  def hostNoConfiguredWidget(widget: AppWidget): Unit = {
+  def hostNoConfiguredWidget(widget: Widget): Unit = {
     statuses = statuses.copy(hostingNoConfiguredWidget = Option(widget))
     actions.hostWidget(widget.packageName, widget.className).run
   }
 
-  def hostWidget(widget: Widget): Unit = {
+  def hostWidget(widget: AppWidget): Unit = {
     statuses = statuses.copy(hostingNoConfiguredWidget = None)
     val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
     currentMomentType foreach { moment =>
@@ -1009,9 +1007,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  private[this] def getSpaceInTheScreen(widgetsByMoment: Seq[AppWidget], spanX: Int, spanY: Int): TaskService[WidgetArea] = {
+  private[this] def getSpaceInTheScreen(widgetsByMoment: Seq[Widget], spanX: Int, spanY: Int): TaskService[WidgetArea] = {
 
-    def searchSpace(widgets: Seq[AppWidget]): TaskService[WidgetArea] = {
+    def searchSpace(widgets: Seq[Widget]): TaskService[WidgetArea] = {
       val emptySpaces = (for {
         column <- 0 to (WidgetsOps.columns - spanX)
         row <- 0 to (WidgetsOps.rows - spanY)
@@ -1150,9 +1148,9 @@ trait LauncherUiActions {
 
   def editMoment(momentType: String): Ui[Any]
 
-  def addWidgets(widgets: Seq[AppWidget]): Ui[Any]
+  def addWidgets(widgets: Seq[Widget]): Ui[Any]
 
-  def replaceWidget(widget: AppWidget): Ui[Any]
+  def replaceWidget(widget: Widget): Ui[Any]
 
   def deleteSelectedWidget(): Ui[Any]
 
@@ -1206,7 +1204,7 @@ object Statuses {
 
   case class LauncherPresenterStatuses(
     touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
-    hostingNoConfiguredWidget: Option[AppWidget] = None,
+    hostingNoConfiguredWidget: Option[Widget] = None,
     mode: LauncherMode = NormalMode,
     transformation: Option[EditWidgetTransformation] = None,
     idWidget: Option[Int] = None,

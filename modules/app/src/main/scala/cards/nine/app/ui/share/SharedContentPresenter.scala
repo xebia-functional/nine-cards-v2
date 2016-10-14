@@ -15,7 +15,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Collection, NineCardIntent, NineCardIntentExtras}
 import cards.nine.process.device.IconResize
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 import cats.syntax.either._
@@ -44,8 +44,8 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
 
       val action = Option(i.getAction)
       val intentType = Option(i.getType)
-      val extra = Option(i.getStringExtra(Intent.EXTRA_TEXT))
-      val subject = Option(i.getStringExtra(Intent.EXTRA_SUBJECT))
+      val extra = readStringValue(i, Intent.EXTRA_TEXT)
+      val subject = readStringValue(i, Intent.EXTRA_SUBJECT)
 
       (action, intentType, extra) match {
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) if isLink(content) =>

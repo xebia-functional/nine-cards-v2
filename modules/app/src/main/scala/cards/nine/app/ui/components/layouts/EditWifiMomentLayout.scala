@@ -10,7 +10,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import cards.nine.commons._
 import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

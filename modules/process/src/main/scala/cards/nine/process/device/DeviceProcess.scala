@@ -3,7 +3,7 @@ package cards.nine.process.device
 import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{Contact, ApplicationData}
+import cards.nine.models.{Shortcut, Contact, ApplicationData}
 import cards.nine.models.types.DockType
 import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.device.models._
@@ -71,7 +71,7 @@ trait DeviceProcess {
   /**
     * Get the available applications that contain shortcuts creating Intents and Drawables necessaries for UI actions
     *
-    * @return the Seq[cards.nine.process.device.models.Shortcut] contains
+    * @return the Seq[cards.nine.models.Shortcut] contains
     *         information about shortcut with the Intents and Drawables for UI actions
     * @throws ShortcutException if exist some problem getting the shortcuts in the cell phone
     */
@@ -155,11 +155,12 @@ trait DeviceProcess {
   def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport): TaskService[IterableContacts]
 
   /**
-    * Get the installed apps and store them in the repository
+    * Fetches the installed apps in the device and synchronizes them with the database, categorizing the apps not
+    * stored in the database
     *
-    * @throws AppException if exist some problem getting the apps or storing them
+    * @throws AppException if exist some problem
     */
-  def saveInstalledApps(implicit context: ContextSupport): TaskService[Unit]
+  def synchronizeInstalledApps(implicit context: ContextSupport): TaskService[Unit]
 
   /**
     * Get an installed app and store it in the repository

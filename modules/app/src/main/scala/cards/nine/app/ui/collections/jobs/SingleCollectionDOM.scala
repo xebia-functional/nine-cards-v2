@@ -6,7 +6,7 @@ import cards.nine.app.ui.components.dialogs.CollectionDialog
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.process.commons.models.{Card, Collection}
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.ContextWrapper
 
 trait SingleCollectionDOM {

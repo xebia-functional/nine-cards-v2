@@ -44,19 +44,18 @@ import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
 import cards.nine.commons._
-import cards.nine.models.{Contact, ApplicationData, ConditionWeather}
 import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment}
+import cards.nine.models.{ApplicationData, ConditionWeather, Contact, Widget}
 import cards.nine.process.commons.models.{Collection, Moment}
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.process.device.{GetAppOrder, GetByName}
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.process.widget.models.AppWidget
 import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
@@ -305,7 +304,7 @@ trait LauncherUiActionsImpl
 
   override def editMoment(momentType: String): Ui[Any] = showEditMoment(momentType)
 
-  override def addWidgets(widgets: Seq[AppWidget]): Ui[Any] = {
+  override def addWidgets(widgets: Seq[Widget]): Ui[Any] = {
     val uiWidgets = widgets map { widget =>
       val widthContent = workspaces map (_.getWidth) getOrElse 0
       val heightContent = workspaces map (_.getHeight) getOrElse 0
@@ -330,7 +329,7 @@ trait LauncherUiActionsImpl
     Ui.sequence(uiWidgets: _*)
   }
 
-  override def replaceWidget(widget: AppWidget): Ui[Any] = {
+  override def replaceWidget(widget: Widget): Ui[Any] = {
     val maybeAppWidgetInfo = widget.appWidgetId flatMap(widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
 
     (maybeAppWidgetInfo, widget.appWidgetId) match {

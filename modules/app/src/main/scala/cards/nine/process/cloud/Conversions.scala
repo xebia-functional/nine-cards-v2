@@ -1,14 +1,13 @@
 package cards.nine.process.cloud
 
 import cards.nine.app.ui.wizard.models.UserCloudDevice
+import cards.nine.models.{Widget, WidgetArea}
 import cards.nine.process.cloud.models._
 import cards.nine.process.commons.models.NineCardIntentImplicits._
 import cards.nine.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
 import cards.nine.process.device.models.DockApp
 import cards.nine.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
-import cards.nine.process.widget.models.{WidgetArea, AppWidget}
 import cards.nine.services.drive.models.DriveServiceFileSummary
-import cards.nine.models.types.WidgetType
 import play.api.libs.json.Json
 
 object Conversions {
@@ -49,7 +48,7 @@ object Conversions {
       title = userCollectionItem.title,
       intent = userCollectionItem.intent)
 
-  def toCloudStorageCollection(collection: Collection, widgets: Option[Seq[AppWidget]]) =
+  def toCloudStorageCollection(collection: Collection, widgets: Option[Seq[Widget]]) =
     CloudStorageCollection(
       name = collection.name,
       originalSharedCollectionId = collection.originalSharedCollectionId,
@@ -67,7 +66,7 @@ object Conversions {
       title = card.term,
       intent = Json.toJson(card.intent).toString())
 
-  def toCloudStorageMoment(moment: Moment, widgets: Option[Seq[AppWidget]]) =
+  def toCloudStorageMoment(moment: Moment, widgets: Option[Seq[Widget]]) =
     CloudStorageMoment(
       timeslot = moment.timeslot map toCloudStorageMomentTimeSlot,
       wifi = moment.wifi,
@@ -75,10 +74,10 @@ object Conversions {
       momentType = moment.momentType,
       widgets = widgets map toCloudStorageWidgetSeq)
 
-  def toCloudStorageWidgetSeq(widgets: Seq[AppWidget]) =
+  def toCloudStorageWidgetSeq(widgets: Seq[Widget]) =
     widgets map toCloudStorageWidget
 
-  def toCloudStorageWidget(widget: AppWidget) =
+  def toCloudStorageWidget(widget: Widget) =
     CloudStorageWidget(
       packageName = widget.packageName,
       className = widget.className,

@@ -10,7 +10,7 @@ import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Tweak}
 
 trait Styles {

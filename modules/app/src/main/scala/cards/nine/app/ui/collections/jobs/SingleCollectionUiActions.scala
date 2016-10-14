@@ -28,7 +28,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.commons.models.{Card, Collection}
 import cards.nine.process.theme.models.{CardBackgroundColor, DrawerTextColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 import scala.language.postfixOps

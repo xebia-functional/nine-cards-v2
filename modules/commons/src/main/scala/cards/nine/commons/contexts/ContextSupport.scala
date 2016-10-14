@@ -3,7 +3,7 @@ package cards.nine.commons.contexts
 import java.io.File
 
 import android.accounts.AccountManager
-import android.app.Activity
+import android.app.{Activity, AlarmManager}
 import android.content.{ContentResolver, Context, Intent, SharedPreferences}
 import android.content.pm.PackageManager
 import android.content.res.{AssetManager, Resources}
@@ -25,6 +25,7 @@ trait ContextSupport {
   def setActiveUserId(id: Int): Unit
   def getAccountManager: AccountManager
   def createIntent(classOf: Class[_]): Intent
+  def getAlarmManager: Option[AlarmManager]
 }
 
 trait ActivityContextSupport extends ContextSupport {

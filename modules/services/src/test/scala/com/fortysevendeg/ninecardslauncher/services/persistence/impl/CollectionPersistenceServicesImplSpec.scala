@@ -85,7 +85,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return the number of elements deleted for a valid request" in new CollectionServicesResponses {
 
       mockCollectionRepository.deleteCollections() returns TaskService(Task(Either.right(items)))
-      mockCardRepository.deleteCards() returns TaskService(Task(Either.right(items)))
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(items)))
 
       val result = persistenceServices.deleteAllCollections().value.run
       result shouldEqual Right(items)
@@ -94,7 +94,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.deleteCollections() returns TaskService(Task(Either.left(exception)))
-      mockCardRepository.deleteCards() returns TaskService(Task(Either.left(exception)))
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.left(exception)))
 
       val result = persistenceServices.deleteAllCollections().value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
@@ -106,30 +106,33 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return the number of elements deleted for a valid request" in new CollectionServicesResponses {
 
       mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Either.right(item)))
-      mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns TaskService(Task(Either.right(items)))
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(items)))
       mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns TaskService(Task(Either.right(item)))
 
       val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).value.run
       result shouldEqual Right(item)
+      there was one(mockCardRepository).deleteCards(None, where = s"${CardEntity.collectionId} = $collectionId")
     }
 
     "return Right of Unit if Moment in Request is None" in new CollectionServicesResponses {
 
       mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Either.right(item)))
-      mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns TaskService(Task(Either.right(items)))
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(items)))
       mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns TaskService(Task(Either.right(item)))
 
       val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collectionWithoutMoment)).value.run
       result shouldEqual Right(item)
+      there was one(mockCardRepository).deleteCards(None, where = s"${CardEntity.collectionId} = $collectionId")
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Either.left(exception)))
-      mockCardRepository.deleteCards(where = s"${CardEntity.collectionId} = $collectionId") returns TaskService(Task(Either.left(exception)))
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.left(exception)))
 
       val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
+      there was one(mockCardRepository).deleteCards(None, where = s"${CardEntity.collectionId} = $collectionId")
     }
   }
 

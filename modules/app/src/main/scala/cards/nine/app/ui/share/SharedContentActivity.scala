@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.ui.commons.{ActivityUiContext, UiContext}
-import com.fortysevendeg.ninecardslauncher2.TypedFindView
+import com.fortysevendeg.ninecardslauncher.TypedFindView
 import macroid.Contexts
 
 class SharedContentActivity

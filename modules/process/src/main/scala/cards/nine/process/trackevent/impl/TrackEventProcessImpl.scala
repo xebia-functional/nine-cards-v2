@@ -1,77 +1,75 @@
 package cards.nine.process.trackevent.impl
 
 import cards.nine.commons.NineCardExtensions._
-import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.models.TrackEvent
+import cards.nine.models.types._
 import cards.nine.process.trackevent._
-import cards.nine.models.types.Game
-import monix.eval.Task
+import cards.nine.services.track.TrackServices
 import cats.implicits._
-import cards.nine.process.trackevent.models._
-import cards.nine.services.track.{TrackEvent, TrackServices}
+import monix.eval.Task
 
 class TrackEventProcessImpl(trackServices: TrackServices)
   extends TrackEventProcess
   with ImplicitsTrackEventException {
 
-  private[this] val startNameGame = "GAME_"
-
   override def openAppFromAppDrawer(packageName: String, category: Category) = {
     val event = TrackEvent(
-      screen = LauncherScreen.name,
-      category = category.name,
-      action = OpenAction.name,
+      screen = LauncherScreen,
+      category = category,
+      action = OpenAction,
       label = Option(packageName),
-      value = Option(OpenAppFromAppDrawerValue.value))
+      value = Option(OpenAppFromAppDrawerValue))
 
-    def eventForGames(isGame: Boolean): TaskService[Unit] = if (isGame) {
-      trackServices.trackEvent(event.copy(category = Game.name)).resolve[TrackEventException]
-    } else {
-      TaskService(Task(Right(())))
-    }
+    def eventForGames(category: Category): TaskService[Unit] =
+      category match {
+        case AppCategory(nineCardCategory) if nineCardCategory.isGameCategory =>
+          trackServices.trackEvent(event.copy(category = AppCategory(Game))).resolve[TrackEventException]
+        case _ => TaskService(Task(Right(())))
+      }
 
-    (trackServices.trackEvent(event) *> eventForGames(category.name.startsWith(startNameGame))).resolve[TrackEventException]
+    (trackServices.trackEvent(event) *> eventForGames(category)).resolve[TrackEventException]
   }
 
   override def openAppFromCollection(packageName: String, category: Category) = {
     val event = TrackEvent(
-      screen = CollectionDetailScreen.name,
-      category = category.name,
-      action = OpenCardAction.name,
+      screen = CollectionDetailScreen,
+      category = category,
+      action = OpenCardAction,
       label = Option(packageName),
-      value = Option(OpenAppFromCollectionValue.value))
+      value = Option(OpenAppFromCollectionValue))
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
   override def addAppToCollection(packageName: String, category: Category) = {
     val event = TrackEvent(
-      screen = CollectionDetailScreen.name,
-      category = category.name,
-      action = AddedToCollectionAction.name,
+      screen = CollectionDetailScreen,
+      category = category,
+      action = AddedToCollectionAction,
       label = Option(packageName),
-      value = Option(AddedToCollectionValue.value))
+      value = Option(AddedToCollectionValue))
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
   override def removeFromCollection(packageName: String, category: Category) = {
     val event = TrackEvent(
-      screen = CollectionDetailScreen.name,
-      category = category.name,
-      action = RemovedFromCollectionAction.name,
+      screen = CollectionDetailScreen,
+      category = category,
+      action = RemovedFromCollectionAction,
       label = Option(packageName),
-      value = Option(RemovedFromCollectionValue.value))
+      value = Option(RemovedFromCollectionValue))
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
   def addWidgetToMoment(packageName: String, className: String, moment: MomentCategory) = {
     val widgetLabel = s"$packageName:$className"
-    val widgetCategory = s"WIDGET_${moment.name}"
     val event = TrackEvent(
-      screen = WidgetScreen.name,
-      category = widgetCategory,
-      action = AddedWidgetToMomentAction.name,
+      screen = WidgetScreen,
+      category = moment,
+      action = AddedWidgetToMomentAction,
       label = Option(widgetLabel),
-      value = Option(AddedWidgetToMomentValue.value))
+      value = Option(AddedWidgetToMomentValue))
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 

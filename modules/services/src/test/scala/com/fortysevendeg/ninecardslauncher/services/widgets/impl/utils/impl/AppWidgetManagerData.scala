@@ -1,6 +1,7 @@
 package cards.nine.services.widgets.impl.utils.impl
 
-import cards.nine.services.widgets.models.Widget
+import cards.nine.models.AppWidget
+import cards.nine.models.types.WidgetResizeMode
 
 import scala.util.Random
 
@@ -36,8 +37,8 @@ trait AppWidgetManagerData {
     resizeMode: Int = resizeMode,
     updatePeriodMillis: Int = updatePeriodMillis,
     label: String = label,
-    preview: Int = preview): Seq[Widget] = List.tabulate(num)(
-    item => Widget(
+    preview: Int = preview): Seq[AppWidget] = List.tabulate(num)(
+    item => AppWidget(
       userHashCode = userHashCode,
       autoAdvanceViewId = autoAdvanceViewId,
       initialLayout = initialLayout,
@@ -47,11 +48,11 @@ trait AppWidgetManagerData {
       minWidth = minWidth,
       className = className,
       packageName = packageName,
-      resizeMode = resizeMode,
+      resizeMode = WidgetResizeMode(resizeMode),
       updatePeriodMillis = updatePeriodMillis,
       label = label,
       preview = preview))
 
-  val seqWidget: Seq[Widget] = createSeqWidget()
+  val seqWidget: Seq[AppWidget] = createSeqWidget()
 
 }

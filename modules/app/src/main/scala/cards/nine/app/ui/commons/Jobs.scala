@@ -32,6 +32,9 @@ class Jobs(implicit contextWrapper: ContextWrapper)
         getDefaultTheme
     }
 
+  def getThemeTask: TaskService[NineCardsTheme] =
+    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues))
+
   @deprecated
   def sendBroadCast(broadAction: BroadAction): Unit = sendBroadCast(commandType, broadAction)
 
@@ -50,11 +53,23 @@ class Jobs(implicit contextWrapper: ContextWrapper)
     contextWrapper.bestAvailable.sendBroadcast(intent)
   }
 
-  def withActivity(f: (AppCompatActivity => Unit)): TaskService[Unit] =
+  def withActivityTask(f: (AppCompatActivity => Unit)): TaskService[Unit] =
+    withActivity(activity => TaskService(CatchAll[JobException](f(activity))))
+
+  def withActivity(f: (AppCompatActivity => TaskService[Unit])): TaskService[Unit] =
     contextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) => TaskService(CatchAll[JobException](f(activity)))
+      case Some(activity: AppCompatActivity) => f(activity)
       case _ => TaskService.empty
     }
+
+  def readIntValue(i: Intent, key: String): Option[Int] =
+    if (i.hasExtra(key)) Option(i.getIntExtra(key, 0)) else None
+
+  def readStringValue(i: Intent, key: String): Option[String] =
+    if (i.hasExtra(key)) Option(i.getStringExtra(key)) else None
+
+  def readArrayValue(i: Intent, key: String): Option[Array[String]] =
+    if (i.hasExtra(key)) Option(i.getStringArrayExtra(key)) else None
 
 }
 

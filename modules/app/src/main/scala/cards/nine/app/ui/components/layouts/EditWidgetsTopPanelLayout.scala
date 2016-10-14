@@ -10,7 +10,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.components.drawables.PathMorphDrawable
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons.javaNull
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 import macroid.FullDsl._
 

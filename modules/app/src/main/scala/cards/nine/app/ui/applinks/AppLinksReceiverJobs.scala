@@ -9,8 +9,7 @@ import cards.nine.app.ui.commons.{BroadAction, ImplicitsUiExceptions, Jobs}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.sharedcollections.models.SharedCollection
-import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
 class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -18,8 +17,6 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
   with Conversions
   with CollectionJobs
   with ImplicitsUiExceptions {
-
-  implicit lazy val theme: NineCardsTheme = getTheme
 
   def uriReceived(uri: Uri): TaskService[Unit] = {
 
@@ -37,9 +34,10 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
     (safeExtractPath, Option(uri)) match {
       case (Some(CollectionsPathRegex(id)), _) =>
         for {
-          _ <- actions.initializeView()
+          theme <- getThemeTask
+          _ <- actions.initializeView(theme)
           sharedCollection <- di.sharedCollectionsProcess.getSharedCollection(id)
-          _ <- actions.showCollection(this, sharedCollection)
+          _ <- actions.showCollection(this, sharedCollection, theme)
         } yield ()
       case (_, Some(link)) =>
         openInBrowser(link)

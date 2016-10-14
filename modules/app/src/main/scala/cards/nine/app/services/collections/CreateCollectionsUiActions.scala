@@ -8,7 +8,7 @@ import cards.nine.app.ui.wizard.WizardActivity
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 trait CreateCollectionsUiActions {

@@ -2,7 +2,7 @@ package cards.nine.commons.contentresolver
 
 object NotificationUri {
 
-  val authorityPart = "com.fortysevendeg.ninecardslauncher2"
+  val authorityPart = "com.fortysevendeg.ninecardslauncher"
 
   val contentPrefix = "notification://"
 

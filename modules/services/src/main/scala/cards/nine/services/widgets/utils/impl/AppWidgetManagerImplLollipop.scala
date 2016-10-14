@@ -3,10 +3,9 @@ package cards.nine.services.widgets.utils.impl
 import android.appwidget.{AppWidgetManager, AppWidgetProviderInfo}
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.drawable. Drawable
 import android.os.{UserHandle, UserManager}
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.services.widgets.models.{Conversions, Widget}
+import cards.nine.models.{AppWidget, Conversions}
 import cards.nine.services.widgets.utils.AppWidgetManagerCompat
 
 import scala.collection.JavaConversions._
@@ -17,7 +16,7 @@ class AppWidgetManagerImplLollipop(implicit contextSupport: ContextSupport)
 
   lazy val packageManager: PackageManager = contextSupport.getPackageManager
 
-  override def getAllProviders: Seq[Widget] = {
+  override def getAllProviders: Seq[AppWidget] = {
     for {
       userHandle <- getUserHandle
       appWidgetProviderInfo <- getAppWidgetProviderInfo(userHandle)

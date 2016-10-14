@@ -54,7 +54,7 @@ trait MomentProcess {
     * Creates Moments from some already formed and given Moments
     *
     * @param items the Seq[cards.nine.process.moment.SaveMomentRequest] of Moments
-    * @return the List[com.fortysevendeg.ninecardslauncherprocess.moment.models.Moment]
+    * @return the List[cards.nine.process.moment.models.Moment]
     * @throws MomentException if there was an error creating the moments' collections
     */
   def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport): TaskService[Seq[Moment]]

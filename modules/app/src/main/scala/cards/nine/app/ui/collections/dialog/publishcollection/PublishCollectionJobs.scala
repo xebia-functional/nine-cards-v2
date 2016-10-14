@@ -4,13 +4,12 @@ import cards.nine.models.types.NineCardCategory
 import cats.implicits._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.{JobException, Jobs}
-import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.commons.models.Collection
 import cards.nine.process.sharedcollections.SharedCollectionsException
 import cards.nine.process.sharedcollections.models.CreateSharedCollection
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
 class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val contextWrapper: ActivityContextWrapper)
@@ -21,7 +20,7 @@ class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val cont
   def initialize(collection: Collection): TaskService[Unit] = {
     statuses = statuses.copy(collection = Some(collection))
     for {
-      theme <- di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues))
+      theme <- getThemeTask
       _ <- actions.loadTheme(theme)
       _ <- actions.initialize()
     } yield ()

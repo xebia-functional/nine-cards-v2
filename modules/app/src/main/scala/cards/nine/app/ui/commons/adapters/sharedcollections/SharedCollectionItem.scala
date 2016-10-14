@@ -19,7 +19,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
 import macroid._
@@ -95,7 +95,9 @@ trait SharedCollectionItem
       (name <~ tvText(resGetString(collection.name) getOrElse collection.name)) ~
       (author <~ tvText(collection.author)) ~
       (subscriptions <~
-        (if (collection.subscriptions.isDefined) vVisible + tvText(resGetString(R.string.subscriptions_number, collection.views.toString)) else vGone)) ~
+        (if (collection.subscriptions.isDefined) vVisible +
+          tvText(resGetString(R.string.subscriptions_number,
+            (collection.subscriptions getOrElse 0).toString)) else vGone)) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (addCollection <~ addCollectionTweak()) ~
       (shareCollection <~ On.click(Ui(onShareCollection)))

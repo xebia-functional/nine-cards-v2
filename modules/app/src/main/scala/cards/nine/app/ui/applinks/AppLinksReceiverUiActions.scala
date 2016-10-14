@@ -11,7 +11,7 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.theme.models.{CardLayoutBackgroundColor, CardTextColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 class AppLinksReceiverUiActions(
@@ -21,14 +21,14 @@ class AppLinksReceiverUiActions(
 
   override def content: ViewGroup = dom.collectionView
 
-  def initializeView()(implicit theme: NineCardsTheme): TaskService[Unit] =
+  def initializeView(theme: NineCardsTheme): TaskService[Unit] =
     ((dom.rootView <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
       (dom.loadingText <~ tvColor(theme.get(CardTextColor))) ~
-      initialize() ~
+      initialize()(theme) ~
       (dom.loadingView <~ vVisible) ~
       (dom.collectionView <~ vGone)).toService
 
-  def showCollection(jobs: AppLinksReceiverJobs, collection: SharedCollection)(implicit theme: NineCardsTheme): TaskService[Unit] = {
+  def showCollection(jobs: AppLinksReceiverJobs, collection: SharedCollection, theme: NineCardsTheme): TaskService[Unit] = {
 
     def onAddCollection(): Unit =
       jobs.addCollection(collection).resolveAsyncServiceOr(_ => jobs.showError())
@@ -38,7 +38,7 @@ class AppLinksReceiverUiActions(
 
     ((dom.loadingView <~ vGone) ~
       (dom.collectionView <~ vVisible) ~
-      bind(collection, onAddCollection(), onShareCollection())).toService
+      bind(collection, onAddCollection(), onShareCollection())(theme)).toService
   }
 
   def showLinkNotSupportedMessage(): TaskService[Unit] =

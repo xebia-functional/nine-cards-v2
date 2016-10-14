@@ -19,7 +19,7 @@ import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
-import com.fortysevendeg.ninecardslauncher2.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 

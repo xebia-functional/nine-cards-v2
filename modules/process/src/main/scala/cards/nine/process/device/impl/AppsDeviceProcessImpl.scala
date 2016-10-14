@@ -2,7 +2,9 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.models.types.{Misc, NineCardCategory}
 import cards.nine.process.device._
 import cards.nine.process.device.models.IterableApps
@@ -10,7 +12,7 @@ import cards.nine.process.device.utils.KnownCategoriesUtil
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.GooglePlayPackagesResponse
 import cards.nine.services.image._
-import cards.nine.services.persistence.{ImplicitsPersistenceServiceExceptions, OrderByName}
+import cards.nine.services.persistence.{ImplicitsPersistenceServiceExceptions, OrderByInstallDate, OrderByName}
 
 trait AppsDeviceProcessImpl
   extends DeviceProcess
@@ -53,22 +55,51 @@ trait AppsDeviceProcessImpl
       iter <- persistenceServices.fetchIterableAppsByKeyword(keyword, toFetchAppOrder(orderBy), orderBy.ascending)
     } yield new IterableApps(iter)).resolve[AppException]
 
-  def saveInstalledApps(implicit context: ContextSupport) =
-  (for {
-      requestConfig <- apiUtils.getRequestConfig
+  def synchronizeInstalledApps(implicit context: ContextSupport) = {
+
+    def deleteAndFilter(existingApps: Seq[Application], duplicatedIds: Seq[Int]): TaskService[Seq[Application]] =
+      if (duplicatedIds.nonEmpty) {
+        for {
+          _ <- persistenceServices.deleteAppsByIds(duplicatedIds)
+          filteredApps <- TaskService.right(existingApps.filterNot(app => duplicatedIds.contains(app.id)))
+        } yield filteredApps
+      } else TaskService.right(existingApps)
+
+    def fixDuplicatedPackages: TaskService[Seq[Application]] = {
+      for {
+        dbApps <- persistenceServices.fetchApps(OrderByInstallDate, ascending = false)
+        appIds <- TaskService.right(dbApps.groupBy(app => s"${app.packageName}:${app.className}").flatMap {
+          case (packageName, seq) => seq.tail.map(_.id)
+        }.toSeq)
+        filteredApps <- deleteAndFilter(existingApps = dbApps, duplicatedIds = appIds)
+      } yield filteredApps
+    }
+
+    def categorizeAndSaveNewApps(filteredApps: Seq[ApplicationData]): TaskService[Unit] =
+      if (filteredApps.nonEmpty) {
+        for {
+          requestConfig <- apiUtils.getRequestConfig
+          googlePlayPackagesResponse <- apiServices.googlePlayPackages(filteredApps map (_.packageName))(requestConfig)
+            .resolveLeftTo(GooglePlayPackagesResponse(200, Seq.empty))
+          apps = filteredApps map { app =>
+            val knownCategory = findCategory(app.packageName)
+            val category = knownCategory getOrElse {
+              val categoryName = googlePlayPackagesResponse.packages find (_.packageName == app.packageName) flatMap (_.category)
+              categoryName map (NineCardCategory(_)) getOrElse Misc
+            }
+            toAddAppRequest(app, category)
+          }
+          _ <- persistenceServices.addApps(apps)
+        } yield ()
+      } else TaskService.empty
+
+    (for {
       installedApps <- appsServices.getInstalledApplications
-      googlePlayPackagesResponse <- apiServices.googlePlayPackages(installedApps map (_.packageName))(requestConfig)
-        .resolveLeftTo(GooglePlayPackagesResponse(200, Seq.empty))
-      apps = installedApps map { app =>
-        val knownCategory = findCategory(app.packageName)
-        val category = knownCategory getOrElse {
-          val categoryName = googlePlayPackagesResponse.packages find(_.packageName == app.packageName) flatMap (_.category)
-          categoryName map (NineCardCategory(_)) getOrElse Misc
-        }
-        toAddAppRequest(app, category)
-      }
-      _ <- persistenceServices.addApps(apps)
+      dbApps <- fixDuplicatedPackages
+      filteredApps <- TaskService.right(installedApps.filterNot(app => dbApps.exists(_.packageName == app.packageName)))
+      _ <- categorizeAndSaveNewApps(filteredApps)
     } yield ()).resolve[AppException]
+  }
 
   def saveApp(packageName: String)(implicit context: ContextSupport) =
     (for {

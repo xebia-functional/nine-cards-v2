@@ -1,4 +1,4 @@
-package cards.nine.process.trackevent.models
+package cards.nine.models.types
 
 sealed trait Label {
   def name: String

@@ -1,7 +1,7 @@
 package cards.nine.process.trackevent
 
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.trackevent.models.{Category, MomentCategory}
+import cards.nine.models.types.{Category, MomentCategory}
 
 trait TrackEventProcess {
 

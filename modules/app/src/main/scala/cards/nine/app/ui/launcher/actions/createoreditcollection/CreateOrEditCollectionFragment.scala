@@ -9,7 +9,7 @@ import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons.javaNull
-import com.fortysevendeg.ninecardslauncher2.R
+import com.fortysevendeg.ninecardslauncher.R
 
 class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
   extends BaseActionFragment

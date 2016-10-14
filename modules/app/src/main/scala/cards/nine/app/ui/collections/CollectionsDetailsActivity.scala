@@ -21,7 +21,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{NotPublished, PublicCollectionStatus}
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher2.{R, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
 import scala.util.Try

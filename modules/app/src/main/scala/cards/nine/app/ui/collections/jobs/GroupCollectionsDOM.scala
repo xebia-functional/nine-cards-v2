@@ -8,7 +8,7 @@ import cards.nine.app.ui.commons.FabButtonTags._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.process.collection.AddCardRequest
 import cards.nine.process.commons.models.{Card, Collection}
-import com.fortysevendeg.ninecardslauncher2.{TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.{ActivityContextWrapper, Ui}
 
 trait GroupCollectionsDOM {
