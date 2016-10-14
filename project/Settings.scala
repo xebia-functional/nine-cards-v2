@@ -29,9 +29,9 @@ object Settings {
   def getDateFormatted = new SimpleDateFormat("yyyyMMdd").format(new Date())
 
   def versionNameSuffix = sys.env.get("GIT_PR") match {
-    case Some("false") => s"master-$getDateFormatted-$commit"
-    case Some(prNumber) => s"PR$prNumber-$commit"
-    case None => s"$user"
+    case Some("false") => s"-master-$getDateFormatted-$commit"
+    case Some(prNumber) => s"-PR$prNumber-$commit"
+    case None => ""
   }
 
   // App Module
@@ -54,7 +54,7 @@ object Settings {
       proguardScala in Android := true,
       useProguard in Android := true,
       useProguardInDebug in Android := true,
-      versionName in Android := Some(s"${versionName.value.getOrElse("")}-$versionNameSuffix"),
+      versionName in Android := Some(s"${versionName.value.getOrElse("")}$versionNameSuffix"),
       proguardOptions in Android ++= proguardCommons,
       proguardCache in Android := Seq.empty)
 
