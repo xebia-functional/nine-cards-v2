@@ -26,7 +26,7 @@ import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.auth.api.Auth
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.{AccountPicker, ConnectionResult, GoogleApiAvailability}
-import macroid.ActivityContextWrapper
+import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 import cats.implicits._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
@@ -98,14 +98,19 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
 
   def connectAccount(termsAccepted: Boolean): TaskService[Unit] =
     if (termsAccepted) {
-      val intent = Marshmallow ifSupportedThen {
-        AccountManager
-          .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
-      } getOrElse {
-        AccountPicker
-          .newChooseAccountIntent(javaNull, javaNull, Array(accountType), false, javaNull, javaNull, javaNull, javaNull)
+      val resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(contextSupport.context)
+      if (resultCode == ConnectionResult.SUCCESS) {
+        val intent = Marshmallow ifSupportedThen {
+          AccountManager
+            .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
+        } getOrElse {
+          AccountPicker
+            .newChooseAccountIntent(javaNull, javaNull, Array(accountType), false, javaNull, javaNull, javaNull, javaNull)
+        }
+        uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
+      } else {
+        onConnectionFailed(None, resultCode)
       }
-      uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
     } else {
       wizardUiActions.showErrorAcceptTerms()
     }
@@ -299,28 +304,36 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
     }
   }
 
-  private[this] def onConnectionFailed(connectionResult: ConnectionResult): TaskService[Unit] = {
+  private[this] def onConnectionFailed(result: ConnectionResult): TaskService[Unit] = {
+    val maybeResult = Option(result)
+    val errorCode = maybeResult.map(_.getErrorCode) getOrElse ConnectionResult.CANCELED
+    onConnectionFailed(maybeResult, errorCode)
+  }
 
-    def showErrorDialog(): TaskService[Unit] = withActivity { activity =>
-      GoogleApiAvailability.getInstance()
-        .getErrorDialog(activity, connectionResult.getErrorCode, resolveGooglePlayConnection)
-        .show()
+  private[this] def onConnectionFailed(maybeResult: Option[ConnectionResult], errorCode: Int): TaskService[Unit] = {
+
+    def showGoogleApiErrorDialog: TaskService[Unit] = withActivity { activity =>
+      Ui(GoogleApiAvailability.getInstance()
+        .getErrorDialog(activity, errorCode, resolveGooglePlayConnection)
+        .show()).toService
     }
 
-    if (connectionResult.hasResolution) {
-      withActivity { activity =>
-        connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)
-      }
-    } else if (
-      connectionResult.getErrorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||
-        connectionResult.getErrorCode == ConnectionResult.SERVICE_MISSING ||
-        connectionResult.getErrorCode == ConnectionResult.SERVICE_DISABLED) {
-      for {
-        _ <- visibilityUiActions.goToUser()
-        _ <- showErrorDialog()
-      } yield ()
-    } else {
-      wizardUiActions.showErrorConnectingGoogle() *> visibilityUiActions.goToUser()
+    def shouldShowDialog: Boolean = errorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||
+      errorCode == ConnectionResult.SERVICE_MISSING ||
+      errorCode == ConnectionResult.SERVICE_DISABLED
+
+    maybeResult match {
+      case Some(result) if result.hasResolution =>
+        withActivityTask { activity =>
+          result.startResolutionForResult(activity, resolveGooglePlayConnection)
+        }
+      case _ if shouldShowDialog =>
+        for {
+          _ <- visibilityUiActions.goToUser()
+          _ <- showGoogleApiErrorDialog
+        } yield ()
+      case _ =>
+        wizardUiActions.showErrorConnectingGoogle() *> visibilityUiActions.goToUser()
     }
   }
 

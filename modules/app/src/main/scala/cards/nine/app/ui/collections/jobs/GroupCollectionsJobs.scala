@@ -28,7 +28,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): TaskService[Unit] = {
     for {
-      theme <- di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues))
+      theme <- getThemeTask
       _ <- actions.loadTheme(theme)
       _ <- actions.initialize(indexColor, icon, isStateChanged)
       collections <- di.collectionProcess.getCollections

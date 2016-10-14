@@ -407,6 +407,12 @@
         <item name="android:textColor">@color/wizard_new_conf_accent_1</item>
     </style>
 
+    <style name="WizardNewConfigurationScrollStep0">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
     <style name="WizardNewConfigurationDescriptionStep0" parent="WizardNewConfigurationDescription">
         <item name="android:text">@string/wizard_new_conf_desc_step_0</item>
     </style>
@@ -489,6 +495,12 @@
         <item name="android:textColor">@color/wizard_new_conf_accent_2</item>
     </style>
 
+    <style name="WizardNewConfigurationScrollStep2">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
     <style name="WizardNewConfigurationDescriptionStep2" parent="WizardNewConfigurationDescription"/>
 
     <!-- Step 3 -->
@@ -553,6 +565,12 @@
     <style name="WizardNewConfigurationTitleStep5" parent="WizardNewConfigurationTitle">
         <item name="android:text">@string/wizard_new_conf_title_step_5</item>
         <item name="android:textColor">@color/wizard_new_conf_accent_4</item>
+    </style>
+
+    <style name="WizardNewConfigurationScrollStep5">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
     </style>
 
     <style name="WizardNewConfigurationDescriptionStep5" parent="WizardNewConfigurationDescription">

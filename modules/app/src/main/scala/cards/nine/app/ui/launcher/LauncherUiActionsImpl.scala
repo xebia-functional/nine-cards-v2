@@ -43,8 +43,8 @@ import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
 import cards.nine.commons._
-import cards.nine.models.types._
-import cards.nine.models._
+import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment, _}
+import cards.nine.models.{ApplicationData, ConditionWeather, Contact, UnknownCondition, Widget, _}
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
@@ -96,7 +96,7 @@ trait LauncherUiActionsImpl
   val tagDialog = "dialog"
 
   override def initialize: Ui[Any] =
-    Ui (appWidgetHost.startListening()) ~
+    Ui(appWidgetHost.startListening()) ~
       systemBarsTint.initAllSystemBarsTint() ~
       prepareBars ~
       initCollectionsUi ~
@@ -206,7 +206,7 @@ trait LauncherUiActionsImpl
         intent.putExtra(indexColorToolbar, collection.themedColorIndex)
         intent.putExtra(iconToolbar, collection.icon)
         CollectionOpeningAnimations.readValue(preferenceValues) match {
-          case anim @ CircleOpeningCollectionAnimation if anim.isSupported =>
+          case anim@CircleOpeningCollectionAnimation if anim.isSupported =>
             rippleToCollection ~~
               Ui {
                 activity.startActivityForResult(intent, RequestCodes.goToCollectionDetails)
@@ -307,7 +307,7 @@ trait LauncherUiActionsImpl
       val widthContent = workspaces map (_.getWidth) getOrElse 0
       val heightContent = workspaces map (_.getHeight) getOrElse 0
 
-      val maybeAppWidgetInfo = widget.appWidgetId flatMap(widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
+      val maybeAppWidgetInfo = widget.appWidgetId flatMap (widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
 
       (maybeAppWidgetInfo, widget.appWidgetId) match {
         case (Some(appWidgetInfo), Some(appWidgetId)) =>
@@ -328,7 +328,7 @@ trait LauncherUiActionsImpl
   }
 
   override def replaceWidget(widget: Widget): Ui[Any] = {
-    val maybeAppWidgetInfo = widget.appWidgetId flatMap(widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
+    val maybeAppWidgetInfo = widget.appWidgetId flatMap (widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
 
     (maybeAppWidgetInfo, widget.appWidgetId) match {
       case (Some(appWidgetInfo), Some(appWidgetId)) =>
@@ -512,7 +512,7 @@ trait LauncherUiActionsImpl
 
   override def canRemoveCollections: Boolean = getCountCollections > 1
 
-  override def isWorkspaceScrolling: Boolean = workspaces exists(_.statuses.isScrolling)
+  override def isWorkspaceScrolling: Boolean = workspaces exists (_.statuses.isScrolling)
 
   override def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])] =
     moments map {
@@ -530,7 +530,20 @@ trait LauncherUiActionsImpl
 
   override def showBottomError(message: Int, action: () => Unit): Ui[Any] = showBottomDrawerError(message, action)
 
-  override def showWeather(condition: ConditionWeather): Ui[Any] = topBarPanel <~ tblWeather(condition)
+  override def showWeather(condition: Option[ConditionWeather]): Ui[Any] = {
+    val previousCondition = topBarPanel.flatMap(v => Option(v.getTag)) match {
+      case Some(c: ConditionWeather) => Some(c)
+      case _ => None
+    }
+
+    (previousCondition, condition) match {
+      case (_, Some(c)) if c != UnknownCondition =>
+        (topBarPanel <~ tblWeather(c)) ~ (topBarPanel <~ vTag(c))
+      case (None, _) =>
+        (topBarPanel <~ tblWeather(UnknownCondition)) ~ (topBarPanel <~ vTag(UnknownCondition))
+      case _ => Ui.nop
+    }
+  }
 
   def reloadPager(currentPage: Int) = Transformer {
     case imageView: ImageView if imageView.isPosition(currentPage) =>

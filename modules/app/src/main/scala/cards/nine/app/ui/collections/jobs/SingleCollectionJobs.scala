@@ -25,7 +25,7 @@ class SingleCollectionJobs(
   def initialize(sType: ScrollType): TaskService[Unit] = {
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
     for {
-      theme <- di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues))
+      theme <- getThemeTask
       _ <- actions.loadTheme(theme)
       _ <- actions.updateStatus(canScroll, sType)
       _ <- maybeCollection match {

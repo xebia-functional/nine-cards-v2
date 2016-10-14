@@ -10,7 +10,6 @@ import cards.nine.app.ui.collections.tasks.CollectionJobs
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.action_filters.{CollectionAddedActionFilter, SyncAskActionFilter}
 import cards.nine.app.ui.commons._
-import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.app.ui.profile.models.AccountSync
 import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
@@ -48,7 +47,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
   def driveConnectionFailed(connectionResult: ConnectionResult): TaskService[Unit] =
     if (connectionResult.hasResolution) {
-      withActivity { activity =>
+      withActivityTask { activity =>
         connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)
       }
     } else {
@@ -70,7 +69,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
 
     for {
-      theme <- di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues))
+      theme <- getThemeTask
       _ <- actions.initialize(theme)
       user <- di.userProcess.getUser
       _ <- showUserAndConnect(user)
@@ -163,7 +162,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
       _ <- di.momentProcess.deleteAllMoments()
       _ <- di.widgetsProcess.deleteAllWidgets()
       _ <- di.userProcess.unregister
-      _ <- withActivity { activity =>
+      _ <- withActivityTask { activity =>
         activity.setResult(ResultCodes.logoutSuccessful)
         activity.finish()
       }
@@ -171,7 +170,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
   def launchService(): TaskService[Unit] =
     if (syncEnabled) {
-      withActivity { activity =>
+      withActivityTask { activity =>
         syncEnabled = false
         activity.startService(new Intent(activity, classOf[SynchronizeDeviceService]))
       }
