@@ -31,6 +31,7 @@
 
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_default">8dp</dimen>
+    <dimen name="padding_checkbox">30dp</dimen>
     <dimen name="padding_medium">12dp</dimen>
     <dimen name="padding_large">16dp</dimen>
     <dimen name="padding_xlarge">24dp</dimen>

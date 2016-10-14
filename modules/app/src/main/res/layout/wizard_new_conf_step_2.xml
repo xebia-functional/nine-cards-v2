@@ -20,8 +20,13 @@
         android:id="@+id/wizard_steps_new_configuration_step2_title"
         style="@style/WizardNewConfigurationTitleStep2"/>
 
-    <TextView
-        android:id="@+id/wizard_steps_new_configuration_step2_description"
-        style="@style/WizardNewConfigurationDescriptionStep2"/>
+    <ScrollView
+        style="@style/WizardNewConfigurationScrollStep2">
+
+        <TextView
+            android:id="@+id/wizard_steps_new_configuration_step2_description"
+            style="@style/WizardNewConfigurationDescriptionStep2"/>
+
+    </ScrollView>
 
 </LinearLayout>
