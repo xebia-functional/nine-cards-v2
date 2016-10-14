@@ -6,9 +6,6 @@ import cards.nine.repository.model.{Collection => RepositoryCollection, Collecti
 
 trait CollectionPersistenceServicesData {
 
-  val items = 5
-  val item = 1
-
   val nonExistentPackageName: String = "nonExistentPackageName"
 
   def createSeqRepoCollection(

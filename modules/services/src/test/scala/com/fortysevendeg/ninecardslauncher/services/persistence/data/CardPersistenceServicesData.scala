@@ -1,7 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
 import cards.nine.commons.test.data.CardValues._
-import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData}
 
 trait CardPersistenceServicesData {

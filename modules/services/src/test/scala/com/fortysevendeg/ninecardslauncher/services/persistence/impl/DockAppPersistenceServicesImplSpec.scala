@@ -2,6 +2,8 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.DockAppTestData
+import cards.nine.commons.test.data.DockAppValues._
 import cards.nine.models.DockApp
 import cards.nine.repository.RepositoryException
 import cards.nine.services.persistence.data.DockAppPersistenceServicesData
@@ -16,6 +18,7 @@ trait DockAppPersistenceServicesSpecification
 
   trait DockAppPersistenceServices
     extends RepositoryServicesScope
+    with DockAppTestData
     with DockAppPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")

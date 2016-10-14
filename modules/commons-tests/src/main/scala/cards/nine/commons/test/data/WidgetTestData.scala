@@ -1,6 +1,5 @@
 package cards.nine.commons.test.data
 
-import cards.nine.commons.test.data.MomentValues._
 import cards.nine.commons.test.data.WidgetValues._
 import cards.nine.models.types.WidgetType
 import cards.nine.models.{NineCardsIntentConversions, Widget, WidgetArea, WidgetData}

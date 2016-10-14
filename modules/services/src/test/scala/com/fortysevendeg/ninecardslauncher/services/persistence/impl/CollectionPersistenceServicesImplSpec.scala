@@ -2,15 +2,18 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.CollectionTestData
 import cards.nine.models.Collection
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.CardEntity
-import cards.nine.services.persistence.data.PersistenceServicesData
+import cards.nine.services.persistence.data.CollectionPersistenceServicesData
 import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.services.persistence.data.{CardPersistenceServicesData, MomentPersistenceServicesData}
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
+import cards.nine.commons.test.data.CollectionValues._
 
 trait CollectionPersistenceServicesDataSpecification
   extends Specification
@@ -19,7 +22,10 @@ trait CollectionPersistenceServicesDataSpecification
 
   trait CollectionServicesResponses
     extends RepositoryServicesScope
-    with PersistenceServicesData {
+    with CollectionTestData
+    with CollectionPersistenceServicesData
+    with CardPersistenceServicesData
+    with MomentPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 
@@ -36,7 +42,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       mockCollectionRepository.addCollection(any) returns TaskService(Task(Either.right(repoCollection)))
       mockCardRepository.addCards(any) returns TaskService(Task(Either.right(Seq(repoCard))))
       mockMomentRepository.fetchMoments() returns TaskService(Task(Either.right(seqRepoMoment)))
-      mockMomentRepository.updateMoment(repoMoment) returns TaskService(Task(Either.right(item)))
+      mockMomentRepository.updateMoment(any) returns TaskService(Task(Either.right(item)))
 
       val result = persistenceServices.addCollection(collectionData).value.run
 

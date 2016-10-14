@@ -1,7 +1,6 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.CardValues._
-import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.models.types.CardType
 import cards.nine.models.{NineCardsIntentConversions, Card, CardData}
 

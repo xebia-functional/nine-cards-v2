@@ -2,10 +2,12 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.WidgetTestData
+import cards.nine.commons.test.data.WidgetValues._
 import cards.nine.models.Widget
 import cards.nine.repository.RepositoryException
-import cards.nine.services.persistence.data.PersistenceServicesData
 import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.services.persistence.data.WidgetPersistenceServicesData
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
@@ -16,7 +18,8 @@ trait WidgetPersistenceServicesSpecification
 
   trait WidgetPersistenceServicesScope
     extends RepositoryServicesScope
-    with PersistenceServicesData {
+    with WidgetTestData
+    with WidgetPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 

@@ -2,11 +2,13 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.models.{MomentData, Moment}
+import cards.nine.commons.test.data.MomentTestData
+import cards.nine.commons.test.data.MomentValues._
+import cards.nine.models.Moment
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.MomentEntity
-import cards.nine.services.persistence.data.PersistenceServicesData
 import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.services.persistence.data.{WidgetPersistenceServicesData, MomentPersistenceServicesData}
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
@@ -19,7 +21,9 @@ trait MomentPersistenceServicesSpecification
 
   trait MomentPersistenceServicesScope
     extends RepositoryServicesScope
-    with PersistenceServicesData {
+    with MomentTestData
+    with WidgetPersistenceServicesData
+    with MomentPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 

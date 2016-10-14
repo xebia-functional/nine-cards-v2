@@ -1,6 +1,5 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
-import cards.nine.commons.test.data.MomentValues._
 import cards.nine.commons.test.data.WidgetValues._
 import cards.nine.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
 

@@ -2,6 +2,8 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.UserTestData
+import cards.nine.commons.test.data.UserValues._
 import cards.nine.models.User
 import cards.nine.repository.RepositoryException
 import cards.nine.services.persistence.data.UserPersistenceServicesData
@@ -17,7 +19,8 @@ trait UserPersistenceServicesDataSpecification
 
   trait UserPersistenceServicesScope
     extends RepositoryServicesScope
-      with UserPersistenceServicesData {
+    with UserTestData
+    with UserPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 
