@@ -3,11 +3,9 @@ package cards.nine.process.device.impl
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.models
+import cards.nine.models.NineCardsIntentImplicits._
 import cards.nine.models.types._
 import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, _}
-import NineCardsIntent
-import NineCardsIntentImplicits._
-import cards.nine.process.device.SaveDockAppRequest
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}

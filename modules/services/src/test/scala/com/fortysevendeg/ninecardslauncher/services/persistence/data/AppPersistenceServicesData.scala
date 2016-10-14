@@ -1,38 +1,16 @@
 package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.models.types.NineCardsCategory
-import cards.nine.models.{Application, ApplicationData}
+import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, DataCounter => RepositoryDataCounter}
 import cards.nine.services.persistence.models._
 
 import scala.util.Random
 
-trait AppPersistenceServicesData extends PersistenceServicesData {
+trait AppPersistenceServicesData {
 
-  val appId: Int = Random.nextInt(10)
-
-  def createSeqApp(
-    num: Int = 5,
-    id: Int = appId,
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[Application] = List.tabulate(num)(
-    item => Application(
-      id = id + item,
-      name = name,
-      packageName = packageName,
-      className = className,
-      category = NineCardsCategory(category),
-      dateInstalled = dateInstalled,
-      dateUpdate = dateUpdate,
-      version = version,
-      installedFromGooglePlay = installedFromGooglePlay))
+  val termDataCounter: String = Random.nextString(1)
+  val countDataCounter: Int = Random.nextInt(2)
 
   def createSeqRepoApp(
     num: Int = 5,
@@ -60,51 +38,9 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
       version = version,
       installedFromGooglePlay = installedFromGooglePlay)
 
-  val seqApp: Seq[Application] = createSeqApp()
-  val app: Application = seqApp(0)
   val repoAppData: RepositoryAppData = createRepoAppData()
   val seqRepoApp: Seq[RepositoryApp] = createSeqRepoApp(data = repoAppData)
   val repoApp: RepositoryApp = seqRepoApp(0)
-
-  def createApplicationData(
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): ApplicationData =
-    ApplicationData(
-      name = name,
-      packageName = packageName,
-      className = className,
-      category = NineCardsCategory(category),
-      dateInstalled = dateInstalled,
-      dateUpdate = dateUpdate,
-      version = version,
-      installedFromGooglePlay = installedFromGooglePlay)
-
-  def createApplication(
-    id: Int = appId,
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    category: String = category,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): Application =
-    Application(
-      id = id,
-      name = name,
-      packageName = packageName,
-      className = className,
-      category = NineCardsCategory(category),
-      dateInstalled = dateInstalled,
-      dateUpdate = dateUpdate,
-      version = version,
-      installedFromGooglePlay = installedFromGooglePlay)
 
   val iterableCursorApp = new IterableCursor[RepositoryApp] {
     override def count(): Int = seqRepoApp.length
@@ -121,7 +57,6 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
       count = countDataCounter
     )
 
-  val keyword = "fake-keyword"
   val dataCounters = 1 to 10 map createDataCounter
 
 }

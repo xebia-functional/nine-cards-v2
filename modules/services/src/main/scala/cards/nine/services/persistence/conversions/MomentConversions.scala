@@ -1,9 +1,9 @@
 package cards.nine.services.persistence.conversions
 
+import cards.nine.models.reads.MomentImplicits
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{Moment, MomentData, MomentTimeSlot}
 import cards.nine.repository.model.{Moment => RepositoryMoment, MomentData => RepositoryMomentData}
-import cards.nine.services.persistence.reads.MomentImplicits
 import play.api.libs.json.Json
 
 trait MomentConversions {

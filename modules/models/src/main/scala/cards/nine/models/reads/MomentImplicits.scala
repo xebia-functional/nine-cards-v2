@@ -1,4 +1,4 @@
-package cards.nine.services.persistence.reads
+package cards.nine.models.reads
 
 import cards.nine.models.MomentTimeSlot
 
