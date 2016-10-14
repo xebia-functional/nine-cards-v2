@@ -5,119 +5,102 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.app.DialogFragment
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.DrawableOps._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.{AppUtils, RequestCodes}
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
+import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.Communication
 import cards.nine.process.commons.models.Collection
-import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor}
+import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.EditTextTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 
-trait CreateOrEditCollectionActionsImpl
-  extends CreateOrEditCollectionActions
-  with Styles {
+trait CreateOrEditCollectionUiActions
+  extends Styles {
 
-  self: TypedFindView with BaseActionFragment =>
+  self: BaseActionFragment with CreateOrEditCollectionDOM with CreateOrEditCollectionListener =>
 
   val tagDialog = "dialog"
 
   val defaultIcon = Communication.name
 
-  lazy val name = findView(TR.new_collection_name)
+  var statuses = CreateOrEditCollectionStatuses()
 
-  lazy val collectionName = findView(TR.new_collection_name)
-
-  lazy val colorContent = findView(TR.new_collection_select_color_content)
-
-  lazy val colorImage = findView(TR.new_collection_select_color_image)
-
-  lazy val colorText = findView(TR.new_collection_select_color_text)
-
-  lazy val iconContent = findView(TR.new_collection_select_icon_content)
-
-  lazy val iconImage = findView(TR.new_collection_select_icon_image)
-
-  lazy val iconText = findView(TR.new_collection_select_icon_text)
-
-  val launcherPresenter: LauncherPresenter
-
-  val collectionPresenter: CreateOrEditCollectionPresenter
-
-  override def initialize(): Ui[Any] = {
-    val textColor = theme.get(DrawerTextColor)
-    (toolbar <~
+  def initialize(theme: NineCardsTheme): TaskService[Unit] = {
+    statuses = statuses.copy(theme = theme)
+    val textColor = statuses.theme.get(DrawerTextColor)
+    ((toolbar <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (name <~ tvColor(textColor) <~ tvHintColor(textColor.alpha(0.4f))) ~
       (colorText <~ tvColor(textColor)) ~
       (iconText <~ tvColor(textColor)) ~
-      (colorContent <~ On.click(Ui(collectionPresenter.changeColor(getColor)))) ~
-      (iconContent <~ On.click(Ui(collectionPresenter.changeIcon(getIcon))))
+      (colorContent <~ On.click(Ui(changeColor(getColor)))) ~
+      (iconContent <~ On.click(Ui(changeIcon(getIcon))))).toService
   }
 
-  override def initializeNewCollection(): Ui[Any] =
-    (toolbar <~
+  def initializeNewCollection(): TaskService[Unit] =
+    ((toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.newCollection)) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
-        On.click(Ui(collectionPresenter.saveCollection(getName, getIcon, getColor)))) ~
+        On.click(Ui(saveCollection(getName, getIcon, getColor)))) ~
       setIcon(defaultIcon) ~
-      setIndexColor(0)
+      setIndexColor(0)).toService
 
-  override def initializeEditCollection(collection: Collection): Ui[Any] ={
+  def initializeEditCollection(collection: Collection): TaskService[Unit] = {
     val color = theme.getIndexColor(collection.themedColorIndex)
-    (toolbar <~
+    ((toolbar <~
       dtbInit(color) <~
       dtbChangeText(R.string.editCollection)) ~
       (collectionName <~ tvText(collection.name)) ~
       (fab <~
         fabButtonMenuStyle(color) <~
-        On.click(Ui(collectionPresenter.editCollection(collection, getName, getIcon, getColor)))) ~
+        On.click(Ui(editCollection(collection, getName, getIcon, getColor)))) ~
       setIcon(collection.icon) ~
-      setIndexColor(collection.themedColorIndex)
+      setIndexColor(collection.themedColorIndex)).toService
   }
 
-  override def addCollection(collection: Collection): Ui[Any] = Ui {
-    launcherPresenter.addCollection(collection)
-  }
+  def addCollection(collection: Collection): TaskService[Unit] = Ui {
+    addLauncherCollection(collection)
+  }.toService
 
-  def editCollection(collection: Collection): Ui[Any] = Ui {
-    launcherPresenter.updateCollection(collection)
-  }
+  def editCollection(collection: Collection): TaskService[Unit] = Ui {
+    updateLauncherCollection(collection)
+  }.toService
 
-  override def showColorDialog(color: Int): Ui[Any] = {
+  def showColorDialog(color: Int): TaskService[Unit] = {
     val dialog = ColorDialogFragment(color)
     val requestCode = RequestCodes.selectInfoColor
-    showDialog(dialog, requestCode)
+    showDialog(dialog, requestCode).toService
   }
 
-  override def showIconDialog(icon: String) = {
+  def showIconDialog(icon: String): TaskService[Unit] = {
     val dialog = IconDialogFragment(icon)
     val requestCode = RequestCodes.selectInfoIcon
-    showDialog(dialog, requestCode)
+    showDialog(dialog, requestCode).toService
   }
 
-  override def showMessageContactUsError: Ui[Any] = showMessage(R.string.contactUsError)
+  def showMessageContactUsError: TaskService[Unit] = showMessage(R.string.contactUsError).toService
 
-  override def showMessageFormFieldError: Ui[Any] = showMessage(R.string.formFieldError)
+  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService
 
-  override def updateIcon(iconName: String): Ui[Any] = setIcon(iconName)
+  def updateIcon(iconName: String): TaskService[Unit] = setIcon(iconName).toService
 
-  override def updateColor(indexColor: Int): Ui[Any] = setIndexColor(indexColor)
+  def updateColor(indexColor: Int): TaskService[Unit] = setIndexColor(indexColor).toService
 
-  override def close(): Ui[Any] = hideKeyboard ~ unreveal()
+  def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService
 
   private[this] def hideKeyboard: Ui[Any] = name <~ etHideKeyboard
 
@@ -167,4 +150,8 @@ trait CreateOrEditCollectionActionsImpl
 
   private[this] def getColor: Option[Int] = Option(colorImage.getTag) map Int.unbox
 
+
 }
+
+case class CreateOrEditCollectionStatuses(
+  theme: NineCardsTheme = AppUtils.getDefaultTheme)
