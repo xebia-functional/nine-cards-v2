@@ -34,10 +34,15 @@ object Settings {
     case None => ""
   }
 
+  lazy val androidVersionName = "2.0-alpha"
+  lazy val androidVersionCode = 57
+
   // App Module
   lazy val appSettings = basicSettings ++ multiDex ++ customS3Settings ++ crashlyticsSettings ++
     Seq(
       name := "nine-cards-v2",
+      versionName in Android := Some(s"$androidVersionName$versionNameSuffix"),
+      versionCode in Android := Some(androidVersionCode),
       run <<= run in Android,
       javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
       scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7"),
@@ -54,7 +59,6 @@ object Settings {
       proguardScala in Android := true,
       useProguard in Android := true,
       useProguardInDebug in Android := true,
-      versionName in Android := Some(s"${versionName.value.getOrElse("")}$versionNameSuffix"),
       proguardOptions in Android ++= proguardCommons,
       proguardCache in Android := Seq.empty)
 
