@@ -365,7 +365,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
       mockCollectionRepository.updateCollections(any) returns TaskService(Task(Either.right(Seq(updatedCollections))))
       val result = persistenceServices.updateCollections(seqCollection).value.run
-      result shouldEqual Right(Seq(updatedCollection))
+      result shouldEqual Right(Seq(updatedCollections))
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {

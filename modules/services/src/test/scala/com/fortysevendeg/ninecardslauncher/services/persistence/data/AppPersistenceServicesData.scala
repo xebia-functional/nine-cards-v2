@@ -12,7 +12,7 @@ trait AppPersistenceServicesData {
   val termDataCounter: String = Random.nextString(1)
   val countDataCounter: Int = Random.nextInt(2)
 
-  def applicationData(num: Int = 0) = AppData(
+  def repoAppData(num: Int = 0) = AppData(
     name = applicationName,
     packageName = applicationPackageName,
     className = applicationClassName,
@@ -20,17 +20,17 @@ trait AppPersistenceServicesData {
     dateInstalled = dateInstalled,
     dateUpdate = dateUpdated,
     version = version,
-    installedFromGooglePlay = installedFromGooglePlay))
+    installedFromGooglePlay = installedFromGooglePlay)
 
-  val repoAppData: AppData = applicationData(0)
-  val seqRepoAppData: Seq[AppData] = Seq(applicationData(0), applicationData(1), applicationData(2))
+  val repoAppData: AppData = repoAppData(0)
+  val seqRepoAppData: Seq[AppData] = Seq(repoAppData(0), repoAppData(1), repoAppData(2))
 
-  def application(num: Int = 0) = App(
-    id = applicationId + item,
-    data = applicationData(num))
+  def repoApp(num: Int = 0) = App(
+    id = applicationId + num,
+    data = repoAppData(num))
 
-  val repoApp: App = application(0)
-  val seqRepoApp: Seq[App] = Seq(application(0), application(1), application(2))
+  val repoApp: App = repoApp(0)
+  val seqRepoApp: Seq[App] = Seq(repoApp(0), repoApp(1), repoApp(2))
 
   val iterableCursorApp = new IterableCursor[App] {
     override def count(): Int = seqRepoApp.length

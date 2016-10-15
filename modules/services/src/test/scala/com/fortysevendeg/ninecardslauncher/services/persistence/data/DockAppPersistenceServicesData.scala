@@ -6,24 +6,23 @@ import cards.nine.repository.model.{DockApp, DockAppData}
 import cards.nine.services.persistence.models.IterableDockApps
 
 trait DockAppPersistenceServicesData{
-
-
-  def dockAppData(num: Int = 0) = DockAppData(
+  
+  def repoDockAppData(num: Int = 0) = DockAppData(
     name = dockAppName,
     dockType = dockType,
     intent = dockAppIntent,
     imagePath = dockAppImagePath,
-    position = dockAppPosition)
+    position = dockAppPosition + num)
 
-  val repoDockAppData: DockAppData = dockAppData(0)
-  val seqRepoDockAppData: Seq[DockAppData] = Seq(dockAppData(0), dockAppData(1), dockAppData(2))
+  val repoDockAppData: DockAppData = repoDockAppData(0)
+  val seqRepoDockAppData: Seq[DockAppData] = Seq(repoDockAppData(0), repoDockAppData(1), repoDockAppData(2))
 
-  def dockApp(num: Int = 0) = DockApp(
-    id = dockAppId + item,
-    data = dockAppData(num))
+  def repoDockApp(num: Int = 0) = DockApp(
+    id = dockAppId + num,
+    data = repoDockAppData(num))
 
-  val repoDockApp: DockApp = dockApp(0)
-  val seqRepoDockApp: Seq[DockApp]  = Seq(dockApp(0), dockApp(1), dockApp(2))
+  val repoDockApp: DockApp = repoDockApp(0)
+  val seqRepoDockApp: Seq[DockApp]  = Seq(repoDockApp(0), repoDockApp(1), repoDockApp(2))
 
   val iterableCursorDockApps = new IterableCursor[DockApp] {
     override def count(): Int = seqRepoDockApp.length

@@ -33,56 +33,56 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a DockApp value for a valid request adding a dockApp" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(dockAppPosition).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(Seq.empty)))
+      mockDockAppRepository.fetchDockApps(any, any, any) returns TaskService(Task(Either.right(Seq.empty)))
 
       mockDockAppRepository.addDockApps(any) returns TaskService(Task(Either.right(Seq(repoDockApp))))
 
       mockDockAppRepository.updateDockApps(any) returns TaskService(Task(Either.right(Seq.empty)))
 
-      val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
+      val result = persistenceServices.createOrUpdateDockApp(Seq(dockAppData)).value.run
       result shouldEqual Right(Seq(dockApp))
     }
 
     "return a DockApp value for a valid request updating a dockApp" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(dockAppPosition).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(seqRepoDockApp)))
+      mockDockAppRepository.fetchDockApps(any, any, any) returns TaskService(Task(Either.right(seqRepoDockApp)))
 
       mockDockAppRepository.addDockApps(any) returns TaskService(Task(Either.right(Seq.empty)))
 
       mockDockAppRepository.updateDockApps(any) returns TaskService(Task(Either.right(Seq(item))))
 
-      val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
+      val result = persistenceServices.createOrUpdateDockApp(Seq(dockAppData)).value.run
       result shouldEqual Right(Seq(dockApp))
 
     }
 
     "return a PersistenceServiceException if the service throws a exception fetching the dockApps" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(dockAppPosition).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.left(exception)))
+      mockDockAppRepository.fetchDockApps(any, any, any) returns TaskService(Task(Either.left(exception)))
 
-      val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
+      val result = persistenceServices.createOrUpdateDockApp(seqDockAppData).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
 
     "return a PersistenceServiceException if the service throws a exception adding the dockApps" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(dockAppPosition).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(Seq.empty)))
+      mockDockAppRepository.fetchDockApps(any, any, any) returns TaskService(Task(Either.right(Seq.empty)))
 
       mockDockAppRepository.addDockApps(any) returns TaskService(Task(Either.left(exception)))
 
-      val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
+      val result = persistenceServices.createOrUpdateDockApp(seqDockAppData).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
 
     "return a PersistenceServiceException if the service throws a exception updating the dockApps" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(dockAppPosition).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(seqRepoDockApp)))
+      mockDockAppRepository.fetchDockApps(any, any, any) returns TaskService(Task(Either.right(seqRepoDockApp)))
 
       mockDockAppRepository.addDockApps(any) returns TaskService(Task(Either.right(Seq.empty)))
 
       mockDockAppRepository.updateDockApps(any) returns TaskService(Task(Either.left(exception)))
 
-      val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
+      val result = persistenceServices.createOrUpdateDockApp(seqDockAppData).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

@@ -3,8 +3,6 @@ package cards.nine.commons.test.data
 import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.models.types._
 
-import scala.util.Random
-
 object ApplicationValues {
 
   val item = 1
@@ -63,7 +61,7 @@ object CardValues {
   val term: String = "cardTerm"
   val cardPackageName: String = "cardPackageName"
   val cardType: String = "APP"
-  val cardIntent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val cardIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val cardImagePath: String = "/card/image/path"
   val notification: String = "notification"
 
@@ -85,16 +83,13 @@ object DockAppValues {
   val nonExistentDockAppId: Int = 10001
   val dockAppName: String = "dockAppName"
   val dockType: String = "APP"
-  val dockAppIntent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val dockAppIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val dockAppImagePath: String = "/dockApp/image/path"
   val dockAppPosition: Int = 1
 
 }
 
 object MomentValues {
-
-  val item = 1
-  val items = 5
 
   val momentId: Int = 1
   val nonExistentMomentId: Int = 10001
@@ -103,14 +98,14 @@ object MomentValues {
   val wifiSeq: Seq[String] = Seq("wifi 1", "wifi 2", "wifi 2")
   val headphone: Boolean = false
   val momentTypeSeq = Seq("HOME", "WORK", "NIGHT", "WALK", "STUDY", "MUSIC", "CAR", "BIKE", "RUNNING")
-
+  val momentType: NineCardsMoment = NineCardsMoment("HOME")
   val homeAppPackageName = "com.google.android.apps.plus"
   val nightAppPackageName = "com.Slack"
   val workAppPackageName = "com.google.android.apps.photos"
   val transitAppPackageName = "com.google.android.apps.maps"
 
-  val ssid: String = "ssid"
-
+  val deletedMoment = 1
+  val deletedMoments = 2
   val updatedMoment: Int = 1
 
 }
@@ -137,9 +132,6 @@ object UserValues {
 
 object WidgetValues {
 
-  val item = 1
-  val items = 5
-
   val widgetId: Int = 1
   val nonExistentWidgetId: Int = 10001
   val widgetMomentId: Int = 1
@@ -154,6 +146,11 @@ object WidgetValues {
   val widgetType: String = "APP"
   val label: String = "widget label"
   val widgetImagePath: String = "/widget/image/path"
-  val widgetIntent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val widgetIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+
+  val deletedWidget: Int = 1
+  val deletedWidgets: Int = 2
+  val updatedWidget: Int = 1
+  val updatedWidgets: Int = 2
 
 }

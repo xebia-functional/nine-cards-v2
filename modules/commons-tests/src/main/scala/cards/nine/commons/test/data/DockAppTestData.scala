@@ -7,7 +7,7 @@ import cards.nine.models.types.DockType
 trait DockAppTestData extends NineCardsIntentConversions {
 
   def dockApp(num: Int = 0) = DockApp(
-    id = dockAppId + item,
+    id = dockAppId + num,
     name = dockAppName,
     dockType = DockType(dockType),
     intent = jsonToNineCardIntent(dockAppIntent),

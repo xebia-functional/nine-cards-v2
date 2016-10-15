@@ -45,7 +45,8 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return Unit for a valid request when AppWidgetId is None" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.addWidget(any) returns TaskService(Task(Either.right(repoWidgetNone)))
+      mockWidgetRepository.addWidget(any) returns
+        TaskService(Task(Either.right(repoWidget.copy(data = repoWidgetData.copy(appWidgetId = 0)))))
       val result = persistenceServices.addWidget(widgetData).value.run
 
       result must beLike {
@@ -84,9 +85,9 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return the number of elements deleted for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.deleteWidgets() returns TaskService(Task(Either.right(items)))
+      mockWidgetRepository.deleteWidgets() returns TaskService(Task(Either.right(deletedWidgets)))
       val result = persistenceServices.deleteAllWidgets().value.run
-      result shouldEqual Right(items)
+      result shouldEqual Right(deletedWidgets)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
@@ -101,9 +102,9 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return the number of elements deleted for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.deleteWidget(any) returns TaskService(Task(Either.right(item)))
+      mockWidgetRepository.deleteWidget(any) returns TaskService(Task(Either.right(deletedWidget)))
       val result = persistenceServices.deleteWidget(widget).value.run
-      result shouldEqual Right(item)
+      result shouldEqual Right(deletedWidget)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
@@ -118,9 +119,9 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return the number of elements deleted for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.deleteWidgets(any) returns TaskService(Task(Either.right(items)))
+      mockWidgetRepository.deleteWidgets(any) returns TaskService(Task(Either.right(deletedWidgets)))
       val result = persistenceServices.deleteWidgetsByMoment(widgetMomentId).value.run
-      result shouldEqual Right(items)
+      result shouldEqual Right(deletedWidgets)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
@@ -138,7 +139,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       mockWidgetRepository.fetchWidgetByAppWidgetId(any) returns TaskService(Task(Either.right(Some(repoWidget))))
       val result = persistenceServices.fetchWidgetByAppWidgetId(appWidgetId).value.run
       result must beLike {
-        case Right(cards) => cards.size shouldEqual item
+        case Right(widgets) => widgets.size shouldEqual deletedWidget
       }
     }
 
@@ -158,7 +159,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.fetchWidgetsByMoment(widgetMomentId).value.run
 
       result must beLike {
-        case Right(cards) => cards.size shouldEqual items
+        case Right(widgets) => widgets.size shouldEqual seqWidget.size
       }
     }
 
@@ -178,7 +179,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       val result = persistenceServices.fetchWidgets.value.run
 
       result must beLike {
-        case Right(collections) => collections.size shouldEqual seqWidget.size
+        case Right(widgets) => widgets.size shouldEqual seqWidget.size
       }
     }
 
@@ -224,9 +225,9 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return the number of elements updated for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.updateWidget(any) returns TaskService(Task(Either.right(item)))
+      mockWidgetRepository.updateWidget(any) returns TaskService(Task(Either.right(deletedWidget)))
       val result = persistenceServices.updateWidget(widget).value.run
-      result shouldEqual Right(item)
+      result shouldEqual Right(deletedWidget)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
@@ -241,9 +242,9 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
 
     "return the sequence with the number of elements updated for a valid request" in new WidgetPersistenceServicesScope {
 
-      mockWidgetRepository.updateWidgets(any) returns TaskService(Task(Either.right(item to items)))
+      mockWidgetRepository.updateWidgets(any) returns TaskService(Task(Either.right(Seq(updatedWidgets))))
       val result = persistenceServices.updateWidgets(seqWidget).value.run
-      result shouldEqual Right(item to items)
+      result shouldEqual Right(Seq(updatedWidgets))
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {

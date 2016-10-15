@@ -5,7 +5,7 @@ import cards.nine.repository.model.{Collection, CollectionData}
 
 trait CollectionPersistenceServicesData {
 
-  def collectionData(num: Int = 0) = CollectionData(
+  def repoCollectionData(num: Int = 0) = CollectionData(
     position = collectionPosition + num,
     name = collectionName + num,
     collectionType = collectionType.name,
@@ -16,14 +16,14 @@ trait CollectionPersistenceServicesData {
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = Option(sharedCollectionSubscribed))
 
-  val repoCollectionData: CollectionData = collectionData(0)
-  val seqRepoCollectionData = Seq(collectionData(0), collectionData(1), collectionData(2))
+  val repoCollectionData: CollectionData = repoCollectionData(0)
+  val seqRepoCollectionData = Seq(repoCollectionData(0), repoCollectionData(1), repoCollectionData(2))
 
-  def collection(num: Int = 0) = Collection(
+  def repoCollection(num: Int = 0) = Collection(
     id = collectionId + num,
     data = repoCollectionData)
 
-  val repoCollection: Collection = collection(0)
-  val seqRepoCollection = Seq(collection(0), collection(1), collection(2))
+  val repoCollection: Collection = repoCollection(0)
+  val seqRepoCollection = Seq(repoCollection(0), repoCollection(1), repoCollection(2))
 
 }

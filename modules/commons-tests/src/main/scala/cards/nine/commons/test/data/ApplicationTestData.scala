@@ -6,7 +6,7 @@ import cards.nine.models.{Application, ApplicationData}
 trait ApplicationTestData {
 
   def application(num: Int = 0) = Application(
-    id = applicationId + item,
+    id = applicationId + num,
     name = applicationName,
     packageName = applicationPackageName,
     className = applicationClassName,

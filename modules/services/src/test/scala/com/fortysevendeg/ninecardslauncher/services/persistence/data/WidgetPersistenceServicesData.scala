@@ -5,7 +5,7 @@ import cards.nine.repository.model.{Widget, WidgetData}
 
 trait WidgetPersistenceServicesData {
 
-  def widgetData(num: Int = 0) = WidgetData(
+  def repoWidgetData(num: Int = 0) = WidgetData(
     momentId = widgetMomentId,
     packageName = widgetPackageName,
     className = widgetClassName,
@@ -19,14 +19,14 @@ trait WidgetPersistenceServicesData {
     imagePath = Option(widgetImagePath),
     intent = Option(widgetIntent))
 
-  val repoWidgetData: WidgetData = widgetData(0)
-  val seqRepoWidgetData = Seq(widgetData(0), widgetData(1), widgetData(2))
+  val repoWidgetData: WidgetData = repoWidgetData(0)
+  val seqRepoWidgetData = Seq(repoWidgetData(0), repoWidgetData(1), repoWidgetData(2))
 
-  def widget(num: Int = 0) = Widget(
+  def repoWidget(num: Int = 0) = Widget(
     id = widgetId + num,
-    data = widgetData(num))
+    data = repoWidgetData(num))
 
-  val repoWidget: Widget = widget(0)
-  val seqRepoWidget = Seq(widget(0), widget(1), widget(2))
+  val repoWidget: Widget = repoWidget(0)
+  val seqRepoWidget = Seq(repoWidget(0), repoWidget(1), repoWidget(2))
 
 }
