@@ -1,9 +1,10 @@
 package cards.nine.app.ui.launcher.actions.createoreditcollection
 
-import cards.nine.app.ui.commons.Jobs
+import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService
 import cards.nine.models.types.FreeCollectionType
 import cards.nine.process.collection.{AddCollectionRequest, EditCollectionRequest}
 import cards.nine.process.commons.models.Collection
@@ -31,62 +32,58 @@ class CreateOrEditCollectionJobs(actions: CreateOrEditCollectionUiActions)(impli
   }
 
   def editCollection(collection: Collection, maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): TaskService[Unit] =
-    (for {
-      name <- maybeName
-      icon <- maybeIcon
-      index <- maybeIndex
-    } yield {
-      val request = EditCollectionRequest(
-        name = name,
-        icon = icon,
-        themedColorIndex = index,
-        appsCategory = collection.appsCategory)
-      for {
-        collection <- di.collectionProcess.editCollection(collection.id, request)
-        _ <- actions.editCollection(collection)
-        _ <- actions.close()
-      } yield ()
-    }) getOrElse actions.showMessageFormFieldError
+    (maybeName, maybeIcon, maybeIndex) match {
+      case (Some(name), Some(icon), Some(themedColorIndex)) =>
+        val request = EditCollectionRequest(
+          name = name,
+          icon = icon,
+          themedColorIndex = themedColorIndex,
+          appsCategory = collection.appsCategory)
+        for {
+          collection <- di.collectionProcess.editCollection(collection.id, request)
+          _ <- actions.editCollection(collection)
+          _ <- actions.close()
+        } yield ()
+      case _ => actions.showMessageFormFieldError
+    }
+
 
   def saveCollection(maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): TaskService[Unit] =
-    (for {
-      name <- maybeName
-      icon <- maybeIcon
-      index <- maybeIndex
-    } yield {
-      val request = AddCollectionRequest(
-        name = name,
-        collectionType = FreeCollectionType,
-        icon = icon,
-        themedColorIndex = index,
-        appsCategory = None,
-        cards = Seq.empty,
-        moment = None)
-      for {
-        collection <- di.collectionProcess.addCollection(request)
-        _ <- actions.addCollection(collection)
-        _ <- actions.close()
-      } yield ()
-    }) getOrElse actions.showMessageFormFieldError
+    (maybeName, maybeIcon, maybeIndex) match {
+      case (Some(name), Some(icon), Some(themedColorIndex)) =>
+        val request = AddCollectionRequest(
+          name = name,
+          collectionType = FreeCollectionType,
+          icon = icon,
+          themedColorIndex = themedColorIndex,
+          appsCategory = None,
+          cards = Seq.empty,
+          moment = None)
+        for {
+          collection <- di.collectionProcess.addCollection(request)
+          _ <- actions.addCollection(collection)
+          _ <- actions.close()
+        } yield ()
+      case _ => actions.showMessageFormFieldError
+    }
 
-  def updateIcon(maybeIcon: Option[String]): TaskService[Unit] = {
-    maybeIcon map { icon =>
-      actions.updateIcon(icon)
-    } getOrElse actions.showMessageContactUsError
-  }
+  def updateIcon(maybeIcon: Option[String]): TaskService[Unit] =
+    readOption(maybeIcon, "Empty index color")(actions.updateIcon)
 
-  def updateColor(maybeIndexColor: Option[Int]): TaskService[Unit] = {
-    maybeIndexColor map { indexColor =>
-      actions.updateColor(indexColor)
-    } getOrElse actions.showMessageContactUsError
-  }
+  def updateColor(maybeIndexColor: Option[Int]): TaskService[Unit] =
+    readOption(maybeIndexColor, "Empty index color")(actions.updateColor)
 
-  def changeColor(maybeColor: Option[Int]): TaskService[Unit] = maybeColor map { color =>
-    actions.showColorDialog(color)
-  } getOrElse actions.showMessageContactUsError
+  def changeColor(maybeColor: Option[Int]): TaskService[Unit] =
+    readOption(maybeColor, "Empty color")(actions.showColorDialog)
 
-  def changeIcon(maybeIcon: Option[String]): TaskService[Unit] = maybeIcon map { icon =>
-    actions.showIconDialog(icon)
-  } getOrElse actions.showMessageContactUsError
+  def changeIcon(maybeIcon: Option[String]): TaskService[Unit] =
+    readOption(maybeIcon, "Empty Icon")(actions.showIconDialog)
+
+  private[this] def readOption[T](maybe: Option[T], errorMessage: String)
+    (f: (T) => TaskService[Unit]): TaskService[Unit] =
+    maybe match {
+      case Some(value) => f(value)
+      case None => TaskService.left(JobException(errorMessage))
+    }
 
 }

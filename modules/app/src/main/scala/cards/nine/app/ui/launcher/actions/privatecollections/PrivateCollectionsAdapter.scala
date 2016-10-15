@@ -71,10 +71,35 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
     (addCollection <~ buttonStyle)).run
 
   def bind(privateCollection: PrivateCollection, onClick: (PrivateCollection => Unit)): Ui[_] = {
-    val d = new ShapeDrawable(new OvalShape)
-    d.getPaint.setColor(theme.getIndexColor(privateCollection.themedColorIndex))
+
+    def automaticAlignment(view: FlexboxLayout, cards: Seq[PrivateCard]): Tweak[FlexboxLayout] = {
+      val width = view.getWidth
+      if (width > 0) {
+        vgAddViews(getViewsByCards(cards, width))
+      } else {
+        vGlobalLayoutListener { v => {
+          appsRow <~ vgAddViews(getViewsByCards(cards, v.getWidth))
+        }}
+      }
+    }
+
+   def getViewsByCards(cards: Seq[PrivateCard], width: Int) = {
+      val sizeIcon = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
+      val sizeView = width / appsByRow
+      val padding = (sizeView - sizeIcon) / 2
+      cards.zipWithIndex  map {
+        case (card, index) =>
+          (w[ImageView] <~
+            lp[FlexboxLayout](sizeView, WRAP_CONTENT) <~
+            vPadding(padding, 0, padding, 0) <~
+            ivSrcByPackageName(card.packageName, card.term)).get
+      }
+    }
+
+    val background = new ShapeDrawable(new OvalShape)
+    background.getPaint.setColor(theme.getIndexColor(privateCollection.themedColorIndex))
     val cardsRow = privateCollection.cards
-    (iconContent <~ vBackground(d)) ~
+    (iconContent <~ vBackground(background)) ~
       (icon <~ ivSrc(privateCollection.getIconCollectionDetail)) ~
       (appsRow <~
         vgRemoveAllViews <~
@@ -85,27 +110,4 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
-  private[this] def automaticAlignment(view: FlexboxLayout, cards: Seq[PrivateCard]): Tweak[FlexboxLayout] = {
-    val width = view.getWidth
-    if (width > 0) {
-      vgAddViews(getViewsByCards(cards, width))
-    } else {
-      vGlobalLayoutListener { v => {
-        appsRow <~ vgAddViews(getViewsByCards(cards, v.getWidth))
-      }}
-    }
-  }
-
-  private[this] def getViewsByCards(cards: Seq[PrivateCard], width: Int) = {
-    val sizeIcon = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
-    val sizeView = width / appsByRow
-    val padding = (sizeView - sizeIcon) / 2
-    cards.zipWithIndex  map {
-      case (card, index) =>
-        (w[ImageView] <~
-          lp[FlexboxLayout](sizeView, WRAP_CONTENT) <~
-          vPadding(padding, 0, padding, 0) <~
-          ivSrcByPackageName(card.packageName, card.term)).get
-    }
-  }
 }

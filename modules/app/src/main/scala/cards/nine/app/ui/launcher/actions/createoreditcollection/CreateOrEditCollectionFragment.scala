@@ -42,21 +42,23 @@ class CreateOrEditCollectionFragment(implicit launcherPresenter: LauncherPresent
             Some(extras.getString(CreateOrEditCollectionFragment.iconRequest))
           case _ => None
         } getOrElse None
-        collectionJobs.updateIcon(maybeIcon).resolveAsync()
+        collectionJobs.updateIcon(maybeIcon).resolveAsyncServiceOr(_ => showMessageContactUsError)
       case (RequestCodes.selectInfoColor, Activity.RESULT_OK) =>
         val maybeIndexColor = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(CreateOrEditCollectionFragment.colorRequest) =>
             Some(extras.getInt(CreateOrEditCollectionFragment.colorRequest))
           case _ => None
         } getOrElse None
-        collectionJobs.updateColor(maybeIndexColor).resolveAsync()
+        collectionJobs.updateColor(maybeIndexColor).resolveAsyncServiceOr(_ => showMessageContactUsError)
       case _ =>
     }
   }
 
-  override def changeColor(maybeColor: Option[Int]): Unit = collectionJobs.changeColor(maybeColor).resolveAsync()
+  override def changeColor(maybeColor: Option[Int]): Unit =
+    collectionJobs.changeColor(maybeColor).resolveAsyncServiceOr(_ => showMessageContactUsError)
 
-  override def changeIcon(maybeIcon: Option[String]): Unit = collectionJobs.changeIcon(maybeIcon).resolveAsync()
+  override def changeIcon(maybeIcon: Option[String]): Unit =
+    collectionJobs.changeIcon(maybeIcon).resolveAsyncServiceOr(_ => showMessageContactUsError)
 
   override def saveCollection(maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): Unit =
     collectionJobs.saveCollection(maybeName, maybeIcon, maybeIndex).resolveServiceOr(_ => showMessageContactUsError)
