@@ -2,6 +2,7 @@ package cards.nine.app.services.sync
 
 import android.content.Context
 import cards.nine.app.observers.NineCardsObserver._
+import cards.nine.app.services.commons.FirebaseExtensions._
 import cards.nine.app.ui.commons.SyncDeviceState._
 import cards.nine.app.ui.commons.action_filters.{SyncAnswerActionFilter, SyncStateActionFilter}
 import cards.nine.app.ui.commons.{BroadAction, ImplicitsJobExceptions, JobException, Jobs}
@@ -89,7 +90,7 @@ class SynchronizeDeviceJobs(actions: SynchronizeDeviceUiActions)(implicit contex
           collections = collections map (collection => toCloudStorageCollection(collection, collection.moment map (moment => widgets.filter(_.momentId == moment.id)))),
           moments = cloudStorageMoments,
           dockApps = dockApps map toCloudStorageDockApp)
-        _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId)
+        _ <- di.userProcess.updateUserDevice(savedDevice.data.deviceName, savedDevice.cloudId, readToken)
       } yield ()
     }
 

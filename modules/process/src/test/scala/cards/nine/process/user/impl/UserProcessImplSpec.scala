@@ -384,31 +384,6 @@ class UserProcessImplSpec
         result must beAnInstanceOf[Left[UserException,  _]]
       }
 
-    "updates the user in the database with the new data but doesn't call to update installation when the user has the same device token" in
-      new UserProcessScope {
-
-        mockContextSupport.getActiveUserId returns Some(userId)
-        val user = persistenceUser.copy(
-          apiKey = Some(apiKey),
-          sessionToken = Some(sessionToken))
-        mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns TaskService(Task(Either.right(1)))
-
-        val result = userProcess.updateUserDevice(anotherDeviceName, anotherDeviceCloudId, Some(deviceToken))(mockContextSupport).value.run
-
-        there was one(mockContextSupport).getActiveUserId
-        there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
-        val updateRequest = updateUserRequest.copy(
-          deviceName = Some(anotherDeviceName),
-          deviceCloudId = Some(anotherDeviceCloudId),
-          deviceToken = Some(deviceToken))
-        there was one(mockPersistenceServices).updateUser(updateRequest)
-        there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any)(any)
-
-        result must beAnInstanceOf[Right[_, Unit]]
-      }
-
     "updates the user in the database with the new data but doesn't call to update installation when the user doesn't have api key" in
       new UserProcessScope {
 
@@ -551,27 +526,6 @@ class UserProcessImplSpec
         there was no(mockApiServices).updateInstallation(any)(any)
 
         result must beAnInstanceOf[Left[UserException,  _]]
-      }
-
-    "updates the user in the database with the new data but doesn't call to update installation when the user has the same device token" in
-      new UserProcessScope {
-
-        mockContextSupport.getActiveUserId returns Some(userId)
-        val user = persistenceUser.copy(
-          apiKey = Some(apiKey),
-          sessionToken = Some(sessionToken))
-        mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
-        mockPersistenceServices.updateUser(any) returns TaskService(Task(Either.right(1)))
-
-        val result = userProcess.updateDeviceToken(deviceToken)(mockContextSupport).value.run
-
-        there was one(mockContextSupport).getActiveUserId
-        there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
-        there was one(mockPersistenceServices).updateUser(updateUserRequest)
-        there was no(mockPersistenceServices).getAndroidId(any)
-        there was no(mockApiServices).updateInstallation(any)(any)
-
-        result must beAnInstanceOf[Right[_, Unit]]
       }
 
     "updates the user in the database with the new data but doesn't call to update installation when the user doesn't have api key" in
