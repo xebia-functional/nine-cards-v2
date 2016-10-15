@@ -29,7 +29,8 @@ object CollectionValues {
   val collectionId: Int = 1
   val nonExistentCollectionId: Int = 10001
   val collectionPosition: Int = 1
-  val nonExistentPosition: Int = 10001
+  val collectionNewPosition: Int = 5
+  val nonExistentCollectionPosition: Int = 10001
   val collectionName: String = "collectionName"
   val collectionType: CollectionType = FreeCollectionType
   val icon: String = "icon"
@@ -72,12 +73,17 @@ object CardValues {
   val updatedCard: Int = 1
   val updatedCards: Int = 2
 
+  val cardIdReorder: Int = 1
+  val samePositionReorder: Int = 1
+  val newPositionReorder: Int = 2
+  val newCardName = "newCardName"
+
 }
 
 object DockAppValues {
 
-  val item = 1
-  val items = 5
+  val item: Int = 1
+  val items: Int = 5
 
   val dockAppId: Int = 1
   val nonExistentDockAppId: Int = 10001
@@ -86,6 +92,16 @@ object DockAppValues {
   val dockAppIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val dockAppImagePath: String = "/dockApp/image/path"
   val dockAppPosition: Int = 1
+
+}
+
+
+object FormedValues {
+
+  val itemType: String = "itemType"
+  val title: String = "title"
+  val formedIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val uriImage: String = "uriImage"
 
 }
 
@@ -104,16 +120,16 @@ object MomentValues {
   val workAppPackageName = "com.google.android.apps.photos"
   val transitAppPackageName = "com.google.android.apps.maps"
 
-  val deletedMoment = 1
-  val deletedMoments = 2
+  val deletedMoment: Int = 1
+  val deletedMoments: Int = 2
   val updatedMoment: Int = 1
 
 }
 
 object UserValues {
 
-  val item = 1
-  val items = 5
+  val item: Int = 1
+  val items: Int = 5
 
   val userId: Int = 1
   val nonExistentUserId: Int = 10001

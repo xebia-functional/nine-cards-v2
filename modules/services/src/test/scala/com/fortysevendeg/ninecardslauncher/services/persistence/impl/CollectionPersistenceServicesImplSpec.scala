@@ -167,7 +167,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return None when a non-existent id is given" in new CollectionServicesResponses {
 
       mockCollectionRepository.fetchCollectionByPosition(any) returns TaskService(Task(Either.right(None)))
-      val result = persistenceServices.fetchCollectionByPosition(nonExistentPosition).value.run
+      val result = persistenceServices.fetchCollectionByPosition(nonExistentCollectionPosition).value.run
       result shouldEqual Right(None)
     }
 
