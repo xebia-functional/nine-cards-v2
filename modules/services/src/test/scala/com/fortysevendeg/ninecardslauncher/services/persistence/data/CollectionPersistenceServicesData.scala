@@ -1,42 +1,29 @@
 package cards.nine.services.persistence.data
 
 import cards.nine.commons.test.data.CollectionValues._
-import cards.nine.models.types._
-import cards.nine.repository.model.{Collection => RepositoryCollection, CollectionData => RepositoryCollectionData}
+import cards.nine.repository.model.{Collection, CollectionData}
 
 trait CollectionPersistenceServicesData {
 
-  val nonExistentPackageName: String = "nonExistentPackageName"
+  def collectionData(num: Int = 0) = CollectionData(
+    position = collectionPosition + num,
+    name = collectionName + num,
+    collectionType = collectionType.name,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategoryStr),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = Option(sharedCollectionSubscribed))
 
-  def createSeqRepoCollection(
-    num: Int = 5,
-    id: Int = collectionId,
-    data: RepositoryCollectionData = createRepoCollectionData()): Seq[RepositoryCollection] =
-    List.tabulate(num)(item => RepositoryCollection(id = id + item, data = data))
+  val repoCollectionData: CollectionData = collectionData(0)
+  val seqRepoCollectionData = Seq(collectionData(0), collectionData(1), collectionData(2))
 
-  def createRepoCollectionData(
-    position: Int = position,
-    name: String = name,
-    collectionType: CollectionType = collectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: String = appsCategory,
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): RepositoryCollectionData =
-    RepositoryCollectionData(
-      position = position,
-      name = name,
-      collectionType = collectionType.name,
-      icon = icon,
-      themedColorIndex = themedColorIndex,
-      appsCategory = Option(appsCategory),
-      originalSharedCollectionId = Option(originalSharedCollectionId),
-      sharedCollectionId = Option(sharedCollectionId),
-      sharedCollectionSubscribed = Option(sharedCollectionSubscribed))
+  def collection(num: Int = 0) = Collection(
+    id = collectionId + num,
+    data = repoCollectionData)
 
-  val repoCollectionData: RepositoryCollectionData = createRepoCollectionData()
-  val seqRepoCollection: Seq[RepositoryCollection] = createSeqRepoCollection(data = repoCollectionData)
-  val repoCollection: RepositoryCollection = seqRepoCollection(0)
+  val repoCollection: Collection = collection(0)
+  val seqRepoCollection = Seq(collection(0), collection(1), collection(2))
 
 }

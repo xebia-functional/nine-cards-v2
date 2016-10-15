@@ -39,7 +39,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       result must beLike {
         case Right(widget) =>
           widget.id shouldEqual widgetId
-          widget.packageName shouldEqual packageName
+          widget.packageName shouldEqual widgetPackageName
       }
     }
 
@@ -51,7 +51,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
       result must beLike {
         case Right(widget) =>
           widget.id shouldEqual widgetId
-          widget.packageName shouldEqual packageName
+          widget.packageName shouldEqual widgetPackageName
           widget.appWidgetId shouldEqual None
       }
     }
@@ -119,14 +119,14 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
     "return the number of elements deleted for a valid request" in new WidgetPersistenceServicesScope {
 
       mockWidgetRepository.deleteWidgets(any) returns TaskService(Task(Either.right(items)))
-      val result = persistenceServices.deleteWidgetsByMoment(momentId).value.run
+      val result = persistenceServices.deleteWidgetsByMoment(widgetMomentId).value.run
       result shouldEqual Right(items)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
       mockWidgetRepository.deleteWidgets(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.deleteWidgetsByMoment(momentId).value.run
+      val result = persistenceServices.deleteWidgetsByMoment(widgetMomentId).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -155,7 +155,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
     "return a list of Widget elements for a valid request" in new WidgetPersistenceServicesScope {
 
       mockWidgetRepository.fetchWidgetsByMoment(any) returns TaskService(Task(Either.right(seqRepoWidget)))
-      val result = persistenceServices.fetchWidgetsByMoment(momentId).value.run
+      val result = persistenceServices.fetchWidgetsByMoment(widgetMomentId).value.run
 
       result must beLike {
         case Right(cards) => cards.size shouldEqual items
@@ -165,7 +165,7 @@ class WidgetPersistenceServicesImplSpec extends WidgetPersistenceServicesSpecifi
     "return a PersistenceServiceException if the service throws a exception" in new WidgetPersistenceServicesScope {
 
       mockWidgetRepository.fetchWidgetsByMoment(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.fetchWidgetsByMoment(momentId).value.run
+      val result = persistenceServices.fetchWidgetsByMoment(widgetMomentId).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

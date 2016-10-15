@@ -5,59 +5,37 @@ import cards.nine.models.{UserData, UserProfile, User}
 
 trait UserTestData {
 
-  def createSeqUser(
-    num: Int = 5,
-    id: Int = uId,
-    email: String = email,
-    sessionToken: String = sessionToken,
-    apiKey: String = apiKey,
-    deviceToken: String = deviceToken,
-    marketToken: String = marketToken,
-    name: String = nameUser,
-    avatar: String = avatar,
-    cover: String = cover,
-    deviceName: String = deviceName,
-    deviceCloudId: String = deviceCloudId): Seq[User] = List.tabulate(num)(
-    item => User(
-      id = id + item,
-      email = Option(email),
-      sessionToken = Option(sessionToken),
-      apiKey = Option(apiKey),
-      deviceToken = Option(deviceToken),
-      marketToken = Option(marketToken),
-      deviceName = Option(deviceName),
-      deviceCloudId = Option(deviceCloudId),
-      userProfile = UserProfile(
-        name = Option(name),
-        avatar = Option(avatar),
-        cover = Option(cover))))
+  def user(num: Int = 0) = User(
+    id = userId + num,
+    email = Option(email),
+    sessionToken = Option(sessionToken),
+    apiKey = Option(apiKey),
+    deviceToken = Option(deviceToken),
+    marketToken = Option(marketToken),
+    deviceName = Option(deviceName),
+    deviceCloudId = Option(deviceCloudId),
+    userProfile = UserProfile(
+      name = Option(userName),
+      avatar = Option(avatar),
+      cover = Option(cover)))
 
-  def createUserData(
-    email: String = email,
-    sessionToken: String = sessionToken,
-    apiKey: String = apiKey,
-    deviceToken: String = deviceToken,
-    marketToken: String = marketToken,
-    name: String = nameUser,
-    avatar: String = avatar,
-    cover: String = cover,
-    deviceName: String = deviceName,
-    deviceCloudId: String = deviceCloudId): UserData =
-    UserData(
-      email = Option(email),
-      sessionToken = Option(sessionToken),
-      apiKey = Option(apiKey),
-      deviceToken = Option(deviceToken),
-      marketToken = Option(marketToken),
-      deviceName = Option(deviceName),
-      deviceCloudId = Option(deviceCloudId),
-      userProfile = UserProfile(
-        name = Option(name),
-        avatar = Option(avatar),
-        cover = Option(cover)))
+  val user: User = user(0)
+  val seqUser: Seq[User] = Seq(user(0), user(1), user(2))
 
-  val seqUser: Seq[User] = createSeqUser()
-  val user: User = seqUser(0)
-  val userData: UserData = createUserData()
+  def userData(num: Int = 0) = UserData(
+    email = Option(email),
+    sessionToken = Option(sessionToken),
+    apiKey = Option(apiKey),
+    deviceToken = Option(deviceToken),
+    marketToken = Option(marketToken),
+    deviceName = Option(deviceName),
+    deviceCloudId = Option(deviceCloudId),
+    userProfile = UserProfile(
+      name = Option(userName),
+      avatar = Option(avatar),
+      cover = Option(cover)))
+
+  val userData: UserData = userData(0)
+  val seqUserData: Seq[UserData]  = Seq(userData(0), userData(1), userData(2))
 
 }

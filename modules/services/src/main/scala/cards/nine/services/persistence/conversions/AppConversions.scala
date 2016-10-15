@@ -14,7 +14,7 @@ trait AppConversions {
       className = app.data.className,
       category = NineCardsCategory(app.data.category),
       dateInstalled = app.data.dateInstalled,
-      dateUpdate = app.data.dateUpdate,
+      dateUpdated = app.data.dateUpdate,
       version = app.data.version,
       installedFromGooglePlay = app.data.installedFromGooglePlay)
 
@@ -27,7 +27,7 @@ trait AppConversions {
         className = app.className,
         category = app.category.name,
         dateInstalled = app.dateInstalled,
-        dateUpdate = app.dateUpdate,
+        dateUpdate = app.dateUpdated,
         version = app.version,
         installedFromGooglePlay = app.installedFromGooglePlay))
 
@@ -38,7 +38,7 @@ trait AppConversions {
       className = app.className,
       category = app.category.name,
       dateInstalled = app.dateInstalled,
-      dateUpdate = app.dateUpdate,
+      dateUpdate = app.dateUpdated,
       version = app.version,
       installedFromGooglePlay = app.installedFromGooglePlay)
 }

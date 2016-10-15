@@ -1,76 +1,45 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.CollectionValues._
-import cards.nine.models.types._
-import cards.nine.models.{Card, Collection, CollectionData, Moment}
+import cards.nine.models._
 
 trait CollectionTestData
   extends CardTestData
   with MomentTestData {
 
-  def createSeqCollection(
-    num: Int = 5,
-    id: Int = collectionId,
-    position: Int = position,
-    name: String = name,
-    collectionType: CollectionType = collectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: String = appsCategory,
-    cards: Seq[Card] = seqCard,
-    moment: Moment = moment,
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    publicCollectionStatus: PublicCollectionStatus = publicCollectionStatus): Seq[Collection] = List.tabulate(num)(
-    item =>
-      Collection(
-        id = id + item,
-        position = position,
-        name = name,
-        collectionType = collectionType,
-        icon = icon,
-        themedColorIndex = themedColorIndex,
-        appsCategory = Option(NineCardsCategory(appsCategory)),
-        cards = cards,
-        moment = Option(moment),
-        originalSharedCollectionId = Option(originalSharedCollectionId),
-        sharedCollectionId = Option(sharedCollectionId),
-        sharedCollectionSubscribed = sharedCollectionSubscribed,
-        publicCollectionStatus = publicCollectionStatus))
+  def collection(num: Int = 0) = Collection(
+    id = collectionId + num,
+    position = collectionPosition + num,
+    name = collectionName + num,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    cards = Seq(card(0), card(1), card(2)),
+    moment = Option(moment(num)),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = sharedCollectionSubscribed,
+    publicCollectionStatus = publicCollectionStatus)
 
-  def createCollectionData(
-    position: Int = position,
-    name: String = name,
-    collectionType: CollectionType = collectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: String = appsCategory,
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    cards: Seq[Card] = seqCard): CollectionData =
-    CollectionData(
-      position = position,
-      name = name,
-      collectionType = collectionType,
-      icon = icon,
-      themedColorIndex = themedColorIndex,
-      appsCategory = Option(NineCardsCategory(appsCategory)),
-      cards = seqCardData,
-      moment = Option(createMomentData()),
-      originalSharedCollectionId = Option(originalSharedCollectionId),
-      sharedCollectionId = Option(sharedCollectionId),
-      sharedCollectionSubscribed = sharedCollectionSubscribed)
+  val collection: Collection = collection(0)
+  val seqCollection: Seq[Collection] = Seq(collection(0), collection(1), collection(2))
 
-  def createSeqCollectionData(
-    num: Int = 5) :Seq[CollectionData]  =
-    List.tabulate(num)(item => createCollectionData())
+  def collectionData(num: Int = 0) = CollectionData(
+    position = collectionPosition + num,
+    name = collectionName + num,
+    collectionType = collectionType,
+    icon = icon,
+    themedColorIndex = themedColorIndex,
+    appsCategory = Option(appsCategory),
+    cards = Seq(cardData(0), cardData(1), cardData(2)),
+    moment = Option(momentData(num)),
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = sharedCollectionSubscribed,
+    publicCollectionStatus = publicCollectionStatus)
 
-  val seqCollection: Seq[Collection] = createSeqCollection()
-  val collection: Collection = seqCollection(0)
-
-  val collectionData = createCollectionData()
-  val seqCollectionData = createSeqCollectionData()
+  val collectionData: CollectionData = collectionData(0)
+  val seqCollectionData: Seq[CollectionData] = Seq(collectionData(0), collectionData(1), collectionData(2))
 
 }

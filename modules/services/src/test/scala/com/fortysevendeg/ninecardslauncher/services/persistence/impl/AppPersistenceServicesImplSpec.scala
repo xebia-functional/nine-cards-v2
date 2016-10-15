@@ -79,14 +79,14 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return an App when a valid packageName is provided" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchAppByPackage(packageName) returns TaskService(Task(Either.right(Option(repoApp))))
-      val result = persistenceServices.findAppByPackage(packageName).value.run
+      mockAppRepository.fetchAppByPackage(applicationPackageName) returns TaskService(Task(Either.right(Option(repoApp))))
+      val result = persistenceServices.findAppByPackage(applicationPackageName).value.run
 
       result must beLike {
         case Right(maybeApp) =>
           maybeApp must beSome[Application].which { app =>
-            app.id shouldEqual appId
-            app.packageName shouldEqual packageName
+            app.id shouldEqual applicationId
+            app.packageName shouldEqual applicationPackageName
           }
       }
     }
@@ -101,7 +101,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
       mockAppRepository.fetchAppByPackage(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.findAppByPackage(packageName).value.run
+      val result = persistenceServices.findAppByPackage(applicationPackageName).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -111,7 +111,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     "return a Seq App when a valid packageName is provided" in new AppPersistenceServicesScope {
 
       mockAppRepository.fetchAppByPackages(any) returns TaskService(Task(Either.right(seqRepoApp)))
-      val result = persistenceServices.fetchAppByPackages(Seq(packageName)).value.run
+      val result = persistenceServices.fetchAppByPackages(Seq(applicationPackageName)).value.run
 
       result must beLike {
         case Right(seqApp) =>
@@ -122,7 +122,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
       mockAppRepository.fetchAppByPackages(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.fetchAppByPackages(Seq(packageName)).value.run
+      val result = persistenceServices.fetchAppByPackages(Seq(applicationPackageName)).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -136,8 +136,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
       result must beLike {
         case Right(app) =>
-          app.id shouldEqual appId
-          app.packageName shouldEqual packageName
+          app.id shouldEqual applicationId
+          app.packageName shouldEqual applicationPackageName
       }
     }
 
@@ -205,14 +205,14 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     "return the number of elements deleted for a valid request" in new AppPersistenceServicesScope {
 
       mockAppRepository.deleteAppByPackage(any) returns TaskService(Task(Either.right(item)))
-      val result = persistenceServices.deleteAppByPackage(packageName).value.run
+      val result = persistenceServices.deleteAppByPackage(applicationPackageName).value.run
       result shouldEqual Right(1)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
       mockAppRepository.deleteAppByPackage(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.deleteAppByPackage(packageName).value.run
+      val result = persistenceServices.deleteAppByPackage(applicationPackageName).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

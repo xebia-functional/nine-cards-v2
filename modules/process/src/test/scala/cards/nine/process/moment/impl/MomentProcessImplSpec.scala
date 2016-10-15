@@ -6,6 +6,7 @@ import android.content.res.Resources
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.MomentTestData
 import cards.nine.models.NineCardsIntent
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.types.NineCardsMoment._
@@ -28,7 +29,7 @@ trait MomentProcessImplSpecification
 
   trait MomentProcessScope
     extends Scope 
-    with MomentProcessImplData { 
+    with MomentTestData {
 
     val resources = mock[Resources]
 

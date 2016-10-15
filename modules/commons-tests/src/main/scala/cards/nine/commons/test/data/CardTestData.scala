@@ -2,52 +2,33 @@ package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.CardValues._
 import cards.nine.models.types.CardType
-import cards.nine.models.{NineCardsIntentConversions, Card, CardData}
+import cards.nine.models.{Card, CardData, NineCardsIntentConversions}
 
 trait CardTestData extends NineCardsIntentConversions {
 
-  def createSeqCardData(
-    num: Int = 5,
-    collectionId: Int = collectionId,
-    position: Int = position,
-    term: String = term,
-    packageName: String = packageName,
-    cardType: String = cardType,
-    intent: String = intent,
-    imagePath: String = imagePath,
-    notification: String = notification): Seq[CardData] = List.tabulate(num)(
-    item => CardData(
-      position = position,
-      term = term,
-      packageName = Option(packageName),
-      cardType = CardType(cardType),
-      intent = jsonToNineCardIntent(intent),
-      imagePath = Option(imagePath),
-      notification = Option(notification)))
+  def card(num: Int = 0) = Card(
+    id = cardId + num,
+    position = cardPosition + num,
+    term = term,
+    packageName = Option(cardPackageName + num),
+    cardType = CardType(cardType),
+    intent = jsonToNineCardIntent(cardIntent),
+    imagePath = Option(cardImagePath),
+    notification = Option(notification))
 
-  def createSeqCard(
-    num: Int = 5,
-    id: Int = cardId,
-    position: Int = position,
-    term: String = term,
-    packageName: String = packageName,
-    cardType: String = cardType,
-    intent: String = intent,
-    imagePath: String = imagePath,
-    notification: String = notification): Seq[Card] = List.tabulate(num)(
-    item => Card(
-      id = id + item,
-      position = position,
-      term = term,
-      packageName = Option(packageName),
-      cardType = CardType(cardType),
-      intent = jsonToNineCardIntent(intent),
-      imagePath = Option(imagePath),
-      notification = Option(notification)))
+  val card: Card = card(0)
+  val seqCard: Seq[Card] = Seq(card(0), card(1), card(2))
 
-  val seqCard: Seq[Card] = createSeqCard()
-  val card: Card = seqCard(0)
-  val seqCardData: Seq[CardData] = createSeqCardData()
-  val cardData: CardData = seqCardData(0)
+  def cardData(num: Int = 0) = CardData(
+    position = cardPosition + num,
+    term = term,
+    packageName = Option(cardPackageName + num),
+    cardType = CardType(cardType),
+    intent = jsonToNineCardIntent(cardIntent),
+    imagePath = Option(cardImagePath),
+    notification = Option(notification))
+
+  val cardData: CardData  = cardData(0)
+  val seqCardData: Seq[CardData] = Seq(cardData(0), cardData(1), cardData(2))
 
 }

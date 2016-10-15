@@ -2,6 +2,7 @@ package cards.nine.process.widget.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.WidgetTestData
 import cards.nine.models.Widget
 import cards.nine.process.widget.AppWidgetException
 import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
@@ -31,7 +32,7 @@ trait WidgetProcessImplSpecification
 
 class WidgetProcessImplSpec
   extends WidgetProcessImplSpecification
-    with WidgetProcessImplData {
+    with WidgetTestData {
 
   "getWidgets" should {
 

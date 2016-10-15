@@ -6,75 +6,43 @@ import cards.nine.models.{NineCardsIntentConversions, Widget, WidgetArea, Widget
 
 trait WidgetTestData extends NineCardsIntentConversions {
 
-  def createSeqWidget(
-    num: Int = 5,
-    id: Int = widgetId,
-    momentId: Int = momentId,
-    packageName: String = packageName,
-    className: String = className,
-    appWidgetId: Int = appWidgetId,
-    startX: Int = startX,
-    startY: Int = startY,
-    spanX: Int = spanX,
-    spanY: Int = spanY,
-    widgetType: String = widgetType,
-    label: Option[String] = labelOption,
-    imagePath: Option[String] = widgetImagePathOption,
-    intent: Option[String] = widgetIntentOption) =
-    (0 until 5) map (
-      item =>
-        Widget(
-          id = id + item,
-          momentId = momentId,
-          packageName = packageName,
-          className = className,
-          appWidgetId = Option(appWidgetId),
-          area =
-            WidgetArea(
-              startX = startX,
-              startY = startY,
-              spanX = spanX,
-              spanY = spanY),
-          widgetType = WidgetType(widgetType),
-          label = label,
-          imagePath = imagePath,
-          intent = intent map jsonToNineCardIntent))
+  def widget(num: Int = 0) = Widget(
+    id = widgetId + num,
+    momentId = widgetMomentId,
+    packageName = widgetPackageName,
+    className = widgetClassName,
+    appWidgetId = Option(appWidgetId),
+    area =
+      WidgetArea(
+        startX = startX,
+        startY = startY,
+        spanX = spanX,
+        spanY = spanY),
+    widgetType = WidgetType(widgetType),
+    label = Option(label),
+    imagePath = Option(widgetImagePath),
+    intent = Option(jsonToNineCardIntent(widgetIntent)))
 
-  def createSeqWidgetData(
-    num: Int = 5,
-    momentId: Int = momentId,
-    packageName: String = packageName,
-    className: String = className,
-    appWidgetId: Int = appWidgetId,
-    startX: Int = startX,
-    startY: Int = startY,
-    spanX: Int = spanX,
-    spanY: Int = spanY,
-    widgetType: String = widgetType,
-    label: Option[String] = labelOption,
-    imagePath: Option[String] = widgetImagePathOption,
-    intent: Option[String] = widgetIntentOption) =
-    (0 until 5) map (
-      item =>
-        WidgetData(
-          momentId = momentId,
-          packageName = packageName,
-          className = className,
-          appWidgetId = Option(appWidgetId),
-          area =
-            WidgetArea(
-              startX = startX,
-              startY = startY,
-              spanX = spanX,
-              spanY = spanY),
-          widgetType = WidgetType(widgetType),
-          label = label,
-          imagePath = imagePath,
-          intent = intent map jsonToNineCardIntent))
+  val widget: Widget = widget(0)
+  val seqWidget = Seq(widget(0), widget(1), widget(2))
 
-  val seqWidget: Seq[Widget] = createSeqWidget()
-  val seqWidgetData: Seq[WidgetData] = createSeqWidgetData()
+  def widgetData(num: Int = 0) = WidgetData(
+    momentId = widgetMomentId,
+    packageName = widgetPackageName,
+    className = widgetClassName,
+    appWidgetId = Option(appWidgetId),
+    area =
+      WidgetArea(
+        startX = startX,
+        startY = startY,
+        spanX = spanX,
+        spanY = spanY),
+    widgetType = WidgetType(widgetType),
+    label = Option(label),
+    imagePath = Option(widgetImagePath),
+    intent = Option(jsonToNineCardIntent(widgetIntent)))
 
-  val widget = seqWidget(0)
-  val widgetData = seqWidgetData(0)
+  val widgetData: WidgetData = widgetData(0)
+  val seqWidgetData = Seq(widgetData(0), widgetData(1), widgetData(2))
+
 }

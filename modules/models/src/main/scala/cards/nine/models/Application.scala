@@ -9,7 +9,7 @@ case class Application(
   className: String,
   category: NineCardsCategory,
   dateInstalled: Long,
-  dateUpdate: Long,
+  dateUpdated: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 
@@ -19,7 +19,7 @@ case class ApplicationData(
   className: String,
   category: NineCardsCategory,
   dateInstalled: Long,
-  dateUpdate: Long,
+  dateUpdated: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 
@@ -33,7 +33,7 @@ object Application {
       className = app.className,
       category = app.category,
       dateInstalled = app.dateInstalled,
-      dateUpdate = app.dateUpdate,
+      dateUpdated = app.dateUpdated,
       version = app.version,
       installedFromGooglePlay = app.installedFromGooglePlay)
   }
@@ -47,7 +47,7 @@ object Application {
       className = app.className,
       category = app.category,
       dateInstalled = app.dateInstalled,
-      dateUpdate = app.dateUpdate,
+      dateUpdated = app.dateUpdated,
       version = app.version,
       installedFromGooglePlay = app.installedFromGooglePlay)
   }

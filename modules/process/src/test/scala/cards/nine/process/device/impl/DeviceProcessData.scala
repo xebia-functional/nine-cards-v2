@@ -2,10 +2,11 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
+import cards.nine.commons.test.data.ApplicationTestData
 import cards.nine.models
 import cards.nine.models.NineCardsIntentImplicits._
 import cards.nine.models.types._
-import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, _}
+import cards.nine.models._
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
@@ -13,7 +14,8 @@ import cards.nine.services.persistence.models.{IterableApps => ServicesIterableA
 import play.api.libs.json.Json
 
 trait DeviceProcessData
-  extends NineCardsIntentConversions {
+  extends ApplicationTestData 
+  with NineCardsIntentConversions {
 
   val statusCodeOk = 200
   val items = 5
@@ -130,58 +132,6 @@ trait DeviceProcessData
   val lookupKey3 = "lookupKey 3"
   val photoUri3 = "photoUri 3"
 
-  val dockAppsRemoved = 4
-
-  val category = "GAME"
-
-  val dockType = AppDockType
-  val dockTypeName = AppDockType.name
-
-  val applicationNoCached = ApplicationData(
-    name = name4,
-    packageName = packageName4,
-    className = className4,
-    category = category4,
-    dateInstalled = dateInstalled4,
-    dateUpdate = dateUpdate4,
-    version = version4,
-    installedFromGooglePlay = installedFromGooglePlay4)
-
-  val applicationSeq: Seq[Application] = Seq(
-    Application(
-      id = 1,
-      name = name1,
-      packageName = packageName1,
-      className = className1,
-      category = category1,
-      dateInstalled = dateInstalled1,
-      dateUpdate = dateUpdate1,
-      version = version1,
-      installedFromGooglePlay = installedFromGooglePlay1),
-    Application(
-      id = 1,
-      name = name2,
-      packageName = packageName2,
-      className = className2,
-      category = category2,
-      dateInstalled = dateInstalled2,
-      dateUpdate = dateUpdate2,
-      version = version2,
-      installedFromGooglePlay = installedFromGooglePlay2),
-    Application(
-      id = 1,
-      name = name3,
-      packageName = packageName3,
-      className = className3,
-      category = category3,
-      dateInstalled = dateInstalled3,
-      dateUpdate = dateUpdate3,
-      version = version3,
-      installedFromGooglePlay = installedFromGooglePlay3)
-  )
-
-  val applicationDataSeq: Seq[ApplicationData] = applicationSeq map (_.toData)
-
   val requestConfig = RequestConfig("fake-api-key", "fake-session-token", "fake-android-id", Some("fake-android-token"))
 
   val packageNameForCreateImage = "com.example"
@@ -251,19 +201,19 @@ trait DeviceProcessData
     hasPhone = true,
     favorite = false,
     info = Some(
-     ModelsContactInfo(
+     ContactInfo(
         emails = Seq(
-          ModelsContactEmail(
+          ContactEmail(
             address = "sample1@47deg.com",
             category = EmailHome
           )
         ),
         phones = Seq(
-          ModelsContactPhone(
+          ContactPhone(
             number = phoneNumber1,
             category = PhoneHome
           ),
-          ModelsContactPhone(
+          ContactPhone(
             number = phoneNumber2,
             category = PhoneMobile
           )
@@ -443,59 +393,6 @@ trait DeviceProcessData
       lastCallDate = date3,
       calls = Seq(call3)))
 
-  def createDockAppServiceSeq(
-    num: Int = 4,
-    id: Int = 0,
-    name: String = name1,
-    dockType: String = dockTypeName,
-    intent: String = intentStr,
-    imagePath: String = imagePath1,
-    position: Int = 0) =
-    (0 until num) map (item =>
-      ServicesDockApp(
-        id = id + num,
-        name = name,
-        dockType = dockType,
-        intent = intent,
-        imagePath = imagePath,
-        position = position + num))
-
-  def createDockAppProcessSeq(
-    num: Int = 4,
-    name: String = name1,
-    dockType: String = dockTypeName,
-    intent: String = intentStr,
-    imagePath: String = imagePath1,
-    position: Int = 0) =
-    (0 until num) map (item =>
-      DockApp(
-        name = name,
-        dockType = DockType(dockType),
-        intent = jsonToNineCardIntent(intent),
-        imagePath = imagePath,
-        position = position + num))
-
-  def createSaveDockAppRequestSeq(
-     num: Int = 4,
-     name: String = name1,
-     dockType: DockType = dockType,
-     intent: String = intentStr,
-     imagePath: String = imagePath1,
-     position: Int = 0) =
-    (0 until num) map (item =>
-      SaveDockAppRequest(
-        name = name,
-        dockType = dockType,
-        intent = intent,
-        imagePath = imagePath,
-        position = position + num))
-
-  val dockAppSeq = createDockAppServiceSeq()
-  val dockApp1 = dockAppSeq(0)
-  val dockAppProcessSeq = createDockAppProcessSeq()
-  val dockAppProcess1 = dockAppProcessSeq(0)
-  val saveDockAppRequestSeq = createSaveDockAppRequestSeq()
-
   val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = contacts.length
 
@@ -515,9 +412,9 @@ trait DeviceProcessData
   }
 
   val iterableCursorApps = new ServicesIterableApps(mockIterableCursor) {
-    override def count(): Int = applicationSeq.length
+    override def count(): Int = seqApplication.length
 
-    override def moveToPosition(pos: Int): Application = applicationSeq(pos)
+    override def moveToPosition(pos: Int): Application = seqApplication(pos)
 
     override def close(): Unit = ()
   }
@@ -525,18 +422,18 @@ trait DeviceProcessData
   val iterableApps = new IterableApps(iterableCursorApps)
 
   val appsCounters = Seq(
-    ServicesDataCounter("#", 4),
-    ServicesDataCounter("B", 1),
-    ServicesDataCounter("E", 6),
-    ServicesDataCounter("F", 5),
-    ServicesDataCounter("Z", 3))
+    TermCounter("#", 4),
+    TermCounter("B", 1),
+    TermCounter("E", 6),
+    TermCounter("F", 5),
+    TermCounter("Z", 3))
 
   val categoryCounters = Seq(
-    ServicesDataCounter("COMMUNICATION", 4),
-    ServicesDataCounter("GAMES", 1),
-    ServicesDataCounter("SOCIAL", 6),
-    ServicesDataCounter("TOOLS", 5),
-    ServicesDataCounter("WEATHER", 3))
+    TermCounter("COMMUNICATION", 4),
+    TermCounter("GAMES", 1),
+    TermCounter("SOCIAL", 6),
+    TermCounter("TOOLS", 5),
+    TermCounter("WEATHER", 3))
 
   val contactsCounters = Seq(
     TermCounter("#", 4),
@@ -546,10 +443,10 @@ trait DeviceProcessData
     TermCounter("Z", 3))
 
   val installationAppsCounters = Seq(
-    ServicesDataCounter("oneWeek", 4),
-    ServicesDataCounter("twoWeeks", 1),
-    ServicesDataCounter("oneMonth", 6),
-    ServicesDataCounter("twoMonths", 5))
+    TermCounter("oneWeek", 4),
+    TermCounter("twoWeeks", 1),
+    TermCounter("oneMonth", 6),
+    TermCounter("twoMonths", 5))
 
   val networks = 0 to 10 map (c => s"Networks $c")
 

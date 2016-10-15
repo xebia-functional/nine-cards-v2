@@ -38,7 +38,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
       val result = persistenceServices.addUser(userData).value.run
 
       result must beLike {
-        case Right(user) => user.id shouldEqual uId
+        case Right(user) => user.id shouldEqual userId
       }
     }
 
@@ -108,12 +108,12 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
     "return a User for a valid request" in new UserPersistenceServicesScope {
 
       mockUserRepository.findUserById(any) returns TaskService(Task(Either.right(Option(repoUser))))
-      val result = persistenceServices.findUserById(uId).value.run
+      val result = persistenceServices.findUserById(userId).value.run
 
       result must beLike {
         case Right(maybeUser) =>
           maybeUser must beSome[User].which { user =>
-            user.id shouldEqual uId
+            user.id shouldEqual userId
           }
       }
     }
@@ -128,7 +128,7 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
 
       mockUserRepository.findUserById(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.findUserById(uId).value.run
+      val result = persistenceServices.findUserById(userId).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

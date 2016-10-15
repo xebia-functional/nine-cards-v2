@@ -6,37 +6,25 @@ import cards.nine.models.types.DockType
 
 trait DockAppTestData extends NineCardsIntentConversions {
 
-  def createSeqDockApp(
-    num: Int = 5,
-    id: Int = dockAppId,
-    name: String = name,
-    dockType: String = dockType,
-    intent: String = intent,
-    imagePath: String = imagePath,
-    position: Int = position): Seq[DockApp] = List.tabulate(num)(
-    item =>
-      DockApp(
-        id = id + item,
-        name = name,
-        dockType = DockType(dockType),
-        intent = jsonToNineCardIntent(intent),
-        imagePath = imagePath,
-        position = position))
+  def dockApp(num: Int = 0) = DockApp(
+    id = dockAppId + item,
+    name = dockAppName,
+    dockType = DockType(dockType),
+    intent = jsonToNineCardIntent(dockAppIntent),
+    imagePath = dockAppImagePath,
+    position = dockAppPosition)
 
-  def createCreateOrUpdateDockAppRequest(
-    name: String = name,
-    dockType: String = dockType,
-    intent: String = intent,
-    imagePath: String = imagePath,
-    position: Int = position): DockAppData =
-    DockAppData(
-      name = name,
-      dockType = DockType(dockType),
-      intent = jsonToNineCardIntent(intent),
-      imagePath = imagePath,
-      position = position)
+  val dockApp: DockApp = dockApp(0)
+  val seqDockApp: Seq[DockApp]  = Seq(dockApp(0), dockApp(1), dockApp(2))
 
-  val seqDockApp: Seq[DockApp] = createSeqDockApp()
-  val dockApp: DockApp = seqDockApp(0)
+  def dockAppData(num: Int = 0) = DockAppData(
+    name = dockAppName,
+    dockType = DockType(dockType),
+    intent = jsonToNineCardIntent(dockAppIntent),
+    imagePath = dockAppImagePath,
+    position = dockAppPosition)
+
+  val dockAppData: DockAppData = dockAppData(0)
+  val seqDockAppData: Seq[DockAppData] = Seq(dockAppData(0), dockAppData(1), dockAppData(2))
 
 }

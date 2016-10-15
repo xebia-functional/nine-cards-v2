@@ -33,7 +33,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a DockApp value for a valid request adding a dockApp" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(Seq.empty)))
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(dockAppPosition).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(Seq.empty)))
 
       mockDockAppRepository.addDockApps(any) returns TaskService(Task(Either.right(Seq(repoDockApp))))
 
@@ -45,7 +45,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a DockApp value for a valid request updating a dockApp" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(seqRepoDockApp)))
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(dockAppPosition).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(seqRepoDockApp)))
 
       mockDockAppRepository.addDockApps(any) returns TaskService(Task(Either.right(Seq.empty)))
 
@@ -58,7 +58,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a PersistenceServiceException if the service throws a exception fetching the dockApps" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.left(exception)))
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(dockAppPosition).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.left(exception)))
 
       val result = persistenceServices.createOrUpdateDockApp(Seq(createCreateOrUpdateDockAppRequest())).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
@@ -66,7 +66,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a PersistenceServiceException if the service throws a exception adding the dockApps" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(Seq.empty)))
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(dockAppPosition).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(Seq.empty)))
 
       mockDockAppRepository.addDockApps(any) returns TaskService(Task(Either.left(exception)))
 
@@ -76,7 +76,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return a PersistenceServiceException if the service throws a exception updating the dockApps" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(position).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(seqRepoDockApp)))
+      mockDockAppRepository.fetchDockApps(where = s"position IN (${Seq(dockAppPosition).mkString("\"", ",", "\"")})") returns TaskService(Task(Either.right(seqRepoDockApp)))
 
       mockDockAppRepository.addDockApps(any) returns TaskService(Task(Either.right(Seq.empty)))
 
