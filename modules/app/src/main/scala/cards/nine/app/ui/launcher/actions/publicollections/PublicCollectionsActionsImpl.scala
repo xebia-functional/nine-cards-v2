@@ -2,19 +2,19 @@ package cards.nine.app.ui.launcher.actions.publicollections
 
 import android.support.v4.app.Fragment
 import android.widget.{LinearLayout, TextView}
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.sharedcollections.{LatestSharedCollection, TopSharedCollection, TypeSharedCollection}
 import cards.nine.process.theme.models.CardLayoutBackgroundColor
@@ -26,7 +26,7 @@ trait PublicCollectionsActionsImpl
   extends PublicCollectionsUiActions 
   with Styles
   with PublicCollectionsStyle
-  with AppNineCardIntentConversions {
+  with AppNineCardsIntentConversions {
 
   self: TypedFindView with BaseActionFragment with Contexts[Fragment] =>
 
@@ -43,7 +43,7 @@ trait PublicCollectionsActionsImpl
   var categoryFilter = slot[TextView]
 
   lazy val (categoryNamesMenu, categories) = {
-    val categoriesSorted = NineCardCategory.appsCategories map { category =>
+    val categoriesSorted = NineCardsCategory.appsCategories map { category =>
       (resGetString(category.getStringResource) getOrElse category.name, category)
     } sortBy(_._1)
     (categoriesSorted map (_._1), categoriesSorted map (_._2))
@@ -114,7 +114,7 @@ trait PublicCollectionsActionsImpl
 
   override def showLoading(): Ui[Any] = (loading <~ vVisible) ~ (recycler <~ vGone)
 
-  override def updateCategory(category: NineCardCategory): Ui[Any] =
+  override def updateCategory(category: NineCardsCategory): Ui[Any] =
     categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)
 
   override def updateTypeCollection(typeSharedCollection: TypeSharedCollection): Ui[Any] = typeSharedCollection match {

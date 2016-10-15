@@ -19,7 +19,7 @@ import cards.nine.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomen
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}
+import cards.nine.models.{Collection, Moment, MomentTimeSlot}
 import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

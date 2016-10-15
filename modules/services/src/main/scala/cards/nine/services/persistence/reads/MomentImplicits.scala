@@ -1,6 +1,6 @@
 package cards.nine.services.persistence.reads
 
-import cards.nine.services.persistence.models.MomentTimeSlot
+import cards.nine.models.MomentTimeSlot
 
 object MomentImplicits {
 

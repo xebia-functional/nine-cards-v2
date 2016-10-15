@@ -1,15 +1,15 @@
-package cards.nine.process.commons.models
+package cards.nine.models
 
 import android.content.Intent
 import android.content.Intent._
 import android.net.Uri
-import cards.nine.process.commons.models.NineCardIntentExtras._
+import cards.nine.models.NineCardsIntentExtras._
 import play.api.libs.json._
 
 import scala.collection.JavaConversions._
 import scala.util.Try
 
-case class NineCardIntent(intentExtras: NineCardIntentExtras) extends Intent {
+case class NineCardsIntent(intentExtras: NineCardsIntentExtras) extends Intent {
 
   def fill(intent: Intent) = fillIn(
     intent,
@@ -47,7 +47,7 @@ case class NineCardIntent(intentExtras: NineCardIntentExtras) extends Intent {
   }
 }
 
-case class NineCardIntentExtras(
+case class NineCardsIntentExtras(
   contact_lookup_key: Option[String] = None,
   tel: Option[String] = None,
   email: Option[String] = None,
@@ -55,7 +55,7 @@ case class NineCardIntentExtras(
   package_name: Option[String] = None,
   class_name: Option[String] = None)
 
-object NineCardIntentExtras {
+object NineCardsIntentExtras {
   val nineCardExtraLookup: String = "contact_lookup_key"
   val nineCardExtraPhone: String = "tel"
   val nineCardExtraEmail: String = "email"
@@ -70,15 +70,15 @@ object NineCardIntentExtras {
   val openContact: String = "cards.nine.OPEN_CONTACT"
 }
 
-object NineCardIntentImplicits {
+object NineCardsIntentImplicits {
 
-  implicit val extrasReads = Json.reads[NineCardIntentExtras]
+  implicit val extrasReads = Json.reads[NineCardsIntentExtras]
 
-  implicit val extrasWrites = Json.writes[NineCardIntentExtras]
+  implicit val extrasWrites = Json.writes[NineCardsIntentExtras]
 
-  implicit val nineCardIntentReads = new Reads[NineCardIntent] {
-    def reads(js: JsValue): JsResult[NineCardIntent] = {
-      val intent = NineCardIntent((js \ "intentExtras").as[NineCardIntentExtras])
+  implicit val nineCardIntentReads = new Reads[NineCardsIntent] {
+    def reads(js: JsValue): JsResult[NineCardsIntent] = {
+      val intent = NineCardsIntent((js \ "intentExtras").as[NineCardsIntentExtras])
       (for {
         packageName <- (js \ "packageName").asOpt[String]
         className <- (js \ "className").asOpt[String]
@@ -113,7 +113,7 @@ object NineCardIntentImplicits {
     def fixActionPackage(action: String): String =
       if (action.startsWith(legacyPackage)) action.replace(legacyPackage, "cards.nine.") else action
 
-    def matchExtras(intent: NineCardIntent, name: String, value: JsValue) = value match {
+    def matchExtras(intent: NineCardsIntent, name: String, value: JsValue) = value match {
       case s:JsString => intent.putExtra(name, s.as[String])
       case s:JsNumber => intent.putExtra(name, s.as[Int])
       case s:JsBoolean => intent.putExtra(name, s.as[Boolean])
@@ -122,8 +122,8 @@ object NineCardIntentImplicits {
 
   }
 
-  implicit val nineCardIntentWrites = new Writes[NineCardIntent] {
-    def writes(intent: NineCardIntent): JsValue = {
+  implicit val nineCardsIntentWrites = new Writes[NineCardsIntent] {
+    def writes(intent: NineCardsIntent): JsValue = {
       val jsExtras = Option(intent.getExtras) map { extras =>
         (extras.keySet() flatMap { key =>
           Try {

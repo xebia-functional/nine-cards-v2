@@ -12,7 +12,7 @@ import cards.nine.app.ui.components.drawables.CharDrawable
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import cards.nine.commons.javaNull
-import cards.nine.process.commons.models.MomentTimeSlot
+import cards.nine.models.MomentTimeSlot
 import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

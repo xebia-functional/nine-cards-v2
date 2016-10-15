@@ -4,7 +4,6 @@ import cards.nine.models.types.{AppsCollectionType, Communication}
 import cards.nine.process.sharedcollections.TopSharedCollection
 import cards.nine.process.sharedcollections.models.{CreateSharedCollection, UpdateSharedCollection}
 import cards.nine.services.api._
-import cards.nine.services.persistence.models.{Collection => CollectionPersistence}
 
 import scala.util.Random
 

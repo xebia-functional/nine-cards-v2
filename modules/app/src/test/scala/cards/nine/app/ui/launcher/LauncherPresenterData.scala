@@ -1,9 +1,11 @@
 package cards.nine.app.ui.launcher
 
+import cards.nine.models
+import cards.nine.models.NineCardsIntentImplicits
 import cards.nine.models.types.CollectionType._
-import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types._
-import cards.nine.process.commons.models.NineCardIntentImplicits._
+import NineCardsIntentImplicits._
 import cards.nine.process.commons.models._
 import cards.nine.process.device.models.DockApp
 import cards.nine.process.user.models.{User, UserProfile}
@@ -20,7 +22,7 @@ trait LauncherPresenterData {
   val collectionType: CollectionType = collectionTypes(Random.nextInt(collectionTypes.length))
   val icon: String = Random.nextString(5)
   val themedColorIndex: Int = Random.nextInt(10)
-  val appsCategory: NineCardCategory = appsCategories(Random.nextInt(appsCategories.length))
+  val appsCategory: NineCardsCategory = appsCategories(Random.nextInt(appsCategories.length))
   val appsCategoryName = appsCategory.name
   val constrains: String = Random.nextString(5)
   val originalSharedCollectionId: String = Random.nextString(5)
@@ -54,7 +56,7 @@ trait LauncherPresenterData {
       term = "App 1",
       packageName = Some("package.name"),
       cardType = AppCardType,
-      intent = NineCardIntent(NineCardIntentExtras()),
+      intent = models.NineCardsIntent(models.NineCardsIntentExtras()),
       imagePath = Some("imagePath"),
       notification = Some("notification")
     )
@@ -89,7 +91,7 @@ trait LauncherPresenterData {
   val imagePath = "imagePath1"
 
   val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
-  val intent = Json.parse(intentStr).as[NineCardIntent]
+  val intent = Json.parse(intentStr).as[models.NineCardsIntent]
 
   val dockApp = DockApp(
     name = packageName,

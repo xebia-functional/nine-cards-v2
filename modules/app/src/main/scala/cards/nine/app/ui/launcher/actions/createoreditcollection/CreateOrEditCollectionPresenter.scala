@@ -2,11 +2,9 @@ package cards.nine.app.ui.launcher.actions.createoreditcollection
 
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.process.collection.{AddCollectionRequest, EditCollectionRequest}
-import cards.nine.process.commons.models.Collection
-import cards.nine.models.types.FreeCollectionType
+import cards.nine.models._
+import cards.nine.models.types._
 import macroid.{ActivityContextWrapper, Ui}
-
 
 class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
@@ -34,13 +32,17 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
       icon <- maybeIcon
       index <- maybeIndex
     } yield {
-      val request = EditCollectionRequest(
+      val collectionData = CollectionData(
+        position = collection.position,
         name = name,
+        collectionType = collection.collectionType,
         icon = icon,
         themedColorIndex = index,
-        appsCategory = collection.appsCategory
-      )
-      di.collectionProcess.editCollection(collection.id, request).resolveAsyncUi2(
+        appsCategory = collection.appsCategory,
+        cards = collection.cards map (_.toData),
+        moment = collection.moment map (_.toData))
+
+      di.collectionProcess.editCollection(collection.id, collectionData).resolveAsyncUi2(
         onResult = (c) => actions.editCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError
       )
@@ -52,16 +54,13 @@ class CreateOrEditCollectionPresenter(actions: CreateOrEditCollectionActions)(im
       icon <- maybeIcon
       index <- maybeIndex
     } yield {
-      val request = AddCollectionRequest(
+      val collection = CollectionData(
         name = name,
         collectionType = FreeCollectionType,
         icon = icon,
-        themedColorIndex = index,
-        appsCategory = None,
-        cards = Seq.empty,
-        moment = None
-      )
-      di.collectionProcess.addCollection(request).resolveAsyncUi2(
+        themedColorIndex = index)
+
+      di.collectionProcess.addCollection(collection).resolveAsyncUi2(
         onResult = (c) => actions.addCollection(c) ~ actions.close(),
         onException = (ex) => actions.showMessageContactUsError
       )

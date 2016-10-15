@@ -7,23 +7,22 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup.LayoutParams._
 import android.view.{View, ViewGroup}
 import android.widget.ImageView
+import cards.nine.app.commons.AppNineCardsIntentConversions
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
+import cards.nine.app.ui.commons.ops.ResourcesCollectionDataOps._
+import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
+import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.models.{CardData, Collection, CollectionData}
+import cards.nine.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.commons.AppNineCardIntentConversions
-import cards.nine.app.ui.commons.AppUtils._
-import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.commons.UiContext
-import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
-import cards.nine.app.ui.commons.styles.{CommonStyles, CollectionCardsStyles}
-import cards.nine.app.ui.commons.ops.PrivateCollectionOps._
-import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.process.commons.models.{Collection, PrivateCard, PrivateCollection}
-import cards.nine.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
@@ -32,7 +31,7 @@ import macroid._
 trait PrivateCollectionsActionsImpl
   extends PrivateCollectionsActions
   with Styles
-  with AppNineCardIntentConversions {
+  with AppNineCardsIntentConversions {
 
   self: TypedFindView with BaseActionFragment with Contexts[Fragment] =>
 
@@ -51,7 +50,7 @@ trait PrivateCollectionsActionsImpl
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)
 
-  override def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any] = {
+  override def addPrivateCollections(privateCollections: Seq[CollectionData]): Ui[Any] = {
     val adapter = PrivateCollectionsAdapter(privateCollections)
     (recycler <~
       vVisible <~
@@ -106,7 +105,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
     (name <~ titleTextStyle) ~
     (addCollection <~ buttonStyle)).run
 
-  def bind(privateCollection: PrivateCollection, position: Int): Ui[_] = {
+  def bind(privateCollection: CollectionData, position: Int): Ui[_] = {
     val d = new ShapeDrawable(new OvalShape)
     d.getPaint.setColor(theme.getIndexColor(privateCollection.themedColorIndex))
     val cardsRow = privateCollection.cards
@@ -122,7 +121,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
-  private[this] def automaticAlignment(view: FlexboxLayout, cards: Seq[PrivateCard]): Tweak[FlexboxLayout] = {
+  private[this] def automaticAlignment(view: FlexboxLayout, cards: Seq[CardData]): Tweak[FlexboxLayout] = {
     val width = view.getWidth
     if (width > 0) {
       vgAddViews(getViewsByCards(cards, width))
@@ -133,7 +132,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
     }
   }
 
-  private[this] def getViewsByCards(cards: Seq[PrivateCard], width: Int) = {
+  private[this] def getViewsByCards(cards: Seq[CardData], width: Int) = {
     val sizeIcon = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
     val sizeView = width / appsByRow
     val padding = (sizeView - sizeIcon) / 2

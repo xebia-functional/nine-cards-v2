@@ -1,8 +1,8 @@
 package cards.nine.services.persistence.data
 
+import cards.nine.models.Widget
 import cards.nine.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
 import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.Widget
 
 import scala.util.Random
 

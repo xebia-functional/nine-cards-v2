@@ -6,9 +6,9 @@ import android.content.res.Resources
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.NineCardsIntent
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.types.NineCardsMoment._
-import cards.nine.process.commons.models.NineCardIntent
 import cards.nine.process.moment.{MomentException, MomentProcessConfig}
 import cards.nine.services.persistence.{OrderByName, PersistenceServiceException, PersistenceServices}
 import cards.nine.services.wifi.{WifiServices, WifiServicesException}
@@ -42,7 +42,7 @@ trait MomentProcessImplSpecification
     val mockWifiServices = mock[WifiServices]
 
     val mockIntent = mock[Intent]
-    val mockNineCardIntent = mock[NineCardIntent]
+    val mockNineCardIntent = mock[NineCardsIntent]
 
     val momentProcess = new MomentProcessImpl(
       momentProcessConfig = momentProcessConfig,

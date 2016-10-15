@@ -3,7 +3,6 @@ package cards.nine.process.user.impl
 import cards.nine.process.user.models.{User, UserProfile}
 import cards.nine.services.api.{LoginResponse, UpdateInstallationResponse}
 import cards.nine.services.persistence.{AddUserRequest, UpdateUserRequest}
-import cards.nine.services.persistence.models.{User => ServicesUser}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 

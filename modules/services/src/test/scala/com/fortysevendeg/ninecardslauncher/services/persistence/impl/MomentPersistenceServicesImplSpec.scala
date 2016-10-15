@@ -1,18 +1,16 @@
 package cards.nine.services.persistence.impl
 
-import cats.syntax.either._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.PersistenceMoment$
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.MomentEntity
 import cards.nine.services.persistence.data.PersistenceServicesData
-import cards.nine.services.persistence.models.Moment
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
-
-
 
 trait MomentPersistenceServicesSpecification
   extends Specification
@@ -174,7 +172,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       result must beLike {
         case Right(maybeMoment) =>
-          maybeMoment must beSome[Moment].which { moment =>
+          maybeMoment must beSome[PersistenceMoment].which { moment =>
             moment.id shouldEqual momentId
           }
       }
@@ -233,7 +231,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
       val result = persistenceServices.fetchMomentByType(momentType = momentType1).value.run
       result must beLike {
         case Right(maybeMoment) =>
-          maybeMoment must beSome[Moment].which { moment =>
+          maybeMoment must beSome[PersistenceMoment].which { moment =>
             moment.momentType shouldEqual Some(momentType1)
           }
       }

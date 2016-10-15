@@ -1,13 +1,13 @@
 package cards.nine.app.ui.commons.ops
 
+import cards.nine.models.CollectionData
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import cards.nine.process.commons.models.PrivateCollection
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
-object PrivateCollectionOps {
+object ResourcesCollectionDataOps {
 
-  implicit class PrivateCollectionOp(privateCollection: PrivateCollection) {
+  implicit class ResourcesCollectionDataOp(privateCollection: CollectionData) {
 
     def getIconCollectionWorkspace(implicit context: ContextWrapper): Int =
       resGetDrawableIdentifier(s"icon_collection_${privateCollection.icon.toLowerCase}") getOrElse R.drawable.icon_collection_default

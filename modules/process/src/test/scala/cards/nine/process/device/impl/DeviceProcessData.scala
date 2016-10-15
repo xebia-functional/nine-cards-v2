@@ -1,24 +1,21 @@
 package cards.nine.process.device.impl
 
-import android.content.Intent
-import android.graphics.drawable.Drawable
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.models
 import cards.nine.models.types._
-import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, Shortcut, _}
-import cards.nine.process.commons.NineCardIntentConversions
-import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.commons.models.NineCardIntentImplicits._
+import cards.nine.models.{ContactEmail => ModelsContactEmail, ContactInfo => ModelsContactInfo, ContactPhone => ModelsContactPhone, _}
+import NineCardsIntent
+import NineCardsIntentImplicits._
 import cards.nine.process.device.SaveDockAppRequest
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.api.{CategorizedPackage, RequestConfig}
-import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp, IterableApps => ServicesIterableApps}
+import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
 import play.api.libs.json.Json
 
 trait DeviceProcessData
-  extends NineCardIntentConversions {
+  extends NineCardsIntentConversions {
 
   val statusCodeOk = 200
   val items = 5
@@ -200,7 +197,7 @@ trait DeviceProcessData
     category = Some("SOCIAL"))
 
   val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
-  val intent = Json.parse(intentStr).as[NineCardIntent]
+  val intent = Json.parse(intentStr).as[NineCardsIntent]
 
   val shortcuts: Seq[Shortcut] = Seq(
     Shortcut(
@@ -544,11 +541,11 @@ trait DeviceProcessData
     ServicesDataCounter("WEATHER", 3))
 
   val contactsCounters = Seq(
-    ContactCounter("#", 4),
-    ContactCounter("B", 1),
-    ContactCounter("E", 6),
-    ContactCounter("F", 5),
-    ContactCounter("Z", 3))
+    TermCounter("#", 4),
+    TermCounter("B", 1),
+    TermCounter("E", 6),
+    TermCounter("F", 5),
+    TermCounter("Z", 3))
 
   val installationAppsCounters = Seq(
     ServicesDataCounter("oneWeek", 4),

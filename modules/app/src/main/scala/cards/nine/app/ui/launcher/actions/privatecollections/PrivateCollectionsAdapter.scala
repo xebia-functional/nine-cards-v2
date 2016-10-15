@@ -3,13 +3,13 @@ package cards.nine.app.ui.launcher.actions.privatecollections
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, ViewGroup}
 import cards.nine.app.ui.commons.UiContext
-import cards.nine.process.commons.models.PrivateCollection
+import cards.nine.models.CollectionData
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.TR
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import macroid.ActivityContextWrapper
 
-case class PrivateCollectionsAdapter(privateCollections: Seq[PrivateCollection])
+case class PrivateCollectionsAdapter(privateCollections: Seq[CollectionData])
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], presenter: PrivateCollectionsPresenter, theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderPrivateCollectionsLayoutAdapter] {
 

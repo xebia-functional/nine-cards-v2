@@ -1,7 +1,7 @@
 package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.repository.model.{App => RepositoryApp, AppData => RepositoryAppData, DataCounter => RepositoryDataCounter}
 import cards.nine.services.persistence.models._
 import cards.nine.models.Application
@@ -29,7 +29,7 @@ trait AppPersistenceServicesData extends PersistenceServicesData {
       name = name,
       packageName = packageName,
       className = className,
-      category = NineCardCategory(category),
+      category = NineCardsCategory(category),
       dateInstalled = dateInstalled,
       dateUpdate = dateUpdate,
       version = version,

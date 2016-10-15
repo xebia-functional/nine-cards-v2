@@ -4,7 +4,6 @@ import cards.nine.models.types.WidgetType
 import cards.nine.models.types.WidgetType._
 import cards.nine.models.{Widget, WidgetArea}
 import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
-import cards.nine.services.persistence.models.{Widget => ServicesWidget}
 
 import scala.util.Random
 

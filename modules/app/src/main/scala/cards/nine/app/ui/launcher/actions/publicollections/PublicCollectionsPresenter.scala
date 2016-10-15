@@ -5,8 +5,8 @@ import cards.nine.app.ui.collections.tasks.CollectionJobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{AppLog, Jobs}
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.{Communication, NineCardCategory}
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.types.{Communication, NineCardsCategory}
+import cards.nine.models.Collection
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -25,7 +25,7 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
     actions.initialize().run
   }
 
-  def loadPublicCollectionsByCategory(category: NineCardCategory): Unit = {
+  def loadPublicCollectionsByCategory(category: NineCardsCategory): Unit = {
     statuses = statuses.copy(category = category)
     actions.updateCategory(category).run
     loadPublicCollections()
@@ -50,7 +50,7 @@ class PublicCollectionsPresenter(actions: PublicCollectionsUiActions)(implicit c
   def loadPublicCollections(): Unit = {
 
     def getSharedCollections(
-      category: NineCardCategory,
+      category: NineCardsCategory,
       typeSharedCollection: TypeSharedCollection): TaskService[Seq[SharedCollection]] =
       di.sharedCollectionsProcess.getSharedCollectionsByCategory(category, typeSharedCollection)
 
@@ -94,7 +94,7 @@ trait PublicCollectionsUiActions {
     onAddCollection: (SharedCollection) => Unit,
     onShareCollection: (SharedCollection) => Unit): Ui[Any]
 
-  def updateCategory(category: NineCardCategory): Ui[Any]
+  def updateCategory(category: NineCardsCategory): Ui[Any]
 
   def updateTypeCollection(typeSharedCollection: TypeSharedCollection): Ui[Any]
 
@@ -102,4 +102,4 @@ trait PublicCollectionsUiActions {
 
 }
 
-case class PublicCollectionStatuses(category: NineCardCategory, typeSharedCollection: TypeSharedCollection)
+case class PublicCollectionStatuses(category: NineCardsCategory, typeSharedCollection: TypeSharedCollection)

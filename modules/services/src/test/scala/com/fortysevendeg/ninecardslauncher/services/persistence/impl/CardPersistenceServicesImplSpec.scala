@@ -1,16 +1,15 @@
 package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.Card
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.CardEntity
 import cards.nine.services.persistence.data._
-import cards.nine.services.persistence.models.Card
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
-import cards.nine.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
-
 
 trait CardPersistenceServicesDataSpecification
   extends Specification

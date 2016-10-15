@@ -4,15 +4,16 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.Application.ApplicationDataOps
+import cards.nine.models.types.{Misc, _}
 import cards.nine.models.{Application, ApplicationData}
-import cards.nine.models.types.{Misc, NineCardCategory}
 import cards.nine.process.device._
 import cards.nine.process.device.models.IterableApps
 import cards.nine.process.device.utils.KnownCategoriesUtil
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.GooglePlayPackagesResponse
 import cards.nine.services.image._
-import cards.nine.services.persistence.{ImplicitsPersistenceServiceExceptions, OrderByInstallDate, OrderByName}
+import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 
 trait AppsDeviceProcessImpl
   extends DeviceProcess
@@ -48,7 +49,7 @@ trait AppsDeviceProcessImpl
         case GetByCategory => persistenceServices.fetchCategorizedAppsCounter
         case _ => persistenceServices.fetchInstallationDateAppsCounter
       }
-    } yield counters map toTermCounter).resolve[AppException]
+    } yield counters).resolve[AppException]
 
   def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport)  =
     (for {
@@ -89,9 +90,9 @@ trait AppsDeviceProcessImpl
             val knownCategory = findCategory(app.packageName)
             val category = knownCategory getOrElse {
               val categoryName = googlePlayPackagesResponse.packages find (_.packageName == app.packageName) flatMap (_.category)
-              categoryName map (NineCardCategory(_)) getOrElse Misc
+              categoryName map (NineCardsCategory(_)) getOrElse Misc
             }
-            toAddAppRequest(app, category)
+            app.copy(category = category)
           }
           _ <- persistenceServices.addApps(apps)
         } yield ()
@@ -109,7 +110,7 @@ trait AppsDeviceProcessImpl
     (for {
       application <- appsServices.getApplication(packageName)
       appCategory <- getAppCategory(packageName)
-      applicationAdded <- persistenceServices.addApp(toAddAppRequest(application, appCategory))
+      applicationAdded <- persistenceServices.addApp(application.copy(category = appCategory))
     } yield applicationAdded.toData).resolve[AppException]
 
   def deleteApp(packageName: String)(implicit context: ContextSupport) =
@@ -122,7 +123,7 @@ trait AppsDeviceProcessImpl
       app <- appsServices.getApplication(packageName)
       appPersistence <- persistenceServices.findAppByPackage(packageName).resolveOption()
       appCategory <- getAppCategory(packageName)
-      _ <- persistenceServices.updateApp(toUpdateAppRequest(appPersistence.id, app, appCategory))
+      _ <- persistenceServices.updateApp(app.copy(category = appCategory).toApp(appPersistence.id))
     } yield ()).resolve[AppException]
 
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
@@ -132,7 +133,7 @@ trait AppsDeviceProcessImpl
         .map(_.app.category)
         .resolveLeftTo(None)
     } yield {
-      appCategory map (NineCardCategory(_)) getOrElse Misc
+      appCategory map (NineCardsCategory(_)) getOrElse Misc
     }
 
 }

@@ -3,9 +3,9 @@ package cards.nine.process.moment.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
+import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}
-import cards.nine.process.moment.{UpdateMomentRequest, _}
+import cards.nine.process.moment._
 import cards.nine.services.persistence._
 import cards.nine.services.wifi.WifiServices
 import org.joda.time.DateTime
@@ -13,36 +13,61 @@ import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
 
 class MomentProcessImpl(
-  val momentProcessConfig: MomentProcessConfig,
   val persistenceServices: PersistenceServices,
   val wifiServices: WifiServices)
   extends MomentProcess
   with ImplicitsMomentException
-  with ImplicitsPersistenceServiceExceptions
-  with MomentConversions {
+  with ImplicitsPersistenceServiceExceptions {
 
-  override def getMoments = (persistenceServices.fetchMoments map toMomentSeq).resolve[MomentException]
+  override def getMoments = persistenceServices.fetchMoments.resolve[MomentException]
 
   override def getMomentByType(momentType: NineCardsMoment) =
-    (persistenceServices.getMomentByType(momentType.name) map toMoment).resolve[MomentException]
+    persistenceServices.getMomentByType(momentType).resolve[MomentException]
 
   override def fetchMomentByType(momentType: NineCardsMoment) =
-    (persistenceServices.fetchMomentByType(momentType.name) map (moment => moment map toMoment)).resolve[MomentException]
+    persistenceServices.fetchMomentByType(momentType.name).resolve[MomentException]
 
-  def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport) =
-    (for {
-      moment <- persistenceServices.addMoment(toAddMomentRequest(None, nineCardsMoment))
-    } yield toMoment(moment)).resolve[MomentException]
+  def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport) = {
 
-  override def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport) =
+    def toMomentData(collectionId: Option[Int], moment: NineCardsMoment): MomentData = {
+
+      def toServicesMomentTimeSlotSeq(moment: NineCardsMoment): Seq[MomentTimeSlot] =
+        moment match {
+          case HomeMorningMoment => Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+          case WorkMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
+          case HomeNightMoment => Seq(MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+          case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
+          case MusicMoment => Seq.empty
+          case CarMoment => Seq.empty
+          case RunningMoment => Seq.empty
+          case BikeMoment => Seq.empty
+          case WalkMoment => Seq.empty
+        }
+
+      MomentData(
+        collectionId = collectionId,
+        timeslot = toServicesMomentTimeSlotSeq(moment),
+        wifi = Seq.empty,
+        headphone = moment == MusicMoment,
+        momentType = Option(moment),
+        widgets = None)
+    }
+
     (for {
-      _ <- persistenceServices.updateMoment(toServiceUpdateMomentRequest(item))
+      moment <- persistenceServices.addMoment(toMomentData(None, nineCardsMoment))
+    } yield moment).resolve[MomentException]
+
+  }
+
+  override def updateMoment(moment: Moment)(implicit context: ContextSupport) =
+    (for {
+      _ <- persistenceServices.updateMoment(moment)
     } yield ()).resolve[MomentException]
 
-  override def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport) =
+  override def saveMoments(moments: Seq[MomentData])(implicit context: ContextSupport) =
     (for {
-      moments <- persistenceServices.addMoments(items map toAddMomentRequest)
-    } yield moments map toMoment).resolve[MomentException]
+      moments <- persistenceServices.addMoments(moments)
+    } yield moments).resolve[MomentException]
 
   override def deleteAllMoments() =
     (for {
@@ -54,7 +79,7 @@ class MomentProcessImpl(
       serviceMoments <- persistenceServices.fetchMoments
       collections <- persistenceServices.fetchCollections
       wifi <- wifiServices.getCurrentSSID
-      moments = serviceMoments map toMoment
+      moments = serviceMoments
       momentsPrior = moments sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
     } yield momentsPrior.headOption).resolve[MomentException]
 
@@ -62,13 +87,13 @@ class MomentProcessImpl(
     (for {
       serviceMoments <- persistenceServices.fetchMoments
       serviceCollections <- persistenceServices.fetchCollections
-      collections = serviceCollections map toCollection
-      moments = serviceMoments map toMoment
+      collections = serviceCollections
+      moments = serviceMoments
       momentWithCollection = moments flatMap {
-        case moment @ Moment(_, Some(collectionId), _, _, _, _) =>
+        case moment @ Moment(_, Some(collectionId), _, _, _, _, _) =>
           collections find (_.id == collectionId) match {
             case Some(collection: Collection) =>
-              Some(toMomentWithCollection(moment, collection))
+              Some((moment, collection))
             case _ => None
           }
         case _ => None

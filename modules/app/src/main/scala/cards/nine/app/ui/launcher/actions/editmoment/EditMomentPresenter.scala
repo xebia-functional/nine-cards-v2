@@ -1,12 +1,11 @@
 package cards.nine.app.ui.launcher.actions.editmoment
 
-import cards.nine.app.ui.commons.{BroadAction, Jobs}
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.action_filters.MomentConstrainsChangedActionFilter
-import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}
-import cards.nine.process.moment.UpdateMomentRequest
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.{BroadAction, Jobs}
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.{Collection, Moment, MomentTimeSlot}
 import macroid._
 
 class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -106,7 +105,7 @@ class EditMomentPresenter(actions: EditMomentActions)(implicit contextWrapper: A
 
   def saveMoment(): Unit = (statuses.wasModified(), statuses.modifiedMoment) match {
     case (true, Some(moment)) =>
-      val request = UpdateMomentRequest(
+      val request = Moment(
         id = moment.id,
         collectionId = moment.collectionId,
         timeslot = moment.timeslot,

@@ -1,15 +1,15 @@
 package cards.nine.process.widget.impl
 
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.Widget
 import cards.nine.process.widget.AppWidgetException
-import cards.nine.services.persistence.models.Widget
 import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
 
 trait WidgetProcessImplSpecification
   extends Specification

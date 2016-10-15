@@ -1,9 +1,9 @@
 package cards.nine.services.persistence.data
 
+import cards.nine.models.{Card, Collection, PersistenceMoment$, MomentTimeSlot}
 import cards.nine.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, DataCounter => RepositoryDataCounter, Moment => RepositoryMoment, MomentData => RepositoryMomentData, User => RepositoryUser, UserData => RepositoryUserData, Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
-import cards.nine.services.persistence.models._
 import cards.nine.services.persistence.reads.MomentImplicits
 import play.api.libs.json.Json
 
@@ -80,8 +80,8 @@ trait PersistenceServicesData extends Conversions {
   val widgetImagePathOption = Option(widgetImagePath)
   val widgetIntentOption = Option(widgetIntent)
 
-  val seqMoment: Seq[Moment] = createSeqMoment()
-  val servicesMoment: Moment = seqMoment(0)
+  val seqMoment: Seq[PersistenceMoment] = createSeqMoment()
+  val servicesMoment: PersistenceMoment = seqMoment(0)
   val repoMomentData: RepositoryMomentData = createRepoMomentData()
   val seqRepoMoment: Seq[RepositoryMoment] = createSeqRepoMoment(data = repoMomentData)
   val repoMoment: RepositoryMoment = seqRepoMoment(0)
@@ -96,7 +96,7 @@ trait PersistenceServicesData extends Conversions {
     themedColorIndex: Int = themedColorIndex,
     appsCategory: String = appsCategory,
     cards: Seq[Card] = seqCard,
-    moment: Option[Moment] = Some(servicesMoment),
+    moment: Option[PersistenceMoment] = Some(servicesMoment),
     originalSharedCollectionId: String = originalSharedCollectionId,
     sharedCollectionId: String = sharedCollectionId,
     sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed): Seq[Collection] = List.tabulate(num)(
@@ -212,9 +212,9 @@ trait PersistenceServicesData extends Conversions {
     timeslot: Seq[MomentTimeSlot] = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi: Seq[String] = wifiSeq,
     headphone: Boolean = headphone,
-    momentType: Option[String] = Option(momentType1)): Seq[Moment] = List.tabulate(num)(
+    momentType: Option[String] = Option(momentType1)): Seq[PersistenceMoment] = List.tabulate(num)(
     item =>
-      Moment(
+      PersistenceMoment(
         id = id + item,
         collectionId = collectionId,
         timeslot = timeslot,
@@ -468,7 +468,7 @@ trait PersistenceServicesData extends Conversions {
     num: Int = 5) :Seq[AddMomentRequest]  =
     List.tabulate(num)(item => createAddMomentRequest())
 
-  def createDeleteMomentRequest(moment: Moment): DeleteMomentRequest =
+  def createDeleteMomentRequest(moment: PersistenceMoment): DeleteMomentRequest =
     DeleteMomentRequest(moment = moment)
 
   def createFindMomentByIdRequest(id: Int): FindMomentByIdRequest =

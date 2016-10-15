@@ -7,7 +7,7 @@ import cards.nine.app.ui.launcher.Statuses.LauncherPresenterStatuses
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.process.collection.{CollectionException, CollectionProcess}
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import cards.nine.process.device.DeviceProcess
 import cards.nine.process.moment.MomentProcess
 import macroid.{ActivityContextWrapper, Ui}

@@ -4,15 +4,13 @@ import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.models._
-import cards.nine.process.device.GetByName
-import cards.nine.process.moment.MomentConversions
+import cards.nine.models.types.GetByName
+import cards.nine.models.{Collection, CollectionData}
 import macroid.{ActivityContextWrapper, Ui}
 
 class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with Conversions
-  with MomentConversions {
+  with Conversions {
 
   def initialize(): Unit = {
     loadPrivateCollections()
@@ -22,7 +20,7 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
   def loadPrivateCollections(): Unit = {
     getPrivateCollections.resolveAsyncUi2(
       onPreTask = () => actions.showLoading(),
-      onResult = (privateCollections: Seq[PrivateCollection]) => {
+      onResult = (privateCollections: Seq[CollectionData]) => {
         if (privateCollections.isEmpty) {
           actions.showEmptyMessageInScreen()
         } else {
@@ -32,14 +30,14 @@ class PrivateCollectionsPresenter(actions: PrivateCollectionsActions)(implicit c
       onException = (ex: Throwable) => actions.showErrorLoadingCollectionInScreen())
   }
 
-  def saveCollection(privateCollection: PrivateCollection): Unit = {
-    di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection)).resolveAsyncUi2(
+  def saveCollection(collection: CollectionData): Unit = {
+    di.collectionProcess.addCollection(collection).resolveAsyncUi2(
       onResult = (c) => actions.addCollection(c) ~ actions.close(),
       onException = (ex) => actions.showErrorSavingCollectionInScreen())
   }
 
   private[this] def getPrivateCollections:
-  TaskService[Seq[PrivateCollection]] =
+  TaskService[Seq[CollectionData]] =
     for {
       collections <- di.collectionProcess.getCollections
       moments <- di.momentProcess.getMoments
@@ -69,7 +67,7 @@ trait PrivateCollectionsActions {
 
   def showEmptyMessageInScreen(): Ui[Any]
 
-  def addPrivateCollections(privateCollections: Seq[PrivateCollection]): Ui[Any]
+  def addPrivateCollections(privateCollections: Seq[CollectionData]): Ui[Any]
 
   def addCollection(collection: Collection): Ui[Any]
 
