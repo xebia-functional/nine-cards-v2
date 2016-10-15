@@ -1,6 +1,7 @@
 package cards.nine.process.sharedcollections.impl
 
-import cards.nine.models.types.{AppsCollectionType, Communication}
+import cards.nine.models.Collection
+import cards.nine.models.types._
 import cards.nine.process.sharedcollections.TopSharedCollection
 import cards.nine.process.sharedcollections.models.{CreateSharedCollection, UpdateSharedCollection}
 import cards.nine.services.api._
@@ -116,11 +117,11 @@ trait SharedCollectionsProcessImplData {
     }
 
   def generateCollection() = 1 to 10 map { i =>
-    CollectionPersistence(
+    Collection(
       id = i,
       position = Random.nextInt(10),
       name = Random.nextString(10),
-      collectionType = Random.nextString(10),
+      collectionType = AppsCollectionType,
       icon = Random.nextString(10),
       themedColorIndex = Random.nextInt(10),
       appsCategory = None,
@@ -128,7 +129,8 @@ trait SharedCollectionsProcessImplData {
       sharedCollectionId = generateOptionOriginalSharedCollectionId(),
       sharedCollectionSubscribed = false,
       cards = Seq.empty,
-      moment = None)
+      moment = None,
+      publicCollectionStatus = NotPublished)
   }
 
   val collectionList = generateCollection()
@@ -148,66 +150,70 @@ trait SharedCollectionsProcessImplData {
       statusCode = statusCodeOk)
 
   def collectionPersistencePublishedByMeSeq = sharedCollectionResponseList.items.map { col =>
-    CollectionPersistence(
+    Collection(
       id = Random.nextInt(),
       position = Random.nextInt(10),
       name = col.name,
-      collectionType = AppsCollectionType.name,
+      collectionType = AppsCollectionType,
       icon = col.icon,
       themedColorIndex = 0,
-      appsCategory = Some(col.category),
+      appsCategory = Some(NineCardsCategory(col.category)),
       originalSharedCollectionId = None,
       sharedCollectionId = Some(col.sharedCollectionId),
       sharedCollectionSubscribed = false,
       cards = Seq.empty,
-      moment = None)
+      moment = None,
+      publicCollectionStatus = PublishedByMe)
   }
 
   def collectionPersistencePublishedByOtherSeq = sharedCollectionResponseList.items.map { col =>
-    CollectionPersistence(
+    Collection(
       id = Random.nextInt(),
       position = Random.nextInt(10),
       name = col.name,
-      collectionType = AppsCollectionType.name,
+      collectionType = AppsCollectionType,
       icon = col.icon,
       themedColorIndex = 0,
-      appsCategory = Some(col.category),
+      appsCategory = Some(NineCardsCategory(col.category)),
       originalSharedCollectionId = Some(col.sharedCollectionId),
       sharedCollectionId = Some(col.sharedCollectionId),
       sharedCollectionSubscribed = false,
       cards = Seq.empty,
-      moment = None)
+      moment = None,
+      publicCollectionStatus = PublishedByOther)
   }
 
   def collectionPersistenceNotPublishedSeq = sharedCollectionResponseList.items.map { col =>
-    CollectionPersistence(
+    Collection(
       id = Random.nextInt(),
       position = Random.nextInt(10),
       name = col.name,
-      collectionType = AppsCollectionType.name,
+      collectionType = AppsCollectionType,
       icon = col.icon,
       themedColorIndex = 0,
-      appsCategory = Some(col.category),
+      appsCategory = Some(NineCardsCategory(col.category)),
       originalSharedCollectionId = None,
       sharedCollectionId = None,
       sharedCollectionSubscribed = false,
       cards = Seq.empty,
-      moment = None)
+      moment = None,
+      publicCollectionStatus = NotPublished)
   }
 
   def collectionPersistenceSubscribedSeq = sharedCollectionResponseList.items.map { col =>
-    CollectionPersistence(
+    Collection(
       id = Random.nextInt(),
       position = Random.nextInt(10),
       name = col.name,
-      collectionType = AppsCollectionType.name,
+      collectionType = AppsCollectionType,
       icon = col.icon,
       themedColorIndex = 0,
-      appsCategory = Some(col.category),
+      appsCategory = Some(NineCardsCategory(col.category)),
       originalSharedCollectionId = Some(col.sharedCollectionId),
       sharedCollectionId = Some(col.sharedCollectionId),
       sharedCollectionSubscribed = true,
       cards = Seq.empty,
-      moment = None)
+      moment = None,
+      publicCollectionStatus = NotPublished)
   }
 }

@@ -82,9 +82,6 @@ object CardValues {
 
 object DockAppValues {
 
-  val item: Int = 1
-  val items: Int = 5
-
   val dockAppId: Int = 1
   val nonExistentDockAppId: Int = 10001
   val dockAppName: String = "dockAppName"
@@ -92,6 +89,9 @@ object DockAppValues {
   val dockAppIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val dockAppImagePath: String = "/dockApp/image/path"
   val dockAppPosition: Int = 1
+
+  val deletedDockApp: Int = 1
+  val deletedDockApps: Int = 5
 
 }
 

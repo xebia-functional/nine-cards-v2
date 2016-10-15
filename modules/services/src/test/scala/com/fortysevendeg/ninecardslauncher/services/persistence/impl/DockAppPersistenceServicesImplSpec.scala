@@ -49,7 +49,7 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
       mockDockAppRepository.addDockApps(any) returns TaskService(Task(Either.right(Seq.empty)))
 
-      mockDockAppRepository.updateDockApps(any) returns TaskService(Task(Either.right(Seq(item))))
+      mockDockAppRepository.updateDockApps(any) returns TaskService(Task(Either.right(Seq(deletedDockApp))))
 
       val result = persistenceServices.createOrUpdateDockApp(Seq(dockAppData)).value.run
       result shouldEqual Right(Seq(dockApp))
@@ -91,11 +91,11 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return the number of elements deleted for a valid request" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.deleteDockApps() returns TaskService(Task(Either.right(items)))
+      mockDockAppRepository.deleteDockApps() returns TaskService(Task(Either.right(deletedDockApps)))
       val result = persistenceServices.deleteAllDockApps().value.run
 
       result must beLike {
-        case Right(deleted) => deleted shouldEqual items
+        case Right(deleted) => deleted shouldEqual deletedDockApps
       }
     }
 
@@ -111,9 +111,9 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
 
     "return the number of elements deleted for a valid request" in new DockAppPersistenceServices {
 
-      mockDockAppRepository.deleteDockApp(any) returns TaskService(Task(Either.right(item)))
+      mockDockAppRepository.deleteDockApp(any) returns TaskService(Task(Either.right(deletedDockApp)))
       val result = persistenceServices.deleteDockApp(dockApp).value.run
-      result shouldEqual Right(item)
+      result shouldEqual Right(deletedDockApp)
 
     }
 
