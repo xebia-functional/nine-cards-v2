@@ -11,7 +11,7 @@ import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.models.{Application, BitmapPath}
-import cards.nine.models.types.{AppDockType, Misc}
+import cards.nine.models.types.{AppDockType, Misc, Social}
 import cards.nine.process.device._
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api._
@@ -753,6 +753,38 @@ class DeviceProcessImplSpec
         result shouldEqual Right((): Unit)
 
         there was one(mockApiServices).googlePlayPackages(===(Seq(app1.packageName)))(any)
+        there was one(mockPersistenceServices).addApps(Seq(app1Request))
+      }
+
+    "call to api services only for those apps with misc category and delete them from database" in
+      new DeviceProcessScope {
+
+        val app1 = applicationSeq.head.copy(id = 1, packageName = packageName1, category = Misc)
+        val app2 = applicationSeq.head.copy(id = 2, packageName = packageName2, category = Social)
+
+        val app1Request = AddAppRequest(
+          name = app1.name,
+          packageName = app1.packageName,
+          className = app1.className,
+          category = Social.name,
+          dateInstalled = app1.dateInstalled,
+          dateUpdate = app1.dateUpdate,
+          version = app1.version,
+          installedFromGooglePlay = app1.installedFromGooglePlay)
+
+        mockAppsServices.getInstalledApplications(any) returns TaskService.right(Seq(app1.toData, app2.toData))
+        mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app1, app2))
+        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(GooglePlayPackagesResponse(
+          statusCodeOk,
+          Seq(CategorizedPackage(app1.packageName, Some(Social.name)))))
+        mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
+        mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns TaskService.right(applicationSeq.head)
+
+        val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
+        result shouldEqual Right((): Unit)
+
+        there was one(mockApiServices).googlePlayPackages(===(Seq(app1.packageName)))(any)
+        there was one(mockPersistenceServices).deleteAppsByIds(Seq(app1.id))
         there was one(mockPersistenceServices).addApps(Seq(app1Request))
       }
 

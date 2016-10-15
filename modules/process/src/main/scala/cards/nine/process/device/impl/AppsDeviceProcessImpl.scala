@@ -58,21 +58,25 @@ trait AppsDeviceProcessImpl
 
   def synchronizeInstalledApps(implicit context: ContextSupport) = {
 
-    def deleteAndFilter(existingApps: Seq[Application], duplicatedIds: Seq[Int]): TaskService[Seq[Application]] =
-      if (duplicatedIds.nonEmpty) {
+    def deleteAndFilter(existingApps: Seq[Application], idsToRemove: Seq[Int]): TaskService[Seq[Application]] =
+      if (idsToRemove.nonEmpty) {
         for {
-          _ <- persistenceServices.deleteAppsByIds(duplicatedIds)
-          filteredApps <- TaskService.right(existingApps.filterNot(app => duplicatedIds.contains(app.id)))
+          _ <- persistenceServices.deleteAppsByIds(idsToRemove)
+          filteredApps <- TaskService.right(existingApps.filterNot(app => idsToRemove.contains(app.id)))
         } yield filteredApps
       } else TaskService.right(existingApps)
 
     def fixDuplicatedPackages: TaskService[Seq[Application]] = {
       for {
-        dbApps <- persistenceServices.fetchApps(OrderByInstallDate, ascending = false)
-        appIds <- TaskService.right(dbApps.groupBy(app => s"${app.packageName}:${app.className}").flatMap {
+        allApps <- persistenceServices.fetchApps(OrderByInstallDate, ascending = false)
+        (miscAps, categorizedApps) = allApps.partition(_.category == Misc)
+        duplicatedIds = categorizedApps.groupBy(app => s"${app.packageName}:${app.className}").flatMap {
           case (packageName, seq) => seq.tail.map(_.id)
-        }.toSeq)
-        filteredApps <- deleteAndFilter(existingApps = dbApps, duplicatedIds = appIds)
+        }.toSeq
+        miscIds = miscAps.map(_.id)
+        filteredApps <- deleteAndFilter(
+          existingApps = allApps,
+          idsToRemove = (duplicatedIds ++ miscIds).distinct)
       } yield filteredApps
     }
 
