@@ -5,71 +5,45 @@ import android.view.Gravity
 import android.widget.TextView
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
-import cards.nine.app.ui.commons.ops.CollectionOps._
-import cards.nine.app.ui.commons.ops.DrawableOps._
-import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, WifiDialogFragment}
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.EditHourMomentLayoutTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.EditWifiMomentLayoutTweaks._
-import cards.nine.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.commons._
-import cards.nine.commons.ops.ColorOps._
 import cards.nine.process.commons.models.{Collection, Moment, MomentTimeSlot}
 import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.ops.DrawableOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.commons.ops.ColorOps._
+import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, WifiDialogFragment}
+import cards.nine.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
+import cards.nine.app.ui.components.layouts.tweaks.EditHourMomentLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.EditWifiMomentLayoutTweaks._
+import cards.nine.commons._
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 
-trait EditMomentActionsImpl
-  extends EditMomentActions
-  with Styles {
+trait EditMomentUiActions
+  extends Styles {
 
-  self: TypedFindView with BaseActionFragment =>
-
-  implicit val editPresenter: EditMomentPresenter
+  self: BaseActionFragment with EditMomentDOM with EditMomentListener =>
 
   val defaultIcon = R.drawable.icon_collection_default_detail
 
   val tagDialog = "dialog"
 
-  lazy val momentCollection = findView(TR.edit_moment_collection)
-
-  lazy val hourContent = findView(TR.edit_moment_hour_content)
-
-  lazy val addHourAction = findView(TR.edit_moment_add_hour)
-
-  lazy val wifiContent = findView(TR.edit_moment_wifi_content)
-
-  lazy val iconLinkCollection = findView(TR.edit_moment_icon_link_collection)
-
-  lazy val iconInfo = findView(TR.edit_moment_collection_info)
-
-  lazy val iconHour = findView(TR.edit_moment_icon_hour)
-
-  lazy val iconWifi = findView(TR.edit_moment_icon_wifi)
-
-  lazy val addWifiAction = findView(TR.edit_moment_add_wifi)
-
-  lazy val nameWifi = findView(TR.edit_moment_name_wifi)
-
-  lazy val nameHour = findView(TR.edit_moment_name_hour)
-
-  lazy val nameLinkCollection = findView(TR.edit_moment_name_link_collection)
-
-  override def initialize(moment: Moment, collections: Seq[Collection]): Ui[Any] = {
+  def initialize(moment: Moment, collections: Seq[Collection]): TaskService[Unit] = {
     val iconColor = theme.get(DrawerIconColor)
     val textColor = theme.get(DrawerTextColor)
     val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
-    (toolbar <~
+    val init = ((toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.editMoment) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
@@ -77,8 +51,8 @@ trait EditMomentActionsImpl
       (iconInfo <~ tivDefaultColor(iconColor) <~ On.click(showLinkCollectionMessage())) ~
       (iconWifi <~ tivDefaultColor(iconColor)) ~
       (iconHour <~ tivDefaultColor(iconColor)) ~
-      (addWifiAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(editPresenter.addWifi()))) ~
-      (addHourAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(editPresenter.addHour()))) ~
+      (addWifiAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(addWifi()))) ~
+      (addHourAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(addHour()))) ~
       (nameWifi <~ tvColor(textColor)) ~
       (nameHour <~ tvColor(textColor)) ~
       (nameLinkCollection <~ tvColor(textColor)) ~
@@ -88,52 +62,56 @@ trait EditMomentActionsImpl
         tvCompoundDrawablesWithIntrinsicBounds(right = Option(arrow))) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
-        On.click(Ui(editPresenter.saveMoment()))) ~
-      loadCategories(moment, collections) ~
-      loadHours(moment) ~
-      loadWifis(moment)
+        On.click(Ui(saveMoment()))) ~
+      loadCategories(moment, collections)).toService
+    for {
+      _ <- init
+      _ <- loadHours(moment)
+      _ <- loadWifis (moment)
+    } yield ()
   }
 
-  override def momentNoFound(): Ui[Any] = unreveal()
+  def momentNoFound(): TaskService[Unit] = unreveal().toService
 
-  override def success(): Ui[Any] = unreveal()
+  def success(): TaskService[Unit] = unreveal().toService
 
-  override def showSavingMomentErrorMessage(): Ui[Any] = uiShortToast2(R.string.contactUsError)
+  def showSavingMomentErrorMessage(): TaskService[Unit] = uiShortToast2(R.string.contactUsError).toService
 
-  override def reloadDays(position: Int, timeslot: MomentTimeSlot): Ui[Any] = hourContent <~ Transformer {
-    case view: EditHourMomentLayout if view.getPosition.contains(position) => view <~ ehmPopulate(timeslot, position)
-  }
+  def reloadDays(position: Int, timeslot: MomentTimeSlot): TaskService[Unit] = (hourContent <~ Transformer {
+    case view: EditHourMomentLayout if view.getPosition.contains(position) =>
+      view <~ ehmPopulate(timeslot, position, removeHour, changeFromHour, changeToHour, swapDay)
+  }).toService
 
-  override def loadHours(moment: Moment): Ui[Any] = {
+  def loadHours(moment: Moment): TaskService[Unit] = {
     val views = if (moment.timeslot.nonEmpty) {
       moment.timeslot.zipWithIndex map {
-        case (slot, index) => (w[EditHourMomentLayout] <~ ehmPopulate(slot, index)).get
+        case (slot, index) => (w[EditHourMomentLayout] <~ ehmPopulate(slot, index, removeHour, changeFromHour, changeToHour, swapDay)).get
       }
     } else {
       Seq(createMessage(R.string.addHoursToEditMoment))
     }
-    hourContent <~ vgRemoveAllViews <~ vgAddViews(views)
+    (hourContent <~ vgRemoveAllViews <~ vgAddViews(views)).toService
   }
 
-  override def showWifiDialog(wifis: Seq[String]): Ui[Any] = {
-    val dialog = WifiDialogFragment(wifis, editPresenter.addWifi)
-    showDialog(dialog)
+  def showWifiDialog(wifis: Seq[String]): TaskService[Unit] = {
+    val dialog = WifiDialogFragment(wifis, addWifi)
+    showDialog(dialog).toService
   }
 
-  override def loadWifis(moment: Moment): Ui[Any] = {
+  def loadWifis(moment: Moment): TaskService[Unit] = {
     val views = if (moment.wifi.nonEmpty) {
       moment.wifi.zipWithIndex map {
-        case (wifi, index) => (w[EditWifiMomentLayout] <~ ewmPopulate(wifi, index)).get
+        case (wifi, index) => (w[EditWifiMomentLayout] <~ ewmPopulate(wifi, index, removeWifi)).get
       }
     } else {
       Seq(createMessage(R.string.addWifiToEditMoment))
     }
-    wifiContent <~ vgRemoveAllViews <~ vgAddViews(views)
+    (wifiContent <~ vgRemoveAllViews <~ vgAddViews(views)).toService
   }
 
-  override def showFieldErrorMessage(): Ui[Any] = uiShortToast2(R.string.contactUsError)
+  def showFieldErrorMessage(): TaskService[Unit] = uiShortToast2(R.string.contactUsError).toService
 
-  def showItemDuplicatedMessage(): Ui[Any] = uiShortToast2(R.string.addDuplicateItemError)
+  def showItemDuplicatedMessage(): TaskService[Unit] = uiShortToast2(R.string.addDuplicateItemError).toService
 
   private[this] def showLinkCollectionMessage() = Ui {
     val dialog = new AlertDialogFragment(
@@ -160,7 +138,7 @@ trait EditMomentActionsImpl
             values = collectionNames,
             onItemClickListener = (position) => {
               setName(position).run
-              editPresenter.setCollectionId(collectionIds.lift(position))
+              setCollectionId(collectionIds.lift(position))
             },
             height = Option(resGetDimensionPixelSize(R.dimen.height_list_popup_menu))
           )
