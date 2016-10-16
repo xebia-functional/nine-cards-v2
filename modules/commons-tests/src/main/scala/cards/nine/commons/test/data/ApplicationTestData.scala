@@ -7,7 +7,7 @@ trait ApplicationTestData {
 
   def application(num: Int = 0) = Application(
     id = applicationId + num,
-    name = applicationName,
+    name = applicationName + num,
     packageName = applicationPackageName,
     className = applicationClassName,
     category = applicationCategory,

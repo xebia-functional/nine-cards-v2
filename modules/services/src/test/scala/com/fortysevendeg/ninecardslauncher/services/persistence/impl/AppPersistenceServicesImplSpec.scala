@@ -170,9 +170,9 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return the number of elements deleted for a valid request" in new AppPersistenceServicesScope {
 
-      mockAppRepository.deleteApps() returns TaskService(Task(Either.right(items)))
+      mockAppRepository.deleteApps() returns TaskService(Task(Either.right(deletedApplications)))
       val result = persistenceServices.deleteAllApps().value.run
-      result shouldEqual Right(items)
+      result shouldEqual Right(deletedApplications)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
@@ -187,9 +187,9 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return the number of elements deleted for a valid request" in new AppPersistenceServicesScope {
 
-      mockAppRepository.deleteApps(any) returns TaskService(Task(Either.right(item)))
+      mockAppRepository.deleteApps(any) returns TaskService(Task(Either.right(deletedApplication)))
       val result = persistenceServices.deleteAppsByIds(Seq.empty).value.run
-      result shouldEqual Right(item)
+      result shouldEqual Right(deletedApplication)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
@@ -204,7 +204,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return the number of elements deleted for a valid request" in new AppPersistenceServicesScope {
 
-      mockAppRepository.deleteAppByPackage(any) returns TaskService(Task(Either.right(item)))
+      mockAppRepository.deleteAppByPackage(any) returns TaskService(Task(Either.right(deletedApplication)))
       val result = persistenceServices.deleteAppByPackage(applicationPackageName).value.run
       result shouldEqual Right(1)
     }
@@ -221,7 +221,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return the number of elements updated for a valid request" in new AppPersistenceServicesScope {
 
-      mockAppRepository.updateApp(any) returns TaskService(Task(Either.right(item)))
+      mockAppRepository.updateApp(any) returns TaskService(Task(Either.right(updatedApplication)))
       val result = persistenceServices.updateApp(application).value.run
       result shouldEqual Right(1)
     }

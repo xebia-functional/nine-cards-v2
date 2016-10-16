@@ -54,9 +54,9 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
 
     "return the number of elements deleted for a valid request" in new UserPersistenceServicesScope {
 
-      mockUserRepository.deleteUsers() returns TaskService(Task(Either.right(items)))
+      mockUserRepository.deleteUsers() returns TaskService(Task(Either.right(deletedUsers)))
       val result = persistenceServices.deleteAllUsers().value.run
-      result shouldEqual Right(items)
+      result shouldEqual Right(deletedUsers)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
@@ -70,9 +70,9 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
   "deleteUser" should {
 
     "return the number of elements deleted for a valid request" in new UserPersistenceServicesScope {
-      mockUserRepository.deleteUser(any) returns TaskService(Task(Either.right(item)))
+      mockUserRepository.deleteUser(any) returns TaskService(Task(Either.right(deletedUser)))
       val result = persistenceServices.deleteUser(user).value.run
-      result shouldEqual Right(item)
+      result shouldEqual Right(deletedUser)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {
@@ -137,9 +137,9 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
 
     "return the number of elements updated for a valid request" in new UserPersistenceServicesScope {
 
-      mockUserRepository.updateUser(any) returns TaskService(Task(Either.right(item)))
+      mockUserRepository.updateUser(any) returns TaskService(Task(Either.right(updatedUser)))
       val result = persistenceServices.updateUser(user).value.run
-      result shouldEqual Right(item)
+      result shouldEqual Right(updatedUser)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new UserPersistenceServicesScope {

@@ -5,9 +5,6 @@ import cards.nine.models.types._
 
 object ApplicationValues {
 
-  val item = 1
-  val items = 5
-
   val keyword = "fake-keyword"
 
   val applicationId: Int = 1
@@ -21,6 +18,29 @@ object ApplicationValues {
   val dateUpdated: Long = 2l
   val version: String = "version"
   val installedFromGooglePlay: Boolean = true
+
+  val deletedApplication: Int = 1
+  val deletedApplications: Int = 2
+  val updatedApplication: Int = 1
+  val updatedApplications: Int = 2
+
+}
+
+object AppWidgetValues {
+
+  val userHashCode: Int = 1
+  val autoAdvanceViewId: Int = 1
+  val initialLayout: Int = 1
+  val minHeight: Int = 40
+  val minResizeHeight: Int = 40
+  val minResizeWidth: Int = 40
+  val minWidth: Int = 40
+  val appWidgetClassName: String = "appWidgetClassName"
+  val appWidgetPackageName: String = "appWidgetPackageName"
+  val resizeMode: Int = 40
+  val updatePeriodMillis: Int = 1
+  val label: String = "label"
+  val preview: Int = 1
 
 }
 
@@ -46,9 +66,9 @@ object CollectionValues {
   val deletedCollections: Int = 2
   val updatedCollection: Int = 1
   val updatedCollections: Int = 2
-  val nameCollectionRequest: String = "nameCollectionRequest"
-  val iconCollectionRequest: String = "iconCollectionRequest"
-  val themedColorIndexRequest: Int = 1
+  val newCollectionName: String = "newCollectionName"
+  val newCollectionIcon: String = "newCollectionIcon"
+  val newThemedColorIndex: Int = 1
   val newSharedCollectionId: String = "newSharedCollectionId"
   val nonExistentSharedCollectionId: String = "nonExistentSharedCollectionId"
 
@@ -95,7 +115,6 @@ object DockAppValues {
 
 }
 
-
 object FormedValues {
 
   val itemType: String = "itemType"
@@ -128,9 +147,6 @@ object MomentValues {
 
 object UserValues {
 
-  val item: Int = 1
-  val items: Int = 5
-
   val userId: Int = 1
   val nonExistentUserId: Int = 10001
   val email: String = "user@email.com"
@@ -143,6 +159,12 @@ object UserValues {
   val userName: String = "userName"
   val avatar: String = "avatar"
   val cover: String = "cover"
+  val androidId = "012354654894654654"
+
+  val deletedUser: Int = 1
+  val deletedUsers: Int = 2
+  val updatedUser: Int = 1
+  val updatedUsers: Int = 2
 
 }
 
@@ -151,6 +173,7 @@ object WidgetValues {
   val widgetId: Int = 1
   val nonExistentWidgetId: Int = 10001
   val widgetMomentId: Int = 1
+  val nonExistentWidgetMomentId: Int = 1
   val widgetPackageName: String = "widgetPackageName"
   val widgetClassName: String = "widgetClassName"
   val appWidgetId: Int = 1
@@ -163,6 +186,11 @@ object WidgetValues {
   val label: String = "widget label"
   val widgetImagePath: String = "/widget/image/path"
   val widgetIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+
+  val displaceX: Int = 2
+  val displaceY: Int = 2
+  val increaseX: Int = 1
+  val increaseY: Int = 1
 
   val deletedWidget: Int = 1
   val deletedWidgets: Int = 2

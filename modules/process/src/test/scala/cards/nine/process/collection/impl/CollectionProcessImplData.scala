@@ -59,5 +59,4 @@ trait CollectionProcessImplData extends ApplicationTestData {
         packages = item._2)
     }
 
-
 }

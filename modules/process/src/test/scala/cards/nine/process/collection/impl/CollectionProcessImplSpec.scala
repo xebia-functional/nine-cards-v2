@@ -93,7 +93,7 @@ class CollectionProcessImplSpec
         collectionProcess.getCollections.mustRight { resultSeqCollection =>
           resultSeqCollection.size shouldEqual seqCollection.size
           resultSeqCollection map (_.name) shouldEqual seqCollection.map(_.name)
-          resultSeqCollection map (_.cards) shouldEqual Seq(Seq.empty, Seq.empty)
+          resultSeqCollection map (_.cards) shouldEqual Seq(Seq.empty, Seq.empty, Seq.empty)
         }
       }
 
@@ -211,9 +211,8 @@ class CollectionProcessImplSpec
     "the size of collections should be equal to size of collections passed by parameter" in
       new CollectionProcessScope {
 
-        val collections: Seq[Collection] = seqFormedCollection map (_ => collection)
         mockPersistenceServices.fetchCollections returns serviceRight(seqCollection)
-        mockPersistenceServices.addCollections(any) returns serviceRight(collections)
+        mockPersistenceServices.addCollections(any) returns serviceRight(seqCollection)
 
         collectionProcess.createCollectionsFromFormedCollections(seqFormedCollection)(contextSupport).mustRight { resultSeqCollection =>
           resultSeqCollection.size shouldEqual seqFormedCollection.size
@@ -410,14 +409,18 @@ class CollectionProcessImplSpec
     "returns a the updated collection for a valid request" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCollectionById(any) returns serviceRight(Option(collection.copy(id = collectionId)))
+        mockPersistenceServices.findCollectionById(any) returns serviceRight(Option(collection))
         mockPersistenceServices.updateCollection(any) returns serviceRight(updatedCollection)
-
-        val result = collectionProcess.editCollection(collectionId, collectionData).run
+        val editedCollectionData = collectionData.copy(
+          name = newCollectionName,
+          icon = newCollectionIcon,
+          themedColorIndex = newThemedColorIndex,
+          appsCategory = Option(applicationCategory))
+        val result = collectionProcess.editCollection(collectionId, editedCollectionData).run
         result shouldEqual Right(collection.copy(
-          name = nameCollectionRequest,
-          icon = iconCollectionRequest,
-          themedColorIndex = themedColorIndexRequest,
+          name = newCollectionName,
+          icon = newCollectionIcon,
+          themedColorIndex = newThemedColorIndex,
           appsCategory = Option(applicationCategory)))
       }
 
