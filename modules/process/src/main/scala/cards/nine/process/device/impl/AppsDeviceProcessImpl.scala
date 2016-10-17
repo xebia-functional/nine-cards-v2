@@ -120,7 +120,8 @@ trait AppsDeviceProcessImpl
   def updateApp(packageName: String)(implicit context: ContextSupport) =
     (for {
       app <- appsServices.getApplication(packageName)
-      appPersistence <- persistenceServices.findAppByPackage(packageName).resolveOption()
+      appPersistence <- persistenceServices.findAppByPackage(packageName)
+        .resolveOption(s"Can't find the application with package name $packageName")
       appCategory <- getAppCategory(packageName)
       _ <- persistenceServices.updateApp(toUpdateAppRequest(appPersistence.id, app, appCategory))
     } yield ()).resolve[AppException]

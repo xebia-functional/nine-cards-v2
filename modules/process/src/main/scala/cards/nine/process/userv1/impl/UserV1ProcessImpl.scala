@@ -50,7 +50,8 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
 
     def loadUserConfig(userId: Int): TaskService[UserV1Info] =
       (for {
-        user <- persistenceServices.findUserById(FindUserByIdRequest(userId)).resolveOption()
+        user <- persistenceServices.findUserById(FindUserByIdRequest(userId))
+          .resolveOption(s"Can't find the user with id $userId")
         androidId <- persistenceServices.getAndroidId
         loginResponse <- loginV1(user, androidId)
         userConfigResponse <- requestConfig(androidId, loginResponse.sessionToken, user.marketToken)

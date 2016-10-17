@@ -103,7 +103,8 @@ class SingleCollectionJobs(
   private[this] def trackCard(card: Card, action: Action): TaskService[Unit] = card.cardType match {
     case AppCardType =>
       for {
-        collection <- actions.getCurrentCollection.resolveOption()
+        collection <- actions.getCurrentCollection
+          .resolveOption("Can't find the current collection in the UI")
         maybeCategory = collection.appsCategory map (c => Option(AppCategory(c))) getOrElse {
           collection.moment flatMap (_.momentType) map MomentCategory
         }

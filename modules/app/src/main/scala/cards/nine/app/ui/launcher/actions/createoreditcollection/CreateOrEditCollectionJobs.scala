@@ -17,7 +17,8 @@ class CreateOrEditCollectionJobs(actions: CreateOrEditCollectionUiActions)(impli
 
     def editCollection(collectionId: Int) =
       for {
-        collection <- di.collectionProcess.getCollectionById(collectionId).resolveOption()
+        collection <- di.collectionProcess.getCollectionById(collectionId)
+          .resolveOption(s"Can't find the collection with id $collectionId")
         _ <- actions.initializeEditCollection(collection)
       } yield ()
 

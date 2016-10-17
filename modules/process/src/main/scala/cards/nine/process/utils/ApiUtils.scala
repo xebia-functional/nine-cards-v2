@@ -18,7 +18,8 @@ class ApiUtils(persistenceServices: PersistenceServices)
 
     def loadUser(userId: Int): TaskService[RequestConfig] =
       (for {
-        user <- persistenceServices.findUserById(FindUserByIdRequest(userId)).resolveOption()
+        user <- persistenceServices.findUserById(FindUserByIdRequest(userId))
+          .resolveOption(s"Can't find the user with id $userId")
         keys <- loadTokens(user)
         (apiKey, sessionToken) = keys
         androidId <- persistenceServices.getAndroidId

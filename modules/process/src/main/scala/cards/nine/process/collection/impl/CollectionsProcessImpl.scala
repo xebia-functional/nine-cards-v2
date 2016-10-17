@@ -74,7 +74,8 @@ trait CollectionsProcessImpl extends CollectionProcess {
       }
 
     (for {
-      collection <- findCollectionById(collectionId).resolveOption()
+      collection <- findCollectionById(collectionId)
+        .resolveOption(s"Can't find the collection with id $collectionId")
       _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
       _ <- persistenceServices.deleteCardsByCollection(collectionId)
       collectionList <- getCollections
@@ -160,7 +161,8 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
 
     (for {
-      _ <- persistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId)).resolveOption()
+      _ <- persistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId))
+        .resolveOption(s"Can't find the collection with id $collectionId")
       tuple <- fetchPackagesNotAddedToCollection()
       (actualCollectionSize, notAdded) = tuple
       installedApps <- fetchInstalledPackages(notAdded)
@@ -191,7 +193,8 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =
     (for {
-      collection <- findCollectionById(collectionId).resolveOption()
+      collection <- findCollectionById(collectionId)
+        .resolveOption(s"Can't find the collection with id $collectionId")
       updatedCollection = f(toCollection(collection))
       _ <- persistenceServices.updateCollection(toServicesUpdateCollectionRequest(updatedCollection))
     } yield updatedCollection).resolve[CollectionException]
