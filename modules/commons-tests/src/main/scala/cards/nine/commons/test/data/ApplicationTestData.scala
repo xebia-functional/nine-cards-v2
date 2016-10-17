@@ -19,17 +19,7 @@ trait ApplicationTestData {
   val application: Application = application(0)
   val seqApplication: Seq[Application] = Seq(application(0), application(1), application(2))
 
-  def applicationData(num: Int = 0) = ApplicationData(
-    name = applicationName + num,
-    packageName = applicationPackageName + num,
-    className = applicationClassName + num,
-    category = applicationCategory,
-    dateInstalled = dateInstalled,
-    dateUpdated = dateUpdated,
-    version = version,
-    installedFromGooglePlay = installedFromGooglePlay)
-
-  val applicationData: ApplicationData = applicationData(0)
-  val seqApplicationData: Seq[ApplicationData] = Seq(applicationData(0), applicationData(1), applicationData(2))
+  val applicationData: ApplicationData = application.toData
+  val seqApplicationData: Seq[ApplicationData] = seqApplication map (_.toData)
 
 }
