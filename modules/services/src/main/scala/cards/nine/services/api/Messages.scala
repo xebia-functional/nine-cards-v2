@@ -2,14 +2,6 @@ package cards.nine.services.api
 
 import cards.nine.models.{LoginV1Device, UserV1}
 
-case class RequestConfigV1(deviceId: String, token: String, marketToken: Option[String])
-
-case class RequestConfig(
-  apiKey: String,
-  sessionToken: String,
-  androidId: String,
-  marketToken: Option[String] = None)
-
 case class LoginResponse(
   statusCode: Int,
   apiKey: String,

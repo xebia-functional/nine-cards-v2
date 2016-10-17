@@ -6,7 +6,7 @@ import cards.nine.api.version2._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{LoginV1Device, PackagesByCategory}
+import cards.nine.models.{RequestConfigV1, RequestConfig, LoginV1Device, PackagesByCategory}
 import cards.nine.services.api._
 import monix.eval.Task
 

@@ -4,9 +4,9 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{User, UserData, UserProfile}
+import cards.nine.models.{RequestConfig, User, UserData, UserProfile}
 import cards.nine.process.user._
-import cards.nine.services.api.{ApiServices, RequestConfig}
+import cards.nine.services.api.ApiServices
 import cards.nine.services.persistence._
 import cats.syntax.either._
 import monix.eval.Task

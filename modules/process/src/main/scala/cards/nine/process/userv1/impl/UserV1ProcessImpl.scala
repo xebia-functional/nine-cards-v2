@@ -4,7 +4,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.User
+import cards.nine.models.{RequestConfigV1, User}
 import cards.nine.process.userv1._
 import cards.nine.process.userv1.models.{Device, UserV1Info}
 import cards.nine.services.api._

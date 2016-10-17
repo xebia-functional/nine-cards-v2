@@ -26,6 +26,17 @@ case class RecommendationApp(
   free: Boolean,
   screenshots: Seq[String])
 
+case class RequestConfigV1(
+  deviceId: String,
+  token: String,
+  marketToken: Option[String])
+
+case class RequestConfig(
+  apiKey: String,
+  sessionToken: String,
+  androidId: String,
+  marketToken: Option[String] = None)
+
 case class SharedCollection(
   id: String,
   sharedCollectionId: String,
