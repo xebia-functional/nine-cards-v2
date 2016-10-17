@@ -128,6 +128,7 @@ trait ApiServicesImplData {
     version2.Collection(
       name = Random.nextString(10),
       author = Random.nextString(10),
+      owned = false,
       icon = Random.nextString(10),
       category = "SOCIAL",
       community = Random.nextBoolean(),

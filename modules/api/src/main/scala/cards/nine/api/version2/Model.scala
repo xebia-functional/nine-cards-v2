@@ -70,6 +70,7 @@ case class PackagesStats(added: Int, removed: Option[Int] = None)
 case class Collection(
   name: String,
   author: String,
+  owned: Boolean,
   icon: String,
   category: String,
   community: Boolean,
