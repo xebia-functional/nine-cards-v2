@@ -714,7 +714,7 @@ class DeviceProcessImplSpec
 
         there was no(mockApiServices).googlePlayPackages(any)(any)
         there was no(mockPersistenceServices).addApps(any)
-      }.pendingUntilFixed("Issue #943")
+      }
 
     "delete the duplicated apps" in
       new DeviceProcessScope {

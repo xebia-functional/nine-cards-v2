@@ -9,7 +9,7 @@ trait ApplicationTestData {
     id = applicationId + num,
     name = applicationName + num,
     packageName = applicationPackageName + num,
-    className = applicationClassName,
+    className = applicationClassName + num,
     category = applicationCategory,
     dateInstalled = dateInstalled,
     dateUpdated = dateUpdated,
@@ -22,7 +22,7 @@ trait ApplicationTestData {
   def applicationData(num: Int = 0) = ApplicationData(
     name = applicationName + num,
     packageName = applicationPackageName + num,
-    className = applicationClassName,
+    className = applicationClassName + num,
     category = applicationCategory,
     dateInstalled = dateInstalled,
     dateUpdated = dateUpdated,

@@ -13,9 +13,9 @@ trait AppPersistenceServicesData {
   val countDataCounter: Int = Random.nextInt(2)
 
   def repoAppData(num: Int = 0) = AppData(
-    name = applicationName,
-    packageName = applicationPackageName,
-    className = applicationClassName,
+    name = applicationName + num,
+    packageName = applicationPackageName + num,
+    className = applicationClassName + num,
     category = applicationCategoryStr,
     dateInstalled = dateInstalled,
     dateUpdate = dateUpdated,
@@ -48,5 +48,6 @@ trait AppPersistenceServicesData {
       count = countDataCounter)
 
   val dataCounters = 1 to 10 map createDataCounter
+  val appPackageName = applicationPackageName + 0
 
 }
