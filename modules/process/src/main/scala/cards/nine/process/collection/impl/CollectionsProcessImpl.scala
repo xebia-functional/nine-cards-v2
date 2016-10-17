@@ -90,13 +90,13 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
       _ <- updateCollectionList(updatedCollections)
     } yield ()).resolve[CollectionException]
 
-  def editCollection(collectionId: Int, collection: CollectionData) =
+  def editCollection(collectionId: Int, collectionData: CollectionData) =
     editCollectionWith(collectionId) { collection =>
       collection.copy(
-        name = collection.name,
-        icon = collection.icon,
-        themedColorIndex = collection.themedColorIndex,
-        appsCategory = collection.appsCategory)
+        name = collectionData.name,
+        icon = collectionData.icon,
+        themedColorIndex = collectionData.themedColorIndex,
+        appsCategory = collectionData.appsCategory)
     }
 
   def updateSharedCollection(collectionId: Int, sharedCollectionId: String) =

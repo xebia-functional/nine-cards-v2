@@ -1,5 +1,6 @@
 package cards.nine.process.userv1.impl
 
+import cards.nine.commons.test.data.UserValues._
 import cards.nine.models.types.{AppCardType, AppsCollectionType, Game}
 import cards.nine.services.api.models._
 import cards.nine.services.api.{GetUserV1Response, LoginResponseV1, RequestConfigV1}
@@ -9,19 +10,11 @@ trait UserV1ProcessData {
 
   val statusCodeUser = 101
 
-  val userId = 99
-
-  val sessionToken = "fake-user-token"
-
-  val email = "example@47deg.com"
-
   val name = "George"
 
   val imageUrl = "http://www.47deg.com/image.jpg"
 
   val deviceIdPrefix = "fake-device-id"
-
-  val deviceName = "Nexus"
 
   val collectionName = "Example Collection"
 
@@ -35,8 +28,6 @@ trait UserV1ProcessData {
 
   val deviceId = "XX-47-XX"
 
-  val marketToken = "EE-47-47-EE"
-
   val permissions = Seq.empty
 
   val googleDevice = LoginV1Device(
@@ -44,19 +35,6 @@ trait UserV1ProcessData {
     deviceId = deviceId,
     secretToken = marketToken,
     permissions = permissions)
-
-  val persistenceUser = PersistenceUser(
-    id = userId,
-    sessionToken = Some(sessionToken),
-    email = Some(email),
-    apiKey = None,
-    deviceToken = None,
-    marketToken = Some(marketToken),
-    name = None,
-    avatar = None,
-    cover = None,
-    deviceName = None,
-    deviceCloudId = None)
 
   val loginResponseV1 = LoginResponseV1(
     statusCode = statusCodeUser,

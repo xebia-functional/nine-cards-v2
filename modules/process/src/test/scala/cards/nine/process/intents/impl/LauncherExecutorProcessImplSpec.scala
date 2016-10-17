@@ -6,7 +6,6 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.models._
-import cards.nine.process.commons.models.NineCardIntentExtras
 import cards.nine.process.intents.{LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
 import cards.nine.services.intents.LauncherIntentServices
 import cats.syntax.either._

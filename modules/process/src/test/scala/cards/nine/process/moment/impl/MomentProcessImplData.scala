@@ -1,16 +1,11 @@
 package cards.nine.process.moment.impl
 
-import cards.nine.models
+import cards.nine.models._
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
 import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types._
-import cards.nine.models.{NineCardsIntent, NineCardsIntentImplicits, Application, ApplicationData}
-import NineCardsIntentImplicits._
-import cards.nine.process.commons.models._
-import cards.nine.process.moment.{SaveMomentRequest, UpdateMomentRequest}
 import org.joda.time.DateTime
-import play.api.libs.json.Json
 
 import scala.util.Random
 
@@ -59,7 +54,7 @@ trait MomentProcessImplData {
   val nightAppPackageName = "com.Slack"
   val workAppPackageName = "com.google.android.apps.photos"
   val transitAppPackageName = "com.google.android.apps.maps"
-  val momentType = Seq("HOME", "WORK", "NIGHT", "WALK", "STUDY", "MUSIC", "CAR", "BIKE", "RUNNING")
+  val seqMomentType = Seq("HOME", "WORK", "NIGHT", "WALK", "STUDY", "MUSIC", "CAR", "BIKE", "RUNNING")
 
   val startX: Int = Random.nextInt(8)
   val startY: Int = Random.nextInt(8)
@@ -70,254 +65,6 @@ trait MomentProcessImplData {
 
   val item: Int = Random.nextInt(5)
 
-  val updateMomentRequest =
-    UpdateMomentRequest(
-      id = momentId,
-      collectionId = Option(collectionId1),
-      timeslot = createSeqMomentTimeSlot(),
-      wifi = Seq.empty,
-      headphone = false,
-      momentType = Option(NineCardsMoment(momentType(0)))
-    )
-
-  def createSeqCollection(
-    num: Int = NineCardsMoment.moments.length,
-    id: Int = collectionId,
-    position: Int = position,
-    name: String = name,
-    collectionType: CollectionType = collectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: NineCardsCategory = appsCategory,
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    cards: Seq[Card] = seqCard,
-    publicCollectionStatus: PublicCollectionStatus = publicCollectionStatus) =
-    (0 until num) map (
-      item =>
-        Collection(
-          id = id + item,
-          position = position,
-          name = name,
-          collectionType = collectionType,
-          icon = icon,
-          themedColorIndex = themedColorIndex,
-          appsCategory = None,
-          originalSharedCollectionId = Option(originalSharedCollectionId),
-          sharedCollectionId = Option(sharedCollectionId),
-          sharedCollectionSubscribed = sharedCollectionSubscribed,
-          cards = cards,
-          publicCollectionStatus = publicCollectionStatus))
-
-  def createSeqMomentCollection(
-    num: Int = NineCardsMoment.moments.length,
-    id: Int = collectionId,
-    position: Int = position,
-    name: String = name,
-    collectionType: CollectionType = MomentCollectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: NineCardsCategory = appsCategory,
-    cards: Seq[Card] = seqCard,
-    moment: Option[Moment] = Option(processMoment),
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed,
-    publicCollectionStatus: PublicCollectionStatus = publicCollectionStatus) =
-    (0 until num) map (
-      item =>
-        Collection(
-          id = id + item,
-          position = position,
-          name = name,
-          collectionType = collectionType,
-          icon = icon,
-          themedColorIndex = themedColorIndex,
-          appsCategory = None,
-          cards = cards,
-          moment = moment,
-          originalSharedCollectionId = Option(originalSharedCollectionId),
-          sharedCollectionId = Option(sharedCollectionId),
-          sharedCollectionSubscribed = sharedCollectionSubscribed,
-          publicCollectionStatus = publicCollectionStatus))
-
-  def createSeqServicesCollection(
-    num: Int = 5,
-    id: Int = collectionId,
-    position: Int = position,
-    name: String = name,
-    collectionType: CollectionType = collectionType,
-    icon: String = icon,
-    themedColorIndex: Int = themedColorIndex,
-    appsCategory: NineCardsCategory = appsCategory,
-    cards: Seq[models.Card] = seqServicesCard,
-    moment: Option[models.Moment] = Option(servicesMoment),
-    originalSharedCollectionId: String = originalSharedCollectionId,
-    sharedCollectionId: String = sharedCollectionId,
-    sharedCollectionSubscribed: Boolean = sharedCollectionSubscribed) =
-    (0 until num) map (item =>
-      ServicesCollection(
-        id = id + item,
-        position = position,
-        name = name,
-        collectionType = collectionType.name,
-        icon = icon,
-        themedColorIndex = themedColorIndex,
-        appsCategory = Option(appsCategory.name),
-        cards = cards,
-        moment = moment,
-        originalSharedCollectionId = Option(originalSharedCollectionId),
-        sharedCollectionId = Option(sharedCollectionId),
-        sharedCollectionSubscribed = sharedCollectionSubscribed))
-
-  def createSeqCard(
-    num: Int = 5,
-    id: Int = cardId,
-    position: Int = position,
-    term: String = term,
-    packageName: String = packageName,
-    cardType: CardType = cardType,
-    intent: String = intent,
-    imagePath: String = imagePath,
-    notification: String = notification) =
-    (0 until num) map (item =>
-      Card(
-        id = id + item,
-        position = position,
-        term = term,
-        packageName = Option(packageName),
-        cardType = cardType,
-        intent = Json.parse(intent).as[NineCardsIntent],
-        imagePath = Option(imagePath),
-        notification = Option(notification)))
-
-  def createSeqServicesCard(
-    num: Int = 5,
-    id: Int = cardId,
-    position: Int = position,
-    term: String = term,
-    packageName: String = packageName,
-    cardType: CardType = cardType,
-    intent: String = intent,
-    imagePath: String = imagePath,
-    notification: String = notification) =
-    (1 until num) map (item =>
-      ServicesCard(
-        id = id + item,
-        position = position,
-        term = term,
-        packageName = Option(packageName),
-        cardType = cardType.name,
-        intent = intent,
-        imagePath = Option(imagePath),
-        notification = Option(notification)))
-
-  def createSeqServicesApp(
-    num: Int = 5,
-    id: Int = appId,
-    name: String = name1,
-    packageName: String = packageName1,
-    className: String = className1,
-    category: String = category1,
-    imagePath: String = imagePath1,
-    dateInstalled: Long = dateInstalled1,
-    dateUpdate: Long = dateUpdate1,
-    version: String = version1,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay1) =
-    (1 until num) map (item =>
-      Application(
-        id = id + item,
-        name = name,
-        packageName = packageName,
-        className = className,
-        category = NineCardsCategory(category),
-        dateInstalled = dateInstalled,
-        dateUpdate = dateUpdate,
-        version = version,
-        installedFromGooglePlay = installedFromGooglePlay))
-
-  def createSeqServicesMoment(
-    num: Int = 4,
-    id: Int = momentId,
-    collectionId: Option[Int] = Option(collectionId1),
-    timeslot: Seq[models.MomentTimeSlot] = createSeqServicesMomentTimeSlot(),
-    wifi: Seq[String] = Seq.empty,
-    headphone: Boolean = false,
-    momentType: Seq[String] = momentType) =
-    (0 until num) map (item =>
-      ServicesMoment(
-        id = id + item,
-        collectionId = collectionId,
-        timeslot = timeslot,
-        wifi = wifi,
-        headphone = headphone,
-        momentType = Option(momentType(item))))
-
-  def createSeqServicesMomentTimeSlot(
-    from: String = from,
-    to: String = to,
-    days: Seq[Int] = days) =
-    (1 until 4) map (item =>
-      ServicesMomentTimeSlot(
-        from = from,
-        to = to,
-        days = days))
-
-  def createSeqFormedWidgets(
-    num: Int = 5,
-    packageName: String = packageName,
-    className: String = className,
-    startX: Int = startX,
-    startY: Int = startX,
-    spanX: Int = startX,
-    spanY: Int = startX,
-    widgetType: WidgetType = AppWidgetType,
-    label: Option[String] = None,
-    imagePath: Option[String] = None,
-    intent: Option[String] = None) =
-    (0 until 5) map (
-      item =>
-        FormedWidget(
-          packageName = packageName + item,
-          className = className + item,
-          startX = startX + item,
-          startY = startY + item,
-          spanX = spanX + item,
-          spanY = spanY + item,
-          widgetType = widgetType,
-          label = label,
-          imagePath = imagePath,
-          intent = intent))
-
-  val seqFormedWidgets = createSeqFormedWidgets()
-
-  def createSeqMoment(
-    num: Int = NineCardsMoment.moments.length,
-    collectionId: Option[Int] = Option(collectionId1),
-    timeslot: Seq[MomentTimeSlot] = createSeqMomentTimeSlot(),
-    wifi: Seq[String] = Seq.empty,
-    headphone: Boolean = false,
-    momentType: Seq[String] = momentType) =
-    (0 until num) map (item =>
-      SaveMomentRequest(
-        collectionId = collectionId,
-        timeslot = timeslot,
-        wifi = wifi,
-        headphone = headphone,
-        momentType = Option(NineCardsMoment(momentType(item))),
-        widgets = Option(seqFormedWidgets)))
-
-  def createSeqMomentTimeSlot(
-    from: String = from,
-    to: String = to,
-    days: Seq[Int] = days)=
-    (1 until 4) map (item =>
-      MomentTimeSlot(
-        from = from,
-        to = to,
-        days = days))
-
   val homeApp =
     ApplicationData(
       name = name,
@@ -325,7 +72,7 @@ trait MomentProcessImplData {
       className = className1,
       category = NineCardsCategory(category1),
       dateInstalled = dateInstalled1,
-      dateUpdate = dateUpdate1,
+      dateUpdated = dateUpdate1,
       version = version1,
       installedFromGooglePlay = installedFromGooglePlay1)
 
@@ -334,32 +81,6 @@ trait MomentProcessImplData {
   val nightApp = homeApp.copy(packageName = nightAppPackageName)
 
   val transitApp = homeApp.copy(packageName = transitAppPackageName)
-
-  val seqCard = createSeqCard()
-  val seqServicesCard = createSeqServicesCard()
-
-  val seqCollection = createSeqCollection()
-  val collection = seqCollection.headOption
-  val seqServicesCollection = createSeqServicesCollection()
-  val seqServicesCollection10 = createSeqServicesCollection(num = 10)
-  val servicesCollection = seqServicesCollection(0)
-
-  val seqServicesApps = createSeqServicesApp()
-  val seqApps = Seq(homeApp, workApp, nightApp, transitApp)
-  val seqMomentCollections = createSeqMomentCollection()
-  val seqServicesMoments = createSeqServicesMoment()
-  val seqServicesMomentsWithoutCollection = createSeqServicesMoment(collectionId = None)
-  val servicesMoment = seqServicesMoments(0)
-  val servicesMomentWihoutCollection = seqServicesMomentsWithoutCollection(0)
-  val seqMoments = createSeqMoment()
-
-  val processMoment = Moment(
-    id = 0,
-    collectionId = Option(collectionId),
-    timeslot = createSeqMomentTimeSlot(),
-    wifi = Seq.empty,
-    headphone = false,
-    momentType = Option(NineCardsMoment(momentType(1))))
 
   val now = DateTime.now()
 
@@ -376,21 +97,6 @@ trait MomentProcessImplData {
   val homeMorningTo = "19:00"
   val homeMorningDays = Seq(1, 1, 1, 1, 1, 1, 1)
 
-  val homeMorningServicesTimeSlot =
-    Seq(ServicesMomentTimeSlot(
-      from = homeMorningFrom,
-      to = homeMorningTo,
-      days = homeMorningDays))
-
-  val homeMorningServicesMoment =
-    ServicesMoment(
-      id = homeMorningId,
-      collectionId = homeMorningCollectionId,
-      timeslot = homeMorningServicesTimeSlot,
-      wifi = homeWifi,
-      headphone = false,
-      momentType = Option(momentType(0)))
-
   val homeMorningTimeSlot =
     Seq(MomentTimeSlot(
       from = homeMorningFrom,
@@ -404,7 +110,7 @@ trait MomentProcessImplData {
       timeslot = homeMorningTimeSlot,
       wifi = homeWifi,
       headphone = false,
-      momentType = Option(NineCardsMoment(momentType(0))))
+      momentType = Option(NineCardsMoment(seqMomentType(0))))
 
   val workId = 2
   val workCollectionId = Option(2)
@@ -412,21 +118,6 @@ trait MomentProcessImplData {
   val workFrom = "08:00"
   val workTo = "17:00"
   val workDays = Seq(0, 1, 1, 1, 1, 1, 0)
-
-  val workServicesTimeSlot =
-    Seq(ServicesMomentTimeSlot(
-      from = workFrom,
-      to = workTo,
-      days = workDays))
-
-  val workServicesMoment =
-    ServicesMoment(
-      id = workId,
-      collectionId = workCollectionId,
-      timeslot = workServicesTimeSlot,
-      wifi = workWifi,
-      headphone = false,
-      momentType = Option(momentType(1)))
 
   val workTimeSlot =
     Seq(MomentTimeSlot(
@@ -441,7 +132,7 @@ trait MomentProcessImplData {
       timeslot = workTimeSlot,
       wifi = workWifi,
       headphone = false,
-      momentType = Option(NineCardsMoment(momentType(1))))
+      momentType = Option(NineCardsMoment(seqMomentType(1))))
 
   val homeNightId = 3
   val homeNightCollectionId = Option(3)
@@ -450,26 +141,6 @@ trait MomentProcessImplData {
   val homeNightFrom2 = "00:00"
   val homeNightTo2 = "08:00"
   val homeNightDays = Seq(1, 1, 1, 1, 1, 1, 1)
-
-  val homeNightServicesTimeSlot =
-    Seq(
-      ServicesMomentTimeSlot(
-        from = homeNightFrom1,
-        to = homeNightTo1,
-        days = homeNightDays),
-      ServicesMomentTimeSlot(
-        from = homeNightFrom2,
-        to = homeNightTo2,
-        days = homeNightDays))
-
-  val homeNightServicesMoment =
-    ServicesMoment(
-      id = homeNightId,
-      collectionId = homeNightCollectionId,
-      timeslot = homeNightServicesTimeSlot,
-      wifi = homeWifi,
-      headphone = false,
-      momentType = Option(momentType(2)))
 
   val homeNightTimeSlot =
     Seq(
@@ -489,7 +160,7 @@ trait MomentProcessImplData {
       timeslot = homeNightTimeSlot,
       wifi = homeWifi,
       headphone = false,
-      momentType = Option(NineCardsMoment(momentType(2))))
+      momentType = Option(NineCardsMoment(seqMomentType(2))))
 
   val transitId = 4
   val transitCollectionId = Option(4)
@@ -497,22 +168,6 @@ trait MomentProcessImplData {
   val transitFrom1 = "00:00"
   val transitTo1 = "23:59"
   val transitDays = Seq(1, 1, 1, 1, 1, 1, 1)
-
-  val transitServicesTimeSlot =
-    Seq(
-      ServicesMomentTimeSlot(
-        from = transitFrom1,
-        to = transitTo1,
-        days = transitDays))
-
-  val transitServicesMoment =
-    ServicesMoment(
-      id = transitId,
-      collectionId = transitCollectionId,
-      timeslot = transitServicesTimeSlot,
-      wifi = transitWifi,
-      headphone = false,
-      momentType = Option(momentType(3)))
 
   val transitTimeSlot =
     Seq(
@@ -528,46 +183,6 @@ trait MomentProcessImplData {
       timeslot = transitTimeSlot,
       wifi = transitWifi,
       headphone = false,
-      momentType = Option(NineCardsMoment(momentType(3))))
-
-  val servicesMomentSeq = Seq(homeMorningServicesMoment, workServicesMoment, homeNightServicesMoment, transitServicesMoment)
-  val processMomentSeq = Seq(homeMorningMoment, workMoment, homeNightMoment, transitMoment)
-
-  val seqServicesCollectionForMoments =
-    createSeqServicesCollection(num = 1, id = homeMorningCollectionId.get) ++
-      createSeqServicesCollection(num = 1, id = homeNightCollectionId.get) ++
-      createSeqServicesCollection(num = 1, id = workCollectionId.get) ++
-      createSeqServicesCollection(num = 1, id = transitCollectionId.get)
-
-  val seqServicesCollectionForMomentsWithoutId =
-    createSeqServicesCollection(num = 1, id = 0) ++
-      createSeqServicesCollection(num = 1, id = 0) ++
-      createSeqServicesCollection(num = 1, id = 0) ++
-      createSeqServicesCollection(num = 1, id = 0)
-
-  val servicesAvailableMomentsSeq = Seq(homeMorningServicesMoment, workServicesMoment, homeNightServicesMoment, transitServicesMoment)
-
-  val mockNineCardMoment: NineCardsMoment = servicesMoment.momentType map (NineCardsMoment(_)) getOrElse NineCardsMoment(momentType(0))
-
-  val processMomentWithoutCollection = Moment(
-    id = servicesMomentWihoutCollection.id,
-    collectionId = None,
-    timeslot = servicesMomentWihoutCollection.timeslot map toTimeSlot,
-    wifi = servicesMomentWihoutCollection.wifi,
-    headphone = servicesMomentWihoutCollection.headphone,
-    momentType = servicesMomentWihoutCollection.momentType map (NineCardsMoment(_)))
-
-  def toTimeSlot(servicesMomentTimeSlot: models.MomentTimeSlot): MomentTimeSlot = MomentTimeSlot(
-    from = servicesMomentTimeSlot.from,
-    to = servicesMomentTimeSlot.to,
-    days = servicesMomentTimeSlot.days)
-
- val processMomentByType = Moment(
-   id = servicesMoment.id,
-   collectionId = servicesMoment.collectionId,
-   timeslot = servicesMoment.timeslot map toTimeSlot,
-   wifi = servicesMoment.wifi,
-   headphone = servicesMoment.headphone,
-   momentType = servicesMoment.momentType map (NineCardsMoment(_)))
+      momentType = Option(NineCardsMoment(seqMomentType(3))))
 
 }
