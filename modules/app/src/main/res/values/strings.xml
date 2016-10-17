@@ -570,6 +570,11 @@
 
     <string name="devShowPrintInfoOptionInAccounts">Print Drive information</string>
 
+    <string name="devIsStethoActive">Enable/Disable Stetho</string>
+    <string name="devIsStethoActiveSummary">Requires restart the application</string>
+    <string name="devRestartApplication">Restart the application</string>
+    <string name="devBackendV2Url">Backend URL</string>
+
     <!-- Preferences About -->
     <string name="others">Others</string>
 

@@ -1,8 +1,12 @@
 package cards.nine.app.ui.preferences.developers
 
+import android.app.Activity
+import android.content.Intent
 import cats.implicits._
 import com.bumptech.glide.Glide
-import cards.nine.app.ui.commons.{ImplicitsUiExceptions, Jobs, UiException}
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, JobException, Jobs, UiException}
+import cards.nine.app.ui.launcher.LauncherActivity
+import cards.nine.app.ui.preferences.commons.{BackendV2Url, NineCardsPreferencesValue}
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
@@ -16,6 +20,7 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
   def initialize() =
     (ui.initialize(this) |@|
       loadAppsCategorized |@|
+      loadBackendV2Summary |@|
       loadMostProbableActivity |@|
       loadHeadphone |@|
       loadLocation |@|
@@ -24,6 +29,11 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
   def loadAppsCategorized: TaskService[Unit] = for {
     apps <- di.deviceProcess.getSavedApps(GetByName)
     _ <- ui.setAppsCategorizedSummary(apps)
+  } yield ()
+
+  def loadBackendV2Summary: TaskService[Unit] = for {
+    backendV2Url <- TaskService.right(BackendV2Url.readValue(new NineCardsPreferencesValue))
+    _ <- ui.setBackendV2UrlSummary(backendV2Url)
   } yield ()
 
   def copyAndroidToken: TaskService[Unit] = for {
@@ -43,6 +53,19 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
         }
     }
     clearCacheService *> ui.cacheCleared
+  }
+
+  def restartApplication: TaskService[Unit] = TaskService {
+    CatchAll[JobException] {
+      val intent = new Intent(contextWrapper.bestAvailable, classOf[LauncherActivity])
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      contextWrapper.bestAvailable.startActivity(intent)
+      contextWrapper.original.get match {
+        case Some(a: Activity) => a.finish()
+        case _ =>
+      }
+      Runtime.getRuntime.exit(0)
+    }
   }
 
   def loadMostProbableActivity: TaskService[Unit] = for {

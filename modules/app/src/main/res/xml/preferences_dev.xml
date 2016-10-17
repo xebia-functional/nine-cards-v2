@@ -9,6 +9,11 @@
             android:key="appsCategorized"
             android:title="@string/devAppsCategorizedTitle"/>
 
+        <EditTextPreference
+            android:key="backendV2Url"
+            android:title="@string/devBackendV2Url"
+            android:defaultValue="@string/api_v2_base_url"/>
+
         <Preference
             android:key="androidToken"
             android:title="@string/devAndroidTokenTitle"
@@ -46,6 +51,10 @@
         android:title="@string/devOthersTitle">
 
         <Preference
+            android:key="restartApplication"
+            android:title="@string/devRestartApplication"/>
+
+        <Preference
             android:key="clearCacheImages"
             android:title="@string/devClearCacheImagesTitle"/>
 
@@ -56,6 +65,11 @@
         <CheckBoxPreference
             android:key="showPrintInfoOptionInAccounts"
             android:title="@string/devShowPrintInfoOptionInAccounts"/>
+
+        <CheckBoxPreference
+            android:key="isStethoActive"
+            android:title="@string/devIsStethoActive"
+            android:summary="@string/devIsStethoActiveSummary"/>
 
     </PreferenceCategory>
 

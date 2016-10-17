@@ -556,6 +556,11 @@
 
     <string name="devShowPrintInfoOptionInAccounts">Imprimir información de Drive</string>
 
+    <string name="devIsStethoActive">Activar/Desactivar Stetho</string>
+    <string name="devIsStethoActiveSummary">Requiere reiniciar la aplicación</string>
+    <string name="devRestartApplication">Reiniciar la aplicación</string>
+    <string name="devBackendV2Url">URL del Backend</string>
+
     <!-- Preferences About -->
     <string name="others">Otros</string>
 

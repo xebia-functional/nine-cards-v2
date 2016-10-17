@@ -332,6 +332,29 @@ case object ShowPrintInfoOptionInAccounts
   override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
 }
 
+case object BackendV2Url
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = backendV2Url
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
+
+case object IsStethoActive
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = isStethoActive
+  override val default: Boolean = false
+
+  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+}
+
+case object RestartApplication
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = resetApplication
+  override val default: String = ""
+
+  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+}
 
 // Commons
 
@@ -404,6 +427,9 @@ object PreferencesValuesKeys {
   val clearCacheImages = "clearCacheImages"
   val showPositionInCards = "showPositionInCards"
   val showPrintInfoOptionInAccounts = "showPrintInfoOptionInAccounts"
+  val backendV2Url = "backendV2Url"
+  val isStethoActive = "isStethoActive"
+  val resetApplication = "resetApplication"
 }
 
 

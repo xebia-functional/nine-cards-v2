@@ -2,7 +2,7 @@ package cards.nine.app.ui.preferences.developers
 
 import android.content.{ClipData, ClipboardManager, Context}
 import android.preference.Preference
-import android.preference.Preference.OnPreferenceClickListener
+import android.preference.Preference.{OnPreferenceChangeListener, OnPreferenceClickListener}
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -24,6 +24,13 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
     }
 
     Ui {
+      dom.androidTokenPreferences.
+        setOnPreferenceChangeListener(new OnPreferenceChangeListener {
+          override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
+            preference.setSummary(newValue.toString)
+            true
+          }
+        })
       dom.androidTokenPreferences.
         setOnPreferenceClickListener(clickPreference(() => {
           developerJobs.copyAndroidToken.resolveAsync()
@@ -55,6 +62,10 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
       dom.clearCacheImagesPreference.
         setOnPreferenceClickListener(clickPreference(() => {
           developerJobs.clearCacheImages.resolveAsync()
+        }))
+      dom.restartApplicationPreference.
+        setOnPreferenceClickListener(clickPreference(() => {
+          developerJobs.restartApplication.resolveAsync()
         }))
     }.toService
   }
@@ -97,6 +108,10 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
   def setWeatherSummary(weather: WeatherState): TaskService[Unit] = Ui {
     val summary = s"${weather.conditions.headOption getOrElse "No Conditions"} Temp: ${weather.temperatureCelsius} C -  ${weather.temperatureFahrenheit} F"
     dom.weatherPreference.setSummary(summary)
+  }.toService
+
+  def setBackendV2UrlSummary(backendV2Url: String): TaskService[Unit] = Ui {
+    dom.backendV2UrlPreference.setSummary(backendV2Url)
   }.toService
 
 }

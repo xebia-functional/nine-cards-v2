@@ -31,7 +31,6 @@
     <string name="crashlytics_api_key">${crashlytics.apikey}</string>
 
     <!-- Debug options -->
-    <string name="stetho_enabled">${stetho.enabled}</string>
     <string name="strict_mode_enabled">${strictmode.enabled}</string>
 
     <!-- Preferences About -->

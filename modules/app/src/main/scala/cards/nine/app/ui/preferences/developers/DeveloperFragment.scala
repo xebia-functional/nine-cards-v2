@@ -31,12 +31,14 @@ class DeveloperFragment
 case class DeveloperDOM(dom: FindPreferences) {
 
   def appsCategorizedPreferences = dom.find[Preference](AppsCategorized)
+  def backendV2UrlPreference = dom.find[Preference](BackendV2Url)
   def androidTokenPreferences = dom.find[Preference](AndroidToken)
   def deviceCloudIdPreferences = dom.find[Preference](DeviceCloudId)
   def probablyActivityPreference = dom.find[Preference](ProbablyActivity)
   def headphonesPreference = dom.find[Preference](Headphones)
   def locationPreference = dom.find[Preference](Location)
   def weatherPreference = dom.find[Preference](Weather)
+  def restartApplicationPreference = dom.find[Preference](RestartApplication)
   def clearCacheImagesPreference = dom.find[Preference](ClearCacheImages)
 
 }
