@@ -21,7 +21,7 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
       _ <- actions.initialize(moment, collections)
     } yield ()
 
-  def momentNoFound(): TaskService[Unit] = actions.momentNoFound()
+  def momentNotFound(): TaskService[Unit] = actions.close()
 
   def setCollectionId(collectionId: Option[Int]): TaskService[Unit] =
     updateStatus(statuses.setCollectionId(collectionId match {
@@ -107,14 +107,13 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
         timeslot = moment.timeslot,
         wifi = moment.wifi,
         headphone = moment.headphone,
-        momentType = moment.momentType
-      )
+        momentType = moment.momentType)
       for {
         _ <- di.momentProcess.updateMoment(request)
         _ <- sendBroadCastTask(BroadAction(MomentConstrainsChangedActionFilter.action))
-        _ <- actions.success()
+        _ <- actions.close()
       } yield ()
-    case _ => actions.success()
+    case _ => actions.close()
   }
 
   private[this] def changePosition(position: Int): TaskService[Unit] = {
@@ -123,7 +122,6 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
       case Some(ts) => actions.reloadDays(position, ts)
       case _ => TaskService.left(JobException("Timeslot not found"))
     }
-    // actions.showSavingMomentErrorMessage()
   }
 
   private[this] def updateStatus(editMomentStatuses: EditMomentStatuses): TaskService[Unit] =

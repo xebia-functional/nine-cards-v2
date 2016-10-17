@@ -71,9 +71,7 @@ trait EditMomentUiActions
     } yield ()
   }
 
-  def momentNoFound(): TaskService[Unit] = unreveal().toService
-
-  def success(): TaskService[Unit] = unreveal().toService
+  def close(): TaskService[Unit] = unreveal().toService
 
   def showSavingMomentErrorMessage(): TaskService[Unit] = uiShortToast2(R.string.contactUsError).toService
 

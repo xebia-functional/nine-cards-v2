@@ -28,8 +28,8 @@ class EditMomentFragment
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
     momentType match {
-      case Some(moment) => editJobs.initialize(NineCardsMoment(moment)).resolveServiceOr(_ => momentNoFound())
-      case _ => editJobs.momentNoFound().resolveAsync()
+      case Some(moment) => editJobs.initialize(NineCardsMoment(moment)).resolveServiceOr(_ => close())
+      case _ => editJobs.momentNotFound().resolveAsync()
     }
   }
 
@@ -47,11 +47,14 @@ class EditMomentFragment
 
   override def removeWifi(position: Int): Unit = editJobs.removeWifi(position).resolveAsync()
 
-  override def changeFromHour(position: Int, hour: String): Unit = editJobs.changeFromHour(position, hour).resolveAsync()
+  override def changeFromHour(position: Int, hour: String): Unit =
+    editJobs.changeFromHour(position, hour).resolveAsyncServiceOr(_ => showSavingMomentErrorMessage())
 
-  override def changeToHour(position: Int, hour: String): Unit = editJobs.changeToHour(position, hour).resolveAsync()
+  override def changeToHour(position: Int, hour: String): Unit =
+    editJobs.changeToHour(position, hour).resolveAsyncServiceOr(_ => showSavingMomentErrorMessage())
 
-  override def swapDay(position: Int, index: Int): Unit = editJobs.swapDay(position, index).resolveAsync()
+  override def swapDay(position: Int, index: Int): Unit =
+    editJobs.swapDay(position, index).resolveAsyncServiceOr(_ => showSavingMomentErrorMessage())
 }
 
 object EditMomentFragment {
@@ -125,8 +128,8 @@ case class EditMomentStatuses(
   }
 
   def addWifi(wifi: String) = {
-    val modMoment = modifiedMoment map { moment =>
-      moment.copy(wifi = moment.wifi :+ wifi)
+    val modMoment = modifiedMoment map { m =>
+      m.copy(wifi = m.wifi :+ wifi)
     }
     copy(modifiedMoment = modMoment)
   }
