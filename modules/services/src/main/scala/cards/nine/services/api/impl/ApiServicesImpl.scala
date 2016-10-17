@@ -89,7 +89,7 @@ class ApiServicesImpl(
       response <- apiService
         .installations(InstallationRequest(deviceToken getOrElse ""), requestConfig.toServiceHeader)
         .readOption(installationNotFoundMessage)
-    } yield UpdateInstallationResponse(response.statusCode)
+    } yield ()
 
   override def googlePlayPackage(packageName: String)(implicit requestConfig: RequestConfig) =
     for {

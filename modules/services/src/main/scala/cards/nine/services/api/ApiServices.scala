@@ -48,12 +48,10 @@ trait ApiServices {
     *
     * @param deviceToken the token used for push notification
     * @param requestConfig necessary info for the headers
-    * @return the [[cards.nine.services.api.UpdateInstallationResponse]] with the HTTP Code
-    *         of the response
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if there was an error in the request
     */
-  def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig): TaskService[UpdateInstallationResponse]
+  def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig): TaskService[Unit]
 
   /**
     * Fetches the package info from Google Play given a package name

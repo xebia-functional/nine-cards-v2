@@ -22,9 +22,6 @@ case class LoginResponseV1(
   email: Option[String],
   devices: Seq[LoginV1Device])
 
-case class UpdateInstallationResponse(
-  statusCode: Int)
-
 trait UserV1Response {
   def statusCode: Int
   def userConfig: UserV1
