@@ -89,14 +89,21 @@ trait FormedCollectionConversions
       icon = category.getStringResource,
       themedColorIndex = themeIndex,
       appsCategory = Some(category),
-      cards = Seq.empty,
+      cards = appsByCategory map toCardData,
       moment = None,
       originalSharedCollectionId = None,
       sharedCollectionId = None,
       sharedCollectionSubscribed = false,
       publicCollectionStatus = NotPublished)
-
   }
+
+  def toCardData(application: ApplicationData): CardData =
+    CardData(
+      term = application.name,
+      packageName = Some(application.packageName),
+      cardType = AppCardType,
+      intent = toNineCardIntent(application),
+      imagePath = None)
 
   def adaptCardsToAppsInstalled(formedCollections: Seq[FormedCollection], apps: Seq[ApplicationData]): Seq[FormedCollection] =
     formedCollections map { fc =>
