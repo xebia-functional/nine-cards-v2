@@ -7,7 +7,7 @@ import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext, UiException}
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 

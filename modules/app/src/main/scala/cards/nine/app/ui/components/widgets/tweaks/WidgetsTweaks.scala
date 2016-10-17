@@ -6,7 +6,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.process.collection.models.PackagesByCategory
+import cards.nine.models.PackagesByCategory
 import macroid._
 
 object TintableImageViewTweaks {

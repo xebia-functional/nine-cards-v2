@@ -13,7 +13,7 @@ import cards.nine.app.ui.wizard.jobs._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.cloud.CloudStorageClientListener
-import cards.nine.process.collection.models.PackagesByCategory
+import cards.nine.models.PackagesByCategory
 import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
 import cards.nine.process.user.UserException
 import cards.nine.process.userv1.UserV1Exception

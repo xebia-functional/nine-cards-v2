@@ -1,6 +1,6 @@
 package cards.nine.process.sharedcollections.models
 
-import cards.nine.models.types.{NineCardCategory, PublicCollectionStatus}
+import cards.nine.models.types.{NineCardsCategory, PublicCollectionStatus}
 
 case class SharedCollection(
   id: String,
@@ -12,7 +12,7 @@ case class SharedCollection(
   resolvedPackages: Seq[SharedCollectionPackage],
   views: Int,
   subscriptions: Option[Int],
-  category: NineCardCategory,
+  category: NineCardsCategory,
   icon: String,
   community: Boolean,
   publicCollectionStatus: PublicCollectionStatus)
@@ -21,7 +21,7 @@ case class CreateSharedCollection(
    author: String,
    name: String,
    packages: Seq[String],
-   category: NineCardCategory,
+   category: NineCardsCategory,
    icon: String,
    community: Boolean)
 
@@ -42,7 +42,7 @@ case class CreatedCollection(
   name: String,
   author: String,
   packages: Seq[String],
-  category: NineCardCategory,
+  category: NineCardsCategory,
   sharedCollectionId: String,
   icon: String,
   community: Boolean

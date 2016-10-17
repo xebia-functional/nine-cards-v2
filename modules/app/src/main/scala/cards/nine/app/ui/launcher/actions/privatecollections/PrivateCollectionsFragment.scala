@@ -2,11 +2,11 @@ package cards.nine.app.ui.launcher.actions.privatecollections
 
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.process.commons.models.{Collection, PrivateCollection}
+import cards.nine.models.{Collection, CollectionData}
 import cards.nine.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
@@ -15,7 +15,7 @@ class PrivateCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
   with PrivateCollectionsDOM
   with PrivateCollectionsUiActions
   with PrivateCollectionsListener
-  with AppNineCardIntentConversions { self =>
+  with AppNineCardsIntentConversions { self =>
 
   lazy val collectionJobs = new PrivateCollectionsJobs(self)
 
@@ -35,7 +35,7 @@ class PrivateCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
 
   override def addLauncherCollection(collection: Collection): Unit = launcherPresenter.addCollection(collection)
 
-  override def saveCollection(collection: PrivateCollection): Unit =
+  override def saveCollection(collection: CollectionData): Unit =
     collectionJobs.saveCollection(collection).resolveServiceOr(_ => showErrorSavingCollectionInScreen)
 }
 

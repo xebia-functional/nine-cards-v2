@@ -1,17 +1,21 @@
 package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.CollectionTestData
+import cards.nine.models.Collection
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.CardEntity
-import cards.nine.services.persistence.data.PersistenceServicesData
-import cards.nine.services.persistence.models.Collection
+import cards.nine.services.persistence.data.CollectionPersistenceServicesData
+import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.services.persistence.data.{CardPersistenceServicesData, MomentPersistenceServicesData}
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
-import cards.nine.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
-
+import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.commons.test.data.CardValues._
+import cards.nine.commons.test.data.MomentValues._
 
 trait CollectionPersistenceServicesDataSpecification
   extends Specification
@@ -20,7 +24,10 @@ trait CollectionPersistenceServicesDataSpecification
 
   trait CollectionServicesResponses
     extends RepositoryServicesScope
-    with PersistenceServicesData {
+    with CollectionTestData
+    with CollectionPersistenceServicesData
+    with CardPersistenceServicesData
+    with MomentPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 
@@ -37,9 +44,9 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       mockCollectionRepository.addCollection(any) returns TaskService(Task(Either.right(repoCollection)))
       mockCardRepository.addCards(any) returns TaskService(Task(Either.right(Seq(repoCard))))
       mockMomentRepository.fetchMoments() returns TaskService(Task(Either.right(seqRepoMoment)))
-      mockMomentRepository.updateMoment(repoMoment) returns TaskService(Task(Either.right(item)))
+      mockMomentRepository.updateMoment(any) returns TaskService(Task(Either.right(updatedMoment)))
 
-      val result = persistenceServices.addCollection(addCollectionRequest).value.run
+      val result = persistenceServices.addCollection(collectionData).value.run
 
       result must beLike {
         case Right(collection) =>
@@ -51,7 +58,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.addCollection(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.addCollection(addCollectionRequest).value.run
+      val result = persistenceServices.addCollection(collectionData).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -63,18 +70,18 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       mockCollectionRepository.addCollections(any) returns TaskService(Task(Either.right(seqRepoCollection)))
       mockCardRepository.addCards(any) returns TaskService(Task(Either.right(Seq(repoCard))))
       mockMomentRepository.fetchMoments() returns TaskService(Task(Either.right(seqRepoMoment)))
-      mockMomentRepository.updateMoment(any) returns TaskService(Task(Either.right(item)))
+      mockMomentRepository.updateMoment(any) returns TaskService(Task(Either.right(updatedMoment)))
 
-      val result = persistenceServices.addCollections(seqAddCollectionRequest).value.run
+      val result = persistenceServices.addCollections(seqCollectionData).value.run
       result must beLike {
-        case Right(collections) => collections.size shouldEqual seqAddCollectionRequest.size
+        case Right(collections) => collections.size shouldEqual seqCollectionData.size
       }
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.addCollections(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.addCollections(seqAddCollectionRequest).value.run
+      val result = persistenceServices.addCollections(seqCollectionData).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
 
@@ -84,11 +91,11 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return the number of elements deleted for a valid request" in new CollectionServicesResponses {
 
-      mockCollectionRepository.deleteCollections() returns TaskService(Task(Either.right(items)))
-      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(items)))
+      mockCollectionRepository.deleteCollections() returns TaskService(Task(Either.right(deletedCollections)))
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(deletedCards)))
 
       val result = persistenceServices.deleteAllCollections().value.run
-      result shouldEqual Right(items)
+      result shouldEqual Right(deletedCollections)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
@@ -105,23 +112,23 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return the number of elements deleted for a valid request" in new CollectionServicesResponses {
 
-      mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Either.right(item)))
-      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(items)))
-      mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns TaskService(Task(Either.right(item)))
+      mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Either.right(deletedCollection)))
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(deletedCards)))
+      mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns TaskService(Task(Either.right(updatedMoment)))
 
-      val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).value.run
-      result shouldEqual Right(item)
+      val result = persistenceServices.deleteCollection(collection).value.run
+      result shouldEqual Right(deletedCollection)
       there was one(mockCardRepository).deleteCards(None, where = s"${CardEntity.collectionId} = $collectionId")
     }
 
     "return Right of Unit if Moment in Request is None" in new CollectionServicesResponses {
 
-      mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Either.right(item)))
-      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(items)))
-      mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns TaskService(Task(Either.right(item)))
+      mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Either.right(deletedCollection)))
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(deletedCards)))
+      mockMomentRepository.updateMoment(repoMoment.copy(data = repoMoment.data.copy(collectionId = None))) returns TaskService(Task(Either.right(updatedMoment)))
 
-      val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collectionWithoutMoment)).value.run
-      result shouldEqual Right(item)
+      val result = persistenceServices.deleteCollection(collection.copy(moment = None)).value.run
+      result shouldEqual Right(deletedCollection)
       there was one(mockCardRepository).deleteCards(None, where = s"${CardEntity.collectionId} = $collectionId")
     }
 
@@ -130,7 +137,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       mockCollectionRepository.deleteCollection(any) returns TaskService(Task(Either.left(exception)))
       mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.left(exception)))
 
-      val result = persistenceServices.deleteCollection(createDeleteCollectionRequest(collection = collection)).value.run
+      val result = persistenceServices.deleteCollection(collection).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
       there was one(mockCardRepository).deleteCards(None, where = s"${CardEntity.collectionId} = $collectionId")
     }
@@ -146,13 +153,13 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       }
       mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.right(seqRepoMoment)))
 
-      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position)).value.run
+      val result = persistenceServices.fetchCollectionByPosition(collectionPosition).value.run
 
       result must beLike {
         case Right(maybeCollection) =>
           maybeCollection must beSome[Collection].which { collection =>
             collection.id shouldEqual collectionId
-            collection.position shouldEqual position
+            collection.position shouldEqual collectionPosition
           }
       }
     }
@@ -160,14 +167,14 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return None when a non-existent id is given" in new CollectionServicesResponses {
 
       mockCollectionRepository.fetchCollectionByPosition(any) returns TaskService(Task(Either.right(None)))
-      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(nonExistentPosition)).value.run
+      val result = persistenceServices.fetchCollectionByPosition(nonExistentCollectionPosition).value.run
       result shouldEqual Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.fetchCollectionByPosition(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.fetchCollectionByPosition(createFetchCollectionByPositionRequest(position)).value.run
+      val result = persistenceServices.fetchCollectionByPosition(collectionPosition).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -275,7 +282,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       }
       mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.right(seqRepoMoment)))
 
-      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId)).value.run
+      val result = persistenceServices.findCollectionById(collectionId).value.run
 
       result must beLike {
         case Right(maybeCollection) =>
@@ -288,14 +295,14 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return None when a non-existent id is given" in new CollectionServicesResponses {
 
       mockCollectionRepository.findCollectionById(any) returns TaskService(Task(Either.right(None)))
-      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = nonExistentCollectionId)).value.run
+      val result = persistenceServices.findCollectionById(nonExistentCollectionId).value.run
       result shouldEqual Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.findCollectionById(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.findCollectionById(createFindCollectionByIdRequest(id = collectionId)).value.run
+      val result = persistenceServices.findCollectionById(collectionId).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -310,11 +317,11 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       }
       mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.right(seqRepoMoment)))
 
-      val result = persistenceServices.findCollectionByCategory(appsCategory).value.run
+      val result = persistenceServices.findCollectionByCategory(appsCategoryStr).value.run
       result must beLike {
         case Right(maybeCollection) =>
           maybeCollection must beSome[Collection].which { collection =>
-            collection.appsCategory shouldEqual Some(appsCategory)
+            collection.appsCategory map (_.name) shouldEqual Some(appsCategoryStr)
           }
       }
     }
@@ -322,7 +329,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.fetchCollectionsByCategory(any) returns TaskService(Task(Either.right(Seq.empty)))
-      val result = persistenceServices.findCollectionByCategory(appsCategory).value.run
+      val result = persistenceServices.findCollectionByCategory(appsCategoryStr).value.run
       result shouldEqual Right(None)
     }
 
@@ -330,7 +337,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.fetchCollectionsByCategory(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.findCollectionByCategory(appsCategory).value.run
+      val result = persistenceServices.findCollectionByCategory(appsCategoryStr).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -339,15 +346,15 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return the number of elements updated for a valid request" in new CollectionServicesResponses {
 
-      mockCollectionRepository.updateCollection(any) returns TaskService(Task(Either.right(item)))
-      val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).value.run
-      result shouldEqual Right(item)
+      mockCollectionRepository.updateCollection(any) returns TaskService(Task(Either.right(updatedCollection)))
+      val result = persistenceServices.updateCollection(collection).value.run
+      result shouldEqual Right(updatedCollection)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.updateCollection(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.updateCollection(createUpdateCollectionRequest()).value.run
+      val result = persistenceServices.updateCollection(collection).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -356,15 +363,15 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
 
     "return the number of elements updated for a valid request" in new CollectionServicesResponses {
 
-      mockCollectionRepository.updateCollections(any) returns TaskService(Task(Either.right(Seq(item))))
-      val result = persistenceServices.updateCollections(updateCollectionsRequest).value.run
-      result shouldEqual Right(Seq(item))
+      mockCollectionRepository.updateCollections(any) returns TaskService(Task(Either.right(Seq(updatedCollections))))
+      val result = persistenceServices.updateCollections(seqCollection).value.run
+      result shouldEqual Right(Seq(updatedCollections))
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.updateCollections(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.updateCollections(updateCollectionsRequest).value.run
+      val result = persistenceServices.updateCollections(seqCollection).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

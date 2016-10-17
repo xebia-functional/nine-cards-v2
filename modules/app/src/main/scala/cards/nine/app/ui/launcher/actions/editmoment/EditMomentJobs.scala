@@ -6,8 +6,7 @@ import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.process.commons.models.MomentTimeSlot
-import cards.nine.process.moment.UpdateMomentRequest
+import cards.nine.models.{Moment, MomentTimeSlot}
 import macroid.ActivityContextWrapper
 
 class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -101,7 +100,7 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
 
   def saveMoment(): TaskService[Unit] = (statuses.wasModified(), statuses.modifiedMoment) match {
     case (true, Some(moment)) =>
-      val request = UpdateMomentRequest(
+      val request = Moment(
         id = moment.id,
         collectionId = moment.collectionId,
         timeslot = moment.timeslot,

@@ -4,13 +4,13 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons.javaNull
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import com.fortysevendeg.ninecardslauncher.R
 
 class CreateOrEditCollectionFragment(implicit launcherPresenter: LauncherPresenter)
@@ -18,7 +18,7 @@ class CreateOrEditCollectionFragment(implicit launcherPresenter: LauncherPresent
   with CreateOrEditCollectionDOM
   with CreateOrEditCollectionUiActions
   with CreateOrEditCollectionListener
-  with AppNineCardIntentConversions { self =>
+  with AppNineCardsIntentConversions { self =>
 
   lazy val maybeCollectionId = Option(getString(Seq(getArguments), CreateOrEditCollectionFragment.collectionId, javaNull))
 

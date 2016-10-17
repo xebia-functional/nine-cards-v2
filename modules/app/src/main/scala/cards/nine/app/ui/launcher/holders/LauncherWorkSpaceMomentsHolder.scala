@@ -22,7 +22,6 @@ import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons._
 import cards.nine.models.Widget
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -68,29 +67,29 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
     case widget: LauncherWidgetView => widget.deactivateSelected()
   }
 
-  def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any] = this <~ Transformer {
+  def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Ui[Any] = this <~ Transformer {
     case i: LauncherWidgetView if i.id == id =>
       (for {
         cell <- i.getField[Cell](cellKey)
         widget <- i.getField[Widget](widgetKey)
       } yield {
         val newWidget = widget.copy(area = widget.area.copy(
-          spanX = widget.area.spanX + resize.increaseX,
-          spanY = widget.area.spanY + resize.increaseY))
+          spanX = widget.area.spanX + increaseX,
+          spanY = widget.area.spanY + increaseY))
         (i <~ vAddField(widgetKey, newWidget)) ~
           i.adaptSize(newWidget)
       }) getOrElse Ui.nop
   }
 
-  def moveWidgetById(id: Int, move: MoveWidgetRequest): Ui[Any] = this <~ Transformer {
+  def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Ui[Any] = this <~ Transformer {
     case i: LauncherWidgetView if i.id == id =>
       (for {
         cell <- i.getField[Cell](cellKey)
         widget <- i.getField[Widget](widgetKey)
       } yield {
         val newWidget = widget.copy(area = widget.area.copy(
-          startX = widget.area.startX + move.displaceX,
-          startY = widget.area.startY + move.displaceY))
+          startX = widget.area.startX + displaceX,
+          startY = widget.area.startY + displaceY))
         (i <~ vAddField(widgetKey, newWidget)) ~
           i.adaptSize(newWidget)
       }) getOrElse Ui.nop

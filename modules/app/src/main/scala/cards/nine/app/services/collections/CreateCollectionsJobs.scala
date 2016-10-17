@@ -1,24 +1,24 @@
 package cards.nine.app.services.collections
 
 import android.content.Intent
-import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
+import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.services.commons.FirebaseExtensions._
 import cards.nine.app.ui.commons.WizardState._
-import cards.nine.app.ui.commons.action_filters.{WizardAnswerActionFilter, WizardStateActionFilter}
 import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.action_filters.{WizardAnswerActionFilter, WizardStateActionFilter}
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.GetByName
 import cards.nine.process.cloud.models.CloudStorageDevice
-import cards.nine.process.device.GetByName
-import cards.nine.process.user.models.User
+import cards.nine.models.User
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ContextWrapper
 
 class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contextWrapper: ContextWrapper)
   extends Jobs
   with Conversions
-  with AppNineCardIntentConversions
+  with AppNineCardsIntentConversions
   with ImplicitsJobExceptions {
 
   import CreateCollectionsService._
@@ -78,8 +78,8 @@ class CreateCollectionsJobs(actions: CreateCollectionsUiActions)(implicit contex
         apps <- di.deviceProcess.getSavedApps(GetByName)
         _ <- actions.setProcess(statuses.selectedCloudId, CreatingCollectionsProcess)
         _ <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))
-        momentSeq = device.data.moments map (_ map toSaveMomentRequest) getOrElse Seq.empty
-        dockAppSeq = device.data.dockApps map (_ map toSaveDockAppRequest) getOrElse Seq.empty
+        momentSeq = device.data.moments map (_ map toMomentData) getOrElse Seq.empty
+        dockAppSeq = device.data.dockApps map (_ map toDockAppData) getOrElse Seq.empty
         _ <- di.momentProcess.saveMoments(momentSeq)
         _ <- di.deviceProcess.saveDockApps(dockAppSeq)
         _ <- di.userProcess.updateUserDevice(device.data.deviceName, device.cloudId, deviceToken)

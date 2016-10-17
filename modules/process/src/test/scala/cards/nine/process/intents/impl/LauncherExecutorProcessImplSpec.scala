@@ -6,7 +6,6 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.models._
-import cards.nine.process.commons.models.{NineCardIntent, NineCardIntentExtras}
 import cards.nine.process.intents.{LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
 import cards.nine.services.intents.LauncherIntentServices
 import cats.syntax.either._
@@ -34,7 +33,7 @@ trait LauncherExecutorProcessImplSpecification
 
     val mockServices = mock[LauncherIntentServices]
 
-    val mockIntent = mock[NineCardIntent]
+    val mockIntent = mock[NineCardsIntent]
 
     val process = new LauncherExecutorProcessImpl(config, mockServices)
 
@@ -71,7 +70,7 @@ trait LauncherExecutorProcessImplSpecification
 
     self: LauncherExecutorProcessImplScope =>
 
-    mockIntent.getAction returns NineCardIntentExtras.openApp
+    mockIntent.getAction returns NineCardsIntentExtras.openApp
     mockIntent.extractPackageName() returns Some(packageName)
     mockIntent.extractClassName() returns Some(className)
 
@@ -129,7 +128,7 @@ class LauncherExecutorProcessImplSpec
       new LauncherExecutorProcessImplScope {
         mockServices.launchIntentAction(any)(any) returns serviceRight
 
-        mockIntent.getAction returns NineCardIntentExtras.openApp
+        mockIntent.getAction returns NineCardsIntentExtras.openApp
         mockIntent.extractPackageName() returns Some(packageName)
         mockIntent.extractClassName() returns None
 
@@ -199,7 +198,7 @@ class LauncherExecutorProcessImplSpec
     "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a package name" in
       new LauncherExecutorProcessImplScope {
 
-        mockIntent.getAction returns NineCardIntentExtras.openApp
+        mockIntent.getAction returns NineCardsIntentExtras.openApp
         mockIntent.extractPackageName() returns None
         mockIntent.extractClassName() returns None
 
@@ -217,7 +216,7 @@ class LauncherExecutorProcessImplSpec
 
     "call to the services with the right parameters" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openNoInstalledApp
+        mockIntent.getAction returns NineCardsIntentExtras.openNoInstalledApp
         mockIntent.extractPackageName() returns Some(packageName)
 
         verifyRight(process.execute(mockIntent)(_), appGooglePlayAction)
@@ -225,7 +224,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openNoInstalledApp
+        mockIntent.getAction returns NineCardsIntentExtras.openNoInstalledApp
         mockIntent.extractPackageName() returns Some(packageName)
 
         verifyLeftPermission(process.execute(mockIntent)(_), appGooglePlayAction)
@@ -233,7 +232,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openNoInstalledApp
+        mockIntent.getAction returns NineCardsIntentExtras.openNoInstalledApp
         mockIntent.extractPackageName() returns Some(packageName)
 
         verifyLeft(process.execute(mockIntent)(_), appGooglePlayAction)
@@ -241,7 +240,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a package name" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openNoInstalledApp
+        mockIntent.getAction returns NineCardsIntentExtras.openNoInstalledApp
         mockIntent.extractPackageName() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
@@ -256,7 +255,7 @@ class LauncherExecutorProcessImplSpec
 
     "call to the services with the right parameters" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openSms
+        mockIntent.getAction returns NineCardsIntentExtras.openSms
         mockIntent.extractPhone() returns Some(phoneNumber)
 
         verifyRight(process.execute(mockIntent)(_), phoneSmsAction)
@@ -264,7 +263,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openSms
+        mockIntent.getAction returns NineCardsIntentExtras.openSms
         mockIntent.extractPhone() returns Some(phoneNumber)
 
         verifyLeftPermission(process.execute(mockIntent)(_), phoneSmsAction)
@@ -272,7 +271,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openSms
+        mockIntent.getAction returns NineCardsIntentExtras.openSms
         mockIntent.extractPhone() returns Some(phoneNumber)
 
         verifyLeft(process.execute(mockIntent)(_), phoneSmsAction)
@@ -280,7 +279,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a phone number" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openSms
+        mockIntent.getAction returns NineCardsIntentExtras.openSms
         mockIntent.extractPhone() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
@@ -295,7 +294,7 @@ class LauncherExecutorProcessImplSpec
 
     "call to the services with the right parameters" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openPhone
+        mockIntent.getAction returns NineCardsIntentExtras.openPhone
         mockIntent.extractPhone() returns Some(phoneNumber)
 
         verifyRight(process.execute(mockIntent)(_), phoneCallAction)
@@ -303,7 +302,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openPhone
+        mockIntent.getAction returns NineCardsIntentExtras.openPhone
         mockIntent.extractPhone() returns Some(phoneNumber)
 
         verifyLeftPermission(process.execute(mockIntent)(_), phoneCallAction)
@@ -311,7 +310,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openPhone
+        mockIntent.getAction returns NineCardsIntentExtras.openPhone
         mockIntent.extractPhone() returns Some(phoneNumber)
 
         verifyLeft(process.execute(mockIntent)(_), phoneCallAction)
@@ -319,7 +318,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a phone number" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openPhone
+        mockIntent.getAction returns NineCardsIntentExtras.openPhone
         mockIntent.extractPhone() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
@@ -334,7 +333,7 @@ class LauncherExecutorProcessImplSpec
 
     "call to the services with the right parameters" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openEmail
+        mockIntent.getAction returns NineCardsIntentExtras.openEmail
         mockIntent.extractEmail() returns Some(email)
 
         verifyRight(process.execute(mockIntent)(_), emailAction)
@@ -342,7 +341,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openEmail
+        mockIntent.getAction returns NineCardsIntentExtras.openEmail
         mockIntent.extractEmail() returns Some(email)
 
         verifyLeftPermission(process.execute(mockIntent)(_), emailAction)
@@ -350,7 +349,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openEmail
+        mockIntent.getAction returns NineCardsIntentExtras.openEmail
         mockIntent.extractEmail() returns Some(email)
 
         verifyLeft(process.execute(mockIntent)(_), emailAction)
@@ -358,7 +357,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have an email" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openEmail
+        mockIntent.getAction returns NineCardsIntentExtras.openEmail
         mockIntent.extractEmail() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run
@@ -373,7 +372,7 @@ class LauncherExecutorProcessImplSpec
 
     "call to the services with the right parameters" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openContact
+        mockIntent.getAction returns NineCardsIntentExtras.openContact
         mockIntent.extractLookup() returns Some(lookupKey)
 
         verifyRight(process.execute(mockIntent)(_), contactAction)
@@ -381,7 +380,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openContact
+        mockIntent.getAction returns NineCardsIntentExtras.openContact
         mockIntent.extractLookup() returns Some(lookupKey)
 
         verifyLeftPermission(process.execute(mockIntent)(_), contactAction)
@@ -389,7 +388,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openContact
+        mockIntent.getAction returns NineCardsIntentExtras.openContact
         mockIntent.extractLookup() returns Some(lookupKey)
 
         verifyLeft(process.execute(mockIntent)(_), contactAction)
@@ -397,7 +396,7 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessException, _] if the intent doesn't have a contact lookup" in
       new LauncherExecutorProcessImplScope {
-        mockIntent.getAction returns NineCardIntentExtras.openContact
+        mockIntent.getAction returns NineCardsIntentExtras.openContact
         mockIntent.extractLookup() returns None
 
         val result = process.execute(mockIntent)(mockActivityContext).value.run

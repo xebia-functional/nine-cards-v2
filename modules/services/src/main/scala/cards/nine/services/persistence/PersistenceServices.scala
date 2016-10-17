@@ -2,8 +2,9 @@ package cards.nine.services.persistence
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.Application
-import cards.nine.services.persistence.models._
+import cards.nine.models._
+import cards.nine.models.types.{NineCardsMoment, FetchAppOrder}
+import cards.nine.services.persistence.models.{IterableDockApps, IterableApps}
 
 trait PersistenceServices {
 
@@ -12,7 +13,7 @@ trait PersistenceServices {
     *
     * @param orderBy   indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
-    * @return the Seq[cards.nine.services.persistence.models.App]
+    * @return the Seq[cards.nine.models.App]
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
   def fetchApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[Seq[Application]]
@@ -22,7 +23,7 @@ trait PersistenceServices {
     *
     * @param orderBy   indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
-    * @return the cards.nine.services.persistence.models.IterableApps
+    * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
   def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
@@ -33,7 +34,7 @@ trait PersistenceServices {
     * @param keyword keyword for search
     * @param orderBy indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
-    * @return the cards.nine.services.persistence.models.IterableApps
+    * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
   def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
@@ -44,7 +45,7 @@ trait PersistenceServices {
     * @param category category for search
     * @param orderBy indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
-    * @return the Seq[cards.nine.services.persistence.models.App]
+    * @return the Seq[cards.nine.models.App]
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
   def fetchAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[Seq[Application]]
@@ -55,7 +56,7 @@ trait PersistenceServices {
     * @param category category for search
     * @param orderBy indicates the field to order by
     * @param ascending indicates if it will be in ascending order or not
-    * @return the cards.nine.services.persistence.models.IterableApps
+    * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
   def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
@@ -63,32 +64,32 @@ trait PersistenceServices {
   /**
     * Returns the number of times the first letter of a app is repeated alphabetically
     *
-    * @return the Seq[cards.nine.services.persistence.models.DataCounter]
+    * @return the Seq[cards.nine.models.TermCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchAlphabeticalAppsCounter: TaskService[Seq[DataCounter]]
+  def fetchAlphabeticalAppsCounter: TaskService[Seq[TermCounter]]
 
   /**
     * Returns the number of times in every category alphabetically
     *
-    * @return the Seq[cards.nine.services.persistence.models.DataCounter]
+    * @return the Seq[cards.nine.models.TermCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchCategorizedAppsCounter: TaskService[Seq[DataCounter]]
+  def fetchCategorizedAppsCounter: TaskService[Seq[TermCounter]]
 
   /**
     * Returns the number of times by installation date
     *
-    * @return the Seq[cards.nine.services.persistence.models.DataCounter]
+    * @return the Seq[cards.nine.models.TermCounter]
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchInstallationDateAppsCounter: TaskService[Seq[DataCounter]]
+  def fetchInstallationDateAppsCounter: TaskService[Seq[TermCounter]]
 
   /**
     * Obtains an app from the repository by the package name
     *
     * @param packageName the package name of the app to get
-    * @return an Option[cards.nine.services.persistence.models.App]
+    * @return an Option[cards.nine.models.App]
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
   def findAppByPackage(packageName: String): TaskService[Option[Application]]
@@ -97,7 +98,7 @@ trait PersistenceServices {
     * Obtains apps from the repository by the package names
     *
     * @param packageNames the package names of the apps to get
-    * @return an Seq[cards.nine.services.persistence.models.App]
+    * @return an Seq[cards.nine.models.App]
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
   def fetchAppByPackages(packageNames: Seq[String]): TaskService[Seq[Application]]
@@ -105,20 +106,19 @@ trait PersistenceServices {
   /**
     * Adds an app to the repository
     *
-    * @param request includes the necessary data to create a new app in the repository
-    * @return the cards.nine.services.persistence.models.App
+    * @param app includes the necessary data to create a new app in the repository
+    * @return the cards.nine.models.App
     * @throws PersistenceServiceException if exist some problem creating the app
     */
-  def addApp(request: AddAppRequest): TaskService[Application]
+  def addApp(app: ApplicationData): TaskService[Application]
 
   /**
     * Adds a sequence of apps to the repository
     *
-    * @param request includes the necessary data to create new apps in the repository
-    * @return Unit
+    * @param app includes the necessary data to create new apps in the repository
     * @throws PersistenceServiceException if exist some problem creating apps
     */
-  def addApps(request: Seq[AddAppRequest]): TaskService[Unit]
+  def addApps(app: Seq[ApplicationData]): TaskService[Unit]
 
   /**
     * Deletes all apps from the repository by the where clause
@@ -149,29 +149,30 @@ trait PersistenceServices {
   /**
     * Updates the data of an app from the repository
     *
-    * @param request includes the data to update the app
+    * @param app includes the data to update the app
     * @return an Int if the app has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the app
     */
-  def updateApp(request: UpdateAppRequest): TaskService[Int]
+  def updateApp(app: Application): TaskService[Int]
 
   /**
     * Adds a card to the repository
     *
-    * @param request includes the necessary data to create a new card in the repository
-    * @return the cards.nine.services.persistence.models.Card
+    * @param collectionId the collection where the card is included
+    * @param card includes the necessary data to create a new card in the repository
+    * @return the cards.nine.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
     */
-  def addCard(request: AddCardRequest): TaskService[Card]
+  def addCard(collectionId: Int, card: CardData): TaskService[Card]
 
   /**
     * Adds a sequence of cards to the repository
     *
-    * @param request includes the necessary data to create new cards in the repository
-    * @return the cards.nine.services.persistence.models.Card
+    * @param cardsByCollectionId includes the collection where the cards are included and the cards
+    * @return the cards.nine.models.Card
     * @throws PersistenceServiceException if exist some problem creating the card
     */
-  def addCards(request: Seq[AddCardWithCollectionIdRequest]): TaskService[Seq[Card]]
+  def addCards(cardsByCollectionId: Seq[(Int, Seq[CardData])]): TaskService[Seq[Card]]
 
   /**
     * Deletes all cards from the repository by the where clause
@@ -184,7 +185,7 @@ trait PersistenceServices {
   /**
     * Deletes a card from the repository by the card
     *
-    * @param collectionId includes the collection where the card is included
+    * @param collectionId the collection where the card is included
     * @param cardId includes the card to delete
     * @return an Int if the card has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the card
@@ -213,16 +214,16 @@ trait PersistenceServices {
   /**
     * Obtains all the cards from the repository by the collection id
     *
-    * @param request includes the id of the collection
-    * @return the Seq[cards.nine.services.persistence.models.Card]
+    * @param collectionId the id of the collection
+    * @return the Seq[cards.nine.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the cards
     */
-  def fetchCardsByCollection(request: FetchCardsByCollectionRequest): TaskService[Seq[Card]]
+  def fetchCardsByCollection(collectionId: Int): TaskService[Seq[Card]]
 
   /**
     * Obtains all the cards from the repository
     *
-    * @return the Seq[cards.nine.services.persistence.models.Card]
+    * @return the Seq[cards.nine.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the cards
     */
   def fetchCards: TaskService[Seq[Card]]
@@ -230,47 +231,47 @@ trait PersistenceServices {
   /**
     * Obtains a card from the repository by the id
     *
-    * @param request includes the id of the card to find
-    * @return an Option[cards.nine.services.persistence.models.Card]
+    * @param cardId the id of the card to find
+    * @return an Option[cards.nine.models.Card]
     * @throws PersistenceServiceException if exist some problem obtaining the card
     */
-  def findCardById(request: FindCardByIdRequest): TaskService[Option[Card]]
+  def findCardById(cardId: Int): TaskService[Option[Card]]
 
   /**
     * Updates the data of an card from the repository
     *
-    * @param request includes the data to update the card
+    * @param card includes the data to update the card
     * @return an Int if the card has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
     */
-  def updateCard(request: UpdateCardRequest): TaskService[Int]
+  def updateCard(card: Card): TaskService[Int]
 
   /**
     * Bulk update of the data of some cards from the repository
     *
-    * @param request includes the data to update the cards
+    * @param cards includes the data to update the cards
     * @return a Seq[Int] if the cards has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
     */
-  def updateCards(request: UpdateCardsRequest): TaskService[Seq[Int]]
+  def updateCards(cards: Seq[Card]): TaskService[Seq[Int]]
 
   /**
     * Adds an collection to the repository
     *
-    * @param request includes the necessary data to create a new collection in the repository
-    * @return the cards.nine.services.persistence.models.Collection
+    * @param collection includes the necessary data to create a new collection in the repository
+    * @return the [cards.nine.models.Collection]
     * @throws PersistenceServiceException if exist some problem creating the collection
     */
-  def addCollection(request: AddCollectionRequest): TaskService[Collection]
+  def addCollection(collection: CollectionData): TaskService[Collection]
 
   /**
     * Adds collections to the repository
     *
-    * @param requests includes the necessary data to create new collections in the repository
-    * @return the Seq[cards.nine.services.persistence.models.Collection]
+    * @param collections includes the necessary data to create new collections in the repository
+    * @return the Seq[cards.nine.models.Collection]
     * @throws PersistenceServiceException if exist some problem creating the collection
     */
-  def addCollections(requests: Seq[AddCollectionRequest]): TaskService[Seq[Collection]]
+  def addCollections(collections: Seq[CollectionData]): TaskService[Seq[Collection]]
 
   /**
     * Deletes all collections from the repository by the where clause
@@ -283,16 +284,16 @@ trait PersistenceServices {
   /**
     * Deletes a collection from the repository by the collection
     *
-    * @param request includes the collection to delete
+    * @param collection the collection to delete
     * @return an Int if the collection has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the collection
     */
-  def deleteCollection(request: DeleteCollectionRequest): TaskService[Int]
+  def deleteCollection(collection: Collection): TaskService[Int]
 
   /**
     * Obtains all the collections from the repository
     *
-    * @return the Seq[cards.nine.services.persistence.models.Collection]
+    * @return the Seq[cards.nine.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collections
     */
   def fetchCollections: TaskService[Seq[Collection]]
@@ -301,7 +302,7 @@ trait PersistenceServices {
     * Obtains the collection from the repository by the sharedCollection id
     *
     * @param sharedCollectionId the shared collection public identifier
-    * @return an Option[cards.nine.services.persistence.models.Collection]
+    * @return an Option[cards.nine.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
     */
   def fetchCollectionBySharedCollectionId(sharedCollectionId: String): TaskService[Option[Collection]]
@@ -310,7 +311,7 @@ trait PersistenceServices {
     * Obtains some collections based on a sequence of shared collection ids
     *
     * @param sharedCollectionIds the shared collection ids sequence
-    * @return a Seq[cards.nine.services.persistence.models.Collection] that could have less
+    * @return a Seq[cards.nine.models.Collection] that could have less
     *         size than the sharedCollectionIds.
     *         IMPORTANT: The collections doesn't have populated the cards and moments fields
     * @throws PersistenceServiceException if exist some problem obtaining the sequence of collections
@@ -320,26 +321,26 @@ trait PersistenceServices {
   /**
     * Obtains the collection from the repository by the position
     *
-    * @param request includes the position
-    * @return an Option[cards.nine.services.persistence.models.Collection]
+    * @param position the position
+    * @return an Option[cards.nine.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
     */
-  def fetchCollectionByPosition(request: FetchCollectionByPositionRequest): TaskService[Option[Collection]]
+  def fetchCollectionByPosition(position: Int): TaskService[Option[Collection]]
 
   /**
     * Obtains a collection from the repository by the id
     *
-    * @param request includes the id of the collection to find
-    * @return an Option[cards.nine.services.persistence.models.Collection]
+    * @param collectionId the id of the collection to find
+    * @return an Option[cards.nine.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
     */
-  def findCollectionById(request: FindCollectionByIdRequest): TaskService[Option[Collection]]
+  def findCollectionById(collectionId: Int): TaskService[Option[Collection]]
 
   /**
     * Obtains a collection from the repository by category
     *
     * @param category category of collection
-    * @return an Option[cards.nine.services.persistence.models.Collection]
+    * @return an Option[cards.nine.models.Collection]
     * @throws PersistenceServiceException if exist some problem obtaining the collection
     */
   def findCollectionByCategory(category: String): TaskService[Option[Collection]]
@@ -347,20 +348,20 @@ trait PersistenceServices {
   /**
     * Updates the data of an collection from the repository
     *
-    * @param request includes the data to update the collection
+    * @param collection includes the data to update the collection
     * @return an Int if the collection has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the collection
     */
-  def updateCollection(request: UpdateCollectionRequest): TaskService[Int]
+  def updateCollection(collection: Collection): TaskService[Int]
 
   /**
     * Bulk update of the data of some collections from the repository
     *
-    * @param request includes the data to update the cards
+    * @param collections includes the data to update the cards
     * @return a Seq[Int] if the cards has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the card
     */
-  def updateCollections(request: UpdateCollectionsRequest): TaskService[Seq[Int]]
+  def updateCollections(collections: Seq[Collection]): TaskService[Seq[Int]]
 
   /**
     * Obtains the android id from the repository
@@ -373,11 +374,11 @@ trait PersistenceServices {
   /**
     * Adds an user to the repository
     *
-    * @param request includes the necessary data to create a new user in the repository
-    * @return the cards.nine.services.persistence.models.User
+    * @param user includes the necessary data to create a new user in the repository
+    * @return the cards.nine.models.User
     * @throws PersistenceServiceException if exist some problem creating the user
     */
-  def addUser(request: AddUserRequest): TaskService[User]
+  def addUser(user: UserData): TaskService[User]
 
   /**
     * Deletes all users from the repository by the where clause
@@ -390,16 +391,16 @@ trait PersistenceServices {
   /**
     * Deletes an user from the repository by the user
     *
-    * @param request includes the user to delete
+    * @param user includes the user to delete
     * @return an Int if the user has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the user
     */
-  def deleteUser(request: DeleteUserRequest): TaskService[Int]
+  def deleteUser(user: User): TaskService[Int]
 
   /**
     * Obtains all the users from the repository
     *
-    * @return the Seq[cards.nine.services.persistence.models.User]
+    * @return the Seq[cards.nine.models.User]
     * @throws PersistenceServiceException if exist some problem obtaining the users
     */
   def fetchUsers: TaskService[Seq[User]]
@@ -407,29 +408,29 @@ trait PersistenceServices {
   /**
     * Obtains an user from the repository by the id
     *
-    * @param request includes the user id  of the user to get
-    * @return an Option[cards.nine.services.persistence.models.User]
+    * @param userId includes the user id  of the user to get
+    * @return an Option[cards.nine.models.User]
     * @throws PersistenceServiceException if exist some problem obtaining the user
     */
-  def findUserById(request: FindUserByIdRequest): TaskService[Option[User]]
+  def findUserById(userId: Int): TaskService[Option[User]]
 
   /**
     * Updates the data of an user from the repository
     *
-    * @param request includes the data to update the user
+    * @param user includes the data to update the user
     * @return an Int if the user has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the user
     */
-  def updateUser(request: UpdateUserRequest): TaskService[Int]
+  def updateUser(user: User): TaskService[Int]
 
   /**
     * Creates or updates dock app to the repository
     *
-    * @param requests includes the necessary data to create a sequence of new dock apps in the repository
-    * @return the Seq[cards.nine.services.persistence.models.DockApp]
+    * @param dockApps includes the necessary data to create a sequence of new dock apps in the repository
+    * @return the Seq[cards.nine.models.DockApp]
     * @throws PersistenceServiceException if exist some problem creating or updating the dock app
     */
-  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]): TaskService[Seq[DockApp]]
+  def createOrUpdateDockApp(dockApps: Seq[DockAppData]): TaskService[Seq[DockApp]]
 
   /**
     * Deletes all dock apps from the repository by the where clause
@@ -442,16 +443,16 @@ trait PersistenceServices {
   /**
     * Deletes a dock app from the repository by the dock app
     *
-    * @param request includes the dock app to delete
+    * @param dockApp includes the dock app to delete
     * @return an Int if the dock app has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the dock app
     */
-  def deleteDockApp(request: DeleteDockAppRequest): TaskService[Int]
+  def deleteDockApp(dockApp: DockApp): TaskService[Int]
 
   /**
     * Obtains all the dock apps from the repository
     *
-    * @return the Seq[cards.nine.services.persistence.models.DockApp]
+    * @return the Seq[cards.nine.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
   def fetchDockApps: TaskService[Seq[DockApp]]
@@ -459,7 +460,7 @@ trait PersistenceServices {
   /**
     * Obtains iterable of dock apps from the repository
     *
-    * @return the cards.nine.services.persistence.models.IterableDockApps
+    * @return the cards.nine.models.IterableDockApps
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
   def fetchIterableDockApps: TaskService[IterableDockApps]
@@ -467,29 +468,30 @@ trait PersistenceServices {
   /**
     * Obtains a dock app from the repository by the id
     *
-    * @param request includes the dock app id  of the dock app to get
-    * @return an Option[cards.nine.services.persistence.models.DockApp]
+    * @param dockAppId includes the dock app id  of the dock app to get
+    * @return an Option[cards.nine.models.DockApp]
     * @throws PersistenceServiceException if exist some problem obtaining the dock app
     */
-  def findDockAppById(request: FindDockAppByIdRequest): TaskService[Option[DockApp]]
+  def findDockAppById(dockAppId: Int): TaskService[Option[DockApp]]
 
   /**
     * Adds an moment to the repository
     *
-    * @param request includes the necessary data to create a new moment in the repository
-    * @return the cards.nine.services.persistence.models.Moment
+    * @param moment includes the necessary data to create a new moment in the repository
+    * @return the cards.nine.models.Moment
     * @throws PersistenceServiceException if exist some problem creating the moment
     */
-  def addMoment(request: AddMomentRequest): TaskService[Moment]
+  def addMoment(moment: MomentData): TaskService[Moment]
 
   /**
     * Adds moments to the repository
     *
-    * @param request includes the necessary data to create new moments in the repository
-    * @return the Seq[cards.nine.services.persistence.models.Moment]
+    * @param momentsWithWidgets includes the necessary data to create new moments in the repository and
+    *                           the necessary data to create the widgets associates with that moment
+    * @return the Seq[cards.nine.models.Moment]
     * @throws PersistenceServiceException if exist some problem creating the moments
     */
-  def addMoments(request: Seq[AddMomentRequest]): TaskService[Seq[Moment]]
+  def addMoments(momentsWithWidgets: Seq[MomentData]): TaskService[Seq[Moment]]
 
   /**
     * Deletes all moments from the repository by the where clause
@@ -502,16 +504,16 @@ trait PersistenceServices {
   /**
     * Deletes an moment from the repository by the moment
     *
-    * @param request includes the moment to delete
+    * @param moment includes the moment to delete
     * @return an Int if the moment has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the moment
     */
-  def deleteMoment(request: DeleteMomentRequest): TaskService[Int]
+  def deleteMoment(moment: Moment): TaskService[Int]
 
   /**
     * Obtains all the moments from the repository
     *
-    * @return the Seq[cards.nine.services.persistence.models.Moment]
+    * @return the Seq[cards.nine.models.Moment]
     * @throws PersistenceServiceException if exist some problem obtaining the moments
     */
   def fetchMoments: TaskService[Seq[Moment]]
@@ -519,26 +521,26 @@ trait PersistenceServices {
   /**
     * Obtains an moment from the repository by the id
     *
-    * @param request includes the moment id  of the moment to get
-    * @return an Option[cards.nine.services.persistence.models.Moment]
+    * @param momentId the moment id  of the moment to get
+    * @return an Option[cards.nine.models.Moment]
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
-  def findMomentById(request: FindMomentByIdRequest): TaskService[Option[Moment]]
+  def findMomentById(momentId: Int): TaskService[Option[Moment]]
 
   /**
     * Obtains an moment from the repository by type. Return exception if the type doesn't exist
     *
     * @param momentType type of the moment
-    * @return an cards.nine.services.persistence.models.Moment
+    * @return an cards.nine.models.Moment
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
-  def getMomentByType(momentType: String): TaskService[Moment]
+  def getMomentByType(momentType: NineCardsMoment): TaskService[Moment]
 
   /**
     * Obtains an moment from the repository by type. Return None if the type doesn't exist
     *
     * @param momentType type of the moment
-    * @return an cards.nine.services.persistence.models.Moment
+    * @return an cards.nine.models.Moment
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
 
@@ -547,29 +549,29 @@ trait PersistenceServices {
   /**
     * Updates the data of an moment from the repository
     *
-    * @param request includes the data to update the moment
+    * @param moment includes the data to update the moment
     * @return an Int if the moment has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the moment
     */
-  def updateMoment(request: UpdateMomentRequest): TaskService[Int]
+  def updateMoment(moment: Moment): TaskService[Int]
 
   /**
     * Add a widget to the repository
     *
-    * @param request includes the necessary data to create a new widget in the repository
-    * @return the cards.nine.services.persistence.models.Widget
+    * @param widget includes the necessary data to create a new widget in the repository
+    * @return the cards.nine.models.Widget
     * @throws PersistenceServiceException if exist some problem creating the widgets
     */
-  def addWidget(request: AddWidgetRequest): TaskService[Widget]
+  def addWidget(widget: WidgetData): TaskService[Widget]
 
   /**
     * Adds widgets to the repository
     *
-    * @param request includes the necessary data to create new widgets in the repository
-    * @return the Seq[cards.nine.services.persistence.models.Widget]
+    * @param widgets includes the necessary data to create new widgets in the repository
+    * @return the Seq[cards.nine.models.Widget]
     * @throws PersistenceServiceException if exist some problem creating the widgets
     */
-  def addWidgets(request: Seq[AddWidgetRequest]): TaskService[Seq[Widget]]
+  def addWidgets(widgets: Seq[WidgetData]): TaskService[Seq[Widget]]
 
   /**
     * Deletes all widgets from the repository
@@ -582,11 +584,11 @@ trait PersistenceServices {
   /**
     * Deletes a widget from the repository
     *
-    * @param request includes the widget to delete
+    * @param widget includes the widget to delete
     * @return an Int if the widget has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the widget
     */
-  def deleteWidget(request: DeleteWidgetRequest): TaskService[Int]
+  def deleteWidget(widget: Widget): TaskService[Int]
 
   /**
     * Deletes the widgets from the repository by the moment id
@@ -600,7 +602,7 @@ trait PersistenceServices {
   /**
     * Obtains all the widgets from the repository
     *
-    * @return the Seq[cards.nine.services.persistence.models.Widget]
+    * @return the Seq[cards.nine.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widgets
     */
   def fetchWidgets: TaskService[Seq[Widget]]
@@ -609,7 +611,7 @@ trait PersistenceServices {
     * Obtains a widget from the repository by the id
     *
     * @param widgetId the widget id  of the widget to get
-    * @return an Option[cards.nine.services.persistence.models.Widget]
+    * @return an Option[cards.nine.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
     */
   def findWidgetById(widgetId: Int): TaskService[Option[Widget]]
@@ -618,7 +620,7 @@ trait PersistenceServices {
     * Obtains the widget from the repository by the appWidgetId
     *
     * @param appWidgetId the appWidgetId value
-    * @return an Option[cards.nine.services.persistence.models.Widget]
+    * @return an Option[cards.nine.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widget
     */
   def fetchWidgetByAppWidgetId(appWidgetId: Int): TaskService[Option[Widget]]
@@ -627,7 +629,7 @@ trait PersistenceServices {
     * Obtains all widgets from the repository by the moment id
     *
     * @param momentId id of the moment
-    * @return the Seq[cards.nine.services.persistence.models.Widget]
+    * @return the Seq[cards.nine.models.Widget]
     * @throws PersistenceServiceException if exist some problem obtaining the widgets
     */
   def fetchWidgetsByMoment(momentId: Int): TaskService[Seq[Widget]]
@@ -635,19 +637,19 @@ trait PersistenceServices {
   /**
     * Updates the data of a widget from the repository
     *
-    * @param request includes the data to update the widget
+    * @param widget includes the data to update the widget
     * @return an Int if the widget has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the widget
     */
-  def updateWidget(request: UpdateWidgetRequest): TaskService[Int]
+  def updateWidget(widget: Widget): TaskService[Int]
 
   /**
     * Bulk update of the data of some widgets from the repository
     *
-    * @param request includes the data to update the widgets
+    * @param widgets includes the data to update the widgets
     * @return a Seq[Int] if the widgets has been updated correctly
     * @throws PersistenceServiceException if exist some problem updating the widget
     */
-  def updateWidgets(request: UpdateWidgetsRequest): TaskService[Seq[Int]]
+  def updateWidgets(widgets: Seq[Widget]): TaskService[Seq[Int]]
 
 }

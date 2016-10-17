@@ -1,6 +1,6 @@
 package cards.nine.process.collection.impl
 
-import cards.nine.process.collection.CollectionProcessConfig
+import cards.nine.models.CollectionProcessConfig
 import cards.nine.services.api.ApiServices
 import cards.nine.services.apps.AppsServices
 import cards.nine.services.awareness.AwarenessServices

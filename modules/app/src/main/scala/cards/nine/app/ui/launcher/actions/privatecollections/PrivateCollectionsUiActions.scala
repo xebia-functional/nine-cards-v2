@@ -1,13 +1,12 @@
 package cards.nine.app.ui.launcher.actions.privatecollections
 
-import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.process.commons.models.{Collection, PrivateCollection}
+import cards.nine.models.{Collection, CollectionData}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
@@ -23,7 +22,7 @@ trait PrivateCollectionsUiActions
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)).toService
 
-  def addPrivateCollections(privateCollections: Seq[PrivateCollection]): TaskService[Unit] = {
+  def addPrivateCollections(privateCollections: Seq[CollectionData]): TaskService[Unit] = {
     val adapter = PrivateCollectionsAdapter(privateCollections, saveCollection)
     ((recycler <~
       vVisible <~

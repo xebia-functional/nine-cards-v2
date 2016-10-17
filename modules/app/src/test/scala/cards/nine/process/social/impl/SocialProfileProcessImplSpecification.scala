@@ -1,13 +1,14 @@
 package cards.nine.process.social.impl
 
 import android.content.Context
-import cats.syntax.either._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.commons.test.data.UserValues._
 import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
 import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
 import cards.nine.services.plus.{GooglePlusServices, GooglePlusServicesException}
+import cats.syntax.either._
 import com.google.android.gms.common.api.GoogleApiClient
 import monix.eval.Task
 import org.specs2.mock.Mockito
@@ -90,16 +91,16 @@ class SocialProfileProcessImplSpec
       new CloudStorageProcessImplScope {
 
         googlePlusServices.loadUserProfile(any) returns TaskService(Task(Either.right(googlePlusProfile)))
-        mockContextSupport.getActiveUserId returns Some(activeUserId)
+        mockContextSupport.getActiveUserId returns Some(userId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
         persistenceServices.updateUser(any) returns TaskService(Task(Either.right(1)))
 
         val result = socialProfileProcess.updateUserProfile(mockApiClient).run
         result should beAnInstanceOf[Right[_,Unit]]
 
-        there was one(persistenceServices).findUserById(findUserByIdRequest)
+        there was one(persistenceServices).findUserById(userId)
 
-        there was one(persistenceServices).updateUser(updateUserRequest)
+        there was one(persistenceServices).updateUser(user)
 
       }
 
@@ -107,13 +108,13 @@ class SocialProfileProcessImplSpec
       new CloudStorageProcessImplScope {
 
         googlePlusServices.loadUserProfile(any) returns TaskService(Task(Either.right(googlePlusProfile)))
-        mockContextSupport.getActiveUserId returns Some(activeUserId)
+        mockContextSupport.getActiveUserId returns Some(userId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(None)))
 
         val result = socialProfileProcess.updateUserProfile(mockApiClient).run
         result must beAnInstanceOf[Left[SocialProfileProcessException, _]]
 
-        there was one(persistenceServices).findUserById(findUserByIdRequest)
+        there was one(persistenceServices).findUserById(userId)
 
       }
 
@@ -137,27 +138,27 @@ class SocialProfileProcessImplSpec
       new CloudStorageProcessImplScope {
 
         googlePlusServices.loadUserProfile(any) returns TaskService(Task(Either.right(googlePlusProfile)))
-        mockContextSupport.getActiveUserId returns Some(activeUserId)
+        mockContextSupport.getActiveUserId returns Some(userId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.left(PersistenceServiceException("Irrelevant message"))))
 
         socialProfileProcess.updateUserProfile(mockApiClient).mustLeft[SocialProfileProcessException]
 
-        there was one(persistenceServices).findUserById(findUserByIdRequest)
+        there was one(persistenceServices).findUserById(userId)
       }
 
     "return an Errata with the SocialProfileProcessException if the Persistence Service return an Errata in the updateUser method" in
       new CloudStorageProcessImplScope {
 
         googlePlusServices.loadUserProfile(any) returns TaskService(Task(Either.right(googlePlusProfile)))
-        mockContextSupport.getActiveUserId returns Some(activeUserId)
+        mockContextSupport.getActiveUserId returns Some(userId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
         persistenceServices.updateUser(any) returns TaskService(Task(Either.left(PersistenceServiceException("Irrelevant message"))))
 
         socialProfileProcess.updateUserProfile(mockApiClient).mustLeft[SocialProfileProcessException]
 
-        there was one(persistenceServices).findUserById(findUserByIdRequest)
+        there was one(persistenceServices).findUserById(userId)
 
-        there was one(persistenceServices).updateUser(updateUserRequest)
+        there was one(persistenceServices).updateUser(user)
       }
 
   }
