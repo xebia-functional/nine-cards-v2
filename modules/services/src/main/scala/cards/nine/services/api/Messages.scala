@@ -34,15 +34,3 @@ case class GetUserV1Response(
   statusCode: Int,
   userConfig: UserV1) extends UserV1Response
 
-case class RecommendationResponse(
-  statusCode: Int,
-  seq: Seq[RecommendationApp])
-
-case class RecommendationApp(
-  packageName: String,
-  name: String,
-  downloads: String,
-  icon: String,
-  stars: Double,
-  free: Boolean,
-  screenshots: Seq[String])

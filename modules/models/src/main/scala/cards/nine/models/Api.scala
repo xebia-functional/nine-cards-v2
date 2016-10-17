@@ -17,6 +17,15 @@ case class RankApps(
   category: String,
   packages: Seq[String])
 
+case class RecommendationApp(
+  packageName: String,
+  name: String,
+  downloads: String,
+  icon: String,
+  stars: Double,
+  free: Boolean,
+  screenshots: Seq[String])
+
 case class SharedCollection(
   id: String,
   sharedCollectionId: String,

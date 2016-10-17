@@ -124,7 +124,7 @@ class ApiServicesImpl(
       response <- apiService
         .recommendations(category, None, RecommendationsRequest(excludePackages, limit), requestConfig.toGooglePlayHeader)
         .readOption(categoryNotFoundMessage)
-    }  yield  RecommendationResponse(response.statusCode, toRecommendationAppSeq(response.data.items))
+    }  yield toRecommendationAppSeq(response.data.items)
 
   override def getRecommendedAppsByPackages(
     packages: Seq[String],
@@ -136,7 +136,7 @@ class ApiServicesImpl(
         .recommendationsByApps(RecommendationsByAppsRequest(packages, excludePackages, limit), requestConfig.toGooglePlayHeader)
         .resolve[ApiServiceException]
       apps = response.data.map(_.apps) getOrElse Seq.empty
-    } yield RecommendationResponse(response.statusCode, toRecommendationAppSeq(apps))
+    } yield toRecommendationAppSeq(apps)
 
   override def getSharedCollection(
     sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
