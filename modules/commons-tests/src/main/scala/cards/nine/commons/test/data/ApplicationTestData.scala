@@ -8,7 +8,7 @@ trait ApplicationTestData {
   def application(num: Int = 0) = Application(
     id = applicationId + num,
     name = applicationName + num,
-    packageName = applicationPackageName,
+    packageName = applicationPackageName + num,
     className = applicationClassName,
     category = applicationCategory,
     dateInstalled = dateInstalled,
@@ -20,8 +20,8 @@ trait ApplicationTestData {
   val seqApplication: Seq[Application] = Seq(application(0), application(1), application(2))
 
   def applicationData(num: Int = 0) = ApplicationData(
-    name = applicationName,
-    packageName = applicationPackageName,
+    name = applicationName + num,
+    packageName = applicationPackageName + num,
     className = applicationClassName,
     category = applicationCategory,
     dateInstalled = dateInstalled,

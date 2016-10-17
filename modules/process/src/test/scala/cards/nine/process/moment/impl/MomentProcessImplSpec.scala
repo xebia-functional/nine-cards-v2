@@ -31,7 +31,8 @@ trait MomentProcessImplSpecification
   val wifiServiceException = WifiServicesException("")
 
   trait MomentProcessScope
-    extends Scope 
+    extends Scope
+    with MomentProcessImplData
     with MomentTestData {
 
     val resources = mock[Resources]
@@ -45,7 +46,6 @@ trait MomentProcessImplSpecification
 
     val mockIntent = mock[Intent]
     val mockNineCardIntent = mock[NineCardsIntent]
-    val mockNineCardsMoment = mock[NineCardsMoment]
 
     val momentProcess = new MomentProcessImpl(
       persistenceServices = mockPersistenceServices,
@@ -104,7 +104,7 @@ class MomentProcessImplSpec
       new MomentProcessScope {
 
         mockPersistenceServices.getMomentByType(any) returns TaskService(Task(Either.right(moment)))
-        val result = momentProcess.getMomentByType(mockNineCardsMoment).value.run
+        val result = momentProcess.getMomentByType(momentType).value.run
         result shouldEqual Right(moment)
       }
 
@@ -112,7 +112,7 @@ class MomentProcessImplSpec
       new MomentProcessScope {
 
         mockPersistenceServices.getMomentByType(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = momentProcess.getMomentByType(mockNineCardsMoment).value.run
+        val result = momentProcess.getMomentByType(momentType).value.run
         result must beAnInstanceOf[Left[MomentException, _]]
       }
   }
@@ -123,7 +123,7 @@ class MomentProcessImplSpec
       new MomentProcessScope {
 
         mockPersistenceServices.fetchMomentByType(any) returns TaskService(Task(Either.right(Option(moment))))
-        val result = momentProcess.fetchMomentByType(mockNineCardsMoment).value.run
+        val result = momentProcess.fetchMomentByType(momentType).value.run
         result shouldEqual Right(Option(moment))
       }
 
@@ -131,7 +131,7 @@ class MomentProcessImplSpec
       new MomentProcessScope {
 
         mockPersistenceServices.fetchMomentByType(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = momentProcess.fetchMomentByType(mockNineCardsMoment).value.run
+        val result = momentProcess.fetchMomentByType(momentType).value.run
         result must beAnInstanceOf[Left[MomentException, _]]
       }
   }
@@ -141,8 +141,8 @@ class MomentProcessImplSpec
     "return a new Moment without collection by type" in
       new MomentProcessScope {
 
-        mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right((moment.copy(collectionId = None)))))
-        val result = momentProcess.createMomentWithoutCollection(mockNineCardsMoment)(contextSupport).value.run
+        mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right(moment.copy(collectionId = None))))
+        val result = momentProcess.createMomentWithoutCollection(momentType)(contextSupport).value.run
         result shouldEqual Right(moment.copy(collectionId = None))
 
       }
@@ -151,7 +151,7 @@ class MomentProcessImplSpec
       new MomentProcessScope {
 
         mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = momentProcess.createMomentWithoutCollection(mockNineCardsMoment)(contextSupport).value.run
+        val result = momentProcess.createMomentWithoutCollection(momentType)(contextSupport).value.run
         result must beAnInstanceOf[Left[MomentException, _]]
       }
   }
@@ -181,7 +181,7 @@ class MomentProcessImplSpec
     "return the three moments saved" in
       new MomentProcessScope {
 
-        mockPersistenceServices.addMoments(any) returns TaskService(Task(Either.right(moments map (_ => moment))))
+        mockPersistenceServices.addMoments(any) returns TaskService(Task(Either.right(seqMoment)))
         val result = momentProcess.saveMoments(seqMomentData)(contextSupport).value.run
         result must beLike {
           case Right(resultSeqMoment) =>
@@ -218,151 +218,148 @@ class MomentProcessImplSpec
       }
   }
 
-//  "getBestAvailableMoment" should {
-//
-//    "returns the best available moment in the morning with the home's wifi available" in
-//      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
-//
-//        override val wifi = homeWifi.headOption
-//        override val time = nowMorning
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result shouldEqual Right(Some(homeMorningMoment))
-//      }
-//
-//    "returns the best available moment in the afternoon with the home's wifi available" in
-//      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
-//
-//        override val wifi = homeWifi.headOption
-//        override val time = nowAfternoon
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result shouldEqual Right(Some(homeMorningMoment))
-//      }
-//
-//    "returns the best available moment in the night with the home's wifi available" in
-//      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
-//
-//        override val wifi = homeWifi.headOption
-//        override val time = nowNight
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result shouldEqual Right(Some(homeNightMoment))
-//      }
-//
-//    "returns the best available moment in the late night with the home's wifi available" in
-//      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
-//
-//        override val wifi = homeWifi.headOption
-//        override val time = nowLateNight
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result shouldEqual Right(Some(homeNightMoment))
-//      }
-//
-//    "returns the best available moment in the morning with the work's wifi available" in
-//      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
-//
-//        override val wifi = workWifi.headOption
-//        override val time = nowMorning
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result shouldEqual Right(Some(workMoment))
-//
-//      }
-//
-//    "returns the best available moment in the afternoon with the work's wifi available" in
-//      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
-//
-//        override val wifi = workWifi.headOption
-//        override val time = nowAfternoon
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result shouldEqual Right(Some(transitMoment))
-//      }
-//
-//    "returns the best available moment in the morning with no wifi available" in
-//      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
-//
-//        override val wifi = None
-//        override val time = nowMorning
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result shouldEqual Right(Some(transitMoment))
-//      }
-//
-//    "returns the best available moment in the afternoon with no wifi available" in
-//      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
-//
-//        override val wifi = None
-//        override val time = nowAfternoon
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result shouldEqual Right(Some(transitMoment))
-//      }
-//
-//    "returns the best available moment in the night with no wifi available" in
-//      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
-//
-//        override val wifi = None
-//        override val time = nowLateNight
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result shouldEqual Right(Some(transitMoment))
-//      }
-//
-//    "returns the best available moment in the morning on a weekend with the work's wifi available" in
-//      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
-//
-//        override val wifi = workWifi.headOption
-//        override val time = nowMorningWeekend
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result shouldEqual Right(Some(transitMoment))
-//      }
-//
-//    "returns a MomentException if the service throws a exception getting the moments" in
-//      new MomentProcessScope {
-//
-//        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
-//        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.left(persistenceServiceException)))
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result must beAnInstanceOf[Left[MomentException, _]]
-//      }
-//
-//    "returns a MomentException if the service throws a exception getting the current SSID" in
-//      new MomentProcessScope  {
-//
-//        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
-//        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment)))
-//        mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Either.left(wifiServiceException)))
-//
-//        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
-//        result must beAnInstanceOf[Left[MomentException, _]]
-//      }
-//  }
+  "getBestAvailableMoment" should {
+
+    "returns the best available moment in the morning with the home's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        override val wifi = homeWifi.headOption
+        override val time = nowMorning
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result shouldEqual Right(Some(homeMorningMoment))
+      }.pendingUntilFixed("Issue #943")
+
+
+    "returns the best available moment in the afternoon with the home's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        override val wifi = homeWifi.headOption
+        override val time = nowAfternoon
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result shouldEqual Right(Some(homeMorningMoment))
+      }.pendingUntilFixed("Issue #943")
+
+    "returns the best available moment in the night with the home's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        override val wifi = homeWifi.headOption
+        override val time = nowNight
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result shouldEqual Right(Some(homeNightMoment))
+      }.pendingUntilFixed("Issue #943")
+
+    "returns the best available moment in the late night with the home's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        override val wifi = homeWifi.headOption
+        override val time = nowLateNight
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result shouldEqual Right(Some(homeNightMoment))
+      }.pendingUntilFixed("Issue #943")
+
+    "returns the best available moment in the morning with the work's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        override val wifi = workWifi.headOption
+        override val time = nowMorning
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result shouldEqual Right(Some(workMoment))
+      }.pendingUntilFixed("Issue #943")
+
+    "returns the best available moment in the afternoon with the work's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        override val wifi = workWifi.headOption
+        override val time = nowAfternoon
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result shouldEqual Right(Some(transitMoment))
+      }.pendingUntilFixed("Issue #943")
+
+    "returns the best available moment in the morning with no wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        override val wifi = None
+        override val time = nowMorning
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result shouldEqual Right(Some(transitMoment))
+      }.pendingUntilFixed("Issue #943")
+
+    "returns the best available moment in the afternoon with no wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        override val wifi = None
+        override val time = nowAfternoon
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result shouldEqual Right(Some(transitMoment))
+      }.pendingUntilFixed("Issue #943")
+
+    "returns the best available moment in the night with no wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        override val wifi = None
+        override val time = nowLateNight
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result shouldEqual Right(Some(transitMoment))
+      }.pendingUntilFixed("Issue #943")
+
+    "returns the best available moment in the morning on a weekend with the work's wifi available" in
+      new MomentProcessScope with ValidGetBestAvailableMomentPersistenceServicesResponses {
+
+        override val wifi = workWifi.headOption
+        override val time = nowMorningWeekend
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result shouldEqual Right(Some(transitMoment))
+      }.pendingUntilFixed("Issue #943")
+
+    "returns a MomentException if the service throws a exception getting the moments" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.left(persistenceServiceException)))
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result must beAnInstanceOf[Left[MomentException, _]]
+      }
+
+    "returns a MomentException if the service throws a exception getting the current SSID" in
+      new MomentProcessScope  {
+
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment)))
+        mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Either.left(wifiServiceException)))
+
+        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        result must beAnInstanceOf[Left[MomentException, _]]
+      }
+  }
 
   "getAvailableMoments" should {
 
-//    "returns the available moments with collection" in
-//      new MomentProcessScope {
-//
-//        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
-//        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment)))
-//
-//        val result = momentProcess.getAvailableMoments(contextSupport).value.run
-//        result must beLike {
-//          case Right(resultMoment) =>
-//            resultMoment flatMap (_.momentType map (_.name)) shouldEqual (seqMoment flatMap (_.momentType))
-//        }
-//      }
+    "returns the available moments with collection" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment)))
+
+        val result = momentProcess.getAvailableMoments(contextSupport).value.run
+        result shouldEqual Right(availableMoments)
+      }
 
     "return Seq.empty for moments without collectionId" in
       new MomentProcessScope {
 
         mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
-        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment map (moment => moment.copy(collectionId = None)))))
+        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment map (_.copy(collectionId = None)))))
 
         val result = momentProcess.getAvailableMoments(contextSupport).value.run
         result shouldEqual Right(Seq.empty)
@@ -372,7 +369,8 @@ class MomentProcessImplSpec
       new MomentProcessScope {
 
         mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
-        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment)))
+        mockPersistenceServices.fetchMoments returns
+          TaskService(Task(Either.right(seqMoment map (moment => moment.copy(collectionId = moment.collectionId map (_ + 100))))))
 
         val result = momentProcess.getAvailableMoments(contextSupport).value.run
         result shouldEqual Right(Seq.empty)

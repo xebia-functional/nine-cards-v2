@@ -80,4 +80,8 @@ trait CollectionTestData
 
   val seqFormedCollection: Seq[FormedCollection] = Seq(formedCollection(0), formedCollection(1), formedCollection(2))
 
+  val availableMoments =
+    Seq((moment(0), collection(0)),
+      (moment(1), collection(1)),
+      (moment(2), collection(2)))
 }

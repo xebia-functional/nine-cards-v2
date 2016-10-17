@@ -85,10 +85,8 @@ class MomentProcessImpl(
 
   override def getAvailableMoments(implicit context: ContextSupport) =
     (for {
-      serviceMoments <- persistenceServices.fetchMoments
-      serviceCollections <- persistenceServices.fetchCollections
-      collections = serviceCollections
-      moments = serviceMoments
+      moments <- persistenceServices.fetchMoments
+      collections <- persistenceServices.fetchCollections
       momentWithCollection = moments flatMap {
         case moment @ Moment(_, Some(collectionId), _, _, _, _, _) =>
           collections find (_.id == collectionId) match {

@@ -12,7 +12,7 @@ object ApplicationValues {
   val applicationPackageName: String = "applicationPackageName"
   val nonExistentApplicationPackageName: String = "nonExistentApplicationPackageName"
   val applicationClassName: String = "applicationClassName"
-  val applicationCategoryStr: String = "MISC"
+  val applicationCategoryStr: String = "SOCIAL"
   val applicationCategory: NineCardsCategory = NineCardsCategory(appsCategoryStr)
   val dateInstalled: Long = 1l
   val dateUpdated: Long = 2l
