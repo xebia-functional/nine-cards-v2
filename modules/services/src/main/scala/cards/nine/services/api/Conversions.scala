@@ -146,7 +146,7 @@ trait Conversions {
       free = app.free,
       screenshots = app.screenshots)
 
-  def toSharedCollectionResponseSeq(collections: Seq[cards.nine.api.version2.Collection]): Seq[SharedCollection] =
+  def toSharedCollectionSeq(collections: Seq[cards.nine.api.version2.Collection]): Seq[SharedCollection] =
     collections map toSharedCollection
 
   def formatPublishedDate(date: String): Long = {
@@ -172,31 +172,24 @@ trait Conversions {
       author = collection.author,
       name = collection.name,
       packages = collection.packages,
-      resolvedPackages = toSharedCollectionPackageResponseSeq(collection.appsInfo),
+      resolvedPackages = toSharedCollectionPackageSeq(collection.appsInfo),
       views = collection.views getOrElse 0,
       subscriptions = collection.subscriptions,
       category = collection.category,
       icon = collection.icon,
       community = collection.community)
 
-  def toSharedCollectionPackageResponseSeq(packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackageResponse] =
-    packages map toSharedCollectionPackageResponse
+  def toSharedCollectionPackageSeq(packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackage] =
+    packages map toSharedCollectionPackage
 
-  def toSharedCollectionPackageResponse(item: cards.nine.api.version2.CollectionApp): SharedCollectionPackageResponse =
-    SharedCollectionPackageResponse(
+  def toSharedCollectionPackage(item: cards.nine.api.version2.CollectionApp): SharedCollectionPackage =
+    SharedCollectionPackage(
       packageName = item.packageName,
       title = item.title,
       icon = item.icon,
       stars = item.stars,
       downloads = item.downloads,
       free = item.free)
-
-  def toSubscriptionResponseSeq(subscriptions: Seq[String]): Seq[SubscriptionResponse] =
-    subscriptions map toSubscriptionResponse
-
-  def toSubscriptionResponse(subscription: String) =
-    SubscriptionResponse(
-      sharedCollectionId = subscription)
 
   def toItemsMap(packagesByCategorySeq: Seq[PackagesByCategory]) =
     Map(packagesByCategorySeq map (

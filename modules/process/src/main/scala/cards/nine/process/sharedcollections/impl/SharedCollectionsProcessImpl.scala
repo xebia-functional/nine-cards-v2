@@ -20,9 +20,9 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
   override def getSharedCollection(sharedCollectionId: String)(implicit context: ContextSupport) =
     (for {
       userConfig <- apiUtils.getRequestConfig
-      response <- apiServices.getSharedCollection(sharedCollectionId)(userConfig)
+      sharedCollection <- apiServices.getSharedCollection(sharedCollectionId)(userConfig)
       maybeCollection <- persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId)
-    } yield toSharedCollection(response.sharedCollection, maybeCollection)).resolveLeft(mapLeft)
+    } yield toSharedCollection(sharedCollection, maybeCollection)).resolveLeft(mapLeft)
 
   override def getSharedCollectionsByCategory(
     category: NineCardsCategory,
@@ -32,17 +32,17 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     (implicit context: ContextSupport): TaskService[Seq[SharedCollection]] =
     (for {
       userConfig <- apiUtils.getRequestConfig
-      response <- apiServices.getSharedCollectionsByCategory(category.name, typeShareCollection.name, offset, limit)(userConfig)
-      localCollectionMap <- fetchSharedCollectionMap(response.items.map(_.sharedCollectionId))
-    } yield toSharedCollections(response.items, localCollectionMap)).resolveLeft(mapLeft)
+      sharedCollections <- apiServices.getSharedCollectionsByCategory(category.name, typeShareCollection.name, offset, limit)(userConfig)
+      localCollectionMap <- fetchSharedCollectionMap(sharedCollections.map(_.sharedCollectionId))
+    } yield toSharedCollections(sharedCollections, localCollectionMap)).resolveLeft(mapLeft)
 
   override def getPublishedCollections()
     (implicit context: ContextSupport) = {
     (for {
       userConfig <- apiUtils.getRequestConfig
-      response <- apiServices.getPublishedCollections()(userConfig)
-      localCollectionMap <- fetchSharedCollectionMap(response.items.map(_.sharedCollectionId))
-    } yield toSharedCollections(response.items, localCollectionMap)).resolveLeft(mapLeft)
+      sharedCollections <- apiServices.getPublishedCollections()(userConfig)
+      localCollectionMap <- fetchSharedCollectionMap(sharedCollections.map(_.sharedCollectionId))
+    } yield toSharedCollections(sharedCollections, localCollectionMap)).resolveLeft(mapLeft)
   }
 
   private[this] def fetchSharedCollectionMap(sharedCollectionsIds: Seq[String]): TaskService[Map[String, Collection]] =
@@ -56,16 +56,16 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     import sharedCollection._
     (for {
       userConfig <- apiUtils.getRequestConfig
-      result <- apiServices.createSharedCollection(name, author, packages, category.name, icon, community)(userConfig)
-    } yield result.sharedCollectionId).resolveLeft(mapLeft)
+      sharedCollectionId <- apiServices.createSharedCollection(name, author, packages, category.name, icon, community)(userConfig)
+    } yield sharedCollectionId).resolveLeft(mapLeft)
   }
 
   override def updateSharedCollection(sharedCollection: UpdateSharedCollection)(implicit context: ContextSupport) = {
     import sharedCollection._
     (for {
       userConfig <- apiUtils.getRequestConfig
-      result <- apiServices.updateSharedCollection(sharedCollectionId, Option(name), packages)(userConfig)
-    } yield result.sharedCollectionId).resolveLeft(mapLeft)
+      sharedCollectionId <- apiServices.updateSharedCollection(sharedCollectionId, Option(name), packages)(userConfig)
+    } yield sharedCollectionId).resolveLeft(mapLeft)
   }
 
   override def getSubscriptions()(implicit context: ContextSupport) =

@@ -126,13 +126,13 @@ trait ApiServices {
     * Fetches the public collection
     *
     * @param sharedCollectionId the public collection id
-    * @return the TaskService containing a SharedCollectionResponse with the HTTP Code of the response and the
+    * @return the TaskService containing a SharedCollection with the
     *         collection or ApiServiceException if the user doesn't exists or there was an error in the request
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def getSharedCollection(
-    sharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[SharedCollectionResponse]
+    sharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[SharedCollection]
 
   /**
     * Fetches the public collections based on some request params
@@ -141,8 +141,7 @@ trait ApiServices {
     * @param collectionType type [top or latest]
     * @param offset offset of list
     * @param limit the maximum number of collection returned
-    * @return the [[cards.nine.services.api.SharedCollectionResponseList]] with the HTTP Code
-    *         of the response and the sequence of recommended collections
+    * @return the [[cards.nine.models.SharedCollection]] with the sequence of recommended collections
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
@@ -150,17 +149,16 @@ trait ApiServices {
     category: String,
     collectionType: String,
     offset: Int,
-    limit: Int)(implicit requestConfig: RequestConfig): TaskService[SharedCollectionResponseList]
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[SharedCollection]]
 
   /**
     * Fetches the published collections
     *
-    * @return the [[cards.nine.services.api.SharedCollectionResponseList]] with the HTTP Code
-    *         of the response and the sequence of recommended collections
+    * @return the [[cards.nine.models.SharedCollection]] with the sequence of recommended collections
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
-  def getPublishedCollections()(implicit requestConfig: RequestConfig): TaskService[SharedCollectionResponseList]
+  def getPublishedCollections()(implicit requestConfig: RequestConfig): TaskService[Seq[SharedCollection]]
 
   /**
     * Persists a new shared collection
@@ -170,8 +168,7 @@ trait ApiServices {
     * @param packages The list of packages in the collection
     * @param icon The collection's icon
     * @param community A flag for whether this is a community collection
-    * @return the [[cards.nine.services.api.CreateSharedCollectionResponse]] with the HTTP Code
-    *         of the response and the sharedCollectionId
+    * @return a String with the sharedCollectionId
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the service is unable to create the shared collection
     */
@@ -181,7 +178,7 @@ trait ApiServices {
     packages: Seq[String],
     category: String,
     icon: String,
-    community: Boolean)(implicit requestConfig: RequestConfig): TaskService[CreateSharedCollectionResponse]
+    community: Boolean)(implicit requestConfig: RequestConfig): TaskService[String]
 
   /**
     * Updates an existing  shared collection
@@ -189,49 +186,43 @@ trait ApiServices {
     * @param sharedCollectionId The collection identifier
     * @param name The name of the collection
     * @param packages The list of packages in the collection
-    * @return the [[cards.nine.services.api.UpdateSharedCollectionResponse]] with the HTTP Code
-    *         of the response and the sharedCollectionId
+    * @return a String with the sharedCollectionId
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the service is unable to create the shared collection
     */
   def updateSharedCollection(
     sharedCollectionId: String,
     name: Option[String],
-    packages: Seq[String])(implicit requestConfig: RequestConfig): TaskService[UpdateSharedCollectionResponse]
+    packages: Seq[String])(implicit requestConfig: RequestConfig): TaskService[String]
 
   /**
     * Fetches the subscriptions
     *
-    * @return the [[cards.nine.services.api.SubscriptionResponseList]] with the HTTP Code
-    *         of the response and the sequence subscriptions
+    * @return the Seq[String] with the subscriptions
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
-  def getSubscriptions()(implicit requestConfig: RequestConfig): TaskService[SubscriptionResponseList]
+  def getSubscriptions()(implicit requestConfig: RequestConfig): TaskService[Seq[String]]
 
   /**
     * Subscribes to a public collection
  *
     * @param originalSharedCollectionId the public id of the collection to subscribe on
-    * @return the [[cards.nine.services.api.SubscribeResponse]] with the HTTP Code
-    *         of the response
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def subscribe(
-    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[SubscribeResponse]
+    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[Unit]
 
   /**
     * Unsubscribes from a public collection
     *
     * @param originalSharedCollectionId the public id of the collection to unsubscribe from
-    * @return the [[cards.nine.services.api.UnsubscribeResponse]] with the HTTP Code
-    *         of the response
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def unsubscribe(
-    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[UnsubscribeResponse]
+    originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[Unit]
 
   /**
     * Rank the packages by importance inside their category

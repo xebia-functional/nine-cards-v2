@@ -145,7 +145,7 @@ class ApiServicesImpl(
       response <- apiService
         .getCollection(sharedCollectionId, requestConfig.toGooglePlayHeader)
         .readOption(publishedCollectionsNotFoundMessage)
-    } yield SharedCollectionResponse(response.statusCode, toSharedCollection(response.data))
+    } yield toSharedCollection(response.data)
 
   override def getSharedCollectionsByCategory(
     category: String,
@@ -167,7 +167,7 @@ class ApiServicesImpl(
       _ <- validateConfig
       response <- serviceCall(requestConfig.toGooglePlayHeader)
         .readOption(shareCollectionNotFoundMessage)
-    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(response.data.collections))
+    } yield toSharedCollectionSeq(response.data.collections)
   }
 
   override def getPublishedCollections()(implicit requestConfig: RequestConfig) =
@@ -176,7 +176,7 @@ class ApiServicesImpl(
       response <- apiService
         .getCollections(requestConfig.toGooglePlayHeader)
         .readOption(publishedCollectionsNotFoundMessage)
-    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(response.data.collections))
+    } yield toSharedCollectionSeq(response.data.collections)
 
   override def createSharedCollection(
     name: String,
@@ -199,7 +199,7 @@ class ApiServicesImpl(
       response <- apiService
         .createCollection(request, requestConfig.toServiceHeader)
         .readOption(errorCreatingCollectionMessage)
-    } yield CreateSharedCollectionResponse(response.statusCode, response.data.publicIdentifier)
+    } yield response.data.publicIdentifier
   }
 
   override def updateSharedCollection(
@@ -216,7 +216,7 @@ class ApiServicesImpl(
       response <- apiService
         .updateCollection(sharedCollectionId, request, requestConfig.toServiceHeader)
         .readOption(errorCreatingCollectionMessage)
-    } yield UpdateSharedCollectionResponse(response.statusCode, response.data.publicIdentifier)
+    } yield response.data.publicIdentifier
   }
 
   override def getSubscriptions()(implicit requestConfig: RequestConfig) =
@@ -225,21 +225,21 @@ class ApiServicesImpl(
       response <- apiService
         .getSubscriptions(requestConfig.toServiceHeader)
         .readOption(subscriptionsNotFoundMessage)
-    } yield SubscriptionResponseList(response.statusCode, toSubscriptionResponseSeq(response.data.subscriptions))
+    } yield response.data.subscriptions
 
   override def subscribe(
     sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
     for {
       _ <- validateConfig
       response <- apiService.subscribe(sharedCollectionId, requestConfig.toServiceHeader).resolve[ApiServiceException]
-    } yield SubscribeResponse(response.statusCode)
+    } yield ()
 
   override def unsubscribe(
     sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
     for {
       _ <- validateConfig
       response <- apiService.unsubscribe(sharedCollectionId, requestConfig.toServiceHeader).resolve[ApiServiceException]
-    } yield UnsubscribeResponse(response.statusCode)
+    } yield ()
 
   override def rankApps(
     packagesByCategorySeq: Seq[PackagesByCategory], location: Option[String])(implicit requestConfig: RequestConfig) =

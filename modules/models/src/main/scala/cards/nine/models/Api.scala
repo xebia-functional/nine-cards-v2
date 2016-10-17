@@ -17,3 +17,25 @@ case class RankApps(
   category: String,
   packages: Seq[String])
 
+case class SharedCollection(
+  id: String,
+  sharedCollectionId: String,
+  publishedOn: Long,
+  author: String,
+  name: String,
+  packages: Seq[String],
+  resolvedPackages: Seq[SharedCollectionPackage],
+  views: Int,
+  subscriptions: Option[Int],
+  category: String,
+  icon: String,
+  community: Boolean)
+
+case class SharedCollectionPackage(
+  packageName: String,
+  title: String,
+  icon: String,
+  stars: Double,
+  downloads: String,
+  free: Boolean)
+
