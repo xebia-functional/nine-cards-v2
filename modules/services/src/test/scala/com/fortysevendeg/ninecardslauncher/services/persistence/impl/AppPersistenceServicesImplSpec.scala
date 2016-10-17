@@ -80,13 +80,13 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     "return an App when a valid packageName is provided" in new AppPersistenceServicesScope {
 
       mockAppRepository.fetchAppByPackage(any) returns TaskService(Task(Either.right(Option(repoApp))))
-      val result = persistenceServices.findAppByPackage(applicationPackageName).value.run
+      val result = persistenceServices.findAppByPackage(appPackageName).value.run
 
       result must beLike {
         case Right(maybeApp) =>
           maybeApp must beSome[Application].which { app =>
             app.id shouldEqual applicationId
-            app.packageName shouldEqual applicationPackageName
+            app.packageName shouldEqual appPackageName
           }
       }
     }
@@ -101,7 +101,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
       mockAppRepository.fetchAppByPackage(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.findAppByPackage(applicationPackageName).value.run
+      val result = persistenceServices.findAppByPackage(appPackageName).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -110,19 +110,19 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a Seq App when a valid packageName is provided" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchAppByPackages(any) returns TaskService(Task(Either.right(seqRepoApp)))
-      val result = persistenceServices.fetchAppByPackages(Seq(applicationPackageName)).value.run
+      mockAppRepository.fetchAppByPackages(any) returns TaskService(Task(Either.right(Seq(repoApp))))
+      val result = persistenceServices.fetchAppByPackages(Seq(appPackageName)).value.run
 
       result must beLike {
-        case Right(seqApplication) =>
-          seqApplication.size shouldEqual seqRepoApp.size
+        case Right(applicationSeq) =>
+            applicationSeq shouldEqual Seq(application)
           }
       }
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
       mockAppRepository.fetchAppByPackages(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.fetchAppByPackages(Seq(applicationPackageName)).value.run
+      val result = persistenceServices.fetchAppByPackages(Seq(appPackageName)).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -137,7 +137,7 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
       result must beLike {
         case Right(app) =>
           app.id shouldEqual applicationId
-          app.packageName shouldEqual applicationPackageName
+          app.packageName shouldEqual appPackageName
       }
     }
 

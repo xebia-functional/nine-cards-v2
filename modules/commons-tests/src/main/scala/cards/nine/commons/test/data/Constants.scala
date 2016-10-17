@@ -55,7 +55,7 @@ object CollectionValues {
   val collectionType: CollectionType = FreeCollectionType
   val icon: String = "icon"
   val themedColorIndex: Int = 1
-  val appsCategoryStr: String = "MISC"
+  val appsCategoryStr: String = "SOCIAL"
   val appsCategory: NineCardsCategory = NineCardsCategory(appsCategoryStr)
   val originalSharedCollectionId: String = "originalSharedCollection"
   val sharedCollectionId: String = "shareCollectionId"
