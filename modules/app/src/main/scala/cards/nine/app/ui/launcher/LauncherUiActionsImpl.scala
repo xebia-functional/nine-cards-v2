@@ -12,7 +12,6 @@ import android.view.{DragEvent, View, WindowManager}
 import android.widget.ImageView
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
-import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.Constants._
@@ -42,10 +41,10 @@ import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import cards.nine.app.ui.launcher.drawer.DrawerUiActions
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
-import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
+import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
-import cards.nine.models.{ApplicationData, ConditionWeather, Contact, UnknownCondition, Widget}
 import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment}
+import cards.nine.models._
 import cards.nine.process.commons.models.{Collection, Moment}
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.process.device.{GetAppOrder, GetByName}
@@ -68,8 +67,6 @@ trait LauncherUiActionsImpl
   with DrawerUiActions {
 
   self: TypedFindView with Contexts[AppCompatActivity] =>
-
-  lazy val preferenceValues = new NineCardsPreferencesValue
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -207,7 +204,7 @@ trait LauncherUiActionsImpl
         intent.putExtra(startPosition, collection.position)
         intent.putExtra(indexColorToolbar, collection.themedColorIndex)
         intent.putExtra(iconToolbar, collection.icon)
-        CollectionOpeningAnimations.readValue(preferenceValues) match {
+        CollectionOpeningAnimations.readValue match {
           case anim@CircleOpeningCollectionAnimation if anim.isSupported =>
             rippleToCollection ~~
               Ui {

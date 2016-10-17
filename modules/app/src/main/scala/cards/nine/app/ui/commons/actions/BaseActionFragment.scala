@@ -14,7 +14,7 @@ import cards.nine.app.ui.commons.actions.ActionsSnails._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
+import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.process.theme.models._
@@ -43,10 +43,8 @@ trait BaseActionFragment
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
-  lazy val preferenceValues = new NineCardsPreferencesValue
-
   implicit lazy val theme: NineCardsTheme =
-    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).resolveNow match {
+    di.themeProcess.getTheme(Theme.getThemeFile).resolveNow match {
       case Right(t) => t
       case _ => getDefaultTheme
     }

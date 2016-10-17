@@ -11,11 +11,9 @@ import macroid.{ContextWrapper, Ui}
 
 class AppDrawerUiActions(dom: AppDrawerDOM)(implicit contextWrapper: ContextWrapper) {
 
-  lazy val preferenceValues = new NineCardsPreferencesValue
-
   def initialize(): TaskService[Unit] = Ui {
-    reloadLongPressActionText(AppDrawerLongPressAction.readValue(preferenceValues).value)
-    reloadAnimationText(AppDrawerAnimation.readValue(preferenceValues).value)
+    reloadLongPressActionText(AppDrawerLongPressAction.readValue.value)
+    reloadAnimationText(AppDrawerAnimation.readValue.value)
     dom.longPressPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener {
       override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
         reloadLongPressActionText(newValue.toString)

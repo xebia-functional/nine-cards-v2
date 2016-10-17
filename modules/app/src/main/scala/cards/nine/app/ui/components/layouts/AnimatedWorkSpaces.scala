@@ -8,16 +8,16 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.view._
 import android.widget.FrameLayout
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.AnimationsUtils._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.commons._
 import cards.nine.app.ui.components.layouts.AnimatedWorkSpaces._
-import cards.nine.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, NineCardsPreferencesValue, WorkspaceAnimations}
+import cards.nine.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, WorkspaceAnimations}
 import cards.nine.commons._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import macroid.FullDsl._
 import macroid._
 
@@ -99,7 +99,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       wire(parentViewThree) <~
       vAddField(positionViewKey, PreviousView)).get), params)).run
 
-  def animationPref = WorkspaceAnimations.readValue(new NineCardsPreferencesValue)
+  def animationPref = WorkspaceAnimations.readValue
 
   def createEmptyView(): Holder
 

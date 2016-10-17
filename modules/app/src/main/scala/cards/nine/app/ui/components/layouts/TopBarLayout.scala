@@ -35,8 +35,6 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
-  val preferenceValues = new NineCardsPreferencesValue
-
   lazy val collectionsSearchPanel = Option(findView(TR.launcher_search_panel))
 
   lazy val collectionsBurgerIcon = Option(findView(TR.launcher_burger_icon))
@@ -84,7 +82,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     val pressedColor = theme.get(SearchPressedColor)
     val iconBackground = new TopBarMomentBackgroundDrawable
     val edgeBackground = new TopBarMomentEdgeBackgroundDrawable
-    val googleLogoPref = GoogleLogo.readValue(preferenceValues)
+    val googleLogoPref = GoogleLogo.readValue
     val googleLogoTweaks = googleLogoPref match {
       case GoogleLogoTheme =>
         ivSrc(R.drawable.search_bar_logo_google_light) +
@@ -135,7 +133,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     }
 
   def reloadMoment(moment: NineCardsMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
-    val showClock = ShowClockMoment.readValue(preferenceValues)
+    val showClock = ShowClockMoment.readValue
     val text = if (showClock) {
       s"${moment.getName} ${resGetString(R.string.atHour)}"
     } else moment.getName

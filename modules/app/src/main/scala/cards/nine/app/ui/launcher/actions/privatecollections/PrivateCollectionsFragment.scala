@@ -3,29 +3,40 @@ package cards.nine.app.ui.launcher.actions.privatecollections
 import android.os.Bundle
 import android.view.View
 import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.process.commons.models.{Collection, PrivateCollection}
+import cards.nine.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
-class PrivateCollectionsFragment(implicit lPresenter: LauncherPresenter)
+class PrivateCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
   extends BaseActionFragment
-  with PrivateCollectionsActionsImpl
+  with PrivateCollectionsDOM
+  with PrivateCollectionsUiActions
+  with PrivateCollectionsListener
   with AppNineCardIntentConversions { self =>
 
-  override lazy val collectionPresenter = new PrivateCollectionsPresenter(self)
-
-  lazy val launcherPresenter = lPresenter
+  lazy val collectionJobs = new PrivateCollectionsJobs(self)
 
   lazy val packages = getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])
 
   override def getLayoutId: Int = R.layout.list_action_fragment
 
-  override protected lazy val backgroundColor: Int = loadBackgroundColor
+  override protected lazy val backgroundColor: Int = theme.get(CardLayoutBackgroundColor)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    collectionPresenter.initialize()
+    collectionJobs.initialize().resolveAsync()
   }
+
+  override def loadPrivateCollections(): Unit =
+    collectionJobs.loadPrivateCollections().resolveServiceOr(_ => showErrorLoadingCollectionInScreen())
+
+  override def addLauncherCollection(collection: Collection): Unit = launcherPresenter.addCollection(collection)
+
+  override def saveCollection(collection: PrivateCollection): Unit =
+    collectionJobs.saveCollection(collection).resolveServiceOr(_ => showErrorSavingCollectionInScreen)
 }
 
 

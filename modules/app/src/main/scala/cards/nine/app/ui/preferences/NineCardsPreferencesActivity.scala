@@ -26,8 +26,6 @@ class NineCardsPreferencesActivity
 
   lazy val jobs = new PreferencesJobs(new PreferencesUiActions(this))
 
-  lazy val nineCardsPreferences = new NineCardsPreferencesValue
-
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     jobs.initialize().resolveAsync()
@@ -57,7 +55,7 @@ class NineCardsPreferencesActivity
     override def onCreate(savedInstanceState: Bundle) = {
       super.onCreate(savedInstanceState)
 
-      if (IsDeveloper.readValue(nineCardsPreferences)) {
+      if (IsDeveloper.readValue) {
         addPreferencesFromResource(R.xml.preferences_devs_headers)
         findPreference(DeveloperPreferences.name).setOnPreferenceClickListener(preferenceClick(DeveloperPreferences.name, new DeveloperFragment()))
       } else {
