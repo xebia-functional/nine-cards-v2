@@ -32,22 +32,8 @@ trait CollectionTestData
   val collection: Collection = collection(0)
   val seqCollection: Seq[Collection] = Seq(collection(0), collection(1), collection(2))
 
-  def collectionData(num: Int = 0) = CollectionData(
-    position = collectionPosition + num,
-    name = collectionName + num,
-    collectionType = collectionType,
-    icon = icon,
-    themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategory),
-    cards = Seq(cardData(0), cardData(1), cardData(2)),
-    moment = Option(momentData(num)),
-    originalSharedCollectionId = Option(originalSharedCollectionId),
-    sharedCollectionId = Option(sharedCollectionId),
-    sharedCollectionSubscribed = sharedCollectionSubscribed,
-    publicCollectionStatus = publicCollectionStatus)
-
-  val collectionData: CollectionData = collectionData(0)
-  val seqCollectionData: Seq[CollectionData] = Seq(collectionData(0), collectionData(1), collectionData(2))
+  val collectionData: CollectionData = collection.toData
+  val seqCollectionData: Seq[CollectionData] = seqCollection map (_.toData)
 
   def formedItem(num: Int) = FormedItem(
     itemType = itemType,

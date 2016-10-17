@@ -63,3 +63,21 @@ case class WidgetArea (
   }
 
 }
+
+object Widget {
+
+  implicit class WidgetOps(widget: Widget) {
+
+    def toData = WidgetData(
+      momentId = widget.momentId,
+      packageName = widget.packageName,
+      className = widget.className,
+      appWidgetId = widget.appWidgetId,
+      area = widget.area,
+      widgetType = widget.widgetType,
+      label = widget.label,
+      imagePath = widget.imagePath,
+      intent = widget.intent)
+
+  }
+}

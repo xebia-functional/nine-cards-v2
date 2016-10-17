@@ -22,15 +22,7 @@ trait MomentTestData extends WidgetTestData {
   val moment: Moment = moment(0)
   val seqMoment: Seq[Moment] = Seq(moment(0), moment(1), moment(2))
 
-  def momentData(num: Int = 0) = MomentData(
-    collectionId = Option(momentCollectionId + num),
-    timeslot = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
-    wifi = Seq(wifiSeq(num)),
-    headphone = headphone,
-    momentType = Option(NineCardsMoment(momentTypeSeq(num))),
-    widgets = Option(seqWidgetData))
-
-  val momentData: MomentData = momentData(0)
-  val seqMomentData: Seq[MomentData]  = Seq(momentData(0), momentData(1), momentData(2))
+  val momentData: MomentData = moment.toData
+  val seqMomentData: Seq[MomentData] = seqMoment map (_.toData)
 
 }

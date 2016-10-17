@@ -17,14 +17,7 @@ trait DockAppTestData extends NineCardsIntentConversions {
   val dockApp: DockApp = dockApp(0)
   val seqDockApp: Seq[DockApp]  = Seq(dockApp(0), dockApp(1), dockApp(2))
 
-  def dockAppData(num: Int = 0) = DockAppData(
-    name = dockAppName,
-    dockType = DockType(dockType),
-    intent = jsonToNineCardIntent(dockAppIntent),
-    imagePath = dockAppImagePath,
-    position = dockAppPosition)
-
-  val dockAppData: DockAppData = dockAppData(0)
-  val seqDockAppData: Seq[DockAppData] = Seq(dockAppData(0), dockAppData(1), dockAppData(2))
+  val dockAppData: DockAppData = dockApp.toData
+  val seqDockAppData: Seq[DockAppData] = seqDockApp map (_.toData)
 
 }
