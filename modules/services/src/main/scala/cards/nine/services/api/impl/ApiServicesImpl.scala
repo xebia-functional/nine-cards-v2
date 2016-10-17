@@ -70,7 +70,7 @@ class ApiServicesImpl(
       baseHeader <- prepareV1Header
       header = baseHeader :+ ((headerDevice, requestConfig.deviceId)) :+ ((headerToken, requestConfig.token))
       response <- apiServiceV1.getUserConfig(header).readOption(userConfigNotFoundMessage)
-    } yield GetUserV1Response(response.statusCode, toUserConfig(response.data))
+    } yield toUserV1(response.data)
 
   override def login(
     email: String,

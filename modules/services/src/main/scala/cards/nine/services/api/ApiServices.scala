@@ -19,14 +19,13 @@ trait ApiServices {
     device: LoginV1Device): TaskService[LoginResponseV1]
 
   /**
-    * Fetches the user configuration associated to the user identified by the data in [[cards.nine.services.api.RequestConfigV1]]
+    * Fetches the user configuration associated to the user identified by the data in [[cards.nine.models.RequestConfigV1]]
     *
-    * @return the [[cards.nine.services.api.GetUserV1Response]] with the HTTP Code
-    *         of the response and the [[UserV1]]
+    * @return the [[cards.nine.models.UserV1]] with the [[UserV1]]
     * @throws ApiServiceV1ConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
-  def getUserConfigV1()(implicit requestConfig: RequestConfigV1): TaskService[GetUserV1Response]
+  def getUserConfigV1()(implicit requestConfig: RequestConfigV1): TaskService[UserV1]
 
   /**
     * Tries to login with the email, the androidId and the tokenId

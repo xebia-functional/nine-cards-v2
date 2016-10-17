@@ -72,7 +72,7 @@ trait Conversions {
         stars = app.stars)
     }
 
-  def toUserConfig(apiUserConfig: cards.nine.api.version1.UserConfig): UserV1 =
+  def toUserV1(apiUserConfig: cards.nine.api.version1.UserConfig): UserV1 =
     UserV1(
       _id = apiUserConfig._id,
       email = apiUserConfig.email,

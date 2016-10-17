@@ -4,7 +4,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{RequestConfigV1, User}
+import cards.nine.models.{UserV1, RequestConfigV1, User}
 import cards.nine.process.userv1._
 import cards.nine.process.userv1.models.{Device, UserV1Info}
 import cards.nine.services.api._
@@ -39,7 +39,7 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
     def requestConfig(
       androidId: String,
       maybeSessionToken: Option[String],
-      marketToken: Option[String]): TaskService[GetUserV1Response] =
+      marketToken: Option[String]): TaskService[UserV1] =
       maybeSessionToken match {
         case Some(sessionToken) =>
           apiServices.getUserConfigV1()(RequestConfigV1(androidId, sessionToken, marketToken))
@@ -52,8 +52,8 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
         user <- persistenceServices.findUserById(userId).resolveOption()
         androidId <- persistenceServices.getAndroidId
         loginResponse <- loginV1(user, androidId)
-        userConfigResponse <- requestConfig(androidId, loginResponse.sessionToken, user.marketToken)
-      } yield toUserInfo(androidId, userConfigResponse.userConfig)) resolveLeft {
+        userConfig <- requestConfig(androidId, loginResponse.sessionToken, user.marketToken)
+      } yield toUserInfo(androidId, userConfig)) resolveLeft {
         case e: ApiServiceV1ConfigurationException => Left(UserV1ConfigurationException(e.getMessage, Some(e)))
         case e => Left(userConfigException(e))
       }
