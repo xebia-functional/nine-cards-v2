@@ -1,7 +1,8 @@
 package cards.nine.process.thirdparty
 
 import android.os.StrictMode
-import cards.nine.app.ui.preferences.commons.{IsStethoActive, NineCardsPreferencesValue}
+import cards.nine.app.ui.commons.AppLog
+import cards.nine.app.ui.preferences.commons.IsStethoActive
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
@@ -19,6 +20,7 @@ class ExternalServicesProcess
   def initializeCrashlytics(implicit contextSupport: ContextSupport): TaskService[Unit] = TaskService {
     CatchAll[ExternalServicesProcessException] {
       if (readFlag(R.string.crashlytics_enabled) && getString(R.string.crashlytics_api_key).nonEmpty) {
+        AppLog.info("Initializing Crashlytics")
         Fabric.`with`(contextSupport.context, new Crashlytics.Builder()
           .core(new CrashlyticsCore.Builder().build())
           .build())
@@ -29,6 +31,7 @@ class ExternalServicesProcess
   def initializeStrictMode(implicit contextSupport: ContextSupport): TaskService[Unit] = TaskService {
     CatchAll[ExternalServicesProcessException] {
       if (readFlag(R.string.strict_mode_enabled)) {
+        AppLog.info("Initializing Strict Mode")
         StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
           .detectDiskReads()
           .detectDiskWrites()
@@ -47,7 +50,8 @@ class ExternalServicesProcess
 
   def initializeStetho(implicit contextSupport: ContextSupport): TaskService[Unit] = TaskService {
     CatchAll[ExternalServicesProcessException] {
-      if (IsStethoActive.readValue(NineCardsPreferencesValue(contextSupport))) {
+      if (IsStethoActive.readValueWith(contextSupport.context)) {
+        AppLog.info("Initializing Stetho")
         Stetho.initialize(
           Stetho.newInitializerBuilder(contextSupport.context)
             .enableDumpapp(Stetho.defaultDumperPluginsProvider(contextSupport.context))
@@ -59,7 +63,10 @@ class ExternalServicesProcess
 
   def initializeFirebase(implicit contextSupport: ContextSupport): TaskService[Unit] = TaskService {
     CatchAll[ExternalServicesProcessException] {
-      if (readFlag(R.string.firebase_enabled)) FirebaseAnalytics.getInstance(contextSupport.context)
+      if (readFlag(R.string.firebase_enabled)) {
+        AppLog.info("Initializing Firebase")
+        FirebaseAnalytics.getInstance(contextSupport.context)
+      }
     }
   }
 

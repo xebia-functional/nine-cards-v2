@@ -4,7 +4,7 @@ import android.content.res.Resources
 import cards.nine.api.rest.client.ServiceClient
 import cards.nine.api.rest.client.http.OkHttpClient
 import cards.nine.app.observers.ObserverRegister
-import cards.nine.app.ui.preferences.commons.{BackendV2Url, IsStethoActive, NineCardsPreferencesValue}
+import cards.nine.app.ui.preferences.commons.{BackendV2Url, IsStethoActive, OverrideBackendV2Url}
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models.types.NineCardCategory._
@@ -106,11 +106,10 @@ trait Injector {
 
 class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
-  val nineCardsPreferencesValue = NineCardsPreferencesValue(contextSupport)
-
   private[this] def createHttpClient = {
     val okHttpClientBuilder = new okhttp3.OkHttpClient.Builder()
-    if (IsStethoActive.readValue(nineCardsPreferencesValue)) {
+    if (IsStethoActive.readValueWith(contextSupport.context)) {
+      cards.nine.app.ui.commons.AppLog.info("Initializing http client with Stetho")
       okHttpClientBuilder.addNetworkInterceptor(new StethoInterceptor)
     }
     new OkHttpClient(okHttpClientBuilder.build())
@@ -126,9 +125,15 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     httpClient = serviceHttpClient,
     baseUrl = resources.getString(R.string.api_base_url))
 
-  private[this] lazy val serviceClient = new ServiceClient(
-    httpClient = serviceHttpClient,
-    baseUrl = BackendV2Url.readValue(nineCardsPreferencesValue))
+  private[this] lazy val serviceClient = {
+    val backendV2Url = if (OverrideBackendV2Url.readValueWith(contextSupport.context)) {
+      BackendV2Url.readValueWith(contextSupport.context)
+    } else resources.getString(R.string.api_v2_base_url)
+    cards.nine.app.ui.commons.AppLog.info(s"Initializing client with url $backendV2Url")
+    new ServiceClient(
+      httpClient = serviceHttpClient,
+      baseUrl = backendV2Url)
+  }
 
   private[this] lazy val apiServicesConfig = ApiServicesConfig(
     appId = resources.getString(R.string.api_app_id),

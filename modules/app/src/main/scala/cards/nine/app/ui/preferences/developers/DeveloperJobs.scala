@@ -2,15 +2,15 @@ package cards.nine.app.ui.preferences.developers
 
 import android.app.Activity
 import android.content.Intent
-import cats.implicits._
-import com.bumptech.glide.Glide
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, JobException, Jobs, UiException}
 import cards.nine.app.ui.launcher.LauncherActivity
-import cards.nine.app.ui.preferences.commons.{BackendV2Url, NineCardsPreferencesValue}
+import cards.nine.app.ui.preferences.commons.{BackendV2Url, IsStethoActive, OverrideBackendV2Url}
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.device.GetByName
+import cats.implicits._
+import com.bumptech.glide.Glide
 import macroid.ContextWrapper
 
 class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrapper)
@@ -20,21 +20,25 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
   def initialize() =
     (ui.initialize(this) |@|
       loadAppsCategorized |@|
-      loadBackendV2Summary |@|
+      loadBackendV2Status |@|
       loadMostProbableActivity |@|
       loadHeadphone |@|
       loadLocation |@|
-      loadWeather).tupled
+      loadWeather |@|
+      loadStethoStatus).tupled
 
   def loadAppsCategorized: TaskService[Unit] = for {
     apps <- di.deviceProcess.getSavedApps(GetByName)
     _ <- ui.setAppsCategorizedSummary(apps)
   } yield ()
 
-  def loadBackendV2Summary: TaskService[Unit] = for {
-    backendV2Url <- TaskService.right(BackendV2Url.readValue(new NineCardsPreferencesValue))
-    _ <- ui.setBackendV2UrlSummary(backendV2Url)
+  def loadBackendV2Status: TaskService[Unit] = for {
+    _ <- ui.enableBackendV2Url(OverrideBackendV2Url.readValue)
+    _ <- ui.setBackendV2UrlSummary(BackendV2Url.readValue)
   } yield ()
+
+  def loadStethoStatus: TaskService[Unit] =
+    ui.setStethoTitle(IsStethoActive.readValue)
 
   def copyAndroidToken: TaskService[Unit] = for {
     user <- di.userProcess.getUser

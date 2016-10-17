@@ -23,14 +23,26 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
       }
     }
 
+    def changePreference(onChange: (Preference, scala.Any) => Unit) = new OnPreferenceChangeListener {
+      override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
+        onChange(preference, newValue)
+        true
+      }
+    }
+
     Ui {
-      dom.androidTokenPreferences.
-        setOnPreferenceChangeListener(new OnPreferenceChangeListener {
-          override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
-            preference.setSummary(newValue.toString)
-            true
-          }
-        })
+      dom.backendV2UrlPreference.
+        setOnPreferenceChangeListener(changePreference((p, v) => {
+          p.setSummary(v.toString)
+        }))
+      dom.overrideBackendV2UrlPreference.
+        setOnPreferenceChangeListener(changePreference((p, v) => {
+          enableBackendV2Url(v.asInstanceOf[Boolean]).resolveAsync()
+        }))
+      dom.isStethoActivePreference.
+        setOnPreferenceChangeListener(changePreference((p, v) => {
+          setStethoTitle(v.asInstanceOf[Boolean]).resolveAsync()
+        }))
       dom.androidTokenPreferences.
         setOnPreferenceClickListener(clickPreference(() => {
           developerJobs.copyAndroidToken.resolveAsync()
@@ -110,8 +122,17 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
     dom.weatherPreference.setSummary(summary)
   }.toService
 
+  def enableBackendV2Url(enable: Boolean): TaskService[Unit] = Ui {
+    dom.backendV2UrlPreference.setEnabled(enable)
+  }.toService
+
   def setBackendV2UrlSummary(backendV2Url: String): TaskService[Unit] = Ui {
     dom.backendV2UrlPreference.setSummary(backendV2Url)
+  }.toService
+
+  def setStethoTitle(enabled: Boolean): TaskService[Unit] = Ui {
+    val title = if (enabled) R.string.devIsStethoActiveTrue else R.string.devIsStethoActiveFalse
+    dom.isStethoActivePreference.setTitle(title)
   }.toService
 
 }
