@@ -1,10 +1,12 @@
 package cards.nine.services.image.impl
 
+import java.io.{FileInputStream, File}
+
 import cards.nine.models._
 
 trait ImageServicesImplData {
 
-  val fileFolder = "/file/example"
+  val fileFolder = "target"
 
   val packageName = "com.fortysevendeg.ninecardslauncher.test"
 
@@ -39,5 +41,10 @@ trait ImageServicesImplData {
   val bitmapPath = BitmapPath(
     name = "",
     path = resultFileSaveBitmap)
+
+  val existingFile = new File(resultFilePath)
+  existingFile.createNewFile()
+
+  val fileInputStream = new FileInputStream(existingFile)
 
 }

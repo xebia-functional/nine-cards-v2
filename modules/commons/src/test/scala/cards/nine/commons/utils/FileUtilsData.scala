@@ -24,4 +24,6 @@ trait FileUtilsData {
 
   val existingFile = new File(resultFilePath)
   existingFile.createNewFile()
+
+  val uri = "http://google.com/"
 }
