@@ -6,21 +6,23 @@ import android.os.Bundle
 import android.view.View
 import cards.nine.app.commons.AppNineCardIntentConversions
 import cards.nine.app.ui.commons.RequestCodes
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons.javaNull
+import cards.nine.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.R
 
-class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
+class CreateOrEditCollectionFragment(implicit launcherPresenter: LauncherPresenter)
   extends BaseActionFragment
-  with CreateOrEditCollectionActionsImpl
+  with CreateOrEditCollectionDOM
+  with CreateOrEditCollectionUiActions
+  with CreateOrEditCollectionListener
   with AppNineCardIntentConversions { self =>
 
   lazy val maybeCollectionId = Option(getString(Seq(getArguments), CreateOrEditCollectionFragment.collectionId, javaNull))
 
-  lazy val launcherPresenter = lPresenter
-
-  lazy val collectionPresenter = new CreateOrEditCollectionPresenter(self)
+  lazy val collectionJobs = new CreateOrEditCollectionJobs(self)
 
   override def getLayoutId: Int = R.layout.new_collection
 
@@ -28,7 +30,7 @@ class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    collectionPresenter.initialize(maybeCollectionId)
+    collectionJobs.initialize(maybeCollectionId).resolveServiceOr(_ => showMessageContactUsError)
   }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
@@ -40,17 +42,33 @@ class CreateOrEditCollectionFragment(implicit lPresenter: LauncherPresenter)
             Some(extras.getString(CreateOrEditCollectionFragment.iconRequest))
           case _ => None
         } getOrElse None
-        collectionPresenter.updateIcon(maybeIcon)
+        collectionJobs.updateIcon(maybeIcon).resolveAsyncServiceOr(_ => showMessageContactUsError)
       case (RequestCodes.selectInfoColor, Activity.RESULT_OK) =>
         val maybeIndexColor = Option(data) flatMap (d => Option(d.getExtras)) map {
           case extras if extras.containsKey(CreateOrEditCollectionFragment.colorRequest) =>
             Some(extras.getInt(CreateOrEditCollectionFragment.colorRequest))
           case _ => None
         } getOrElse None
-        collectionPresenter.updateColor(maybeIndexColor)
+        collectionJobs.updateColor(maybeIndexColor).resolveAsyncServiceOr(_ => showMessageContactUsError)
       case _ =>
     }
   }
+
+  override def changeColor(maybeColor: Option[Int]): Unit =
+    collectionJobs.changeColor(maybeColor).resolveAsyncServiceOr(_ => showMessageContactUsError)
+
+  override def changeIcon(maybeIcon: Option[String]): Unit =
+    collectionJobs.changeIcon(maybeIcon).resolveAsyncServiceOr(_ => showMessageContactUsError)
+
+  override def saveCollection(maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): Unit =
+    collectionJobs.saveCollection(maybeName, maybeIcon, maybeIndex).resolveServiceOr(_ => showMessageContactUsError)
+
+  override def editCollection(collection: Collection, maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): Unit =
+    collectionJobs.editCollection(collection, maybeName, maybeIcon, maybeIndex).resolveServiceOr(_ => showMessageContactUsError)
+
+  override def updateLauncherCollection(collection: Collection): Unit = launcherPresenter.updateCollection(collection)
+
+  override def addLauncherCollection(collection: Collection): Unit = launcherPresenter.addCollection(collection)
 }
 
 object CreateOrEditCollectionFragment {
