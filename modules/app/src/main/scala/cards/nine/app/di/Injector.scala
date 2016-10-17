@@ -109,7 +109,6 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   private[this] def createHttpClient = {
     val okHttpClientBuilder = new okhttp3.OkHttpClient.Builder()
     if (IsStethoActive.readValueWith(contextSupport.context)) {
-      cards.nine.app.ui.commons.AppLog.info("Initializing http client with Stetho")
       okHttpClientBuilder.addNetworkInterceptor(new StethoInterceptor)
     }
     new OkHttpClient(okHttpClientBuilder.build())
@@ -129,7 +128,6 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     val backendV2Url = if (OverrideBackendV2Url.readValueWith(contextSupport.context)) {
       BackendV2Url.readValueWith(contextSupport.context)
     } else resources.getString(R.string.api_v2_base_url)
-    cards.nine.app.ui.commons.AppLog.info(s"Initializing client with url $backendV2Url")
     new ServiceClient(
       httpClient = serviceHttpClient,
       baseUrl = backendV2Url)
