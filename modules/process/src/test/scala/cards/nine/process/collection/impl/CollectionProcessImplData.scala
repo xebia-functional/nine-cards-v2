@@ -2,7 +2,7 @@ package cards.nine.process.collection.impl
 
 import cards.nine.commons.test.data.ApplicationTestData
 import cards.nine.models._
-import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse, RankAppsResponseList}
+import cards.nine.services.api.{CategorizedDetailPackage, RankApps, RankAppsResponseList}
 
 trait CollectionProcessImplData extends ApplicationTestData {
 
@@ -43,7 +43,7 @@ trait CollectionProcessImplData extends ApplicationTestData {
     (seqApplication map (app => (app.category, app.packageName))).groupBy(_._1).mapValues(_.map(_._2)).toSeq
 
   def generateRankAppsResponse() = seqCategoryAndPackages map { item =>
-    RankAppsResponse(
+    RankApps(
       category = item._1.name,
       packages = item._2)
   }

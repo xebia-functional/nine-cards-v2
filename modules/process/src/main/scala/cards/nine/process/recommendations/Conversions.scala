@@ -1,7 +1,7 @@
 package cards.nine.process.recommendations
 
 import cards.nine.process.recommendations.models.RecommendedApp
-import cards.nine.services.api.RecommendationApp
+import cards.nine.models.RecommendationApp
 
 trait Conversions {
 

@@ -3,6 +3,7 @@ package cards.nine.services.api.impl
 import cards.nine.api._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.LoginV1Device
 import cards.nine.services.api._
 import cards.nine.services.api.models._
 import cards.nine.api.rest.client.http.HttpClientException

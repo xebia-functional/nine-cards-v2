@@ -1,8 +1,7 @@
 package cards.nine.services.api
 
 import cards.nine.api._
-import cards.nine.models.PackagesByCategory
-import cards.nine.services.api.models._
+import cards.nine.models._
 import org.joda.time.format.DateTimeFormat
 
 import scala.util.{Success, Try}
@@ -37,7 +36,6 @@ trait Conversions {
 
   def toLoginResponseV1(statusCode: Int, user: cards.nine.api.version1.User): LoginResponseV1 =
     LoginResponseV1(
-      statusCode,
       userId = user._id,
       sessionToken = user.sessionToken,
       email = user.email,
@@ -73,7 +71,7 @@ trait Conversions {
         stars = app.stars)
     }
 
-  def toUserConfig(apiUserConfig: cards.nine.api.version1.UserConfig): UserV1 =
+  def toUserV1(apiUserConfig: cards.nine.api.version1.UserConfig): UserV1 =
     UserV1(
       _id = apiUserConfig._id,
       email = apiUserConfig.email,
@@ -147,7 +145,7 @@ trait Conversions {
       free = app.free,
       screenshots = app.screenshots)
 
-  def toSharedCollectionResponseSeq(collections: Seq[cards.nine.api.version2.Collection]): Seq[SharedCollection] =
+  def toSharedCollectionSeq(collections: Seq[cards.nine.api.version2.Collection]): Seq[SharedCollection] =
     collections map toSharedCollection
 
   def formatPublishedDate(date: String): Long = {
@@ -173,18 +171,18 @@ trait Conversions {
       author = collection.author,
       name = collection.name,
       packages = collection.packages,
-      resolvedPackages = toSharedCollectionPackageResponseSeq(collection.appsInfo),
+      resolvedPackages = toSharedCollectionPackageSeq(collection.appsInfo),
       views = collection.views getOrElse 0,
       subscriptions = collection.subscriptions,
       category = collection.category,
       icon = collection.icon,
       community = collection.community)
 
-  def toSharedCollectionPackageResponseSeq(packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackageResponse] =
-    packages map toSharedCollectionPackageResponse
+  def toSharedCollectionPackageSeq(packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackage] =
+    packages map toSharedCollectionPackage
 
-  def toSharedCollectionPackageResponse(item: cards.nine.api.version2.CollectionApp): SharedCollectionPackageResponse =
-    SharedCollectionPackageResponse(
+  def toSharedCollectionPackage(item: cards.nine.api.version2.CollectionApp): SharedCollectionPackage =
+    SharedCollectionPackage(
       packageName = item.packageName,
       title = item.title,
       icon = item.icon,
@@ -192,20 +190,13 @@ trait Conversions {
       downloads = item.downloads,
       free = item.free)
 
-  def toSubscriptionResponseSeq(subscriptions: Seq[String]): Seq[SubscriptionResponse] =
-    subscriptions map toSubscriptionResponse
-
-  def toSubscriptionResponse(subscription: String) =
-    SubscriptionResponse(
-      sharedCollectionId = subscription)
-
   def toItemsMap(packagesByCategorySeq: Seq[PackagesByCategory]) =
     Map(packagesByCategorySeq map (
       packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
   def toRankAppsResponse(items: Map[String, Seq[String]]) =
     (items map {
-      case (category, packages) => RankAppsResponse(category = category, packages = packages)
+      case (category, packages) => RankApps(category = category, packages = packages)
     }).toSeq
 
 }
