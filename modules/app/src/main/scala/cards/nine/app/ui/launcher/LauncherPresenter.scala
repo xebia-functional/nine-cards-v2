@@ -35,6 +35,7 @@ import cards.nine.process.device.models._
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import cards.nine.process.moment.MomentException
 import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
+import cats.implicits._
 import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
@@ -75,8 +76,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   private[this] def updateWeather(): TaskService[Unit] =
     for {
       maybeCondition <- di.recognitionProcess.getWeather.map(_.conditions.headOption).resolveLeftTo(None)
-      _ = momentPreferences.weatherLoaded()
-      _ <- actions.showWeather(maybeCondition.getOrElse(UnknownCondition)).toService
+      _ = momentPreferences.weatherLoaded(maybeCondition.isEmpty || maybeCondition.contains(UnknownCondition))
+      _ <- actions.showWeather(maybeCondition).toService
     } yield ()
 
   def pause(): Unit = di.observerRegister.unregisterObserver()
@@ -287,7 +288,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     for {
       result <- di.userAccountsProcess.havePermission(FineLocation)
       _ <- if (result.hasPermission(FineLocation)) {
-        di.launcherExecutorProcess.launchGoogleWeather
+        updateWeather() *> di.launcherExecutorProcess.launchGoogleWeather
       } else {
         di.userAccountsProcess.requestPermission(RequestCodes.locationPermission, FineLocation)
       }
@@ -494,12 +495,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def getMoment = for {
       maybeMoment <- di.momentProcess.fetchMomentByType(momentType)
       moment <- maybeMoment match {
-        case Some(moment) => TaskService(Task(Either.right[NineCardException, Moment](moment)))
+        case Some(moment) => TaskService(Task(Right[NineCardException, Moment](moment)))
         case _ => di.momentProcess.createMomentWithoutCollection(momentType)
       }
       collection <- moment.collectionId match {
         case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
-        case _ => TaskService(Task(Either.right[NineCardException, Option[Collection]](None)))
+        case _ => TaskService(Task(Right[NineCardException, Option[Collection]](None)))
       }
 
     } yield (moment, collection)
@@ -525,7 +526,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def getCollectionById(collectionId: Option[Int]): TaskService[Option[Collection]] =
       collectionId match {
         case Some(id) => di.collectionProcess.getCollectionById(id)
-        case _ => TaskService(Task(Either.right(None)))
+        case _ => TaskService.right(None)
       }
 
     def getCollection: TaskService[LauncherMoment] = for {
@@ -698,8 +699,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     def getWidgetInfoById(appWidgetId: Int): TaskService[(ComponentName, Cell)] =
       actions.getWidgetInfoById(appWidgetId) match {
-        case Some(info) => TaskService(Task(Either.right(info)))
-        case _ => TaskService(Task(Either.left(MomentException("Info widget not found"))))
+        case Some(info) => TaskService.right(info)
+        case _ => TaskService.left(MomentException("Info widget not found"))
       }
 
     def createWidget(appWidgetId: Int, nineCardsMoment: NineCardsMoment) = for {
@@ -820,7 +821,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
       def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
         val collectionId = moment flatMap (_.collectionId)
-        collectionId map di.collectionProcess.getCollectionById getOrElse TaskService(Task(Either.right(None)))
+        collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
       }
 
       for {
@@ -861,7 +862,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           case Some(phone) =>
             statuses = statuses.copy(lastPhone = None)
             di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, phone))
-          case _ => TaskService(Task(Right((): Unit)))
+          case _ => TaskService.right((): Unit)
         }
       case RequestCodes.contactsPermission =>
         (actions.reloadDrawerApps() ~
@@ -877,7 +878,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
               _ <- di.launcherExecutorProcess.launchDial(Some(phone))
               _ <- actions.showNoPhoneCallPermissionError().toService
             } yield ()
-          case _ => TaskService(Task(Right((): Unit)))
+          case _ => TaskService.right((): Unit)
         }
       case RequestCodes.locationPermission if result.exists(_.hasPermission(FineLocation)) =>
         for {
@@ -885,7 +886,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           _ <- di.launcherExecutorProcess.launchGoogleWeather
         } yield ()
       case _ =>
-        TaskService(Task(Right((): Unit)))
+        TaskService.right((): Unit)
     }
 
     launcherService {
@@ -1023,8 +1024,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
         if (hasConflict.isEmpty) Some(area) else None
       }).flatten
       emptySpaces.headOption match {
-        case Some(space) => TaskService(Task(Either.right(space)))
-        case _ => TaskService(Task(Either.left(SpaceException("Widget don't have space"))))
+        case Some(space) => TaskService.right(space)
+        case _ => TaskService.left(SpaceException("Widget don't have space"))
       }
     }
 
@@ -1196,7 +1197,7 @@ trait LauncherUiActions {
 
   def getCurrentPage: Option[Int]
 
-  def showWeather(condition: ConditionWeather): Ui[Any]
+  def showWeather(condition: Option[ConditionWeather]): Ui[Any]
 
 }
 

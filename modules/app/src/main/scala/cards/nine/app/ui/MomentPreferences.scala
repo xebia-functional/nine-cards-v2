@@ -34,15 +34,18 @@ class MomentPreferences(implicit contextWrapper: ContextWrapper) {
 
   def loadWeather: Boolean = {
     val defaultDate = new DateTime().minusDays(1)
-    val timeChanged = new DateTime(persistMomentPreferences.getLong(timeWeatherLoadedKey, defaultDate.getMillis))
-    timeChanged.plusHours(2).isBeforeNow
+    val nextDate = new DateTime(persistMomentPreferences.getLong(timeWeatherLoadedKey, defaultDate.getMillis))
+    nextDate.isBeforeNow
   }
 
-  def weatherLoaded(): Unit =
+  def weatherLoaded(error: Boolean): Unit = {
+    val time = if (error) 10 else 120
     persistMomentPreferences
       .edit()
-      .putLong(timeWeatherLoadedKey, new DateTime().getMillis)
+      .putLong(timeWeatherLoadedKey, new DateTime().plusMinutes(time).getMillis)
       .apply()
+  }
+
 
   def getPersistMoment: Option[NineCardsMoment] = if (nonPersist) {
     None
