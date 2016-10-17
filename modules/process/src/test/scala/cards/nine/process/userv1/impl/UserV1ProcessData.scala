@@ -1,6 +1,7 @@
 package cards.nine.process.userv1.impl
 
 import cards.nine.commons.test.data.UserValues._
+import cards.nine.models
 import cards.nine.models.types.{AppCardType, AppsCollectionType, Game}
 import cards.nine.services.api.models._
 import cards.nine.services.api.{GetUserV1Response, LoginResponseV1, RequestConfigV1}
@@ -30,7 +31,7 @@ trait UserV1ProcessData {
 
   val permissions = Seq.empty
 
-  val googleDevice = LoginV1Device(
+  val googleDevice = models.LoginV1Device(
     name = deviceName,
     deviceId = deviceId,
     secretToken = marketToken,
@@ -43,10 +44,10 @@ trait UserV1ProcessData {
     email = Option(email),
     devices = Seq(googleDevice))
 
-  def createUserConfigCollectionItem(count: Int = 8): Seq[UserV1CollectionItem] =
+  def createUserConfigCollectionItem(count: Int = 8): Seq[models.UserV1CollectionItem] =
     (0 until count) map {
       item =>
-        UserV1CollectionItem(
+        models.UserV1CollectionItem(
           itemType = itemType.name,
           title = s"Item $item",
           metadata = JsString(""),
@@ -57,7 +58,7 @@ trait UserV1ProcessData {
   def createUserConfigCollection(count: Int = 5) =
     (0 until count) map {
       item =>
-        UserV1Collection(
+        models.UserV1Collection(
           name = collectionName,
           originalSharedCollectionId = None,
           sharedCollectionId = None,
@@ -79,25 +80,25 @@ trait UserV1ProcessData {
   def createUserConfigDevice(count: Int = 3) =
     (0 until count) map {
       item =>
-        UserV1Device(
+        models.UserV1Device(
           deviceId = s"$deviceIdPrefix-$item",
           deviceName = s"$deviceName $item",
           collections = createUserConfigCollection()
         )
     }
 
-  val userConfig = UserV1(
+  val userConfig = models.UserV1(
     _id = "fake-id",
     email = email,
-    plusProfile = UserV1PlusProfile(
+    plusProfile = models.UserV1PlusProfile(
       displayName = name,
-      profileImage = UserV1ProfileImage(
+      profileImage = models.UserV1ProfileImage(
         imageType = 0,
         imageUrl = imageUrl
       )
     ),
     devices = createUserConfigDevice(),
-    status = UserV1StatusInfo(
+    status = models.UserV1StatusInfo(
       products = Seq.empty,
       friendsReferred = 0,
       themesShared = 0,

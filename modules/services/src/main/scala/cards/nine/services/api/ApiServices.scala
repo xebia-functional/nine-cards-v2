@@ -1,8 +1,7 @@
 package cards.nine.services.api
 
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.PackagesByCategory
-import cards.nine.services.api.models._
+import cards.nine.models.{LoginV1Device, UserV1, PackagesByCategory}
 
 trait ApiServices {
 
@@ -23,7 +22,7 @@ trait ApiServices {
     * Fetches the user configuration associated to the user identified by the data in [[cards.nine.services.api.RequestConfigV1]]
     *
     * @return the [[cards.nine.services.api.GetUserV1Response]] with the HTTP Code
-    *         of the response and the [[cards.nine.services.api.models.UserV1]]
+    *         of the response and the [[UserV1]]
     * @throws ApiServiceV1ConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
