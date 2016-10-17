@@ -97,7 +97,7 @@ class ApiServicesImpl(
       response <- apiService
         .categorize(CategorizeRequest(Seq(packageName)), requestConfig.toGooglePlayHeader)
         .readOption(playAppNotFoundMessage)
-    } yield GooglePlayPackageResponse(response.statusCode, toCategorizedPackage(packageName, response.data))
+    } yield toCategorizedPackage(packageName, response.data)
 
   override def googlePlayPackages(packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
     for {
@@ -105,9 +105,7 @@ class ApiServicesImpl(
       response <- apiService
         .categorize(CategorizeRequest(packageNames), requestConfig.toGooglePlayHeader)
         .resolve[ApiServiceException]
-    } yield GooglePlayPackagesResponse(
-      statusCode = response.statusCode,
-      packages = response.data map toCategorizedPackages getOrElse Seq.empty)
+    } yield response.data map toCategorizedPackages getOrElse Seq.empty
 
   override def googlePlayPackagesDetail(packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
     for {
@@ -115,9 +113,7 @@ class ApiServicesImpl(
       response <- apiService
         .categorizeDetail(CategorizeRequest(packageNames), requestConfig.toGooglePlayHeader)
         .resolve[ApiServiceException]
-    } yield GooglePlayPackagesDetailResponse(
-      statusCode = response.statusCode,
-      packages = response.data map toCategorizedDetailPackages getOrElse Seq.empty)
+    } yield response.data map toCategorizedDetailPackages getOrElse Seq.empty
 
   override def getRecommendedApps(
     category: String,

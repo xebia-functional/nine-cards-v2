@@ -25,34 +25,8 @@ case class LoginResponseV1(
 case class UpdateInstallationResponse(
   statusCode: Int)
 
-case class GooglePlayPackageResponse(
-  statusCode: Int,
-  app: CategorizedPackage)
-
-case class CategorizedPackage(
-  packageName: String,
-  category: Option[String])
-
-case class CategorizedDetailPackage(
-  packageName: String,
-  title: String,
-  category: Option[String],
-  icon: String,
-  free: Boolean,
-  downloads: String,
-  stars: Double)
-
-case class GooglePlayPackagesResponse(
-  statusCode: Int,
-  packages: Seq[CategorizedPackage])
-
-case class GooglePlayPackagesDetailResponse(
-  statusCode: Int,
-  packages: Seq[CategorizedDetailPackage])
-
 trait UserV1Response {
   def statusCode: Int
-
   def userConfig: UserV1
 }
 

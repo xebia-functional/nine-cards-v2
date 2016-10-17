@@ -1,7 +1,7 @@
 package cards.nine.services.api
 
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{LoginV1Device, UserV1, PackagesByCategory}
+import cards.nine.models._
 
 trait ApiServices {
 
@@ -60,12 +60,11 @@ trait ApiServices {
     *
     * @param packageName the package identifier. For example `com.fortysevendeg.ninecardslauncher`
     * @param requestConfig necessary info for the headers
-    * @return the [[cards.nine.services.api.GooglePlayPackageResponse]] with the HTTP Code
-    *         of the response and a sequence of [[cards.nine.services.api.CategorizedPackage]]
+    * @return the [[cards.nine.models.CategorizedPackage]]
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if there was an error in the request
     */
-  def googlePlayPackage(packageName: String)(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackageResponse]
+  def googlePlayPackage(packageName: String)(implicit requestConfig: RequestConfig): TaskService[CategorizedPackage]
 
   /**
     * Fetches a list of packages information from Google Play given a list of package names. The response is similar to
@@ -73,12 +72,11 @@ trait ApiServices {
     *
     * @param packageNames a sequence of package identifiers
     * @param requestConfig necessary info for the headers
-    * @return the [[cards.nine.services.api.GooglePlayPackagesResponse]] with the HTTP Code
-    *         of the response and a sequence of [[cards.nine.services.api.CategorizedPackage]]
+    * @return the sequence of [[cards.nine.models.CategorizedPackage]]
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if there was an error in the request
     */
-  def googlePlayPackages(packageNames: Seq[String])(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackagesResponse]
+  def googlePlayPackages(packageNames: Seq[String])(implicit requestConfig: RequestConfig): TaskService[Seq[CategorizedPackage]]
 
   /**
     * Fetches a list of packages information from Google Play given a list of package names.
@@ -86,12 +84,11 @@ trait ApiServices {
     *
     * @param packageNames a sequence of package identifiers
     * @param requestConfig necessary info for the headers
-    * @return the [[cards.nine.services.api.GooglePlayPackagesDetailResponse]] with the HTTP Code
-    *         of the response and a sequence of [[cards.nine.services.api.CategorizedPackage]]
+    * @return the sequence of [[cards.nine.models.CategorizedDetailPackage]]
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if there was an error in the request
     */
-  def googlePlayPackagesDetail(packageNames: Seq[String])(implicit requestConfig: RequestConfig): TaskService[GooglePlayPackagesDetailResponse]
+  def googlePlayPackagesDetail(packageNames: Seq[String])(implicit requestConfig: RequestConfig): TaskService[Seq[CategorizedDetailPackage]]
 
   /**
     * Fetches the recommended applications based on a category
