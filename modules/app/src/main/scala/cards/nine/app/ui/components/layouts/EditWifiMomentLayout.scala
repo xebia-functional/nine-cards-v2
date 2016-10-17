@@ -4,12 +4,11 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import cards.nine.commons._
 import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -29,7 +28,7 @@ class EditWifiMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   LayoutInflater.from(context).inflate(R.layout.edit_moment_wifi_layout, this)
 
-  def populate(wifi: String, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter): Ui[Any] = {
+  def populate(wifi: String, position: Int, onRemoveWifi: (Int => Unit))(implicit theme: NineCardsTheme): Ui[Any] = {
     val iconColor = theme.get(DrawerIconColor)
     val textColor = theme.get(DrawerTextColor)
     (this <~ vSetPosition(position)) ~
@@ -38,7 +37,7 @@ class EditWifiMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         tvColor(textColor)) ~
       (deleteAction <~
         tivDefaultColor(iconColor) <~
-        On.click(Ui(editMomentPresenter.removeWifi(position))))
+        On.click(Ui(onRemoveWifi(position))))
   }
 
 }
