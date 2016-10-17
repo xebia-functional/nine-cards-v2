@@ -11,7 +11,7 @@ import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types._
 import cards.nine.process.collection._
 import cards.nine.process.utils.ApiUtils
-import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse}
+import cards.nine.models.RankApps
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import cats.syntax.either._
 import monix.eval.Task
@@ -125,8 +125,8 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
       } else {
         for {
           requestConfig <- apiUtils.getRequestConfig
-          response <- apiServices.googlePlayPackagesDetail(notInstalledApps)(requestConfig)
-        } yield response.packages
+          packages <- apiServices.googlePlayPackagesDetail(notInstalledApps)(requestConfig)
+        } yield packages
       }
     }
 
@@ -190,7 +190,7 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
         packages = packages)
     }
 
-    def generatePackagesByCategoryFromRankApps(item: RankAppsResponse) =
+    def generatePackagesByCategoryFromRankApps(item: RankApps) =
       PackagesByCategory(
         category = NineCardsCategory(item.category),
         packages = item.packages)
@@ -207,7 +207,7 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
         result <- apiServices.rankApps(
           packagesByCategory map generatePackagesByCategory,
           location flatMap (_.countryCode))(requestConfig)
-      } yield result.items map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
+      } yield result map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
   }
 
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =

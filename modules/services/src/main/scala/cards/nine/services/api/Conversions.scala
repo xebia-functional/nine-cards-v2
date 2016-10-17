@@ -204,7 +204,7 @@ trait Conversions {
 
   def toRankAppsResponse(items: Map[String, Seq[String]]) =
     (items map {
-      case (category, packages) => RankAppsResponse(category = category, packages = packages)
+      case (category, packages) => RankApps(category = category, packages = packages)
     }).toSeq
 
 }

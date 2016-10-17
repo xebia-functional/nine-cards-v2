@@ -248,7 +248,7 @@ class ApiServicesImpl(
       response <- apiService
         .rankApps(RankAppsRequest(toItemsMap(packagesByCategorySeq), location), requestConfig.toServiceHeader)
         .readOption(errorRankingAppsMessage)
-    } yield RankAppsResponseList(response.statusCode, toRankAppsResponse(response.data.items))
+    } yield toRankAppsResponse(response.data.items)
 
   private[this] def prepareV1Header: TaskService[Seq[(String, String)]] = {
 

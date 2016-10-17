@@ -238,13 +238,12 @@ trait ApiServices {
     *
     * @param packagesByCategorySeq a Sequence with the packages of the apps to rank ordered by its category
     * @param location the current country location of the device if it can be obtained
-    * @return the [[cards.nine.services.api.RankAppsResponse]] with the HTTP Code
-    *         of the response
+    * @return the Seq[[cards.nine.models.RankApps]]
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def rankApps(
     packagesByCategorySeq: Seq[PackagesByCategory],
-    location: Option[String])(implicit requestConfig: RequestConfig): TaskService[RankAppsResponseList]
+    location: Option[String])(implicit requestConfig: RequestConfig): TaskService[Seq[RankApps]]
 
 }
