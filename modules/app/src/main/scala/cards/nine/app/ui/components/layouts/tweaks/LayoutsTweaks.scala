@@ -15,7 +15,6 @@ import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{ConditionWeather, Widget}
@@ -460,15 +459,21 @@ object EditWidgetsBottomPanelLayoutTweaks {
 object EditHourMomentLayoutTweaks {
   type W = EditHourMomentLayout
 
-  def ehmPopulate(timeSlot: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter) =
-    Tweak[W] (_.populate(timeSlot, position).run)
+  def ehmPopulate(
+    timeSlot: MomentTimeSlot,
+    position: Int,
+    onRemoveHour: (Int) => Unit,
+    onChangeFromHour: (Int, String) => Unit,
+    onChangeToHour: (Int, String) => Unit,
+    onSwapDays: (Int, Int) => Unit)(implicit theme: NineCardsTheme) =
+    Tweak[W] (_.populate(timeSlot, position, onRemoveHour, onChangeFromHour, onChangeToHour, onSwapDays).run)
 
 }
 
 object EditWifiMomentLayoutTweaks {
   type W = EditWifiMomentLayout
 
-  def ewmPopulate(wifi: String, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter) =
-    Tweak[W] (_.populate(wifi, position).run)
+  def ewmPopulate(wifi: String, position: Int, onRemoveWifi: (Int) => Unit)(implicit theme: NineCardsTheme) =
+    Tweak[W] (_.populate(wifi, position, onRemoveWifi).run)
 
 }
