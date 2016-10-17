@@ -57,13 +57,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   var statuses = LauncherPresenterStatuses()
 
   def initialize(): Unit = {
-    (for {
-      _ <- di.externalServicesProcess.initializeStrictMode
-      _ <- di.externalServicesProcess.initializeCrashlytics
-      _ <- di.externalServicesProcess.initializeFirebase
-      _ <- di.externalServicesProcess.initializeStetho
-      _ <- di.userProcess.register
-    } yield ()).resolveAsync2()
+
+    def initServices: TaskService[Unit] =
+      di.externalServicesProcess.initializeStrictMode *>
+        di.externalServicesProcess.initializeCrashlytics *>
+        di.externalServicesProcess.initializeFirebase *>
+        di.externalServicesProcess.initializeStetho
+
+    (initServices *> di.userProcess.register).resolveAsync2()
+
     actions.initialize.run
   }
 
