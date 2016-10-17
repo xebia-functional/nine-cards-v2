@@ -1,5 +1,6 @@
 package cards.nine.app.ui.preferences.commons
 
+import NineCardsPreferencesValue._
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -52,7 +53,7 @@ sealed trait NineCardsPreferenceValue[T]
   extends NineCardsPreferences {
   val name: String
   val default: T
-  def readValue(pref: NineCardsPreferencesValue): T
+  def readValue(implicit contextWrapper: ContextWrapper): T
 }
 
 // Moments Preferences
@@ -62,7 +63,7 @@ case object ShowClockMoment
   override val name: String = showClockMoment
   override val default: Boolean = false
 
-  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
 }
 
 // Animations Preferences
@@ -72,11 +73,11 @@ case object SpeedAnimations
   override val name: String = speed
   override val default: SpeedAnimationValue = NormalAnimation
 
-  override def readValue(pref: NineCardsPreferencesValue): SpeedAnimationValue =
-    SpeedAnimationValue(pref.getString(name, default.value))
+  override def readValue(implicit contextWrapper: ContextWrapper): SpeedAnimationValue =
+    SpeedAnimationValue(getString(name, default.value))
 
   def getDuration(implicit contextWrapper: ContextWrapper): Int = {
-    resGetInteger(readValue(new NineCardsPreferencesValue) match {
+    resGetInteger(readValue match {
       case NormalAnimation => R.integer.anim_duration_normal
       case SlowAnimation => R.integer.anim_duration_slow
       case FastAnimation => R.integer.anim_duration_fast
@@ -89,8 +90,8 @@ case object CollectionOpeningAnimations
   override val name: String = collectionOpening
   override val default: CollectionOpeningValue = CircleOpeningCollectionAnimation
 
-  override def readValue(pref: NineCardsPreferencesValue): CollectionOpeningValue =
-    CollectionOpeningValue(pref.getString(name, default.value))
+  override def readValue(implicit contextWrapper: ContextWrapper): CollectionOpeningValue =
+    CollectionOpeningValue(getString(name, default.value))
 }
 
 case object WorkspaceAnimations
@@ -98,8 +99,8 @@ case object WorkspaceAnimations
   override val name: String = workspaceAnimation
   override val default: WorkspaceAnimationValue = HorizontalSlideWorkspaceAnimation
 
-  override def readValue(pref: NineCardsPreferencesValue): WorkspaceAnimationValue =
-    WorkspaceAnimationValue(pref.getString(name, default.value))
+  override def readValue(implicit contextWrapper: ContextWrapper): WorkspaceAnimationValue =
+    WorkspaceAnimationValue(getString(name, default.value))
 }
 
 // App Drawer Preferences
@@ -109,8 +110,8 @@ case object AppDrawerLongPressAction
   override val name: String = appDrawerLongPressAction
   override val default: AppDrawerLongPressActionValue = AppDrawerLongPressActionOpenKeyboard
 
-  override def readValue(pref: NineCardsPreferencesValue): AppDrawerLongPressActionValue =
-    AppDrawerLongPressActionValue(pref.getString(name, default.value))
+  override def readValue(implicit contextWrapper: ContextWrapper): AppDrawerLongPressActionValue =
+    AppDrawerLongPressActionValue(getString(name, default.value))
 }
 
 case object AppDrawerAnimation
@@ -118,8 +119,8 @@ case object AppDrawerAnimation
   override val name: String = appDrawerAnimation
   override val default: AppDrawerAnimationValue = AppDrawerAnimationCircle
 
-  override def readValue(pref: NineCardsPreferencesValue): AppDrawerAnimationValue =
-    AppDrawerAnimationValue(pref.getString(name, default.value))
+  override def readValue(implicit contextWrapper: ContextWrapper): AppDrawerAnimationValue =
+    AppDrawerAnimationValue(getString(name, default.value))
 }
 
 case object AppDrawerFavoriteContactsFirst
@@ -127,7 +128,7 @@ case object AppDrawerFavoriteContactsFirst
   override val name: String = appDrawerFavoriteContacts
   override val default: Boolean = false
 
-  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
 }
 
 case object AppDrawerSelectItemsInScroller
@@ -135,7 +136,7 @@ case object AppDrawerSelectItemsInScroller
   override val name: String = appDrawerSelectItemsInScroller
   override val default: Boolean = true
 
-  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
 }
 
 // Look & Feel Preferences
@@ -145,10 +146,10 @@ case object Theme
   override val name: String = theme
   override val default: ThemeValue = ThemeLight
 
-  override def readValue(pref: NineCardsPreferencesValue): ThemeValue =
-    ThemeValue(pref.getString(name, default.value))
+  override def readValue(implicit contextWrapper: ContextWrapper): ThemeValue =
+    ThemeValue(getString(name, default.value))
 
-  def getThemeFile(pref: NineCardsPreferencesValue): String = Theme.readValue(pref) match {
+  def getThemeFile(implicit contextWrapper: ContextWrapper): String = Theme.readValue match {
     case ThemeLight => "theme_light"
     case ThemeDark => "theme_dark"
   }
@@ -159,8 +160,8 @@ case object GoogleLogo
   override val name: String = googleLogo
   override val default: GoogleLogoValue = GoogleLogoTheme
 
-  override def readValue(pref: NineCardsPreferencesValue): GoogleLogoValue =
-    GoogleLogoValue(pref.getString(name, default.value))
+  override def readValue(implicit contextWrapper: ContextWrapper): GoogleLogoValue =
+    GoogleLogoValue(getString(name, default.value))
 }
 
 case object FontSize
@@ -168,11 +169,11 @@ case object FontSize
   override val name: String = fontsSize
   override val default: FontSizeValue = FontSizeMedium
 
-  override def readValue(pref: NineCardsPreferencesValue): FontSizeValue =
-    FontSizeValue(pref.getString(name, default.value))
+  override def readValue(implicit contextWrapper: ContextWrapper): FontSizeValue =
+    FontSizeValue(getString(name, default.value))
 
   def getSizeResource(implicit contextWrapper: ContextWrapper): Int = {
-    readValue(new NineCardsPreferencesValue) match {
+    readValue match {
       case FontSizeSmall => R.dimen.text_medium
       case FontSizeMedium => R.dimen.text_default
       case FontSizeLarge => R.dimen.text_large
@@ -180,7 +181,7 @@ case object FontSize
   }
 
   def getTitleSizeResource(implicit contextWrapper: ContextWrapper): Int = {
-    readValue(new NineCardsPreferencesValue) match {
+    readValue match {
       case FontSizeSmall => R.dimen.text_large
       case FontSizeMedium => R.dimen.text_xlarge
       case FontSizeLarge => R.dimen.text_xxlarge
@@ -188,7 +189,7 @@ case object FontSize
   }
 
   def getContactSizeResource(implicit contextWrapper: ContextWrapper): Int = {
-    readValue(new NineCardsPreferencesValue) match {
+    readValue match {
       case FontSizeSmall => R.dimen.text_default
       case FontSizeMedium => R.dimen.text_large
       case FontSizeLarge => R.dimen.text_xlarge
@@ -202,11 +203,11 @@ case object IconsSize
   override val name: String = iconsSize
   override val default: IconsSizeValue = IconsSizeMedium
 
-  override def readValue(pref: NineCardsPreferencesValue): IconsSizeValue =
-    IconsSizeValue(pref.getString(name, default.value))
+  override def readValue(implicit contextWrapper: ContextWrapper): IconsSizeValue =
+    IconsSizeValue(getString(name, default.value))
 
   def getIconApp(implicit contextWrapper: ContextWrapper): Int = {
-    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+    resGetDimensionPixelSize(readValue match {
       case IconsSizeSmall => R.dimen.size_icon_app_small
       case IconsSizeMedium => R.dimen.size_icon_app_medium
       case IconsSizeLarge => R.dimen.size_icon_app_large
@@ -214,7 +215,7 @@ case object IconsSize
   }
 
   def getIconCollection(implicit contextWrapper: ContextWrapper): Int = {
-    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+    resGetDimensionPixelSize(readValue match {
       case IconsSizeSmall => R.dimen.size_group_collection_small
       case IconsSizeMedium => R.dimen.size_group_collection_medium
       case IconsSizeLarge => R.dimen.size_group_collection_large
@@ -228,11 +229,11 @@ case object CardPadding
   override val name: String = cardPadding
   override val default: IconsSizeValue = IconsSizeMedium
 
-  override def readValue(pref: NineCardsPreferencesValue): IconsSizeValue =
-    IconsSizeValue(pref.getString(name, default.value))
+  override def readValue(implicit contextWrapper: ContextWrapper): IconsSizeValue =
+    IconsSizeValue(getString(name, default.value))
 
   def getPadding(implicit contextWrapper: ContextWrapper): Int = {
-    resGetDimensionPixelSize(readValue(new NineCardsPreferencesValue) match {
+    resGetDimensionPixelSize(readValue match {
       case IconsSizeSmall => R.dimen.card_padding_small
       case IconsSizeMedium => R.dimen.card_padding_medium
       case IconsSizeLarge => R.dimen.card_padding_large
@@ -247,9 +248,9 @@ case object IsDeveloper
   override val name: String = isDeveloper
   override val default: Boolean = false
 
-  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
 
-  def convertToDeveloper(pref: NineCardsPreferencesValue): Unit = pref.setBoolean(name, value = true)
+  def convertToDeveloper(implicit contextWrapper: ContextWrapper): Unit = setBoolean(name, value = true)
 }
 
 case object AppsCategorized
@@ -257,7 +258,7 @@ case object AppsCategorized
   override val name: String = appsCategorized
   override val default: String = ""
 
-  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
 }
 
 case object AndroidToken
@@ -265,7 +266,7 @@ case object AndroidToken
   override val name: String = androidToken
   override val default: String = ""
 
-  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
 }
 
 case object DeviceCloudId
@@ -273,7 +274,7 @@ case object DeviceCloudId
   override val name: String = deviceCloudId
   override val default: String = ""
 
-  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
 }
 
 case object ProbablyActivity
@@ -281,7 +282,7 @@ case object ProbablyActivity
   override val name: String = probablyActivity
   override val default: String = ""
 
-  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
 }
 
 case object Headphones
@@ -289,7 +290,7 @@ case object Headphones
   override val name: String = headphones
   override val default: String = ""
 
-  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
 }
 
 case object Location
@@ -297,7 +298,7 @@ case object Location
   override val name: String = location
   override val default: String = ""
 
-  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
 }
 
 case object Weather
@@ -305,7 +306,7 @@ case object Weather
   override val name: String = weather
   override val default: String = ""
 
-  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
 }
 
 case object ClearCacheImages
@@ -313,7 +314,7 @@ case object ClearCacheImages
   override val name: String = clearCacheImages
   override val default: String = ""
 
-  override def readValue(pref: NineCardsPreferencesValue): String = pref.getString(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
 }
 
 case object ShowPositionInCards
@@ -321,7 +322,7 @@ case object ShowPositionInCards
   override val name: String = showPositionInCards
   override val default: Boolean = false
 
-  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
 }
 
 case object ShowPrintInfoOptionInAccounts
@@ -329,28 +330,34 @@ case object ShowPrintInfoOptionInAccounts
   override val name: String = showPrintInfoOptionInAccounts
   override val default: Boolean = false
 
-  override def readValue(pref: NineCardsPreferencesValue): Boolean = pref.getBoolean(name, default)
+  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
 }
 
 
 // Commons
 
-class NineCardsPreferencesValue(implicit contextWrapper: ContextWrapper) {
+object NineCardsPreferencesValue {
 
-  private[this] def get[T](f: (SharedPreferences) => T) =
+  private[this] def get[T](f: (SharedPreferences) => T)(implicit contextWrapper: ContextWrapper) =
     f(PreferenceManager.getDefaultSharedPreferences(contextWrapper.application))
 
-  def getInt(name: String, defaultValue: Int): Int = get(_.getInt(name, defaultValue))
+  def getInt(name: String, defaultValue: Int)(implicit contextWrapper: ContextWrapper): Int =
+    get(_.getInt(name, defaultValue))
 
-  def setInt(name: String, value: Int): Unit = get(_.edit().putInt(name, value).apply())
+  def setInt(name: String, value: Int)(implicit contextWrapper: ContextWrapper): Unit =
+    get(_.edit().putInt(name, value).apply())
 
-  def getString(name: String, defaultValue: String): String = get(_.getString(name, defaultValue))
+  def getString(name: String, defaultValue: String)(implicit contextWrapper: ContextWrapper): String =
+    get(_.getString(name, defaultValue))
 
-  def setString(name: String, value: String): Unit = get(_.edit().putString(name, value).apply())
+  def setString(name: String, value: String)(implicit contextWrapper: ContextWrapper): Unit =
+    get(_.edit().putString(name, value).apply())
 
-  def getBoolean(name: String, defaultValue: Boolean): Boolean = get(_.getBoolean(name, defaultValue))
+  def getBoolean(name: String, defaultValue: Boolean)(implicit contextWrapper: ContextWrapper): Boolean =
+    get(_.getBoolean(name, defaultValue))
 
-  def setBoolean(name: String, value: Boolean): Unit = get(_.edit().putBoolean(name, value).apply())
+  def setBoolean(name: String, value: Boolean)(implicit contextWrapper: ContextWrapper): Unit =
+    get(_.edit().putBoolean(name, value).apply())
 
 }
 
