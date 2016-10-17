@@ -6,7 +6,8 @@ import cards.nine.api.version2._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{RequestConfigV1, RequestConfig, LoginV1Device, PackagesByCategory}
+import cards.nine.models._
+import cards.nine.services.api.Conversions
 import cards.nine.services.api._
 import monix.eval.Task
 
@@ -81,7 +82,7 @@ class ApiServicesImpl(
       response <- apiService
         .login(ApiLoginRequest(email, androidId, tokenId))
         .readOption(userNotAuthenticatedMessage)
-    }  yield LoginResponse(response.statusCode, response.data.apiKey, response.data.sessionToken)
+    }  yield LoginResponse(response.data.apiKey, response.data.sessionToken)
 
   override def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig) =
     for {

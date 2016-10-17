@@ -13,6 +13,10 @@ case class CategorizedPackage(
   packageName: String,
   category: Option[String])
 
+case class LoginResponse(
+  apiKey: String,
+  sessionToken: String)
+
 case class RankApps(
   category: String,
   packages: Seq[String])

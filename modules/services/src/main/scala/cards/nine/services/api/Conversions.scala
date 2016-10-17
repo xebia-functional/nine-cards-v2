@@ -36,7 +36,6 @@ trait Conversions {
 
   def toLoginResponseV1(statusCode: Int, user: cards.nine.api.version1.User): LoginResponseV1 =
     LoginResponseV1(
-      statusCode,
       userId = user._id,
       sessionToken = user.sessionToken,
       email = user.email,

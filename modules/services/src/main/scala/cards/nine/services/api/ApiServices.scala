@@ -10,7 +10,7 @@ trait ApiServices {
     *
     * @param email user email
     * @param device user device
-    * @return the [[cards.nine.services.api.LoginResponseV1]]
+    * @return the [[cards.nine.models.LoginResponseV1]]
     * @throws ApiServiceV1ConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user is not found or the request throws an Exception
     */
@@ -33,7 +33,7 @@ trait ApiServices {
     * @param email user email
     * @param androidId device identifier
     * @param tokenId token id obtained in the email authentication
-    * @return the [[cards.nine.services.api.LoginResponse]]
+    * @return the [[cards.nine.models.LoginResponse]]
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user is not found or the request throws an Exception
     */
