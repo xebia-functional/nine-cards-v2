@@ -5,22 +5,26 @@ import android.graphics.Color
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.view.View
+import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{AppUtils, SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.drawables.EdgeWorkspaceDrawable
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import cards.nine.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
@@ -28,17 +32,16 @@ import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.IsDeveloper
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.models.{ConditionWeather, UnknownCondition}
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
-import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.models.{ConditionWeather, UnknownCondition}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -49,6 +52,9 @@ class WorkspaceUiActions(dom: LauncherDOM)
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_],
     presenter: LauncherPresenter) {
+
+  // TODO We select the page in ViewPager with collections. In the future this will be a user preference
+  val selectedPageDefault = 1
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
@@ -132,6 +138,37 @@ class WorkspaceUiActions(dom: LauncherDOM)
         (dom.topBarPanel <~ tblWeather(UnknownCondition)) ~ (dom.topBarPanel <~ vTag(UnknownCondition))
       case _ => Ui.nop
     }).toService
+  }
+
+  def loadLauncherInfo(data: Seq[LauncherData]): TaskService[Unit] = {
+    ((dom.loading <~ vGone) ~
+      (dom.workspaces <~
+        vGlobalLayoutListener(_ =>
+          (dom.workspaces <~
+            lwsData(data, selectedPageDefault) <~
+            lwsAddPageChangedObserver(dom.topBarPanel.movement) <~
+            awsAddPageChangedObserver(currentPage => {
+              (dom.paginationPanel <~ ivReloadPager(currentPage)).run
+            })) ~
+            createPager(selectedPageDefault)
+        ))).toService
+  }
+
+  private[this] def createPager(activePosition: Int): Ui[Any] = {
+    def pagination(position: Int) = {
+      val margin = resGetDimensionPixelSize(R.dimen.margin_pager_collection)
+      (w[ImageView] <~
+        vWrapContent <~
+        llLayoutMargin(marginLeft = margin, marginTop = 0, marginRight = margin, marginBottom = 0) <~
+        ivSrc(R.drawable.workspaces_pager) <~ vSetPosition(position)).get
+    }
+
+    val pagerViews = 0 until dom.getWorksSpacesCount map { position =>
+      val view = pagination(position)
+      view.setActivated(activePosition == position)
+      view
+    }
+    dom.paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
   }
 
   private[this] def closeCollectionMenu(): Ui[Future[Any]] = dom.workspaces <~~ lwsCloseMenu

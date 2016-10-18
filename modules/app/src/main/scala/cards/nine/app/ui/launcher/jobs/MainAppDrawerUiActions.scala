@@ -151,7 +151,6 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
             }) ~ (if (dom.isDrawerTabsOpened) closeDrawerTabs else Ui.nop) ~ (dom.searchBoxView <~ sbvClean)).run
           }
         ))) ~
-      (dom.drawerContent <~ contentStyle) ~
       loadAppsAlphabetical ~
       createDrawerPagers).toService
   }
@@ -402,8 +401,6 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
   }
 
   // Styles
-
-  def contentStyle = vGone
 
   def scrollableStyle(implicit context: ContextWrapper, theme: NineCardsTheme) = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)

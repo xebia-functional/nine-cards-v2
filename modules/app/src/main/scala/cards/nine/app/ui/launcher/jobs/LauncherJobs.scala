@@ -2,34 +2,50 @@ package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.app.ui.commons.{Jobs, actions}
+import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
-import cards.nine.commons.services.TaskService
 import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.{Collection, DockApp, Moment, UnknownCondition}
+import cards.nine.process.theme.models.NineCardsTheme
 import cats.implicits._
-import macroid.{ActivityContextWrapper, Ui}
+import macroid.ActivityContextWrapper
 
 class LauncherJobs(
   mainLauncherUiActions: MainLauncherUiActions,
   workspaceUiActions: WorkspaceUiActions,
   menuDrawersUiActions: MenuDrawersUiActions,
   appDrawerUiActions: MainAppDrawerUiActions,
-  navigationUiActions: NavigationUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  navigationUiActions: NavigationUiActions,
+  dockAppsUiActions: DockAppsUiActions,
+  topBarUiActions: TopBarUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs { self =>
 
   lazy val momentPreferences = new MomentPreferences
 
-  def initialize(): TaskService[Unit] =
+  def initialize(): TaskService[Unit] = {
+    def initServices: TaskService[Unit] =
+      di.externalServicesProcess.initializeStrictMode *>
+        di.externalServicesProcess.initializeCrashlytics *>
+        di.externalServicesProcess.initializeFirebase *>
+        di.externalServicesProcess.initializeStetho
+
+    def loadTheme(theme: NineCardsTheme): TaskService[Unit] =
+      workspaceUiActions.initialize(theme) *>
+        menuDrawersUiActions.initialize(theme) *>
+        appDrawerUiActions.initialize(theme) *>
+        topBarUiActions.initialize(theme) *>
+        dockAppsUiActions.initialize(theme)
+
     for {
+      _ <-  mainLauncherUiActions.initialize()
+      _ <- initServices
       _ <- di.userProcess.register
       theme <- getThemeTask
-      _ <- mainLauncherUiActions.initialize(theme)
-      _ <- workspaceUiActions.initialize(theme)
-      _ <- menuDrawersUiActions.initialize(theme)
-      _ <- appDrawerUiActions.initialize(theme)
+      _ <- loadTheme(theme)
     } yield ()
+  }
 
   def resume(): TaskService[Unit] =
     for {
@@ -43,6 +59,10 @@ class LauncherJobs(
         TaskService.empty
       }
     } yield ()
+
+  def pause(): TaskService[Unit] = di.observerRegister.unregisterObserverTask()
+
+  def destroy(): TaskService[Unit] = mainLauncherUiActions.destroy()
 
   def reloadAppsMomentBar(): TaskService[Unit] = {
 
@@ -97,12 +117,14 @@ class LauncherJobs(
               maybeCoverUrl = user.userProfile.cover)
             collectionMoment = getCollectionMoment(moment, collections)
             launcherMoment = LauncherMoment(moment flatMap (_.momentType), collectionMoment)
-            data = LauncherData(MomentWorkSpace, Some(launcherMoment)) +: createLauncherDataCollections(collections)
+            data = LauncherData(MomentWorkSpace, Option(launcherMoment)) +: createLauncherDataCollections(collections)
+            _ <- workspaceUiActions.loadLauncherInfo(data)
+            _ <- dockAppsUiActions.loadDockApps(apps map (_.toData))
+            _ <- topBarUiActions.loadBar(data)
+            _ <- menuDrawersUiActions.reloadBarMoment(launcherMoment)
           } yield ()
       }
     } yield ()
-
-    // goToWizard())
   }
 
   // Check if there is a new best available moment, if not reload the apps moment bar

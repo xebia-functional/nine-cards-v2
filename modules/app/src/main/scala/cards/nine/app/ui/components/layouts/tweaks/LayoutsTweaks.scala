@@ -420,7 +420,7 @@ object AppsMomentLayoutTweaks {
   def amlPopulate(moment: LauncherMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
     Tweak[W] (_.populate(moment).run)
 
-  def amlPaddingTopAndBottom(paddingTop: Int, paddingBottom: Int)(implicit theme: NineCardsTheme) =
+  def amlPaddingTopAndBottom(paddingTop: Int, paddingBottom: Int) =
     Tweak[W] (_.setPaddingTopAndBottom(paddingTop, paddingBottom).run)
 
 }

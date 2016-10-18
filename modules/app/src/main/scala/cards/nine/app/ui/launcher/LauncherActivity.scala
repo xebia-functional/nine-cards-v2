@@ -38,6 +38,8 @@ class LauncherActivity
 
   lazy val appDrawerJobs = createAppDrawerJobs
 
+  lazy val navigationJobs = createNavigationJobs
+
   private[this] var hasFocus = false
 
   override val actionsFilters: Seq[String] =
@@ -60,24 +62,23 @@ class LauncherActivity
     super.onCreate(bundle)
     setContentView(R.layout.launcher_activity)
     registerDispatchers()
-//    presenter.initialize()
     launcherJobs.initialize().resolveAsync()
   }
 
   override def onResume(): Unit = {
     super.onResume()
-    presenter.resume()
+    launcherJobs.resume().resolveAsyncServiceOr(_ => navigationJobs.goToWizard())
   }
 
   override def onPause(): Unit = {
     super.onPause()
-    presenter.pause()
+    launcherJobs.pause().resolveAsync()
   }
 
   override def onDestroy(): Unit = {
     super.onDestroy()
     unregisterDispatcher()
-    presenter.destroy()
+    launcherJobs.destroy().resolveAsync()
   }
 
   override def onStartFinishAction(): Unit = presenter.resetAction()
@@ -142,12 +143,14 @@ object LauncherActivity {
     uiContext: UiContext[_],
     presenter: LauncherPresenter) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
-    val mainLauncherUiActions = new MainLauncherUiActions(dom)
-    val workspaceUiActions = new WorkspaceUiActions(dom)
-    val appDrawerUiActions = new MainAppDrawerUiActions(dom)
-    val menuDrawersUiActions = new MenuDrawersUiActions(dom)
-    val navigationUiActions = new NavigationUiActions(dom)
-    new LauncherJobs(mainLauncherUiActions, workspaceUiActions, menuDrawersUiActions, appDrawerUiActions, navigationUiActions)
+    new LauncherJobs(
+      mainLauncherUiActions = new MainLauncherUiActions(dom),
+      workspaceUiActions = new WorkspaceUiActions(dom),
+      menuDrawersUiActions = new MenuDrawersUiActions(dom),
+      appDrawerUiActions = new MainAppDrawerUiActions(dom),
+      navigationUiActions = new NavigationUiActions(dom),
+      dockAppsUiActions = new DockAppsUiActions(dom),
+      topBarUiActions = new TopBarUiActions(dom))
   }
 
   def createAppDrawerJobs(implicit
@@ -156,8 +159,7 @@ object LauncherActivity {
     uiContext: UiContext[_],
     presenter: LauncherPresenter) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
-    val appDrawerUiActions = new MainAppDrawerUiActions(dom)
-    new AppDrawerJobs(appDrawerUiActions)
+    new AppDrawerJobs(new MainAppDrawerUiActions(dom))
   }
 
   def createNavigationJobs(implicit
@@ -166,8 +168,7 @@ object LauncherActivity {
     uiContext: UiContext[_],
     presenter: LauncherPresenter) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
-    val navigationUiActions = new NavigationUiActions(dom)
-    new NavigationJobs(navigationUiActions)
+    new NavigationJobs(new NavigationUiActions(dom))
   }
 
 }

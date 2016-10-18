@@ -16,6 +16,7 @@ import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.launcher._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
@@ -32,23 +33,18 @@ class MainLauncherUiActions(val dom: LauncherDOM)
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
-  case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
-
-  private[this] var actionsState = State()
-
-  implicit def theme: NineCardsTheme = actionsState.theme
-
   lazy val appWidgetManager = AppWidgetManager.getInstance(activityContextWrapper.application)
 
   lazy val appWidgetHost = new AppWidgetHost(activityContextWrapper.application, R.id.app_widget_host_id)
 
-  def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = {
-    actionsState = actionsState.copy(theme = nineCardsTheme)
+  def initialize(): TaskService[Unit] = {
     (Ui(appWidgetHost.startListening()) ~
       systemBarsTint.initAllSystemBarsTint() ~
       prepareBars ~
       (dom.root <~ dragListener())).toService
   }
+
+  def destroy(): TaskService[Unit] = TaskService.right(appWidgetHost.stopListening())
 
   private[this] def prepareBars =
     KitKat.ifSupportedThen {

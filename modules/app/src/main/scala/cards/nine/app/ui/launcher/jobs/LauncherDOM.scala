@@ -91,6 +91,8 @@ class LauncherDOM(activity: Activity) {
 
   lazy val searchBoxView = findView(TR.launcher_search_box_content).run(activity)
 
+  def getWorksSpacesCount: Int = workspaces.getWorksSpacesCount
+
   def getData: Seq[LauncherData] = workspaces.data
 
   def getCurrentMomentType: Option[NineCardsMoment] = getData.headOption flatMap (_.moment) flatMap (_.momentType)
