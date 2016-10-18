@@ -161,6 +161,7 @@ trait ApiServices {
     * @param name The name of the collection
     * @param author The original author of the collection
     * @param packages The list of packages in the collection
+    * @param category the category of the SharedCollection
     * @param icon The collection's icon
     * @param community A flag for whether this is a community collection
     * @return a String with the sharedCollectionId

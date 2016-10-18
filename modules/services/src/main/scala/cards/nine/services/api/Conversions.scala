@@ -2,6 +2,7 @@ package cards.nine.services.api
 
 import cards.nine.api._
 import cards.nine.models._
+import cards.nine.models.types.{NineCardsCategory, NotPublished}
 import org.joda.time.format.DateTimeFormat
 
 import scala.util.{Success, Try}
@@ -174,9 +175,10 @@ trait Conversions {
       resolvedPackages = toSharedCollectionPackageSeq(collection.appsInfo),
       views = collection.views getOrElse 0,
       subscriptions = collection.subscriptions,
-      category = collection.category,
+      category = NineCardsCategory(collection.category),
       icon = collection.icon,
-      community = collection.community)
+      community = collection.community,
+      publicCollectionStatus = NotPublished)
 
   def toSharedCollectionPackageSeq(packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackage] =
     packages map toSharedCollectionPackage

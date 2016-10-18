@@ -2,7 +2,7 @@ package cards.nine.process.sharedcollections
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.sharedcollections.models._
+import cards.nine.models._
 import cards.nine.models.types.NineCardsCategory
 
 trait SharedCollectionsProcess {
@@ -25,7 +25,7 @@ trait SharedCollectionsProcess {
     * @param typeShareCollection type of shared collection
     * @param offset offset of query
     * @param limit limit of query
-    * @return the Seq[cards.nine.process.sharedcollections.models.SharedCollection]
+    * @return the Seq[cards.nine.models.SharedCollection]
     * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
     * @throws SharedCollectionsException if there was an error fetching the collections
     */
@@ -38,7 +38,7 @@ trait SharedCollectionsProcess {
   /**
     * Get published collections
     *
-    * @return the Seq[cards.nine.process.sharedcollections.models.SharedCollection]
+    * @return the Seq[cards.nine.models.SharedCollection]
     * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
     * @throws SharedCollectionsException if there was an error fetching the published collections
     */
@@ -47,31 +47,41 @@ trait SharedCollectionsProcess {
   /**
     * Persist a SharedCollection
     *
-    * @param sharedCollection the defined collection to create
+    * @param name The name of the collection
+    * @param author The original author of the collection
+    * @param packages The list of packages in the collection
+    * @param category the NineCardsCategory of the SharedCollection
+    * @param icon The collection's icon
+    * @param community A flag for whether this is a community collection
     * @return shared collection identifier
     * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
     * @throws SharedCollectionsException if the service cannot create the collection for some reason
     */
   def createSharedCollection(
-    sharedCollection: CreateSharedCollection
-  )(implicit context: ContextSupport): TaskService[String]
+    name: String,
+    author: String,
+    packages: Seq[String],
+    category: NineCardsCategory,
+    icon: String,
+    community: Boolean)(implicit context: ContextSupport): TaskService[String]
 
   /**
     * Updates a SharedCollection
     *
-    * @param sharedCollection the defined collection to update
+    * @param sharedCollectionId the SharedCollection id
+    * @param name the name of the SharedCollection
+    * @param packages the packages of the SharedCollection
     * @return shared collection identifier
     * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
     * @throws SharedCollectionsException if the service cannot create the collection for some reason
     */
   def updateSharedCollection(
-    sharedCollection: UpdateSharedCollection
-  )(implicit context: ContextSupport): TaskService[String]
+    sharedCollectionId: String, name: String, packages: Seq[String])(implicit context: ContextSupport): TaskService[String]
 
   /**
     * Gets all the subscriptions of the current user
     *
-    * @return the Seq[cards.nine.process.sharedcollections.models.Subscription]
+    * @return the Seq[cards.nine.models.Subscription]
     * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
     * @throws SharedCollectionsException if the service cannot get the subscriptions or the collections
     */

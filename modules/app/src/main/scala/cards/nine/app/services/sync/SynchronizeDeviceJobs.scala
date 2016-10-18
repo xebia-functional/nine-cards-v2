@@ -10,11 +10,9 @@ import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.{Collection, User}
 import cards.nine.models.types.{AppCardType, PublishedByMe}
 import cards.nine.process.cloud.Conversions._
-import cards.nine.models.Collection
-import cards.nine.process.sharedcollections.models.UpdateSharedCollection
-import cards.nine.models.User
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ContextWrapper
 import monix.eval.Task
@@ -37,10 +35,9 @@ class SynchronizeDeviceJobs(actions: SynchronizeDeviceUiActions)(implicit contex
           (collection.publicCollectionStatus, collection.sharedCollectionId) match {
             case (PublishedByMe, Some(sharedCollectionId)) =>
               di.sharedCollectionsProcess.updateSharedCollection(
-                UpdateSharedCollection(
                   sharedCollectionId = sharedCollectionId,
                   name = collection.name,
-                  packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName))).map(Option(_))
+                  packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName)).map(Option(_))
             case _ => TaskService.right(None)
           }
 
