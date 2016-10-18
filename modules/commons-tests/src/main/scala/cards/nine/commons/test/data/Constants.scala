@@ -5,30 +5,40 @@ import cards.nine.models.types._
 
 object ApiValues {
 
+  val latitude: Double = 47
+  val longitude: Double = 36
+
+  val countryCode: String = "countryCode"
+  val countryName: String = "countryName"
+  val street: String = "street"
+  val city: String = "city"
+  val postalCode: String = "postalCode"
+  val apiIcon: String = "apiIcon"
+  val free: Boolean = true
+  val downloads: String = "100"
+  val stars: Double = 4.5
 
 }
 
 
 object ApiV1Values {
 
-  val statusCodeUser = 101
-
   val deviceId: String  = "XX-47-XX"
   val permissions: Seq[String] = Seq("permission1", "permission2")
   val itemType: CardType = AppCardType
   val title: String = "title"
-  val apiIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
-  val apiCollectionCategory: NineCardsCategory = Game
-  val apiCollectionAnotherCategory: NineCardsCategory = Communication
-  val apiCollectionName: String  = "apiCollectionName"
-  val apiOriginalSharedCollectionId: String = "apiOriginalSharedCollectionId"
-  val apiSharedCollectionId: String = "apiSharedCollectionId"
-  val apiSharedCollectionSubscribed: Boolean = false
-  val apiCollectionType: CollectionType = AppsCollectionType
+  val apiV1Intent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val apiV1CollectionCategory: NineCardsCategory = Game
+  val apiV1CollectionAnotherCategory: NineCardsCategory = Communication
+  val apiV1CollectionName: String  = "apiCollectionName"
+  val apiV1OriginalSharedCollectionId: String = "apiOriginalSharedCollectionId"
+  val apiV1SharedCollectionId: String = "apiSharedCollectionId"
+  val apiV1SharedCollectionSubscribed: Boolean = false
+  val apiV1CollectionType: CollectionType = AppsCollectionType
   val constrains: Seq[String] = Seq("constrain1", "constrain2")
   val wifi: Seq[String] = Seq("wifi1", "wifi2")
   val occurrence: Seq[String] = Seq("occurrence1", "occurrence2")
-  val apiCollectionIcon: String  = "GAME"
+  val apiV1CollectionIcon: String  = "GAME"
   val deviceIdPrefix: String  = "deviceIdPrefix"
   val userV1Id: String = "userV1Id"
   val displayName: String = "displayName"

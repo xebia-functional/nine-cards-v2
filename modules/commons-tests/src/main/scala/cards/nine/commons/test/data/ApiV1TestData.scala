@@ -29,23 +29,23 @@ trait ApiV1TestData {
   def userV1CollectionItem(num: Int = 0) = UserV1CollectionItem(
     itemType = itemType,
     title = title + num,
-    intent = apiIntent,
-    categories = Option(Seq(apiCollectionCategory, apiCollectionAnotherCategory)))
+    intent = apiV1Intent,
+    categories = Option(Seq(apiV1CollectionCategory, apiV1CollectionAnotherCategory)))
 
   val seqUserV1CollectionItem: Seq[UserV1CollectionItem] = Seq(userV1CollectionItem(0), userV1CollectionItem(1), userV1CollectionItem(2))
 
   def userV1Collection(num: Int = 0) = UserV1Collection(
-    name = apiCollectionName,
-    originalSharedCollectionId = Option(apiOriginalSharedCollectionId),
-    sharedCollectionId = Option(apiSharedCollectionId),
-    sharedCollectionSubscribed = Option(apiSharedCollectionSubscribed),
+    name = apiV1CollectionName,
+    originalSharedCollectionId = Option(apiV1OriginalSharedCollectionId),
+    sharedCollectionId = Option(apiV1SharedCollectionId),
+    sharedCollectionSubscribed = Option(apiV1SharedCollectionSubscribed),
     items = seqUserV1CollectionItem,
-    collectionType = apiCollectionType,
+    collectionType = apiV1CollectionType,
     constrains = constrains,
     wifi = wifi,
     occurrence = occurrence,
-    icon = apiCollectionIcon,
-    category = Option(apiCollectionCategory))
+    icon = apiV1CollectionIcon,
+    category = Option(apiV1CollectionCategory))
 
   val seqUserV1Collection: Seq[UserV1Collection] = Seq(userV1Collection(0), userV1Collection(1), userV1Collection(2))
 
