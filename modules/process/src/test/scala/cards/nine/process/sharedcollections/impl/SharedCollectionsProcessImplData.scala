@@ -1,10 +1,8 @@
 package cards.nine.process.sharedcollections.impl
 
-import cards.nine.models.Collection
+import cards.nine.models.{RequestConfig, Collection}
 import cards.nine.models.types._
 import cards.nine.process.sharedcollections.TopSharedCollection
-import cards.nine.process.sharedcollections.models.{CreateSharedCollection, UpdateSharedCollection}
-import cards.nine.services.api._
 
 import scala.util.Random
 

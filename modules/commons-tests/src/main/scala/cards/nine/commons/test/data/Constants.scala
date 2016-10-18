@@ -7,7 +7,6 @@ object ApiValues {
 
   val latitude: Double = 47
   val longitude: Double = 36
-
   val countryCode: String = "countryCode"
   val countryName: String = "countryName"
   val street: String = "street"
@@ -17,9 +16,14 @@ object ApiValues {
   val free: Boolean = true
   val downloads: String = "100"
   val stars: Double = 4.5
+  val apiCategory: NineCardsCategory = Social
+  val likePackages: Seq[String] = Seq("com.fortysevendeg.package1", "com.fortysevendeg.package2", "com.fortysevendeg.package3")
+  val limit: Int = 20
+  val apiPackageName: String = "apiPackageName"
+  val apiTitle: String = "apiTitle"
+  val screenshots: Seq[String] = Seq("screenshot1", "screenshot2", "screenshot3"))
 
 }
-
 
 object ApiV1Values {
 
@@ -49,8 +53,7 @@ object ApiV1Values {
 
 object ApplicationValues {
 
-  val keyword = "fake-keyword"
-
+  val keyword = "keyword"
   val applicationId: Int = 1
   val applicationName: String = "applicationName"
   val applicationPackageName: String = "applicationPackageName"

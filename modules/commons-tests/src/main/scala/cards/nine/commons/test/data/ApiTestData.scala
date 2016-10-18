@@ -1,10 +1,17 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.ApiValues._
+import cards.nine.commons.test.data.UserValues._
 import cards.nine.models._
 import cards.nine.models.types.NineCardsCategory
 
 trait ApiTestData extends ApplicationTestData {
+
+  val requestConfig = RequestConfig(
+    apiKey = apiKey,
+    sessionToken = sessionToken,
+    androidId = androidId,
+    marketToken = Some(marketToken))
 
   val awarenessLocation = Location(
       latitude = latitude,
@@ -40,5 +47,16 @@ trait ApiTestData extends ApplicationTestData {
         packages = item._2)
     }
 
+  def recommendedApp(num: Int = 0) = RecommendedApp(
+    packageName = apiPackageName,
+    title = apiTitle,
+    downloads = downloads,
+    icon = Option(apiIcon),
+    stars = stars,
+    free = free,
+    screenshots = screenshots)
+
+  val recommendedApp: RecommendedApp = recommendedApp(0)
+  val seqRecommendedApp: Seq[RecommendedApp]  = Seq(recommendedApp(0), recommendedApp(1), recommendedApp(2))
 
 }
