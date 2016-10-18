@@ -10,7 +10,7 @@ import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.components.commons.ReorderItemTouchListener
 import cards.nine.app.ui.components.drawables.{BackgroundSelectedDrawable, IconTypes, PathMorphDrawable}
-import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, NineCardsPreferencesValue, ShowPositionInCards}
+import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, ShowPositionInCards}
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.models.types.{CardType, EmailCardType, PhoneCardType, SmsCardType}
 import cards.nine.models.{Card, Collection}
@@ -35,7 +35,7 @@ case class CollectionAdapter(
   extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
   with ReorderItemTouchListener { self =>
 
-  val showPositions = ShowPositionInCards.readValue(new NineCardsPreferencesValue)
+  val showPositions = ShowPositionInCards.readValue
 
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderCollectionAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.card_item, parent, false)

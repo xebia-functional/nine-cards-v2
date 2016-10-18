@@ -2,19 +2,19 @@ package cards.nine.app.ui.profile.adapters
 
 import android.support.v7.widget.RecyclerView
 import android.view.{LayoutInflater, View, ViewGroup}
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.preferences.commons.ShowPrintInfoOptionInAccounts
+import cards.nine.app.ui.profile.AccountsAdapterStyles
+import cards.nine.app.ui.profile.adapters.AccountOptions._
+import cards.nine.app.ui.profile.models.{AccountSync, Device, Header}
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.UiContext
-import cards.nine.app.ui.preferences.commons.{NineCardsPreferencesValue, ShowPrintInfoOptionInAccounts}
-import cards.nine.app.ui.profile.adapters.AccountOptions._
-import cards.nine.app.ui.profile.AccountsAdapterStyles
-import cards.nine.app.ui.profile.models.{AccountSync, Device, Header}
-import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
-import macroid._
 import macroid.FullDsl._
+import macroid._
 
 case class AccountsAdapter(
   items: Seq[AccountSync],
@@ -91,7 +91,7 @@ case class ViewHolderAccountItemAdapter(
 
   lazy val printDriveInfo = (PrintInfoOption, resGetString(R.string.menuAccountPrintInfo))
 
-  lazy val showPrintDriveInfo = ShowPrintInfoOptionInAccounts.readValue(new NineCardsPreferencesValue)
+  lazy val showPrintDriveInfo = ShowPrintInfoOptionInAccounts.readValue
 
   lazy val subtitle = findView(TR.profile_account_subtitle)
 

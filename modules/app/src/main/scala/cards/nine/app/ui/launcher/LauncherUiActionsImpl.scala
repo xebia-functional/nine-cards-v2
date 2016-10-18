@@ -41,7 +41,7 @@ import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import cards.nine.app.ui.launcher.drawer.DrawerUiActions
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
-import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
+import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
 import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment, _}
 import cards.nine.models.{ApplicationData, ConditionWeather, Contact, UnknownCondition, Widget, _}
@@ -64,8 +64,6 @@ trait LauncherUiActionsImpl
   with DrawerUiActions {
 
   self: TypedFindView with Contexts[AppCompatActivity] =>
-
-  lazy val preferenceValues = new NineCardsPreferencesValue
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -205,7 +203,7 @@ trait LauncherUiActionsImpl
         intent.putExtra(startPosition, collection.position)
         intent.putExtra(indexColorToolbar, collection.themedColorIndex)
         intent.putExtra(iconToolbar, collection.icon)
-        CollectionOpeningAnimations.readValue(preferenceValues) match {
+        CollectionOpeningAnimations.readValue match {
           case anim@CircleOpeningCollectionAnimation if anim.isSupported =>
             rippleToCollection ~~
               Ui {

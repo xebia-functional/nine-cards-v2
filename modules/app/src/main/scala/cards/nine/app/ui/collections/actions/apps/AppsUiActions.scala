@@ -13,7 +13,7 @@ import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.layouts.{PullToTabsListener, TabInfo}
-import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
+import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.{TermCounter, ApplicationData}
@@ -33,10 +33,8 @@ trait AppsUiActions
 
   val resistance = 2.4f
 
-  lazy val preferences = new NineCardsPreferencesValue
-
   def initialize(onlyAllApps: Boolean, category: NineCardsCategory): TaskService[Unit] = {
-    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferences)
+    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     val pullToTabsTweaks = if (onlyAllApps) {
       pdvEnable(false)
     } else {
