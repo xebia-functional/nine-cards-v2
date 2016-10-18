@@ -33,7 +33,7 @@ import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.launcher.LauncherActivity
+import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import cards.nine.app.ui.launcher.types.AddItemToCollection
 import cards.nine.models.{ApplicationData, Contact, TermCounter}
@@ -60,7 +60,8 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) {
+    uiContext: UiContext[_],
+    presenter: LauncherPresenter) {
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
@@ -101,8 +102,8 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
             case (true, false) => openTabs
           }).run
         },
-        onAppStoreIconClick = () => (), //presenter.launchPlayStore(),
-        onContactsIconClick = () => () //presenter.launchDial()
+        onAppStoreIconClick = () => presenter.launchPlayStore(),
+        onContactsIconClick = () => presenter.launchDial()
       )) <~
       sbvOnChangeText((text: String) => {
         (text, dom.getStatus, dom.getTypeView) match {
@@ -161,9 +162,9 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
     counters: Seq[TermCounter] = Seq.empty): TaskService[Unit] =
     addApps(
       apps = apps,
-      clickListener = (app: ApplicationData) => (),//presenter.openApp(app),
+      clickListener = (app: ApplicationData) => presenter.openApp(app),
       longClickListener = (view: View, app: ApplicationData) => {
-        //presenter.startAddItemToCollection(app)
+        presenter.startAddItemToCollection(app)
         (view <~ startDrag()).run
       },
       getAppOrder = getAppOrder,
@@ -174,15 +175,15 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
     counters: Seq[TermCounter] = Seq.empty): TaskService[Unit] =
     addContacts(
       contacts = contacts,
-      clickListener = (contact: Contact) => (),//presenter.openContact(contact),
+      clickListener = (contact: Contact) => presenter.openContact(contact),
       longClickListener = (view: View, contact: Contact) => {
-        //presenter.startAddItemToCollection(contact)
+        presenter.startAddItemToCollection(contact)
         (view <~ startDrag()).run
       },
       counters = counters).toService
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): TaskService[Unit] =
-    addLastCallContacts(contacts, (contact: LastCallsContact) => ()).toService // presenter.openLastCall(contact.number)
+    addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact.number)).toService
 
   private[this] def manageContactException(throwable: Throwable) = throwable match {
     case e: CallPermissionException => appDrawerJobs.requestReadCallLog()

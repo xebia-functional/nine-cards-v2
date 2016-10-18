@@ -21,6 +21,7 @@ import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import cards.nine.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
+import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
@@ -46,7 +47,8 @@ class WorkspaceUiActions(dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) {
+    uiContext: UiContext[_],
+    presenter: LauncherPresenter) {
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
@@ -87,7 +89,7 @@ class WorkspaceUiActions(dom: LauncherDOM)
           )
         ) <~
         awsListener(AnimatedWorkSpacesListener(
-          onClick = () => (), //presenter.clickWorkspaceBackground(),
+          onClick = () => presenter.clickWorkspaceBackground(),
           onLongClick = () => (dom.workspaces <~ lwsOpenMenu).run)
         )) ~
       (dom.menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
@@ -95,7 +97,7 @@ class WorkspaceUiActions(dom: LauncherDOM)
         closeCollectionMenu() ~~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
       }) ~
       (dom.menuLauncherWidgets <~ On.click {
-        closeCollectionMenu() //~~ Ui(presenter.goToWidgets())
+        closeCollectionMenu() ~~ Ui(presenter.goToWidgets())
       }) ~
       (dom.menuLauncherSettings <~ On.click {
         goToSettings()

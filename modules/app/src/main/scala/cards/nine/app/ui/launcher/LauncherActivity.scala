@@ -30,7 +30,7 @@ class LauncherActivity
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
-  lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
+  implicit lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
 
   lazy val managerContext: FragmentManagerContext[Fragment, FragmentManager] = activityManagerContext
 
@@ -139,7 +139,8 @@ object LauncherActivity {
   def createLauncherJobs(implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) = {
+    uiContext: UiContext[_],
+    presenter: LauncherPresenter) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     val mainLauncherUiActions = new MainLauncherUiActions(dom)
     val workspaceUiActions = new WorkspaceUiActions(dom)
@@ -151,7 +152,8 @@ object LauncherActivity {
   def createAppDrawerJobs(implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) = {
+    uiContext: UiContext[_],
+    presenter: LauncherPresenter) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     val appDrawerUiActions = new MainAppDrawerUiActions(dom)
     new AppDrawerJobs(appDrawerUiActions)
