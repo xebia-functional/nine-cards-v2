@@ -2,17 +2,17 @@ package cards.nine.process.recommendations.impl
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.process.recommendations.{RecommendedAppsConfigurationException, RecommendedAppsException}
 import cards.nine.process.utils.ApiUtils
-import cards.nine.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices, RecommendationResponse}
+import cards.nine.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices}
 import cards.nine.services.persistence.PersistenceServices
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
-import cards.nine.commons.services.TaskService._
 
 import scala.reflect.ClassTag
 

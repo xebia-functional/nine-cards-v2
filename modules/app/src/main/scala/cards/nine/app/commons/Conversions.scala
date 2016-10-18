@@ -5,7 +5,7 @@ import cards.nine.app.ui.commons.Constants._
 import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.process.cloud.models._
-import cards.nine.process.recommendations.models.RecommendedApp
+import cards.nine.models.RecommendedApp
 import cards.nine.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
 
 import scala.util.Random

@@ -21,11 +21,11 @@ case class RankApps(
   category: String,
   packages: Seq[String])
 
-case class RecommendationApp(
+case class RecommendedApp(
   packageName: String,
-  name: String,
+  title: String,
+  icon: Option[String],
   downloads: String,
-  icon: String,
   stars: Double,
   free: Boolean,
   screenshots: Seq[String])
