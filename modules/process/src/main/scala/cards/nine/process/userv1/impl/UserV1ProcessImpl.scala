@@ -6,7 +6,6 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models._
 import cards.nine.process.userv1._
-import cards.nine.process.userv1.models.UserV1Info
 import cards.nine.services.api._
 import cards.nine.services.persistence.PersistenceServices
 import cats.syntax.either._
@@ -14,8 +13,7 @@ import monix.eval.Task
 
 class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
   extends UserV1Process
-  with ImplicitsUserV1Exception
-  with UserV1Conversions {
+  with ImplicitsUserV1Exception {
 
   private[this] val noActiveUserErrorMsg = "No active user"
   private[this] val marketTokenErrorMsg = "Market token not available"
@@ -47,13 +45,13 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
           TaskService(Task(Either.left(UserV1Exception(userNotLoggedMsg))))
       }
 
-    def loadUserConfig(userId: Int): TaskService[UserV1Info] =
+    def loadUserConfig(userId: Int): TaskService[UserV1] =
       (for {
         user <- persistenceServices.findUserById(userId).resolveOption()
         androidId <- persistenceServices.getAndroidId
         loginResponse <- loginV1(user, androidId)
         userConfig <- requestConfig(androidId, loginResponse.sessionToken, user.marketToken)
-      } yield toUserInfo(androidId, userConfig)) resolveLeft {
+      } yield userConfig) resolveLeft {
         case e: ApiServiceV1ConfigurationException => Left(UserV1ConfigurationException(e.getMessage, Some(e)))
         case e => Left(userConfigException(e))
       }

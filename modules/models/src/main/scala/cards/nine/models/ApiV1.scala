@@ -21,6 +21,13 @@ case class UserV1(
   devices: Seq[UserV1Device],
   status: UserV1StatusInfo)
 
+//case class UserV1Info(
+//  email: String,
+//  name: String,
+//  imageUrl: String,
+//  androidId: String,
+//  devices: Seq[UserV1Device])
+
 case class UserV1Collection(
   name: String,
   originalSharedCollectionId: Option[String],
