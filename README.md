@@ -9,7 +9,7 @@
 # Table of Contents
 1. [Prerequisites](#prerequisites)
 2. [Compile and Run](#compile-and-run)
-3. [Properties File](#properties-files)
+3. [Properties File](#properties-file)
 4. [Troubleshooting](#troubleshooting)
 
 ## Prerequisites
