@@ -190,7 +190,7 @@ class WorkspaceUiActions(dom: LauncherDOM)
       workspaceButtonChangeMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       On.click {
-        closeCollectionMenu() //~~ Ui(presenter.goToChangeMoment())
+        closeCollectionMenu() ~~ Ui(presenter.goToChangeMoment())
       }).get
   )
 
