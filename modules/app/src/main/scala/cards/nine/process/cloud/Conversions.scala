@@ -4,7 +4,7 @@ import cards.nine.app.ui.wizard.models.UserCloudDevice
 import cards.nine.models.NineCardsIntentImplicits._
 import cards.nine.models._
 import cards.nine.process.cloud.models._
-import cards.nine.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
+import cards.nine.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
 import cards.nine.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
 

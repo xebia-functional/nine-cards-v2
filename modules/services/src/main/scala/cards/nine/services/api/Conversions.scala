@@ -2,7 +2,7 @@ package cards.nine.services.api
 
 import cards.nine.api._
 import cards.nine.models._
-import cards.nine.models.types.{NineCardsCategory, NotPublished}
+import cards.nine.models.types.{NineCardsCategory, CollectionType, NotPublished}
 import org.joda.time.format.DateTimeFormat
 
 import scala.util.{Success, Try}
@@ -103,23 +103,19 @@ trait Conversions {
       sharedCollectionId = apiCollection.sharedCollectionId,
       sharedCollectionSubscribed = apiCollection.sharedCollectionSubscribed,
       items = apiCollection.items map toUserConfigCollectionItem,
-      collectionType = apiCollection.collectionType,
+      collectionType = CollectionType(apiCollection.collectionType),
       constrains = apiCollection.constrains,
       wifi = apiCollection.wifi,
       occurrence = apiCollection.occurrence,
       icon = apiCollection.icon,
-      radius = apiCollection.radius,
-      lat = apiCollection.lat,
-      lng = apiCollection.lng,
-      alt = apiCollection.alt,
-      category = apiCollection.category)
+      category = apiCollection.category map (NineCardsCategory(_)))
 
   def toUserConfigCollectionItem(apiCollectionItem: cards.nine.api.version1.UserConfigCollectionItem): UserV1CollectionItem =
     UserV1CollectionItem(
       itemType = apiCollectionItem.itemType,
       title = apiCollectionItem.title,
-      metadata = apiCollectionItem.metadata,
-      categories = apiCollectionItem.categories)
+      intent = apiCollectionItem.metadata.toString(),
+      categories = apiCollectionItem.categories.map(categorySeq => categorySeq map (NineCardsCategory(_))))
 
   def toUserConfigStatusInfo(apiStatusInfo: cards.nine.api.version1.UserConfigStatusInfo): UserV1StatusInfo =
     UserV1StatusInfo(
