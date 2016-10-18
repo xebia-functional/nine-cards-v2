@@ -2,7 +2,6 @@ package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.models.types._
-import cards.nine.process.sharedcollections.TopSharedCollection
 
 object ApiValues {
 
@@ -18,7 +17,7 @@ object ApiValues {
   val downloads: String = "100"
   val stars: Double = 4.5
   val apiCategory: NineCardsCategory = Social
-  val likePackages: Seq[String] = Seq("com.fortysevendeg.package1", "com.fortysevendeg.package2", "com.fortysevendeg.package3")
+  val likePackages: Seq[String] = Seq("likePackage1", "likePackage2", "likePackage3")
   val limit: Int = 20
   val apiPackageName: String = "apiPackageName"
   val apiTitle: String = "apiTitle"
@@ -192,12 +191,31 @@ object MomentValues {
 
 }
 
-object SharedCollection {
+object SharedCollectionValues {
 
-  val SharedCollectionCategory = Communication
-  val typeShareCollection = TopSharedCollection
-  val offset = 0
-  val limit = 50
+  val sharedCollectionPackageName: String = "sharedCollectionPackage"
+  val sharedCollectionPackageTitle: String = "sharedCollectionPackageTitle"
+  val sharedCollectionPackageIcon: String = "sharedCollectionPackageIcon"
+  val sharedCollectionPackageStars: Double = 4.2d
+  val sharedCollectionDownloads: String = "28"
+  val sharedCollectionFree: Boolean = true
+
+  val sharedCollectionId: String = "sharedCollectionId"
+  val publishedOn: Long = 1l
+  val author: String = "author"
+  val sharedCollectionName: String = "sharedCollectionName"
+  val sharedCollectionPackagesStr: Seq[String] = Seq("sharedCollectionPackage1", "sharedCollectionPackage2", "sharedCollectionPackage2")
+  val views: Int = 29
+  val subscriptions: Int = 6
+  val sharedCollectionPublicCollectionStatus: PublicCollectionStatus = NotPublished
+  val sharedCollectionCategory: NineCardsCategory = Communication
+  val sharedCollectionIcon: String = "sharedCollectionIcon"
+  val community: Boolean = false
+
+  val typeShareCollection: TypeSharedCollection = TopSharedCollection
+  val offset: Int = 0
+  val limit: Int = 50
+
 }
 
 object UserValues {
