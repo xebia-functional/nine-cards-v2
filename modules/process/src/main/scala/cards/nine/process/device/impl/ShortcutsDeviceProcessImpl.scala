@@ -4,7 +4,8 @@ import android.graphics.Bitmap
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.device.{DeviceConversions, DeviceProcess, IconResize, ImplicitsDeviceException, ShortcutException}
+import cards.nine.models.IconResize
+import cards.nine.process.device.{DeviceConversions, DeviceProcess, ImplicitsDeviceException, ShortcutException}
 
 trait ShortcutsDeviceProcessImpl extends DeviceProcess {
 

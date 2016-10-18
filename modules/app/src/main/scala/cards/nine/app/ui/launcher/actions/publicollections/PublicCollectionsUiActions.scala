@@ -1,6 +1,6 @@
 package cards.nine.app.ui.launcher.actions.publicollections
 
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
@@ -8,8 +8,8 @@ import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAda
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.NineCardCategory
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.sharedcollections.{LatestSharedCollection, TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
@@ -22,12 +22,12 @@ import macroid._
 
 trait PublicCollectionsUiActions
   extends Styles
-    with AppNineCardIntentConversions {
+    with AppNineCardsIntentConversions {
 
   self: BaseActionFragment with PublicCollectionsDOM with PublicCollectionsListener =>
 
   lazy val (categoryNamesMenu, categories) = {
-    val categoriesSorted = NineCardCategory.appsCategories map { category =>
+    val categoriesSorted = NineCardsCategory.appsCategories map { category =>
       (resGetString(category.getStringResource) getOrElse category.name, category)
     } sortBy (_._1)
     (categoriesSorted map (_._1), categoriesSorted map (_._2))
@@ -89,7 +89,7 @@ trait PublicCollectionsUiActions
 
   def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
 
-  def updateCategory(category: NineCardCategory): TaskService[Unit] =
+  def updateCategory(category: NineCardsCategory): TaskService[Unit] =
     (categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)).toService
 
   def updateTypeCollection(typeSharedCollection: TypeSharedCollection): TaskService[Unit] = (typeSharedCollection match {

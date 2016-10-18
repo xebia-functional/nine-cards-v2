@@ -1,15 +1,10 @@
 package cards.nine.process.device
 
-import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.process.commons.NineCardIntentConversions
-import cards.nine.process.commons.models.NineCardIntent
-import cards.nine.process.device.models.{ContactEmail, ContactPhone, _}
-import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.{DataCounter => ServicesDataCounter, DockApp => ServicesDockApp}
+import cards.nine.process.device.models.{AppsWithWidgets, LastCallsContact}
 
-trait DeviceConversions extends NineCardIntentConversions {
+trait DeviceConversions extends NineCardsIntentConversions {
 
   val defaultDate = 0L
 
@@ -18,60 +13,6 @@ trait DeviceConversions extends NineCardIntentConversions {
     case GetByInstallDate(_) => OrderByInstallDate
     case GetByCategory(_) => OrderByCategory
   }
-
-  def toAddAppRequest(item: ApplicationData, category: NineCardCategory): AddAppRequest =
-      AddAppRequest(
-        name = item.name,
-        packageName = item.packageName,
-        className = item.className,
-        category = category.name,
-        dateInstalled = item.dateInstalled,
-        dateUpdate = item.dateUpdate,
-        version = item.version,
-        installedFromGooglePlay = item.installedFromGooglePlay)
-
-  def toUpdateAppRequest(id: Int, item: ApplicationData, category: NineCardCategory): UpdateAppRequest =
-      UpdateAppRequest(
-        id = id,
-        name = item.name,
-        packageName = item.packageName,
-        className = item.className,
-        category = category.name,
-        dateInstalled = item.dateInstalled,
-        dateUpdate = item.dateUpdate,
-        version = item.version,
-        installedFromGooglePlay = item.installedFromGooglePlay)
-
-  def toCreateOrUpdateDockAppRequest(name: String, dockType: DockType, intent: NineCardIntent, imagePath: String, position: Int): CreateOrUpdateDockAppRequest =
-    CreateOrUpdateDockAppRequest(
-      name = name,
-      dockType = dockType.name,
-      intent = nineCardIntentToJson(intent),
-      imagePath = imagePath,
-      position = position)
-
-  def toCreateOrUpdateDockAppRequest(dockApp: SaveDockAppRequest): CreateOrUpdateDockAppRequest =
-    CreateOrUpdateDockAppRequest(
-      name = dockApp.name,
-      dockType = dockApp.dockType.name,
-      intent = dockApp.intent,
-      imagePath = dockApp.imagePath,
-      position = dockApp.position)
-
-  def toDockApp(app: ServicesDockApp): DockApp = DockApp(
-    name = app.name,
-    dockType = DockType(app.dockType),
-    intent = jsonToNineCardIntent(app.intent),
-    imagePath = app.imagePath,
-    position = app.position
-  )
-
-  def toDockApp(app: ApplicationData, position: Int, imagePath: String)(implicit context: ContextSupport): DockApp = DockApp(
-    name = app.packageName,
-    dockType = AppDockType,
-    intent = toNineCardIntent(app),
-    imagePath = imagePath,
-    position = position)
 
   def toSimpleLastCallsContact(number: String, calls: Seq[Call]): LastCallsContact = {
     val (hasContact, name, date) = calls.headOption map { call =>
@@ -84,14 +25,6 @@ trait DeviceConversions extends NineCardIntentConversions {
       lastCallDate = date,
       calls = calls)
   }
-
-  def toTermCounter(item: ContactCounter): TermCounter = TermCounter(
-    term = item.term,
-    count = item.count)
-
-  def toTermCounter(item: ServicesDataCounter): TermCounter = TermCounter(
-    term = item.term,
-    count = item.count)
 
   def toContactEmail(item: ContactEmail): ContactEmail = ContactEmail(
     address = item.address,

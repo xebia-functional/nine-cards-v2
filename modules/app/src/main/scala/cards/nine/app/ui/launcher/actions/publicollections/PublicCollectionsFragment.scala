@@ -2,13 +2,14 @@ package cards.nine.app.ui.launcher.actions.publicollections
 
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.models.types.{Communication, NineCardCategory}
-import cards.nine.process.commons.models.Collection
+import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.models.Collection
+import cards.nine.models.types.{NineCardsCategory, Communication}
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
 import cards.nine.process.theme.models.CardLayoutBackgroundColor
@@ -20,7 +21,7 @@ class PublicCollectionsFragment
   with PublicCollectionsUiActions
   with PublicCollectionsDOM
   with PublicCollectionsListener
-  with AppNineCardIntentConversions { self =>
+  with AppNineCardsIntentConversions { self =>
 
   // TODO First implementation in order to remove LauncherPresenter
   def launcherPresenter: LauncherPresenter = getActivity match {
@@ -44,7 +45,7 @@ class PublicCollectionsFragment
   override def loadPublicCollectionsByTypeSharedCollection(typeSharedCollection: TypeSharedCollection): Unit =
     collectionJobs.loadPublicCollectionsByTypeSharedCollection(typeSharedCollection).resolveServiceOr(onError)
 
-  override def loadPublicCollectionsByCategory(category: NineCardCategory): Unit =
+  override def loadPublicCollectionsByCategory(category: NineCardsCategory): Unit =
     collectionJobs.loadPublicCollectionsByCategory(category).resolveServiceOr(onError)
 
   override def loadPublicCollections(): Unit =
@@ -72,7 +73,7 @@ object PublicCollectionsFragment {
 }
 
 case class PublicCollectionStatuses(
-  category: NineCardCategory = Communication,
+  category: NineCardsCategory = Communication,
   typeSharedCollection: TypeSharedCollection = TopSharedCollection)
 
 

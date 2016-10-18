@@ -46,7 +46,7 @@ trait AppsServicesImplData {
       className = className,
       category = Misc,
       dateInstalled = dateInstalled,
-      dateUpdate = dateUpdate,
+      dateUpdated = dateUpdate,
       version = version,
       installedFromGooglePlay = installedFromGooglePlay))
 

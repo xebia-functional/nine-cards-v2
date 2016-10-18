@@ -27,7 +27,7 @@ import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.pos
 import cards.nine.app.ui.launcher.types.ReorderCollection
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
 import cards.nine.commons.ops.SeqOps._
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}

@@ -28,8 +28,8 @@ import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import cards.nine.app.ui.launcher.drawer.DrawerSnails._
 import cards.nine.app.ui.launcher.{LauncherUiActions, LauncherUiActionsImpl}
 import cards.nine.app.ui.preferences.commons._
-import cards.nine.models.{ApplicationData, Contact}
-import cards.nine.process.device._
+import cards.nine.models.types.{GetByCategory, GetByInstallDate, GetByName, GetAppOrder}
+import cards.nine.models.{TermCounter, ApplicationData, Contact}
 import cards.nine.process.device.models._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -86,7 +86,7 @@ trait DrawerUiActions
   }
 
   protected def initDrawerUi: Ui[_] = {
-    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferenceValues)
+    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     (searchBoxView <~
       sbvUpdateContentView(AppsView) <~
       sbvChangeListener(SearchBoxAnimatedListener(
@@ -154,17 +154,17 @@ trait DrawerUiActions
   private[this] def openDrawer(longClick: Boolean) = {
 
     def revealInDrawer(longClick: Boolean): Ui[Future[_]] = {
-      val showKeyboard = AppDrawerLongPressAction.readValue(preferenceValues) == AppDrawerLongPressActionOpenKeyboard && longClick
+      val showKeyboard = AppDrawerLongPressAction.readValue == AppDrawerLongPressActionOpenKeyboard && longClick
       (drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
         (paginationDrawerPanel <~ reloadPager(0)) ~
         ((drawerContent <~~
-          openAppDrawer(AppDrawerAnimation.readValue(preferenceValues), appDrawerMain)) ~~
+          openAppDrawer(AppDrawerAnimation.readValue, appDrawerMain)) ~~
           (searchBoxView <~
             sbvEnableSearch <~
             (if (showKeyboard) sbvShowKeyboard else Tweak.blank)))
     }
 
-    val loadContacts = AppDrawerLongPressAction.readValue(preferenceValues) == AppDrawerLongPressActionOpenContacts && longClick
+    val loadContacts = AppDrawerLongPressAction.readValue == AppDrawerLongPressActionOpenContacts && longClick
     (if (loadContacts) {
       Ui(
         recycler.getAdapter match {
@@ -235,7 +235,7 @@ trait DrawerUiActions
 
   private[this] def loadContactsAlphabetical: Ui[_] = {
     val maybeDrawable = appTabs.lift(AppsMenuOption(AppsAlphabetical)) map (_.drawable)
-    val favoriteContactsFirst = AppDrawerFavoriteContactsFirst.readValue(preferenceValues)
+    val favoriteContactsFirst = AppDrawerFavoriteContactsFirst.readValue
     loadContactsAndSaveStatus(if (favoriteContactsFirst) ContactsFavorites else ContactsAlphabetical) ~
       (paginationDrawerPanel <~ reloadPager(1)) ~
       (pullToTabsView <~
@@ -285,7 +285,7 @@ trait DrawerUiActions
     (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank)) ~
       (topBarPanel <~ vVisible) ~
       (searchBoxView <~ sbvClean <~ sbvDisableSearch) ~
-      ((drawerContent <~~ closeAppDrawer(AppDrawerAnimation.readValue(preferenceValues), appDrawerMain)) ~~ resetData(searchIsEmpty))
+      ((drawerContent <~~ closeAppDrawer(AppDrawerAnimation.readValue, appDrawerMain)) ~~ resetData(searchIsEmpty))
   }
 
   protected def addApps(

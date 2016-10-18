@@ -34,7 +34,7 @@ import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.IsDeveloper
 import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -165,7 +165,7 @@ trait CollectionsUiActions
       (menuLauncherSettings <~ On.click {
         goToSettings()
       } <~ On.longClick {
-        Ui(IsDeveloper.convertToDeveloper(preferenceValues)) ~
+        Ui(IsDeveloper.convertToDeveloper) ~
           uiShortToast2(R.string.developerOptionsActivated) ~
           goToSettings() ~
           Ui(true)

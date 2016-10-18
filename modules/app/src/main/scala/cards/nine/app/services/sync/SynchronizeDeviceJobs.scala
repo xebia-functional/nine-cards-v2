@@ -12,9 +12,9 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{AppCardType, PublishedByMe}
 import cards.nine.process.cloud.Conversions._
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import cards.nine.process.sharedcollections.models.UpdateSharedCollection
-import cards.nine.process.user.models.User
+import cards.nine.models.User
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ContextWrapper
 import monix.eval.Task
@@ -45,7 +45,8 @@ class SynchronizeDeviceJobs(actions: SynchronizeDeviceUiActions)(implicit contex
           }
 
         for {
-          collection <- di.collectionProcess.getCollectionById(collectionId).resolveOption()
+          collection <- di.collectionProcess.getCollectionById(collectionId)
+            .resolveOption(s"Can't find the collection with id $collectionId")
           _ <- updateSharedCollection(collection)
         } yield ()
       }

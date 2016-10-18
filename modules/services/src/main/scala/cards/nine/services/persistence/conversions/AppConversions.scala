@@ -1,9 +1,8 @@
 package cards.nine.services.persistence.conversions
 
-import cards.nine.models.Application
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.{Application, ApplicationData}
 import cards.nine.repository.model.{App => RepositoryApp, AppData => RepositoryAppData}
-import cards.nine.services.persistence.{AddAppRequest, UpdateAppRequest}
 
 trait AppConversions {
 
@@ -13,34 +12,33 @@ trait AppConversions {
       name = app.data.name,
       packageName = app.data.packageName,
       className = app.data.className,
-      category = NineCardCategory(app.data.category),
+      category = NineCardsCategory(app.data.category),
       dateInstalled = app.data.dateInstalled,
-      dateUpdate = app.data.dateUpdate,
+      dateUpdated = app.data.dateUpdate,
       version = app.data.version,
       installedFromGooglePlay = app.data.installedFromGooglePlay)
 
-  def toRepositoryApp(request: UpdateAppRequest): RepositoryApp =
+  def toRepositoryApp(app: Application): RepositoryApp =
     RepositoryApp(
-      id = request.id,
+      id = app.id,
       data = RepositoryAppData(
-        name = request.name,
-        packageName = request.packageName,
-        className = request.className,
-        category = request.category,
-        dateInstalled = request.dateInstalled,
-        dateUpdate = request.dateUpdate,
-        version = request.version,
-        installedFromGooglePlay = request.installedFromGooglePlay)
-    )
+        name = app.name,
+        packageName = app.packageName,
+        className = app.className,
+        category = app.category.name,
+        dateInstalled = app.dateInstalled,
+        dateUpdate = app.dateUpdated,
+        version = app.version,
+        installedFromGooglePlay = app.installedFromGooglePlay))
 
-  def toRepositoryAppData(request: AddAppRequest): RepositoryAppData =
+  def toRepositoryAppData(app: ApplicationData): RepositoryAppData =
     RepositoryAppData(
-      name = request.name,
-      packageName = request.packageName,
-      className = request.className,
-      category = request.category,
-      dateInstalled = request.dateInstalled,
-      dateUpdate = request.dateUpdate,
-      version = request.version,
-      installedFromGooglePlay = request.installedFromGooglePlay)
+      name = app.name,
+      packageName = app.packageName,
+      className = app.className,
+      category = app.category.name,
+      dateInstalled = app.dateInstalled,
+      dateUpdate = app.dateUpdated,
+      version = app.version,
+      installedFromGooglePlay = app.installedFromGooglePlay)
 }

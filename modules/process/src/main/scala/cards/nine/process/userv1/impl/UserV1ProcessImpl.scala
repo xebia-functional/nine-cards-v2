@@ -2,16 +2,15 @@ package cards.nine.process.userv1.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.commons.services.TaskService._
 import cards.nine.commons.services.TaskService
-import cards.nine.process.userv1.models.{Device, UserV1Info}
+import cards.nine.commons.services.TaskService._
+import cards.nine.models.User
 import cards.nine.process.userv1._
+import cards.nine.process.userv1.models.{Device, UserV1Info}
 import cards.nine.services.api._
-import cards.nine.services.persistence.models.{User => ServicesUser}
-import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServices}
-import monix.eval.Task
+import cards.nine.services.persistence.PersistenceServices
 import cats.syntax.either._
-
+import monix.eval.Task
 
 class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
   extends UserV1Process
@@ -24,7 +23,7 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
 
   override def getUserInfo(deviceName: String, oauthScopes: Seq[String])(implicit context: ContextSupport) = {
 
-    def loginV1(user: ServicesUser, androidId: String): TaskService[LoginResponseV1] =
+    def loginV1(user: User, androidId: String): TaskService[LoginResponseV1] =
       (user.email, user.marketToken) match {
         case (Some(email), Some(marketToken)) =>
           val device = Device(
@@ -50,7 +49,8 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
 
     def loadUserConfig(userId: Int): TaskService[UserV1Info] =
       (for {
-        user <- persistenceServices.findUserById(FindUserByIdRequest(userId)).resolveOption()
+        user <- persistenceServices.findUserById(userId)
+          .resolveOption(s"Can't find the user with id $userId")
         androidId <- persistenceServices.getAndroidId
         loginResponse <- loginV1(user, androidId)
         userConfigResponse <- requestConfig(androidId, loginResponse.sessionToken, user.marketToken)

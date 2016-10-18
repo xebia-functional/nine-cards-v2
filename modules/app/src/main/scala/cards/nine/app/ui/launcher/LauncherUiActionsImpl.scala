@@ -11,6 +11,7 @@ import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import android.widget.ImageView
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.Constants._
@@ -39,15 +40,12 @@ import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import cards.nine.app.ui.launcher.drawer.DrawerUiActions
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
-import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
+import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
-import cards.nine.models.{ApplicationData, ConditionWeather, Contact, UnknownCondition, Widget}
-import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment}
-import cards.nine.process.commons.models.{Collection, Moment}
+import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment, _}
+import cards.nine.models.{ApplicationData, ConditionWeather, Contact, UnknownCondition, Widget, _}
 import cards.nine.process.device.models.{LastCallsContact, _}
-import cards.nine.process.device.{GetAppOrder, GetByName}
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -67,8 +65,6 @@ trait LauncherUiActionsImpl
   with DrawerUiActions {
 
   self: TypedFindView with Contexts[AppCompatActivity] =>
-
-  lazy val preferenceValues = new NineCardsPreferencesValue
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -111,7 +107,7 @@ trait LauncherUiActionsImpl
   override def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): Ui[Any] =
     (workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager
 
-  override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
+  override def reloadDockApps(dockApp: DockAppData): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
 
   override def openModeEditWidgets(): Ui[Any] =
     uiVibrate() ~
@@ -149,9 +145,11 @@ trait LauncherUiActionsImpl
       (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
       (editWidgetsTopPanel <~ ewtMoving)
 
-  override def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any] = workspaces <~ lwsResizeWidgetById(id, resize)
+  override def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Ui[Any] =
+    workspaces <~ lwsResizeWidgetById(id, increaseX, increaseY)
 
-  override def moveWidgetById(id: Int, move: MoveWidgetRequest): Ui[Any] = workspaces <~ lwsMoveWidgetById(id, move)
+  override def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Ui[Any] =
+    workspaces <~ lwsMoveWidgetById(id, displaceX, displaceY)
 
   override def cancelWidget(appWidgetId: Int): Ui[Any] = Ui(appWidgetHost.deleteAppWidgetId(appWidgetId))
 
@@ -206,7 +204,7 @@ trait LauncherUiActionsImpl
         intent.putExtra(CollectionsDetailsActivity.startPosition, collection.position)
         intent.putExtra(CollectionsDetailsActivity.indexColorToolbar, collection.themedColorIndex)
         intent.putExtra(CollectionsDetailsActivity.iconToolbar, collection.icon)
-        CollectionOpeningAnimations.readValue(preferenceValues) match {
+        CollectionOpeningAnimations.readValue match {
           case anim@CircleOpeningCollectionAnimation if anim.isSupported =>
             rippleToCollection ~~
               Ui {
@@ -218,7 +216,7 @@ trait LauncherUiActionsImpl
     }
   }
 
-  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] = {
+  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockAppData]): Ui[Any] = {
     val momentType = data.headOption.flatMap(_.moment).flatMap(_.momentType)
     val launcherMoment = data.headOption.flatMap(_.moment)
     (loading <~ vGone) ~
@@ -517,7 +515,7 @@ trait LauncherUiActionsImpl
 
   override def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])] =
     moments map {
-      case Moment(_, Some(collectionId: Int), _, _, _, Some(m: NineCardsMoment)) =>
+      case Moment(_, Some(collectionId: Int), _, _, _, Some(m: NineCardsMoment), _) =>
         (m, getCollections.find(_.id == collectionId))
     }
 

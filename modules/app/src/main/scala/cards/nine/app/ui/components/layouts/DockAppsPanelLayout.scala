@@ -18,7 +18,7 @@ import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.types.{AppDockType, ContactDockType}
-import cards.nine.process.device.models.DockApp
+import cards.nine.models.{DockAppData, DockApp}
 import cards.nine.process.theme.models.{DockPressedColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -61,13 +61,13 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     defaultColor = Color.WHITE.alpha(selectedAlpha),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
-  var dockApps: Seq[DockApp] = Seq.empty
+  var dockApps: Seq[DockAppData] = Seq.empty
 
   var draggingTo: Option[Int] = None
 
   LayoutInflater.from(context).inflate(R.layout.app_drawer_panel, this)
 
-  def init(apps: Seq[DockApp])
+  def init(apps: Seq[DockAppData])
     (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
     dockApps = apps
     (findView(TR.launcher_page_1) <~ vSetPosition(0) <~ populate(getDockApp(0))) ~
@@ -76,7 +76,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (findView(TR.launcher_page_4) <~ vSetPosition(3) <~ populate(getDockApp(3)))
   }
 
-  def reload(dockApp: DockApp)
+  def reload(dockApp: DockAppData)
     (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
     dockApps = (dockApps filterNot (_.position == dockApp.position)) :+ dockApp
     this <~ updatePosition(dockApp.position)
@@ -122,7 +122,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     }
   }
 
-  private[this] def populate(dockApp: Option[DockApp])
+  private[this] def populate(dockApp: Option[DockAppData])
     (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Tweak[TintableImageView] =
     tivPressedColor(theme.get(DockPressedColor)) +
       (dockApp map { app =>

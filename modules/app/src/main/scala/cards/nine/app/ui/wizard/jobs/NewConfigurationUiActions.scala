@@ -25,7 +25,7 @@ import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.models.types._
-import cards.nine.process.collection.models.PackagesByCategory
+import cards.nine.models.PackagesByCategory
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._

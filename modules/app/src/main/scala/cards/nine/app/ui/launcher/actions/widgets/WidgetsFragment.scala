@@ -2,7 +2,7 @@ package cards.nine.app.ui.launcher.actions.widgets
 
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -16,7 +16,7 @@ class WidgetsFragment
   with WidgetsUiActions
   with WidgetsDOM
   with WidgetsListener
-  with AppNineCardIntentConversions {
+  with AppNineCardsIntentConversions {
 
   // TODO First implementation in order to remove LauncherPresenter
   def launcherPresenter: LauncherPresenter = getActivity match {

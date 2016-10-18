@@ -1,15 +1,14 @@
 package cards.nine.process.utils
 
-import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.User
 import cards.nine.services.api.{ApiServiceException, ImplicitsApiServiceExceptions, RequestConfig}
-import cards.nine.services.persistence.models.User
-import cards.nine.services.persistence.{FindUserByIdRequest, PersistenceServices}
-import monix.eval.Task
+import cards.nine.services.persistence.PersistenceServices
 import cats.syntax.either._
-
+import monix.eval.Task
 
 class ApiUtils(persistenceServices: PersistenceServices)
   extends ImplicitsApiServiceExceptions {
@@ -18,7 +17,8 @@ class ApiUtils(persistenceServices: PersistenceServices)
 
     def loadUser(userId: Int): TaskService[RequestConfig] =
       (for {
-        user <- persistenceServices.findUserById(FindUserByIdRequest(userId)).resolveOption()
+        user <- persistenceServices.findUserById(userId)
+          .resolveOption(s"Can't find the user with id $userId")
         keys <- loadTokens(user)
         (apiKey, sessionToken) = keys
         androidId <- persistenceServices.getAndroidId

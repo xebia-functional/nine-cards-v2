@@ -22,7 +22,7 @@ import cards.nine.app.ui.preferences.commons.IconsSize
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.types.{AppCardType, CardType, NoInstalledAppCardType}
-import cards.nine.process.commons.models.Card
+import cards.nine.models.Card
 import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion._

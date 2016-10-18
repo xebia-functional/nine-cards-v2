@@ -6,7 +6,7 @@ import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.sharedcollections.TypeSharedCollection
 import cards.nine.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -27,7 +27,7 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
   def loadPublicCollections(): TaskService[Unit] = {
 
     def getSharedCollections(
-      category: NineCardCategory,
+      category: NineCardsCategory,
       typeSharedCollection: TypeSharedCollection): TaskService[Seq[SharedCollection]] =
       di.sharedCollectionsProcess.getSharedCollectionsByCategory(category, typeSharedCollection)
 
@@ -42,7 +42,7 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
     } yield ()
   }
 
-  def loadPublicCollectionsByCategory(category: NineCardCategory): TaskService[Unit] = {
+  def loadPublicCollectionsByCategory(category: NineCardsCategory): TaskService[Unit] = {
     statuses = statuses.copy(category = category)
     for {
       _ <- actions.updateCategory(category)

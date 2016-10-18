@@ -17,11 +17,9 @@ import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.models.{ConditionWeather, Widget}
-import cards.nine.process.commons.models.{Card, Collection, MomentTimeSlot}
-import cards.nine.process.device.models.{DockApp, TermCounter}
+import cards.nine.models._
+import cards.nine.models.TermCounter
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
@@ -72,9 +70,9 @@ object LauncherWorkSpacesTweaks {
 
   def lwsMoveCurrentWidget() = Tweak[W] (_.moveCurrentWidget())
 
-  def lwsResizeWidgetById(id: Int, resize: ResizeWidgetRequest) = Tweak[W] (_.resizeWidgetById(id, resize))
+  def lwsResizeWidgetById(id: Int, increaseX: Int, increaseY: Int) = Tweak[W] (_.resizeWidgetById(id, increaseX, increaseY))
 
-  def lwsMoveWidgetById(id: Int, move: MoveWidgetRequest) = Tweak[W] (_.moveWidgetById(id, move))
+  def lwsMoveWidgetById(id: Int, displaceX: Int, displaceY: Int) = Tweak[W] (_.moveWidgetById(id, displaceX, displaceY))
 
   def lwsClearWidgets() = Tweak[W] (_.clearWidgets())
 
@@ -373,12 +371,12 @@ object SwipeAnimatedDrawerViewTweaks {
 object DockAppsPanelLayoutTweaks {
   type W = DockAppsPanelLayout
 
-  def daplInit(dockApps: Seq[DockApp])(implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplInit(dockApps: Seq[DockAppData])(implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.init(dockApps).run)
 
   def daplDragDispatcher(action: Int, x: Float, y: Float)(implicit contextWrapper: ActivityContextWrapper) = Tweak[W] (_.dragAddItemController(action, x, y))
 
-  def daplReload(dockApp: DockApp)(implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplReload(dockApp: DockAppData)(implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.reload(dockApp).run)
 
 }

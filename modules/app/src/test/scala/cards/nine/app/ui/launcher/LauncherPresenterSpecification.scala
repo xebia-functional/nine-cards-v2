@@ -1,17 +1,14 @@
 package cards.nine.app.ui.launcher
 
-import cats.syntax.either._
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.launcher.Statuses.LauncherPresenterStatuses
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.data.CollectionTestData
 import cards.nine.process.collection.{CollectionException, CollectionProcess}
-import cards.nine.process.commons.models.Collection
 import cards.nine.process.device.DeviceProcess
 import cards.nine.process.moment.MomentProcess
 import macroid.{ActivityContextWrapper, Ui}
-import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
@@ -21,7 +18,7 @@ import scala.concurrent.duration._
 trait LauncherPresenterSpecification
   extends Specification
   with Mockito
-  with LauncherPresenterData {
+  with CollectionTestData {
 
   implicit val contextSupport = mock[ContextSupport]
 
@@ -93,6 +90,5 @@ class LauncherPresenterSpec
       }
 
   }
-
 
 }

@@ -33,7 +33,7 @@ class ContactsServicesImpl(
   override def getAlphabeticalCounterContacts =
     catchMapPermission {
       val iterator = getNamesAlphabetically
-      iterator.foldLeft(Seq.empty[ContactCounter]) { (acc, name) =>
+      iterator.foldLeft(Seq.empty[TermCounter]) { (acc, name) =>
         val term = name.substring(0, 1).toUpperCase match {
           case t if abc.contains(t) => t
           case _ => wildcard
@@ -44,7 +44,7 @@ class ContactsServicesImpl(
         }
         lastWithSameTerm map { c =>
           acc.dropRight(1) :+ c.copy(count = c.count + 1)
-        } getOrElse acc :+ ContactCounter(term, 1)
+        } getOrElse acc :+ TermCounter(term, 1)
       }
     }
 
