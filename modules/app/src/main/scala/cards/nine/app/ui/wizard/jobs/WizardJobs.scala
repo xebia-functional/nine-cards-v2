@@ -304,6 +304,12 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
     }
   }
 
+  def googleDriveClient: TaskService[GoogleApiClient] = clientStatuses.driveApiClient match {
+    case Some(client) if client.isConnected => TaskService.right(client)
+    case Some(_) => TaskService.left(JobException("Client not connected"))
+    case _ => TaskService.left(JobException("Client not available"))
+  }
+
   private[this] def onConnectionFailed(result: ConnectionResult): TaskService[Unit] = {
     val maybeResult = Option(result)
     val errorCode = maybeResult.map(_.getErrorCode) getOrElse ConnectionResult.CANCELED

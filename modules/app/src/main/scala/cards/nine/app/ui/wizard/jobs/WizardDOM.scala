@@ -167,7 +167,7 @@ trait WizardUiListener {
 
   def onSaveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): Unit
 
-  def onLoadWifiByMoment(): Unit
+  def onLoadMomentWithWifi(): Unit
 
   def onSaveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit
 
