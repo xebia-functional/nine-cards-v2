@@ -52,10 +52,12 @@ object NineCardExtensions {
       cause map initCause
     }
 
-    def resolveOption() =
+    def resolveOption(message: String): EitherT[Task, NineCardException, A] = resolveOption(Option(message))
+
+    def resolveOption(message: Option[String] = None): EitherT[Task, NineCardException, A] =
       r.resolveRight {
         case Some(v) => Right(v)
-        case None => Left(EmptyException("Value not found"))
+        case None => Left(EmptyException(message getOrElse "Value not found"))
       }
 
   }

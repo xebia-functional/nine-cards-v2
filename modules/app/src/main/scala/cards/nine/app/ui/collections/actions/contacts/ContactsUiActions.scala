@@ -13,7 +13,7 @@ import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.layouts.{PullToTabsListener, TabInfo}
-import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, NineCardsPreferencesValue}
+import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.{TermCounter, Contact}
@@ -35,10 +35,8 @@ trait ContactsUiActions
     TabInfo(R.drawable.app_drawer_filter_alphabetical, getString(R.string.contacts_alphabetical)),
     TabInfo(R.drawable.app_drawer_filter_favorites, getString(R.string.contacts_favorites)))
 
-  lazy val preferences = new NineCardsPreferencesValue
-
   def initialize(): TaskService[Unit] = {
-    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferences)
+    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     ((scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
         dtbInit(colorPrimary) <~

@@ -2,12 +2,12 @@ package cards.nine.app.ui.commons
 
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
-import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.commons.BroadcastDispatcher._
+import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.{Injector, InjectorImpl}
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
+import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
@@ -21,11 +21,9 @@ class Jobs(implicit contextWrapper: ContextWrapper)
 
   implicit lazy val di: Injector = new InjectorImpl
 
-  lazy val preferenceValues = new NineCardsPreferencesValue
-
   @deprecated
   def getTheme: NineCardsTheme =
-    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).resolveNow match {
+    di.themeProcess.getTheme(Theme.getThemeFile).resolveNow match {
       case Right(t) => t
       case Left(e) =>
         AppLog.printErrorMessage(e)
@@ -33,7 +31,7 @@ class Jobs(implicit contextWrapper: ContextWrapper)
     }
 
   def getThemeTask: TaskService[NineCardsTheme] =
-    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues))
+    di.themeProcess.getTheme(Theme.getThemeFile)
 
   @deprecated
   def sendBroadCast(broadAction: BroadAction): Unit = sendBroadCast(commandType, broadAction)

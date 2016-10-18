@@ -14,7 +14,7 @@ import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{ActivityUiContext, UiContext, UiExtensions}
-import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
+import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
@@ -45,8 +45,6 @@ class CollectionsDetailsActivity
   val defaultStateChanged = false
 
   var firstTime = true
-
-  lazy val preferenceValues = new NineCardsPreferencesValue
 
   val navigation = new NavigationCollections()
 
@@ -113,7 +111,7 @@ class CollectionsDetailsActivity
   }
 
   override def onResume(): Unit = {
-    val anim = CollectionOpeningAnimations.readValue(preferenceValues)
+    val anim = CollectionOpeningAnimations.readValue
     if (firstTime && anim == CircleOpeningCollectionAnimation && anim.isSupported) {
       overridePendingTransition(0, 0)
       firstTime = false
