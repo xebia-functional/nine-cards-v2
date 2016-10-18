@@ -3,17 +3,15 @@ package cards.nine.process.sharedcollections.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.Collection
-import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.types._
+import cards.nine.models.{Collection, _}
 import cards.nine.process.sharedcollections._
-import cards.nine.process.sharedcollections.models._
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.{ApiServiceConfigurationException, ApiServices}
 import cards.nine.services.persistence.PersistenceServices
 
 class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
-  extends SharedCollectionsProcess
-  with Conversions {
+  extends SharedCollectionsProcess {
 
   val apiUtils = new ApiUtils(persistenceServices)
 
@@ -22,7 +20,9 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       userConfig <- apiUtils.getRequestConfig
       sharedCollection <- apiServices.getSharedCollection(sharedCollectionId)(userConfig)
       maybeCollection <- persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId)
-    } yield toSharedCollection(sharedCollection, maybeCollection)).resolveLeft(mapLeft)
+    } yield sharedCollection.copy(
+      publicCollectionStatus = maybeCollection map (_.publicCollectionStatus) getOrElse NotPublished))
+      .resolveLeft(mapLeft)
 
   override def getSharedCollectionsByCategory(
     category: NineCardsCategory,
@@ -34,16 +34,21 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       userConfig <- apiUtils.getRequestConfig
       sharedCollections <- apiServices.getSharedCollectionsByCategory(category.name, typeShareCollection.name, offset, limit)(userConfig)
       localCollectionMap <- fetchSharedCollectionMap(sharedCollections.map(_.sharedCollectionId))
-    } yield toSharedCollections(sharedCollections, localCollectionMap)).resolveLeft(mapLeft)
+    } yield sharedCollections map { sharedCollection =>
+      sharedCollection.copy(publicCollectionStatus =
+        localCollectionMap.get(sharedCollection.sharedCollectionId) map (_.publicCollectionStatus) getOrElse NotPublished)
+    }).resolveLeft(mapLeft)
 
   override def getPublishedCollections()
-    (implicit context: ContextSupport) = {
+    (implicit context: ContextSupport) =
     (for {
       userConfig <- apiUtils.getRequestConfig
       sharedCollections <- apiServices.getPublishedCollections()(userConfig)
       localCollectionMap <- fetchSharedCollectionMap(sharedCollections.map(_.sharedCollectionId))
-    } yield toSharedCollections(sharedCollections, localCollectionMap)).resolveLeft(mapLeft)
-  }
+    } yield sharedCollections map { sharedCollection =>
+      sharedCollection.copy(publicCollectionStatus =
+        localCollectionMap.get(sharedCollection.sharedCollectionId) map (_.publicCollectionStatus) getOrElse NotPublished)
+    }).resolveLeft(mapLeft)
 
   private[this] def fetchSharedCollectionMap(sharedCollectionsIds: Seq[String]): TaskService[Map[String, Collection]] =
     for {
@@ -51,24 +56,40 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     } yield localCollections.flatMap(c => c.sharedCollectionId.map(id => id -> c)).toMap
 
   override def createSharedCollection(
-    sharedCollection: CreateSharedCollection)
+    name: String,
+    author: String,
+    packages: Seq[String],
+    category: NineCardsCategory,
+    icon: String,
+    community: Boolean)
     (implicit context: ContextSupport) = {
-    import sharedCollection._
     (for {
       userConfig <- apiUtils.getRequestConfig
       sharedCollectionId <- apiServices.createSharedCollection(name, author, packages, category.name, icon, community)(userConfig)
     } yield sharedCollectionId).resolveLeft(mapLeft)
   }
 
-  override def updateSharedCollection(sharedCollection: UpdateSharedCollection)(implicit context: ContextSupport) = {
-    import sharedCollection._
+  override def updateSharedCollection(sharedCollectionId: String, name: String, packages: Seq[String])(implicit context: ContextSupport) = {
     (for {
       userConfig <- apiUtils.getRequestConfig
       sharedCollectionId <- apiServices.updateSharedCollection(sharedCollectionId, Option(name), packages)(userConfig)
     } yield sharedCollectionId).resolveLeft(mapLeft)
   }
 
-  override def getSubscriptions()(implicit context: ContextSupport) =
+  override def getSubscriptions()(implicit context: ContextSupport) = {
+
+    def toSubscription(subscriptions: (String, Collection)): Subscription = {
+      val (sharedCollectionId, collection) = subscriptions
+      Subscription(
+        id = collection.id,
+        sharedCollectionId = sharedCollectionId,
+        name = collection.name,
+        apps = collection.cards.count(card => card.cardType == AppCardType),
+        icon = collection.icon,
+        themedColorIndex = collection.themedColorIndex,
+        subscribed = collection.sharedCollectionSubscribed)
+    }
+
     (for {
       collections <- persistenceServices.fetchCollections
     } yield {
@@ -89,6 +110,8 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       }) map toSubscription
 
     }).resolveLeft(mapLeft)
+  }
+
 
   override def subscribe(sharedCollectionId: String)(implicit context: ContextSupport) =
     (for {

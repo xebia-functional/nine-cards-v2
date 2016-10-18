@@ -1,4 +1,4 @@
-package cards.nine.process.sharedcollections.models
+package cards.nine.models
 
 import cards.nine.models.types.{NineCardsCategory, PublicCollectionStatus}
 
@@ -17,19 +17,6 @@ case class SharedCollection(
   community: Boolean,
   publicCollectionStatus: PublicCollectionStatus)
 
-case class CreateSharedCollection(
-   author: String,
-   name: String,
-   packages: Seq[String],
-   category: NineCardsCategory,
-   icon: String,
-   community: Boolean)
-
-case class UpdateSharedCollection(
-   sharedCollectionId: String,
-   name: String,
-   packages: Seq[String])
-
 case class SharedCollectionPackage(
   packageName: String,
   title: String,
@@ -37,16 +24,6 @@ case class SharedCollectionPackage(
   stars: Double,
   downloads: String,
   free: Boolean)
-
-case class CreatedCollection(
-  name: String,
-  author: String,
-  packages: Seq[String],
-  category: NineCardsCategory,
-  sharedCollectionId: String,
-  icon: String,
-  community: Boolean
-)
 
 case class Subscription(
   id: Int,

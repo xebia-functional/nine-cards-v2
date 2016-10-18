@@ -16,7 +16,7 @@ trait ApiServices {
     */
   def loginV1(
     email: String,
-    device: LoginV1Device): TaskService[LoginResponseV1]
+    device: Device): TaskService[LoginResponseV1]
 
   /**
     * Fetches the user configuration associated to the user identified by the data in [[cards.nine.models.RequestConfigV1]]
@@ -93,14 +93,14 @@ trait ApiServices {
     * @param category the category
     * @param excludePackages sequence of exclude packages
     * @param limit the maximum number of apps returned
-    * @return the Seq[[cards.nine.models.RecommendationApp]] of recommended apps
+    * @return the Seq[[cards.nine.models.RecommendedApp]] of recommended apps
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def getRecommendedApps(
     category: String,
     excludePackages: Seq[String],
-    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[RecommendationApp]]
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[RecommendedApp]]
 
   /**
     * Fetches the recommended applications based on other packages
@@ -108,14 +108,14 @@ trait ApiServices {
     * @param packages the liked packages
     * @param excludePackages sequence of exclude packages
     * @param limit the maximum number of apps returned
-    * @return the Seq[[cards.nine.models.RecommendationApp]] of recommended apps
+    * @return the Seq[[cards.nine.models.RecommendedApp]] of recommended apps
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def getRecommendedAppsByPackages(
     packages: Seq[String],
     excludePackages: Seq[String],
-    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[RecommendationApp]]
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[RecommendedApp]]
 
   /**
     * Fetches the public collection
@@ -161,6 +161,7 @@ trait ApiServices {
     * @param name The name of the collection
     * @param author The original author of the collection
     * @param packages The list of packages in the collection
+    * @param category the category of the SharedCollection
     * @param icon The collection's icon
     * @param community A flag for whether this is a community collection
     * @return a String with the sharedCollectionId

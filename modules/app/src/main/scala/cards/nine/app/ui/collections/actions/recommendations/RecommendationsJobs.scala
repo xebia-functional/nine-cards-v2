@@ -4,7 +4,7 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.recommendations.models.RecommendedApp
+import cards.nine.models.RecommendedApp
 import cards.nine.models.types.NineCardsCategory
 import macroid.ActivityContextWrapper
 

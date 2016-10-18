@@ -4,7 +4,7 @@ import android.support.v7.app.ActionBar
 import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import cards.nine.app.ui.profile.adapters.SubscriptionsAdapter
 import cards.nine.app.ui.profile.models.ProfileTab
-import cards.nine.process.sharedcollections.models.SharedCollection
+import cards.nine.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
 trait ProfileDOM {

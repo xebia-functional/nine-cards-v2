@@ -21,11 +21,11 @@ case class RankApps(
   category: String,
   packages: Seq[String])
 
-case class RecommendationApp(
+case class RecommendedApp(
   packageName: String,
-  name: String,
+  title: String,
+  icon: Option[String],
   downloads: String,
-  icon: String,
   stars: Double,
   free: Boolean,
   screenshots: Seq[String])
@@ -40,26 +40,4 @@ case class RequestConfig(
   sessionToken: String,
   androidId: String,
   marketToken: Option[String] = None)
-
-case class SharedCollection(
-  id: String,
-  sharedCollectionId: String,
-  publishedOn: Long,
-  author: String,
-  name: String,
-  packages: Seq[String],
-  resolvedPackages: Seq[SharedCollectionPackage],
-  views: Int,
-  subscriptions: Option[Int],
-  category: String,
-  icon: String,
-  community: Boolean)
-
-case class SharedCollectionPackage(
-  packageName: String,
-  title: String,
-  icon: String,
-  stars: Double,
-  downloads: String,
-  free: Boolean)
 

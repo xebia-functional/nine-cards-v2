@@ -3,10 +3,9 @@ package cards.nine.app.ui.launcher.actions.publicollections
 import android.support.v4.app.Fragment
 import android.view.Gravity
 import android.widget.{LinearLayout, TextView}
+import cards.nine.models.{Collection, SharedCollection}
 import cards.nine.models.types.NineCardsCategory
-import cards.nine.models.Collection
 import cards.nine.process.sharedcollections.TypeSharedCollection
-import cards.nine.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._

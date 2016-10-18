@@ -1,8 +1,9 @@
 package cards.nine.models
 
+import cards.nine.models.types.{NineCardsCategory, CollectionType}
 import play.api.libs.json._
 
-case class LoginV1Device(
+case class Device(
   name: String,
   deviceId: String,
   secretToken: String,
@@ -12,7 +13,7 @@ case class LoginResponseV1(
   userId: Option[String],
   sessionToken: Option[String],
   email: Option[String],
-  devices: Seq[LoginV1Device])
+  devices: Seq[Device])
 
 case class UserV1(
   _id: String,
@@ -27,22 +28,18 @@ case class UserV1Collection(
   sharedCollectionId: Option[String],
   sharedCollectionSubscribed: Option[Boolean],
   items: Seq[UserV1CollectionItem],
-  collectionType: String,
+  collectionType: CollectionType,
   constrains: Seq[String],
   wifi: Seq[String],
   occurrence: Seq[String],
   icon: String,
-  radius: Int,
-  lat: Double,
-  lng: Double,
-  alt: Double,
-  category: Option[String])
+  category: Option[NineCardsCategory])
 
 case class UserV1CollectionItem(
   itemType: String,
   title: String,
-  metadata: JsValue,
-  categories: Option[Seq[String]])
+  intent: String,
+  categories: Option[Seq[NineCardsCategory]])
 
 case class UserV1Device(
   deviceId: String,

@@ -1,7 +1,7 @@
 package cards.nine.app.ui.commons.ops
 
+import cards.nine.models.SharedCollection
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import cards.nine.process.sharedcollections.models.SharedCollection
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 

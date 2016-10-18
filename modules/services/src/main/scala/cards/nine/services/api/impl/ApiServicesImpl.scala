@@ -60,7 +60,7 @@ class ApiServicesImpl(
 
   override def loginV1(
     email: String,
-    device: LoginV1Device) =
+    device: Device) =
     for {
       baseHeader <- prepareV1Header
       response <- apiServiceV1.login(toUser(email, device), baseHeader).readOption(userNotFoundMessage)
