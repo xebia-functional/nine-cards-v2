@@ -21,13 +21,12 @@ object ApiValues {
   val limit: Int = 20
   val apiPackageName: String = "apiPackageName"
   val apiTitle: String = "apiTitle"
-  val screenshots: Seq[String] = Seq("screenshot1", "screenshot2", "screenshot3"))
+  val screenshots: Seq[String] = Seq("screenshot1", "screenshot2", "screenshot3")
 
 }
 
 object ApiV1Values {
 
-  val deviceId: String  = "XX-47-XX"
   val permissions: Seq[String] = Seq("permission1", "permission2")
   val itemType: CardType = AppCardType
   val title: String = "title"
@@ -200,13 +199,18 @@ object UserValues {
   val sessionToken: String = "sessionToken"
   val apiKey: String = "apiKey"
   val deviceToken: String = "deviceToken"
+  val anotherDeviceToken = "anotherDeviceToken"
   val marketToken: String = "marketToken"
   val deviceName: String = "deviceName"
+  val anotherDeviceName = "anotherDeviceName"
+  val deviceId = "XX-47-XX"
   val deviceCloudId: String = "deviceCloudId"
+  val anotherDeviceCloudId = "anotherDeviceCloudId"
   val userName: String = "userName"
   val avatar: String = "avatar"
   val cover: String = "cover"
   val androidId = "012354654894654654"
+  val emailTokenId = "emailTokenId"
 
   val deletedUser: Int = 1
   val deletedUsers: Int = 2

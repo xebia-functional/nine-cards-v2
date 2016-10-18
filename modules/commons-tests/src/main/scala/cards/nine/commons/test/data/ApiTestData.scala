@@ -13,6 +13,10 @@ trait ApiTestData extends ApplicationTestData {
     androidId = androidId,
     marketToken = Some(marketToken))
 
+  val loginResponse = LoginResponse(
+    apiKey = apiKey,
+    sessionToken = sessionToken)
+
   val awarenessLocation = Location(
       latitude = latitude,
       longitude = longitude,
