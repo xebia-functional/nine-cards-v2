@@ -3,7 +3,7 @@ package cards.nine.process.sharedcollections
 import cards.nine.models.Collection
 import cards.nine.models.types._
 import cards.nine.process.sharedcollections.models._
-import cards.nine.services.api.{SharedCollection => SharedCollectionService, SharedCollectionPackageResponse}
+import cards.nine.models.{SharedCollection => SharedCollectionService, SharedCollectionPackage => SharedCollectionPackageService}
 
 trait Conversions {
 
@@ -26,7 +26,7 @@ trait Conversions {
       community = item.community,
       publicCollectionStatus = determinePublicCollectionStatus(maybeLocalCollection))
 
-  def toSharedCollectionPackage(item: SharedCollectionPackageResponse): SharedCollectionPackage =
+  def toSharedCollectionPackage(item: SharedCollectionPackageService): SharedCollectionPackage =
     SharedCollectionPackage(
       packageName = item.packageName,
       title = item.title,

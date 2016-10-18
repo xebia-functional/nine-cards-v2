@@ -1,9 +1,8 @@
 package cards.nine.process.userv1.impl
 
 import cards.nine.commons.test.data.UserValues._
-import cards.nine.models.types.{AppCardType, AppsCollectionType, Game}
-import cards.nine.services.api.models._
-import cards.nine.services.api.{GetUserV1Response, LoginResponseV1, RequestConfigV1}
+import cards.nine.models._
+import cards.nine.models.types.{AppCardType, Game, AppsCollectionType}
 import play.api.libs.json.JsString
 
 trait UserV1ProcessData {
@@ -37,7 +36,6 @@ trait UserV1ProcessData {
     permissions = permissions)
 
   val loginResponseV1 = LoginResponseV1(
-    statusCode = statusCodeUser,
     userId = Option(userId.toString),
     sessionToken = Option(sessionToken),
     email = Option(email),
@@ -107,10 +105,6 @@ trait UserV1ProcessData {
       communityMember = true,
       joinedThrough = None,
       tester = false))
-
-  val getUserConfigResponse = GetUserV1Response(
-    statusCode = statusCodeUser,
-    userConfig = userConfig)
 
   val requestConfig = RequestConfigV1(
     deviceId = deviceId,

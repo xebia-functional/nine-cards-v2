@@ -2,7 +2,7 @@ package cards.nine.process.userv1
 
 import cards.nine.models.types.{CollectionType, NineCardsCategory}
 import cards.nine.process.userv1.models.{Device, UserV1Collection, UserV1CollectionItem, UserV1Device, UserV1Info}
-import cards.nine.services.api.models.{LoginV1Device => ServiceLoginV1Device, UserV1 => ServiceUserV1, UserV1Collection => ServiceUserV1Collection, UserV1CollectionItem => ServiceUserV1CollectionItem, UserV1Device => ServiceUserV1Device}
+import cards.nine.models.{LoginV1Device => ServiceLoginV1Device, UserV1 => ServiceUserV1, UserV1Collection => ServiceUserV1Collection, UserV1CollectionItem => ServiceUserV1CollectionItem, UserV1Device => ServiceUserV1Device}
 
 trait UserV1Conversions {
 

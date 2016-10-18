@@ -4,9 +4,9 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{User, UserData, UserProfile}
+import cards.nine.models.{RequestConfig, User, UserData, UserProfile}
 import cards.nine.process.user._
-import cards.nine.services.api.{ApiServices, RequestConfig}
+import cards.nine.services.api.ApiServices
 import cards.nine.services.persistence._
 import cats.syntax.either._
 import monix.eval.Task
@@ -119,13 +119,13 @@ class UserProcessImpl(
   private[this] def syncInstallation(
     maybeApiKey: Option[String],
     maybeSessionToken: Option[String],
-    deviceToken: Option[String])(implicit context: ContextSupport): TaskService[Int] =
+    deviceToken: Option[String])(implicit context: ContextSupport): TaskService[Unit] =
     (maybeApiKey, maybeSessionToken) match {
       case (Some(apiKey), Some(sessionToken)) if deviceToken.nonEmpty =>
         (for {
           androidId <- persistenceServices.getAndroidId
-          response <- apiServices.updateInstallation(deviceToken)(RequestConfig(apiKey, sessionToken, androidId))
-        } yield response.statusCode).resolve[UserException]
+          _ <- apiServices.updateInstallation(deviceToken)(RequestConfig(apiKey, sessionToken, androidId))
+        } yield ()).resolve[UserException]
       case _ => TaskService(Task(Either.right(0)))
     }
 
