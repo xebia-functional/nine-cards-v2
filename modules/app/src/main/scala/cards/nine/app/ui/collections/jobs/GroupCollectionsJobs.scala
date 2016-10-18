@@ -50,8 +50,9 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def reloadCards(): TaskService[Seq[Card]] =
     for {
-      currentCollection <- actions.getCurrentCollection.resolveOption()
-      databaseCollection <- di.collectionProcess.getCollectionById(currentCollection.id).resolveOption()
+      currentCollection <- fetchCurrentCollection
+      databaseCollection <- di.collectionProcess.getCollectionById(currentCollection.id)
+        .resolveOption(s"Can't find the collection with id ${currentCollection.id}")
       cardsAreDifferent = databaseCollection.cards != currentCollection.cards
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(cardsAreDifferent && currentIsMoment, ())
@@ -60,7 +61,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def editCard(): TaskService[Unit] =
     for {
-      currentCollection <- actions.getCurrentCollection.resolveOption()
+      currentCollection <- fetchCurrentCollection
       currentCollectionId = currentCollection.id
       cards = filterSelectedCards(currentCollection.cards)
       _ <- cards match {
@@ -72,7 +73,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def removeCards(): TaskService[Seq[Card]] =
     for {
-      currentCollection <- actions.getCurrentCollection.resolveOption()
+      currentCollection <- fetchCurrentCollection
       currentCollectionId = currentCollection.id
       cards = filterSelectedCards(currentCollection.cards)
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
@@ -84,8 +85,9 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def moveToCollection(toCollectionId: Int, collectionPosition: Int): TaskService[Seq[Card]] =
     for {
-      currentCollection <- actions.getCurrentCollection.resolveOption()
-      toCollection <- actions.getCollection(collectionPosition).resolveOption()
+      currentCollection <- fetchCurrentCollection
+      toCollection <- actions.getCollection(collectionPosition)
+        .resolveOption(s"Can't find the collection in the position $collectionPosition in the UI")
       currentCollectionId = currentCollection.id
       cards = filterSelectedCards(currentCollection.cards)
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
@@ -102,7 +104,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def savePublishStatus(): TaskService[Unit] =
     for {
-      currentCollection <- actions.getCurrentCollection.resolveOption()
+      currentCollection <- fetchCurrentCollection
       _ <- TaskService.right(statuses = statuses.copy(publishStatus = currentCollection.publicCollectionStatus))
     } yield ()
 
@@ -152,7 +154,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def addCards(cardsRequest: Seq[CardData]): TaskService[Seq[Card]] =
     for {
-      currentCollection <- actions.getCurrentCollection.resolveOption()
+      currentCollection <- fetchCurrentCollection
       currentCollectionId = currentCollection.id
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
       cards <- di.collectionProcess.addCards(currentCollectionId, cardsRequest)
@@ -174,7 +176,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
     } yield cards
 
     for {
-      currentCollection <- actions.getCurrentCollection.resolveOption()
+      currentCollection <- fetchCurrentCollection
       currentIsMoment = currentCollection.collectionType == MomentCollectionType
       cards <- createShortcut(currentCollection.id)
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
@@ -204,7 +206,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def emptyCollection(): TaskService[Unit] =
     for {
-      currentCollection <- actions.getCurrentCollection.resolveOption()
+      currentCollection <- fetchCurrentCollection
       _ <- actions.showMenuButton(autoHide = false, currentCollection.themedColorIndex)
     } yield ()
 
@@ -214,7 +216,7 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
   def startScroll(): TaskService[Unit] =
     for {
-      currentCollection <-  actions.getCurrentCollection.resolveOption()
+      currentCollection <-  fetchCurrentCollection
       _ <- actions.showMenuButton(autoHide = true, currentCollection.themedColorIndex)
     } yield ()
 
@@ -224,6 +226,9 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
     case (card, index) if statuses.positionsEditing.contains(index) => Option(card)
     case _ => None
   }
+
+  private[this] def fetchCurrentCollection: TaskService[Collection] =
+    actions.getCurrentCollection.resolveOption("Can't find the current collection in the UI")
 
 }
 

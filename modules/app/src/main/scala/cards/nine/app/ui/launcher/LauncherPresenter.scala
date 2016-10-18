@@ -382,7 +382,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       }
 
       for {
-        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption()
+        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption(s"Can't find the widget with id $idWidget")
         widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
         newSpace = convertSpace(widget.area)
       } yield {
@@ -417,7 +417,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     def moveIntersect(idWidget: Int): TaskService[Option[WidgetMovement]] =
       for {
-        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption()
+        widget <- di.widgetsProcess.getWidgetById(idWidget)
+          .resolveOption(s"Can't find the widget with id $idWidget")
         widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
       } yield {
         val otherWidgets = widgetsByMoment.filterNot(_.id == widget.id)

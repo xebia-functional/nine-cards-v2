@@ -66,7 +66,7 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
       }
 
     (for {
-      collection <- findCollectionById(collectionId).resolveOption()
+      collection <- findCollectionById(collectionId)
       _ <- persistenceServices.deleteCollection(collection)
       _ <- persistenceServices.deleteCardsByCollection(collectionId)
       collectionList <- getCollections
@@ -169,7 +169,7 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
     }
 
     (for {
-      _ <- persistenceServices.findCollectionById(collectionId).resolveOption()
+      _ <- findCollectionById(collectionId)
       tuple <- fetchPackagesNotAddedToCollection()
       (actualCollectionSize, notAdded) = tuple
       installedApps <- fetchInstalledPackages(notAdded)
@@ -212,13 +212,14 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
 
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =
     (for {
-      collection <- findCollectionById(collectionId).resolveOption()
+      collection <- findCollectionById(collectionId)
       updatedCollection = f(collection)
       _ <- persistenceServices.updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 
   private[this] def findCollectionById(collectionId: Int) =
     persistenceServices.findCollectionById(collectionId)
+      .resolveOption(s"Can't find the collection with id $collectionId")
 
   private[this] def updateCollectionList(collectionList: Seq[Collection]) =
     persistenceServices.updateCollections(collectionList)

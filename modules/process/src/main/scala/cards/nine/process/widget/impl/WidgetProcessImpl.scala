@@ -11,32 +11,22 @@ class WidgetProcessImpl(
   extends WidgetProcess
   with ImplicitsWidgetException {
 
-  override def getWidgets = (persistenceServices.fetchWidgets).resolve[AppWidgetException]
+  override def getWidgets = persistenceServices.fetchWidgets.resolve[AppWidgetException]
 
   override def getWidgetById(widgetId: Int) =
-    (for {
-      widget <- findWidgetById(widgetId)
-    } yield widget).resolve[AppWidgetException]
+    findWidgetById(widgetId).resolve[AppWidgetException]
 
   override def getWidgetByAppWidgetId(appWidgetId: Int) =
-    (for {
-      widget <- persistenceServices.fetchWidgetByAppWidgetId(appWidgetId)
-    } yield widget).resolve[AppWidgetException]
+    persistenceServices.fetchWidgetByAppWidgetId(appWidgetId).resolve[AppWidgetException]
 
   override def getWidgetsByMoment(momentId: Int) =
-    (for {
-      widgets <- persistenceServices.fetchWidgetsByMoment(momentId)
-    } yield widgets).resolve[AppWidgetException]
+    persistenceServices.fetchWidgetsByMoment(momentId).resolve[AppWidgetException]
 
   override def addWidget(addWidgetRequest: WidgetData) =
-    (for {
-      widget <- persistenceServices.addWidget(addWidgetRequest)
-    } yield widget).resolve[AppWidgetException]
+    persistenceServices.addWidget(addWidgetRequest).resolve[AppWidgetException]
 
   override def addWidgets(request: Seq[WidgetData]) =
-    (for {
-      widgets <- persistenceServices.addWidgets(request)
-    } yield widgets).resolve[AppWidgetException]
+    persistenceServices.addWidgets(request).resolve[AppWidgetException]
 
   override def moveWidget(widgetId: Int, displaceX: Int, displaceY: Int) = {
 
@@ -47,7 +37,7 @@ class WidgetProcessImpl(
           startY = widget.area.startY + displaceY))
 
     (for {
-      widget <- findWidgetById(widgetId).resolveOption()
+      widget <- fetchWidgetById(widgetId)
       updatedWidget = toUpdatedWidget(widget, displaceX, displaceY)
       _ <- updateWidget(updatedWidget)
     } yield updatedWidget).resolve[AppWidgetException]
@@ -63,7 +53,7 @@ class WidgetProcessImpl(
           spanY = widget.area.spanY + increaseY))
 
     (for {
-      widget <- findWidgetById(widgetId).resolveOption()
+      widget <- fetchWidgetById(widgetId)
       updatedWidget = toUpdatedWidget(widget, increaseX, increaseY)
       _ <- updateWidget(updatedWidget)
     } yield updatedWidget).resolve[AppWidgetException]
@@ -76,7 +66,7 @@ class WidgetProcessImpl(
       widget.copy(appWidgetId = Option(appWidgetId))
 
     (for {
-      widget <- findWidgetById(widgetId).resolveOption()
+      widget <- fetchWidgetById(widgetId)
       updatedWidget = toUpdatedWidget(widget, appWidgetId)
       _ <- updateWidget(updatedWidget)
     } yield updatedWidget).resolve[AppWidgetException]
@@ -89,7 +79,7 @@ class WidgetProcessImpl(
 
   override def deleteWidget(widgetId: Int) =
     (for {
-      widget <- findWidgetById(widgetId).resolveOption()
+      widget <- fetchWidgetById(widgetId)
       _ <- persistenceServices.deleteWidget(widget)
     } yield ()).resolve[AppWidgetException]
 
@@ -99,13 +89,15 @@ class WidgetProcessImpl(
     } yield ()).resolve[AppWidgetException]
 
   private[this] def findWidgetById(widgetId: Int) =
-    (for {
-      widget <- persistenceServices.findWidgetById(widgetId)
-    } yield widget).resolve[AppWidgetException]
+    persistenceServices.findWidgetById(widgetId).resolve[AppWidgetException]
 
   private[this] def updateWidget(widget: Widget) =
     (for {
       _ <- persistenceServices.updateWidget(widget)
     } yield ()).resolve[AppWidgetException]
+
+  private[this] def fetchWidgetById(widgetId: Int) =
+    findWidgetById(widgetId).resolveOption(s"Can't find widget with id $widgetId")
+
 
 }
