@@ -6,7 +6,8 @@ import cards.nine.app.ui.commons.{ImplicitsUiExceptions, Jobs, UiException}
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.device.GetByName
+import cards.nine.models.types.GetByName
+import com.bumptech.glide.Glide
 import macroid.ContextWrapper
 
 class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrapper)

@@ -4,15 +4,14 @@ import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.models.PrivateCollection
-import cards.nine.process.device.GetByName
-import cards.nine.process.moment.MomentConversions
+import cards.nine.models.CollectionData
+import cards.nine.models.types.GetByName
+
 import macroid.ActivityContextWrapper
 
 class PrivateCollectionsJobs(actions: PrivateCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with Conversions
-  with MomentConversions {
+  with Conversions {
 
   def initialize(): TaskService[Unit] =
     for {
@@ -40,9 +39,9 @@ class PrivateCollectionsJobs(actions: PrivateCollectionsUiActions)(implicit cont
       }
     } yield ()
 
-  def saveCollection(privateCollection: PrivateCollection): TaskService[Unit] =
+  def saveCollection(collection: CollectionData): TaskService[Unit] =
     for {
-      collection <- di.collectionProcess.addCollection(toAddCollectionRequest(privateCollection))
+      collection <- di.collectionProcess.addCollection(collection)
       _ <- actions.addCollection(collection)
       _ <- actions.close()
     } yield ()

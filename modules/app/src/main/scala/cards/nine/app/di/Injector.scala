@@ -6,21 +6,22 @@ import cards.nine.api.rest.client.http.OkHttpClient
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.types.NineCardCategory._
+import cards.nine.models.CollectionProcessConfig
+import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types.NineCardsMoment._
-import cards.nine.models.types.{NineCardCategory, NineCardsMoment}
+import cards.nine.models.types.{NineCardsCategory, NineCardsMoment}
 import cards.nine.process.accounts.UserAccountsProcess
 import cards.nine.process.accounts.impl.UserAccountsProcessImpl
 import cards.nine.process.cloud.CloudStorageProcess
 import cards.nine.process.cloud.impl.CloudStorageProcessImpl
+import cards.nine.process.collection.CollectionProcess
 import cards.nine.process.collection.impl.CollectionProcessImpl
-import cards.nine.process.collection.{CollectionProcess, CollectionProcessConfig}
 import cards.nine.process.device.DeviceProcess
 import cards.nine.process.device.impl.DeviceProcessImpl
 import cards.nine.process.intents.impl.LauncherExecutorProcessImpl
 import cards.nine.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig}
+import cards.nine.process.moment.MomentProcess
 import cards.nine.process.moment.impl.MomentProcessImpl
-import cards.nine.process.moment.{MomentProcess, MomentProcessConfig}
 import cards.nine.process.recognition.RecognitionProcess
 import cards.nine.process.recognition.impl.RecognitionProcessImpl
 import cards.nine.process.recommendations.RecommendationsProcess
@@ -185,7 +186,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     callsServices = callsServices,
     wifiServices = wifiServices)
 
-  private[this] lazy val nameCategories: Map[NineCardCategory, String] = (allCategories map {
+  private[this] lazy val nameCategories: Map[NineCardsCategory, String] = (allCategories map {
     category =>
       val identifier = resources.getIdentifier(category.getIconResource, "string", contextSupport.getPackageName)
       (category, if (identifier != 0) resources.getString(identifier) else category.name)
@@ -208,11 +209,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
       (moment, if (identifier != 0) resources.getString(identifier) else moment.name)
   }).toMap
 
-  private[this] lazy val momentProcessConfig = MomentProcessConfig(
-    namesMoments = namesMoments)
-
   lazy val momentProcess = new MomentProcessImpl(
-    momentProcessConfig = momentProcessConfig,
     persistenceServices = persistenceServices,
     wifiServices = wifiServices)
 

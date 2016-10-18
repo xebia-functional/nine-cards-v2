@@ -2,15 +2,14 @@ package cards.nine.services.contacts
 
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{ContactCounter, Contact}
+import cards.nine.models.{TermCounter, Contact}
 
 trait ContactsServices {
 
   /**
     * Get contacts sort by name. The info field is not filled
     *
-    * @return the Seq[cards.nine.services.contacts.models.Contact] contains
-    *         information about contacts
+    * @return the Seq[cards.nine.models.Contact] contains information about contacts
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
@@ -19,18 +18,16 @@ trait ContactsServices {
   /**
     * Returns the number of times the first letter of a contact is repeated alphabetically
     *
-    * @return the Seq[cards.nine.services.contacts.models.ContactCounter] contains
-    *         information about the times is repeated a contacts
+    * @return the Seq[cards.nine.models.TermCounter] contains information about the times is repeated a contacts
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
-  def getAlphabeticalCounterContacts: TaskService[Seq[ContactCounter]]
+  def getAlphabeticalCounterContacts: TaskService[Seq[TermCounter]]
 
   /**
     * Get iterable contacts sort by name. The info field is not filled
     *
-    * @return the IterableCursorSeq[cards.nine.services.contacts.models.Contact] contains
-    *         information about contacts
+    * @return the IterableCursorSeq[cards.nine.models.Contact] contains information about contacts
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
@@ -39,8 +36,7 @@ trait ContactsServices {
   /**
     * Get iterable contacts by keyword sort by name. The info field is not filled
     *
-    * @return the IterableCursorSeq[cards.nine.services.contacts.models.Contact] contains
-    *         information about contacts
+    * @return the IterableCursorSeq[cards.nine.models.Contact] contains information about contacts
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
@@ -49,7 +45,7 @@ trait ContactsServices {
   /**
     * Return contact by email if exist. The info field is not filled
     *
-    * @return the Option[cards.nine.services.contacts.models.Contact] contains
+    * @return the Option[cards.nine.models.Contact] contains
     *         information about contact
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
@@ -59,8 +55,7 @@ trait ContactsServices {
   /**
     * Return contact by phone number if exist. The info field is not filled
     *
-    * @return the Option[cards.nine.services.contacts.models.Contact] contains
-    *         information about contact
+    * @return the Option[cards.nine.models.Contact] contains information about contact
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
@@ -69,8 +64,7 @@ trait ContactsServices {
   /**
     * Return contact by lookup key. The info field is filled
     *
-    * @return the cards.nine.services.contacts.models.Contact contains
-    *         information about contacts
+    * @return the cards.nine.models.Contact contains information about contacts
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     * @throws ContactNotFoundException if the lookup key doesn't exits
@@ -80,7 +74,7 @@ trait ContactsServices {
   /**
     * Populate the info field in every contact
     *
-    * @return sequence of the cards.nine.services.contacts.models.Contact
+    * @return sequence of the cards.nine.models.Contact
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     * @throws ContactNotFoundException if any contact doesn't exits
@@ -90,8 +84,7 @@ trait ContactsServices {
   /**
     * Return favorite contacts. The info field is not filled
     *
-    * @return the Seq[cards.nine.services.contacts.models.Contact] contains
-    *         information about contacts
+    * @return the Seq[cards.nine.models.Contact] contains information about contacts
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
@@ -100,8 +93,7 @@ trait ContactsServices {
   /**
     * Return iterable favorite contacts. The info field is not filled
     *
-    * @return the IterableCursor[cards.nine.services.contacts.models.Contact] contains
-    *         information about contacts
+    * @return the IterableCursor[cards.nine.models.Contact] contains information about contacts
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
@@ -110,8 +102,7 @@ trait ContactsServices {
   /**
     * Return contacts with phone number. The info field is not filled
     *
-    * @return the Seq[cards.nine.services.contacts.models.Contact] contains
-    *         information about contacts
+    * @return the Seq[cards.nine.models.Contact] contains information about contacts
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */
@@ -120,8 +111,7 @@ trait ContactsServices {
   /**
     * Return iterable contacts with phone number. The info field is not filled
     *
-    * @return the IterableCursor[cards.nine.services.contacts.models.Contact] contains
-    *         information about contacts
+    * @return the IterableCursor[cards.nine.models.Contact] contains information about contacts
     * @throws ContactsServicePermissionException if the permission for read contacts hasn't been granted
     * @throws ContactsServiceException if exist some problem accessing to contact provider
     */

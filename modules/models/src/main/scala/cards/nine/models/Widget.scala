@@ -1,6 +1,6 @@
 package cards.nine.models
 
-import cards.nine.models.types.{WidgetType, WidgetResizeMode}
+import cards.nine.models.types.{WidgetResizeMode, WidgetType}
 
 case class AppWidget (
   userHashCode: Option[Int],
@@ -17,7 +17,7 @@ case class AppWidget (
   label: String,
   preview: Int)
 
-case class Widget (
+case class Widget(
   id: Int,
   momentId: Int,
   packageName: String,
@@ -27,7 +27,18 @@ case class Widget (
   widgetType: WidgetType,
   label: Option[String],
   imagePath: Option[String],
-  intent: Option[String])
+  intent: Option[NineCardsIntent])
+
+case class WidgetData(
+  momentId: Int = 0,
+  packageName: String,
+  className: String,
+  appWidgetId: Option[Int],
+  area: WidgetArea,
+  widgetType: WidgetType,
+  label: Option[String],
+  imagePath: Option[String],
+  intent: Option[NineCardsIntent])
 
 case class WidgetArea (
   startX: Int,
@@ -51,4 +62,22 @@ case class WidgetArea (
     (xOverlap && yOverlap) || outOfLimits
   }
 
+}
+
+object Widget {
+
+  implicit class WidgetOps(widget: Widget) {
+
+    def toData = WidgetData(
+      momentId = widget.momentId,
+      packageName = widget.packageName,
+      className = widget.className,
+      appWidgetId = widget.appWidgetId,
+      area = widget.area,
+      widgetType = widget.widgetType,
+      label = widget.label,
+      imagePath = widget.imagePath,
+      intent = widget.intent)
+
+  }
 }

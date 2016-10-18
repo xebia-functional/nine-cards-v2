@@ -4,12 +4,12 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.ContactCounter
+import cards.nine.models.TermCounter
+import cards.nine.models.types.{ContactsWithPhoneNumber, FavoriteContacts, AllContacts, ContactsFilter}
 import cards.nine.process.device._
 import cards.nine.process.device.models.IterableContacts
 import cards.nine.services.contacts.ContactsServicePermissionException
 import monix.eval.Task
-import cats.syntax.either._
 
 trait ContactsDeviceProcessImpl extends DeviceProcess {
 
@@ -17,7 +17,7 @@ trait ContactsDeviceProcessImpl extends DeviceProcess {
     with DeviceProcessDependencies
     with ImplicitsDeviceException =>
 
-  val emptyContactCounterService: TaskService[Seq[ContactCounter]] =
+  val emptyContactCounterService: TaskService[Seq[TermCounter]] =
     TaskService(Task(Right(Seq.empty)))
 
   def mapServicesException[E >: NineCardException]: (NineCardException => E) = {
@@ -47,7 +47,7 @@ trait ContactsDeviceProcessImpl extends DeviceProcess {
         case FavoriteContacts => emptyContactCounterService
         case ContactsWithPhoneNumber => emptyContactCounterService
       }
-    } yield counters map toTermCounter).leftMap(mapServicesException)
+    } yield counters).leftMap(mapServicesException)
 
   def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
     (for {

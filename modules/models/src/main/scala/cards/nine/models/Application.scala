@@ -1,15 +1,15 @@
 package cards.nine.models
 
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 
 case class Application(
   id: Int,
   name: String,
   packageName: String,
   className: String,
-  category: NineCardCategory,
+  category: NineCardsCategory,
   dateInstalled: Long,
-  dateUpdate: Long,
+  dateUpdated: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 
@@ -17,9 +17,9 @@ case class ApplicationData(
   name: String,
   packageName: String,
   className: String,
-  category: NineCardCategory,
+  category: NineCardsCategory,
   dateInstalled: Long,
-  dateUpdate: Long,
+  dateUpdated: Long,
   version: String,
   installedFromGooglePlay: Boolean)
 
@@ -33,7 +33,21 @@ object Application {
       className = app.className,
       category = app.category,
       dateInstalled = app.dateInstalled,
-      dateUpdate = app.dateUpdate,
+      dateUpdated = app.dateUpdated,
+      version = app.version,
+      installedFromGooglePlay = app.installedFromGooglePlay)
+  }
+
+  implicit class ApplicationDataOps(app: ApplicationData) {
+
+    def toApp(id: Int) = Application(
+      id = id,
+      name = app.name,
+      packageName = app.packageName,
+      className = app.className,
+      category = app.category,
+      dateInstalled = app.dateInstalled,
+      dateUpdated = app.dateUpdated,
       version = app.version,
       installedFromGooglePlay = app.installedFromGooglePlay)
   }

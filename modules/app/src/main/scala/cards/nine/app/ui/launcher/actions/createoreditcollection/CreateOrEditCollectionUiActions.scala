@@ -15,7 +15,7 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.Communication
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.EditTextTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._

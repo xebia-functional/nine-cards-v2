@@ -4,15 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view._
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{JobException, RequestCodes}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.device.{AllContacts, ContactPermissionException, ContactsFilter}
+import cards.nine.models.CardData
+import cards.nine.models.types.{AllContacts, ContactsFilter}
+import cards.nine.process.device.ContactPermissionException
 import com.fortysevendeg.ninecardslauncher.R
 
 class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -20,7 +21,7 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
   with ContactsUiActions
   with ContactsDOM
   with ContactsUiListener
-  with AppNineCardIntentConversions { self =>
+  with AppNineCardsIntentConversions { self =>
 
   lazy val contactsJobs = new ContactsJobs(self)
 
@@ -47,7 +48,7 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
       case (RequestCodes.selectInfoContact, Activity.RESULT_OK) =>
         val maybeRequest = readExtras flatMap { extras =>
           readExtraProperty(extras, ContactsFragment.addCardRequest) match {
-            case Some(card: AddCardRequest) => Some(card)
+            case Some(card: CardData) => Some(card)
             case _ => None
           }
         }

@@ -1,19 +1,19 @@
 package cards.nine.app.ui.collections.actions.apps
 
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.{AllAppsCategory, Misc, NineCardCategory}
-import cards.nine.process.device.models.{IterableApps, TermCounter}
-import cards.nine.process.device.{GetAppOrder, GetByName}
+import cards.nine.models.TermCounter
+import cards.nine.models.types._
+import cards.nine.process.device.models.IterableApps
 import macroid.ActivityContextWrapper
 
 case class AppsJobs(
-  category: NineCardCategory,
-  actions: AppsIuActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  category: NineCardsCategory,
+  actions: AppsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
-  with AppNineCardIntentConversions {
+  with AppNineCardsIntentConversions {
 
   def initialize(): TaskService[Unit] = {
     val onlyAllApps = category == AllAppsCategory || category == Misc
@@ -33,7 +33,7 @@ case class AppsJobs(
         counters <- di.deviceProcess.getTermCountersForApps(order)
       } yield (iterableApps, counters)
 
-    def getLoadAppsByCategory(category: NineCardCategory): TaskService[(IterableApps, Seq[TermCounter])] =
+    def getLoadAppsByCategory(category: NineCardsCategory): TaskService[(IterableApps, Seq[TermCounter])] =
       for {
         iterableApps <- di.deviceProcess.getIterableAppsByCategory(category.name)
       } yield (iterableApps, Seq.empty)

@@ -1,16 +1,17 @@
 package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.CardTestData
+import cards.nine.commons.test.data.CardValues._
+import cards.nine.models.Card
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.CardEntity
-import cards.nine.services.persistence.data._
-import cards.nine.services.persistence.models.Card
+import cats.syntax.either._
+import com.fortysevendeg.ninecardslauncher.services.persistence.data.CardPersistenceServicesData
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
-import cards.nine.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
-
 
 trait CardPersistenceServicesDataSpecification
   extends Specification
@@ -18,7 +19,8 @@ trait CardPersistenceServicesDataSpecification
 
   trait CardServicesScope
     extends RepositoryServicesScope
-    with PersistenceServicesData {
+    with CardTestData
+    with CardPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 
@@ -32,27 +34,20 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
 
     "return a Card value for a valid request" in new CardServicesScope {
 
-      mockCardRepository.addCard(collectionId, repoCardData) returns TaskService(Task(Either.right(repoCard)))
-      val result = persistenceServices.addCard(createAddCardRequest()).value.run
+      mockCardRepository.addCard(any, any) returns TaskService(Task(Either.right(repoCard)))
+      val result = persistenceServices.addCard(cardCollectionId, cardData).value.run
 
       result must beLike {
         case Right(card) =>
           card.id shouldEqual cardId
-          card.cardType shouldEqual cardType
+          card.cardType.name shouldEqual cardType
       }
-    }
-    "return a PersistenceServiceException id collectionId is empty" in new CardServicesScope {
-
-      mockCardRepository.addCard(any, any) returns TaskService(Task(Either.right(repoCard)))
-      val result = persistenceServices.addCard(createAddCardRequestWithoutCollectionId).value.run
-      result must beAnInstanceOf[Left[RepositoryException, _]]
-
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
 
-      mockCardRepository.addCard(collectionId, repoCardData) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.addCard(createAddCardRequest()).value.run
+      mockCardRepository.addCard(any, any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.addCard(cardCollectionId, cardData).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -61,9 +56,9 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
 
     "return the number of elements deleted for a valid request" in new CardServicesScope {
 
-      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(items)))
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(seqRepoCard.size)))
       val result = persistenceServices.deleteAllCards().value.run
-      result shouldEqual Right(items)
+      result shouldEqual Right(seqRepoCard.size)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
@@ -79,20 +74,20 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
     "return the number of elements deleted for a valid request" in new CardServicesScope {
 
       seqRepoCard foreach { repoCard =>
-        mockCardRepository.deleteCard(collectionId, repoCard.id) returns TaskService(Task(Either.right(item)))
+        mockCardRepository.deleteCard(cardCollectionId, repoCard.id) returns TaskService(Task(Either.right(deletedCard)))
       }
 
-      val result = persistenceServices.deleteCard(collectionId, card.id).value.run
-      result shouldEqual Right(item)
+      val result = persistenceServices.deleteCard(cardCollectionId, card.id).value.run
+      result shouldEqual Right(deletedCard)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
 
       seqRepoCard foreach { repoCard =>
-        mockCardRepository.deleteCard(collectionId, repoCard.id) returns TaskService(Task(Either.left(exception)))
+        mockCardRepository.deleteCard(cardCollectionId, repoCard.id) returns TaskService(Task(Either.left(exception)))
       }
 
-      val result = persistenceServices.deleteCard(collectionId, card.id).value.run
+      val result = persistenceServices.deleteCard(cardCollectionId, card.id).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -101,16 +96,16 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
 
     "return the number of elements deleted for a valid request" in new CardServicesScope {
 
-      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(items)))
-      val result = persistenceServices.deleteCards(collectionId, Seq(card.id)).value.run
-      result shouldEqual Right(items)
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(deletedCards)))
+      val result = persistenceServices.deleteCards(cardCollectionId, Seq(card.id)).value.run
+      result shouldEqual Right(deletedCards)
 
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
 
       mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.deleteCards(collectionId, Seq(card.id)).value.run
+      val result = persistenceServices.deleteCards(cardCollectionId, Seq(card.id)).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -119,18 +114,18 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
 
     "return the number of elements deleted for a valid request" in new CardServicesScope {
 
-      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(items)))
-      val result = persistenceServices.deleteCardsByCollection(collectionId).value.run
-      result shouldEqual Right(items)
-      there was one(mockCardRepository).deleteCards(None, where = s"${CardEntity.collectionId} = $collectionId")
+      mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.right(deletedCards)))
+      val result = persistenceServices.deleteCardsByCollection(cardCollectionId).value.run
+      result shouldEqual Right(deletedCards)
+      there was one(mockCardRepository).deleteCards(None, where = s"${CardEntity.collectionId} = $cardCollectionId")
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
 
       mockCardRepository.deleteCards(any, any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.deleteCardsByCollection(collectionId).value.run
+      val result = persistenceServices.deleteCardsByCollection(cardCollectionId).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
-      there was one(mockCardRepository).deleteCards(None, where = s"${CardEntity.collectionId} = $collectionId")
+      there was one(mockCardRepository).deleteCards(None, where = s"${CardEntity.collectionId} = $cardCollectionId")
     }
   }
 
@@ -139,10 +134,10 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
     "return a list of Card elements for a valid request" in new CardServicesScope {
 
       List.tabulate(5) { index =>
-        mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Either.right(seqRepoCard)))
+        mockCardRepository.fetchCardsByCollection(cardCollectionId + index) returns TaskService(Task(Either.right(seqRepoCard)))
       }
 
-      val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId)).value.run
+      val result = persistenceServices.fetchCardsByCollection(cardCollectionId).value.run
 
       result must beLike {
         case Right(cards) => cards.size shouldEqual seqCard.size
@@ -152,10 +147,10 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
     "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
 
       List.tabulate(5) { index =>
-        mockCardRepository.fetchCardsByCollection(collectionId + index) returns TaskService(Task(Either.left(exception)))
+        mockCardRepository.fetchCardsByCollection(cardCollectionId + index) returns TaskService(Task(Either.left(exception)))
       }
 
-      val result = persistenceServices.fetchCardsByCollection(createFetchCardsByCollectionRequest(collectionId)).value.run
+      val result = persistenceServices.fetchCardsByCollection(cardCollectionId).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -188,12 +183,12 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
     "return a Card for a valid request" in new CardServicesScope {
 
       mockCardRepository.findCardById(cardId) returns TaskService(Task(Either.right(Option(repoCard))))
-      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId)).value.run
+      val result = persistenceServices.findCardById(cardId).value.run
 
       result must beLike {
         case Right(maybeCard) =>
           maybeCard must beSome[Card].which { card =>
-            card.cardType shouldEqual cardType
+            card.cardType.name shouldEqual cardType
           }
       }
     }
@@ -201,14 +196,14 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
     "return None when a non-existent id is given" in new CardServicesScope {
 
       mockCardRepository.findCardById(nonExistentCardId) returns TaskService(Task(Either.right(None)))
-      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = nonExistentCardId)).value.run
+      val result = persistenceServices.findCardById(nonExistentCardId).value.run
       result shouldEqual Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
 
       mockCardRepository.findCardById(cardId) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.findCardById(createFindCardByIdRequest(id = cardId)).value.run
+      val result = persistenceServices.findCardById(cardId).value.run
 
       result must beLike {
         case Left(e) => e.cause must beSome.which(_ shouldEqual exception)
@@ -220,15 +215,15 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
 
     "return the number of elements updated for a valid request" in new CardServicesScope {
 
-      mockCardRepository.updateCard(repoCard) returns TaskService(Task(Either.right(item)))
-      val result = persistenceServices.updateCard(createUpdateCardRequest()).value.run
-      result shouldEqual Right(item)
+      mockCardRepository.updateCard(any) returns TaskService(Task(Either.right(deletedCard)))
+      val result = persistenceServices.updateCard(card).value.run
+      result shouldEqual Right(deletedCard)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
 
-      mockCardRepository.updateCard(repoCard) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.updateCard(createUpdateCardRequest()).value.run
+      mockCardRepository.updateCard(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.updateCard(card).value.run
 
       result must beLike {
         case Left(e) => e.cause must beSome.which(_ shouldEqual exception)
@@ -240,15 +235,15 @@ class CardPersistenceServicesImplSpec extends CardPersistenceServicesDataSpecifi
 
     "return the sequence with the number of elements updated for a valid request" in new CardServicesScope {
 
-      mockCardRepository.updateCards(seqRepoCard) returns TaskService(Task(Either.right(item to items)))
-      val result = persistenceServices.updateCards(createUpdateCardsRequest()).value.run
-      result shouldEqual Right(item to items)
+      mockCardRepository.updateCards(any) returns TaskService(Task(Either.right(deletedCard to deletedCards)))
+      val result = persistenceServices.updateCards(seqCard).value.run
+      result shouldEqual Right(deletedCard to deletedCards)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new CardServicesScope {
 
-      mockCardRepository.updateCards(seqRepoCard) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.updateCards(createUpdateCardsRequest()).value.run
+      mockCardRepository.updateCards(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.updateCards(seqCard).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

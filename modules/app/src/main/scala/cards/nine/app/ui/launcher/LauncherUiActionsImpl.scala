@@ -43,13 +43,10 @@ import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
-import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment}
-import cards.nine.models._
-import cards.nine.process.commons.models.{Collection, Moment}
+import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment, _}
+import cards.nine.models.{ApplicationData, ConditionWeather, Contact, UnknownCondition, Widget, _}
 import cards.nine.process.device.models.{LastCallsContact, _}
-import cards.nine.process.device.{GetAppOrder, GetByName}
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -109,7 +106,7 @@ trait LauncherUiActionsImpl
   override def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): Ui[Any] =
     (workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager
 
-  override def reloadDockApps(dockApp: DockApp): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
+  override def reloadDockApps(dockApp: DockAppData): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
 
   override def openModeEditWidgets(): Ui[Any] =
     uiVibrate() ~
@@ -147,9 +144,11 @@ trait LauncherUiActionsImpl
       (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
       (editWidgetsTopPanel <~ ewtMoving)
 
-  override def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any] = workspaces <~ lwsResizeWidgetById(id, resize)
+  override def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Ui[Any] =
+    workspaces <~ lwsResizeWidgetById(id, increaseX, increaseY)
 
-  override def moveWidgetById(id: Int, move: MoveWidgetRequest): Ui[Any] = workspaces <~ lwsMoveWidgetById(id, move)
+  override def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Ui[Any] =
+    workspaces <~ lwsMoveWidgetById(id, displaceX, displaceY)
 
   override def cancelWidget(appWidgetId: Int): Ui[Any] = Ui(appWidgetHost.deleteAppWidgetId(appWidgetId))
 
@@ -216,7 +215,7 @@ trait LauncherUiActionsImpl
     }
   }
 
-  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any] = {
+  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockAppData]): Ui[Any] = {
     val momentType = data.headOption.flatMap(_.moment).flatMap(_.momentType)
     val launcherMoment = data.headOption.flatMap(_.moment)
     (loading <~ vGone) ~
@@ -515,7 +514,7 @@ trait LauncherUiActionsImpl
 
   override def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])] =
     moments map {
-      case Moment(_, Some(collectionId: Int), _, _, _, Some(m: NineCardsMoment)) =>
+      case Moment(_, Some(collectionId: Int), _, _, _, Some(m: NineCardsMoment), _) =>
         (m, getCollections.find(_.id == collectionId))
     }
 
