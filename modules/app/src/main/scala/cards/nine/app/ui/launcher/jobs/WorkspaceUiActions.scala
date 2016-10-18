@@ -1,6 +1,5 @@
 package cards.nine.app.ui.launcher.jobs
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -11,8 +10,9 @@ import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.commons.{ActivityUiContext, AppUtils, SystemBarsTint, UiContext}
+import cards.nine.app.ui.commons.{AppUtils, SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.drawables.EdgeWorkspaceDrawable
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
@@ -27,9 +27,8 @@ import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsF
 import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
-import cards.nine.app.ui.preferences.commons.{IsDeveloper, NineCardsPreferencesValue}
+import cards.nine.app.ui.preferences.commons.IsDeveloper
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -40,8 +39,8 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class WorkspaceUiActions(dom: LauncherDOM)
   (implicit
@@ -56,8 +55,6 @@ class WorkspaceUiActions(dom: LauncherDOM)
   private[this] var actionsState = State()
 
   implicit def theme: NineCardsTheme = actionsState.theme
-
-  lazy val preferenceValues = new NineCardsPreferencesValue
 
   val maxBackgroundPercent: Float = 0.7f
 
@@ -103,7 +100,7 @@ class WorkspaceUiActions(dom: LauncherDOM)
       (dom.menuLauncherSettings <~ On.click {
         goToSettings()
       } <~ On.longClick {
-        Ui(IsDeveloper.convertToDeveloper(preferenceValues)) ~
+        Ui(IsDeveloper.convertToDeveloper) ~
           uiShortToast2(R.string.developerOptionsActivated) ~
           goToSettings() ~
           Ui(true)

@@ -36,9 +36,9 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import cards.nine.app.ui.launcher.types.AddItemToCollection
-import cards.nine.models.{ApplicationData, Contact}
+import cards.nine.models.{ApplicationData, Contact, TermCounter}
 import cards.nine.process.device._
-import cards.nine.process.device.models.{IterableApps, IterableContacts, LastCallsContact, TermCounter}
+import cards.nine.process.device.models.{IterableApps, IterableContacts, LastCallsContact}
 import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -54,6 +54,7 @@ import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Try}
 import LauncherActivity._
+import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
 
 class MainAppDrawerUiActions(dom: LauncherDOM)
   (implicit
@@ -62,8 +63,6 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
     uiContext: UiContext[_]) {
 
   implicit lazy val systemBarsTint = new SystemBarsTint
-
-  lazy val preferenceValues = new NineCardsPreferencesValue
 
   case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
 
@@ -91,7 +90,7 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
 
   def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = {
     actionsState = actionsState.copy(theme = nineCardsTheme)
-    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue(preferenceValues)
+    val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     ((dom.searchBoxView <~
       sbvUpdateContentView(AppsView) <~
       sbvChangeListener(SearchBoxAnimatedListener(
@@ -196,17 +195,17 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
   private[this] def openDrawer(longClick: Boolean) = {
 
     def revealInDrawer(longClick: Boolean): Ui[Future[_]] = {
-      val showKeyboard = AppDrawerLongPressAction.readValue(preferenceValues) == AppDrawerLongPressActionOpenKeyboard && longClick
+      val showKeyboard = AppDrawerLongPressAction.readValue == AppDrawerLongPressActionOpenKeyboard && longClick
       (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
         (dom.paginationDrawerPanel <~ ivReloadPager(0)) ~
         ((dom.drawerContent <~~
-          openAppDrawer(AppDrawerAnimation.readValue(preferenceValues), dom.appDrawerMain)) ~~
+          openAppDrawer(AppDrawerAnimation.readValue, dom.appDrawerMain)) ~~
           (dom.searchBoxView <~
             sbvEnableSearch <~
             (if (showKeyboard) sbvShowKeyboard else Tweak.blank)))
     }
 
-    val loadContacts = AppDrawerLongPressAction.readValue(preferenceValues) == AppDrawerLongPressActionOpenContacts && longClick
+    val loadContacts = AppDrawerLongPressAction.readValue == AppDrawerLongPressActionOpenContacts && longClick
     (if (loadContacts) {
       Ui(
         dom.recycler.getAdapter match {
@@ -299,7 +298,7 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
 
   private[this] def loadContactsAlphabetical: Ui[_] = {
     val maybeDrawable = appTabs.lift(AppsMenuOption(AppsAlphabetical)) map (_.drawable)
-    val favoriteContactsFirst = AppDrawerFavoriteContactsFirst.readValue(preferenceValues)
+    val favoriteContactsFirst = AppDrawerFavoriteContactsFirst.readValue
     loadContactsAndSaveStatus(if (favoriteContactsFirst) ContactsFavorites else ContactsAlphabetical) ~
       (dom.paginationDrawerPanel <~ ivReloadPager(1)) ~
       (dom.pullToTabsView <~

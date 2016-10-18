@@ -41,8 +41,6 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     case _ => throw new RuntimeException("LauncherPresenter not found")
   }
 
-  val preferenceValues = new NineCardsPreferencesValue
-
   lazy val collectionsSearchPanel = Option(findView(TR.launcher_search_panel))
 
   lazy val collectionsBurgerIcon = Option(findView(TR.launcher_burger_icon))

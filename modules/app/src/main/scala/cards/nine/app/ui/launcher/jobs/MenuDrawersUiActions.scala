@@ -1,16 +1,15 @@
 package cards.nine.app.ui.launcher.jobs
 
-import android.app.Activity
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.support.design.widget.NavigationView
 import android.support.v4.app.{Fragment, FragmentManager}
-import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.SafeUi._
+import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
-import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}

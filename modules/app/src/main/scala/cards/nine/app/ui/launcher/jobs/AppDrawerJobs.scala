@@ -3,9 +3,10 @@ package cards.nine.app.ui.launcher.jobs
 import cards.nine.app.ui.commons.{Jobs, RequestCodes}
 import cards.nine.app.ui.launcher.drawer._
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.TermCounter
+import cards.nine.models.types._
 import cards.nine.process.accounts.{ReadCallLog, ReadContacts}
-import cards.nine.process.device._
-import cards.nine.process.device.models.{IterableApps, IterableContacts, TermCounter}
+import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import macroid.ActivityContextWrapper
 
 class AppDrawerJobs(

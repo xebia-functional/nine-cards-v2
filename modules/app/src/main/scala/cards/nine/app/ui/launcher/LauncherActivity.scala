@@ -9,18 +9,15 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import cards.nine.app.ui.collections.ActionsScreenListener
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
 import cards.nine.app.ui.launcher.jobs._
-import cards.nine.models.Widget
-import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.{CardData, Collection, Widget}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
-
-import LauncherActivity._
 
 class LauncherActivity
   extends AppCompatActivity
@@ -168,13 +165,13 @@ case class LauncherPresenterStatuses(
   mode: LauncherMode = NormalMode,
   transformation: Option[EditWidgetTransformation] = None,
   idWidget: Option[Int] = None,
-  cardAddItemMode: Option[AddCardRequest] = None,
+  cardAddItemMode: Option[CardData] = None,
   collectionReorderMode: Option[Collection] = None,
   startPositionReorderMode: Int = 0,
   currentDraggingPosition: Int = 0,
   lastPhone: Option[String] = None) {
 
-  def startAddItem(card: AddCardRequest): LauncherPresenterStatuses =
+  def startAddItem(card: CardData): LauncherPresenterStatuses =
     copy(mode = AddItemMode, cardAddItemMode = Some(card))
 
   def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =

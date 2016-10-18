@@ -11,7 +11,6 @@ import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import android.widget.ImageView
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
-import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.Constants._

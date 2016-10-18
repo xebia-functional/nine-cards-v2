@@ -1,24 +1,21 @@
 package cards.nine.app.ui.launcher.jobs
 
-import android.app.Activity
 import android.appwidget.{AppWidgetHost, AppWidgetManager}
-import android.content.ClipData
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.view.DragEvent._
 import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
-import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
-import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.launcher._
+import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
