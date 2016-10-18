@@ -14,10 +14,8 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import cards.nine.commons.javaNull
-import cards.nine.models.Widget
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.{Collection, Widget}
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import macroid._
@@ -120,9 +118,9 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def moveCurrentWidget(): Unit = uiWithView(_.moveCurrentWidget)
 
-  def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Unit = uiWithView(_.resizeWidgetById(id, resize))
+  def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Unit = uiWithView(_.resizeWidgetById(id, increaseX, increaseY))
 
-  def moveWidgetById(id: Int, move: MoveWidgetRequest): Unit = uiWithView(_.moveWidgetById(id, move))
+  def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Unit = uiWithView(_.moveWidgetById(id, displaceX, displaceY))
 
   private[this] def uiWithView(f: (LauncherWorkSpaceMomentsHolder) => Ui[_]) = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => f(momentWorkSpace).run

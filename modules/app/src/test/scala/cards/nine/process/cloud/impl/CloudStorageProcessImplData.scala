@@ -1,40 +1,21 @@
 package cards.nine.process.cloud.impl
 
+import cards.nine.commons.test.data.UserTestData
 import cards.nine.models.types._
 import cards.nine.process.cloud.models._
 import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
-import cards.nine.services.persistence.models.User
 import org.joda.time.DateTime
 
 import scala.util.Random
 
-trait CloudStorageProcessImplData {
+trait  CloudStorageProcessImplData extends UserTestData {
 
   val activeUserId = 10
-
   val cloudId = "drive-id"
-
   val anotherCloudId = "drive-id-2"
-
   val account = "example@domain.com"
-
-  val user = User(
-    activeUserId,
-    email = Some(account),
-    apiKey = Some("api-key"),
-    sessionToken = Some("session-token"),
-    deviceToken = Some("device-token"),
-    marketToken = Some("android-token"),
-    name = None,
-    avatar = None,
-    cover = None,
-    deviceName = Some("device"),
-    deviceCloudId = Some(cloudId))
-
   val driveServiceFileSummary = generateDriveServiceFileSummary
-
   val driveServiceFileSummarySeq: Seq[DriveServiceFileSummary] = 1 to 10 map (_ => generateDriveServiceFileSummary)
-
   val driveServiceFileSummaryEmptySeq = Seq.empty[DriveServiceFileSummary]
 
   def generateDriveServiceFileSummary =
@@ -46,31 +27,18 @@ trait CloudStorageProcessImplData {
       modifiedDate = DateTime.now().minusMonths(3).toDate)
 
   val deviceId = "device-id"
-
   val anotherDeviceId = "device-id-2"
-
   val deviceName = "device-name"
-
   val packageName = "package-name"
-
   val className = "class-name"
-
   val documentVersion = 1
-
   val numCollections = 1
-
   val numItemsPerCollection = 1
-
   val numMoments = 2
-
   val numTimeSlot = 2
-
   val numDockApps = 4
-
   val numWidgets = 2
-
   val momentType = Option("HOME")
-
   val widgetType = "APP"
 
   def generateCloudStorageDeviceData(deviceId: String = deviceId) =

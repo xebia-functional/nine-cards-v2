@@ -3,7 +3,7 @@ package cards.nine.process.sharedcollections
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.sharedcollections.models._
-import cards.nine.models.types.NineCardCategory
+import cards.nine.models.types.NineCardsCategory
 
 trait SharedCollectionsProcess {
 
@@ -30,7 +30,7 @@ trait SharedCollectionsProcess {
     * @throws SharedCollectionsException if there was an error fetching the collections
     */
   def getSharedCollectionsByCategory(
-    category: NineCardCategory,
+    category: NineCardsCategory,
     typeShareCollection: TypeSharedCollection,
     offset: Int = 0,
     limit: Int = 50)(implicit context: ContextSupport): TaskService[Seq[SharedCollection]]

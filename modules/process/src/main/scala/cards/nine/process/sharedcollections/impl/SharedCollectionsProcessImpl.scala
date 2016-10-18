@@ -3,13 +3,13 @@ package cards.nine.process.sharedcollections.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.Collection
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.sharedcollections._
 import cards.nine.process.sharedcollections.models._
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.{ApiServiceConfigurationException, ApiServices}
 import cards.nine.services.persistence.PersistenceServices
-import cards.nine.services.persistence.models.Collection
-import cards.nine.models.types.NineCardCategory
 
 class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
   extends SharedCollectionsProcess
@@ -25,7 +25,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
     } yield toSharedCollection(response.sharedCollection, maybeCollection)).resolveLeft(mapLeft)
 
   override def getSharedCollectionsByCategory(
-    category: NineCardCategory,
+    category: NineCardsCategory,
     typeShareCollection: TypeSharedCollection,
     offset: Int = 0,
     limit: Int = 50)
@@ -95,7 +95,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       userConfig <- apiUtils.getRequestConfig
       _ <- apiServices.subscribe(sharedCollectionId)(userConfig)
       collection <- getCollectionBySharedCollectionId(sharedCollectionId)
-      _ <- persistenceServices.updateCollection(toUpdateCollectionRequest(collection, sharedCollectionSubscribed= true))
+      _ <- persistenceServices.updateCollection(collection.copy(sharedCollectionSubscribed = true))
     } yield ()).resolveLeft(mapLeft)
 
   override def unsubscribe(sharedCollectionId: String)(implicit context: ContextSupport) =
@@ -103,7 +103,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       userConfig <- apiUtils.getRequestConfig
       _ <- apiServices.unsubscribe(sharedCollectionId)(userConfig)
       collection <- getCollectionBySharedCollectionId(sharedCollectionId)
-      _ <- persistenceServices.updateCollection(toUpdateCollectionRequest(collection, sharedCollectionSubscribed = false))
+      _ <- persistenceServices.updateCollection(collection.copy(sharedCollectionSubscribed = false))
     } yield ()).resolveLeft(mapLeft)
 
   private[this] def getCollectionBySharedCollectionId(sharedCollectionId: String) =

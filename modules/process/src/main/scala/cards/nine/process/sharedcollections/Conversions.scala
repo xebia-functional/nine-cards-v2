@@ -1,14 +1,11 @@
 package cards.nine.process.sharedcollections
 
-import cards.nine.models.types.{AppCardType, CardType, NineCardCategory}
-import cards.nine.process.commons.CommonConversions
+import cards.nine.models.Collection
+import cards.nine.models.types._
 import cards.nine.process.sharedcollections.models._
 import cards.nine.services.api.{SharedCollection => SharedCollectionService, SharedCollectionPackageResponse}
-import cards.nine.services.persistence.UpdateCollectionRequest
-import cards.nine.services.persistence.models.Collection
 
-trait Conversions
-  extends CommonConversions {
+trait Conversions {
 
   def toSharedCollections(items: Seq[SharedCollectionService], localCollectionMap: Map[String, Collection]): Seq[SharedCollection] =
     items map (col => toSharedCollection(col, localCollectionMap.get(col.sharedCollectionId)))
@@ -24,7 +21,7 @@ trait Conversions
       resolvedPackages = item.resolvedPackages map toSharedCollectionPackage,
       views = item.views,
       subscriptions = item.subscriptions,
-      category = NineCardCategory(item.category),
+      category = NineCardsCategory(item.category),
       icon = item.icon,
       community = item.community,
       publicCollectionStatus = determinePublicCollectionStatus(maybeLocalCollection))
@@ -38,30 +35,27 @@ trait Conversions
       downloads = item.downloads,
       free = item.free)
 
-  def toUpdateCollectionRequest(collection: Collection, sharedCollectionSubscribed: Boolean): UpdateCollectionRequest =
-    UpdateCollectionRequest(
-      id = collection.id,
-      position = collection.position,
-      name = collection.name,
-      collectionType = collection.collectionType,
-      icon = collection.icon,
-      themedColorIndex = collection.themedColorIndex,
-      appsCategory = collection.appsCategory,
-      originalSharedCollectionId = collection.originalSharedCollectionId,
-      sharedCollectionId = collection.sharedCollectionId,
-      sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
-      cards = collection.cards)
-
   def toSubscription(subscriptions: (String, Collection)): Subscription = {
     val (sharedCollectionId, collection) = subscriptions
     Subscription(
       id = collection.id,
       sharedCollectionId = sharedCollectionId,
       name = collection.name,
-      apps = collection.cards.count(card => CardType(card.cardType) == AppCardType),
+      apps = collection.cards.count(card => card.cardType == AppCardType),
       icon = collection.icon,
       themedColorIndex = collection.themedColorIndex,
       subscribed = collection.sharedCollectionSubscribed)
   }
+
+  def determinePublicCollectionStatus(maybeCollection: Option[Collection]): PublicCollectionStatus =
+    maybeCollection match {
+      case Some(c) if c.sharedCollectionId.isDefined && c.sharedCollectionSubscribed => Subscribed
+      case Some(c) if c.sharedCollectionId.isDefined && c.originalSharedCollectionId == c.sharedCollectionId =>
+        PublishedByOther
+      case Some(c) if c.sharedCollectionId.isDefined =>
+        PublishedByMe
+      case _ => NotPublished
+    }
+
 
 }

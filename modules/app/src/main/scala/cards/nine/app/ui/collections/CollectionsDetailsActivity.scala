@@ -19,8 +19,7 @@ import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{NotPublished, PublicCollectionStatus}
-import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.models.{Card, CardData, Collection}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
@@ -234,7 +233,7 @@ class CollectionsDetailsActivity
   def showEditCollectionDialog(cardName: String, onChangeName: (Option[String]) => Unit): Unit =
     navigation.openEditCard(cardName, onChangeName)
 
-  override def addCards(cardsRequest: Seq[AddCardRequest]): Unit =
+  override def addCards(cardsRequest: Seq[CardData]): Unit =
     (for {
       cards <- groupCollectionsJobs.addCards(cardsRequest)
       _ <- getSingleCollectionJobs match {

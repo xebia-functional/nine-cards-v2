@@ -79,7 +79,7 @@ class AppsServicesImpl
       className = className,
       category = Misc,
       dateInstalled = packageInfo.firstInstallTime,
-      dateUpdate = packageInfo.lastUpdateTime,
+      dateUpdated = packageInfo.lastUpdateTime,
       version = packageInfo.versionCode.toString,
       installedFromGooglePlay = isFromGooglePlay(packageManager, packageName))
   }

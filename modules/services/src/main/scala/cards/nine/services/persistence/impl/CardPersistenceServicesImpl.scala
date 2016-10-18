@@ -1,31 +1,24 @@
 package cards.nine.services.persistence.impl
 
 import cards.nine.commons.NineCardExtensions._
-import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.{Card, CardData}
 import cards.nine.repository.provider.{CardEntity, NineCardsSqlHelper}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
-import monix.eval.Task
-
 
 trait CardPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 
-  def addCard(request: AddCardRequest) =
-    request.collectionId match {
-      case Some(collectionId) =>
-        (for {
-          card <- cardRepository.addCard(collectionId, toRepositoryCardData(request))
-        } yield toCard(card)).resolve[PersistenceServiceException]
-      case None =>
-        TaskService(Task(Left(PersistenceServiceException("CollectionId can't be empty"))))
-    }
-
-  def addCards(request: Seq[AddCardWithCollectionIdRequest]) =
+  def addCard(collectionId: Int, card: CardData) =
     (for {
-      cards <- cardRepository.addCards(request map toCardsWithCollectionId)
+      card <- cardRepository.addCard(collectionId, toRepositoryCardData(card))
+    } yield toCard(card)).resolve[PersistenceServiceException]
+
+  def addCards(cardsByCollectionId: Seq[(Int, Seq[CardData])]) =
+    (for {
+      cards <- cardRepository.addCards(cardsByCollectionId map toCardsWithCollectionId)
     } yield cards map toCard).resolve[PersistenceServiceException]
 
   def deleteAllCards() =
@@ -50,9 +43,9 @@ trait CardPersistenceServicesImpl extends PersistenceServices {
       deleted <- cardRepository.deleteCards(maybeCollectionId = None, where = s"${CardEntity.collectionId} = $collectionId")
     } yield deleted).resolve[PersistenceServiceException]
 
-  def fetchCardsByCollection(request: FetchCardsByCollectionRequest) =
+  def fetchCardsByCollection(collectionId: Int) =
     (for {
-      cards <- cardRepository.fetchCardsByCollection(request.collectionId)
+      cards <- cardRepository.fetchCardsByCollection(collectionId)
     } yield cards map toCard).resolve[PersistenceServiceException]
 
   def fetchCards =
@@ -60,19 +53,19 @@ trait CardPersistenceServicesImpl extends PersistenceServices {
       cards <- cardRepository.fetchCards
     } yield cards map toCard).resolve[PersistenceServiceException]
 
-  def findCardById(request: FindCardByIdRequest) =
+  def findCardById(cardId: Int) =
     (for {
-      maybeCard <- cardRepository.findCardById(request.id)
+      maybeCard <- cardRepository.findCardById(cardId)
     } yield maybeCard map toCard).resolve[PersistenceServiceException]
 
-  def updateCard(request: UpdateCardRequest) =
+  def updateCard(card: Card) =
     (for {
-      updated <- cardRepository.updateCard(toRepositoryCard(request))
+      updated <- cardRepository.updateCard(toRepositoryCard(card))
     } yield updated).resolve[PersistenceServiceException]
 
-  def updateCards(request: UpdateCardsRequest) =
+  def updateCards(cards: Seq[Card]) =
     (for {
-      updated <- cardRepository.updateCards(request.updateCardRequests map toRepositoryCard)
+      updated <- cardRepository.updateCards(cards map toRepositoryCard)
     } yield updated).resolve[PersistenceServiceException]
 
 }

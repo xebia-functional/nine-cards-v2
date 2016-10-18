@@ -121,10 +121,10 @@ trait ContactsServicesImplData {
   }
 
   val contactCounters = Seq(
-    ContactCounter("#", 5),
-    ContactCounter("A", 3),
-    ContactCounter("B", 3),
-    ContactCounter("C", 1)
+    TermCounter("#", 5),
+    TermCounter("A", 3),
+    TermCounter("B", 3),
+    TermCounter("C", 1)
   )
 
 }

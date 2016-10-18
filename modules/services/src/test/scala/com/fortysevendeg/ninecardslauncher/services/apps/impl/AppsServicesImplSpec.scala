@@ -46,7 +46,7 @@ trait AppsServicesImplSpecification
       mockApplicationInfo.name = sampleApp.name
       mockApplicationInfo.className = sampleApp.className
       samplePackageInfo.firstInstallTime = sampleApp.dateInstalled
-      samplePackageInfo.lastUpdateTime = sampleApp.dateUpdate
+      samplePackageInfo.lastUpdateTime = sampleApp.dateUpdated
       samplePackageInfo.versionCode = sampleApp.version.toInt
       samplePackageInfo
     }

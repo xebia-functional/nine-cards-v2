@@ -1,6 +1,7 @@
 package cards.nine.services.api
 
 import cards.nine.api._
+import cards.nine.models.PackagesByCategory
 import cards.nine.services.api.models._
 import org.joda.time.format.DateTimeFormat
 

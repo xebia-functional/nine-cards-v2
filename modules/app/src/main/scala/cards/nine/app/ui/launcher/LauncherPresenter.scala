@@ -3,7 +3,7 @@ package cards.nine.app.ui.launcher
 import android.content.{ComponentName, Intent}
 import android.graphics.Point
 import android.support.v7.app.AppCompatActivity
-import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
+import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
@@ -25,18 +25,14 @@ import cards.nine.commons._
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models._
 import cards.nine.models.types._
+import cards.nine.models.{Card, Collection, DockApp, Moment, _}
 import cards.nine.process.accounts._
-import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.commons.models.{Card, Collection, Moment, _}
 import cards.nine.process.device._
 import cards.nine.process.device.models._
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import cards.nine.process.moment.MomentException
-import cards.nine.process.widget.{AddWidgetRequest, MoveWidgetRequest, ResizeWidgetRequest}
 import cats.implicits._
-import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
@@ -46,7 +42,7 @@ import scala.language.postfixOps
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
-  with AppNineCardIntentConversions {
+  with AppNineCardsIntentConversions {
 
   val tagDialog = "dialog"
 
@@ -92,15 +88,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def logout(): Unit = actions.logout.run
 
-  def startAddItemToCollection(app: ApplicationData): Unit = startAddItemToCollection(toAddCardRequest(app))
+  def startAddItemToCollection(app: ApplicationData): Unit = startAddItemToCollection(toCardData(app))
 
-  def startAddItemToCollection(contact: Contact): Unit = startAddItemToCollection(toAddCardRequest(contact))
+  def startAddItemToCollection(contact: Contact): Unit = startAddItemToCollection(toCardData(contact))
 
   def launchMenu(): Unit = actions.openMenu().run
 
-  private[this] def startAddItemToCollection(addCardRequest: AddCardRequest): Unit = {
-    statuses = statuses.startAddItem(addCardRequest)
-    actions.startAddItem(addCardRequest.cardType).run
+  private[this] def startAddItemToCollection(card: CardData): Unit = {
+    statuses = statuses.startAddItem(card)
+    actions.startAddItem(card.cardType).run
   }
 
   def draggingAddItemTo(position: Int): Unit = statuses = statuses.updateCurrentPosition(position)
@@ -117,8 +113,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def endAddItemToCollection(): Unit = {
     (actions.getCollection(statuses.currentDraggingPosition), statuses.cardAddItemMode) match {
-      case (Some(collection: Collection), Some(request: AddCardRequest)) =>
-        di.collectionProcess.addCards(collection.id, Seq(request)).resolveAsyncUi2(
+      case (Some(collection: Collection), Some(card: CardData)) =>
+        di.collectionProcess.addCards(collection.id, Seq(card)).resolveAsyncUi2(
           onResult = (_) => {
             actions.showAddItemMessage(collection.name) ~
               Ui(momentReloadBroadCastIfNecessary())
@@ -132,15 +128,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def endAddItemToDockApp(position: Int): Unit = {
     statuses.cardAddItemMode match {
-      case Some(card: AddCardRequest) =>
+      case Some(card: CardData) =>
         card.cardType match {
           case AppCardType =>
             createOrUpdateDockApp(card, AppDockType, position).resolveAsyncUi2(
-              onResult = (_) => actions.reloadDockApps(DockApp(card.term, AppDockType, card.intent, card.imagePath getOrElse "", position)),
+              onResult = (_) => actions.reloadDockApps(DockAppData(card.term, AppDockType, card.intent, card.imagePath getOrElse "", position)),
               onException = (_) => actions.showContactUsError())
           case ContactCardType =>
             createOrUpdateDockApp(card, ContactDockType, position).resolveAsyncUi2(
-              onResult = (_) => actions.reloadDockApps(DockApp(card.term, ContactDockType, card.intent, card.imagePath getOrElse "", position)),
+              onResult = (_) => actions.reloadDockApps(DockAppData(card.term, ContactDockType, card.intent, card.imagePath getOrElse "", position)),
               onException = (_) => actions.showContactUsError())
           case _ =>
             actions.showContactUsError()
@@ -159,7 +155,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def uninstallInAddItem(): Unit = {
     statuses.cardAddItemMode match {
-      case Some(card: AddCardRequest) if card.cardType == AppCardType =>
+      case Some(card: CardData) if card.cardType == AppCardType =>
         card.packageName foreach { packageName =>
           launcherService(di.launcherExecutorProcess.launchUninstall(packageName))
         }
@@ -171,7 +167,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def settingsInAddItem(): Unit = {
     statuses.cardAddItemMode match {
-      case Some(card: AddCardRequest) if card.cardType == AppCardType =>
+      case Some(card: CardData) if card.cardType == AppCardType =>
         card.packageName foreach { packageName =>
           launcherService(di.launcherExecutorProcess.launchSettings(packageName))
         }
@@ -277,7 +273,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     launcherCallService(di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, number)), Some(number))
   }
 
-  def execute(intent: NineCardIntent): Unit =
+  def execute(intent: NineCardsIntent): Unit =
     launcherCallService(di.launcherExecutorProcess.execute(intent), intent.extractPhone())
 
   def launchSearch(): Unit = launcherService(di.launcherExecutorProcess.launchSearch)
@@ -366,7 +362,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def arrowWidget(arrow: Arrow): Unit = if (statuses.mode == EditWidgetsMode) {
 
-    type WidgetMovement = (Int, MoveWidgetRequest)
+    type WidgetMovement = (Int, (Int, Int))
 
     val limits = Option((WidgetsOps.rows, WidgetsOps.columns))
 
@@ -379,10 +375,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     def resizeIntersect(idWidget: Int): TaskService[Boolean] = {
 
       def convertSpace(widgetArea: WidgetArea) = {
-        val r = ResizeWidgetRequest.tupled(operationArgs)
+        val (increaseX, increaseY) = operationArgs
         widgetArea.copy(
-          spanX = widgetArea.spanX + r.increaseX,
-          spanY = widgetArea.spanY + r.increaseY)
+          spanX = widgetArea.spanX + increaseX,
+          spanY = widgetArea.spanY + increaseY)
       }
 
       for {
@@ -397,15 +393,16 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     @scala.annotation.tailrec
     def searchSpaceForMoveWidget(
-      movements: List[MoveWidgetRequest],
+      movements: List[(Int, Int)],
       widget: Widget,
       otherWidgets: Seq[Widget]): Option[WidgetMovement] =
       movements match {
         case Nil => None
         case head :: tail =>
+          val (displaceX, displaceY) = head
           val newPosition = widget.area.copy(
-            startX = widget.area.startX + head.displaceX,
-            startY = widget.area.startY + head.displaceY)
+            startX = widget.area.startX + displaceX,
+            startY = widget.area.startY + displaceY)
           if (outOfTheLimit(newPosition)) {
             None
           } else {
@@ -434,11 +431,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case ArrowLeft => (-1, 0)
     }
 
-    def steps(area: WidgetArea): List[MoveWidgetRequest] = (arrow match {
-      case ArrowUp => 1 to area.startY map (p => MoveWidgetRequest(0, -p))
-      case ArrowDown => 1 until (WidgetsOps.columns - area.startY) map (p => MoveWidgetRequest(0, p))
-      case ArrowRight => 1 until (WidgetsOps.rows - area.startX) map (p => MoveWidgetRequest(p, 0))
-      case ArrowLeft => 1 to area.startX map (p => MoveWidgetRequest(-p, 0))
+    def steps(area: WidgetArea): List[(Int, Int)] = (arrow match {
+      case ArrowUp => 1 to area.startY map (p => (0, -p))
+      case ArrowDown => 1 until (WidgetsOps.columns - area.startY) map (p => (0, p))
+      case ArrowRight => 1 until (WidgetsOps.rows - area.startX) map (p => (p, 0))
+      case ArrowLeft => 1 to area.startX map (p => (-p, 0))
     }).toList
 
     (statuses.idWidget, statuses.transformation) match {
@@ -448,9 +445,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
             if (intersect) {
               actions.showWidgetCantResizeMessage().run
             } else {
-              val resizeRequest = ResizeWidgetRequest.tupled(operationArgs)
-              di.widgetsProcess.resizeWidget(id, resizeRequest).resolveAsyncUi2(
-                onResult = (_) => actions.resizeWidgetById(id, resizeRequest),
+              val (increaseX, increaseY) = operationArgs
+              di.widgetsProcess.resizeWidget(id, increaseX, increaseY).resolveAsyncUi2(
+                onResult = (_) => actions.resizeWidgetById(id, increaseX, increaseY),
                 onException = (_) => actions.showContactUsError())
             }
           },
@@ -458,9 +455,9 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       case (Some(id), Some(MoveTransformation)) =>
         moveIntersect(id).resolveAsync2(
           onResult = {
-            case Some((idWidget, moveWidgetRequest)) =>
-              di.widgetsProcess.moveWidget(id, moveWidgetRequest).resolveAsyncUi2(
-                onResult = (_) => actions.moveWidgetById(idWidget, moveWidgetRequest),
+            case Some((idWidget, (displaceX, displaceY))) =>
+              di.widgetsProcess.moveWidget(id, displaceX, displaceY).resolveAsyncUi2(
+                onResult = (_) => actions.moveWidgetById(idWidget, displaceX, displaceY),
                 onException = (_) => actions.showContactUsError())
             case _ => actions.showWidgetCantMoveMessage().run
           },
@@ -574,7 +571,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
           } yield collection
           val launcherMoment = LauncherMoment(moment flatMap (_.momentType), collectionMoment)
           val data = LauncherData(MomentWorkSpace, Some(launcherMoment)) +: createLauncherDataCollections(collections)
-          actions.loadLauncherInfo(data, apps)
+          actions.loadLauncherInfo(data, apps map (_.toData))
       },
       onException = (ex: Throwable) => Ui(goToWizard()),
       onPreTask = () => actions.showLoading()
@@ -709,16 +706,20 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       (provider, cell) = widgetInfo
       widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(moment.id)
       space <- getSpaceInTheScreen(widgetsByMoment, cell.spanX, cell.spanY)
-      appWidgetRequest = AddWidgetRequest(
+      appWidgetRequest = WidgetData(
         momentId = moment.id,
         packageName = provider.getPackageName,
         className = provider.getClassName,
-        appWidgetId = appWidgetId,
-        startX = space.startX,
-        startY = space.startY,
-        spanX = space.spanX,
-        spanY = space.spanY,
-        widgetType = AppWidgetType)
+        appWidgetId = Option(appWidgetId),
+        area = WidgetArea(
+          startX = space.startX,
+          startY = space.startY,
+          spanX = space.spanX,
+          spanY = space.spanY),
+        widgetType = AppWidgetType,
+        label = None,
+        imagePath = None,
+        intent = None)
       widget <- di.widgetsProcess.addWidget(appWidgetRequest)
     } yield widget
 
@@ -809,7 +810,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   private[this] def momentForceBestAvailable() = sendBroadCast(BroadAction(MomentForceBestAvailableActionFilter.action))
 
-  private[this] def createOrUpdateDockApp(card: AddCardRequest, dockType: DockType, position: Int) =
+  private[this] def createOrUpdateDockApp(card: CardData, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath getOrElse "", position)
 
   // Check if there is a new best available moment, if not reload the apps moment bar
@@ -1074,7 +1075,7 @@ trait LauncherUiActions {
 
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): Ui[Any]
 
-  def reloadDockApps(dockApp: DockApp): Ui[Any]
+  def reloadDockApps(dockApp: DockAppData): Ui[Any]
 
   def openModeEditWidgets(): Ui[Any]
 
@@ -1082,9 +1083,9 @@ trait LauncherUiActions {
 
   def moveWidget(): Ui[Any]
 
-  def resizeWidgetById(id: Int, resize: ResizeWidgetRequest): Ui[Any]
+  def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Ui[Any]
 
-  def moveWidgetById(id: Int, move: MoveWidgetRequest): Ui[Any]
+  def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Ui[Any]
 
   def cancelWidget(appWidgetId: Int): Ui[Any]
 
@@ -1118,7 +1119,7 @@ trait LauncherUiActions {
 
   def goToCollection(collection: Collection, point: Point): Ui[Any]
 
-  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockApp]): Ui[Any]
+  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockAppData]): Ui[Any]
 
   def reloadCurrentMoment(): Ui[Any]
 
@@ -1209,13 +1210,13 @@ object Statuses {
     mode: LauncherMode = NormalMode,
     transformation: Option[EditWidgetTransformation] = None,
     idWidget: Option[Int] = None,
-    cardAddItemMode: Option[AddCardRequest] = None,
+    cardAddItemMode: Option[CardData] = None,
     collectionReorderMode: Option[Collection] = None,
     startPositionReorderMode: Int = 0,
     currentDraggingPosition: Int = 0,
     lastPhone: Option[String] = None) {
 
-    def startAddItem(card: AddCardRequest): LauncherPresenterStatuses =
+    def startAddItem(card: CardData): LauncherPresenterStatuses =
       copy(mode = AddItemMode, cardAddItemMode = Some(card))
 
     def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =

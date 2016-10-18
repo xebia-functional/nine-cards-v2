@@ -21,5 +21,3 @@ case class ContactEmail(
 case class ContactPhone(
   number: String,
   category: PhoneCategory)
-
-case class ContactCounter(term: String, count: Int)
