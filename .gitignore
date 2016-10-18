@@ -9,7 +9,7 @@ dist
 
 # Keys
 /debug.properties
-/release.properties
+/ninecards.properties
 /debug.keystore
 /local.properties
 /modules/app/local.properties
