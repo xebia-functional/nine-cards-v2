@@ -44,7 +44,7 @@ import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
 import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment, _}
-import cards.nine.models.{ApplicationData, ConditionWeather, Contact, UnknownCondition, Widget, _}
+import cards.nine.models.{ApplicationData, Contact, Widget, _}
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}

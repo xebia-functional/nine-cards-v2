@@ -14,7 +14,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons._
-import cards.nine.models.ConditionWeather
+import cards.nine.models.types.ConditionWeather
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._

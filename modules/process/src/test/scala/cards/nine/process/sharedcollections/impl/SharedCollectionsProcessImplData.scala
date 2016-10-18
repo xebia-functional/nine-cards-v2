@@ -2,23 +2,11 @@ package cards.nine.process.sharedcollections.impl
 
 import cards.nine.models.{RequestConfig, Collection}
 import cards.nine.models.types._
-import cards.nine.process.sharedcollections.TopSharedCollection
+import TopSharedCollection
 
 import scala.util.Random
 
 trait SharedCollectionsProcessImplData {
-
-  val requestConfig = RequestConfig("fake-api-key", "fake-session-token", "fake-android-id", Some("fake-market-token"))
-
-  val category = Communication
-
-  val typeShareCollection = TopSharedCollection
-
-  val offset = 0
-
-  val limit = 50
-
-  val statusCodeOk = 200
 
   def generateSharedCollectionSeq() = 1 to 10 map { i =>
     SharedCollection(
@@ -36,55 +24,10 @@ trait SharedCollectionsProcessImplData {
       community = Random.nextBoolean())
   }
 
-  val sharedCollectionResponseList = SharedCollectionResponseList(
-    statusCode = statusCodeOk,
-    items = generateSharedCollectionSeq())
-
-  val sharedCollectionResponse = SharedCollectionResponse(
-    statusCode = statusCodeOk,
-    sharedCollection = sharedCollectionResponseList.items.head)
 
   val sharedCollectionId = "shared-collection-id"
 
-  def generateCreateSharedCollection =
-    CreateSharedCollection(
-      author = Random.nextString(10),
-      name = Random.nextString(10),
-      packages = Seq.empty,
-      category = Communication,
-      icon = Random.nextString(10),
-      community = Random.nextBoolean())
 
-  val createSharedCollection = generateCreateSharedCollection
-
-  val createSharedCollectionResponse =
-    CreateSharedCollectionResponse(
-      statusCode = statusCodeOk,
-      sharedCollectionId = sharedCollectionId)
-
-  val updateSharedCollectionResponse =
-    UpdateSharedCollectionResponse(
-      statusCode = statusCodeOk,
-      sharedCollectionId = sharedCollectionId)
-
-  def generateUpdateSharedCollection =
-    UpdateSharedCollection(
-      sharedCollectionId,
-      name = Random.nextString(10),
-      packages = Seq.empty)
-
-  val updateSharedCollection = generateUpdateSharedCollection
-
-  def generateSharedCollectionId() =
-    sharedCollectionId + Random.nextInt(10)
-
-  def generateSubscriptionResponse() = 1 to 10 map { i =>
-    SubscriptionResponse(sharedCollectionId = generateSharedCollectionId())
-  }
-
-  val subscriptionList = SubscriptionResponseList(
-    statusCode = statusCodeOk,
-    items = generateSubscriptionResponse())
 
   def generateSharedCollection() = 1 to 10 map { i =>
     SharedCollection(
@@ -102,11 +45,7 @@ trait SharedCollectionsProcessImplData {
       community = false)
   }
 
-  val publicationList = SharedCollectionResponseList(
-    statusCode = statusCodeOk,
-    items = generateSharedCollection())
 
-  val publicationListIds = publicationList.items.map(_.sharedCollectionId)
 
   def generateOptionOriginalSharedCollectionId() =
     Random.nextBoolean() match {

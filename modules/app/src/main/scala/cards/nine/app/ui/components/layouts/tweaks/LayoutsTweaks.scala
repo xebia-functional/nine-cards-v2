@@ -16,9 +16,8 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
-import cards.nine.models.types.NineCardsMoment
-import cards.nine.models._
-import cards.nine.models.TermCounter
+import cards.nine.models.types.{ConditionWeather, NineCardsMoment}
+import cards.nine.models.{TermCounter, _}
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R

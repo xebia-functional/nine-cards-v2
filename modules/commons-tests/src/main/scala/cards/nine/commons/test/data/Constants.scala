@@ -2,6 +2,7 @@ package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.models.types._
+import cards.nine.process.sharedcollections.TopSharedCollection
 
 object ApiValues {
 
@@ -189,6 +190,14 @@ object MomentValues {
   val deletedMoments: Int = 2
   val updatedMoment: Int = 1
 
+}
+
+object SharedCollection {
+
+  val SharedCollectionCategory = Communication
+  val typeShareCollection = TopSharedCollection
+  val offset = 0
+  val limit = 50
 }
 
 object UserValues {
