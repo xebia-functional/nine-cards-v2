@@ -9,11 +9,18 @@ import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import cards.nine.app.ui.collections.ActionsScreenListener
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
+import cards.nine.app.ui.launcher.jobs._
+import cards.nine.models.Widget
+import cards.nine.process.collection.AddCardRequest
+import cards.nine.process.commons.models.Collection
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
+
+import LauncherActivity._
 
 class LauncherActivity
   extends AppCompatActivity
@@ -24,11 +31,15 @@ class LauncherActivity
   with LauncherUiActionsImpl
   with BroadcastDispatcher { self =>
 
-  lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
+  implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
   lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
 
   lazy val managerContext: FragmentManagerContext[Fragment, FragmentManager] = activityManagerContext
+
+  lazy val launcherJobs = createLauncherJobs
+
+  lazy val appDrawerJobs = createAppDrawerJobs
 
   private[this] var hasFocus = false
 
@@ -52,7 +63,8 @@ class LauncherActivity
     super.onCreate(bundle)
     setContentView(R.layout.launcher_activity)
     registerDispatchers()
-    presenter.initialize()
+//    presenter.initialize()
+    launcherJobs.initialize().resolveAsync()
   }
 
   override def onResume(): Unit = {
@@ -122,3 +134,83 @@ class LauncherActivity
   override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
     presenter.requestPermissionsResult(requestCode, permissions, grantResults)
 }
+
+object LauncherActivity {
+
+  var statuses = LauncherPresenterStatuses()
+
+  def createLauncherJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new LauncherDOM(activityContextWrapper.getOriginal)
+    val mainLauncherUiActions = new MainLauncherUiActions(dom)
+    val workspaceUiActions = new WorkspaceUiActions(dom)
+    val appDrawerUiActions = new MainAppDrawerUiActions(dom)
+    val menuDrawersUiActions = new MenuDrawersUiActions(dom)
+    new LauncherJobs(mainLauncherUiActions, workspaceUiActions, menuDrawersUiActions, appDrawerUiActions)
+  }
+
+  def createAppDrawerJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new LauncherDOM(activityContextWrapper.getOriginal)
+    val appDrawerUiActions = new MainAppDrawerUiActions(dom)
+    new AppDrawerJobs(appDrawerUiActions)
+  }
+
+}
+
+case class LauncherPresenterStatuses(
+  touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
+  hostingNoConfiguredWidget: Option[Widget] = None,
+  mode: LauncherMode = NormalMode,
+  transformation: Option[EditWidgetTransformation] = None,
+  idWidget: Option[Int] = None,
+  cardAddItemMode: Option[AddCardRequest] = None,
+  collectionReorderMode: Option[Collection] = None,
+  startPositionReorderMode: Int = 0,
+  currentDraggingPosition: Int = 0,
+  lastPhone: Option[String] = None) {
+
+  def startAddItem(card: AddCardRequest): LauncherPresenterStatuses =
+    copy(mode = AddItemMode, cardAddItemMode = Some(card))
+
+  def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =
+    copy(
+      startPositionReorderMode = position,
+      collectionReorderMode = Some(collection),
+      currentDraggingPosition = position,
+      mode = ReorderMode)
+
+  def updateCurrentPosition(position: Int): LauncherPresenterStatuses =
+    copy(currentDraggingPosition = position)
+
+  def reset(): LauncherPresenterStatuses =
+    copy(
+      startPositionReorderMode = 0,
+      cardAddItemMode = None,
+      collectionReorderMode = None,
+      currentDraggingPosition = 0,
+      mode = NormalMode)
+
+  def isReordering: Boolean = mode == ReorderMode
+
+}
+
+sealed trait LauncherMode
+
+case object NormalMode extends LauncherMode
+
+case object AddItemMode extends LauncherMode
+
+case object ReorderMode extends LauncherMode
+
+case object EditWidgetsMode extends LauncherMode
+
+sealed trait EditWidgetTransformation
+
+case object ResizeTransformation extends EditWidgetTransformation
+
+case object MoveTransformation extends EditWidgetTransformation

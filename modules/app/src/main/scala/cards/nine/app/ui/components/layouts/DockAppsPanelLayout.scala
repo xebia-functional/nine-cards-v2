@@ -14,7 +14,7 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.types.{AppDockType, ContactDockType}
@@ -34,6 +34,12 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
+
+  // TODO First implementation in order to remove LauncherPresenter
+  def presenter(implicit context: ActivityContextWrapper): LauncherPresenter = context.original.get match {
+    case Some(activity: LauncherActivity) => activity.presenter
+    case _ => throw new RuntimeException("LauncherPresenter not found")
+  }
 
   val unselectedPosition = -1
 
@@ -62,7 +68,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   LayoutInflater.from(context).inflate(R.layout.app_drawer_panel, this)
 
   def init(apps: Seq[DockApp])
-    (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
+    (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
     dockApps = apps
     (findView(TR.launcher_page_1) <~ vSetPosition(0) <~ populate(getDockApp(0))) ~
       (findView(TR.launcher_page_2) <~ vSetPosition(1) <~ populate(getDockApp(1))) ~
@@ -71,12 +77,12 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   }
 
   def reload(dockApp: DockApp)
-    (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
+    (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
     dockApps = (dockApps filterNot (_.position == dockApp.position)) :+ dockApp
     this <~ updatePosition(dockApp.position)
   }
 
-  def dragAddItemController(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Unit =
+  def dragAddItemController(action: Int, x: Float, y: Float)(implicit contextWrapper: ActivityContextWrapper): Unit =
     action match {
       case ACTION_DRAG_LOCATION =>
         val newPosition = calculatePosition(x)
@@ -102,7 +108,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     }
 
   private[this] def updatePosition(position: Int)
-    (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Transformer =
+    (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Transformer =
     Transformer {
       case view: TintableImageView if view.getPosition.contains(position) => view <~ populate(getDockApp(position))
     }
@@ -117,7 +123,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   }
 
   private[this] def populate(dockApp: Option[DockApp])
-    (implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Tweak[TintableImageView] =
+    (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Tweak[TintableImageView] =
     tivPressedColor(theme.get(DockPressedColor)) +
       (dockApp map { app =>
         (app.dockType match {

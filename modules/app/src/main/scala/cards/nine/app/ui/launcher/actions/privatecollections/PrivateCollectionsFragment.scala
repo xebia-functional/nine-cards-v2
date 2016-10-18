@@ -3,19 +3,25 @@ package cards.nine.app.ui.launcher.actions.privatecollections
 import android.os.Bundle
 import android.view.View
 import cards.nine.app.commons.AppNineCardIntentConversions
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
-import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import cards.nine.process.commons.models.{Collection, PrivateCollection}
 import cards.nine.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
-class PrivateCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
+class PrivateCollectionsFragment
   extends BaseActionFragment
   with PrivateCollectionsDOM
   with PrivateCollectionsUiActions
   with PrivateCollectionsListener
   with AppNineCardIntentConversions { self =>
+
+  // TODO First implementation in order to remove LauncherPresenter
+  def launcherPresenter: LauncherPresenter = getActivity match {
+    case activity: LauncherActivity => activity.presenter
+    case _ => throw new RuntimeException("LauncherPresenter not found")
+  }
 
   lazy val collectionJobs = new PrivateCollectionsJobs(self)
 

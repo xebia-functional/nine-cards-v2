@@ -14,7 +14,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
 import cards.nine.app.ui.components.models.LauncherMoment
-import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import cards.nine.commons.javaNull
 import cards.nine.process.commons.models.{Card, Collection}
 import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
@@ -32,6 +32,12 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
+  // TODO First implementation in order to remove LauncherPresenter
+  def presenter(implicit context: ActivityContextWrapper): LauncherPresenter = context.original.get match {
+    case Some(activity: LauncherActivity) => activity.presenter
+    case _ => throw new RuntimeException("LauncherPresenter not found")
+  }
+
   LayoutInflater.from(context).inflate(R.layout.apps_moment_layout, this)
 
   lazy val iconContent = findView(TR.moment_bar_icon_content)
@@ -42,7 +48,7 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   (Lollipop.ifSupportedThen(iconContent <~ vElevation(resGetDimensionPixelSize(R.dimen.elevation_default))) getOrElse Ui.nop).run
 
-  def populate(moment: LauncherMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = moment.collection match {
+  def populate(moment: LauncherMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Any] = moment.collection match {
     case Some(collection: Collection) =>
       val resIcon = collection.getIconDetail
       val color = theme.getIndexColor(collection.themedColorIndex)
@@ -71,7 +77,7 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (appsContent <~ vPadding(paddingBottom = paddingBottom))
 
   private[this] def createIconCard(
-    card: Card, moment: Option[NineCardsMoment])(implicit presenter: LauncherPresenter, theme: NineCardsTheme): WorkSpaceButton =
+    card: Card, moment: Option[NineCardsMoment])(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme): WorkSpaceButton =
     (w[WorkSpaceButton] <~
       vMatchWidth <~
       wbInit(WorkSpaceAppMomentButton) <~
