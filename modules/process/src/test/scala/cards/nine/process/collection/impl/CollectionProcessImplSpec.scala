@@ -10,7 +10,7 @@ import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.commons.test.data.CardValues._
 import cards.nine.commons.test.data.CollectionTestData
 import cards.nine.commons.test.data.CollectionValues._
-import cards.nine.models.{Collection, CollectionProcessConfig, NineCardsIntent}
+import cards.nine.models.{RequestConfig, Collection, CollectionProcessConfig, NineCardsIntent}
 import cards.nine.process.collection.{CardException, CollectionException}
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.{ApiServiceException, ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}

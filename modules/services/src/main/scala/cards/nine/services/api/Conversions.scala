@@ -2,7 +2,7 @@ package cards.nine.services.api
 
 import cards.nine.api._
 import cards.nine.models._
-import cards.nine.models.types.{NineCardsCategory, CollectionType, NotPublished}
+import cards.nine.models.types.{CardType, NineCardsCategory, CollectionType, NotPublished}
 import org.joda.time.format.DateTimeFormat
 
 import scala.util.{Success, Try}
@@ -112,7 +112,7 @@ trait Conversions {
 
   def toUserConfigCollectionItem(apiCollectionItem: cards.nine.api.version1.UserConfigCollectionItem): UserV1CollectionItem =
     UserV1CollectionItem(
-      itemType = apiCollectionItem.itemType,
+      itemType = CardType(apiCollectionItem.itemType),
       title = apiCollectionItem.title,
       intent = apiCollectionItem.metadata.toString(),
       categories = apiCollectionItem.categories.map(categorySeq => categorySeq map (NineCardsCategory(_))))

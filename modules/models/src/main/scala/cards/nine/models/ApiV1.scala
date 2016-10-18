@@ -1,6 +1,6 @@
 package cards.nine.models
 
-import cards.nine.models.types.{NineCardsCategory, CollectionType}
+import cards.nine.models.types.{CardType, NineCardsCategory, CollectionType}
 import play.api.libs.json._
 
 case class Device(
@@ -36,7 +36,7 @@ case class UserV1Collection(
   category: Option[NineCardsCategory])
 
 case class UserV1CollectionItem(
-  itemType: String,
+  itemType: CardType,
   title: String,
   intent: String,
   categories: Option[Seq[NineCardsCategory]])

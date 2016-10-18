@@ -3,6 +3,40 @@ package cards.nine.commons.test.data
 import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.models.types._
 
+object ApiValues {
+
+
+}
+
+
+object ApiV1Values {
+
+  val statusCodeUser = 101
+
+  val deviceId: String  = "XX-47-XX"
+  val permissions: Seq[String] = Seq("permission1", "permission2")
+  val itemType: CardType = AppCardType
+  val title: String = "title"
+  val apiIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val apiCollectionCategory: NineCardsCategory = Game
+  val apiCollectionAnotherCategory: NineCardsCategory = Communication
+  val apiCollectionName: String  = "apiCollectionName"
+  val apiOriginalSharedCollectionId: String = "apiOriginalSharedCollectionId"
+  val apiSharedCollectionId: String = "apiSharedCollectionId"
+  val apiSharedCollectionSubscribed: Boolean = false
+  val apiCollectionType: CollectionType = AppsCollectionType
+  val constrains: Seq[String] = Seq("constrain1", "constrain2")
+  val wifi: Seq[String] = Seq("wifi1", "wifi2")
+  val occurrence: Seq[String] = Seq("occurrence1", "occurrence2")
+  val apiCollectionIcon: String  = "GAME"
+  val deviceIdPrefix: String  = "deviceIdPrefix"
+  val userV1Id: String = "userV1Id"
+  val displayName: String = "displayName"
+  val imageUrl: String = "imageUrl"
+  val products: Seq[String] = Seq("product1", "product2")
+
+}
+
 object ApplicationValues {
 
   val keyword = "fake-keyword"
