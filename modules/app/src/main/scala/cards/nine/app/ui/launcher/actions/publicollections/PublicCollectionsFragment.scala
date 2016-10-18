@@ -6,20 +6,26 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import cards.nine.models.Collection
-import cards.nine.models.types.{NineCardsCategory, Communication}
+import cards.nine.models.types.{Communication, NineCardsCategory}
 import cards.nine.process.sharedcollections.models.SharedCollection
 import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
 import cards.nine.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
-class PublicCollectionsFragment(implicit launcherPresenter: LauncherPresenter)
+class PublicCollectionsFragment
   extends BaseActionFragment
   with PublicCollectionsUiActions
   with PublicCollectionsDOM
   with PublicCollectionsListener
   with AppNineCardsIntentConversions { self =>
+
+  // TODO First implementation in order to remove LauncherPresenter
+  def launcherPresenter: LauncherPresenter = getActivity match {
+    case activity: LauncherActivity => activity.presenter
+    case _ => throw new RuntimeException("LauncherPresenter not found")
+  }
 
   lazy val collectionJobs = new PublicCollectionsJobs(self)
 

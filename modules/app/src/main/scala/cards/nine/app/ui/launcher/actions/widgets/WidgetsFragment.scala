@@ -6,17 +6,23 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import com.fortysevendeg.ninecardslauncher.R
 import WidgetsFragment._
 import cards.nine.models.AppWidget
 
-class WidgetsFragment(implicit launcherPresenter: LauncherPresenter)
+class WidgetsFragment
   extends BaseActionFragment
   with WidgetsUiActions
   with WidgetsDOM
   with WidgetsListener
   with AppNineCardsIntentConversions {
+
+  // TODO First implementation in order to remove LauncherPresenter
+  def launcherPresenter: LauncherPresenter = getActivity match {
+    case activity: LauncherActivity => activity.presenter
+    case _ => throw new RuntimeException("LauncherPresenter not found")
+  }
 
   lazy val widgetContentWidth = getString(Seq(getArguments), WidgetsFragment.widgetContentWidth, "0").toInt
 
