@@ -16,7 +16,7 @@ trait ApiServices {
     */
   def loginV1(
     email: String,
-    device: LoginV1Device): TaskService[LoginResponseV1]
+    device: Device): TaskService[LoginResponseV1]
 
   /**
     * Fetches the user configuration associated to the user identified by the data in [[cards.nine.models.RequestConfigV1]]

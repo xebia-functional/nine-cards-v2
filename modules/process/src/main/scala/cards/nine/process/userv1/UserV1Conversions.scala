@@ -1,18 +1,11 @@
 package cards.nine.process.userv1
 
 import cards.nine.models.types.{CollectionType, NineCardsCategory}
-import cards.nine.process.userv1.models.{Device, UserV1Collection, UserV1CollectionItem, UserV1Device, UserV1Info}
-import cards.nine.models.{LoginV1Device => ServiceLoginV1Device, UserV1 => ServiceUserV1, UserV1Collection => ServiceUserV1Collection, UserV1CollectionItem => ServiceUserV1CollectionItem, UserV1Device => ServiceUserV1Device}
+import cards.nine.models.{Device, UserV1 => ServiceUserV1, UserV1Collection => ServiceUserV1Collection, UserV1CollectionItem => ServiceUserV1CollectionItem, UserV1Device => ServiceUserV1Device}
+import cards.nine.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device, UserV1Info}
 
 trait UserV1Conversions {
-
-  def toGoogleDevice(device: Device): ServiceLoginV1Device =
-    ServiceLoginV1Device(
-      name = device.name,
-      deviceId = device.deviceId,
-      secretToken = device.secretToken,
-      permissions = device.permissions)
-
+  
   def toUserInfo(androidId: String, userConfig: ServiceUserV1): UserV1Info = UserV1Info(
     email = userConfig.email,
     name = userConfig.plusProfile.displayName,

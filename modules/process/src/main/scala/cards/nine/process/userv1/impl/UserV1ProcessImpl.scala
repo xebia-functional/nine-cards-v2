@@ -4,9 +4,9 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{LoginResponseV1, UserV1, RequestConfigV1, User}
+import cards.nine.models._
 import cards.nine.process.userv1._
-import cards.nine.process.userv1.models.{Device, UserV1Info}
+import cards.nine.process.userv1.models.UserV1Info
 import cards.nine.services.api._
 import cards.nine.services.persistence.PersistenceServices
 import cats.syntax.either._
@@ -31,7 +31,7 @@ class UserV1ProcessImpl(apiServices: ApiServices, persistenceServices: Persisten
             deviceId = androidId,
             secretToken = marketToken,
             permissions = oauthScopes)
-          apiServices.loginV1(email, toGoogleDevice(device))
+          apiServices.loginV1(email, device)
         case _ =>
           TaskService(Task(Either.left(UserV1Exception(marketTokenErrorMsg))))
       }

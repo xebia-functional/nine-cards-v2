@@ -11,7 +11,7 @@ trait Conversions {
 
   def toUser(
     email: String,
-    device: LoginV1Device
+    device: Device
     ): cards.nine.api.version1.User =
     version1.User(
       _id = None,
@@ -28,7 +28,7 @@ trait Conversions {
         twitter = None,
         anonymous = None)))
 
-  def fromGoogleDevice(device: LoginV1Device): cards.nine.api.version1.AuthGoogleDevice =
+  def fromGoogleDevice(device: Device): cards.nine.api.version1.AuthGoogleDevice =
     version1.AuthGoogleDevice(
       name = device.name,
       deviceId = device.deviceId,
@@ -45,10 +45,10 @@ trait Conversions {
         google <- data.google
       } yield toGoogleDeviceSeq(google.devices)) getOrElse Seq.empty)
 
-  def toGoogleDeviceSeq(devices: Seq[cards.nine.api.version1.AuthGoogleDevice]): Seq[LoginV1Device] = devices map toGoogleDevice
+  def toGoogleDeviceSeq(devices: Seq[cards.nine.api.version1.AuthGoogleDevice]): Seq[Device] = devices map toGoogleDevice
 
-  def toGoogleDevice(device: cards.nine.api.version1.AuthGoogleDevice): LoginV1Device =
-    LoginV1Device(
+  def toGoogleDevice(device: cards.nine.api.version1.AuthGoogleDevice): Device =
+    Device(
       name = device.name,
       deviceId = device.deviceId,
       secretToken = device.secretToken,

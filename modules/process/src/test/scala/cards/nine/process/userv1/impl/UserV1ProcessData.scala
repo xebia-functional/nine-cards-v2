@@ -29,7 +29,7 @@ trait UserV1ProcessData {
 
   val permissions = Seq.empty
 
-  val googleDevice = LoginV1Device(
+  val googleDevice = Device(
     name = deviceName,
     deviceId = deviceId,
     secretToken = marketToken,

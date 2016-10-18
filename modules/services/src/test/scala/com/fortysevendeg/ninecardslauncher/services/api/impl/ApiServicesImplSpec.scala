@@ -3,7 +3,7 @@ package cards.nine.services.api.impl
 import cards.nine.api._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.LoginV1Device
+import cards.nine.models.Device
 import cards.nine.services.api._
 import cards.nine.services.api.models._
 import cards.nine.api.rest.client.http.HttpClientException
@@ -90,7 +90,7 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version1.User](statusCode, Some(user))))
           }
 
-        val result = apiServices.loginV1(email, LoginV1Device(name, deviceId, secretToken, permissions)).value.run
+        val result = apiServices.loginV1(email, Device(name, deviceId, secretToken, permissions)).value.run
         result shouldEqual Right(toLoginResponseV1(statusCode, user))
 
         there was one(apiServiceV1).login(===(loginV1User), any)(any, any)
@@ -101,7 +101,7 @@ class ApiServicesImplSpec
 
         apiServiceV1.baseUrl returns ""
 
-        mustLeft[ApiServiceV1ConfigurationException](apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)))
+        mustLeft[ApiServiceV1ConfigurationException](apiServices.loginV1("", Device("", "", "", Seq.empty)))
       }
 
     "return an ApiServiceException when the service returns None" in
@@ -110,7 +110,7 @@ class ApiServicesImplSpec
         apiServiceV1.baseUrl returns baseUrl
         apiServiceV1.login(any, any)(any, any) returns TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
-        mustLeft[ApiServiceException](apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)))
+        mustLeft[ApiServiceException](apiServices.loginV1("", Device("", "", "", Seq.empty)))
       }
 
     "return an ApiServiceException when the service returns an exception" in
@@ -121,7 +121,7 @@ class ApiServicesImplSpec
           Task(Either.left(exception))
         }
 
-        mustLeft[ApiServiceException](apiServices.loginV1("", LoginV1Device("", "", "", Seq.empty)))
+        mustLeft[ApiServiceException](apiServices.loginV1("", Device("", "", "", Seq.empty)))
       }
 
   }

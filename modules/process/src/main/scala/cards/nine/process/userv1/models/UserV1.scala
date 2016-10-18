@@ -2,12 +2,6 @@ package cards.nine.process.userv1.models
 
 import cards.nine.models.types.{CollectionType, NineCardsCategory}
 
-case class Device(
-  name: String,
-  deviceId: String,
-  secretToken: String,
-  permissions: Seq[String])
-
 case class UserV1Info(
   email: String,
   name: String,

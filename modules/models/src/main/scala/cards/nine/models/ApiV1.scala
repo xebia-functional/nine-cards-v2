@@ -2,7 +2,7 @@ package cards.nine.models
 
 import play.api.libs.json._
 
-case class LoginV1Device(
+case class Device(
   name: String,
   deviceId: String,
   secretToken: String,
@@ -12,7 +12,7 @@ case class LoginResponseV1(
   userId: Option[String],
   sessionToken: Option[String],
   email: Option[String],
-  devices: Seq[LoginV1Device])
+  devices: Seq[Device])
 
 case class UserV1(
   _id: String,
