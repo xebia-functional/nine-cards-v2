@@ -161,6 +161,8 @@ trait WizardUiListener {
 
   def onClickCancelPermissionsDialog(): Unit
 
+  def onStartLoadConfiguration(cloudId: String): Unit
+
   def onStartNewConfiguration(): Unit
 
   def onLoadBetterCollections(): Unit
