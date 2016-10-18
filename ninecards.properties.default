@@ -6,7 +6,6 @@ backend.v2.clientid=
 crashlytics.enabled=false
 crashlytics.apikey=
 crashlytics.apisecret=
-stetho.enabled=false
 strictmode.enabled=false
 analytics.enabled=false
 analytics.trackid=
