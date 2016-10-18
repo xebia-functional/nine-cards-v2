@@ -4,6 +4,14 @@
 
 9 Cards does the bulk of the work for you, organizing your apps into collections. Get quick and easy access to the apps you need most
 
+[Changelog](CHANGELOG.md)
+
+# Table of Contents
+1. [Prerequisites](#prerequisites)
+2. [Compile and Run](#compile-and-run)
+3. [Properties File](#properties-files)
+4. [Troubleshooting](#troubleshooting)
+
 ## Prerequisites
 
 ### SBT
@@ -28,7 +36,7 @@ You need an Android device and [enable USB debugging](https://www.google.es/sear
 
 You need to create a project in the Google API Console with these two APIs enabled.
 
-#### Create the project**
+#### Create the project
 
 1. Go to the [Google Developers Console](https://console.developers.google.com/apis/library?project=_)
 2. From the project drop-down, select a [project](https://support.google.com/cloud/answer/6158853), or create a new one.
@@ -73,7 +81,7 @@ To compile the project:
 $ git clone git@github.com:47deg/nine-cards-v2.git
 ```
 
-* Add a `ninecards.properties` file (See [Add Debug Keys](#add-properties-file) section)
+* Add a `ninecards.properties` file (See [Add Debug Keys](#properties-file) section)
 
 * You need to set the heap size to at least 2M
 
@@ -101,7 +109,7 @@ The output should look like:
 > run
 ```
 
-## Add Properties File
+## Properties File
 
 You need to add a `ninecards.properties` file in the project root folder. 
 
@@ -137,16 +145,12 @@ firebase.gcm.senderid=
 firebase.clientid=
 ```
 
-### Backend V2
-
-These properties are mandatory.
+### Backend V2 (Mandatory)
 
 * `backend.v2.url`: Defines the URL for the Backend. Visit the [GitHub project](https://github.com/47deg/nine-cards-backend) for more information
 * `backend.v2.clientid`: This value is used for requesting a token id that will be used by the Backend to authenticate the user. It's the *client id* obtained in the [Google Plus API section](#google-plus-api). 
 
-### Third Parties
-
-These properties are optional.
+### Third Parties (Optional)
 
 **[Crashlytics](https://try.crashlytics.com/)**
 
@@ -162,9 +166,9 @@ These properties are optional.
 * `analytics.enabled`: Enables or disables the Google Analytics service
 * `analytics.trackid`: You can use your own tracking ID. See how to [find your tracking code, tracking ID, and property number](https://support.google.com/analytics/answer/1032385)
 
-### Google Firebase
+### Google Firebase (Optional)
 
-These properties are optional. Google Firebase is used for push notifications.
+Google Firebase is used for push notifications.
 
 **[Google Firebase](https://firebase.google.com/)**
 
