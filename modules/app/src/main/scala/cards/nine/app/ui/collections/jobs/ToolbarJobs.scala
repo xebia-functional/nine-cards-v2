@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.jobs
 
-import cards.nine.app.commons.{Conversions, AppNineCardIntentConversions}
+import cards.nine.app.commons.{Conversions, AppNineCardsIntentConversions}
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService.TaskService
 import macroid.ActivityContextWrapper
@@ -8,7 +8,7 @@ import macroid.ActivityContextWrapper
 class ToolbarJobs(actions: ToolbarUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
     with Conversions
-    with AppNineCardIntentConversions { self =>
+    with AppNineCardsIntentConversions { self =>
 
   def scrollY(dy: Int): TaskService[Unit] = actions.translationScrollY(dy)
 

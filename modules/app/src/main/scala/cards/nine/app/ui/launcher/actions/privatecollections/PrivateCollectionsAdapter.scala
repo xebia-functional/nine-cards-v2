@@ -7,15 +7,15 @@ import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.ImageView
 import cards.nine.app.ui.commons.UiContext
+import cards.nine.models.{CollectionData, CardData}
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import cards.nine.app.ui.commons.ops.PrivateCollectionOps._
+import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
-import cards.nine.process.commons.models.{PrivateCard, PrivateCollection}
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
@@ -24,8 +24,8 @@ import macroid.FullDsl._
 import macroid._
 
 case class PrivateCollectionsAdapter(
-  privateCollections: Seq[PrivateCollection],
-  onClick: (PrivateCollection => Unit))
+  privateCollections: Seq[CollectionData],
+  onClick: (CollectionData => Unit))
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderPrivateCollectionsLayoutAdapter] {
 
@@ -70,9 +70,9 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
     (name <~ titleTextStyle) ~
     (addCollection <~ buttonStyle)).run
 
-  def bind(privateCollection: PrivateCollection, onClick: (PrivateCollection => Unit)): Ui[_] = {
+  def bind(collection: CollectionData, onClick: (CollectionData => Unit)): Ui[_] = {
 
-    def automaticAlignment(view: FlexboxLayout, cards: Seq[PrivateCard]): Tweak[FlexboxLayout] = {
+    def automaticAlignment(view: FlexboxLayout, cards: Seq[CardData]): Tweak[FlexboxLayout] = {
       val width = view.getWidth
       if (width > 0) {
         vgAddViews(getViewsByCards(cards, width))
@@ -83,7 +83,7 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
       }
     }
 
-   def getViewsByCards(cards: Seq[PrivateCard], width: Int) = {
+   def getViewsByCards(cards: Seq[CardData], width: Int) = {
       val sizeIcon = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
       val sizeView = width / appsByRow
       val padding = (sizeView - sizeIcon) / 2
@@ -97,15 +97,15 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
     }
 
     val background = new ShapeDrawable(new OvalShape)
-    background.getPaint.setColor(theme.getIndexColor(privateCollection.themedColorIndex))
-    val cardsRow = privateCollection.cards
+    background.getPaint.setColor(theme.getIndexColor(collection.themedColorIndex))
+    val cardsRow = collection.cards
     (iconContent <~ vBackground(background)) ~
-      (icon <~ ivSrc(privateCollection.getIconCollectionDetail)) ~
+      (icon <~ ivSrc(collection.getIconCollectionDetail)) ~
       (appsRow <~
         vgRemoveAllViews <~
         automaticAlignment(appsRow, cardsRow)) ~
-      (name <~ tvText(privateCollection.name)) ~
-      (addCollection <~ On.click(Ui(onClick(privateCollection))))
+      (name <~ tvText(collection.name)) ~
+      (addCollection <~ On.click(Ui(onClick(collection))))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

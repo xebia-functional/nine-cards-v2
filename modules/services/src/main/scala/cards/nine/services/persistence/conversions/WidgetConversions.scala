@@ -1,28 +1,10 @@
 package cards.nine.services.persistence.conversions
 
+import cards.nine.models.types.WidgetType
+import cards.nine.models.{NineCardsIntentConversions, Widget, WidgetArea, WidgetData}
 import cards.nine.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
-import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.Widget
 
-trait WidgetConversions {
-
-  def toAddWidgetRequestSeq(momentId: Int, widgetRequest: Seq[SaveWidgetRequest]) =
-    widgetRequest map (widget => toAddWidgetRequest(momentId, widget))
-
-  def toAddWidgetRequest(momentId: Int, widget: SaveWidgetRequest) =
-    AddWidgetRequest(
-      momentId = momentId,
-      packageName = widget.packageName,
-      className = widget.className,
-      appWidgetId = widget.appWidgetId,
-      startX = widget.startX,
-      startY = widget.startY,
-      spanX = widget.spanX,
-      spanY = widget.spanY,
-      widgetType = widget.widgetType,
-      label = widget.label,
-      imagePath = widget.imagePath,
-      intent = widget.intent)
+trait WidgetConversions extends NineCardsIntentConversions {
 
   def toWidget(widget: RepositoryWidget): Widget =
     Widget(
@@ -31,14 +13,15 @@ trait WidgetConversions {
       packageName = widget.data.packageName,
       className = widget.data.className,
       appWidgetId = if (widget.data.appWidgetId == 0) None else Some(widget.data.appWidgetId),
-      startX = widget.data.startX,
-      startY = widget.data.startY,
-      spanX = widget.data.spanX,
-      spanY = widget.data.spanY,
-      widgetType = widget.data.widgetType,
+      area = WidgetArea(
+        startX = widget.data.startX,
+        startY = widget.data.startY,
+        spanX = widget.data.spanX,
+        spanY = widget.data.spanY),
+      widgetType = WidgetType(widget.data.widgetType),
       label = widget.data.label,
       imagePath = widget.data.imagePath,
-      intent = widget.data.intent)
+      intent = widget.data.intent map jsonToNineCardIntent)
 
   def toRepositoryWidget(widget: Widget): RepositoryWidget =
     RepositoryWidget(
@@ -48,45 +31,28 @@ trait WidgetConversions {
         packageName = widget.packageName,
         className = widget.className,
         appWidgetId = widget.appWidgetId getOrElse 0,
-        startX = widget.startX,
-        startY = widget.startY,
-        spanX = widget.spanX,
-        spanY = widget.spanY,
-        widgetType = widget.widgetType,
+        startX = widget.area.startX,
+        startY = widget.area.startY,
+        spanX = widget.area.spanX,
+        spanY = widget.area.spanY,
+        widgetType = widget.widgetType.name,
         label = widget.label,
         imagePath = widget.imagePath,
-        intent = widget.intent))
+        intent = widget.intent map nineCardIntentToJson))
 
-  def toRepositoryWidget(request: UpdateWidgetRequest): RepositoryWidget =
-    RepositoryWidget(
-      id = request.id,
-      data = RepositoryWidgetData(
-        momentId = request.momentId,
-        packageName = request.packageName,
-        className = request.className,
-        appWidgetId = request.appWidgetId getOrElse 0,
-        startX = request.startX,
-        startY = request.startY,
-        spanX = request.spanX,
-        spanY = request.spanY,
-        widgetType = request.widgetType,
-        label = request.label,
-        imagePath = request.imagePath,
-        intent = request.intent))
-
-  def toRepositoryWidgetData(request: AddWidgetRequest): RepositoryWidgetData =
+  def toRepositoryWidgetData(widget: WidgetData): RepositoryWidgetData =
     RepositoryWidgetData(
-      momentId = request.momentId,
-      packageName = request.packageName,
-      className = request.className,
-      appWidgetId = request.appWidgetId,
-      startX = request.startX,
-      startY = request.startY,
-      spanX = request.spanX,
-      spanY = request.spanY,
-      widgetType = request.widgetType,
-      label = request.label,
-      imagePath = request.imagePath,
-      intent = request.intent)
+      momentId = widget.momentId,
+      packageName = widget.packageName,
+      className = widget.className,
+      appWidgetId = widget.appWidgetId getOrElse 0,
+      startX = widget.area.startX,
+      startY = widget.area.startY,
+      spanX = widget.area.spanX,
+      spanY = widget.area.spanY,
+      widgetType = widget.widgetType.name,
+      label = widget.label,
+      imagePath = widget.imagePath,
+      intent = widget.intent map nineCardIntentToJson)
 
 }

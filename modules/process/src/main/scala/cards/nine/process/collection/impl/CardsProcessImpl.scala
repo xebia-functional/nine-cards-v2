@@ -5,11 +5,11 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.{CardType, NoInstalledAppCardType}
-import cards.nine.process.collection.{AddCardRequest, CardException, CollectionProcess}
-import cards.nine.process.commons.models.Card
-import cards.nine.services.persistence.models.{Card => ServicesCard, Collection}
-import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, ImplicitsPersistenceServiceExceptions}
+import cards.nine.models
+import cards.nine.models._
+import cards.nine.models.types.{AppCardType, NoInstalledAppCardType}
+import cards.nine.process.collection.{CardException, CollectionProcess}
+import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import monix.eval.Task
 
 trait CardsProcessImpl extends CollectionProcess {
@@ -18,20 +18,20 @@ trait CardsProcessImpl extends CollectionProcess {
     with FormedCollectionConversions
     with ImplicitsPersistenceServiceExceptions =>
 
-  override def addCards(collectionId: Int, addCardListRequest: Seq[AddCardRequest]) =
+  override def addCards(collectionId: Int, cards: Seq[CardData]) =
     (for {
-      cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId))
+      cardList <- persistenceServices.fetchCardsByCollection(collectionId)
       size = cardList.size
-      cards = addCardListRequest.zipWithIndex map {
-        case (item, index) => toAddCardRequest(collectionId, item, index + size)
+      cardsToAdd = cards.zipWithIndex map {
+        case (card, index) => card.copy(position = index + size)
       }
-      addedCardList <- persistenceServices.addCards(Seq(AddCardWithCollectionIdRequest(collectionId, cards)))
-    } yield toCardSeq(addedCardList)).resolve[CardException]
+      addedCardList <- persistenceServices.addCards(Seq((collectionId, cardsToAdd)))
+    } yield addedCardList).resolve[CardException]
 
   override def deleteCard(collectionId: Int, cardId: Int) =
     (for {
       _ <- persistenceServices.deleteCard(collectionId, cardId)
-      cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq
+      cardList <- persistenceServices.fetchCardsByCollection(collectionId)
       _ <- updateCardList(reloadPositions(cardList))
     } yield ()).resolve[CardException]
 
@@ -55,7 +55,7 @@ trait CardsProcessImpl extends CollectionProcess {
   override def deleteCards(collectionId: Int, cardIds: Seq[Int]) =
     (for {
       _ <- persistenceServices.deleteCards(collectionId, cardIds)
-      cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq
+      cardList <- persistenceServices.fetchCardsByCollection(collectionId)
       _ <- updateCardList(reloadPositions(cardList))
     } yield ()).resolve[CardException]
 
@@ -69,15 +69,15 @@ trait CardsProcessImpl extends CollectionProcess {
         .map( { case (card, index) => card.copy(position = index) })
     }
 
-    def reorderAux(card: ServicesCard) =
+    def reorderAux(card: models.Card) =
       if (card.position != newPosition)
         for {
-          cardList <- persistenceServices.fetchCardsByCollection(toFetchCardsByCollectionRequest(collectionId)) map toCardSeq
+          cardList <- persistenceServices.fetchCardsByCollection(collectionId)
           _ <- updateCardList(reorderList(cardList,card.position))
         } yield ()
       else TaskService(Task(Right(Unit)))
     (for {
-      card <- persistenceServices.findCardById(toFindCardByIdRequest(cardId))
+      card <- persistenceServices.findCardById(cardId)
         .resolveOption(s"Can't find the card with id $cardId")
       _ <- reorderAux(card)
     } yield ()).resolve[CardException]
@@ -85,20 +85,31 @@ trait CardsProcessImpl extends CollectionProcess {
 
   override def editCard(collectionId: Int, cardId: Int, name: String) =
     (for {
-      card <- persistenceServices.findCardById(toFindCardByIdRequest(cardId))
+      card <- persistenceServices.findCardById(cardId)
         .resolveOption(s"Can't find the card with id $cardId")
-      updatedCard = toCard(card).copy(term = name)
+      updatedCard = card.copy(term = name)
       _ <- updateCard(updatedCard)
     } yield updatedCard).resolve[CardException]
 
-  override def updateNoInstalledCardsInCollections(packageName: String)(implicit contextSupport: ContextSupport) =
+  override def updateNoInstalledCardsInCollections(packageName: String)(implicit contextSupport: ContextSupport) = {
+
+    def toCard(cards: Seq[Card], app: ApplicationData)(implicit contextSupport: ContextSupport): Seq[Card] = {
+      val intent = toNineCardIntent(app)
+      cards map (_.copy(
+        term = app.name,
+        cardType = AppCardType,
+        intent = intent))
+    }
+
     (for {
       app <- appsServices.getApplication(packageName)
       cardList <- persistenceServices.fetchCards
-      cardsNoInstalled = cardList filter (card => CardType(card.cardType) == NoInstalledAppCardType && card.packageName.contains(packageName))
-      cards = toCardSeq(toInstalledApp(cardsNoInstalled, app))
+      cardsNoInstalled = cardList filter (card => card.cardType == NoInstalledAppCardType && card.packageName.contains(packageName))
+      cards = toCard(cardsNoInstalled, app)
       _ <- updateCardList(cards)
     } yield ()).resolve[CardException]
+
+  }
 
   private[this] def reloadPositions(cardList: Seq[Card]) = cardList.zipWithIndex flatMap {
     case (card, position) if card.position != position => Option(card.copy(position = position))
@@ -107,12 +118,12 @@ trait CardsProcessImpl extends CollectionProcess {
 
   private[this] def updateCard(card: Card) =
     (for {
-      _ <- persistenceServices.updateCard(toServicesUpdateCardRequest(card))
+      _ <- persistenceServices.updateCard(card)
     } yield ()).resolve[CardException]
 
   private[this] def updateCardList(cardList: Seq[Card]) =
     (for {
-      _ <- persistenceServices.updateCards(toServicesUpdateCardsRequest(cardList))
+      _ <- persistenceServices.updateCards(cardList)
     } yield ()).resolve[CardException]
 
 }

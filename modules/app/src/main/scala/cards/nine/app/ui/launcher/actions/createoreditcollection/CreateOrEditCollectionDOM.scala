@@ -1,6 +1,6 @@
 package cards.nine.app.ui.launcher.actions.createoreditcollection
 
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
 trait CreateOrEditCollectionDOM {

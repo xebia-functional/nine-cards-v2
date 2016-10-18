@@ -4,7 +4,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import cards.nine.app.ui.commons.adapters.contacts.ContactsAdapter
 import cards.nine.commons._
-import cards.nine.process.device.ContactsFilter
+import cards.nine.models.types.ContactsFilter
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.ActivityContextWrapper
 

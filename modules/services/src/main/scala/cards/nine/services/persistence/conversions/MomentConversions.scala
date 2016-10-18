@@ -1,9 +1,9 @@
 package cards.nine.services.persistence.conversions
 
+import cards.nine.models.reads.MomentImplicits
+import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.{Moment, MomentData, MomentTimeSlot}
 import cards.nine.repository.model.{Moment => RepositoryMoment, MomentData => RepositoryMomentData}
-import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.{MomentTimeSlot, Moment}
-import cards.nine.services.persistence.reads.MomentImplicits
 import play.api.libs.json.Json
 
 trait MomentConversions {
@@ -17,7 +17,8 @@ trait MomentConversions {
       timeslot = Json.parse(moment.data.timeslot).as[Seq[MomentTimeSlot]],
       wifi = if (moment.data.wifi.isEmpty) List.empty else moment.data.wifi.split(",").toList,
       headphone = moment.data.headphone,
-      momentType = moment.data.momentType)
+      momentType = moment.data.momentType.map(NineCardsMoment(_)),
+      widgets = None)
 
   def toRepositoryMoment(moment: Moment): RepositoryMoment =
     RepositoryMoment(
@@ -27,7 +28,7 @@ trait MomentConversions {
         timeslot = Json.toJson(moment.timeslot).toString,
         wifi = moment.wifi.mkString(","),
         headphone = moment.headphone,
-        momentType = moment.momentType))
+        momentType = moment.momentType map (_.name)))
 
   def toRepositoryMomentWithoutCollection(moment: Moment): RepositoryMoment =
     RepositoryMoment(
@@ -37,23 +38,13 @@ trait MomentConversions {
         timeslot = Json.toJson(moment.timeslot).toString,
         wifi = moment.wifi.mkString(","),
         headphone = moment.headphone,
-        momentType = moment.momentType))
+        momentType = moment.momentType map (_.name)))
 
-  def toRepositoryMoment(request: UpdateMomentRequest): RepositoryMoment =
-    RepositoryMoment(
-      id = request.id,
-      data = RepositoryMomentData(
-        collectionId = request.collectionId,
-        timeslot = Json.toJson(request.timeslot).toString,
-        wifi = request.wifi.mkString(","),
-        headphone = request.headphone,
-        momentType = request.momentType))
-
-  def toRepositoryMomentData(request: AddMomentRequest): RepositoryMomentData =
+  def toRepositoryMomentData(moment: MomentData): RepositoryMomentData =
     RepositoryMomentData(
-      collectionId = request.collectionId,
-      timeslot = Json.toJson(request.timeslot).toString,
-      wifi = request.wifi.mkString(","),
-      headphone = request.headphone,
-      momentType = request.momentType)
+      collectionId = moment.collectionId,
+      timeslot = Json.toJson(moment.timeslot).toString,
+      wifi = moment.wifi.mkString(","),
+      headphone = moment.headphone,
+      momentType = moment.momentType map (_.name))
 }

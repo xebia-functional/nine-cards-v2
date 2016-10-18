@@ -1,13 +1,11 @@
 package cards.nine.app.ui.launcher.actions.createoreditcollection
 
 import cards.nine.app.ui.commons.{JobException, Jobs}
-import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.{CollectionData, Collection}
 import cards.nine.models.types.FreeCollectionType
-import cards.nine.process.collection.{AddCollectionRequest, EditCollectionRequest}
-import cards.nine.process.commons.models.Collection
 import macroid.ActivityContextWrapper
 
 class CreateOrEditCollectionJobs(actions: CreateOrEditCollectionUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -35,11 +33,15 @@ class CreateOrEditCollectionJobs(actions: CreateOrEditCollectionUiActions)(impli
   def editCollection(collection: Collection, maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): TaskService[Unit] =
     (maybeName, maybeIcon, maybeIndex) match {
       case (Some(name), Some(icon), Some(themedColorIndex)) =>
-        val request = EditCollectionRequest(
+        val request = CollectionData(
+          position = collection.position,
           name = name,
+          collectionType = collection.collectionType,
           icon = icon,
           themedColorIndex = themedColorIndex,
-          appsCategory = collection.appsCategory)
+          appsCategory = collection.appsCategory,
+          cards = collection.cards map (_.toData),
+          moment = collection.moment map (_.toData))
         for {
           collection <- di.collectionProcess.editCollection(collection.id, request)
           _ <- actions.editCollection(collection)
@@ -52,7 +54,7 @@ class CreateOrEditCollectionJobs(actions: CreateOrEditCollectionUiActions)(impli
   def saveCollection(maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): TaskService[Unit] =
     (maybeName, maybeIcon, maybeIndex) match {
       case (Some(name), Some(icon), Some(themedColorIndex)) =>
-        val request = AddCollectionRequest(
+        val request = CollectionData(
           name = name,
           collectionType = FreeCollectionType,
           icon = icon,

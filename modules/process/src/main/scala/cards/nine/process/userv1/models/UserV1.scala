@@ -1,6 +1,6 @@
 package cards.nine.process.userv1.models
 
-import cards.nine.models.types.{CollectionType, NineCardCategory}
+import cards.nine.models.types.{CollectionType, NineCardsCategory}
 
 case class Device(
   name: String,
@@ -31,10 +31,10 @@ case class UserV1Collection(
   wifi: Seq[String],
   occurrence: Seq[String],
   icon: String,
-  category: Option[NineCardCategory])
+  category: Option[NineCardsCategory])
 
 case class UserV1CollectionItem(
   itemType: String,
   title: String,
   intent: String,
-  categories: Option[Seq[NineCardCategory]])
+  categories: Option[Seq[NineCardsCategory]])

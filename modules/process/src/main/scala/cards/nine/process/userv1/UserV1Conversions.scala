@@ -1,6 +1,6 @@
 package cards.nine.process.userv1
 
-import cards.nine.models.types.{CollectionType, NineCardCategory}
+import cards.nine.models.types.{CollectionType, NineCardsCategory}
 import cards.nine.process.userv1.models.{Device, UserV1Collection, UserV1CollectionItem, UserV1Device, UserV1Info}
 import cards.nine.services.api.models.{LoginV1Device => ServiceLoginV1Device, UserV1 => ServiceUserV1, UserV1Collection => ServiceUserV1Collection, UserV1CollectionItem => ServiceUserV1CollectionItem, UserV1Device => ServiceUserV1Device}
 
@@ -36,12 +36,12 @@ trait UserV1Conversions {
     wifi = userConfigCollection.wifi,
     occurrence = userConfigCollection.occurrence,
     icon = userConfigCollection.icon,
-    category = userConfigCollection.category map (NineCardCategory(_)))
+    category = userConfigCollection.category map (NineCardsCategory(_)))
 
   def toUserCollectionItem(item: ServiceUserV1CollectionItem): UserV1CollectionItem = UserV1CollectionItem(
     itemType = item.itemType,
     title = item.title,
     intent = item.metadata.toString(),
-    categories = item.categories map (_ map (NineCardCategory(_))))
+    categories = item.categories map (_ map (NineCardsCategory(_))))
 
 }

@@ -1,113 +1,32 @@
-package cards.nine.services.persistence.data
+package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
-import cards.nine.repository.model.{Widget => RepositoryWidget, WidgetData => RepositoryWidgetData}
-import cards.nine.services.persistence._
-import cards.nine.services.persistence.models.Widget
+import cards.nine.commons.test.data.WidgetValues._
+import cards.nine.repository.model.{Widget, WidgetData}
 
-import scala.util.Random
+trait WidgetPersistenceServicesData {
 
-trait WidgetPersistenceServicesData extends PersistenceServicesData {
+  def repoWidgetData(num: Int = 0) = WidgetData(
+    momentId = widgetMomentId,
+    packageName = widgetPackageName,
+    className = widgetClassName,
+    appWidgetId = appWidgetId,
+    startX = startX,
+    startY = startY,
+    spanX = spanX,
+    spanY = spanY,
+    widgetType = widgetType,
+    label = Option(label),
+    imagePath = Option(widgetImagePath),
+    intent = Option(widgetIntent))
 
-  val nonExistentWidgetId: Int = Random.nextInt(10) + 100
-  val nonExistentAppWidgetId: Int = Random.nextInt(10) + 100
+  val repoWidgetData: WidgetData = repoWidgetData(0)
+  val seqRepoWidgetData = Seq(repoWidgetData(0), repoWidgetData(1), repoWidgetData(2))
 
-  def createSeqWidget(
-    num: Int = 5,
-    id: Int = widgetId,
-    momentId: Int = momentId,
-    packageName: String = packageName,
-    className: String = className,
-    appWidgetId: Int = appWidgetId,
-    startX: Int = startX,
-    startY: Int = startY,
-    spanX: Int = spanX,
-    spanY: Int = spanY,
-    widgetType: String = widgetType,
-    label: Option[String] = labelOption,
-    imagePath: Option[String] = widgetImagePathOption,
-    intent: Option[String] = widgetIntentOption) = List.tabulate(num)(
-    item =>
-      Widget(
-        id = id + item,
-        momentId = momentId,
-        packageName = packageName,
-        className = className,
-        appWidgetId = Option(appWidgetId),
-        startX = startX,
-        startY = startY,
-        spanX = spanX,
-        spanY = spanY,
-        widgetType = widgetType,
-        label = label,
-        imagePath = imagePath,
-        intent = intent))
+  def repoWidget(num: Int = 0) = Widget(
+    id = widgetId + num,
+    data = repoWidgetData(num))
 
-  val seqWidget: Seq[Widget] = createSeqWidget()
-  val servicesWidget: Widget = seqWidget(0)
-  val repoWidget: RepositoryWidget = seqRepoWidget(0)
-  val repoWidgetNone: RepositoryWidget = seqRepoWidgetNone(0)
+  val repoWidget: Widget = repoWidget(0)
+  val seqRepoWidget = Seq(repoWidget(0), repoWidget(1), repoWidget(2))
 
-  def createAddWidgetRequest(
-    momentId: Int = momentId,
-    packageName: String = packageName,
-    className: String = className,
-    appWidgetId: Int = appWidgetId,
-    startX: Int = startX,
-    startY: Int = startY,
-    spanX: Int = spanX,
-    spanY: Int = spanY,
-    widgetType: String = widgetType,
-    label: Option[String] = labelOption,
-    imagePath: Option[String] = widgetImagePathOption,
-    intent: Option[String] = widgetIntentOption): AddWidgetRequest =
-    AddWidgetRequest(
-      momentId = momentId,
-      packageName = packageName,
-      className = className,
-      appWidgetId = appWidgetId,
-      startX = startX,
-      startY = startY,
-      spanX = spanX,
-      spanY = spanY,
-      widgetType = widgetType,
-      label = label,
-      imagePath = imagePath,
-      intent = intent)
-
-  def createDeleteWidgetRequest(widget: Widget): DeleteWidgetRequest = DeleteWidgetRequest(widget = widget)
-
-  def createUpdateWidgetsRequest(
-    num: Int = 5,
-    id: Int = widgetId) =
-    UpdateWidgetsRequest(
-      List.tabulate(num)(item => createUpdateWidgetRequest(id = id + item)))
-
-  def createUpdateWidgetRequest(
-    id: Int = widgetId,
-    momentId: Int = momentId,
-    packageName: String = packageName,
-    className: String = className,
-    appWidgetId: Int = appWidgetId,
-    startX: Int = startX,
-    startY: Int = startY,
-    spanX: Int = spanX,
-    spanY: Int = spanY,
-    widgetType: String = widgetType,
-    label: Option[String] = labelOption,
-    imagePath: Option[String] = widgetImagePathOption,
-    intent: Option[String] = widgetIntentOption): UpdateWidgetRequest =
-    UpdateWidgetRequest(
-      id = id,
-      momentId = momentId,
-      packageName = packageName,
-      className = className,
-      appWidgetId = Option(appWidgetId),
-      startX = startX,
-      startY = startY,
-      spanX = spanX,
-      spanY = spanY,
-      widgetType = widgetType,
-      label = label,
-      imagePath = imagePath,
-      intent = intent)
 }

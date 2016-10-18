@@ -10,12 +10,12 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.ApplicationData
-import cards.nine.models.types.{AllAppsCategory, NineCardCategory}
+import cards.nine.models.types.{AllAppsCategory, NineCardsCategory}
 import com.fortysevendeg.ninecardslauncher.R
 
 class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
   extends BaseActionFragment
-  with AppsIuActions
+  with AppsUiActions
   with AppsDOM
   with AppsUiListener
   with Conversions
@@ -24,7 +24,7 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
   val allApps = AllAppsCategory
 
   lazy val appsJobs = AppsJobs(
-    category = NineCardCategory(getString(Seq(getArguments), AppsFragment.categoryKey, AllAppsCategory.name)),
+    category = NineCardsCategory(getString(Seq(getArguments), AppsFragment.categoryKey, AllAppsCategory.name)),
     actions = self)
 
   override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment
@@ -44,7 +44,7 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 
   override def addApp(app: ApplicationData): Unit =
     (for {
-      cards <- groupCollectionsJobs.addCards(Seq(toAddCardRequest(app)))
+      cards <- groupCollectionsJobs.addCards(Seq(toCardData(app)))
       _ <- singleCollectionJobs match {
         case Some(job) => job.addCards(cards)
         case _ => TaskService.empty

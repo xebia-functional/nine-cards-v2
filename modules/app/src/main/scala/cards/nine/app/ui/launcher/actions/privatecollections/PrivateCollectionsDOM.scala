@@ -1,6 +1,6 @@
 package cards.nine.app.ui.launcher.actions.privatecollections
 
-import cards.nine.process.commons.models.{Collection, PrivateCollection}
+import cards.nine.models.{Collection, CollectionData}
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
 trait PrivateCollectionsDOM {
@@ -17,6 +17,6 @@ trait PrivateCollectionsListener {
 
   def addLauncherCollection(collection: Collection): Unit
 
-  def saveCollection(collection: PrivateCollection): Unit
+  def saveCollection(collection: CollectionData): Unit
 
 }
