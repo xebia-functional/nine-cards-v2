@@ -42,7 +42,8 @@ class SynchronizeDeviceJobs(actions: SynchronizeDeviceUiActions)(implicit contex
           }
 
         for {
-          collection <- di.collectionProcess.getCollectionById(collectionId).resolveOption()
+          collection <- di.collectionProcess.getCollectionById(collectionId)
+            .resolveOption(s"Can't find the collection with id $collectionId")
           _ <- updateSharedCollection(collection)
         } yield ()
       }

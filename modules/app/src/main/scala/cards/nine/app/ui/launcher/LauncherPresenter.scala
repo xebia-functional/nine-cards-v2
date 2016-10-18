@@ -53,7 +53,15 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   var statuses = LauncherPresenterStatuses()
 
   def initialize(): Unit = {
-    di.userProcess.register.resolveAsync2()
+
+    def initServices: TaskService[Unit] =
+      di.externalServicesProcess.initializeStrictMode *>
+        di.externalServicesProcess.initializeCrashlytics *>
+        di.externalServicesProcess.initializeFirebase *>
+        di.externalServicesProcess.initializeStetho
+
+    (initServices *> di.userProcess.register).resolveAsync2()
+
     actions.initialize.run
   }
 
@@ -382,7 +390,7 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       }
 
       for {
-        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption()
+        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption(s"Can't find the widget with id $idWidget")
         widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
         newSpace = convertSpace(widget.area)
       } yield {
@@ -417,7 +425,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
     def moveIntersect(idWidget: Int): TaskService[Option[WidgetMovement]] =
       for {
-        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption()
+        widget <- di.widgetsProcess.getWidgetById(idWidget)
+          .resolveOption(s"Can't find the widget with id $idWidget")
         widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
       } yield {
         val otherWidgets = widgetsByMoment.filterNot(_.id == widget.id)

@@ -4,6 +4,7 @@ import android.content.res.Resources
 import cards.nine.api.rest.client.ServiceClient
 import cards.nine.api.rest.client.http.OkHttpClient
 import cards.nine.app.observers.ObserverRegister
+import cards.nine.app.ui.preferences.commons.{BackendV2Url, IsStethoActive, OverrideBackendV2Url}
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models.CollectionProcessConfig
@@ -32,6 +33,7 @@ import cards.nine.process.social.SocialProfileProcess
 import cards.nine.process.social.impl.SocialProfileProcessImpl
 import cards.nine.process.theme.ThemeProcess
 import cards.nine.process.theme.impl.ThemeProcessImpl
+import cards.nine.process.thirdparty.ExternalServicesProcess
 import cards.nine.process.trackevent.TrackEventProcess
 import cards.nine.process.trackevent.impl.TrackEventProcessImpl
 import cards.nine.process.user.UserProcess
@@ -99,13 +101,17 @@ trait Injector {
 
   def launcherExecutorProcess: LauncherExecutorProcess
 
+  def externalServicesProcess: ExternalServicesProcess
+
 }
 
 class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] def createHttpClient = {
     val okHttpClientBuilder = new okhttp3.OkHttpClient.Builder()
-    okHttpClientBuilder.addNetworkInterceptor(new StethoInterceptor)
+    if (IsStethoActive.readValueWith(contextSupport.context)) {
+      okHttpClientBuilder.addNetworkInterceptor(new StethoInterceptor)
+    }
     new OkHttpClient(okHttpClientBuilder.build())
   }
 
@@ -119,9 +125,14 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     httpClient = serviceHttpClient,
     baseUrl = resources.getString(R.string.api_base_url))
 
-  private[this] lazy val serviceClient = new ServiceClient(
-    httpClient = serviceHttpClient,
-    baseUrl = resources.getString(R.string.api_v2_base_url))
+  private[this] lazy val serviceClient = {
+    val backendV2Url = if (OverrideBackendV2Url.readValueWith(contextSupport.context)) {
+      BackendV2Url.readValueWith(contextSupport.context)
+    } else resources.getString(R.string.api_v2_base_url)
+    new ServiceClient(
+      httpClient = serviceHttpClient,
+      baseUrl = backendV2Url)
+  }
 
   private[this] lazy val apiServicesConfig = ApiServicesConfig(
     appId = resources.getString(R.string.api_app_id),
@@ -275,4 +286,6 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     val services = new LauncherIntentServicesImpl
     new LauncherExecutorProcessImpl(config, services)
   }
+
+  lazy val externalServicesProcess = new ExternalServicesProcess
 }

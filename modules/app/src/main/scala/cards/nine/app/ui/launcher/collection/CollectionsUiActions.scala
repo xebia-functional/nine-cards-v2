@@ -166,7 +166,7 @@ trait CollectionsUiActions
       (menuLauncherSettings <~ On.click {
         goToSettings()
       } <~ On.longClick {
-        Ui(IsDeveloper.convertToDeveloper(preferenceValues)) ~
+        Ui(IsDeveloper.convertToDeveloper) ~
           uiShortToast2(R.string.developerOptionsActivated) ~
           goToSettings() ~
           Ui(true)

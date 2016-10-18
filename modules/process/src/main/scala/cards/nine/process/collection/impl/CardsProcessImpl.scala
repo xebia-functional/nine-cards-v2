@@ -77,14 +77,16 @@ trait CardsProcessImpl extends CollectionProcess {
         } yield ()
       else TaskService(Task(Right(Unit)))
     (for {
-      card <- persistenceServices.findCardById(cardId).resolveOption()
+      card <- persistenceServices.findCardById(cardId)
+        .resolveOption(s"Can't find the card with id $cardId")
       _ <- reorderAux(card)
     } yield ()).resolve[CardException]
   }
 
   override def editCard(collectionId: Int, cardId: Int, name: String) =
     (for {
-      card <- persistenceServices.findCardById(cardId).resolveOption()
+      card <- persistenceServices.findCardById(cardId)
+        .resolveOption(s"Can't find the card with id $cardId")
       updatedCard = card.copy(term = name)
       _ <- updateCard(updatedCard)
     } yield updatedCard).resolve[CardException]
