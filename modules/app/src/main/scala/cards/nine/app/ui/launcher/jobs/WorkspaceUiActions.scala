@@ -9,7 +9,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
-import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{AppUtils, SystemBarsTint, UiContext}
@@ -20,25 +20,25 @@ import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import cards.nine.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
-import cards.nine.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
+import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
-import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
-import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.IsDeveloper
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.macroid.extras.FragmentExtras._
+import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
+import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.models.{ConditionWeather, UnknownCondition}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -57,6 +57,8 @@ class WorkspaceUiActions(dom: LauncherDOM)
   private[this] var actionsState = State()
 
   implicit def theme: NineCardsTheme = actionsState.theme
+
+  val navigationJobs = createNavigationJobs
 
   val maxBackgroundPercent: Float = 0.7f
 
@@ -109,7 +111,30 @@ class WorkspaceUiActions(dom: LauncherDOM)
       })).toService
   }
 
-  def closeCollectionMenu(): Ui[Future[Any]] = dom.workspaces <~~ lwsCloseMenu
+  def reloadMoment(data: LauncherData): TaskService[Unit] = {
+    val momentType = data.moment.flatMap(_.momentType)
+    val launcherMoment = data.moment
+    ((dom.workspaces <~ lwsDataMoment(data)) ~
+      (dom.appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
+      (dom.topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))).toService
+  }
+
+  def showWeather(condition: Option[ConditionWeather]): TaskService[Unit] = {
+    val previousCondition = Option(dom.topBarPanel.getTag) match {
+      case Some(c: ConditionWeather) => Some(c)
+      case _ => None
+    }
+
+    ((previousCondition, condition) match {
+      case (_, Some(c)) if c != UnknownCondition =>
+        (dom.topBarPanel <~ tblWeather(c)) ~ (dom.topBarPanel <~ vTag(c))
+      case (None, _) =>
+        (dom.topBarPanel <~ tblWeather(UnknownCondition)) ~ (dom.topBarPanel <~ vTag(UnknownCondition))
+      case _ => Ui.nop
+    }).toService
+  }
+
+  private[this] def closeCollectionMenu(): Ui[Future[Any]] = dom.workspaces <~~ lwsCloseMenu
 
   private[this] def startOpenCollectionMenu(): Ui[Any] = {
 
@@ -155,22 +180,31 @@ class WorkspaceUiActions(dom: LauncherDOM)
       workspaceButtonCreateCollectionStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       FuncOn.click { view: View =>
-        val iconView = getIconView(view)
-        showAction(f[CreateOrEditCollectionFragment], iconView, resGetColor(R.color.collection_group_1))
+        Ui {
+          val iconView = getIconView(view)
+          val bundle = createBundle(iconView, resGetColor(R.color.collection_group_1))
+          navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
+        }
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonMyCollectionsStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       FuncOn.click { view: View =>
-        val iconView = getIconView(view)
-        showAction(f[PrivateCollectionsFragment], iconView, resGetColor(R.color.collection_fab_button_item_my_collections))
+        Ui {
+          val iconView = getIconView(view)
+          val bundle = createBundle(iconView, resGetColor(R.color.collection_fab_button_item_my_collections))
+          navigationJobs.launchPrivateCollection(bundle).resolveAsync()
+        }
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonPublicCollectionStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       FuncOn.click { view: View =>
-        val iconView = getIconView(view)
-        showAction(f[PublicCollectionsFragment], iconView, resGetColor(R.color.collection_fab_button_item_public_collection))
+        Ui {
+          val iconView = getIconView(view)
+          val bundle = createBundle(iconView, resGetColor(R.color.collection_fab_button_item_public_collection))
+          navigationJobs.launchPublicCollection(bundle).resolveAsync()
+        }
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonEditMomentStyle <~
@@ -179,18 +213,20 @@ class WorkspaceUiActions(dom: LauncherDOM)
         val momentType = dom.getData.headOption flatMap (_.moment) flatMap (_.momentType) map (_.name)
         momentType match {
           case Some(moment) =>
-            val iconView = getIconView(view)
-            val momentMap = Map(EditMomentFragment.momentKey -> moment)
-            showAction(f[EditMomentFragment], iconView, resGetColor(R.color.collection_fab_button_item_edit_moment), momentMap)
+            Ui {
+              val iconView = getIconView(view)
+              val momentMap = Map(EditMomentFragment.momentKey -> moment)
+              val bundle = createBundle(iconView, resGetColor(R.color.collection_fab_button_item_edit_moment))
+              navigationJobs.launchEditMoment(bundle, momentMap).resolveAsync()
+            }
           case _ => Ui.nop
         }
-
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonChangeMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       On.click {
-        closeCollectionMenu() //~~ Ui(presenter.goToChangeMoment())
+        closeCollectionMenu() ~~ Ui(presenter.goToChangeMoment())
       }).get
   )
 
@@ -199,8 +235,7 @@ class WorkspaceUiActions(dom: LauncherDOM)
     case _ => None
   }) flatMap (_.icon)
 
-  private[this] def showAction[F <: BaseActionFragment]
-  (fragmentBuilder: FragmentBuilder[F], maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty): Ui[Any] = {
+  private[this] def createBundle(maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty): Bundle = {
     val sizeIconWorkSpaceMenuItem = resGetDimensionPixelSize(R.dimen.size_workspace_menu_item)
     val (startX: Int, startY: Int) = maybeView map (_.calculateAnchorViewPosition) getOrElse(0, 0)
     val (startWX: Int, startWY: Int) = dom.workspaces.calculateAnchorViewPosition
@@ -217,11 +252,7 @@ class WorkspaceUiActions(dom: LauncherDOM)
       case (key, value) => args.putString(key, value)
     }
     args.putInt(BaseActionFragment.colorPrimary, color)
-    (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
-      closeCollectionMenu() ~
-      (dom.actionFragmentContent <~ vBackgroundColor(Color.BLACK.alpha(maxBackgroundPercent))) ~
-      (dom.fragmentContent <~ vClickable(true)) ~
-      addFragment(fragmentBuilder.pass(args), Option(R.id.action_fragment_content), Option(ActionsBehaviours.nameActionFragment))
+    args
   }
 
   // Styles

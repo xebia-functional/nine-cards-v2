@@ -146,7 +146,8 @@ object LauncherActivity {
     val workspaceUiActions = new WorkspaceUiActions(dom)
     val appDrawerUiActions = new MainAppDrawerUiActions(dom)
     val menuDrawersUiActions = new MenuDrawersUiActions(dom)
-    new LauncherJobs(mainLauncherUiActions, workspaceUiActions, menuDrawersUiActions, appDrawerUiActions)
+    val navigationUiActions = new NavigationUiActions(dom)
+    new LauncherJobs(mainLauncherUiActions, workspaceUiActions, menuDrawersUiActions, appDrawerUiActions, navigationUiActions)
   }
 
   def createAppDrawerJobs(implicit
@@ -157,6 +158,16 @@ object LauncherActivity {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     val appDrawerUiActions = new MainAppDrawerUiActions(dom)
     new AppDrawerJobs(appDrawerUiActions)
+  }
+
+  def createNavigationJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_],
+    presenter: LauncherPresenter) = {
+    val dom = new LauncherDOM(activityContextWrapper.getOriginal)
+    val navigationUiActions = new NavigationUiActions(dom)
+    new NavigationJobs(navigationUiActions)
   }
 
 }
