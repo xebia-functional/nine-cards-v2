@@ -43,7 +43,25 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/devBackendCategory">
+
+        <CheckBoxPreference
+            android:key="overrideBackendV2Url"
+            android:title="@string/devOverrideBackendV2Url"
+            android:summary="@string/devOverrideBackendV2UrlSummary"/>
+
+        <EditTextPreference
+            android:key="backendV2Url"
+            android:title="@string/devBackendV2Url"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/devOthersTitle">
+
+        <Preference
+            android:key="restartApplication"
+            android:title="@string/devRestartApplication"/>
 
         <Preference
             android:key="clearCacheImages"
@@ -56,6 +74,11 @@
         <CheckBoxPreference
             android:key="showPrintInfoOptionInAccounts"
             android:title="@string/devShowPrintInfoOptionInAccounts"/>
+
+        <CheckBoxPreference
+            android:key="isStethoActive"
+            android:title="@string/devIsStethoActiveFalse"
+            android:summary="@string/devIsStethoActiveSummary"/>
 
     </PreferenceCategory>
 

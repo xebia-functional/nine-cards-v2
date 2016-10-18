@@ -1,7 +1,7 @@
 package cards.nine.app.ui.preferences.commons
 
 import NineCardsPreferencesValue._
-import android.content.SharedPreferences
+import android.content.{Context, SharedPreferences}
 import android.preference.PreferenceManager
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.preferences.commons.PreferencesKeys._
@@ -51,9 +51,14 @@ case object HelpPreferences extends NineCardsPreferences {
 
 sealed trait NineCardsPreferenceValue[T]
   extends NineCardsPreferences {
+
   val name: String
   val default: T
-  def readValue(implicit contextWrapper: ContextWrapper): T
+
+  def readValue(implicit contextWrapper: ContextWrapper): T =
+    readValueWith(contextWrapper.application)
+
+  def readValueWith(context: Context): T
 }
 
 // Moments Preferences
@@ -63,7 +68,7 @@ case object ShowClockMoment
   override val name: String = showClockMoment
   override val default: Boolean = false
 
-  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
 }
 
 // Animations Preferences
@@ -73,8 +78,8 @@ case object SpeedAnimations
   override val name: String = speed
   override val default: SpeedAnimationValue = NormalAnimation
 
-  override def readValue(implicit contextWrapper: ContextWrapper): SpeedAnimationValue =
-    SpeedAnimationValue(getString(name, default.value))
+  override def readValueWith(context: Context): SpeedAnimationValue =
+    SpeedAnimationValue(getString(context, name, default.value))
 
   def getDuration(implicit contextWrapper: ContextWrapper): Int = {
     resGetInteger(readValue match {
@@ -90,8 +95,8 @@ case object CollectionOpeningAnimations
   override val name: String = collectionOpening
   override val default: CollectionOpeningValue = CircleOpeningCollectionAnimation
 
-  override def readValue(implicit contextWrapper: ContextWrapper): CollectionOpeningValue =
-    CollectionOpeningValue(getString(name, default.value))
+  override def readValueWith(context: Context): CollectionOpeningValue =
+    CollectionOpeningValue(getString(context, name, default.value))
 }
 
 case object WorkspaceAnimations
@@ -99,8 +104,8 @@ case object WorkspaceAnimations
   override val name: String = workspaceAnimation
   override val default: WorkspaceAnimationValue = HorizontalSlideWorkspaceAnimation
 
-  override def readValue(implicit contextWrapper: ContextWrapper): WorkspaceAnimationValue =
-    WorkspaceAnimationValue(getString(name, default.value))
+  override def readValueWith(context: Context): WorkspaceAnimationValue =
+    WorkspaceAnimationValue(getString(context, name, default.value))
 }
 
 // App Drawer Preferences
@@ -110,8 +115,8 @@ case object AppDrawerLongPressAction
   override val name: String = appDrawerLongPressAction
   override val default: AppDrawerLongPressActionValue = AppDrawerLongPressActionOpenKeyboard
 
-  override def readValue(implicit contextWrapper: ContextWrapper): AppDrawerLongPressActionValue =
-    AppDrawerLongPressActionValue(getString(name, default.value))
+  override def readValueWith(context: Context): AppDrawerLongPressActionValue =
+    AppDrawerLongPressActionValue(getString(context, name, default.value))
 }
 
 case object AppDrawerAnimation
@@ -119,8 +124,8 @@ case object AppDrawerAnimation
   override val name: String = appDrawerAnimation
   override val default: AppDrawerAnimationValue = AppDrawerAnimationCircle
 
-  override def readValue(implicit contextWrapper: ContextWrapper): AppDrawerAnimationValue =
-    AppDrawerAnimationValue(getString(name, default.value))
+  override def readValueWith(context: Context): AppDrawerAnimationValue =
+    AppDrawerAnimationValue(getString(context, name, default.value))
 }
 
 case object AppDrawerFavoriteContactsFirst
@@ -128,7 +133,7 @@ case object AppDrawerFavoriteContactsFirst
   override val name: String = appDrawerFavoriteContacts
   override val default: Boolean = false
 
-  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
 }
 
 case object AppDrawerSelectItemsInScroller
@@ -136,7 +141,7 @@ case object AppDrawerSelectItemsInScroller
   override val name: String = appDrawerSelectItemsInScroller
   override val default: Boolean = true
 
-  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
 }
 
 // Look & Feel Preferences
@@ -146,8 +151,8 @@ case object Theme
   override val name: String = theme
   override val default: ThemeValue = ThemeLight
 
-  override def readValue(implicit contextWrapper: ContextWrapper): ThemeValue =
-    ThemeValue(getString(name, default.value))
+  override def readValueWith(context: Context): ThemeValue =
+    ThemeValue(getString(context, name, default.value))
 
   def getThemeFile(implicit contextWrapper: ContextWrapper): String = Theme.readValue match {
     case ThemeLight => "theme_light"
@@ -160,8 +165,8 @@ case object GoogleLogo
   override val name: String = googleLogo
   override val default: GoogleLogoValue = GoogleLogoTheme
 
-  override def readValue(implicit contextWrapper: ContextWrapper): GoogleLogoValue =
-    GoogleLogoValue(getString(name, default.value))
+  override def readValueWith(context: Context): GoogleLogoValue =
+    GoogleLogoValue(getString(context, name, default.value))
 }
 
 case object FontSize
@@ -169,8 +174,8 @@ case object FontSize
   override val name: String = fontsSize
   override val default: FontSizeValue = FontSizeMedium
 
-  override def readValue(implicit contextWrapper: ContextWrapper): FontSizeValue =
-    FontSizeValue(getString(name, default.value))
+  override def readValueWith(context: Context): FontSizeValue =
+    FontSizeValue(getString(context, name, default.value))
 
   def getSizeResource(implicit contextWrapper: ContextWrapper): Int = {
     readValue match {
@@ -203,8 +208,8 @@ case object IconsSize
   override val name: String = iconsSize
   override val default: IconsSizeValue = IconsSizeMedium
 
-  override def readValue(implicit contextWrapper: ContextWrapper): IconsSizeValue =
-    IconsSizeValue(getString(name, default.value))
+  override def readValueWith(context: Context): IconsSizeValue =
+    IconsSizeValue(getString(context, name, default.value))
 
   def getIconApp(implicit contextWrapper: ContextWrapper): Int = {
     resGetDimensionPixelSize(readValue match {
@@ -229,8 +234,8 @@ case object CardPadding
   override val name: String = cardPadding
   override val default: IconsSizeValue = IconsSizeMedium
 
-  override def readValue(implicit contextWrapper: ContextWrapper): IconsSizeValue =
-    IconsSizeValue(getString(name, default.value))
+  override def readValueWith(context: Context): IconsSizeValue =
+    IconsSizeValue(getString(context, name, default.value))
 
   def getPadding(implicit contextWrapper: ContextWrapper): Int = {
     resGetDimensionPixelSize(readValue match {
@@ -248,9 +253,10 @@ case object IsDeveloper
   override val name: String = isDeveloper
   override val default: Boolean = false
 
-  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
 
-  def convertToDeveloper(implicit contextWrapper: ContextWrapper): Unit = setBoolean(name, value = true)
+  def convertToDeveloper(implicit contextWrapper: ContextWrapper): Unit =
+    setBoolean(contextWrapper.application, name, value = true)
 }
 
 case object AppsCategorized
@@ -258,7 +264,7 @@ case object AppsCategorized
   override val name: String = appsCategorized
   override val default: String = ""
 
-  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
+  override def readValueWith(context: Context): String = getString(context, name, default)
 }
 
 case object AndroidToken
@@ -266,7 +272,7 @@ case object AndroidToken
   override val name: String = androidToken
   override val default: String = ""
 
-  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
+  override def readValueWith(context: Context): String = getString(context, name, default)
 }
 
 case object DeviceCloudId
@@ -274,7 +280,7 @@ case object DeviceCloudId
   override val name: String = deviceCloudId
   override val default: String = ""
 
-  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
+  override def readValueWith(context: Context): String = getString(context, name, default)
 }
 
 case object ProbablyActivity
@@ -282,7 +288,7 @@ case object ProbablyActivity
   override val name: String = probablyActivity
   override val default: String = ""
 
-  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
+  override def readValueWith(context: Context): String = getString(context, name, default)
 }
 
 case object Headphones
@@ -290,7 +296,7 @@ case object Headphones
   override val name: String = headphones
   override val default: String = ""
 
-  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
+  override def readValueWith(context: Context): String = getString(context, name, default)
 }
 
 case object Location
@@ -298,7 +304,7 @@ case object Location
   override val name: String = location
   override val default: String = ""
 
-  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
+  override def readValueWith(context: Context): String = getString(context, name, default)
 }
 
 case object Weather
@@ -306,7 +312,7 @@ case object Weather
   override val name: String = weather
   override val default: String = ""
 
-  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
+  override def readValueWith(context: Context): String = getString(context, name, default)
 }
 
 case object ClearCacheImages
@@ -314,7 +320,7 @@ case object ClearCacheImages
   override val name: String = clearCacheImages
   override val default: String = ""
 
-  override def readValue(implicit contextWrapper: ContextWrapper): String = getString(name, default)
+  override def readValueWith(context: Context): String = getString(context, name, default)
 }
 
 case object ShowPositionInCards
@@ -322,7 +328,7 @@ case object ShowPositionInCards
   override val name: String = showPositionInCards
   override val default: Boolean = false
 
-  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
 }
 
 case object ShowPrintInfoOptionInAccounts
@@ -330,34 +336,65 @@ case object ShowPrintInfoOptionInAccounts
   override val name: String = showPrintInfoOptionInAccounts
   override val default: Boolean = false
 
-  override def readValue(implicit contextWrapper: ContextWrapper): Boolean = getBoolean(name, default)
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
 }
 
+case object OverrideBackendV2Url
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = overrideBackendV2Url
+  override val default: Boolean = false
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
+}
+
+case object BackendV2Url
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = backendV2Url
+  override val default: String = ""
+
+  override def readValueWith(context: Context): String = getString(context, name, default)
+}
+
+case object IsStethoActive
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = isStethoActive
+  override val default: Boolean = false
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
+}
+
+case object RestartApplication
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = resetApplication
+  override val default: String = ""
+
+  override def readValueWith(context: Context): String = getString(context, name, default)
+}
 
 // Commons
 
 object NineCardsPreferencesValue {
 
-  private[this] def get[T](f: (SharedPreferences) => T)(implicit contextWrapper: ContextWrapper) =
-    f(PreferenceManager.getDefaultSharedPreferences(contextWrapper.application))
+  private[this] def get[T](context: Context, f: (SharedPreferences) => T) =
+    f(PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext))
 
-  def getInt(name: String, defaultValue: Int)(implicit contextWrapper: ContextWrapper): Int =
-    get(_.getInt(name, defaultValue))
+  def getInt(context: Context, name: String, defaultValue: Int): Int =
+    get(context, _.getInt(name, defaultValue))
 
-  def setInt(name: String, value: Int)(implicit contextWrapper: ContextWrapper): Unit =
-    get(_.edit().putInt(name, value).apply())
+  def setInt(context: Context, name: String, value: Int): Unit =
+    get(context, _.edit().putInt(name, value).apply())
 
-  def getString(name: String, defaultValue: String)(implicit contextWrapper: ContextWrapper): String =
-    get(_.getString(name, defaultValue))
+  def getString(context: Context, name: String, defaultValue: String): String =
+    get(context, _.getString(name, defaultValue))
 
-  def setString(name: String, value: String)(implicit contextWrapper: ContextWrapper): Unit =
-    get(_.edit().putString(name, value).apply())
+  def setString(context: Context, name: String, value: String): Unit =
+    get(context, _.edit().putString(name, value).apply())
 
-  def getBoolean(name: String, defaultValue: Boolean)(implicit contextWrapper: ContextWrapper): Boolean =
-    get(_.getBoolean(name, defaultValue))
+  def getBoolean(context: Context, name: String, defaultValue: Boolean): Boolean =
+    get(context, _.getBoolean(name, defaultValue))
 
-  def setBoolean(name: String, value: Boolean)(implicit contextWrapper: ContextWrapper): Unit =
-    get(_.edit().putBoolean(name, value).apply())
+  def setBoolean(context: Context, name: String, value: Boolean): Unit =
+    get(context, _.edit().putBoolean(name, value).apply())
 
 }
 
@@ -411,6 +448,10 @@ object PreferencesValuesKeys {
   val clearCacheImages = "clearCacheImages"
   val showPositionInCards = "showPositionInCards"
   val showPrintInfoOptionInAccounts = "showPrintInfoOptionInAccounts"
+  val overrideBackendV2Url = "overrideBackendV2Url"
+  val backendV2Url = "backendV2Url"
+  val isStethoActive = "isStethoActive"
+  val resetApplication = "restartApplication"
 }
 
 
