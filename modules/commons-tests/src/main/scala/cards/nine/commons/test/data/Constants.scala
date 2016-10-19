@@ -104,7 +104,7 @@ object CollectionValues {
   val appsCategoryStr: String = "SOCIAL"
   val appsCategory: NineCardsCategory = NineCardsCategory(appsCategoryStr)
   val originalSharedCollectionId: String = "originalSharedCollection"
-  val sharedCollectionId: String = "shareCollectionId"
+  val sharedCollectionId: String = "sharedCollectionId"
   val sharedCollectionSubscribed: Boolean = false
   val publicCollectionStatus: PublicCollectionStatus = NotPublished
 

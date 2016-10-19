@@ -30,9 +30,9 @@ trait LauncherPresenterSpecification
     extends Scope {
 
     val mockActions = mock[LauncherUiActions]
-    mockActions.showLoading() returns Ui[Any]()
-    mockActions.showContactUsError() returns Ui[Any]()
-    mockActions.showMinimumOneCollectionMessage() returns Ui[Any]()
+    mockActions.showLoading() returns Ui[Any]((): Unit)
+    mockActions.showContactUsError() returns Ui[Any]((): Unit)
+    mockActions.showMinimumOneCollectionMessage() returns Ui[Any]((): Unit)
     mockActions.canRemoveCollections returns true
 
     val mockInjector = mock[Injector]
