@@ -11,7 +11,13 @@ import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
 import cards.nine.app.ui.collections.ActionsScreenListener
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
+import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
+import cards.nine.app.ui.launcher.jobs._
+import cards.nine.commons.services.TaskService
+import cards.nine.models.{CardData, Collection, Widget}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
@@ -24,11 +30,17 @@ class LauncherActivity
   with LauncherUiActionsImpl
   with BroadcastDispatcher { self =>
 
-  lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
+  implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
-  lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
+  implicit lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
 
   lazy val managerContext: FragmentManagerContext[Fragment, FragmentManager] = activityManagerContext
+
+  lazy val launcherJobs = createLauncherJobs
+
+  lazy val appDrawerJobs = createAppDrawerJobs
+
+  lazy val navigationJobs = createNavigationJobs
 
   private[this] var hasFocus = false
 
@@ -52,23 +64,27 @@ class LauncherActivity
     super.onCreate(bundle)
     setContentView(R.layout.launcher_activity)
     registerDispatchers()
-    presenter.initialize()
+    launcherJobs.initialize().resolveAsync()
   }
 
   override def onResume(): Unit = {
     super.onResume()
-    presenter.resume()
+    launcherJobs.resume().resolveAsyncServiceOr[Throwable] {
+      case _: LoadDataException => navigationJobs.goToWizard()
+      case _: ChangeMomentException => launcherJobs.reloadAppsMomentBar()
+      case _ => TaskService.empty
+    }
   }
 
   override def onPause(): Unit = {
     super.onPause()
-    presenter.pause()
+    launcherJobs.pause().resolveAsync()
   }
 
   override def onDestroy(): Unit = {
     super.onDestroy()
     unregisterDispatcher()
-    presenter.destroy()
+    launcherJobs.destroy().resolveAsync()
   }
 
   override def onStartFinishAction(): Unit = presenter.resetAction()
@@ -122,3 +138,96 @@ class LauncherActivity
   override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
     presenter.requestPermissionsResult(requestCode, permissions, grantResults)
 }
+
+object LauncherActivity {
+
+  var statuses = LauncherPresenterStatuses()
+
+  def createLauncherJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_],
+    presenter: LauncherPresenter) = {
+    val dom = new LauncherDOM(activityContextWrapper.getOriginal)
+    new LauncherJobs(
+      mainLauncherUiActions = new MainLauncherUiActions(dom),
+      workspaceUiActions = new WorkspaceUiActions(dom),
+      menuDrawersUiActions = new MenuDrawersUiActions(dom),
+      appDrawerUiActions = new MainAppDrawerUiActions(dom),
+      navigationUiActions = new NavigationUiActions(dom),
+      dockAppsUiActions = new DockAppsUiActions(dom),
+      topBarUiActions = new TopBarUiActions(dom))
+  }
+
+  def createAppDrawerJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_],
+    presenter: LauncherPresenter) = {
+    val dom = new LauncherDOM(activityContextWrapper.getOriginal)
+    new AppDrawerJobs(new MainAppDrawerUiActions(dom))
+  }
+
+  def createNavigationJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_],
+    presenter: LauncherPresenter) = {
+    val dom = new LauncherDOM(activityContextWrapper.getOriginal)
+    new NavigationJobs(new NavigationUiActions(dom))
+  }
+
+}
+
+case class LauncherPresenterStatuses(
+  touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
+  hostingNoConfiguredWidget: Option[Widget] = None,
+  mode: LauncherMode = NormalMode,
+  transformation: Option[EditWidgetTransformation] = None,
+  idWidget: Option[Int] = None,
+  cardAddItemMode: Option[CardData] = None,
+  collectionReorderMode: Option[Collection] = None,
+  startPositionReorderMode: Int = 0,
+  currentDraggingPosition: Int = 0,
+  lastPhone: Option[String] = None) {
+
+  def startAddItem(card: CardData): LauncherPresenterStatuses =
+    copy(mode = AddItemMode, cardAddItemMode = Some(card))
+
+  def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =
+    copy(
+      startPositionReorderMode = position,
+      collectionReorderMode = Some(collection),
+      currentDraggingPosition = position,
+      mode = ReorderMode)
+
+  def updateCurrentPosition(position: Int): LauncherPresenterStatuses =
+    copy(currentDraggingPosition = position)
+
+  def reset(): LauncherPresenterStatuses =
+    copy(
+      startPositionReorderMode = 0,
+      cardAddItemMode = None,
+      collectionReorderMode = None,
+      currentDraggingPosition = 0,
+      mode = NormalMode)
+
+  def isReordering: Boolean = mode == ReorderMode
+
+}
+
+sealed trait LauncherMode
+
+case object NormalMode extends LauncherMode
+
+case object AddItemMode extends LauncherMode
+
+case object ReorderMode extends LauncherMode
+
+case object EditWidgetsMode extends LauncherMode
+
+sealed trait EditWidgetTransformation
+
+case object ResizeTransformation extends EditWidgetTransformation
+
+case object MoveTransformation extends EditWidgetTransformation

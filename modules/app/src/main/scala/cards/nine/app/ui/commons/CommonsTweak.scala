@@ -21,14 +21,17 @@ import android.widget._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
+import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object CommonsTweak {
 
@@ -119,6 +122,26 @@ object CommonsTweak {
         }
       })
       listPopupWindow.show()
+    }
+
+  def ivReloadPager(currentPage: Int)(implicit contextWrapper: ContextWrapper) = Transformer {
+    case imageView: ImageView if imageView.isPosition(currentPage) =>
+      imageView <~ vActivated(true) <~~ pagerAppear
+    case imageView: ImageView =>
+      imageView <~ vActivated(false)
+  }
+
+  def vLauncherSnackbar(message: Int, args: Seq[String] = Seq.empty)
+    (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
+      val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), Snackbar.LENGTH_SHORT)
+      snackbar.getView.getLayoutParams match {
+        case params : FrameLayout.LayoutParams =>
+          val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0
+          params.setMargins(0, 0, 0, bottom)
+          snackbar.getView.setLayoutParams(params)
+        case _ =>
+      }
+      snackbar.show()
     }
 
 }
