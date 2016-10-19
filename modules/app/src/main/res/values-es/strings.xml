@@ -305,6 +305,16 @@
     <string name="travel_and_local">Viajes</string>
     <string name="weather">Tiempo</string>
     <string name="app_widgets">Widgets</string>
+    <string name="video_players">Reproductores y Editores de Vídeo</string>
+    <string name="maps_and_navigation">Mapas y Navegación</string>
+    <string name="art_and_design">Arte y Diseño</string>
+    <string name="auto_and_vehicles">Automoción</string>
+    <string name="beauty">Belleza</string>
+    <string name="dating">Dating</string>
+    <string name="events">Citas</string>
+    <string name="food_and_drink">Comer y Beber</string>
+    <string name="house_and_home">Casa y Hogar</string>
+    <string name="parenting">Ser Padres</string>
 
     <string name="game_action">Acción</string>
     <string name="game_adventure">Aventura</string>

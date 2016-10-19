@@ -259,15 +259,16 @@ object NineCardsCategory {
 
   val customCategories = Seq(AllAppsCategory, AllCategories, Custom, Misc, ContactsCategory)
 
-  val appsCategories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
-    Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
-    VideoPlayers, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
-    Productivity, Shopping, Social, Sports, Tools, MapsAndNavigation, TravelAndLocal, Weather, AppWidgetsCategory,
-    ArtAndDesign, AutoAndVehicles, Beauty, Dating, Events, FoodAndDrink, HouseAndHome, Parenting)
+  val appsCategories = Seq(
+    AppWallpaper, AppWidgetsCategory, ArtAndDesign, AutoAndVehicles, Beauty, BooksAndReference, Business,
+    Comics, Communication, Dating, Education, Entertainment, Events, Finance, FoodAndDrink, Game, HealthAndFitness,
+    HouseAndHome, LibrariesAndDemo, Lifestyle, MapsAndNavigation, Medical, MusicAndAudio, NewsAndMagazines, Parenting,
+    Personalization, Photography, Productivity, Shopping, Social, Sports, Tools, TravelAndLocal, VideoPlayers, Weather)
 
-  val gamesCategories = Seq(GameAction, GameAdventure, GameRacing, GameCard, GameCasino, GameCasual, GameFamily,
-    GameSports, GameEducational, GameStrategy, GameWallpaper, GameTrivia, GameBoard, GameRolePlaying, GameMusic,
-    GameWord, GamePuzzle, GameArcade, GameSimulation, GameWidgets)
+  val gamesCategories = Seq(
+    GameAction, GameAdventure, GameArcade, GameBoard, GameCard, GameCasino, GameCasual, GameEducational, GameFamily,
+    GameMusic, GamePuzzle, GameRacing, GameRolePlaying, GameSimulation, GameSports, GameStrategy, GameTrivia,
+    GameWallpaper, GameWidgets, GameWord)
 
   val allCategories = customCategories ++ gamesCategories ++ appsCategories
 

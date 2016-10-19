@@ -77,7 +77,8 @@ trait Conversions {
   private[this] def findBestCategory(categories: Seq[String]): Option[NineCardsCategory] =
     categories.foldLeft[Option[NineCardsCategory]](None) {
       case (Some(nineCardsCategory), _) => Some(nineCardsCategory)
-      case (_, categoryName) => NineCardsCategory.allCategories.find(_.name == categoryName)
+      case (_, categoryName) =>
+        (NineCardsCategory.gamesCategories ++ NineCardsCategory.appsCategories).find(_.name == categoryName)
     }
 
   def toUserV1(apiUserConfig: cards.nine.api.version1.UserConfig): UserV1 =
