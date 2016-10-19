@@ -60,15 +60,7 @@
 
     <string name="errorLoginUser">Error accessing to server. Please try again later</string>
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
-    <string name="errorEmptyDevice">There was a problem loading the selected device. Please, select other device or create a new configuration</string>
     <string name="goTo9Cards">Dive in!</string>
-    <string name="workingNotificationTitle">Wait a moment…</string>
-
-    <string name="downloadingAppsInfoMessage">Categorizing your apps</string>
-    <string name="loadingAppsInfoMessage">Configuring your apps</string>
-    <string name="loadingUserConfigMessage">Loading available configurations</string>
-    <string name="loadingFromDeviceMessage">Synchronizing your device configuration</string>
-    <string name="loadingForMyDeviceMessage">Generating a new device configuration</string>
 
     <string name="downloadingBitmapsMessage">Downloading images for apps</string>
     <string name="savingConfigurationMessage">Saving configuration to our servers</string>
