@@ -73,10 +73,11 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val momentWorkspace = LayoutInflater.from(context).inflate(R.layout.moment_bar_view_panel, javaNull)
 
-  (this <~ vgAddViews(Seq(momentWorkspace, collectionWorkspace))).run
+  (this <~ vgAddViews(Seq(momentWorkspace, collectionWorkspace)) <~ vInvisible).run
 
   def init(workSpaceType: WorkSpaceType)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Any] = {
-    populate ~
+    (this <~ vVisible) ~
+      populate ~
       (workSpaceType match {
         case CollectionsWorkSpace => (momentWorkspace <~ vInvisible) ~ (collectionWorkspace <~ vVisible)
         case MomentWorkSpace => (momentWorkspace <~ vVisible) ~ (collectionWorkspace <~ vInvisible)

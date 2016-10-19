@@ -6,8 +6,10 @@ import android.view.View
 import cards.nine.app.ui.commons.ActivityFindViews
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.models.LauncherData
 import cards.nine.app.ui.components.widgets.ContentView
+import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.TR
 import macroid._
 
@@ -89,7 +91,11 @@ class LauncherDOM(activity: Activity) {
 
   lazy val searchBoxView = findView(TR.launcher_search_box_content).run(activity)
 
+  def getWorksSpacesCount: Int = workspaces.getWorksSpacesCount
+
   def getData: Seq[LauncherData] = workspaces.data
+
+  def getCurrentMomentType: Option[NineCardsMoment] = getData.headOption flatMap (_.moment) flatMap (_.momentType)
 
   def isMenuVisible: Boolean = drawerLayout.isDrawerOpen(GravityCompat.START)
 
@@ -106,5 +112,7 @@ class LauncherDOM(activity: Activity) {
   def getDrawerWidth: Int = drawerContent.getWidth
 
   def isDrawerVisible = drawerContent.getVisibility == View.VISIBLE
+
+  def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get
 
 }
