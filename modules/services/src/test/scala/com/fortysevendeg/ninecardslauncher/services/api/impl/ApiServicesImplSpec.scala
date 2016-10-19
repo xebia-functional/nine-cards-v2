@@ -33,6 +33,33 @@ trait ApiServicesSpecification
     with CollectionTestData
     with SharedCollectionTestData {
 
+    implicit val requestConfigV1 = RequestConfigV1(
+      deviceId = userV1DeviceId,
+      token = userV1Token,
+      marketToken = Option(userV1MarketToken))
+
+    implicit val requestConfig = RequestConfig(
+      apiKey = userV1ApiKey,
+      sessionToken = userV1SessionToken,
+      androidId = userV1AndroidId,
+      marketToken = Option(userV1MarketToken))
+
+    val apiServicesConfig = ApiServicesConfig(
+      appId = userV1AppId,
+      appKey = userV1AppKey,
+      localization = userV1Localization)
+
+    val serviceHeader = version2.ServiceHeader(
+      requestConfig.apiKey,
+      requestConfig.sessionToken,
+      requestConfig.androidId)
+
+    val serviceMarketHeader = version2.ServiceMarketHeader(
+      requestConfig.apiKey,
+      requestConfig.sessionToken,
+      requestConfig.androidId,
+      requestConfig.marketToken)
+
     val apiService = mock[cards.nine.api.version2.ApiService]
 
     val apiServiceV1 = mock[cards.nine.api.version1.ApiService]
@@ -159,7 +186,7 @@ class ApiServicesImplSpec
           }
 
         val result = apiServices.login(userV1email, userV1AndroidId, userV1TokenId).value.run
-        result shouldEqual Right(LoginResponse(statusCode, userV1ApiKey, userV1SessionToken))
+        result shouldEqual Right(LoginResponse(userV1ApiKey, userV1SessionToken))
 
         there was one(apiService).login(===(loginRequest))(any, any)
       }
@@ -207,10 +234,6 @@ class ApiServicesImplSpec
           }
 
         val result = apiServices.updateInstallation(Some(userV1DeviceToken)).value.run
-        result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-        }
 
         there was one(apiService).installations(===(installationRequest), ===(serviceHeader))(any, any)
       }
@@ -259,9 +282,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.googlePlayPackage(categorizeApps.head.packageName).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            Some(response.app) shouldEqual categorizeApps.headOption.map(a => CategorizedPackage(a.packageName, Some(a.category)))
+          case Right(app) =>
+            Some(app) shouldEqual categorizeApps.headOption.map(a => CategorizedPackage(a.packageName, Some(a.category)))
         }
 
         there was one(apiService).categorize(===(categorizeOneRequest), ===(serviceMarketHeader))(any, any)
@@ -308,9 +330,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.packages shouldEqual (categorizeApps map (a => CategorizedPackage(a.packageName, Some(a.category))))
+          case Right(packages) =>
+            packages shouldEqual (categorizeApps map (a => CategorizedPackage(a.packageName, Some(a.category))))
         }
 
         there was one(apiService).categorize(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
@@ -325,9 +346,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.packages must beEmpty
+          case Right(packages) =>
+            packages must beEmpty
         }
 
         there was one(apiService).categorize(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
@@ -349,9 +369,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.packages must beEmpty
+          case Right(packages) =>
+            packages must beEmpty
         }
       }
 
@@ -380,9 +399,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.googlePlayPackagesDetail(categorizeApps.map(_.packageName)).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.packages shouldEqual categorizedDetailPackages
+          case Right(packages) =>
+            packages shouldEqual categorizedDetailPackages
         }
 
         there was one(apiService).categorizeDetail(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
@@ -399,9 +417,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.googlePlayPackagesDetail(categorizeApps.map(_.packageName)).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.packages must beEmpty
+          case Right(packages) =>
+            packages must beEmpty
         }
 
         there was one(apiService).categorizeDetail(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
@@ -439,9 +456,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.getRecommendedApps(category, excludedPackages, limit).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.seq.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
+          case Right(recommendedApps) =>
+            recommendedApps.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
         }
 
         there was one(apiService).recommendations(===(category), any, ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
@@ -477,9 +493,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.getRecommendedAppsByPackages(packages, excludedPackages, limit).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.seq.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
+          case Right(recommendedApps) =>
+            recommendedApps.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
         }
 
         there was one(apiService).recommendationsByApps(===(recommendationsByAppsRequest), ===(serviceMarketHeader))(any, any)
@@ -494,9 +509,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.getRecommendedAppsByPackages(packages, excludedPackages, limit).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.seq must beEmpty
+          case Right(recommendedApps) =>
+            recommendedApps must beEmpty
         }
 
         there was one(apiService).recommendationsByApps(===(recommendationsByAppsRequest), ===(serviceMarketHeader))(any, any)
@@ -527,14 +541,13 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns baseUrl
-        apiService.getCollection(any, any)(any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(sharedCollection)))))
+//        apiService.getCollection(any, any)(any) returns
+//          TaskService(Task(Either.right(ServiceClientResponse(sharedCollection))))
 
         val result = apiServices.getSharedCollection(sharedCollectionId).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.sharedCollection shouldEqual toSharedCollection(sharedCollection)
+          case Right(shareCollection) =>
+            shareCollection shouldEqual sharedCollection
         }
 
         there was one(apiService).getCollection(===(sharedCollectionId), ===(serviceMarketHeader))(any)
@@ -582,9 +595,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeTop, offset, limit).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.items.size shouldEqual collections.size
+          case Right(shareCollections) =>
+            shareCollections.size shouldEqual collections.size
         }
 
         there was one(apiService).topCollections(===(category), ===(offset), ===(limit), ===(serviceMarketHeader))(any)
@@ -608,9 +620,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.items.size shouldEqual collections.size
+          case Right(shareCollections) =>
+            shareCollections.size shouldEqual collections.size
         }
 
         there was one(apiService).latestCollections(===(category), ===(offset), ===(limit), ===(serviceMarketHeader))(any)
@@ -658,9 +669,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.sharedCollectionId shouldEqual sharedCollectionId
+          case Right(shareCollectionId) =>
+            shareCollectionId shouldEqual sharedCollectionId
         }
 
         there was one(apiService).createCollection(===(createCollectionRequest), ===(serviceHeader))(any, any)
@@ -709,9 +719,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.updateSharedCollection(sharedCollectionId, Some(name), packages).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.sharedCollectionId shouldEqual sharedCollectionId
+          case Right(shareCollectionId) =>
+            shareCollectionId shouldEqual sharedCollectionId
         }
 
         there was one(apiService).updateCollection(===(sharedCollectionId), ===(updateCollectionRequest), ===(serviceHeader))(any, any)
@@ -726,9 +735,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.updateSharedCollection(sharedCollectionId, None, packages).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.sharedCollectionId shouldEqual sharedCollectionId
+          case Right(shareCollectionId) =>
+            shareCollectionId shouldEqual sharedCollectionId
         }
 
         there was one(apiService).updateCollection(===(sharedCollectionId), ===(updateCollectionRequest.copy(collectionInfo = None)), ===(serviceHeader))(any, any)
@@ -782,9 +790,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.getPublishedCollections().value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.items.size shouldEqual collections.size
+          case Right(shareCollection) =>
+            shareCollection.size shouldEqual collections.size
         }
 
         there was one(apiService).getCollections(===(serviceMarketHeader))(any)
@@ -831,9 +838,8 @@ class ApiServicesImplSpec
 
         val result = apiServices.getSubscriptions().value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.items.map(_.sharedCollectionId) shouldEqual subscriptions.subscriptions
+          case Right(items) =>
+            items shouldEqual subscriptions.subscriptions
         }
 
         there was one(apiService).getSubscriptions(===(serviceHeader))(any)
@@ -877,10 +883,6 @@ class ApiServicesImplSpec
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
         val result = apiServices.subscribe(sharedCollectionId).value.run
-        result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-        }
 
         there was one(apiService).subscribe(sharedCollectionId, serviceHeader)
       }
@@ -914,10 +916,6 @@ class ApiServicesImplSpec
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
         val result = apiServices.unsubscribe(sharedCollectionId).value.run
-        result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-        }
 
         there was one(apiService).unsubscribe(sharedCollectionId, serviceHeader)
       }
@@ -954,10 +952,9 @@ class ApiServicesImplSpec
 
         val result = apiServices.rankApps(packagesByCategorySeq, Some(location)).value.run
         result must beLike {
-          case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.items.map(_.category) shouldEqual items.map(_._1)
-            response.items.map(_.packages) shouldEqual items.map(_._2)
+          case Right(rankApps) =>
+            rankApps.map(_.category) shouldEqual items.map(_._1)
+            rankApps.map(_.packages) shouldEqual items.map(_._2)
         }
 
         there was one(apiService).rankApps(===(rankAppsRequest), ===(serviceHeader))(any, any)
