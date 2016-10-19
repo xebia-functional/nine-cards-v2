@@ -7,10 +7,9 @@ import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
-import cards.nine.models.Collection
-import cards.nine.models.types.{Communication, NineCardsCategory}
-import cards.nine.process.sharedcollections.models.SharedCollection
-import cards.nine.process.sharedcollections.{SharedCollectionsConfigurationException, TopSharedCollection, TypeSharedCollection}
+import cards.nine.models.{Collection, SharedCollection}
+import cards.nine.models.types.{TopSharedCollection, TypeSharedCollection, Communication, NineCardsCategory}
+import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import cards.nine.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 

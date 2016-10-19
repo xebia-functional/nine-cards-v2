@@ -1,6 +1,6 @@
 package cards.nine.services.awareness.impl
 
-import cards.nine.models._
+import cards.nine.models.types._
 import com.google.android.gms.awareness.state.Weather._
 import com.google.android.gms.location.DetectedActivity._
 

@@ -16,7 +16,7 @@ import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.commons.test.data.DockAppValues._
 import cards.nine.commons.test.data.WidgetValues._
 import cards.nine.commons.test.data.{AppWidgetTestData, ApplicationTestData, DockAppTestData}
-import cards.nine.models.BitmapPath
+import cards.nine.models.{CategorizedPackage, BitmapPath}
 import cards.nine.models.types._
 import cards.nine.process.device._
 import cards.nine.process.utils.ApiUtils
@@ -695,7 +695,7 @@ class DeviceProcessImplSpec
 
         mockAppsServices.getInstalledApplications(any) returns TaskService(Task(Either.right(seqApplicationData)))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq.empty)
-        mockApiServices.googlePlayPackages(any)(any) returns TaskService(Task(Either.right(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
+        mockApiServices.googlePlayPackages(any)(any) returns TaskService(Task(Either.right(Seq.empty)))
         mockPersistenceServices.addApps(any) returns TaskService(Task(Either.right(seqApplication.head)))
 
         val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
@@ -745,9 +745,8 @@ class DeviceProcessImplSpec
         mockAppsServices.getInstalledApplications(any) returns TaskService.right(Seq(app1.toData, app2.toData))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app2))
         mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
-        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(GooglePlayPackagesResponse(
-          statusCodeOk,
-          Seq(CategorizedPackage(app1.packageName, Some(app1.category.name)))))
+        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(
+          Seq(CategorizedPackage(app1.packageName, Some(app1.category.name))))
         mockPersistenceServices.addApps(any) returns TaskService.right(seqApplication.head)
 
         val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
@@ -765,9 +764,8 @@ class DeviceProcessImplSpec
 
         mockAppsServices.getInstalledApplications(any) returns TaskService.right(Seq(app1.toData, app2.toData))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app1, app2))
-        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(GooglePlayPackagesResponse(
-          statusCodeOk,
-          Seq(CategorizedPackage(app1.packageName, Some(Social.name)))))
+        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(
+          Seq(CategorizedPackage(app1.packageName, Some(Social.name))))
         mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
         mockPersistenceServices.addApps(any) returns TaskService.right(seqApplication.head)
 
@@ -824,7 +822,7 @@ class DeviceProcessImplSpec
           TaskService(Task(Either.right(seqApplication(1)))),
           TaskService(Task(Either.right(seqApplication(2)))))
         mockAppsServices.getApplication(applicationPackageName)(contextSupport) returns TaskService(Task(Either.right(seqApplicationData.head)))
-        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
+        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(categorizedPackage)))
 
         val result = deviceProcess.saveApp(applicationPackageName)(contextSupport).value.run
         result shouldEqual Right(seqApplicationData.head)
@@ -863,7 +861,7 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockAppsServices.getApplication(applicationPackageName)(contextSupport) returns TaskService(Task(Either.right(seqApplicationData.head)))
-        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
+        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(categorizedPackage)))
         mockPersistenceServices.addApp(any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = deviceProcess.saveApp(applicationPackageName)(contextSupport).value.run
@@ -900,7 +898,7 @@ class DeviceProcessImplSpec
         mockPersistenceServices.updateApp(any) returns TaskService(Task(Either.right(updatedApplications)))
         mockPersistenceServices.findAppByPackage(any) returns TaskService(Task(Either.right(seqApplication.headOption)))
         mockAppsServices.getApplication(applicationPackageName)(contextSupport) returns TaskService(Task(Either.right(seqApplicationData.head)))
-        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
+        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(categorizedPackage)))
 
         val result = deviceProcess.updateApp(applicationPackageName)(contextSupport).value.run
         result shouldEqual Right((): Unit)

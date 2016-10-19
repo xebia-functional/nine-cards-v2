@@ -2,7 +2,7 @@ package cards.nine.services.permissions
 
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.PermissionStatus
+import cards.nine.models.types.PermissionStatus
 
 trait PermissionsServices {
 

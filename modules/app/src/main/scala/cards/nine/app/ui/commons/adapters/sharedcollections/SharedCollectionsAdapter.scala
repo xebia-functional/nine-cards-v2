@@ -3,7 +3,7 @@ package cards.nine.app.ui.commons.adapters.sharedcollections
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, ViewGroup}
 import cards.nine.app.ui.commons.UiContext
-import cards.nine.process.sharedcollections.models.SharedCollection
+import cards.nine.models.SharedCollection
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.TR
 import com.fortysevendeg.ninecardslauncher.TypedResource._

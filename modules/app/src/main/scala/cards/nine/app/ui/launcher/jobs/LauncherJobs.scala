@@ -8,7 +8,8 @@ import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataExc
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.{Collection, DockApp, Moment, UnknownCondition}
+import cards.nine.models.types.UnknownCondition
+import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.theme.models.NineCardsTheme
 import cats.implicits._
 import macroid.ActivityContextWrapper
