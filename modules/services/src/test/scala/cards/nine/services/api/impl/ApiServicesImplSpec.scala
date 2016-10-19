@@ -13,6 +13,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.models.types.NineCardsCategory
 import cats.syntax.either._
 
 import scala.reflect.ClassTag
@@ -221,7 +222,7 @@ class ApiServicesImplSpec
 
   "updateInstallation" should {
 
-    "return a valid response if the services returns a valid response" in
+    "call to installations with the right request" in
       new ApiServicesScope {
 
         apiService.baseUrl returns baseUrl
@@ -231,10 +232,6 @@ class ApiServicesImplSpec
           }
 
         val result = apiServices.updateInstallation(Some(deviceToken)).value.run
-//        result must beLike {
-//          case Right(response) =>
-//            response.statusCode shouldEqual statusCode
-//        }
 
         there was one(apiService).installations(===(installationRequest), ===(serviceHeader))(any, any)
       }
@@ -284,8 +281,7 @@ class ApiServicesImplSpec
         val result = apiServices.googlePlayPackage(categorizeApps.head.packageName).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
-            Some(response) shouldEqual categorizeApps.headOption.map(a => CategorizedPackage(a.packageName, Some(a.category)))
+            Some(response) shouldEqual categorizeApps.headOption.map(a => CategorizedPackage(a.packageName, a.categories.headOption.map(NineCardsCategory(_))))
         }
 
         there was one(apiService).categorize(===(categorizeOneRequest), ===(serviceMarketHeader))(any, any)
@@ -333,8 +329,7 @@ class ApiServicesImplSpec
         val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
-            response shouldEqual (categorizeApps map (a => CategorizedPackage(a.packageName, Some(a.category))))
+            response shouldEqual (categorizeApps map (a => CategorizedPackage(a.packageName, a.categories.headOption.map(NineCardsCategory(_)))))
         }
 
         there was one(apiService).categorize(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
@@ -350,7 +345,6 @@ class ApiServicesImplSpec
         val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response must beEmpty
         }
 
@@ -374,7 +368,6 @@ class ApiServicesImplSpec
         val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response must beEmpty
         }
       }
@@ -405,7 +398,6 @@ class ApiServicesImplSpec
         val result = apiServices.googlePlayPackagesDetail(categorizeApps.map(_.packageName)).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response shouldEqual categorizedDetailPackages
         }
 
@@ -424,7 +416,6 @@ class ApiServicesImplSpec
         val result = apiServices.googlePlayPackagesDetail(categorizeApps.map(_.packageName)).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response must beEmpty
         }
 
@@ -464,7 +455,6 @@ class ApiServicesImplSpec
         val result = apiServices.getRecommendedApps(category, excludedPackages, limit).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
         }
 
@@ -502,7 +492,6 @@ class ApiServicesImplSpec
         val result = apiServices.getRecommendedAppsByPackages(packages, excludedPackages, limit).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
         }
 
@@ -519,7 +508,6 @@ class ApiServicesImplSpec
         val result = apiServices.getRecommendedAppsByPackages(packages, excludedPackages, limit).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response must beEmpty
         }
 
@@ -557,7 +545,6 @@ class ApiServicesImplSpec
         val result = apiServices.getSharedCollection(sharedCollectionId).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response shouldEqual sharedCollection
         }
 
@@ -607,7 +594,6 @@ class ApiServicesImplSpec
         val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeTop, offset, limit).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response.size shouldEqual collections.size
         }
 
@@ -633,7 +619,6 @@ class ApiServicesImplSpec
         val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response.size shouldEqual collections.size
         }
 
@@ -683,7 +668,6 @@ class ApiServicesImplSpec
         val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response shouldEqual sharedCollectionId
         }
 
@@ -734,7 +718,6 @@ class ApiServicesImplSpec
         val result = apiServices.updateSharedCollection(sharedCollectionId, Some(name), packages).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response shouldEqual sharedCollectionId
         }
 
@@ -751,7 +734,6 @@ class ApiServicesImplSpec
         val result = apiServices.updateSharedCollection(sharedCollectionId, None, packages).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response shouldEqual sharedCollectionId
         }
 
@@ -807,7 +789,6 @@ class ApiServicesImplSpec
         val result = apiServices.getPublishedCollections().value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response.size shouldEqual collections.size
         }
 
@@ -856,7 +837,6 @@ class ApiServicesImplSpec
         val result = apiServices.getSubscriptions().value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response shouldEqual subscriptions.subscriptions
         }
 
@@ -893,7 +873,7 @@ class ApiServicesImplSpec
 
   "subscribe" should {
 
-    "return a valid response if the services returns a valid response" in
+    "call to subscribe" in
       new ApiServicesScope {
 
         apiService.baseUrl returns baseUrl
@@ -901,10 +881,6 @@ class ApiServicesImplSpec
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
         val result = apiServices.subscribe(sharedCollectionId).value.run
-//        result must beLike {
-//          case Right(response) =>
-//            response.statusCode shouldEqual statusCode
-//        }
 
         there was one(apiService).subscribe(sharedCollectionId, serviceHeader)
       }
@@ -930,7 +906,7 @@ class ApiServicesImplSpec
 
   "unsubscribe" should {
 
-    "return a valid response if the services returns a valid response" in
+    "call to unsubscribe" in
       new ApiServicesScope {
 
         apiService.baseUrl returns baseUrl
@@ -938,10 +914,6 @@ class ApiServicesImplSpec
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
         val result = apiServices.unsubscribe(sharedCollectionId).value.run
-//        result must beLike {
-//          case Right(response) =>
-//            response.statusCode shouldEqual statusCode
-//        }
 
         there was one(apiService).unsubscribe(sharedCollectionId, serviceHeader)
       }
@@ -979,7 +951,6 @@ class ApiServicesImplSpec
         val result = apiServices.rankApps(packagesByCategorySeq, Some(location)).value.run
         result must beLike {
           case Right(response) =>
-//            response.statusCode shouldEqual statusCode
             response.map(_.category) shouldEqual items.map(_._1)
             response.map(_.packages) shouldEqual items.map(_._2)
         }

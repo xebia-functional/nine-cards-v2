@@ -28,7 +28,7 @@ trait ApiTestData extends ApplicationTestData {
     CategorizedDetailPackage(
       packageName = app.packageName,
       title = app.name,
-      category = Option(app.category.name),
+      category = Option(app.category),
       icon = apiIcon,
       free = free,
       downloads = downloads,

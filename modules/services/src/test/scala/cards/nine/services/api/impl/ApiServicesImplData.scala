@@ -55,7 +55,7 @@ trait ApiServicesImplData {
   def generateCategorizedApp =
     version2.CategorizedApp(
       packageName = Random.nextString(10),
-      category = "SOCIAL")
+      categories = Seq("SOCIAL"))
 
   def generateCategorizedAppDetail =
     version2.CategorizedAppDetail(
@@ -181,7 +181,7 @@ trait ApiServicesImplData {
     CategorizedDetailPackage(
       packageName = app.packageName,
       title = app.title,
-      category = app.categories.headOption,
+      category = app.categories.headOption.map(category => NineCardsCategory(category)),
       icon = app.icon,
       free = app.free,
       downloads = app.downloads,

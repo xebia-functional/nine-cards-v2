@@ -55,21 +55,29 @@ trait Conversions {
       permissions = device.permissions)
 
   def toCategorizedPackage(packageName: String, categorizeResponse: cards.nine.api.version2.CategorizeResponse): CategorizedPackage =
-    CategorizedPackage(packageName, categorizeResponse.items.find(_.packageName == packageName).map(_.category))
+    CategorizedPackage(
+      packageName = packageName,
+      category = categorizeResponse.items.find(_.packageName == packageName).flatMap(app => findBestCategory(app.categories)))
 
   def toCategorizedPackages(categorizeResponse: cards.nine.api.version2.CategorizeResponse): Seq[CategorizedPackage] =
-    categorizeResponse.items.map(app => CategorizedPackage(app.packageName, Some(app.category)))
+    categorizeResponse.items.map(app => CategorizedPackage(app.packageName, findBestCategory(app.categories)))
 
   def toCategorizedDetailPackages(categorizeResponse: cards.nine.api.version2.CategorizeDetailResponse): Seq[CategorizedDetailPackage] =
     categorizeResponse.items.map { app =>
       CategorizedDetailPackage(
         packageName = app.packageName,
         title = app.title,
-        category = app.categories.headOption,
+        category = findBestCategory(app.categories),
         icon = app.icon,
         free = app.free,
         downloads = app.downloads,
         stars = app.stars)
+    }
+
+  private[this] def findBestCategory(categories: Seq[String]): Option[NineCardsCategory] =
+    categories.foldLeft[Option[NineCardsCategory]](None) {
+      case (Some(nineCardsCategory), _) => Some(nineCardsCategory)
+      case (_, categoryName) => NineCardsCategory.allCategories.find(_.name == categoryName)
     }
 
   def toUserV1(apiUserConfig: cards.nine.api.version1.UserConfig): UserV1 =

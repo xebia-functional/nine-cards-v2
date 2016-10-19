@@ -95,7 +95,7 @@ case class CollectionUpdateInfo(
 
 case class CategorizedApp(
   packageName: String,
-  category: String)
+  categories: Seq[String])
 
 case class CategorizedAppDetail(
   packageName: String,

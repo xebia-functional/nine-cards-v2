@@ -53,7 +53,7 @@ trait DeviceProcessData
 
   val categorizedPackage = CategorizedPackage(
     packageName = packageNameForCreateImage,
-    category = Some("SOCIAL"))
+    category = Some(Social))
 
   val intentStr = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val intent = Json.parse(intentStr).as[NineCardsIntent]

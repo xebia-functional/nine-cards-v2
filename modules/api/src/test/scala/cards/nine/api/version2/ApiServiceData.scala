@@ -109,7 +109,7 @@ trait ApiServiceData {
 
   val categorizeResponse = CategorizeResponse(
     errors = Seq.empty,
-    items = Seq(CategorizedApp(packageName = collectionApp.packageName, category = category)))
+    items = Seq(CategorizedApp(packageName = collectionApp.packageName, categories = Seq(category))))
 
   val categorizeDetailResponse = CategorizeDetailResponse(
     errors = Seq.empty,
