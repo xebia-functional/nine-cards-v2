@@ -3,6 +3,7 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types._
 import cards.nine.models.{MomentData, CollectionData, Collection, Moment}
 import cards.nine.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, Moment => RepositoryMoment}
 import cards.nine.repository.provider.{CardEntity, MomentEntity}

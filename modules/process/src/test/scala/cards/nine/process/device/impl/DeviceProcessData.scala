@@ -3,13 +3,11 @@ package cards.nine.process.device.impl
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.ApplicationTestData
-import cards.nine.models
 import cards.nine.models.NineCardsIntentImplicits._
-import cards.nine.models.types._
 import cards.nine.models._
+import cards.nine.models.types._
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.repository.model.{App => RepositoryApp}
-import cards.nine.services.api.{CategorizedPackage, RequestConfig}
 import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
 import play.api.libs.json.Json
 

@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.actions.recommendations
 
-import cards.nine.process.recommendations.models.RecommendedApp
+import cards.nine.models.RecommendedApp
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
 trait RecommendationsDOM {

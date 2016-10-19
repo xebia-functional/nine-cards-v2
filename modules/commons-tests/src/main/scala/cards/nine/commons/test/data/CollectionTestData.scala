@@ -25,7 +25,7 @@ trait CollectionTestData
     cards = Seq(card(0), card(1), card(2)),
     moment = Option(moment(num)),
     originalSharedCollectionId = Option(originalSharedCollectionId),
-    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId + num),
     sharedCollectionSubscribed = sharedCollectionSubscribed,
     publicCollectionStatus = publicCollectionStatus)
 

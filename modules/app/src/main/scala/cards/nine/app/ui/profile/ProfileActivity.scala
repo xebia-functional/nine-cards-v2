@@ -13,7 +13,7 @@ import cards.nine.app.ui.profile.models.{AccountsTab, ProfileTab, PublicationsTa
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.cloud.CloudStorageClientListener
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
-import cards.nine.process.sharedcollections.models.SharedCollection
+import cards.nine.models.SharedCollection
 import cats.implicits._
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult

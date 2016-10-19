@@ -1,14 +1,14 @@
 package cards.nine.app.ui.applinks
 
 import android.net.Uri
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.collections.tasks.CollectionJobs
 import cards.nine.app.ui.commons.action_filters.CollectionAddedActionFilter
 import cards.nine.app.ui.commons.{BroadAction, ImplicitsUiExceptions, Jobs}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.sharedcollections.models.SharedCollection
+import cards.nine.models.SharedCollection
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
