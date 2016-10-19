@@ -103,7 +103,7 @@
             android:name="cards.nine.repository.provider.NineCardsContentProvider"
             android:exported="false"/>
 
-        <receiver android:name="cards.nine.app.receivers.AppBroadcastReceiver">
+        <receiver android:name="cards.nine.app.receivers.apps.AppBroadcastReceiver">
             <intent-filter android:priority="999">
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
@@ -111,6 +111,12 @@
                 <action android:name="android.intent.action.PACKAGE_REPLACED"/>
 
                 <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="cards.nine.app.receivers.moments.MomentBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
 
