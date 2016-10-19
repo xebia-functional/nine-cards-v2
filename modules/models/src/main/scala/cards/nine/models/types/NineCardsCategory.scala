@@ -1,7 +1,5 @@
 package cards.nine.models.types
 
-import cards.nine.models.types.NineCardCategories._
-
 sealed trait NineCardsCategory {
   val name: String
 
@@ -18,211 +16,243 @@ sealed trait NineCardsCategory {
 }
 
 case object AllAppsCategory extends NineCardsCategory {
-  override val name: String = allApps
+  override val name: String = "ALL_APPS"
 }
 
 case object AllCategories extends NineCardsCategory {
-  override val name: String = allCategories
-}
-
-case object Custom extends NineCardsCategory {
-  override val name: String = custom
-}
-
-case object Misc extends NineCardsCategory {
-  override val name: String = misc
-}
-
-case object Game extends NineCardsCategory {
-  override val name: String = game
-}
-
-case object BooksAndReference extends NineCardsCategory {
-  override val name: String = booksAndReference
-}
-
-case object Business extends NineCardsCategory {
-  override val name: String = business
-}
-
-case object Comics extends NineCardsCategory {
-  override val name: String = comics
-}
-
-case object Communication extends NineCardsCategory {
-  override val name: String = communication
-}
-
-case object Education extends NineCardsCategory {
-  override val name: String = education
-}
-
-case object Entertainment extends NineCardsCategory {
-  override val name: String = entertainment
-}
-
-case object Finance extends NineCardsCategory {
-  override val name: String = finance
-}
-
-case object HealthAndFitness extends NineCardsCategory {
-  override val name: String = healthAndFitness
-}
-
-case object LibrariesAndDemo extends NineCardsCategory {
-  override val name: String = librariesAndDemo
-}
-
-case object Lifestyle extends NineCardsCategory {
-  override val name: String = lifestyle
+  override val name: String = "ALL_CATEGORIES"
 }
 
 case object AppWallpaper extends NineCardsCategory {
-  override val name: String = appWallpaper
-}
-
-case object MediaAndVideo extends NineCardsCategory {
-  override val name: String = mediaAndVideo
-}
-
-case object Medical extends NineCardsCategory {
-  override val name: String = medical
-}
-
-case object MusicAndAudio extends NineCardsCategory {
-  override val name: String = musicAndAudio
-}
-
-case object NewsAndMagazines extends NineCardsCategory {
-  override val name: String = newsAndMagazines
-}
-
-case object Personalization extends NineCardsCategory {
-  override val name: String = personalization
-}
-
-case object Photography extends NineCardsCategory {
-  override val name: String = photography
-}
-
-case object Productivity extends NineCardsCategory {
-  override val name: String = productivity
-}
-
-case object Shopping extends NineCardsCategory {
-  override val name: String = shopping
-}
-
-case object Social extends NineCardsCategory {
-  override val name: String = social
-}
-
-case object Sports extends NineCardsCategory {
-  override val name: String = sports
-}
-
-case object Tools extends NineCardsCategory {
-  override val name: String = tools
-}
-
-case object Transportation extends NineCardsCategory {
-  override val name: String = transportation
-}
-
-case object TravelAndLocal extends NineCardsCategory {
-  override val name: String = travelAndLocal
-}
-
-case object Weather extends NineCardsCategory {
-  override val name: String = weather
+  override val name: String = "APP_WALLPAPER"
 }
 
 case object AppWidgetsCategory extends NineCardsCategory {
-  override val name: String = appWidgets
+  override val name: String = "APP_WIDGETS"
+}
+
+case object ArtAndDesign extends NineCardsCategory {
+  override val name: String = "ART_AND_DESIGN"
+}
+
+case object AutoAndVehicles extends NineCardsCategory {
+  override val name: String = "AUTO_AND_VEHICLES"
+}
+
+case object Beauty extends NineCardsCategory {
+  override val name: String = "BEAUTY"
+}
+
+case object BooksAndReference extends NineCardsCategory {
+  override val name: String = "BOOKS_AND_REFERENCE"
+}
+
+case object Business extends NineCardsCategory {
+  override val name: String = "BUSINESS"
+}
+
+case object Comics extends NineCardsCategory {
+  override val name: String = "COMICS"
+}
+
+case object Communication extends NineCardsCategory {
+  override val name: String = "COMMUNICATION"
 }
 
 case object ContactsCategory extends NineCardsCategory {
-  override val name: String = contacts
+  override val name: String = "CONTACTS"
+}
+
+case object Custom extends NineCardsCategory {
+  override val name: String = "CUSTOM"
+}
+
+case object Dating extends NineCardsCategory {
+  override val name: String = "DATING"
+}
+
+case object Education extends NineCardsCategory {
+  override val name: String = "EDUCATION"
+}
+
+case object Entertainment extends NineCardsCategory {
+  override val name: String = "ENTERTAINMENT"
+}
+
+case object Events extends NineCardsCategory {
+  override val name: String = "EVENTS"
+}
+
+case object Finance extends NineCardsCategory {
+  override val name: String = "FINANCE"
+}
+
+case object FoodAndDrink extends NineCardsCategory {
+  override val name: String = "FOOD_AND_DRINK"
+}
+
+case object Game extends NineCardsCategory {
+  override val name: String = "GAME"
+}
+
+case object HealthAndFitness extends NineCardsCategory {
+  override val name: String = "HEALTH_AND_FITNESS"
+}
+
+case object HouseAndHome extends NineCardsCategory {
+  override val name: String = "HOUSE_AND_HOME"
+}
+
+case object LibrariesAndDemo extends NineCardsCategory {
+  override val name: String = "LIBRARIES_AND_DEMO"
+}
+
+case object Lifestyle extends NineCardsCategory {
+  override val name: String = "LIFESTYLE"
+}
+
+case object MapsAndNavigation extends NineCardsCategory {
+  override val name: String = "MAPS_AND_NAVIGATION"
+}
+
+case object Medical extends NineCardsCategory {
+  override val name: String = "MEDICAL"
+}
+
+case object Misc extends NineCardsCategory {
+  override val name: String = "MISC"
+}
+
+case object MusicAndAudio extends NineCardsCategory {
+  override val name: String = "MUSIC_AND_AUDIO"
+}
+
+case object NewsAndMagazines extends NineCardsCategory {
+  override val name: String = "NEWS_AND_MAGAZINES"
+}
+
+case object Parenting extends NineCardsCategory {
+  override val name: String = "PARENTING"
+}
+
+case object Personalization extends NineCardsCategory {
+  override val name: String = "PERSONALIZATION"
+}
+
+case object Photography extends NineCardsCategory {
+  override val name: String = "PHOTOGRAPHY"
+}
+
+case object Productivity extends NineCardsCategory {
+  override val name: String = "PRODUCTIVITY"
+}
+
+case object Shopping extends NineCardsCategory {
+  override val name: String = "SHOPPING"
+}
+
+case object Social extends NineCardsCategory {
+  override val name: String = "SOCIAL"
+}
+
+case object Sports extends NineCardsCategory {
+  override val name: String = "SPORTS"
+}
+
+case object Tools extends NineCardsCategory {
+  override val name: String = "TOOLS"
+}
+
+case object TravelAndLocal extends NineCardsCategory {
+  override val name: String = "TRAVEL_AND_LOCAL"
+}
+
+case object VideoPlayers extends NineCardsCategory {
+  override val name: String = "VIDEO_PLAYERS"
+}
+
+case object Weather extends NineCardsCategory {
+  override val name: String = "WEATHER"
 }
 
 case object GameAction extends NineCardsCategory {
-  override val name: String = gameAction
-}
-
-case object GameAdventure extends NineCardsCategory {
-  override val name: String = gameAdventure
-}
-
-case object GameRacing extends NineCardsCategory {
-  override val name: String = gameRacing
-}
-
-case object GameCard extends NineCardsCategory {
-  override val name: String = gameCard
-}
-
-case object GameCasino extends NineCardsCategory {
-  override val name: String = gameCasino
-}
-
-case object GameCasual extends NineCardsCategory {
-  override val name: String = gameCasual
-}
-
-case object GameFamily extends NineCardsCategory {
-  override val name: String = gameFamily
-}
-
-case object GameSports extends NineCardsCategory {
-  override val name: String = gameSports
-}
-
-case object GameEducational extends NineCardsCategory {
-  override val name: String = gameEducational
-}
-
-case object GameStrategy extends NineCardsCategory {
-  override val name: String = gameStrategy
-}
-
-case object GameWallpaper extends NineCardsCategory {
-  override val name: String = gameWallpaper
-}
-
-case object GameTrivia extends NineCardsCategory {
-  override val name: String = gameTrivia
-}
-
-case object GameBoard extends NineCardsCategory {
-  override val name: String = gameBoard
-}
-
-case object GameRolePlaying extends NineCardsCategory {
-  override val name: String = gameRolePlaying
-}
-
-case object GameMusic extends NineCardsCategory {
-  override val name: String = gameMusic
-}
-
-case object GameWord extends NineCardsCategory {
-  override val name: String = gameWord
-}
-
-case object GamePuzzle extends NineCardsCategory {
-  override val name: String = gamePuzzle
+  override val name: String = "GAME_ACTION"
 }
 
 case object GameArcade extends NineCardsCategory {
-  override val name: String = gameArcade
+  override val name: String = "GAME_ARCADE"
+}
+
+case object GameAdventure extends NineCardsCategory {
+  override val name: String = "GAME_ADVENTURE"
+}
+
+case object GameBoard extends NineCardsCategory {
+  override val name: String = "GAME_BOARD"
+}
+
+case object GameCard extends NineCardsCategory {
+  override val name: String = "GAME_CARD"
+}
+
+case object GameCasino extends NineCardsCategory {
+  override val name: String = "GAME_CASINO"
+}
+
+case object GameCasual extends NineCardsCategory {
+  override val name: String = "GAME_CASUAL"
+}
+
+case object GameEducational extends NineCardsCategory {
+  override val name: String = "GAME_EDUCATIONAL"
+}
+
+case object GameFamily extends NineCardsCategory {
+  override val name: String = "GAME_FAMILY"
+}
+
+case object GameMusic extends NineCardsCategory {
+  override val name: String = "GAME_MUSIC"
+}
+
+case object GamePuzzle extends NineCardsCategory {
+  override val name: String = "GAME_PUZZLE"
+}
+
+case object GameRacing extends NineCardsCategory {
+  override val name: String = "GAME_RACING"
+}
+
+case object GameRolePlaying extends NineCardsCategory {
+  override val name: String = "GAME_ROLE_PLAYING"
 }
 
 case object GameSimulation extends NineCardsCategory {
-  override val name: String = gameSimulation
+  override val name: String = "GAME_SIMULATION"
+}
+
+case object GameSports extends NineCardsCategory {
+  override val name: String = "GAME_SPORTS"
+}
+
+case object GameStrategy extends NineCardsCategory {
+  override val name: String = "GAME_STRATEGY"
+}
+
+case object GameTrivia extends NineCardsCategory {
+  override val name: String = "GAME_TRIVIA"
+}
+
+case object GameWallpaper extends NineCardsCategory {
+  override val name: String = "GAME_WALLPAPER"
 }
 
 case object GameWidgets extends NineCardsCategory {
-  override val name: String = gameSimulation
+  override val name: String = "GAME_WIDGETS"
+}
+
+case object GameWord extends NineCardsCategory {
+  override val name: String = "GAME_WORD"
 }
 
 object NineCardsCategory {
@@ -231,8 +261,9 @@ object NineCardsCategory {
 
   val appsCategories = Seq(Game, BooksAndReference, Business, Comics, Communication, Education,
     Entertainment, Finance, HealthAndFitness, LibrariesAndDemo, Lifestyle, AppWallpaper,
-    MediaAndVideo, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
-    Productivity, Shopping, Social, Sports, Tools, Transportation, TravelAndLocal, Weather, AppWidgetsCategory)
+    VideoPlayers, Medical, MusicAndAudio, NewsAndMagazines, Personalization, Photography,
+    Productivity, Shopping, Social, Sports, Tools, MapsAndNavigation, TravelAndLocal, Weather, AppWidgetsCategory,
+    ArtAndDesign, AutoAndVehicles, Beauty, Dating, Events, FoodAndDrink, HouseAndHome, Parenting)
 
   val gamesCategories = Seq(GameAction, GameAdventure, GameRacing, GameCard, GameCasino, GameCasual, GameFamily,
     GameSports, GameEducational, GameStrategy, GameWallpaper, GameTrivia, GameBoard, GameRolePlaying, GameMusic,
