@@ -8,8 +8,7 @@ import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
-import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.app.ui.launcher.Statuses.EditWidgetsMode
+import cards.nine.app.ui.launcher.{EditWidgetsMode, LauncherPresenter}
 import cards.nine.commons._
 import cards.nine.models.Widget
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -19,6 +18,8 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 
+import cards.nine.app.ui.launcher.LauncherActivity._
+
 case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter: LauncherPresenter)(implicit contextWrapper: ContextWrapper)
   extends FrameLayout(contextWrapper.bestAvailable) {
 
@@ -26,18 +27,18 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter:
 
   val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin)
 
-  var statuses = LauncherWidgetViewStatuses()
+  var launcherWidgetViewStatuses = LauncherWidgetViewStatuses()
 
   val gestureDetector = new GestureDetector(getContext, new GestureDetector.SimpleOnGestureListener() {
-    override def onLongPress(e: MotionEvent): Unit = if (statuses.canEdit) presenter.openModeEditWidgets(id)
+    override def onLongPress(e: MotionEvent): Unit = if (launcherWidgetViewStatuses.canEdit) presenter.openModeEditWidgets(id)
   })
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = gestureDetector.onTouchEvent(event)
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
     event.getAction match {
-      case ACTION_DOWN => statuses = statuses.copy(canEdit = true)
-      case ACTION_UP | ACTION_CANCEL => statuses =  statuses.copy(canEdit = false)
+      case ACTION_DOWN => launcherWidgetViewStatuses = launcherWidgetViewStatuses.copy(canEdit = true)
+      case ACTION_UP | ACTION_CANCEL => launcherWidgetViewStatuses =  launcherWidgetViewStatuses.copy(canEdit = false)
       case _ =>
     }
     true
@@ -48,8 +49,8 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter:
     override def onTouch(v: View, event: MotionEvent): Boolean = {
       event.getAction match {
         case ACTION_DOWN =>
-          presenter.statuses = presenter.statuses.copy(touchingWidget = true)
-          if (presenter.statuses.mode == EditWidgetsMode) presenter.loadViewEditWidgets(id)
+          statuses = statuses.copy(touchingWidget = true)
+          if (statuses.mode == EditWidgetsMode) presenter.loadViewEditWidgets(id)
         case _ =>
       }
       false

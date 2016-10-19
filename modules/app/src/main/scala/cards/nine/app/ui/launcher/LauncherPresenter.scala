@@ -14,7 +14,6 @@ import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.commons.{BroadAction, Jobs, RequestCodes}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
-import cards.nine.app.ui.launcher.Statuses._
 import cards.nine.app.ui.launcher.drawer._
 import cards.nine.app.ui.launcher.exceptions.SpaceException
 import cards.nine.app.ui.launcher.holders._
@@ -37,6 +36,8 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 
+import LauncherActivity._
+
 import scala.language.postfixOps
 
 class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -49,8 +50,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   val defaultPage = 1
 
   lazy val momentPreferences = new MomentPreferences
-
-  var statuses = LauncherPresenterStatuses()
 
   def initialize(): Unit = {
 
@@ -1208,62 +1207,5 @@ trait LauncherUiActions {
   def getCurrentPage: Option[Int]
 
   def showWeather(condition: Option[ConditionWeather]): Ui[Any]
-
-}
-
-object Statuses {
-
-  case class LauncherPresenterStatuses(
-    touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
-    hostingNoConfiguredWidget: Option[Widget] = None,
-    mode: LauncherMode = NormalMode,
-    transformation: Option[EditWidgetTransformation] = None,
-    idWidget: Option[Int] = None,
-    cardAddItemMode: Option[CardData] = None,
-    collectionReorderMode: Option[Collection] = None,
-    startPositionReorderMode: Int = 0,
-    currentDraggingPosition: Int = 0,
-    lastPhone: Option[String] = None) {
-
-    def startAddItem(card: CardData): LauncherPresenterStatuses =
-      copy(mode = AddItemMode, cardAddItemMode = Some(card))
-
-    def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =
-      copy(
-        startPositionReorderMode = position,
-        collectionReorderMode = Some(collection),
-        currentDraggingPosition = position,
-        mode = ReorderMode)
-
-    def updateCurrentPosition(position: Int): LauncherPresenterStatuses =
-      copy(currentDraggingPosition = position)
-
-    def reset(): LauncherPresenterStatuses =
-      copy(
-        startPositionReorderMode = 0,
-        cardAddItemMode = None,
-        collectionReorderMode = None,
-        currentDraggingPosition = 0,
-        mode = NormalMode)
-
-    def isReordering: Boolean = mode == ReorderMode
-
-  }
-
-  sealed trait LauncherMode
-
-  case object NormalMode extends LauncherMode
-
-  case object AddItemMode extends LauncherMode
-
-  case object ReorderMode extends LauncherMode
-
-  case object EditWidgetsMode extends LauncherMode
-
-  sealed trait EditWidgetTransformation
-
-  case object ResizeTransformation extends EditWidgetTransformation
-
-  case object MoveTransformation extends EditWidgetTransformation
 
 }

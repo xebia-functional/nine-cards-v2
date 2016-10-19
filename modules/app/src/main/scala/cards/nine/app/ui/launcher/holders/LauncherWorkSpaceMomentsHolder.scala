@@ -29,7 +29,9 @@ import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresenter, theme: NineCardsTheme, parentDimen: Dimen)
+import cards.nine.app.ui.launcher.LauncherActivity._
+
+class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(implicit presenter: LauncherPresenter, theme: NineCardsTheme)
   extends LauncherWorkSpaceHolder(context)
   with Contexts[View]
   with TypedFindView {
@@ -53,17 +55,17 @@ class LauncherWorkSpaceMomentsHolder(context: Context, presenter: LauncherPresen
      moment.momentType map (moment => Ui(presenter.loadWidgetsForMoment(moment))) getOrElse clearWidgets
 
   def reloadSelectedWidget: Ui[Any] = this <~ Transformer {
-    case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeSelected()
+    case widget: LauncherWidgetView if statuses.idWidget.contains(widget.id) => widget.activeSelected()
     case widget: LauncherWidgetView => widget.deactivateSelected()
   }
 
   def resizeCurrentWidget: Ui[Any] = this <~ Transformer {
-    case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeResizing()
+    case widget: LauncherWidgetView if statuses.idWidget.contains(widget.id) => widget.activeResizing()
     case widget: LauncherWidgetView => widget.deactivateSelected()
   }
 
   def moveCurrentWidget: Ui[Any] = this <~ Transformer {
-    case widget: LauncherWidgetView if presenter.statuses.idWidget.contains(widget.id) => widget.activeMoving()
+    case widget: LauncherWidgetView if statuses.idWidget.contains(widget.id) => widget.activeMoving()
     case widget: LauncherWidgetView => widget.deactivateSelected()
   }
 
