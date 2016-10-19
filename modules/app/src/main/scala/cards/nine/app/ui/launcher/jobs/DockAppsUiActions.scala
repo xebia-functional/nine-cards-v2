@@ -10,7 +10,7 @@ import cards.nine.models.DockAppData
 import cards.nine.process.theme.models.NineCardsTheme
 import macroid.{ActivityContextWrapper, FragmentManagerContext}
 
-class DockAppsUiActions(dom: LauncherDOM)
+case class DockAppsUiActions(dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],

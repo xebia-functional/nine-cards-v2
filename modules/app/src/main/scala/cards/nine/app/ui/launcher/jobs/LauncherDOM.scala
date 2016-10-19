@@ -1,21 +1,28 @@
 package cards.nine.app.ui.launcher.jobs
 
 import android.app.Activity
+import android.os.Bundle
+import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.GravityCompat
 import android.view.View
 import cards.nine.app.ui.commons.ActivityFindViews
+import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.models.LauncherData
 import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.models.types.NineCardsMoment
-import com.fortysevendeg.ninecardslauncher.TR
+import com.fortysevendeg.macroid.extras.FragmentExtras._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.ninecardslauncher.{R, TR}
 import macroid._
 
 class LauncherDOM(activity: Activity) {
 
   import ActivityFindViews._
+
+  val nameActionFragment = "action-fragment"
 
   lazy val foreground = findView(TR.launcher_foreground).run(activity)
 
@@ -114,5 +121,33 @@ class LauncherDOM(activity: Activity) {
   def isDrawerVisible = drawerContent.getVisibility == View.VISIBLE
 
   def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get
+
+  def isWorkspaceScrolling: Boolean = workspaces.animatedWorkspaceStatuses.isScrolling
+
+  def createBundle(maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty)
+    (implicit contextWrapper: ContextWrapper): Bundle = {
+    val sizeIconWorkSpaceMenuItem = resGetDimensionPixelSize(R.dimen.size_workspace_menu_item)
+    val (startX: Int, startY: Int) = maybeView map (_.calculateAnchorViewPosition) getOrElse(0, 0)
+    val (startWX: Int, startWY: Int) = workspaces.calculateAnchorViewPosition
+    val (endPosX: Int, endPosY: Int) = (startWX + workspaces.animatedWorkspaceStatuses.dimen.width / 2, startWY + workspaces.animatedWorkspaceStatuses.dimen.height / 2)
+    val x = startX + (sizeIconWorkSpaceMenuItem / 2)
+    val y = startY + (sizeIconWorkSpaceMenuItem / 2)
+    val args = new Bundle()
+    args.putInt(BaseActionFragment.sizeIcon, sizeIconWorkSpaceMenuItem)
+    args.putInt(BaseActionFragment.startRevealPosX, x)
+    args.putInt(BaseActionFragment.startRevealPosY, y)
+    args.putInt(BaseActionFragment.endRevealPosX, endPosX)
+    args.putInt(BaseActionFragment.endRevealPosY, endPosY)
+    map foreach {
+      case (key, value) => args.putString(key, value)
+    }
+    args.putInt(BaseActionFragment.colorPrimary, color)
+    args
+  }
+
+  def isActionShowed(implicit fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager]): Boolean = findFragmentByTag(nameActionFragment).isDefined
+
+  def getFragment(implicit fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager]): Option[BaseActionFragment] =
+    findFragmentByTag[BaseActionFragment](nameActionFragment)
 
 }

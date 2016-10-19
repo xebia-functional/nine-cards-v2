@@ -9,7 +9,7 @@ import cards.nine.process.accounts.{ReadCallLog, ReadContacts}
 import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import macroid.ActivityContextWrapper
 
-class AppDrawerJobs(
+case class AppDrawerJobs(
   mainAppDrawerUiActions: MainAppDrawerUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs { self =>
 

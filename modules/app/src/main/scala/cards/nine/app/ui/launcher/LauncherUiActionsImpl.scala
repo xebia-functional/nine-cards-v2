@@ -21,26 +21,22 @@ import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps._
-import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
+import cards.nine.app.ui.components.dialogs.MomentDialog
 import cards.nine.app.ui.components.drawables.RippleCollectionDrawable
 import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.components.models.{LauncherData, LauncherMoment}
-import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
 import cards.nine.app.ui.launcher.collection.CollectionsUiActions
 import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import cards.nine.app.ui.launcher.drawer.DrawerUiActions
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
-import cards.nine.commons._
 import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment, _}
 import cards.nine.models.{ApplicationData, ConditionWeather, Contact, UnknownCondition, Widget, _}
 import cards.nine.process.device.models.{LastCallsContact, _}
@@ -50,10 +46,7 @@ import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
-import macroid.FullDsl._
 import macroid._
-
-import LauncherActivity._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -93,35 +86,10 @@ trait LauncherUiActionsImpl
 
   val tagDialog = "dialog"
 
-  override def initialize: Ui[Any] =
-    Ui(appWidgetHost.startListening()) ~
-      systemBarsTint.initAllSystemBarsTint() ~
-      prepareBars ~
-      initCollectionsUi ~
-      initDrawerUi ~
-      (root <~ dragListener())
-
-  override def destroy: Ui[Any] = Ui(appWidgetHost.stopListening())
-
   override def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): Ui[Any] =
     (workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager
 
   override def reloadDockApps(dockApp: DockAppData): Ui[Any] = dockAppsPanel <~ daplReload(dockApp)
-
-  override def openModeEditWidgets(): Ui[Any] =
-    uiVibrate() ~
-      (dockAppsPanel <~ applyFadeOut()) ~
-      (paginationPanel <~ applyFadeOut()) ~
-      (topBarPanel <~ applyFadeOut()) ~
-      (editWidgetsTopPanel <~ ewtInit <~ applyFadeIn()) ~
-      (editWidgetsBottomPanel <~ ewbShowActions <~ applyFadeIn()) ~
-      (workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
-      (drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)
-
-  override def reloadViewEditWidgets(): Ui[Any] =
-    (editWidgetsTopPanel <~ ewtInit) ~
-      (editWidgetsBottomPanel <~ ewbShowActions) ~
-      (workspaces <~ lwsReloadSelectedWidget)
 
   override def closeModeEditWidgets(): Ui[Any] = {
     val collectionMoment = getData.headOption flatMap (_.moment) flatMap (_.collection)
@@ -133,29 +101,6 @@ trait LauncherUiActionsImpl
       (workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
       (drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))
   }
-
-  override def resizeWidget(): Ui[Any] =
-    (workspaces <~ lwsResizeCurrentWidget()) ~
-      (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
-      (editWidgetsTopPanel <~ ewtResizing)
-
-  override def moveWidget(): Ui[Any] =
-    (workspaces <~ lwsMoveCurrentWidget()) ~
-      (editWidgetsBottomPanel <~ ewbAnimateCursors) ~
-      (editWidgetsTopPanel <~ ewtMoving)
-
-  override def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Ui[Any] =
-    workspaces <~ lwsResizeWidgetById(id, increaseX, increaseY)
-
-  override def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Ui[Any] =
-    workspaces <~ lwsMoveWidgetById(id, displaceX, displaceY)
-
-  override def cancelWidget(appWidgetId: Int): Ui[Any] = Ui(appWidgetHost.deleteAppWidgetId(appWidgetId))
-
-  override def editWidgetsShowActions(): Ui[Any] =
-    (workspaces <~ lwsReloadSelectedWidget) ~
-      (editWidgetsTopPanel <~ ewtInit) ~
-      (editWidgetsBottomPanel <~ ewbAnimateActions)
 
   override def showAddItemMessage(nameCollection: String): Ui[Any] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
 
@@ -347,20 +292,6 @@ trait LauncherUiActionsImpl
 
   override def clearWidgets(): Ui[Any] = workspaces <~ lwsClearWidgets()
 
-  override def deleteSelectedWidget(): Ui[Any] = Ui {
-    activityContextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) =>
-        val ft = activity.getSupportFragmentManager.beginTransaction()
-        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-        ft.addToBackStack(javaNull)
-        val dialog = new AlertDialogFragment(
-          message = R.string.removeWidgetMessage,
-          positiveAction = () => presenter.deleteDBWidget())
-        dialog.show(ft, tagDialog)
-      case _ =>
-    }
-  }
-
   override def unhostWidget(id: Int): Ui[Any] = workspaces <~ lwsUnhostWidget(id)
 
   override def hostWidget(packageName: String, className: String): Ui[Any] = {
@@ -395,16 +326,6 @@ trait LauncherUiActionsImpl
       info <- Option(appWidgetManager.getAppWidgetInfo(appWidgetId))
     } yield (info.provider, info.getCell(ws.getWidth, ws.getHeight))
 
-  override def showWidgetsDialog(): Ui[Any] = {
-    val widthContent = workspaces map (_.getWidth) getOrElse 0
-    val heightContent = workspaces map (_.getHeight) getOrElse 0
-    val map = Map(
-      WidgetsFragment.widgetContentWidth -> widthContent.toString,
-      WidgetsFragment.widgetContentHeight -> heightContent.toString
-    )
-    showAction(f[WidgetsFragment], None, resGetColor(R.color.primary), map)
-  }
-
   override def showSelectMomentDialog(moments: Seq[Moment]): Ui[Any] = activityContextWrapper.original.get match {
     case Some(activity: Activity) => Ui {
       val momentDialog = new MomentDialog(moments)
@@ -423,29 +344,25 @@ trait LauncherUiActionsImpl
 
   override def closeAppsMoment(): Ui[Any] = drawerLayout <~ dlCloseDrawerEnd
 
-  override def back: Ui[Any] =
-    if (statuses.mode == EditWidgetsMode) {
-      Ui(statuses.transformation match {
-        case Some(_) => presenter.backToActionEditWidgets()
-        case _ => presenter.closeModeEditWidgets()
-      })
-    } else if (isDrawerTabsOpened) {
-      closeDrawerTabs
-    } else if (isMenuVisible) {
-      closeMenu()
-    } else if (isDrawerVisible) {
-      revealOutDrawer
-    } else if (isActionShowed) {
-      unrevealActionFragment
-    } else if (isCollectionMenuVisible) {
-      closeCollectionMenu()
-    } else {
-      Ui.nop
-    }
-
-  override def resetAction: Ui[Any] = turnOffFragmentContent
-
-  override def destroyAction: Ui[Any] = (actionFragmentContent <~ vBlankBackground) ~ Ui(removeActionFragment)
+//  override def back: Ui[Any] =
+//    if (statuses.mode == EditWidgetsMode) {
+//      Ui(statuses.transformation match {
+//        case Some(_) => presenter.backToActionEditWidgets()
+//        case _ => presenter.closeModeEditWidgets()
+//      })
+//    } else if (isDrawerTabsOpened) {
+//      closeDrawerTabs
+//    } else if (isMenuVisible) {
+//      closeMenu()
+//    } else if (isDrawerVisible) {
+//      revealOutDrawer
+//    } else if (isActionShowed) {
+//      unrevealActionFragment
+//    } else if (isCollectionMenuVisible) {
+//      closeCollectionMenu()
+//    } else {
+//      Ui.nop
+//    }
 
   override def logout: Ui[Any] = cleanWorkspaces() ~ Ui(presenter.goToWizard())
 

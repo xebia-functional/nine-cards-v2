@@ -13,14 +13,15 @@ import cards.nine.process.theme.models.NineCardsTheme
 import cats.implicits._
 import macroid.ActivityContextWrapper
 
-class LauncherJobs(
+case class LauncherJobs(
   mainLauncherUiActions: MainLauncherUiActions,
   workspaceUiActions: WorkspaceUiActions,
   menuDrawersUiActions: MenuDrawersUiActions,
   appDrawerUiActions: MainAppDrawerUiActions,
   navigationUiActions: NavigationUiActions,
   dockAppsUiActions: DockAppsUiActions,
-  topBarUiActions: TopBarUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  topBarUiActions: TopBarUiActions,
+  widgetUiActions: WidgetUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs { self =>
 
   lazy val momentPreferences = new MomentPreferences
@@ -41,6 +42,7 @@ class LauncherJobs(
 
     for {
       _ <- mainLauncherUiActions.initialize()
+      _ <- widgetUiActions.initialize()
       _ <- initServices
       _ <- di.userProcess.register
       theme <- getThemeTask
@@ -65,7 +67,7 @@ class LauncherJobs(
 
   def pause(): TaskService[Unit] = di.observerRegister.unregisterObserverTask()
 
-  def destroy(): TaskService[Unit] = mainLauncherUiActions.destroy()
+  def destroy(): TaskService[Unit] = widgetUiActions.destroy()
 
   def reloadAppsMomentBar(): TaskService[Unit] = {
 

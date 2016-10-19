@@ -7,6 +7,7 @@ import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -16,16 +17,15 @@ import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.launcher._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
-import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
+import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
-class MainLauncherUiActions(val dom: LauncherDOM)
+case class MainLauncherUiActions(dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -33,18 +33,20 @@ class MainLauncherUiActions(val dom: LauncherDOM)
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
-  lazy val appWidgetManager = AppWidgetManager.getInstance(activityContextWrapper.application)
-
-  lazy val appWidgetHost = new AppWidgetHost(activityContextWrapper.application, R.id.app_widget_host_id)
-
-  def initialize(): TaskService[Unit] = {
-    (Ui(appWidgetHost.startListening()) ~
-      systemBarsTint.initAllSystemBarsTint() ~
+  def initialize(): TaskService[Unit] =
+    (systemBarsTint.initAllSystemBarsTint() ~
       prepareBars ~
       (dom.root <~ dragListener())).toService
+
+  def resetAction(): TaskService[Unit] = {
+    val collectionMoment = dom.getData.headOption flatMap (_.moment) flatMap (_.collection)
+    ((dom.fragmentContent <~ vClickable(false)) ~
+      (dom.drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))).toService
   }
 
-  def destroy(): TaskService[Unit] = TaskService.right(appWidgetHost.stopListening())
+  def destroyAction(): TaskService[Unit] =
+    ((dom.actionFragmentContent <~ vBlankBackground) ~
+      Ui(dom.getFragment foreach (fragment => removeFragment(fragment)))).toService
 
   private[this] def prepareBars =
     KitKat.ifSupportedThen {

@@ -16,6 +16,7 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
+import cards.nine.app.ui.launcher.jobs.WidgetsJobs
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models._
 import cards.nine.models.TermCounter
@@ -429,24 +430,24 @@ object EditWidgetsTopPanelLayoutTweaks {
 
   type W = EditWidgetsTopPanelLayout
 
-  def ewtInit(implicit presenter: LauncherPresenter) = Tweak[W] (_.init.run)
+  def ewtInit(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.init.run)
 
-  def ewtResizing(implicit presenter: LauncherPresenter) = Tweak[W] (_.resizing.run)
+  def ewtResizing(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.resizing.run)
 
-  def ewtMoving(implicit presenter: LauncherPresenter) = Tweak[W] (_.moving.run)
+  def ewtMoving(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.moving.run)
 
 }
 
 object EditWidgetsBottomPanelLayoutTweaks {
   type W = EditWidgetsBottomPanelLayout
 
-  def ewbInit(implicit context: ActivityContextWrapper, theme: NineCardsTheme) = Tweak[W] (_.init.run)
+  def ewbInit(implicit theme: NineCardsTheme) = Tweak[W] (_.init.run)
 
   def ewbShowActions = Tweak[W] (_.showActions().run)
 
   def ewbAnimateActions = Tweak[W] (_.animateActions().run)
 
-  def ewbAnimateCursors(implicit context: ActivityContextWrapper) = Tweak[W] (_.animateCursors.run)
+  def ewbAnimateCursors = Tweak[W] (_.animateCursors().run)
 }
 
 object EditHourMomentLayoutTweaks {

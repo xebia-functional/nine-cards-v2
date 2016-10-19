@@ -11,6 +11,7 @@ import android.widget.ImageView
 import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{AppUtils, DragObject, SystemBarsTint, UiContext}
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
@@ -56,7 +57,7 @@ import scala.util.{Failure, Try}
 import LauncherActivity._
 import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
 
-class MainAppDrawerUiActions(dom: LauncherDOM)
+case class MainAppDrawerUiActions(dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -183,6 +184,29 @@ class MainAppDrawerUiActions(dom: LauncherDOM)
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): TaskService[Unit] =
     addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact.number)).toService
+
+  def closeTabs(): TaskService[Unit] = closeDrawerTabs.toService
+
+  def close(): TaskService[Unit] = {
+
+    def isShowingAppsAlphabetical = dom.recycler.isType(AppsAlphabetical.name)
+
+    def resetData(searchIsEmpty: Boolean) =
+      if (searchIsEmpty && isShowingAppsAlphabetical) {
+        (dom.recycler <~ rvScrollToTop) ~ (dom.scrollerLayout <~ fslReset)
+      } else {
+        closeCursorAdapter ~ loadAppsAlphabetical ~ (dom.searchBoxView <~ sbvUpdateContentView(AppsView))
+      }
+
+    val collectionMoment = dom.getData.headOption flatMap (_.moment) flatMap (_.collection)
+    val searchIsEmpty = dom.searchBoxView.isEmpty
+    ((dom.drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank)) ~
+      (dom.topBarPanel <~ vVisible) ~
+      (dom.searchBoxView <~ sbvClean <~ sbvDisableSearch) ~
+      ((dom.drawerContent <~~
+        closeAppDrawer(AppDrawerAnimation.readValue, dom.appDrawerMain)) ~~
+        resetData(searchIsEmpty))).toService
+  }
 
   private[this] def manageContactException(throwable: Throwable) = throwable match {
     case e: CallPermissionException => appDrawerJobs.requestReadCallLog()

@@ -12,6 +12,7 @@ import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.drawables.CharDrawable
+import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
@@ -28,7 +29,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
-class MenuDrawersUiActions(dom: LauncherDOM)
+case class MenuDrawersUiActions(dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -82,6 +83,14 @@ class MenuDrawersUiActions(dom: LauncherDOM)
       case Some(_) => dlUnlockedEnd
       case None => dlLockedClosedEnd
     }))).toService
+
+  def openAppsMoment(): TaskService[Unit] =
+    ((dom.drawerLayout ~> dlIsLockedClosedDrawerEnd) map {
+      case false => dom.drawerLayout <~ dlOpenDrawerEnd
+      case _ => Ui.nop
+    }).toService
+
+  def close(): TaskService[Unit] = closeMenu.toService
 
   private[this] def closeMenu(): Ui[Any] = dom.drawerLayout <~ dlCloseDrawer
 

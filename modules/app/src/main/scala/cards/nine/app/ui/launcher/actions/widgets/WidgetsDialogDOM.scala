@@ -3,7 +3,7 @@ package cards.nine.app.ui.launcher.actions.widgets
 import cards.nine.models.AppWidget
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
-trait WidgetsDOM {
+trait WidgetsDialogDOM {
 
   self: TypedFindView =>
 
@@ -13,7 +13,7 @@ trait WidgetsDOM {
 
 }
 
-trait WidgetsListener {
+trait WidgetsDialogListener {
 
   def loadWidgets(): Unit
 

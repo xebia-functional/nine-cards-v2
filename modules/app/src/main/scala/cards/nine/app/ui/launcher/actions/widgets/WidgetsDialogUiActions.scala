@@ -22,10 +22,10 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 
-trait WidgetsUiActions
+trait WidgetsDialogUiActions
   extends Styles {
 
-  self: BaseActionFragment with WidgetsDOM with WidgetsListener =>
+  self: BaseActionFragment with WidgetsDialogDOM with WidgetsDialogListener =>
 
   val unselectedAlpha = .3f
 

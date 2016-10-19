@@ -51,47 +51,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   lazy val momentPreferences = new MomentPreferences
 
-  def initialize(): Unit = {
-
-    def initServices: TaskService[Unit] =
-      di.externalServicesProcess.initializeStrictMode *>
-        di.externalServicesProcess.initializeCrashlytics *>
-        di.externalServicesProcess.initializeFirebase *>
-        di.externalServicesProcess.initializeStetho
-
-    (initServices *> di.userProcess.register).resolveAsync2()
-
-    actions.initialize.run
-  }
-
-  def resume(): Unit = {
-    di.observerRegister.registerObserver()
-    if (momentPreferences.loadWeather) {
-      updateWeather().resolveAsync()
-    }
-    if (actions.isEmptyCollectionsInWorkspace) {
-      loadLauncherInfo()
-    } else if (momentPreferences.nonPersist) {
-      changeMomentIfIsAvailable()
-    }
-  }
-
   private[this] def updateWeather(): TaskService[Unit] =
     for {
       maybeCondition <- di.recognitionProcess.getWeather.map(_.conditions.headOption).resolveLeftTo(None)
       _ = momentPreferences.weatherLoaded(maybeCondition.isEmpty || maybeCondition.contains(UnknownCondition))
       _ <- actions.showWeather(maybeCondition).toService
     } yield ()
-
-  def pause(): Unit = di.observerRegister.unregisterObserver()
-
-  def destroy(): Unit = actions.destroy.run
-
-  def back(): Unit = actions.back.run
-
-  def resetAction(): Unit = actions.resetAction.run
-
-  def destroyAction(): Unit = actions.destroyAction.run
 
   def logout(): Unit = actions.logout.run
 
@@ -243,15 +208,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def goToMomentWorkspace(): Unit = (actions.goToMomentWorkspace() ~ actions.closeAppsMoment()).run
 
-  def clickWorkspaceBackground(): Unit = {
-    (statuses.mode, statuses.transformation) match {
-      case (NormalMode, _) => actions.openAppsMoment().run
-      case (EditWidgetsMode, Some(_)) => backToActionEditWidgets()
-      case (EditWidgetsMode, None) => closeModeEditWidgets()
-      case _ =>
-    }
-  }
-
   def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
     card.packageName foreach { packageName =>
       val category = moment map MomentCategory getOrElse FreeCategory
@@ -337,152 +293,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
-  def openModeEditWidgets(id: Int): Unit = if (!actions.isWorkspaceScrolling) {
-    statuses = statuses.copy(mode = EditWidgetsMode, transformation = None, idWidget = Some(id))
-    actions.openModeEditWidgets().run
-  }
-
-  def backToActionEditWidgets(): Unit = {
-    statuses = statuses.copy(transformation = None)
-    actions.reloadViewEditWidgets().run
-  }
-
-  def loadViewEditWidgets(id: Int): Unit = {
-    statuses = statuses.copy(idWidget = Some(id), transformation = None)
-    actions.reloadViewEditWidgets().run
-  }
-
   def closeModeEditWidgets(): Unit = {
     statuses = statuses.copy(mode = NormalMode, idWidget = None)
     actions.closeModeEditWidgets().run
   }
-
-  def resizeWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
-    statuses = statuses.copy(transformation = Some(ResizeTransformation))
-    actions.resizeWidget().run
-  }
-
-  def moveWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
-    statuses = statuses.copy(transformation = Some(MoveTransformation))
-    actions.moveWidget().run
-  }
-
-  def arrowWidget(arrow: Arrow): Unit = if (statuses.mode == EditWidgetsMode) {
-
-    type WidgetMovement = (Int, (Int, Int))
-
-    val limits = Option((WidgetsOps.rows, WidgetsOps.columns))
-
-    def outOfTheLimit(area: WidgetArea) =
-      area.spanX <= 0 ||
-        area.spanY <= 0 ||
-        area.startX + area.spanX > WidgetsOps.columns ||
-        area.startY + area.spanY > WidgetsOps.rows
-
-    def resizeIntersect(idWidget: Int): TaskService[Boolean] = {
-
-      def convertSpace(widgetArea: WidgetArea) = {
-        val (increaseX, increaseY) = operationArgs
-        widgetArea.copy(
-          spanX = widgetArea.spanX + increaseX,
-          spanY = widgetArea.spanY + increaseY)
-      }
-
-      for {
-        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption(s"Can't find the widget with id $idWidget")
-        widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
-        newSpace = convertSpace(widget.area)
-      } yield {
-        outOfTheLimit(newSpace) ||
-          widgetsByMoment.filterNot(_.id == widget.id).exists(w => newSpace.intersect(w.area, limits))
-      }
-    }
-
-    @scala.annotation.tailrec
-    def searchSpaceForMoveWidget(
-      movements: List[(Int, Int)],
-      widget: Widget,
-      otherWidgets: Seq[Widget]): Option[WidgetMovement] =
-      movements match {
-        case Nil => None
-        case head :: tail =>
-          val (displaceX, displaceY) = head
-          val newPosition = widget.area.copy(
-            startX = widget.area.startX + displaceX,
-            startY = widget.area.startY + displaceY)
-          if (outOfTheLimit(newPosition)) {
-            None
-          } else {
-            val widgetsIntersected = otherWidgets.filter(w => newPosition.intersect(w.area, limits))
-            widgetsIntersected match {
-              case Nil => Option((widget.id, head))
-              case intersected =>
-                searchSpaceForMoveWidget(tail, widget, otherWidgets)
-            }
-          }
-      }
-
-    def moveIntersect(idWidget: Int): TaskService[Option[WidgetMovement]] =
-      for {
-        widget <- di.widgetsProcess.getWidgetById(idWidget)
-          .resolveOption(s"Can't find the widget with id $idWidget")
-        widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
-      } yield {
-        val otherWidgets = widgetsByMoment.filterNot(_.id == widget.id)
-        searchSpaceForMoveWidget(steps(widget.area), widget, otherWidgets)
-      }
-
-    def operationArgs: (Int, Int) = arrow match {
-      case ArrowUp => (0, -1)
-      case ArrowDown => (0, 1)
-      case ArrowRight => (1, 0)
-      case ArrowLeft => (-1, 0)
-    }
-
-    def steps(area: WidgetArea): List[(Int, Int)] = (arrow match {
-      case ArrowUp => 1 to area.startY map (p => (0, -p))
-      case ArrowDown => 1 until (WidgetsOps.columns - area.startY) map (p => (0, p))
-      case ArrowRight => 1 until (WidgetsOps.rows - area.startX) map (p => (p, 0))
-      case ArrowLeft => 1 to area.startX map (p => (-p, 0))
-    }).toList
-
-    (statuses.idWidget, statuses.transformation) match {
-      case (Some(id), Some(ResizeTransformation)) =>
-        resizeIntersect(id).resolveAsync2(
-          onResult = (intersect: Boolean) => {
-            if (intersect) {
-              actions.showWidgetCantResizeMessage().run
-            } else {
-              val (increaseX, increaseY) = operationArgs
-              di.widgetsProcess.resizeWidget(id, increaseX, increaseY).resolveAsyncUi2(
-                onResult = (_) => actions.resizeWidgetById(id, increaseX, increaseY),
-                onException = (_) => actions.showContactUsError())
-            }
-          },
-          onException = (_) => actions.showContactUsError().run)
-      case (Some(id), Some(MoveTransformation)) =>
-        moveIntersect(id).resolveAsync2(
-          onResult = {
-            case Some((idWidget, (displaceX, displaceY))) =>
-              di.widgetsProcess.moveWidget(id, displaceX, displaceY).resolveAsyncUi2(
-                onResult = (_) => actions.moveWidgetById(idWidget, displaceX, displaceY),
-                onException = (_) => actions.showContactUsError())
-            case _ => actions.showWidgetCantMoveMessage().run
-          },
-          onException = (_) => actions.showContactUsError())
-      case _ => actions.showContactUsError().run
-    }
-
-  }
-
-  def cancelWidget(maybeAppWidgetId: Option[Int]): Unit = if (statuses.mode == EditWidgetsMode) {
-    (maybeAppWidgetId match {
-      case Some(id) => actions.cancelWidget(id)
-      case _ => Ui.nop
-    }).run
-  }
-
-  def editWidgetsShowActions(): Unit = actions.editWidgetsShowActions().run
 
   def goToEditMoment(): Unit = {
     val momentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
@@ -660,14 +474,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       activity.startActivity(wizardIntent)
     }
   }
-
-  def goToWidgets(): Unit = actions.showWidgetsDialog().run
-
-  def deleteWidget(): Unit =
-    (statuses.idWidget match {
-      case Some(id) => actions.deleteSelectedWidget()
-      case _ => actions.showContactUsError()
-    }).run
 
   def deleteDBWidget(): Unit =
     statuses.idWidget match {
@@ -1047,16 +853,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
 trait LauncherUiActions {
 
-  def initialize: Ui[Any]
-
-  def destroy: Ui[Any]
-
-  def back: Ui[Any]
-
-  def resetAction: Ui[Any]
-
-  def destroyAction: Ui[Any]
-
   def logout: Ui[Any]
 
   def closeTabs: Ui[Any]
@@ -1084,22 +880,6 @@ trait LauncherUiActions {
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): Ui[Any]
 
   def reloadDockApps(dockApp: DockAppData): Ui[Any]
-
-  def openModeEditWidgets(): Ui[Any]
-
-  def resizeWidget(): Ui[Any]
-
-  def moveWidget(): Ui[Any]
-
-  def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Ui[Any]
-
-  def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Ui[Any]
-
-  def cancelWidget(appWidgetId: Int): Ui[Any]
-
-  def editWidgetsShowActions(): Ui[Any]
-
-  def reloadViewEditWidgets(): Ui[Any]
 
   def closeModeEditWidgets(): Ui[Any]
 
@@ -1162,8 +942,6 @@ trait LauncherUiActions {
 
   def replaceWidget(widget: Widget): Ui[Any]
 
-  def deleteSelectedWidget(): Ui[Any]
-
   def unhostWidget(id: Int): Ui[Any]
 
   def hostWidget(packageName: String, className: String): Ui[Any]
@@ -1173,8 +951,6 @@ trait LauncherUiActions {
   def getWidgetInfoById(appWidgetId: Int): Option[(ComponentName, Cell)]
 
   def clearWidgets(): Ui[Any]
-
-  def showWidgetsDialog(): Ui[Any]
 
   def showSelectMomentDialog(moments: Seq[Moment]): Ui[Any]
 

@@ -12,17 +12,14 @@ import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.PositionsUtils._
-import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.components.drawables.{CharDrawable, EdgeWorkspaceDrawable}
-import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
+import cards.nine.app.ui.components.drawables.CharDrawable
+import cards.nine.app.ui.components.layouts.WorkspaceItemMenu
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
-import cards.nine.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.launcher.LauncherUiActionsImpl
 import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
@@ -30,8 +27,6 @@ import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
-import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
-import cards.nine.app.ui.preferences.commons.IsDeveloper
 import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.Collection
@@ -39,7 +34,6 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.NavigationViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -121,56 +115,6 @@ trait CollectionsUiActions
   lazy val menuLauncherSettings = Option(findView(TR.menu_launcher_settings))
 
   lazy val fragmentContent = Option(findView(TR.action_fragment_content))
-
-  def initCollectionsUi: Ui[Any] = {
-
-    def goToSettings(): Ui[Any] = {
-      closeCollectionMenu() ~~ uiStartIntentForResult(
-        intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
-        requestCode = goToPreferences)
-    }
-
-    (drawerLayout <~ dlStatusBarBackground(R.color.primary)) ~
-      (navigationView <~
-        navigationViewStyle <~
-        nvNavigationItemSelectedListener(itemId => {
-          (goToMenuOption(itemId) ~ closeMenu()).run
-          true
-        })) ~
-      (paginationPanel <~ On.longClick((workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
-      (topBarPanel <~ tblInit(CollectionsWorkSpace)) ~
-      (workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
-      (workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
-      (menuCollectionRoot <~ vGone) ~
-      (editWidgetsBottomPanel <~ ewbInit) ~
-      (workspaces <~
-        lwsListener(
-          LauncherWorkSpacesListener(
-            onStartOpenMenu = startOpenCollectionMenu,
-            onUpdateOpenMenu = updateOpenCollectionMenu,
-            onEndOpenMenu = closeCollectionMenu
-          )
-        ) <~
-        awsListener(AnimatedWorkSpacesListener(
-          onClick = () => presenter.clickWorkspaceBackground(),
-          onLongClick = () => (workspaces <~ lwsOpenMenu).run)
-        )) ~
-      (menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
-      (menuLauncherWallpaper <~ On.click {
-        closeCollectionMenu() ~~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
-      }) ~
-      (menuLauncherWidgets <~ On.click {
-        closeCollectionMenu() ~~ Ui(presenter.goToWidgets())
-      }) ~
-      (menuLauncherSettings <~ On.click {
-        goToSettings()
-      } <~ On.longClick {
-        Ui(IsDeveloper.convertToDeveloper) ~
-          uiShortToast2(R.string.developerOptionsActivated) ~
-          goToSettings() ~
-          Ui(true)
-      })
-  }
 
   def showEditCollection(collection: Collection): Ui[Any] = {
     val view = collectionActionsPanel flatMap (_.leftActionView)
