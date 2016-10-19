@@ -144,7 +144,6 @@ trait CollectionsUiActions
       (menuCollectionRoot <~ vGone) ~
       (editWidgetsBottomPanel <~ ewbInit) ~
       (workspaces <~
-        lwsInitialize(presenter, theme) <~
         lwsListener(
           LauncherWorkSpacesListener(
             onStartOpenMenu = startOpenCollectionMenu,
@@ -369,7 +368,7 @@ trait CollectionsUiActions
     val sizeIconWorkSpaceMenuItem = resGetDimensionPixelSize(R.dimen.size_workspace_menu_item)
     val (startX: Int, startY: Int) = maybeView map calculateAnchorViewPosition getOrElse(0, 0)
     val (startWX: Int, startWY: Int) = workspaces map calculateAnchorViewPosition getOrElse(0, 0)
-    val (endPosX: Int, endPosY: Int) = workspaces map (w => (startWX + w.statuses.dimen.width / 2, startWY + w.statuses.dimen.height / 2)) getOrElse(0, 0)
+    val (endPosX: Int, endPosY: Int) = workspaces map (w => (startWX + w.animatedWorkspaceStatuses.dimen.width / 2, startWY + w.animatedWorkspaceStatuses.dimen.height / 2)) getOrElse(0, 0)
     val x = startX + (sizeIconWorkSpaceMenuItem / 2)
     val y = startY + (sizeIconWorkSpaceMenuItem / 2)
     val args = new Bundle()
