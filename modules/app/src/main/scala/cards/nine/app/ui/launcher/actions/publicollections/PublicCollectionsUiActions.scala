@@ -8,8 +8,8 @@ import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAda
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.{NineCardsCategory, TopSharedCollection, TypeSharedCollection}
-import cards.nine.models.{Collection, SharedCollection, types}
+import cards.nine.models.types.{LatestSharedCollection, NineCardsCategory, TopSharedCollection, TypeSharedCollection}
+import cards.nine.models.{Collection, SharedCollection}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -45,7 +45,7 @@ trait PublicCollectionsUiActions
             values = values,
             onItemClickListener = {
               case 0 => loadPublicCollectionsByTypeSharedCollection(TopSharedCollection)
-              case _ => loadPublicCollectionsByTypeSharedCollection(types.LatestSharedCollection)
+              case _ => loadPublicCollectionsByTypeSharedCollection(LatestSharedCollection)
             })
         }) ~
       (categoryFilter <~
@@ -92,7 +92,7 @@ trait PublicCollectionsUiActions
 
   def updateTypeCollection(typeSharedCollection: TypeSharedCollection): TaskService[Unit] = (typeSharedCollection match {
     case TopSharedCollection => typeFilter <~ tvText(R.string.top)
-    case types.LatestSharedCollection => typeFilter <~ tvText(R.string.latest)
+    case LatestSharedCollection => typeFilter <~ tvText(R.string.latest)
   }).toService
 
   def close(): TaskService[Unit] = unreveal().toService
