@@ -18,11 +18,11 @@ trait ApiTestData extends ApplicationTestData {
     sessionToken = sessionToken)
 
   val awarenessLocation = Location(
-      latitude = latitude,
-      longitude = longitude,
-      countryCode = Option(countryCode),
-      countryName = Option(countryName),
-      addressLines = Seq(street, city, postalCode))
+    latitude = latitude,
+    longitude = longitude,
+    countryCode = Option(countryCode),
+    countryName = Option(countryName),
+    addressLines = Seq(street, city, postalCode))
 
   val categorizedDetailPackages = seqApplication map { app =>
     CategorizedDetailPackage(

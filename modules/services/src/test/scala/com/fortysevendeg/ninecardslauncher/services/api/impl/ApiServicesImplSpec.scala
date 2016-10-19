@@ -1,26 +1,24 @@
 package cards.nine.services.api.impl
 
 import cards.nine.api._
-import cards.nine.commons.services.TaskService
-import cards.nine.commons.services.TaskService._
-import cards.nine.commons.test.data.SharedCollectionValues._
-import cards.nine.commons.test.data.UserV1Values._
-import cards.nine.commons.test.data.{UserTestData, SharedCollectionTestData, CollectionTestData, ApiTestData}
-import cards.nine.models.Device
-import cards.nine.services.api._
-import cards.nine.models._
 import cards.nine.api.rest.client.http.HttpClientException
 import cards.nine.api.rest.client.messages.ServiceClientResponse
+import cards.nine.api.version2.{ServiceMarketHeader, ServiceHeader}
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.SharedCollectionValues._
+import cards.nine.commons.test.data.UserV1Values._
+import cards.nine.commons.test.data.{ApiTestData, CollectionTestData, SharedCollectionTestData}
+import cards.nine.models.{Device, _}
+import cards.nine.services.api._
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
-import cards.nine.commons.test.data.SharedCollectionValues._
 
 import scala.reflect.ClassTag
-import scala.util.Random
 
 trait ApiServicesSpecification
   extends Specification
@@ -30,7 +28,6 @@ trait ApiServicesSpecification
     extends Scope
     with ApiServicesImplData
     with ApiTestData
-    with CollectionTestData
     with SharedCollectionTestData {
 
     implicit val requestConfigV1 = RequestConfigV1(
@@ -38,7 +35,7 @@ trait ApiServicesSpecification
       token = userV1Token,
       marketToken = Option(userV1MarketToken))
 
-    implicit val requestConfig = RequestConfig(
+    implicit val apiRequestConfig = RequestConfig(
       apiKey = userV1ApiKey,
       sessionToken = userV1SessionToken,
       androidId = userV1AndroidId,
@@ -49,16 +46,16 @@ trait ApiServicesSpecification
       appKey = userV1AppKey,
       localization = userV1Localization)
 
-    val serviceHeader = version2.ServiceHeader(
-      requestConfig.apiKey,
-      requestConfig.sessionToken,
-      requestConfig.androidId)
+    val serviceHeader = ServiceHeader(
+      apiRequestConfig.apiKey,
+      apiRequestConfig.sessionToken,
+      apiRequestConfig.androidId)
 
-    val serviceMarketHeader = version2.ServiceMarketHeader(
-      requestConfig.apiKey,
-      requestConfig.sessionToken,
-      requestConfig.androidId,
-      requestConfig.marketToken)
+    val serviceMarketHeader = ServiceMarketHeader(
+      apiRequestConfig.apiKey,
+      apiRequestConfig.sessionToken,
+      apiRequestConfig.androidId,
+      apiRequestConfig.marketToken)
 
     val apiService = mock[cards.nine.api.version2.ApiService]
 
@@ -325,7 +322,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.categorize(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, seqCategorizedApp)))))
           }
 
         val result = apiServices.googlePlayPackages(seqCategorizedApp.map(_.packageName)).value.run
@@ -451,16 +448,16 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.recommendations(any, any, any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.RecommendationsResponse](statusCode, Some(recommendationResponse))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.RecommendationsResponse](statusCode, Some(recommendationsResponse))))
           }
 
-        val result = apiServices.getRecommendedApps(category, excludedPackages, limit).value.run
+        val result = apiServices.getRecommendedApps(userV1Category, excludedPackages, userV1Limit).value.run
         result must beLike {
           case Right(recommendedApps) =>
-            recommendedApps.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
+            recommendedApps.map(_.packageName) shouldEqual seqRecommendationApp.map(_.packageName)
         }
 
-        there was one(apiService).recommendations(===(category), any, ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
+        there was one(apiService).recommendations(===(userV1Category), any, ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
       }
 
     "return an ApiServiceConfigurationException when the base url is empty" in
@@ -468,7 +465,7 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns ""
 
-        mustLeft[ApiServiceConfigurationException](apiServices.getRecommendedApps(category, Seq.empty, limit))
+        mustLeft[ApiServiceConfigurationException](apiServices.getRecommendedApps(userV1Category, Seq.empty, userV1Limit))
       }
 
     "return an ApiServiceException when the service returns an exception" in
@@ -477,7 +474,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.recommendations(any, any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
-        mustLeft[ApiServiceException](apiServices.getRecommendedApps(category, Seq.empty, limit))
+        mustLeft[ApiServiceException](apiServices.getRecommendedApps(userV1Category, Seq.empty, userV1Limit))
       }
 
   }
@@ -491,10 +488,10 @@ class ApiServicesImplSpec
         apiService.recommendationsByApps(any, any)(any, any) returns
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(recommendationByAppsResponse)))))
 
-        val result = apiServices.getRecommendedAppsByPackages(packages, excludedPackages, limit).value.run
+        val result = apiServices.getRecommendedAppsByPackages(userV1Packages, excludedPackages, userV1Limit).value.run
         result must beLike {
           case Right(recommendedApps) =>
-            recommendedApps.map(_.packageName) shouldEqual recommendationApps.map(_.packageName)
+            recommendedApps.map(_.packageName) shouldEqual seqRecommendationApp.map(_.packageName)
         }
 
         there was one(apiService).recommendationsByApps(===(recommendationsByAppsRequest), ===(serviceMarketHeader))(any, any)
@@ -507,7 +504,7 @@ class ApiServicesImplSpec
         apiService.recommendationsByApps(any, any)(any, any) returns
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
-        val result = apiServices.getRecommendedAppsByPackages(packages, excludedPackages, limit).value.run
+        val result = apiServices.getRecommendedAppsByPackages(userV1Packages, excludedPackages, userV1Limit).value.run
         result must beLike {
           case Right(recommendedApps) =>
             recommendedApps must beEmpty
@@ -521,7 +518,7 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns ""
 
-        mustLeft[ApiServiceConfigurationException](apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit))
+        mustLeft[ApiServiceConfigurationException](apiServices.getRecommendedAppsByPackages(userV1Packages, Seq.empty, userV1Limit))
       }
 
     "return an ApiServiceException when the service returns an exception" in
@@ -530,7 +527,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.recommendationsByApps(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
-        mustLeft[ApiServiceException](apiServices.getRecommendedAppsByPackages(packages, Seq.empty, limit))
+        mustLeft[ApiServiceException](apiServices.getRecommendedAppsByPackages(userV1Packages, Seq.empty, userV1Limit))
       }
 
   }
@@ -593,13 +590,13 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
           }
 
-        val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeTop, offset, limit).value.run
+        val result = apiServices.getSharedCollectionsByCategory(userV1Category, collectionTypeTop, offset, userV1Limit).value.run
         result must beLike {
           case Right(shareCollections) =>
-            shareCollections.size shouldEqual collections.size
+            shareCollections.size shouldEqual seqCollection.size
         }
 
-        there was one(apiService).topCollections(===(category), ===(offset), ===(limit), ===(serviceMarketHeader))(any)
+        there was one(apiService).topCollections(===(userV1Category), ===(offset), ===(userV1Limit), ===(serviceMarketHeader))(any)
       }
 
     "return an ApiServiceException when the service returns an exception for TOP apps" in
@@ -608,7 +605,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.topCollections(any, any, any, any)(any) returns TaskService(Task(Either.left(exception)))
 
-        mustLeft[ApiServiceException](apiServices.getSharedCollectionsByCategory(category, collectionTypeTop, offset, limit))
+        mustLeft[ApiServiceException](apiServices.getSharedCollectionsByCategory(userV1Category, collectionTypeTop, offset, userV1Limit))
       }
 
     "return a valid response if the services returns a valid response for LATEST apps" in
@@ -616,15 +613,15 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns baseUrl
         apiService.latestCollections(any, any, any, any)(any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(version2.CollectionsResponse(collections))))))
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(version2.CollectionsResponse(seqCollection))))))
 
-        val result = apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit).value.run
+        val result = apiServices.getSharedCollectionsByCategory(userV1Category, collectionTypeLatest, offset, userV1Limit).value.run
         result must beLike {
           case Right(shareCollections) =>
-            shareCollections.size shouldEqual collections.size
+            shareCollections.size shouldEqual seqCollection.size
         }
 
-        there was one(apiService).latestCollections(===(category), ===(offset), ===(limit), ===(serviceMarketHeader))(any)
+        there was one(apiService).latestCollections(===(userV1Category), ===(offset), ===(userV1Limit), ===(serviceMarketHeader))(any)
       }
 
     "return an ApiServiceException when the service returns an exception for LATEST apps" in
@@ -633,7 +630,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.latestCollections(any, any, any, any)(any) returns TaskService(Task(Either.left(exception)))
 
-        mustLeft[ApiServiceException](apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit))
+        mustLeft[ApiServiceException](apiServices.getSharedCollectionsByCategory(userV1Category, collectionTypeLatest, offset, userV1Limit))
       }
 
     "return an ApiServiceException for an invalid collection type" in
@@ -641,7 +638,7 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns baseUrl
 
-        mustLeft[ApiServiceException](apiServices.getSharedCollectionsByCategory(category, collectionTypeUnknown, offset, limit))
+        mustLeft[ApiServiceException](apiServices.getSharedCollectionsByCategory(userV1Category, collectionTypeUnknown, offset, userV1Limit))
 
         there was no(apiService).latestCollections(any, any, any, any)(any)
       }
@@ -651,7 +648,7 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns ""
 
-        mustLeft[ApiServiceConfigurationException](apiServices.getSharedCollectionsByCategory(category, collectionTypeLatest, offset, limit))
+        mustLeft[ApiServiceConfigurationException](apiServices.getSharedCollectionsByCategory(userV1Category, collectionTypeLatest, offset, userV1Limit))
       }
 
   }
@@ -667,7 +664,7 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
           }
 
-        val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
+        val result = apiServices.createSharedCollection(sharedCollectionName, author, userV1Packages, userV1Category, userV1Icon, community).value.run
         result must beLike {
           case Right(shareCollectionId) =>
             shareCollectionId shouldEqual sharedCollectionId
@@ -681,7 +678,7 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns ""
 
-        val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
+        val result = apiServices.createSharedCollection(sharedCollectionName, author, userV1Packages, userV1Category, userV1Icon, community).value.run
         result must beAnInstanceOf[Left[ApiServiceConfigurationException, _]]
       }
 
@@ -692,7 +689,7 @@ class ApiServicesImplSpec
         apiService.createCollection(any, any)(any, any) returns
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
-        val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
+        val result = apiServices.createSharedCollection(sharedCollectionName, author, userV1Packages, userV1Category, userV1Icon, community).value.run
         result must beAnInstanceOf[Left[ApiServiceException,  _]]
       }
 
@@ -702,7 +699,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.createCollection(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
-        val result = apiServices.createSharedCollection(name, author, packages, category, icon, community).value.run
+        val result = apiServices.createSharedCollection(sharedCollectionName, author, userV1Packages, userV1Category, userV1Icon, community).value.run
         result must beAnInstanceOf[Left[ApiServiceException,  _]]
       }
 
@@ -717,7 +714,7 @@ class ApiServicesImplSpec
         apiService.updateCollection(any, any, any)(any, any) returns
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(updateCollectionResponse)))))
 
-        val result = apiServices.updateSharedCollection(sharedCollectionId, Some(name), packages).value.run
+        val result = apiServices.updateSharedCollection(sharedCollectionId, Some(sharedCollectionName), userV1Packages).value.run
         result must beLike {
           case Right(shareCollectionId) =>
             shareCollectionId shouldEqual sharedCollectionId
@@ -733,7 +730,7 @@ class ApiServicesImplSpec
         apiService.updateCollection(any, any, any)(any, any) returns
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(updateCollectionResponse)))))
 
-        val result = apiServices.updateSharedCollection(sharedCollectionId, None, packages).value.run
+        val result = apiServices.updateSharedCollection(sharedCollectionId, None, userV1Packages).value.run
         result must beLike {
           case Right(shareCollectionId) =>
             shareCollectionId shouldEqual sharedCollectionId
@@ -748,7 +745,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns ""
 
         mustLeft[ApiServiceConfigurationException] {
-          apiServices.updateSharedCollection(sharedCollectionId, Some(name), packages)
+          apiServices.updateSharedCollection(sharedCollectionId, Some(sharedCollectionName), userV1Packages)
         }
       }
 
@@ -760,7 +757,7 @@ class ApiServicesImplSpec
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
         mustLeft[ApiServiceException] {
-          apiServices.updateSharedCollection(sharedCollectionId, Some(name), packages)
+          apiServices.updateSharedCollection(sharedCollectionId, Some(sharedCollectionName), userV1Packages)
         }
       }
 
@@ -771,7 +768,7 @@ class ApiServicesImplSpec
         apiService.updateCollection(any, any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceException] {
-          apiServices.updateSharedCollection(sharedCollectionId, Some(name), packages)
+          apiServices.updateSharedCollection(sharedCollectionId, Some(sharedCollectionName), userV1Packages)
         }
       }
 
@@ -785,13 +782,13 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.getCollections(any)(any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse(statusCode, Some(version2.CollectionsResponse(collections)))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(collectionsResponse))))
           }
 
         val result = apiServices.getPublishedCollections().value.run
         result must beLike {
           case Right(shareCollection) =>
-            shareCollection.size shouldEqual collections.size
+            shareCollection.size shouldEqual seqCollection.size
         }
 
         there was one(apiService).getCollections(===(serviceMarketHeader))(any)
@@ -839,7 +836,7 @@ class ApiServicesImplSpec
         val result = apiServices.getSubscriptions().value.run
         result must beLike {
           case Right(items) =>
-            items shouldEqual subscriptions.subscriptions
+            items shouldEqual subscriptions
         }
 
         there was one(apiService).getSubscriptions(===(serviceHeader))(any)
@@ -950,11 +947,11 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.RankAppsResponse](statusCode, Some(rankAppsResponse))))
           }
 
-        val result = apiServices.rankApps(packagesByCategorySeq, Some(location)).value.run
+        val result = apiServices.rankApps(seqPackagesByCategory, Some(userV1Localization)).value.run
         result must beLike {
           case Right(rankApps) =>
-            rankApps.map(_.category) shouldEqual items.map(_._1)
-            rankApps.map(_.packages) shouldEqual items.map(_._2)
+            rankApps.map(_.category) shouldEqual rankAppMap.map(_._1)
+            rankApps.map(_.packages) shouldEqual rankAppMap.map(_._2)
         }
 
         there was one(apiService).rankApps(===(rankAppsRequest), ===(serviceHeader))(any, any)
@@ -965,7 +962,7 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns ""
 
-        mustLeft[ApiServiceConfigurationException](apiServices.rankApps(packagesByCategorySeq, Some(location)))
+        mustLeft[ApiServiceConfigurationException](apiServices.rankApps(seqPackagesByCategory, Some(userV1Localization)))
       }
 
     "return an ApiServiceException when the service returns an exception" in
@@ -974,7 +971,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.rankApps(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
-        mustLeft[ApiServiceException](apiServices.rankApps(packagesByCategorySeq, Some(location)))
+        mustLeft[ApiServiceException](apiServices.rankApps(seqPackagesByCategory, Some(userV1Localization)))
       }
 
   }

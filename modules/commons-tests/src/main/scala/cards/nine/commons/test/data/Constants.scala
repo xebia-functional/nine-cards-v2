@@ -307,9 +307,22 @@ object UserV1Values {
   val userV1Category: String = "SOCIAL"
   val userV1Title: String = "userV1title"
   val userV1Icon: String = "userV1Icon"
+  val userV1Free: Boolean = true
+  val userV1Downloads: String = "470"
+  val userV1Stars: Double = 4.3d
+  val userV1Screenshot: String = "userV1Screenshot"
+  val userV1Limit: Int = 50
+  val userV1Packages: Seq[String] = Seq("userV1PackageName1", "userV1PackageName2", "userV1PackageName3")
+  val excludedPackages: Seq[String] = Seq("userV1PackageName1")
+  val userV1Installations: Int = 20
+  val userV1Subscriptions: Int = 10
+  val publicIdentifier: String = "publicIdentifier"
+
+  val collectionTypeTop: String  = "top"
+  val collectionTypeLatest: String = "latest"
+  val collectionTypeUnknown: String = "unknown"
 
 }
-
 
 object WidgetValues {
 

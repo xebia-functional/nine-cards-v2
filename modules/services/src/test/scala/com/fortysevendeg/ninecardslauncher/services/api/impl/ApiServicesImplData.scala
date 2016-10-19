@@ -1,13 +1,12 @@
 package cards.nine.services.api.impl
 
-import cards.nine.api._
 import cards.nine.api.version1.{User, _}
 import cards.nine.api.version2._
+import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.UserV1Values._
-import cards.nine.models._
 import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.{PackagesByCategory, Device}
 
-import scala.util.Random
 
 trait ApiServicesImplData {
 
@@ -137,23 +136,85 @@ trait ApiServicesImplData {
   val userConfig: UserConfig = userConfig(0)
 
   def categorizedApp(num: Int = 0) = CategorizedApp(
-    packageName = userV1PackageName,
+    packageName = userV1PackageName + num,
     category = userV1Category)
 
   val categorizedApp: CategorizedApp = categorizedApp(0)
   val seqCategorizedApp: Seq[CategorizedApp] = Seq(categorizedApp(0), categorizedApp(1), categorizedApp(2))
 
   def categorizedAppDetail(num: Int = 0) = CategorizedAppDetail(
-      packageName = userV1PackageName,
-      title = userV1Title,
+      packageName = userV1PackageName + num,
+      title = userV1Title + num,
       categories = Seq(userV1Category),
       icon = userV1Icon,
-      free = Random.nextBoolean(),
-      downloads = "500,000,000+",
-      stars = Random.nextDouble() * 5)
+      free = userV1Free,
+      downloads = userV1Downloads,
+      stars = userV1Stars)
 
   val categorizedAppDetail: CategorizedAppDetail = categorizedAppDetail(0)
   val seqCategorizedAppDetail: Seq[CategorizedAppDetail] = Seq(categorizedAppDetail(0), categorizedAppDetail(1), categorizedAppDetail(2))
+
+  def screenshots(num: Int = 0) = userV1Screenshot + num
+
+  val seqScreenshots: Seq[String] = Seq(screenshots(0), screenshots(1), screenshots(2))
+
+  def recommendationApp(num: Int = 0) = RecommendationApp(
+    packageName = userV1PackageName + num,
+    title = userV1Title + num,
+    downloads = userV1Downloads,
+    icon = userV1Icon,
+    stars = userV1Stars,
+    free = userV1Free,
+    screenshots = seqScreenshots)
+
+  val recommendationApp: RecommendationApp = recommendationApp(0)
+  val seqRecommendationApp: Seq[RecommendationApp] = Seq(recommendationApp(0), recommendationApp(1), recommendationApp(2))
+
+  val packageStats = PackagesStats(1, None)
+
+  def collectionApp(num: Int = 0) = CollectionApp(
+    stars = userV1Stars,
+    icon = userV1Icon,
+    packageName = userV1PackageName + num,
+    downloads = userV1Downloads,
+    category = userV1Category,
+    title = userV1Title,
+    free = userV1Free)
+
+  val collectionApp: CollectionApp = collectionApp(0)
+  val seqCollectionApp: Seq[CollectionApp] = Seq(collectionApp(0), collectionApp(1), collectionApp(2))
+
+  def collection(num: Int = 0) = Collection(
+    name = sharedCollectionName,
+    author = author,
+    icon = userV1Icon,
+    category = userV1Category,
+    community = community,
+    publishedOn = publishedOn.toString,
+    installations = Some(userV1Installations),
+    views = Some(views),
+    subscriptions = Some(userV1Subscriptions),
+    publicIdentifier = publicIdentifier,
+    appsInfo = seqCollectionApp,
+    packages = seqCollectionApp map (_.packageName))
+
+  val collection: Collection = collection(0)
+  val seqCollection: Seq[Collection] = Seq(collection(0), collection(1), collection(2))
+
+  def packagesByCategorySeq(num: Int = 0) = PackagesByCategory(
+    category = NineCardsCategory(userV1Category),
+    packages = userV1Packages)
+
+  val seqPackagesByCategory: Seq[PackagesByCategory] = Seq(packagesByCategorySeq(0), packagesByCategorySeq(1), packagesByCategorySeq(2))
+
+  val rankAppMap = Map(seqPackagesByCategory map (
+    packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
+
+  val recommendationsResponse = RecommendationsResponse(items = seqRecommendationApp)
+
+  val recommendationByAppsResponse = RecommendationsByAppsResponse(apps = seqRecommendationApp)
+
+  val recommendationsByAppsRequest = RecommendationsByAppsRequest(userV1Packages, excludedPackages, userV1Limit)
 
   val loginRequest = ApiLoginRequest(userV1email, userV1AndroidId, userV1TokenId)
 
@@ -161,173 +222,22 @@ trait ApiServicesImplData {
 
   val categorizeOneRequest = CategorizeRequest(seqCategorizedApp.headOption.map(_.packageName).toSeq)
 
-  val categorizeRequest = version2.CategorizeRequest(seqCategorizedApp.map(_.packageName))
+  val categorizeRequest = CategorizeRequest(seqCategorizedApp.map(_.packageName))
 
+  val recommendationsRequest = RecommendationsRequest(excludedPackages, userV1Limit)
 
-//  def generatePackagesByCategorySeq(num: Int = 10) =
-//    1 to num map { _ =>
-//      PackagesByCategory(
-//        category = NineCardsCategory(category),
-//        packages = packages
-//      )
-//    }
-//
+  val createCollectionRequest = CreateCollectionRequest(sharedCollectionName, author, userV1Icon, userV1Category, community, userV1Packages)
 
-//
-//  def generateCategorizedAppsDetail(num: Int = 10) =
-//    1 to num map { _ =>
-//      generateCategorizedAppDetail
-//    }
-//
+  val updateCollectionRequest = UpdateCollectionRequest(Some(CollectionUpdateInfo(sharedCollectionName)), Some(userV1Packages))
 
-//
+  val updateCollectionResponse = UpdateCollectionResponse(sharedCollectionId, packageStats)
 
-//
-//
-//
-//  def generateRecommendationApp =
-//    version2.RecommendationApp(
-//      packageName = Random.nextString(10),
-//      title = Random.nextString(10),
-//      downloads = "500,000,000+",
-//      icon = Random.nextString(10),
-//      stars = Random.nextDouble() * 5,
-//      free = Random.nextBoolean(),
-//      screenshots = Seq("screenshot1", "screenshot2", "screenshot3"))
-//
-//  def generateCollection(collectionApps: Seq[cards.nine.api.version2.CollectionApp]) =
-//    version2.Collection(
-//      name = Random.nextString(10),
-//      author = Random.nextString(10),
-//      icon = Random.nextString(10),
-//      category = "SOCIAL",
-//      community = Random.nextBoolean(),
-//      publishedOn = "\"2016-08-19T09:39:00.359000\"",
-//      installations = Some(Random.nextInt(10)),
-//      views = Some(Random.nextInt(100)),
-//      subscriptions = Some(Random.nextInt()),
-//      publicIdentifier = Random.nextString(10),
-//      appsInfo = collectionApps,
-//      packages = collectionApps map (_.packageName))
-//
-//  def generateCollectionApp =
-//    version2.CollectionApp(
-//      stars = Random.nextDouble() * 5,
-//      icon = Random.nextString(10),
-//      packageName = Random.nextString(10),
-//      downloads = "500,000,000+",
-//      category = "SOCIAL",
-//      title = Random.nextString(10),
-//      free = Random.nextBoolean())
-//
-//  val offset = 0
-//
-//  val limit = 20
-//
-//  val category = "COMMUNICATION"
-//
-//  val name = "Name"
-//
-//  val author = "Author"
-//
-//  val packages = List("Package1", "Package2")
-//
-//  val excludedPackages = List("Package3", "Package4")
-//
-//  val icon = "Icon"
-//
-//  val community = true
-//
-//  val collectionTypeTop = "top"
-//  val collectionTypeLatest = "latest"
-//  val collectionTypeUnknown = "unknown"
-//
-////  val user = generateUser
-//
+  val collectionsResponse = CollectionsResponse(seqCollection)
 
-//
-  val categorizeAppsDetail = generateCategorizedAppsDetail()
-//
-//  val categorizedDetailPackages = categorizeAppsDetail map { app =>
-//    CategorizedDetailPackage(
-//      packageName = app.packageName,
-//      title = app.title,
-//      category = app.categories.headOption,
-//      icon = app.icon,
-//      free = app.free,
-//      downloads = app.downloads,
-//      stars = app.stars)
-//  }
-//
-//  val recommendationApps = 1 to 10 map (_ => generateRecommendationApp)
-//
-//  val recommendationResponse = version2.RecommendationsResponse(recommendationApps)
-//
-//  val recommendationByAppsResponse = version2.RecommendationsByAppsResponse(recommendationApps)
-//
-//  val collectionApps1 = 1 to 5 map (_ => generateCollectionApp)
-//  val collectionApps2 = 1 to 5 map (_ => generateCollectionApp)
-//  val collectionApps3 = 1 to 5 map (_ => generateCollectionApp)
-//
-//  val collections = Seq(
-//    generateCollection(collectionApps1),
-//    generateCollection(collectionApps2),
-//    generateCollection(collectionApps3))
-//
-//  val sharedCollection = generateCollection(collectionApps1)
-//
-////  val userConfig = generateUserConfig
-//
-//  val apiKey = Random.nextString(10)
-//
-//  val sessionToken = Random.nextString(20)
-//
-//  val deviceId = "device-id"
-//
-//  val deviceToken = Random.nextString(20)
-//
-//  val secretToken = Random.nextString(20)
-//
-////  val permissions = Seq("permission1", "permission2")
-//
-//  val email = "email@dot.com"
-//
-//  val packageName = Random.nextString(20)
-//
-//  val location = "ES"
-//
-//  val androidId = Random.nextString(10)
-//
-//  val tokenId = Random.nextString(30)
-//
-//  val sharedCollectionId = Random.nextString(30)
-//
-//  val packageStats = version2.PackagesStats(1, None)
-//
-//  val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(sharedCollectionId))
-//
-//  val createCollectionRequest = version2.CreateCollectionRequest(name, author, icon, category, community, packages)
-//
-//  val updateCollectionRequest = version2.UpdateCollectionRequest(Some(CollectionUpdateInfo(name)), Some(packages))
-//
-//  val updateCollectionResponse = version2.UpdateCollectionResponse(sharedCollectionId, packageStats)
-//
-//  val recommendationsRequest = version2.RecommendationsRequest(excludedPackages, limit)
-//
-//  val recommendationsByAppsRequest = version2.RecommendationsByAppsRequest(packages, excludedPackages, limit)
-//
+  val rankAppsRequest = RankAppsRequest(rankAppMap, Some(userV1Localization))
 
+  val rankAppsResponse = RankAppsResponse(rankAppMap)
 
+  val subscriptions = SubscriptionsResponse(subscriptions = Seq(sharedCollectionId))
 
-
-//
-//
-//  val packagesByCategorySeq = generatePackagesByCategorySeq()
-//
-//  val items = Map(packagesByCategorySeq map (
-//    packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
-//
-//  val rankAppsRequest = version2.RankAppsRequest(items, Some(location))
-//
-//  val rankAppsResponse = version2.RankAppsResponse(items)
 }
