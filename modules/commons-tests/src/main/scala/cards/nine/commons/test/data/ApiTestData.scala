@@ -11,7 +11,7 @@ trait ApiTestData extends ApplicationTestData {
     apiKey = apiKey,
     sessionToken = sessionToken,
     androidId = androidId,
-    marketToken = Some(marketToken))
+    marketToken = Option(marketToken))
 
   val loginResponse = LoginResponse(
     apiKey = apiKey,
@@ -20,8 +20,8 @@ trait ApiTestData extends ApplicationTestData {
   val awarenessLocation = Location(
       latitude = latitude,
       longitude = longitude,
-      countryCode = Some(countryCode),
-      countryName = Some(countryName),
+      countryCode = Option(countryCode),
+      countryName = Option(countryName),
       addressLines = Seq(street, city, postalCode))
 
   val categorizedDetailPackages = seqApplication map { app =>

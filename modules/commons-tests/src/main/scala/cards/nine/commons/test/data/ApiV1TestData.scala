@@ -6,14 +6,24 @@ import cards.nine.models._
 
 trait ApiV1TestData {
 
-  val requestConfigV1 = RequestConfigV1(
-    deviceId = deviceId,
+  def deviceId(num: Int = 0) = userDeviceId + num
+
+  val deviceId: String = deviceId(0)
+
+  def deviceName(num: Int = 0) = userDeviceName + num
+
+  val deviceName: String = deviceName(0)
+
+  def requestConfigV1(num: Int = 0) = RequestConfigV1(
+    deviceId = deviceId(num),
     token = sessionToken,
-    marketToken = Some(marketToken))
+    marketToken = Option(marketToken))
+
+  val requestConfigV1: RequestConfigV1 = requestConfigV1(0)
 
   def device(num: Int = 0) = Device(
-    name = deviceName + num,
-    deviceId = deviceId + num,
+    name = deviceName(num),
+    deviceId = deviceId(num),
     secretToken = marketToken,
     permissions = permissions)
 
@@ -51,7 +61,7 @@ trait ApiV1TestData {
 
   def userV1Device(num: Int = 0) = UserV1Device(
     deviceId = deviceIdPrefix + num,
-    deviceName = deviceName + num,
+    deviceName = deviceName,
     collections = seqUserV1Collection)
 
   val seqUserV1Device: Seq[UserV1Device] = Seq(userV1Device(0), userV1Device(1), userV1Device(2))

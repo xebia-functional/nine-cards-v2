@@ -56,7 +56,7 @@ class UserV1ProcessImplSpec
       new UserV1ProcessScope {
 
         contextSupport.getActiveUserId returns None
-        val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
+        val result = userConfigProcess.getUserInfo(userDeviceName, permissions)(contextSupport).value.run
         result must beAnInstanceOf[Left[UserV1Exception,  _]]
 
         there was one(contextSupport).getActiveUserId
@@ -72,7 +72,7 @@ class UserV1ProcessImplSpec
         contextSupport.getActiveUserId returns Some(userId)
         mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(None)))
 
-        val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
+        val result = userConfigProcess.getUserInfo(userDeviceName, permissions)(contextSupport).value.run
         result must beAnInstanceOf[Left[UserV1Exception,  _]]
 
         there was one(contextSupport).getActiveUserId
@@ -88,7 +88,7 @@ class UserV1ProcessImplSpec
         contextSupport.getActiveUserId returns Some(userId)
         mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user.copy(email = None)))))
 
-        val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
+        val result = userConfigProcess.getUserInfo(userDeviceName, permissions)(contextSupport).value.run
         result must beAnInstanceOf[Left[UserV1Exception,  _]]
 
         there was one(contextSupport).getActiveUserId
@@ -104,7 +104,7 @@ class UserV1ProcessImplSpec
         contextSupport.getActiveUserId returns Some(userId)
         mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user.copy(marketToken = None)))))
 
-        val result = userConfigProcess.getUserInfo(deviceName, permissions)(contextSupport).value.run
+        val result = userConfigProcess.getUserInfo(userDeviceName, permissions)(contextSupport).value.run
         result must beAnInstanceOf[Left[UserV1Exception,  _]]
 
         there was one(contextSupport).getActiveUserId

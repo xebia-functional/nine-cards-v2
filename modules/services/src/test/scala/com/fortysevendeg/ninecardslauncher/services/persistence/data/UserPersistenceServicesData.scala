@@ -11,7 +11,7 @@ trait UserPersistenceServicesData {
     apiKey = Option(apiKey),
     deviceToken = Option(deviceToken),
     marketToken = Option(marketToken),
-    deviceName = Option(deviceName),
+    deviceName = Option(userDeviceName),
     deviceCloudId = Option(deviceCloudId),
     name = Option(userName),
     avatar = Option(avatar),

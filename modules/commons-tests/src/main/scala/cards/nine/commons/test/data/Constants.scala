@@ -221,6 +221,7 @@ object SharedCollectionValues {
 object UserValues {
 
   val userId: Int = 1
+  val newUserId: Int = 10
   val nonExistentUserId: Int = 10001
   val email: String = "user@email.com"
   val sessionToken: String = "sessionToken"
@@ -228,15 +229,15 @@ object UserValues {
   val deviceToken: String = "deviceToken"
   val anotherDeviceToken = "anotherDeviceToken"
   val marketToken: String = "marketToken"
-  val deviceName: String = "deviceName"
-  val anotherDeviceName = "anotherDeviceName"
-  val deviceId = "XX-47-XX"
+  val userDeviceName: String = "deviceName"
+  val anotherUserDeviceName = "anotherDeviceName"
+  val userDeviceId = "deviceId"
   val deviceCloudId: String = "deviceCloudId"
   val anotherDeviceCloudId = "anotherDeviceCloudId"
   val userName: String = "userName"
   val avatar: String = "avatar"
   val cover: String = "cover"
-  val androidId = "012354654894654654"
+  val androidId = "androidId"
   val emailTokenId = "emailTokenId"
 
   val deletedUser: Int = 1
