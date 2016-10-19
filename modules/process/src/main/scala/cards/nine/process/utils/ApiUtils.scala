@@ -4,8 +4,8 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.User
-import cards.nine.services.api.{ApiServiceException, ImplicitsApiServiceExceptions, RequestConfig}
+import cards.nine.models.{RequestConfig, User}
+import cards.nine.services.api.{ApiServiceException, ImplicitsApiServiceExceptions}
 import cards.nine.services.persistence.PersistenceServices
 import cats.syntax.either._
 import monix.eval.Task

@@ -1,4 +1,4 @@
-package cards.nine.process.sharedcollections
+package cards.nine.models.types
 
 sealed trait TypeSharedCollection {
   val name: String

@@ -2,30 +2,29 @@ package cards.nine.process.recommendations.impl
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.ApiTestData
+import cards.nine.commons.test.data.ApiValues._
 import cards.nine.process.recommendations.{RecommendedAppsConfigurationException, RecommendedAppsException}
 import cards.nine.process.utils.ApiUtils
-import cards.nine.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices, RecommendationResponse}
+import cards.nine.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices}
 import cards.nine.services.persistence.PersistenceServices
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.test.TaskServiceTestOps._
-import cats.syntax.either._
-import cards.nine.commons.services.TaskService._
 
 import scala.reflect.ClassTag
-
 
 trait RecommendationsProcessSpecification
   extends Specification
   with Mockito
-  with RecommendationsProcessData {
+  with ApiTestData {
 
   val apiException = ApiServiceException("")
   val apiConfigException = ApiServiceConfigurationException("")
-
-  val recommendationApps = generateRecommendationApps()
 
   trait RecommendationsProcessScope
     extends Scope {
@@ -61,15 +60,15 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedApps(any, any, any)(any) returns
-          TaskService(Task(Either.right(RecommendationResponse(statusCodeOk, recommendationApps))))
+          TaskService(Task(Either.right(seqRecommendedApp)))
 
-        val result = process.getRecommendedAppsByCategory(category)(contextSupport).value.run
+        val result = process.getRecommendedAppsByCategory(apiCategory)(contextSupport).value.run
 
-        there was one(apiServices).getRecommendedApps(category.name, Seq.empty, limit)(requestConfig)
+        there was one(apiServices).getRecommendedApps(apiCategory.name, Seq.empty, limit)(requestConfig)
 
         result must beLike {
           case Right(response) =>
-            response.seq.map(_.packageName).toSet shouldEqual recommendationApps.map(_.packageName).toSet
+            response.seq.map(_.packageName).toSet shouldEqual seqRecommendedApp.map(_.packageName).toSet
         }
 
       }
@@ -80,7 +79,7 @@ class RecommendationsProcessSpec
         apiServices.getRecommendedApps(any, any, any)(any) returns
           TaskService(Task(Either.left(apiException)))
 
-        mustLeft[RecommendedAppsException](process.getRecommendedAppsByCategory(category)(contextSupport))
+        mustLeft[RecommendedAppsException](process.getRecommendedAppsByCategory(apiCategory)(contextSupport))
       }
 
     "returns a RecommendedAppsConfigurationException if service returns a config exception" in
@@ -89,7 +88,7 @@ class RecommendationsProcessSpec
         apiServices.getRecommendedApps(any, any, any)(any) returns
           TaskService(Task(Either.left(apiConfigException)))
 
-        mustLeft[RecommendedAppsConfigurationException](process.getRecommendedAppsByCategory(category)(contextSupport))
+        mustLeft[RecommendedAppsConfigurationException](process.getRecommendedAppsByCategory(apiCategory)(contextSupport))
       }
 
   }
@@ -100,7 +99,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedAppsByPackages(any, any, any)(any) returns
-          TaskService(Task(Either.right(RecommendationResponse(statusCodeOk, recommendationApps))))
+          TaskService(Task(Either.right(seqRecommendedApp)))
 
         val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).value.run
 
@@ -108,7 +107,7 @@ class RecommendationsProcessSpec
 
         result must beLike {
           case Right(response) =>
-            response.seq.map(_.packageName).toSet shouldEqual recommendationApps.map(_.packageName).toSet
+            response.seq.map(_.packageName).toSet shouldEqual seqRecommendedApp.map(_.packageName).toSet
         }
 
       }

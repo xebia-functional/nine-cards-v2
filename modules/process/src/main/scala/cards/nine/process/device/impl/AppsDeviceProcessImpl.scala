@@ -11,7 +11,6 @@ import cards.nine.process.device._
 import cards.nine.process.device.models.IterableApps
 import cards.nine.process.device.utils.KnownCategoriesUtil
 import cards.nine.process.utils.ApiUtils
-import cards.nine.services.api.GooglePlayPackagesResponse
 import cards.nine.services.image._
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 
@@ -84,12 +83,12 @@ trait AppsDeviceProcessImpl
       if (filteredApps.nonEmpty) {
         for {
           requestConfig <- apiUtils.getRequestConfig
-          googlePlayPackagesResponse <- apiServices.googlePlayPackages(filteredApps map (_.packageName))(requestConfig)
-            .resolveLeftTo(GooglePlayPackagesResponse(200, Seq.empty))
+          categorizedPackages <- apiServices.googlePlayPackages(filteredApps map (_.packageName))(requestConfig)
+            .resolveLeftTo(Seq.empty)
           apps = filteredApps map { app =>
             val knownCategory = findCategory(app.packageName)
             val category = knownCategory getOrElse {
-              val categoryName = googlePlayPackagesResponse.packages find (_.packageName == app.packageName) flatMap (_.category)
+              val categoryName = categorizedPackages find (_.packageName == app.packageName) flatMap (_.category)
               categoryName map (NineCardsCategory(_)) getOrElse Misc
             }
             app.copy(category = category)
@@ -131,7 +130,7 @@ trait AppsDeviceProcessImpl
     for {
       requestConfig <- apiUtils.getRequestConfig
       appCategory <- apiServices.googlePlayPackage(packageName)(requestConfig)
-        .map(_.app.category)
+        .map(_.category)
         .resolveLeftTo(None)
     } yield {
       appCategory map (NineCardsCategory(_)) getOrElse Misc

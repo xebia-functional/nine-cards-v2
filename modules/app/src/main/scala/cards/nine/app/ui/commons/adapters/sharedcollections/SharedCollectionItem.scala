@@ -5,14 +5,13 @@ import android.graphics.drawable.shapes.OvalShape
 import android.view.ViewGroup.LayoutParams._
 import android.view.{View, ViewGroup}
 import android.widget._
-import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.SharedCollectionOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
 import cards.nine.models.types.{NotPublished, PublishedByMe, PublishedByOther, Subscribed}
-import cards.nine.process.sharedcollections.models._
+import cards.nine.models.{SharedCollection, SharedCollectionPackage}
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

@@ -9,9 +9,8 @@ import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{Collection, User}
 import cards.nine.models.types.{AppCardType, PublishedByMe}
-import cards.nine.process.sharedcollections.models.UpdateSharedCollection
+import cards.nine.models.{Collection, User}
 import macroid.ContextWrapper
 import monix.eval.Task
 
@@ -33,10 +32,9 @@ class SynchronizeDeviceServiceJobs(implicit contextWrapper: ContextWrapper)
           (collection.publicCollectionStatus, collection.sharedCollectionId) match {
             case (PublishedByMe, Some(sharedCollectionId)) =>
               di.sharedCollectionsProcess.updateSharedCollection(
-                UpdateSharedCollection(
-                  sharedCollectionId = sharedCollectionId,
-                  name = collection.name,
-                  packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName))).map(Option(_))
+                sharedCollectionId = sharedCollectionId,
+                name = collection.name,
+                packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName)).map(Option(_))
             case _ => TaskService.right(None)
           }
 

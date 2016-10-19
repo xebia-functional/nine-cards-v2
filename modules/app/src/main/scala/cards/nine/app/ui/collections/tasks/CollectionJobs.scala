@@ -4,10 +4,8 @@ import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.ApplicationData
-import cards.nine.models.Collection
 import cards.nine.models.types.GetByName
-import cards.nine.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
+import cards.nine.models.{ApplicationData, Collection, SharedCollection, SharedCollectionPackage}
 
 trait CollectionJobs {
 

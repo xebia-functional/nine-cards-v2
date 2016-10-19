@@ -20,6 +20,8 @@ import cards.nine.app.ui.launcher.jobs.WidgetsJobs
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models._
 import cards.nine.models.TermCounter
+import cards.nine.models.types.{ConditionWeather, NineCardsMoment}
+import cards.nine.models.{TermCounter, _}
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R

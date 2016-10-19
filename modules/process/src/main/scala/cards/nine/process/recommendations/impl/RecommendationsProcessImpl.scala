@@ -11,8 +11,7 @@ import cards.nine.models.types.NineCardsCategory
 
 
 class RecommendationsProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
-  extends RecommendationsProcess
-  with Conversions {
+  extends RecommendationsProcess {
 
   val apiUtils = new ApiUtils(persistenceServices)
 
@@ -22,13 +21,13 @@ class RecommendationsProcessImpl(apiServices: ApiServices, persistenceServices: 
     (for {
       userConfig <- apiUtils.getRequestConfig
       response <- apiServices.getRecommendedApps(category.name, excludePackages, defaultRecommendedAppsLimit)(userConfig)
-    } yield response.seq map toRecommendedApp).resolveLeft(mapLeft)
+    } yield response.seq).resolveLeft(mapLeft)
 
   override def getRecommendedAppsByPackages(packages: Seq[String], excludePackages: Seq[String] = Seq.empty)(implicit context: ContextSupport) =
     (for {
       userConfig <- apiUtils.getRequestConfig
       response <- apiServices.getRecommendedAppsByPackages(packages, excludePackages, defaultRecommendedAppsLimit)(userConfig)
-    } yield response.seq map toRecommendedApp).resolveLeft(mapLeft)
+    } yield response.seq).resolveLeft(mapLeft)
 
   private[this] def mapLeft[T]: (NineCardException) => Either[NineCardException, T] = {
     case e: ApiServiceConfigurationException => Left(RecommendedAppsConfigurationException(e.message, Some(e)))

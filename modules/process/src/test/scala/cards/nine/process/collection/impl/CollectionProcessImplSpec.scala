@@ -8,12 +8,12 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.commons.test.data.CardValues._
-import cards.nine.commons.test.data.CollectionTestData
 import cards.nine.commons.test.data.CollectionValues._
-import cards.nine.models.{Collection, CollectionProcessConfig, NineCardsIntent}
+import cards.nine.commons.test.data.{ApiTestData, CollectionTestData}
+import cards.nine.models.{CollectionProcessConfig, NineCardsIntent, RequestConfig}
 import cards.nine.process.collection.{CardException, CollectionException}
 import cards.nine.process.utils.ApiUtils
-import cards.nine.services.api.{ApiServiceException, ApiServices, GooglePlayPackagesDetailResponse, RequestConfig}
+import cards.nine.services.api.{ApiServiceException, ApiServices}
 import cards.nine.services.apps.{AppsInstalledException, AppsServices}
 import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.contacts.ContactsServices
@@ -23,7 +23,7 @@ import org.specs2.specification.Scope
 
 trait CollectionProcessImplSpecification
   extends TaskServiceSpecification
-  with CollectionProcessImplData
+  with ApiTestData
   with Mockito {
 
   val persistenceServiceException = PersistenceServiceException("")
@@ -524,7 +524,7 @@ class CollectionProcessImplSpec
           serviceRight(Seq.empty)
         val secondHalfPackages = categorizedDetailPackages.filter(p => secondHalf.exists(_.packageName.contains(p.packageName)))
         mockApiServices.googlePlayPackagesDetail(any)(any) returns
-          serviceRight(GooglePlayPackagesDetailResponse(200, secondHalfPackages))
+          serviceRight(secondHalfPackages)
         mockPersistenceServices.addCards(any) returns
           serviceRight(secondHalf)
 
@@ -546,7 +546,7 @@ class CollectionProcessImplSpec
 
         mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
         mockAwarenessServices.getLocation(any) returns serviceRight(awarenessLocation)
-        mockApiServices.rankApps(any, any)(any) returns serviceRight(rankAppsResponseList)
+        mockApiServices.rankApps(any, any)(any) returns serviceRight(rankApps)
 
         collectionProcess.rankApps()(contextSupport).mustRight(_ shouldEqual packagesByCategory)
       }
@@ -563,7 +563,7 @@ class CollectionProcessImplSpec
 
         mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
         mockAwarenessServices.getLocation(any) returns serviceLeft(apiServiceException)
-        mockApiServices.rankApps(any, any)(any) returns serviceRight(rankAppsResponseList)
+        mockApiServices.rankApps(any, any)(any) returns serviceRight(rankApps)
 
         collectionProcess.rankApps()(contextSupport).mustRight(_ shouldEqual packagesByCategory)
       }
