@@ -11,13 +11,15 @@ import macroid.ContextWrapper
 class ConnectionStatusChangedJobs(implicit contextWrapper: ContextWrapper)
   extends Jobs {
 
-  def connectionStatusChanged(intent: Intent): TaskService[Unit] = {
-    val maybeNetworkInfo = Option(intent) flatMap (i => Option(i.getParcelableExtra[android.net.NetworkInfo]("networkInfo")))
+  def connectionStatusChanged(intent: Intent): Option[TaskService[Unit]] = {
+    val maybeNetworkInfo = Option(intent) flatMap { i =>
+      Option(i.getParcelableExtra[android.net.NetworkInfo]("networkInfo"))
+    }
     maybeNetworkInfo match {
       case Some(networkInfo) if networkInfo.getType == ConnectivityManager.TYPE_WIFI =>
-        sendBroadCastTask(BroadAction(MomentForceBestAvailableActionFilter.action))
+        Some(sendBroadCastTask(BroadAction(MomentForceBestAvailableActionFilter.action)))
+      case _ => None
     }
-    TaskService.empty
   }
 
 }
