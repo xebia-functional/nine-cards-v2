@@ -303,6 +303,10 @@ object UserV1Values {
   val joinedThrough: Option[String] = None
   val tester: Boolean = false
 
+  val userV1PackageName: String = "userV1packageName"
+  val userV1Category: String = "SOCIAL"
+  val userV1Title: String = "userV1title"
+  val userV1Icon: String = "userV1Icon"
 
 }
 

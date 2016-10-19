@@ -182,7 +182,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.login(any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.ApiLoginResponse](statusCode, Some(version2.ApiLoginResponse(apiKey, sessionToken)))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.ApiLoginResponse](statusCode, Some(version2.ApiLoginResponse(userV1ApiKey, userV1SessionToken)))))
           }
 
         val result = apiServices.login(userV1email, userV1AndroidId, userV1TokenId).value.run
@@ -230,7 +230,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.installations(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.InstallationResponse](statusCode, Some(version2.InstallationResponse(androidId, deviceToken)))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.InstallationResponse](statusCode, Some(version2.InstallationResponse(userV1AndroidId, userV1DeviceToken)))))
           }
 
         val result = apiServices.updateInstallation(Some(userV1DeviceToken)).value.run
@@ -277,13 +277,13 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.categorize(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse(statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(version2.CategorizeResponse(Seq.empty, seqCategorizedApp)))))
           }
 
-        val result = apiServices.googlePlayPackage(categorizeApps.head.packageName).value.run
+        val result = apiServices.googlePlayPackage(seqCategorizedApp.head.packageName).value.run
         result must beLike {
           case Right(app) =>
-            Some(app) shouldEqual categorizeApps.headOption.map(a => CategorizedPackage(a.packageName, Some(a.category)))
+            Some(app) shouldEqual seqCategorizedApp.headOption.map(a => CategorizedPackage(a.packageName, Some(a.category)))
         }
 
         there was one(apiService).categorize(===(categorizeOneRequest), ===(serviceMarketHeader))(any, any)
@@ -328,10 +328,10 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CategorizeResponse](statusCode, Some(version2.CategorizeResponse(Seq.empty, categorizeApps)))))
           }
 
-        val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
+        val result = apiServices.googlePlayPackages(seqCategorizedApp.map(_.packageName)).value.run
         result must beLike {
           case Right(packages) =>
-            packages shouldEqual (categorizeApps map (a => CategorizedPackage(a.packageName, Some(a.category))))
+            packages shouldEqual (seqCategorizedApp map (a => CategorizedPackage(a.packageName, Some(a.category))))
         }
 
         there was one(apiService).categorize(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
@@ -344,7 +344,7 @@ class ApiServicesImplSpec
         apiService.categorize(any, any)(any, any) returns
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
-        val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
+        val result = apiServices.googlePlayPackages(seqCategorizedApp.map(_.packageName)).value.run
         result must beLike {
           case Right(packages) =>
             packages must beEmpty
@@ -367,7 +367,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.categorize(any, any)(any, any) returns TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
 
-        val result = apiServices.googlePlayPackages(categorizeApps.map(_.packageName)).value.run
+        val result = apiServices.googlePlayPackages(seqCategorizedApp.map(_.packageName)).value.run
         result must beLike {
           case Right(packages) =>
             packages must beEmpty
@@ -394,10 +394,10 @@ class ApiServicesImplSpec
         apiService.categorizeDetail(any, any)(any, any) returns
           TaskService {
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CategorizeDetailResponse](
-              statusCode, Some(version2.CategorizeDetailResponse(Seq.empty, categorizeAppsDetail)))))
+              statusCode, Some(version2.CategorizeDetailResponse(Seq.empty, seqCategorizedAppDetail)))))
           }
 
-        val result = apiServices.googlePlayPackagesDetail(categorizeApps.map(_.packageName)).value.run
+        val result = apiServices.googlePlayPackagesDetail(seqCategorizedApp.map(_.packageName)).value.run
         result must beLike {
           case Right(packages) =>
             packages shouldEqual categorizedDetailPackages
@@ -415,7 +415,7 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CategorizeDetailResponse](statusCode, None)))
           }
 
-        val result = apiServices.googlePlayPackagesDetail(categorizeApps.map(_.packageName)).value.run
+        val result = apiServices.googlePlayPackagesDetail(seqCategorizedApp.map(_.packageName)).value.run
         result must beLike {
           case Right(packages) =>
             packages must beEmpty
