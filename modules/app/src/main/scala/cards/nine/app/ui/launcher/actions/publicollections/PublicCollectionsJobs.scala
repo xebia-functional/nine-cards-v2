@@ -6,8 +6,7 @@ import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment._
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.SharedCollection
-import cards.nine.models.types.NineCardsCategory
-import cards.nine.process.sharedcollections.TypeSharedCollection
+import cards.nine.models.types.{TypeSharedCollection, NineCardsCategory}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper

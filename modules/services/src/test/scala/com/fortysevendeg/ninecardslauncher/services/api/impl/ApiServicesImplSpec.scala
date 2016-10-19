@@ -5,7 +5,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Device
 import cards.nine.services.api._
-import cards.nine.services.api.models._
+import cards.nine.models._
 import cards.nine.api.rest.client.http.HttpClientException
 import cards.nine.api.rest.client.messages.ServiceClientResponse
 import monix.eval.Task
@@ -55,8 +55,7 @@ trait ApiServicesSpecification
 
   trait ApiServicesScope
     extends Scope
-    with ApiServicesImplData
-    with Conversions {
+    with ApiServicesImplData {
 
     val apiService = mock[cards.nine.api.version2.ApiService]
 
@@ -91,7 +90,7 @@ class ApiServicesImplSpec
           }
 
         val result = apiServices.loginV1(email, Device(name, deviceId, secretToken, permissions)).value.run
-        result shouldEqual Right(toLoginResponseV1(statusCode, user))
+        result shouldEqual Right(user)
 
         there was one(apiServiceV1).login(===(loginV1User), any)(any, any)
       }
@@ -140,8 +139,7 @@ class ApiServicesImplSpec
         val result = apiServices.getUserConfigV1().value.run
         result must beLike {
           case Right(response) =>
-            response.statusCode shouldEqual statusCode
-            response.userConfig shouldEqual toUserConfig(userConfig)
+            response shouldEqual userConfig
         }
       }
 

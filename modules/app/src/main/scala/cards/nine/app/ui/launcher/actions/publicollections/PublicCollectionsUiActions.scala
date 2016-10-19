@@ -8,9 +8,8 @@ import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAda
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.types.{LatestSharedCollection, NineCardsCategory, TopSharedCollection, TypeSharedCollection}
 import cards.nine.models.{Collection, SharedCollection}
-import cards.nine.models.types.NineCardsCategory
-import cards.nine.process.sharedcollections.{LatestSharedCollection, TopSharedCollection, TypeSharedCollection}
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

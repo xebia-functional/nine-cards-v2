@@ -42,7 +42,7 @@ object Conversions  extends NineCardsIntentConversions {
 
   def toCloudStorageCollectionItem(userCollectionItem: UserV1CollectionItem) =
     CloudStorageCollectionItem(
-      itemType = userCollectionItem.itemType,
+      itemType = userCollectionItem.itemType.name,
       title = userCollectionItem.title,
       intent = userCollectionItem.intent)
 

@@ -1,6 +1,7 @@
 package cards.nine.process.recognition.impl
 
 import cards.nine.models._
+import cards.nine.models.types.{ClearCondition, CloudyCondition, FoggyCondition, InVehicleActivity}
 
 import scala.util.Random
 
