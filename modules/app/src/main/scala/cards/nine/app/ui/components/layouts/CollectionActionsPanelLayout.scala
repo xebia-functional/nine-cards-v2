@@ -10,7 +10,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.widgets.TintableButton
 import cards.nine.app.ui.components.widgets.tweaks.TintableButtonTweaks._
-import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import cards.nine.commons.javaNull
 import cards.nine.process.theme.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
@@ -23,6 +23,12 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
   def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
+
+  // TODO First implementation in order to remove LauncherPresenter
+  def presenter(implicit context: ActivityContextWrapper): LauncherPresenter = context.original.get match {
+    case Some(activity: LauncherActivity) => activity.presenter
+    case _ => throw new RuntimeException("LauncherPresenter not found")
+  }
 
   val unselectedPosition = -1
 
@@ -41,7 +47,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
   def rightActionView: Option[TintableButton] = Option(findView(TR.launcher_collections_action_2))
 
   def load(actions: Seq[CollectionActionItem])
-          (implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Ui[Any] = {
+          (implicit theme: NineCardsTheme, contextWrapper: ActivityContextWrapper): Ui[Any] = {
 
     def populate(action: CollectionActionItem, position: Int): Tweak[TintableButton] =
       tvText(action.name) +
@@ -62,7 +68,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
     }: _*)
   }
 
-  def dragController(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper): Unit = {
+  def dragController(action: Int, x: Float, y: Float)(implicit contextWrapper: ActivityContextWrapper): Unit = {
 
     def performAction(action: CollectionActionItem) = action.collectionActionType match {
       case CollectionActionAppInfo => presenter.settingsInAddItem()

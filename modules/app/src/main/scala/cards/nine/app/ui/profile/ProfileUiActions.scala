@@ -1,7 +1,7 @@
 package cards.nine.app.ui.profile
 
-import android.support.design.widget.{AppBarLayout, TabLayout}
 import android.support.design.widget.TabLayout.Tab
+import android.support.design.widget.{AppBarLayout, TabLayout}
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -20,7 +20,7 @@ import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.PublishedByOther
-import cards.nine.process.sharedcollections.models.{SharedCollection, Subscription}
+import cards.nine.models.{SharedCollection, Subscription}
 import cards.nine.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._

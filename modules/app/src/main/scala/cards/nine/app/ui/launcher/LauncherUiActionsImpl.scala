@@ -11,7 +11,6 @@ import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import android.widget.ImageView
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
-import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.Constants._
@@ -34,7 +33,6 @@ import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTwea
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.components.models.{LauncherData, LauncherMoment}
-import cards.nine.app.ui.launcher.Statuses.EditWidgetsMode
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
 import cards.nine.app.ui.launcher.collection.CollectionsUiActions
 import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
@@ -44,7 +42,7 @@ import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
 import cards.nine.models.types.{AppCardType, CardType, NineCardsMoment, _}
-import cards.nine.models.{ApplicationData, ConditionWeather, Contact, UnknownCondition, Widget, _}
+import cards.nine.models.{ApplicationData, Contact, Widget, _}
 import cards.nine.process.device.models.{LastCallsContact, _}
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
@@ -54,6 +52,8 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+
+import LauncherActivity._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -200,9 +200,9 @@ trait LauncherUiActionsImpl
     activityContextWrapper.original.get match {
       case Some(activity: AppCompatActivity) =>
         val intent = new Intent(activity, classOf[CollectionsDetailsActivity])
-        intent.putExtra(startPosition, collection.position)
-        intent.putExtra(indexColorToolbar, collection.themedColorIndex)
-        intent.putExtra(iconToolbar, collection.icon)
+        intent.putExtra(CollectionsDetailsActivity.startPosition, collection.position)
+        intent.putExtra(CollectionsDetailsActivity.indexColorToolbar, collection.themedColorIndex)
+        intent.putExtra(CollectionsDetailsActivity.iconToolbar, collection.icon)
         CollectionOpeningAnimations.readValue match {
           case anim@CircleOpeningCollectionAnimation if anim.isSupported =>
             rippleToCollection ~~
@@ -424,8 +424,8 @@ trait LauncherUiActionsImpl
   override def closeAppsMoment(): Ui[Any] = drawerLayout <~ dlCloseDrawerEnd
 
   override def back: Ui[Any] =
-    if (presenter.statuses.mode == EditWidgetsMode) {
-      Ui(presenter.statuses.transformation match {
+    if (statuses.mode == EditWidgetsMode) {
+      Ui(statuses.transformation match {
         case Some(_) => presenter.backToActionEditWidgets()
         case _ => presenter.closeModeEditWidgets()
       })
@@ -510,7 +510,7 @@ trait LauncherUiActionsImpl
 
   override def canRemoveCollections: Boolean = getCountCollections > 1
 
-  override def isWorkspaceScrolling: Boolean = workspaces exists (_.statuses.isScrolling)
+  override def isWorkspaceScrolling: Boolean = workspaces exists (_.animatedWorkspaceStatuses.isScrolling)
 
   override def getCollectionsWithMoment(moments: Seq[Moment]): Seq[(NineCardsMoment, Option[Collection])] =
     moments map {

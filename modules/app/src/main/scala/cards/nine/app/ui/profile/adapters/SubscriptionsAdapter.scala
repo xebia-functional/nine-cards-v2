@@ -4,17 +4,16 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v7.widget.RecyclerView
 import android.view.{LayoutInflater, View, ViewGroup}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.profile.SubscriptionsAdapterStyles
 import cards.nine.app.ui.profile.ops.SubscriptionOps._
-import cards.nine.process.sharedcollections.models.Subscription
+import cards.nine.models.Subscription
 import cards.nine.process.theme.models.NineCardsTheme
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

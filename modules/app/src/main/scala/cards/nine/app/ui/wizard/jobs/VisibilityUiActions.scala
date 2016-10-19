@@ -29,7 +29,7 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
       (dom.deviceRootLayout <~ vInvisible) ~
       (dom.newConfigurationContent <~ vInvisible)).toService
 
-  def goToWizard(): TaskService[Unit] = {
+  def goToWizard(cloudId: String): TaskService[Unit] = {
     val backgroundColor = resGetColor(R.color.wizard_background_step_0)
     ((dom.loadingRootLayout <~ vInvisible) ~
       (dom.userRootLayout <~ vInvisible) ~
@@ -37,7 +37,8 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
       systemBarsTint.updateStatusColor(backgroundColor) ~
       systemBarsTint.defaultStatusBar() ~
       (dom.deviceRootLayout <~ vInvisible) ~
-      (dom.newConfigurationContent <~ vInvisible)).toService
+      (dom.newConfigurationContent <~ vInvisible) ~
+      Ui(dom.onStartLoadConfiguration(cloudId))).toService
   }
 
   def goToNewConfiguration(): TaskService[Unit] =

@@ -11,10 +11,10 @@ import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons._
-import cards.nine.models.ConditionWeather
+import cards.nine.models.types.ConditionWeather
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -34,6 +34,12 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
+
+  // TODO First implementation in order to remove LauncherPresenter
+  def presenter(implicit context: ActivityContextWrapper): LauncherPresenter = context.original.get match {
+    case Some(activity: LauncherActivity) => activity.presenter
+    case _ => throw new RuntimeException("LauncherPresenter not found")
+  }
 
   lazy val collectionsSearchPanel = Option(findView(TR.launcher_search_panel))
 
@@ -67,17 +73,18 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val momentWorkspace = LayoutInflater.from(context).inflate(R.layout.moment_bar_view_panel, javaNull)
 
-  (this <~ vgAddViews(Seq(momentWorkspace, collectionWorkspace))).run
+  (this <~ vgAddViews(Seq(momentWorkspace, collectionWorkspace)) <~ vInvisible).run
 
-  def init(workSpaceType: WorkSpaceType)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
-    populate ~
+  def init(workSpaceType: WorkSpaceType)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Any] = {
+    (this <~ vVisible) ~
+      populate ~
       (workSpaceType match {
         case CollectionsWorkSpace => (momentWorkspace <~ vInvisible) ~ (collectionWorkspace <~ vVisible)
         case MomentWorkSpace => (momentWorkspace <~ vVisible) ~ (collectionWorkspace <~ vInvisible)
       })
   }
 
-  def populate(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
+  def populate(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Any] = {
     val iconColor = theme.get(SearchIconsColor)
     val pressedColor = theme.get(SearchPressedColor)
     val iconBackground = new TopBarMomentBackgroundDrawable
@@ -132,7 +139,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           vVisible)).run
     }
 
-  def reloadMoment(moment: NineCardsMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
+  def reloadMoment(moment: NineCardsMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Any] = {
     val showClock = ShowClockMoment.readValue
     val text = if (showClock) {
       s"${moment.getName} ${resGetString(R.string.atHour)}"

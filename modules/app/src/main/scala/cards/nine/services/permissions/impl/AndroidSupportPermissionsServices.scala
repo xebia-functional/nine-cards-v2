@@ -7,7 +7,7 @@ import android.support.v4.content.ContextCompat
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import cards.nine.commons.services.TaskService
-import cards.nine.models.{PermissionDenied, PermissionGranted}
+import cards.nine.models.types.{PermissionDenied, PermissionGranted}
 import cards.nine.services.permissions._
 
 class AndroidSupportPermissionsServices

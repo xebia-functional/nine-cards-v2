@@ -93,9 +93,6 @@
         </activity>
 
         <service
-            android:name="cards.nine.app.services.collections.CreateCollectionsService"/>
-
-        <service
             android:name="cards.nine.app.services.sync.SynchronizeDeviceService"/>
 
         <provider
