@@ -247,6 +247,66 @@ object UserValues {
 
 }
 
+
+object UserV1Values {
+
+  val baseUrl = "http://baseUrl"
+  val statusCode = 200
+
+  val userV1DeviceId: String = "userV1DeviceId"
+  val userV1DeviceName: String = "userV1DeviceName"
+  val userV1DeviceToken: String = "userV1DeviceToken"
+  val userV1Token: String = "userV1Token"
+  val userV1MarketToken: String = "userV1MarketToken"
+  val userV1ApiKey: String = "userV1ApiKey"
+  val userV1AndroidId: String = "userV1AndroidId"
+  val userV1TokenId: String = "userV1TokenId"
+
+  val userV1AppId: String = "userV1AppId"
+  val userV1AppKey: String = "userV1AppKey"
+  val userV1Localization: String = "EN"
+
+  val userV1Id: String = "userV1Id"
+  val userV1SessionToken: String = "userV1SessionToken"
+  val userV1email: String = "userV1@email.com"
+  val userV1Name: String = "userV1Name"
+  val userV1Password: String = "userV1Password"
+  val userV1GoogleDeviceName: String = "userV1GoogleDeviceName"
+  val userV1GoogleDeviceId: String = "userV1GoogleDeviceId"
+  val userV1SecretToken: String = "userV1SecretToken"
+  val userV1Permission: String = "userV1Permission"
+  val authFacebookId: String = "authFacebookId"
+  val authFacebookAccessToken: String = "authFacebookAccessToken"
+  val authFacebookExpirationDate: Long = 10l
+  val authTwitterId: String = "authTwitterId"
+  val authTwitterScreenName: String = "authTwitterScreenName"
+  val authTwitterConsumerKey: String = "authTwitterConsumerKey"
+  val authTwitterConsumerSecret: String = "authTwitterConsumerSecret"
+  val authTwitterAuthToken: String = "authTwitterAuthToken"
+  val authTwitterAuthTokenSecret: String = "authTwitterAuthTokenSecret"
+  val authTwitterKey: String = "authTwitterKey"
+  val authTwitterSecretKey: String = "authTwitterSecretKey"
+  val authAnonymousId: String = "authAnonymousId"
+
+  val userConfigPlusDisplayName: String = "userConfigPlusDisplayName"
+  val userConfigPlusImageType: Int = 0
+  val userConfigPlusImageUrl: String = "userConfigPlusImageUrl"
+  val userConfigPlusSecureUrl: String = "userConfigPlusSecureUrl"
+
+  val products: Seq[String] = Seq("product1", "product2", "product3")
+  val friendsReferred: Int = 5
+  val themesShared: Int = 2
+  val collectionsShared: Int = 10
+  val customCollections: Int = 4
+  val earlyAdopter: Boolean = false
+  val communityMember: Boolean = false
+  val joinedThrough: Option[String] = None
+  val tester: Boolean = false
+
+
+}
+
+
 object WidgetValues {
 
   val widgetId: Int = 1

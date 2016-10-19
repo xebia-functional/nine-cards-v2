@@ -3,6 +3,9 @@ package cards.nine.services.api.impl
 import cards.nine.api._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.commons.test.data.SharedCollectionValues._
+import cards.nine.commons.test.data.UserV1Values._
+import cards.nine.commons.test.data.{UserTestData, SharedCollectionTestData, CollectionTestData, ApiTestData}
 import cards.nine.models.Device
 import cards.nine.services.api._
 import cards.nine.models._
@@ -14,6 +17,7 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import cards.nine.commons.test.TaskServiceTestOps._
 import cats.syntax.either._
+import cards.nine.commons.test.data.SharedCollectionValues._
 
 import scala.reflect.ClassTag
 import scala.util.Random
@@ -22,40 +26,12 @@ trait ApiServicesSpecification
   extends Specification
   with Mockito {
 
-  implicit val requestConfigV1 = RequestConfigV1(
-    deviceId = Random.nextString(10),
-    token = Random.nextString(10),
-    marketToken = Option(Random.nextString(10)))
-
-  implicit val requestConfig = RequestConfig(
-    apiKey = Random.nextString(10),
-    sessionToken = Random.nextString(10),
-    androidId = Random.nextString(10),
-    marketToken = Some(Random.nextString(10)))
-
-  val apiServicesConfig = ApiServicesConfig(
-    appId = Random.nextString(10),
-    appKey = Random.nextString(10),
-    localization = "EN")
-
-  val serviceHeader = version2.ServiceHeader(
-    requestConfig.apiKey,
-    requestConfig.sessionToken,
-    requestConfig.androidId)
-
-  val serviceMarketHeader = version2.ServiceMarketHeader(
-    requestConfig.apiKey,
-    requestConfig.sessionToken,
-    requestConfig.androidId,
-    requestConfig.marketToken)
-
-  val baseUrl = "http://mockedUrl"
-
-  val statusCode = 200
-
   trait ApiServicesScope
     extends Scope
-    with ApiServicesImplData {
+    with ApiServicesImplData
+    with ApiTestData
+    with CollectionTestData
+    with SharedCollectionTestData {
 
     val apiService = mock[cards.nine.api.version2.ApiService]
 
@@ -86,11 +62,11 @@ class ApiServicesImplSpec
         apiServiceV1.baseUrl returns baseUrl
         apiServiceV1.login(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version1.User](statusCode, Some(user))))
+            Task(Either.right(ServiceClientResponse[cards.nine.api.version1.User](statusCode, Option(userV1))))
           }
 
-        val result = apiServices.loginV1(email, Device(name, deviceId, secretToken, permissions)).value.run
-        result shouldEqual Right(user)
+        val result = apiServices.loginV1(userV1email, device).value.run
+        result shouldEqual Right(userV1)
 
         there was one(apiServiceV1).login(===(loginV1User), any)(any, any)
       }
@@ -182,8 +158,8 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.ApiLoginResponse](statusCode, Some(version2.ApiLoginResponse(apiKey, sessionToken)))))
           }
 
-        val result = apiServices.login(email, androidId, tokenId).value.run
-        result shouldEqual Right(LoginResponse(statusCode, apiKey, sessionToken))
+        val result = apiServices.login(userV1email, userV1AndroidId, userV1TokenId).value.run
+        result shouldEqual Right(LoginResponse(statusCode, userV1ApiKey, userV1SessionToken))
 
         there was one(apiService).login(===(loginRequest))(any, any)
       }
@@ -193,7 +169,7 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns ""
 
-        mustLeft[ApiServiceConfigurationException](apiServices.login(email, androidId, tokenId))
+        mustLeft[ApiServiceConfigurationException](apiServices.login(userV1email, userV1AndroidId, userV1TokenId))
       }
 
     "return an ApiServiceException when the service returns None" in
@@ -205,7 +181,7 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.ApiLoginResponse](statusCode, None)))
           }
 
-        mustLeft[ApiServiceException](apiServices.login(email, androidId, tokenId))
+        mustLeft[ApiServiceException](apiServices.login(userV1email, userV1AndroidId, userV1TokenId))
       }
 
     "return an ApiServiceException when the service returns an exception" in
@@ -214,7 +190,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.login(any)(any, any) returns TaskService(Task(Either.left(exception)))
 
-        mustLeft[ApiServiceException](apiServices.login(email, androidId, tokenId))
+        mustLeft[ApiServiceException](apiServices.login(userV1email, userV1AndroidId, userV1TokenId))
       }
 
   }
@@ -230,7 +206,7 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.InstallationResponse](statusCode, Some(version2.InstallationResponse(androidId, deviceToken)))))
           }
 
-        val result = apiServices.updateInstallation(Some(deviceToken)).value.run
+        val result = apiServices.updateInstallation(Some(userV1DeviceToken)).value.run
         result must beLike {
           case Right(response) =>
             response.statusCode shouldEqual statusCode
