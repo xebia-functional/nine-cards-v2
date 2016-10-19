@@ -10,7 +10,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.process.theme.models.NineCardsTheme
 import macroid.{ActivityContextWrapper, FragmentManagerContext, Tweak}
 
-case class TopBarUiActions(dom: LauncherDOM)
+class TopBarUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],

@@ -45,7 +45,7 @@ import macroid._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class WorkspaceUiActions(dom: LauncherDOM)
+class WorkspaceUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -161,6 +161,11 @@ case class WorkspaceUiActions(dom: LauncherDOM)
   }
 
   def closeMenu(): TaskService[Unit] = closeCollectionMenu().toService
+
+  def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): TaskService[Unit] =
+    ((dom.workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager).toService
+
+  private[this] def reloadWorkspacePager: Ui[Any] = createPager((dom.workspaces ~> lwsCurrentPage()).get)
 
   private[this] def createPager(activePosition: Int): Ui[Any] = {
     def pagination(position: Int) = {

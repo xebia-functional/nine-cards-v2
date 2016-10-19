@@ -51,13 +51,20 @@ class LauncherActivity
 
   override def manageCommand(action: String, data: Option[String]): Unit = {
     (MomentsActionFilter(action), AppsActionFilter(action), CollectionsActionFilter(action), data) match {
-      case (Some(MomentReloadedActionFilter), _, _, _) => presenter.reloadAppsMomentBar()
-      case (Some(MomentConstrainsChangedActionFilter), _, _, _) => presenter.reloadAppsMomentBar()
-      case (Some(MomentForceBestAvailableActionFilter), _, _, _) => presenter.changeMomentIfIsAvailable()
-      case (_, Some(AppInstalledActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
-      case (_, Some(AppUninstalledActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
-      case (_, Some(AppUpdatedActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
-      case (_, _, Some(CollectionAddedActionFilter), Some(id)) => presenter.reloadCollection(id.toInt)
+      case (Some(MomentReloadedActionFilter), _, _, _) =>
+        launcherJobs.reloadAppsMomentBar().resolveAsync()
+      case (Some(MomentConstrainsChangedActionFilter), _, _, _) =>
+        launcherJobs.reloadAppsMomentBar().resolveAsync()
+      case (Some(MomentForceBestAvailableActionFilter), _, _, _) =>
+        launcherJobs.changeMomentIfIsAvailable().resolveAsync()
+      case (_, Some(AppInstalledActionFilter), _, _) =>
+        appDrawerJobs.loadApps(AppsAlphabetical).resolveAsync()
+      case (_, Some(AppUninstalledActionFilter), _, _) =>
+        appDrawerJobs.loadApps(AppsAlphabetical).resolveAsync()
+      case (_, Some(AppUpdatedActionFilter), _, _) =>
+        appDrawerJobs.loadApps(AppsAlphabetical).resolveAsync()
+      case (_, _, Some(CollectionAddedActionFilter), Some(id)) =>
+        launcherJobs.reloadCollection(id.toInt).resolveAsyncServiceOr(_ => launcherJobs.navigationUiActions.showContactUsError())
       case _ =>
     }
   }
@@ -175,14 +182,14 @@ object LauncherActivity {
     presenter: LauncherPresenter) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new LauncherJobs(
-      mainLauncherUiActions = MainLauncherUiActions(dom),
-      workspaceUiActions = WorkspaceUiActions(dom),
-      menuDrawersUiActions = MenuDrawersUiActions(dom),
-      appDrawerUiActions = MainAppDrawerUiActions(dom),
-      navigationUiActions = NavigationUiActions(dom),
-      dockAppsUiActions = DockAppsUiActions(dom),
-      topBarUiActions = TopBarUiActions(dom),
-      widgetUiActions = WidgetUiActions(dom))
+      mainLauncherUiActions = new MainLauncherUiActions(dom),
+      workspaceUiActions = new WorkspaceUiActions(dom),
+      menuDrawersUiActions = new MenuDrawersUiActions(dom),
+      appDrawerUiActions = new MainAppDrawerUiActions(dom),
+      navigationUiActions = new NavigationUiActions(dom),
+      dockAppsUiActions = new DockAppsUiActions(dom),
+      topBarUiActions = new TopBarUiActions(dom),
+      widgetUiActions = new WidgetUiActions(dom))
   }
 
   def createAppDrawerJobs(implicit
@@ -191,7 +198,7 @@ object LauncherActivity {
     uiContext: UiContext[_],
     presenter: LauncherPresenter) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
-    new AppDrawerJobs(MainAppDrawerUiActions(dom))
+    new AppDrawerJobs(new MainAppDrawerUiActions(dom))
   }
 
   def createNavigationJobs(implicit
@@ -201,9 +208,9 @@ object LauncherActivity {
     presenter: LauncherPresenter) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new NavigationJobs(
-      navigationUiActions = NavigationUiActions(dom),
-      menuDrawersUiActions = MenuDrawersUiActions(dom),
-      widgetUiActions = WidgetUiActions(dom))
+      navigationUiActions = new NavigationUiActions(dom),
+      menuDrawersUiActions = new MenuDrawersUiActions(dom),
+      widgetUiActions = new WidgetUiActions(dom))
   }
 
   def createWidgetsJobs(implicit
@@ -211,7 +218,7 @@ object LauncherActivity {
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
-    WidgetsJobs(WidgetUiActions(dom), NavigationUiActions(dom))
+    new WidgetsJobs(new WidgetUiActions(dom), new NavigationUiActions(dom))
   }
 
 }

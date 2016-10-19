@@ -1,6 +1,5 @@
 package cards.nine.app.ui.launcher.jobs
 
-import android.appwidget.{AppWidgetHost, AppWidgetManager}
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.view.DragEvent._
 import android.view.View.OnDragListener
@@ -25,7 +24,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
-case class MainLauncherUiActions(dom: LauncherDOM)
+class MainLauncherUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],

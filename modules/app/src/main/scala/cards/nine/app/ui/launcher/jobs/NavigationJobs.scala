@@ -9,9 +9,9 @@ import cards.nine.commons.services.TaskService.TaskService
 import macroid.ActivityContextWrapper
 
 class NavigationJobs(
-  navigationUiActions: NavigationUiActions,
-  menuDrawersUiActions: MenuDrawersUiActions,
-  widgetUiActions: WidgetUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  val navigationUiActions: NavigationUiActions,
+  val menuDrawersUiActions: MenuDrawersUiActions,
+  val widgetUiActions: WidgetUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs {
 
   def goToWizard(): TaskService[Unit] = navigationUiActions.goToWizard()

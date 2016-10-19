@@ -100,12 +100,22 @@ class EditWidgetsBottomPanelLayout(context: Context, attrs: AttributeSet, defSty
       case Some(ResizeTransformation) => resizeColor
       case _ => moveColor
     }
-    (arrowUp <~ vBackgroundCircle(color) <~ On.click(Ui(widgetJobs.arrowWidget(ArrowUp).resolveAsync()))) ~
-      (arrowDown <~ vBackgroundCircle(color) <~ On.click(Ui(widgetJobs.arrowWidget(ArrowDown).resolveAsync()))) ~
-      (arrowLeft <~ vBackgroundCircle(color) <~ On.click(Ui(widgetJobs.arrowWidget(ArrowLeft).resolveAsync()))) ~
-      (arrowRight <~ vBackgroundCircle(color) <~ On.click(Ui(widgetJobs.arrowWidget(ArrowRight).resolveAsync()))) ~
+    (arrowUp <~
+      vBackgroundCircle(color) <~
+      On.click(Ui(widgetJobs.arrowWidget(ArrowUp).resolveAsyncServiceOr(onExeption)))) ~
+      (arrowDown <~
+        vBackgroundCircle(color) <~
+        On.click(Ui(widgetJobs.arrowWidget(ArrowDown).resolveAsyncServiceOr(onExeption)))) ~
+      (arrowLeft <~
+        vBackgroundCircle(color) <~
+        On.click(Ui(widgetJobs.arrowWidget(ArrowLeft).resolveAsyncServiceOr(onExeption)))) ~
+      (arrowRight <~
+        vBackgroundCircle(color) <~
+        On.click(Ui(widgetJobs.arrowWidget(ArrowRight).resolveAsyncServiceOr(onExeption)))) ~
       (actionsContent <~ applyFadeOut()) ~
       (cursorContent <~ applyFadeIn())
   }
+
+  private[this] def onExeption(ex: Throwable) = widgetJobs.navigationUiActions.showContactUsError()
 
 }

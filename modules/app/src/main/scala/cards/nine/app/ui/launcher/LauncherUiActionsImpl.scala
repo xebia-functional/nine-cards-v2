@@ -344,26 +344,6 @@ trait LauncherUiActionsImpl
 
   override def closeAppsMoment(): Ui[Any] = drawerLayout <~ dlCloseDrawerEnd
 
-//  override def back: Ui[Any] =
-//    if (statuses.mode == EditWidgetsMode) {
-//      Ui(statuses.transformation match {
-//        case Some(_) => presenter.backToActionEditWidgets()
-//        case _ => presenter.closeModeEditWidgets()
-//      })
-//    } else if (isDrawerTabsOpened) {
-//      closeDrawerTabs
-//    } else if (isMenuVisible) {
-//      closeMenu()
-//    } else if (isDrawerVisible) {
-//      revealOutDrawer
-//    } else if (isActionShowed) {
-//      unrevealActionFragment
-//    } else if (isCollectionMenuVisible) {
-//      closeCollectionMenu()
-//    } else {
-//      Ui.nop
-//    }
-
   override def logout: Ui[Any] = cleanWorkspaces() ~ Ui(presenter.goToWizard())
 
   override def closeTabs: Ui[Any] = closeDrawerTabs

@@ -54,9 +54,11 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       databaseCollection <- di.collectionProcess.getCollectionById(currentCollection.id)
         .resolveOption(s"Can't find the collection with id ${currentCollection.id}")
       cardsAreDifferent = databaseCollection.cards != currentCollection.cards
-      currentIsMoment = currentCollection.collectionType == MomentCollectionType
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(cardsAreDifferent && currentIsMoment, ())
       _ <- actions.reloadCards(databaseCollection.cards).resolveIf(cardsAreDifferent, ())
+      // TODO Create getMomentByCollectionId #975
+      moments <- di.momentProcess.getMoments
+      currentIsMoment = moments.exists(_.collectionId.contains(currentCollection.id))
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(cardsAreDifferent && currentIsMoment, ())
     } yield databaseCollection.cards
 
   def editCard(): TaskService[Unit] =
@@ -76,11 +78,13 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
       currentCollection <- fetchCurrentCollection
       currentCollectionId = currentCollection.id
       cards = filterSelectedCards(currentCollection.cards)
-      currentIsMoment = currentCollection.collectionType == MomentCollectionType
       _ <- closeEditingMode()
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
       _ <- actions.removeCards(cards)
+      // TODO Create getMomentByCollectionId #975
+      moments <- di.momentProcess.getMoments
+      currentIsMoment = moments.exists(_.collectionId.contains(currentCollectionId))
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
     } yield cards
 
   def moveToCollection(toCollectionId: Int, collectionPosition: Int): TaskService[Seq[Card]] =
@@ -90,16 +94,18 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
         .resolveOption(s"Can't find the collection in the position $collectionPosition in the UI")
       currentCollectionId = currentCollection.id
       cards = filterSelectedCards(currentCollection.cards)
-      currentIsMoment = currentCollection.collectionType == MomentCollectionType
       otherIsMoment = toCollection.collectionType == MomentCollectionType
       _ <- closeEditingMode()
       // TODO We must to create a new methods for moving cards to collection in #828
       // We should change this calls when the method will be ready
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
       _ <- di.collectionProcess.addCards(toCollectionId, cards map (_.toData))
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment || otherIsMoment, ())
       _ <- actions.removeCards(cards)
       _ <- actions.addCardsToCollection(collectionPosition, cards)
+      // TODO Create getMomentByCollectionId #975
+      moments <- di.momentProcess.getMoments
+      currentIsMoment = moments.exists(_.collectionId.contains(currentCollectionId))
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment || otherIsMoment, ())
     } yield cards
 
   def savePublishStatus(): TaskService[Unit] =
@@ -156,10 +162,12 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
     for {
       currentCollection <- fetchCurrentCollection
       currentCollectionId = currentCollection.id
-      currentIsMoment = currentCollection.collectionType == MomentCollectionType
       cards <- di.collectionProcess.addCards(currentCollectionId, cardsRequest)
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
       _ <- actions.addCards(cards)
+      // TODO Create getMomentByCollectionId #975
+      moments <- di.momentProcess.getMoments
+      currentIsMoment = moments.exists(_.collectionId.contains(currentCollectionId))
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
     } yield cards
 
   def addShortcut(name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): TaskService[Seq[Card]] = {
@@ -177,10 +185,12 @@ class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activity
 
     for {
       currentCollection <- fetchCurrentCollection
-      currentIsMoment = currentCollection.collectionType == MomentCollectionType
       cards <- createShortcut(currentCollection.id)
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
       _ <- actions.addCards(cards)
+      // TODO Create getMomentByCollectionId #975
+      moments <- di.momentProcess.getMoments
+      currentIsMoment = moments.exists(_.collectionId.contains(currentCollection.id))
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
     } yield cards
   }
 

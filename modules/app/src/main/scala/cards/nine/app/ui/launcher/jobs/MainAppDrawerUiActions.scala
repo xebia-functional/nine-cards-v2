@@ -57,7 +57,7 @@ import scala.util.{Failure, Try}
 import LauncherActivity._
 import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
 
-case class MainAppDrawerUiActions(dom: LauncherDOM)
+class MainAppDrawerUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],

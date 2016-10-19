@@ -29,7 +29,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
-case class MenuDrawersUiActions(dom: LauncherDOM)
+class MenuDrawersUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -85,12 +85,13 @@ case class MenuDrawersUiActions(dom: LauncherDOM)
     }))).toService
 
   def openAppsMoment(): TaskService[Unit] =
-    ((dom.drawerLayout ~> dlIsLockedClosedDrawerEnd) map {
-      case false => dom.drawerLayout <~ dlOpenDrawerEnd
-      case _ => Ui.nop
+    (if ((dom.drawerLayout ~> dlIsLockedClosedDrawerEnd).get) {
+      Ui.nop
+    } else {
+      dom.drawerLayout <~ dlOpenDrawerEnd
     }).toService
 
-  def close(): TaskService[Unit] = closeMenu.toService
+  def close(): TaskService[Unit] = closeMenu().toService
 
   private[this] def closeMenu(): Ui[Any] = dom.drawerLayout <~ dlCloseDrawer
 

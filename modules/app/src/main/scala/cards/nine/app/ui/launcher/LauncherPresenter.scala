@@ -14,9 +14,9 @@ import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.commons.{BroadAction, Jobs, RequestCodes}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.drawer._
 import cards.nine.app.ui.launcher.exceptions.SpaceException
-import cards.nine.app.ui.launcher.holders._
 import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
 import cards.nine.app.ui.wizard.WizardActivity
 import cards.nine.commons.NineCardExtensions._
@@ -25,7 +25,7 @@ import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types._
-import cards.nine.models.{Card, Collection, DockApp, Moment, _}
+import cards.nine.models.{Card, Collection, Moment, _}
 import cards.nine.process.accounts._
 import cards.nine.process.device._
 import cards.nine.process.device.models._
@@ -35,8 +35,6 @@ import cats.implicits._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
-
-import LauncherActivity._
 
 import scala.language.postfixOps
 
@@ -283,16 +281,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
-  def reloadCollection(collectionId: Int): Unit = {
-    di.collectionProcess.getCollectionById(collectionId).resolveAsync2(
-      onResult = {
-        case Some(collection) => addCollection(collection)
-        case _ => actions.showContactUsError()
-      },
-      onException = (_) => actions.showContactUsError()
-    )
-  }
-
   def closeModeEditWidgets(): Unit = {
     statuses = statuses.copy(mode = NormalMode, idWidget = None)
     actions.closeModeEditWidgets().run
@@ -332,72 +320,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
             Ui(momentReloadBroadCastIfNecessary())
         case _ => Ui.nop
       })
-  }
-
-  def reloadAppsMomentBar(): Unit = {
-
-    def selectMoment(moments: Seq[Moment]) = for {
-      data <- actions.getData.headOption
-      currentMoment <- data.moment
-      moment <- moments.find(_.momentType == currentMoment.momentType)
-    } yield moment
-
-    def getCollectionById(collectionId: Option[Int]): TaskService[Option[Collection]] =
-      collectionId match {
-        case Some(id) => di.collectionProcess.getCollectionById(id)
-        case _ => TaskService.right(None)
-      }
-
-    def getCollection: TaskService[LauncherMoment] = for {
-      moments <- di.momentProcess.getMoments
-      moment = selectMoment(moments)
-      collection <- getCollectionById(moment flatMap (_.collectionId))
-    } yield LauncherMoment(moment flatMap (_.momentType), collection)
-
-    getCollection.resolveAsyncUi2(
-      onResult = {
-        case launcherMoment: LauncherMoment => actions.reloadBarMoment(launcherMoment)
-        case _ => Ui.nop
-      })
-  }
-
-  def loadLauncherInfo(): Unit = {
-
-    def getMoment = momentPreferences.getPersistMoment match {
-      case Some(moment) => di.momentProcess.fetchMomentByType(moment)
-      case _ => di.momentProcess.getBestAvailableMoment
-    }
-
-    def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
-      for {
-        collections <- di.collectionProcess.getCollections
-        dockApps <- di.deviceProcess.getDockApps
-        moment <- getMoment
-      } yield (collections, dockApps, moment)
-
-    getLauncherInfo.resolveAsyncUi2(
-      onResult = {
-        // Check if there are collections in DB, if there aren't we go to wizard
-        case (Nil, _, _) => Ui(goToWizard())
-        case (collections, apps, moment) =>
-          di.userProcess.getUser.resolveAsyncUi2(
-            onResult = user => actions.showUserProfile(
-              email = user.email,
-              name = user.userProfile.name,
-              avatarUrl = user.userProfile.avatar,
-              coverPhotoUrl = user.userProfile.cover))
-          val collectionMoment = for {
-            m <- moment
-            collectionId <- m.collectionId
-            collection <- collections.find(_.id == collectionId)
-          } yield collection
-          val launcherMoment = LauncherMoment(moment flatMap (_.momentType), collectionMoment)
-          val data = LauncherData(MomentWorkSpace, Some(launcherMoment)) +: createLauncherDataCollections(collections)
-          actions.loadLauncherInfo(data, apps map (_.toData))
-      },
-      onException = (ex: Throwable) => Ui(goToWizard()),
-      onPreTask = () => actions.showLoading()
-    )
   }
 
   def loadApps(appsMenuOption: AppsMenuOption): Unit = {
@@ -475,37 +397,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }
   }
 
-  def deleteDBWidget(): Unit =
-    statuses.idWidget match {
-      case Some(id) =>
-        di.widgetsProcess.deleteWidget(id).resolveAsyncUi2(
-          onResult = (_) => {
-            closeModeEditWidgets()
-            actions.unhostWidget(id)
-          },
-          onException = (_) => actions.showContactUsError()
-        )
-      case _ => actions.showContactUsError().run
-    }
-
-  def loadWidgetsForMoment(nineCardsMoment: NineCardsMoment): Unit = {
-
-    def getWidgets = for {
-      moment <- di.momentProcess.getMomentByType(nineCardsMoment)
-      widgets <- di.widgetsProcess.getWidgetsByMoment(moment.id)
-    } yield widgets
-
-    getWidgets.resolveAsyncUi2(
-      onPreTask = actions.clearWidgets,
-      onResult = {
-        case Nil => Ui.nop
-        case widgets => actions.addWidgets(widgets)
-      },
-      onException = (_) => actions.showContactUsError()
-    )
-
-  }
-
   def addWidget(maybeAppWidgetId: Option[Int]): Unit = {
 
     def getWidgetInfoById(appWidgetId: Int): TaskService[(ComponentName, Cell)] =
@@ -569,23 +460,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }) getOrElse actions.showContactUsError().run
   }
 
-  def hostNoConfiguredWidget(widget: Widget): Unit = {
-    statuses = statuses.copy(hostingNoConfiguredWidget = Option(widget))
-    actions.hostWidget(widget.packageName, widget.className).run
-  }
-
-  def hostWidget(widget: AppWidget): Unit = {
-    statuses = statuses.copy(hostingNoConfiguredWidget = None)
-    val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
-    currentMomentType foreach { moment =>
-      di.trackEventProcess.addWidgetToMoment(
-        widget.packageName,
-        widget.className,
-        MomentCategory(moment)).resolveAsync2()
-    }
-    actions.hostWidget(widget.packageName, widget.className).run
-  }
-
   def configureOrAddWidget(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map actions.configureWidget getOrElse actions.showContactUsError()).run
 
@@ -626,41 +500,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   private[this] def createOrUpdateDockApp(card: CardData, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath getOrElse "", position)
-
-  // Check if there is a new best available moment, if not reload the apps moment bar
-  def changeMomentIfIsAvailable(): Unit = {
-
-    // Check if the best available moment is different to the current moment, if it's different return Some(moment)
-    // in the other case None
-    def getCheckMoment: TaskService[Option[LauncherMoment]] = {
-
-      def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
-        val collectionId = moment flatMap (_.collectionId)
-        collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
-      }
-
-      for {
-        moment <- di.momentProcess.getBestAvailableMoment
-        collection <- getCollection(moment)
-        currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
-        momentType = moment flatMap (_.momentType)
-      } yield {
-        currentMomentType match {
-          case `momentType` => None
-          case _ => Option(LauncherMoment(moment flatMap (_.momentType), collection))
-        }
-      }
-    }
-
-    getCheckMoment.resolveAsyncUi2(
-      onResult = {
-        case launcherMoment@Some(_) =>
-          val data = LauncherData(MomentWorkSpace, launcherMoment)
-          actions.reloadMoment(data)
-        case _ => Ui.nop
-      },
-      onException = (_) => Ui(reloadAppsMomentBar()))
-  }
 
   def requestPermissionsResult(
     requestCode: Int,

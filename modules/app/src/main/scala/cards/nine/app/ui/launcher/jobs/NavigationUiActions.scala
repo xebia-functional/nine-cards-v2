@@ -34,7 +34,7 @@ import macroid._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-case class NavigationUiActions(dom: LauncherDOM)
+class NavigationUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -66,20 +66,16 @@ case class NavigationUiActions(dom: LauncherDOM)
   def launchWidgets(bundle: Bundle): TaskService[Unit] =
     showAction(f[WidgetsFragment], bundle).toService
 
-  def deleteSelectedWidget(): TaskService[Unit] = TaskService.right {
-    activityContextWrapper.original.get match {
-      case Some(activity: AppCompatActivity) =>
-        val ft = activity.getSupportFragmentManager.beginTransaction()
-        Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
-        ft.addToBackStack(javaNull)
-        val dialog = new AlertDialogFragment(
-          message = R.string.removeWidgetMessage,
-          positiveAction = () => widgetsJobs.deleteDBWidget().resolveAsyncServiceOr(_ =>
-            widgetsJobs.navigationUiActions.showContactUsError()))
-        dialog.show(ft, tagDialog)
-      case _ =>
-    }
-  }
+  def deleteSelectedWidget(): TaskService[Unit] = Ui {
+    val ft = fragmentManagerContext.manager.beginTransaction()
+    Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    val dialog = new AlertDialogFragment(
+      message = R.string.removeWidgetMessage,
+      positiveAction = () => widgetsJobs.deleteDBWidget().resolveAsyncServiceOr(_ =>
+        widgetsJobs.navigationUiActions.showContactUsError()))
+    dialog.show(ft, tagDialog)
+  }.toService
 
   def showAddItemMessage(nameCollection: String): TaskService[Unit] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
 

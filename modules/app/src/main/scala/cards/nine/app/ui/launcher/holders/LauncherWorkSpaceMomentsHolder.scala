@@ -52,7 +52,10 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
   }
 
   def populate(moment: LauncherMoment): Ui[Any] =
-     moment.momentType map (moment => Ui(widgetJobs.loadWidgetsForMoment(moment).resolveAsync())) getOrElse clearWidgets
+     moment.momentType map (moment => Ui {
+       widgetJobs.loadWidgetsForMoment(moment).resolveAsyncServiceOr(_ =>
+         widgetJobs.navigationUiActions.showContactUsError())
+     }) getOrElse clearWidgets
 
   def reloadSelectedWidget: Ui[Any] = this <~ Transformer {
     case widget: LauncherWidgetView if statuses.idWidget.contains(widget.id) => widget.activeSelected()

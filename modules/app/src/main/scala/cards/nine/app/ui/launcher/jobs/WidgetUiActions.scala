@@ -9,7 +9,7 @@ import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps.{Cell, _}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.{RequestCodes, UiContext}
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, RequestCodes, UiContext, UiException}
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
@@ -21,12 +21,14 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.SpaceException
+import cards.nine.commons.CatchAll
 
-case class WidgetUiActions(dom: LauncherDOM)
+class WidgetUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) {
+    uiContext: UiContext[_])
+  extends ImplicitsUiExceptions {
 
   lazy val appWidgetManager = AppWidgetManager.getInstance(activityContextWrapper.application)
 
@@ -117,9 +119,11 @@ case class WidgetUiActions(dom: LauncherDOM)
   }
 
   def getWidgetInfoById(appWidgetId: Int): TaskService[Option[(ComponentName, Cell)]] =
-    TaskService.right {
-      Option(appWidgetManager.getAppWidgetInfo(appWidgetId)) map { info =>
-        (info.provider, info.getCell(dom.workspaces.getWidth, dom.workspaces.getHeight))
+    TaskService {
+      CatchAll[UiException] {
+        Option(appWidgetManager.getAppWidgetInfo(appWidgetId)) map { info =>
+          (info.provider, info.getCell(dom.workspaces.getWidth, dom.workspaces.getHeight))
+        }
       }
     }
 

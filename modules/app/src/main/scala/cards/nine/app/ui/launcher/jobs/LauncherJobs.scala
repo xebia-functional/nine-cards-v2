@@ -2,7 +2,8 @@ package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.app.ui.commons.{JobException, Jobs}
+import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
+import cards.nine.app.ui.commons.{BroadAction, JobException, Jobs}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
 import cards.nine.commons.NineCardExtensions._
@@ -11,17 +12,17 @@ import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.{Collection, DockApp, Moment, UnknownCondition}
 import cards.nine.process.theme.models.NineCardsTheme
 import cats.implicits._
-import macroid.ActivityContextWrapper
+import macroid.{ActivityContextWrapper, Ui}
 
-case class LauncherJobs(
-  mainLauncherUiActions: MainLauncherUiActions,
-  workspaceUiActions: WorkspaceUiActions,
-  menuDrawersUiActions: MenuDrawersUiActions,
-  appDrawerUiActions: MainAppDrawerUiActions,
-  navigationUiActions: NavigationUiActions,
-  dockAppsUiActions: DockAppsUiActions,
-  topBarUiActions: TopBarUiActions,
-  widgetUiActions: WidgetUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+class LauncherJobs(
+  val mainLauncherUiActions: MainLauncherUiActions,
+  val workspaceUiActions: WorkspaceUiActions,
+  val menuDrawersUiActions: MenuDrawersUiActions,
+  val appDrawerUiActions: MainAppDrawerUiActions,
+  val navigationUiActions: NavigationUiActions,
+  val dockAppsUiActions: DockAppsUiActions,
+  val topBarUiActions: TopBarUiActions,
+  val widgetUiActions: WidgetUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs { self =>
 
   lazy val momentPreferences = new MomentPreferences
@@ -73,7 +74,7 @@ case class LauncherJobs(
 
     def selectMoment(moments: Seq[Moment]): Option[Moment] = for {
       currentMomentType <- mainLauncherUiActions.dom.getCurrentMomentType
-      moment <- moments find (_.momentType == currentMomentType)
+      moment <- moments find (_.momentType.contains(currentMomentType))
     } yield moment
 
     def getCollectionById(collectionId: Option[Int]): TaskService[Option[Collection]] =
@@ -156,12 +157,44 @@ case class LauncherJobs(
     } yield ()
   }
 
+  def reloadCollection(collectionId: Int): TaskService[Unit] =
+    for {
+      collection <- di.collectionProcess.getCollectionById(collectionId).resolveOption("Collection Id not found in reload collection")
+      _ <- addCollection(collection)
+    } yield ()
+
+  def addCollection(collection: Collection): TaskService[Unit] = {
+    addCollectionToCurrentData(collection) match {
+      case Some((page: Int, data: Seq[LauncherData])) =>
+        for {
+          _ <- workspaceUiActions.reloadWorkspaces(data, Some(page))
+          _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
+        } yield ()
+      case _ => TaskService.empty
+    }
+  }
+
   private[this] def updateWeather(): TaskService[Unit] =
     for {
       maybeCondition <- di.recognitionProcess.getWeather.map(_.conditions.headOption).resolveLeftTo(None)
       _ = momentPreferences.weatherLoaded(maybeCondition.isEmpty || maybeCondition.contains(UnknownCondition))
       _ <- workspaceUiActions.showWeather(maybeCondition)
     } yield ()
+
+  private[this] def addCollectionToCurrentData(collection: Collection): Option[(Int, Seq[LauncherData])] = {
+    val currentData = mainLauncherUiActions.dom.getData.filter(_.workSpaceType == CollectionsWorkSpace)
+    currentData.lastOption map { data =>
+      val lastWorkspaceHasSpace = data.collections.size < numSpaces
+      val newData = if (lastWorkspaceHasSpace) {
+        currentData.dropRight(1) :+ data.copy(collections = data.collections :+ collection)
+      } else {
+        val newPosition = currentData.count(_.workSpaceType == CollectionsWorkSpace)
+        currentData :+ LauncherData(CollectionsWorkSpace, collections = Seq(collection), positionByType = newPosition)
+      }
+      val page = newData.size - 1
+      (page, newData)
+    }
+  }
 
   private[this] def createLauncherDataCollections(collections: Seq[Collection]): Seq[LauncherData] = {
     collections.grouped(numSpaces).toList.zipWithIndex map {

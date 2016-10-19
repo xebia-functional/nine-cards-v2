@@ -14,9 +14,9 @@ import cards.nine.models.{AppWidget, Widget, WidgetArea, WidgetData}
 import cats.implicits._
 import macroid.ActivityContextWrapper
 
-case class WidgetsJobs(
-  widgetUiActions: WidgetUiActions,
-  navigationUiActions: NavigationUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+class WidgetsJobs(
+  val widgetUiActions: WidgetUiActions,
+  val navigationUiActions: NavigationUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs {
 
   def deleteWidget(): TaskService[Unit] =
@@ -35,7 +35,6 @@ case class WidgetsJobs(
         } yield ()
       case _ => navigationUiActions.showContactUsError()
     }
-  // navigationUiActions.showContactUsError()
 
   def loadWidgetsForMoment(nineCardsMoment: NineCardsMoment): TaskService[Unit] =
     for {
@@ -47,7 +46,6 @@ case class WidgetsJobs(
         case w => widgetUiActions.addWidgets(w)
       }
     } yield ()
-    // navigationUiActions.showContactUsError()
 
   def addWidget(maybeAppWidgetId: Option[Int]): TaskService[Unit] = {
 
@@ -264,7 +262,6 @@ case class WidgetsJobs(
   } else {
     TaskService.empty
   }
-  // showContactUsError()
 
   def cancelWidget(maybeAppWidgetId: Option[Int]): TaskService[Unit] =
     (statuses.mode == EditWidgetsMode, maybeAppWidgetId) match {
