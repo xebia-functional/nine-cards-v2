@@ -11,16 +11,17 @@ import android.widget.ImageView
 import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.commons.{AppUtils, DragObject, SystemBarsTint, UiContext}
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.commons.{AppUtils, DragObject, SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
-import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.layouts.snails.TabsSnails._
+import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.SearchBoxesViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.SwipeAnimatedDrawerViewTweaks._
@@ -28,15 +29,14 @@ import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import cards.nine.app.ui.launcher.drawer.DrawerSnails._
 import cards.nine.app.ui.launcher.drawer.{ContactsMenuOption, _}
+import cards.nine.app.ui.launcher.types.AddItemToCollection
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
-import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
-import cards.nine.app.ui.launcher.types.AddItemToCollection
+import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
 import cards.nine.models.{ApplicationData, Contact, TermCounter}
 import cards.nine.process.device._
 import cards.nine.process.device.models.{IterableApps, IterableContacts, LastCallsContact}
@@ -47,22 +47,20 @@ import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 import scala.util.{Failure, Try}
-import LauncherActivity._
-import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
 
 class MainAppDrawerUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_],
-    presenter: LauncherPresenter) {
+    uiContext: UiContext[_]) {
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
@@ -73,6 +71,10 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
   implicit def theme: NineCardsTheme = actionsState.theme
 
   lazy val appDrawerJobs: AppDrawerJobs = createAppDrawerJobs
+
+  lazy val navigationJobs: NavigationJobs = createNavigationJobs
+
+  lazy val dragJobs: DragJobs = createDragJobs
 
   val pages = 2
 
@@ -103,17 +105,17 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
             case (true, false) => openTabs
           }).run
         },
-        onAppStoreIconClick = () => presenter.launchPlayStore(),
-        onContactsIconClick = () => presenter.launchDial()
+        onAppStoreIconClick = () => navigationJobs.launchPlayStore().resolveAsyncServiceOr(manageException),
+        onContactsIconClick = () => navigationJobs.launchDial().resolveAsyncServiceOr(manageException)
       )) <~
       sbvOnChangeText((text: String) => {
         (text, dom.getStatus, dom.getTypeView) match {
           case ("", Some(status), Some(AppsView)) =>
             AppsMenuOption(status) foreach (option => appDrawerJobs.loadApps(option).resolveAsync())
           case ("", Some(status), Some(ContactView)) =>
-            ContactsMenuOption(status) foreach (option => appDrawerJobs.loadContacts(option).resolveAsyncServiceOr(manageContactException))
+            ContactsMenuOption(status) foreach (option => appDrawerJobs.loadContacts(option).resolveAsyncServiceOr(manageException))
           case (t, _, Some(AppsView)) => appDrawerJobs.loadAppsByKeyword(t).resolveAsync()
-          case (t, _, Some(ContactView)) => appDrawerJobs.loadContactsByKeyword(t).resolveAsyncServiceOr(manageContactException)
+          case (t, _, Some(ContactView)) => appDrawerJobs.loadContactsByKeyword(t).resolveAsyncServiceOr(manageException)
           case _ =>
         }
       })) ~
@@ -162,9 +164,9 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     counters: Seq[TermCounter] = Seq.empty): TaskService[Unit] =
     addApps(
       apps = apps,
-      clickListener = (app: ApplicationData) => presenter.openApp(app),
+      clickListener = (app: ApplicationData) => navigationJobs.openApp(app).resolveAsyncServiceOr(manageException),
       longClickListener = (view: View, app: ApplicationData) => {
-        presenter.startAddItemToCollection(app)
+        dragJobs.startAddItemToCollection(app).resolveAsync()
         (view <~ startDrag()).run
       },
       getAppOrder = getAppOrder,
@@ -175,15 +177,16 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     counters: Seq[TermCounter] = Seq.empty): TaskService[Unit] =
     addContacts(
       contacts = contacts,
-      clickListener = (contact: Contact) => presenter.openContact(contact),
+      clickListener = (contact: Contact) => navigationJobs.openContact(contact).resolveAsyncServiceOr(manageException),
       longClickListener = (view: View, contact: Contact) => {
-        presenter.startAddItemToCollection(contact)
+        dragJobs.startAddItemToCollection(contact).resolveAsync()
         (view <~ startDrag()).run
       },
       counters = counters).toService
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): TaskService[Unit] =
-    addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact.number)).toService
+    addLastCallContacts(contacts, (contact: LastCallsContact) =>
+      navigationJobs.openLastCall(contact.number).resolveAsyncServiceOr(manageException)).toService
 
   def closeTabs(): TaskService[Unit] = closeDrawerTabs.toService
 
@@ -218,7 +221,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
 
   def reloadApps(): TaskService[Unit] = loadAppsAlphabetical.toService
 
-  private[this] def manageContactException(throwable: Throwable) = throwable match {
+  private[this] def manageException(throwable: Throwable) = throwable match {
     case e: CallPermissionException => appDrawerJobs.requestReadCallLog()
     case e: ContactPermissionException => appDrawerJobs.requestReadContacts()
     case _ => showGeneralError().toService
@@ -307,7 +310,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
 
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] = {
     val maybeDrawable = contactsTabs.lift(ContactsMenuOption(option)) map (_.drawable)
-    appDrawerJobs.loadContacts(option).resolveAsyncServiceOr(manageContactException)
+    appDrawerJobs.loadContacts(option).resolveAsyncServiceOr(manageException)
     (dom.searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
       (dom.recycler <~ drvSetType(option))
   }

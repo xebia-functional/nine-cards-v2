@@ -45,8 +45,6 @@ class LauncherActivity
 
   lazy val widgetJobs = createWidgetsJobs
 
-  private[this] var hasFocus = false
-
   override val actionsFilters: Seq[String] =
     (MomentsActionFilter.cases map (_.action)) ++ (AppsActionFilter.cases map (_.action)) ++ (CollectionsActionFilter.cases map (_.action))
 
@@ -105,12 +103,12 @@ class LauncherActivity
 
   override def onWindowFocusChanged(hasFocus: Boolean): Unit = {
     super.onWindowFocusChanged(hasFocus)
-    this.hasFocus = hasFocus
+    statuses = statuses.copy(hasFocus = hasFocus)
   }
 
   override def onNewIntent(intent: Intent): Unit = {
     super.onNewIntent(intent)
-    val alreadyOnHome = hasFocus && ((intent.getFlags &
+    val alreadyOnHome = statuses.hasFocus && ((intent.getFlags &
       Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
       != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
     if (alreadyOnHome) back().resolveAsync()
@@ -195,14 +193,14 @@ object LauncherActivity {
       navigationUiActions = new NavigationUiActions(dom),
       dockAppsUiActions = new DockAppsUiActions(dom),
       topBarUiActions = new TopBarUiActions(dom),
-      widgetUiActions = new WidgetUiActions(dom))
+      widgetUiActions = new WidgetUiActions(dom),
+      dragUiActions = new DragUiActions(dom))
   }
 
   def createAppDrawerJobs(implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_],
-    presenter: LauncherPresenter) = {
+    uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new AppDrawerJobs(new MainAppDrawerUiActions(dom))
   }
@@ -210,13 +208,13 @@ object LauncherActivity {
   def createNavigationJobs(implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_],
-    presenter: LauncherPresenter) = {
+    uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new NavigationJobs(
       navigationUiActions = new NavigationUiActions(dom),
       menuDrawersUiActions = new MenuDrawersUiActions(dom),
-      widgetUiActions = new WidgetUiActions(dom))
+      widgetUiActions = new WidgetUiActions(dom),
+      appDrawerUiActions = new MainAppDrawerUiActions(dom))
   }
 
   def createWidgetsJobs(implicit
@@ -227,10 +225,22 @@ object LauncherActivity {
     new WidgetsJobs(new WidgetUiActions(dom), new NavigationUiActions(dom))
   }
 
+  def createDragJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new LauncherDOM(activityContextWrapper.getOriginal)
+    new DragJobs(
+      mainAppDrawerUiActions = new MainAppDrawerUiActions(dom),
+      dragUiActions = new DragUiActions(dom),
+      navigationUiActions = new NavigationUiActions(dom))
+  }
+
 }
 
 case class LauncherPresenterStatuses(
   touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
+  hasFocus: Boolean = false,
   hostingNoConfiguredWidget: Option[Widget] = None,
   mode: LauncherMode = NormalMode,
   transformation: Option[EditWidgetTransformation] = None,

@@ -11,15 +11,17 @@ import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
+import cards.nine.app.ui.commons.{RequestCodes, SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
+import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.app.ui.wizard.WizardActivity
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
@@ -43,6 +45,10 @@ class NavigationUiActions(val dom: LauncherDOM)
   implicit lazy val systemBarsTint = new SystemBarsTint
 
   implicit lazy val widgetsJobs = createWidgetsJobs
+
+  val pageMoments = 0
+
+  val pageCollections = 1
 
   val maxBackgroundPercent: Float = 0.7f
 
@@ -77,27 +83,28 @@ class NavigationUiActions(val dom: LauncherDOM)
     dialog.show(ft, tagDialog)
   }.toService
 
-  def showAddItemMessage(nameCollection: String): TaskService[Unit] = showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection))
+  def showAddItemMessage(nameCollection: String): TaskService[Unit] =
+    showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection)).toService
 
-  def showWidgetCantResizeMessage(): TaskService[Unit] = showMessage(R.string.noResizeForWidget)
+  def showWidgetCantResizeMessage(): TaskService[Unit] = showMessage(R.string.noResizeForWidget).toService
 
-  def showWidgetCantMoveMessage(): TaskService[Unit] = showMessage(R.string.noMoveForWidget)
+  def showWidgetCantMoveMessage(): TaskService[Unit] = showMessage(R.string.noMoveForWidget).toService
 
-  def showWidgetNoHaveSpaceMessage(): TaskService[Unit] = showMessage(R.string.noSpaceForWidget)
+  def showWidgetNoHaveSpaceMessage(): TaskService[Unit] = showMessage(R.string.noSpaceForWidget).toService
 
-  def showContactUsError(): TaskService[Unit] = showMessage(R.string.contactUsError)
+  def showContactUsError(): TaskService[Unit] = showMessage(R.string.contactUsError).toService
 
-  def showMinimumOneCollectionMessage(): TaskService[Unit]= showMessage(R.string.minimumOneCollectionMessage)
+  def showMinimumOneCollectionMessage(): TaskService[Unit]= showMessage(R.string.minimumOneCollectionMessage).toService
 
-  def showNoImplementedYetMessage(): TaskService[Unit] = showMessage(R.string.todo)
+  def showNoImplementedYetMessage(): TaskService[Unit] = showMessage(R.string.todo).toService
 
-  def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage)
+  def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage).toService
 
   def showContactPermissionError(action: () => Unit): TaskService[Unit] =
-    showMessageWithAction(R.string.errorContactsPermission, R.string.buttonTryAgain, action)
+    showMessageWithAction(R.string.errorContactsPermission, R.string.buttonTryAgain, action).toService
 
   def showCallPermissionError(action: () => Unit): TaskService[Unit] =
-    showMessageWithAction(R.string.errorCallsPermission, R.string.buttonTryAgain, action)
+    showMessageWithAction(R.string.errorCallsPermission, R.string.buttonTryAgain, action).toService
 
   def removeActionFragment(): TaskService[Unit] =
     dom.getFragment match {
@@ -111,11 +118,35 @@ class NavigationUiActions(val dom: LauncherDOM)
       case _ => TaskService.empty
     }
 
-  private[this] def showMessage(res: Int, args: Seq[String] = Seq.empty): TaskService[Unit] =
-    (dom.workspaces <~ vLauncherSnackbar(res, args)).toService
+  def goToProfile(): TaskService[Unit] =
+    uiStartIntentForResult(
+      new Intent(activityContextWrapper.bestAvailable, classOf[ProfileActivity]), RequestCodes.goToProfile).toService
 
-  private[this] def showMessageWithAction(resMessage: Int, resButton: Int, action: () => Unit): TaskService[Unit] =
-    (dom.workspaces <~ vLauncherSnackbarWithAction(resMessage, resButton, action, lenght = Snackbar.LENGTH_LONG)).toService
+  def goToMomentWorkspace(): TaskService[Unit] = goToWorkspace(pageMoments)
+
+  def goToCollectionWorkspace(): TaskService[Unit] = goToWorkspace(pageCollections)
+
+  def goToWorkspace(page: Int): TaskService[Unit] = {
+    ((dom.getData.lift(page) map (data => dom.topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
+      (dom.workspaces <~ lwsSelect(page)) ~
+      (dom.paginationPanel <~ ivReloadPager(page))).toService
+  }
+
+  def goToNextWorkspace(): TaskService[Unit] =
+    (dom.workspaces ~> lwsNextScreen()).get map { next =>
+      goToWorkspace(next)
+    } getOrElse TaskService.empty
+
+  def goToPreviousWorkspace(): TaskService[Unit] =
+    (dom.workspaces ~> lwsPreviousScreen()).get map { previous =>
+      goToWorkspace(previous)
+    } getOrElse TaskService.empty
+
+  private[this] def showMessage(res: Int, args: Seq[String] = Seq.empty): Ui[Any] =
+    dom.workspaces <~ vLauncherSnackbar(res, args)
+
+  private[this] def showMessageWithAction(resMessage: Int, resButton: Int, action: () => Unit): Ui[Any] =
+    dom.workspaces <~ vLauncherSnackbarWithAction(resMessage, resButton, action, lenght = Snackbar.LENGTH_LONG)
 
   private[this] def showAction[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], bundle: Bundle): Ui[Any] = {

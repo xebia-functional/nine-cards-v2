@@ -122,6 +122,8 @@ class LauncherDOM(activity: Activity) {
 
   def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get
 
+  def isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get
+
   def isWorkspaceScrolling: Boolean = workspaces.animatedWorkspaceStatuses.isScrolling
 
   def createBundle(maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty)

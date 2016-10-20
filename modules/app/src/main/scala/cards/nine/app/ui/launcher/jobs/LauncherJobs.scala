@@ -18,7 +18,6 @@ import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
 import cards.nine.process.theme.models.NineCardsTheme
 import cats.implicits._
-import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 
@@ -30,7 +29,8 @@ class LauncherJobs(
   val navigationUiActions: NavigationUiActions,
   val dockAppsUiActions: DockAppsUiActions,
   val topBarUiActions: TopBarUiActions,
-  val widgetUiActions: WidgetUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  val widgetUiActions: WidgetUiActions,
+  val dragUiActions: DragUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
   with AppNineCardsIntentConversions { self =>
 
@@ -48,7 +48,8 @@ class LauncherJobs(
         menuDrawersUiActions.initialize(theme) *>
         appDrawerUiActions.initialize(theme) *>
         topBarUiActions.initialize(theme) *>
-        dockAppsUiActions.initialize(theme)
+        dockAppsUiActions.initialize(theme) *>
+        dragUiActions.initialize(theme)
 
     for {
       _ <- mainLauncherUiActions.initialize()
@@ -256,7 +257,6 @@ class LauncherJobs(
         } yield ()
       case _ => TaskService.empty
     }
-
 
     for {
       result <- di.userAccountsProcess.parsePermissionsRequestResult(permissions, grantResults)

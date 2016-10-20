@@ -1,23 +1,19 @@
 package cards.nine.app.ui.launcher.jobs
 
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.support.design.widget.NavigationView
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.widget.ImageView
 import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.drawables.CharDrawable
-import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.components.models.LauncherMoment
-import cards.nine.app.ui.profile.ProfileActivity
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -29,6 +25,8 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
+import cards.nine.app.ui.launcher.LauncherActivity._
+
 class MenuDrawersUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
@@ -39,13 +37,11 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
 
   case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
 
+  lazy val navigationJobs = createNavigationJobs
+
   private[this] var actionsState = State()
 
   implicit def theme: NineCardsTheme = actionsState.theme
-
-  val pageMoments = 0
-
-  val pageCollections = 1
 
   def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = {
     actionsState = actionsState.copy(theme = nineCardsTheme)
@@ -53,7 +49,8 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
       (dom.navigationView <~
         navigationViewStyle <~
         nvNavigationItemSelectedListener(itemId => {
-          (goToMenuOption(itemId) ~ closeMenu()).run
+          navigationJobs.goToMenuOption(itemId).resolveAsync()
+          closeMenu().run
           true
         }))).toService
   }
@@ -94,33 +91,6 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
   def close(): TaskService[Unit] = closeMenu().toService
 
   private[this] def closeMenu(): Ui[Any] = dom.drawerLayout <~ dlCloseDrawer
-
-  private[this] def goToMenuOption(itemId: Int): Ui[Any] = {
-    (itemId, activityContextWrapper.original.get) match {
-      case (R.id.menu_collections, _) => goToWorkspace(pageCollections)
-      case (R.id.menu_moments, _) => goToWorkspace(pageMoments)
-      case (R.id.menu_profile, Some(activity)) => uiStartIntentForResult(new Intent(activity, classOf[ProfileActivity]), RequestCodes.goToProfile)
-      case (R.id.menu_send_feedback, _) => showNoImplementedYetMessage()
-      case (R.id.menu_help, _) => showNoImplementedYetMessage()
-      case _ => Ui.nop
-    }
-  }
-
-  def goToWorkspace(page: Int): Ui[Any] = {
-    (dom.getData.lift(page) map (data => dom.topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
-      (dom.workspaces <~ lwsSelect(page)) ~
-      (dom.paginationPanel <~ ivReloadPager(page))
-  }
-
-  def goToNextWorkspace(): Ui[Any] =
-    (dom.workspaces ~> lwsNextScreen()).get map { next =>
-      goToWorkspace(next)
-    } getOrElse Ui.nop
-
-  def goToPreviousWorkspace(): Ui[Any] =
-    (dom.workspaces ~> lwsPreviousScreen()).get map { previous =>
-      goToWorkspace(previous)
-    } getOrElse Ui.nop
 
   def showNoImplementedYetMessage(): Ui[Any] = dom.workspaces <~ vLauncherSnackbar(R.string.todo)
 
