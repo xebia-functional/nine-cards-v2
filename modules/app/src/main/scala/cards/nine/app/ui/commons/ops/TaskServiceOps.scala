@@ -6,6 +6,7 @@ import cards.nine.app.ui.commons.AppLog._
 import macroid.Ui
 import monix.eval.Task
 import cats.syntax.either._
+import monix.execution.Cancelable
 import monix.execution.Scheduler.Implicits.global
 
 import scala.concurrent.Await
@@ -80,12 +81,29 @@ object TaskServiceOps {
       }.coeval.runAttempt
     }
 
-
     def resolveAsync[E >: Throwable](
       onResult: A => Unit = a => (),
       onException: E => Unit = (e: Throwable) => ()
     ): Unit = {
       Task.fork(t.value).runAsync { result =>
+        result match {
+          case Failure(ex) =>
+            printErrorTaskMessage("=> EXCEPTION Disjunction <=", ex)
+            onException(ex)
+          case Success(Right(value)) => onResult(value)
+          case Success(Left(ex)) =>
+            printErrorTaskMessage(s"=> EXCEPTION Left) <=", ex)
+            onException(ex)
+        }
+      }
+    }
+
+    def resolveAsyncDelayed[E >: Throwable](
+      finiteDuration: FiniteDuration,
+      onResult: A => Unit = a => (),
+      onException: E => Unit = (e: Throwable) => ()
+    ): Cancelable = {
+      Task.fork(t.value.delayExecution(finiteDuration)).runAsync { result =>
         result match {
           case Failure(ex) =>
             printErrorTaskMessage("=> EXCEPTION Disjunction <=", ex)
