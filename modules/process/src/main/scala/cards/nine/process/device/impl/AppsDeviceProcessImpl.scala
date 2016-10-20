@@ -9,14 +9,12 @@ import cards.nine.models.types.{Misc, _}
 import cards.nine.models.{Application, ApplicationData}
 import cards.nine.process.device._
 import cards.nine.process.device.models.IterableApps
-import cards.nine.process.device.utils.KnownCategoriesUtil
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.image._
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 
 trait AppsDeviceProcessImpl
-  extends DeviceProcess
-  with KnownCategoriesUtil {
+  extends DeviceProcess {
 
   self: DeviceConversions
     with DeviceProcessDependencies
@@ -86,10 +84,7 @@ trait AppsDeviceProcessImpl
           categorizedPackages <- apiServices.googlePlayPackages(filteredApps map (_.packageName))(requestConfig)
             .resolveLeftTo(Seq.empty)
           apps = filteredApps map { app =>
-            val knownCategory = findCategory(app.packageName)
-            val category = knownCategory getOrElse {
-              categorizedPackages find (_.packageName == app.packageName) flatMap (_.category) getOrElse Misc
-            }
+            val category = categorizedPackages find (_.packageName == app.packageName) flatMap (_.category) getOrElse Misc
             app.copy(category = category)
           }
           _ <- persistenceServices.addApps(apps)
