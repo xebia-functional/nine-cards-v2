@@ -1,5 +1,6 @@
 package cards.nine.app.ui.launcher.jobs
 
+import android.graphics.Point
 import android.os.Bundle
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.{Jobs, RequestCodes}
@@ -9,7 +10,7 @@ import cards.nine.app.ui.launcher.{EditWidgetsMode, NormalMode}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.AppCategory
-import cards.nine.models.{ApplicationData, Contact, NineCardsIntentConversions}
+import cards.nine.models.{ApplicationData, Collection, Contact, NineCardsIntentConversions}
 import cards.nine.process.accounts.FineLocation
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
@@ -50,6 +51,11 @@ class NavigationJobs(
         widgetUiActions.closeModeEditWidgets()
       case _ => TaskService.empty
     }
+  }
+
+  def goToCollection(maybeCollection: Option[Collection], point: Point): TaskService[Unit] = maybeCollection match {
+    case Some(collection) => navigationUiActions.goToCollection(collection, point)
+    case _ => navigationUiActions.showContactUsError()
   }
 
   def openApp(app: ApplicationData): TaskService[Unit] = if (navigationUiActions.dom.isDrawerTabsOpened) {

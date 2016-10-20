@@ -160,7 +160,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
 
   def closeMenu(): TaskService[Unit] = closeCollectionMenu().toService
 
-  def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): TaskService[Unit] =
+  def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): TaskService[Unit] =
     ((dom.workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager).toService
 
   def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService

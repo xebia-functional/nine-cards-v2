@@ -30,4 +30,6 @@ class DockAppsUiActions(val dom: LauncherDOM)
   def loadDockApps(apps: Seq[DockAppData]): TaskService[Unit] =
     (dom.dockAppsPanel <~ daplInit(apps)).toService
 
+  def reloadDockApps(dockApp: DockAppData): TaskService[Unit] = (dom.dockAppsPanel <~ daplReload(dockApp)).toService
+
 }

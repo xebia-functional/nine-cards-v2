@@ -1,10 +1,12 @@
 package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.content.Intent
-import android.graphics.Color
+import android.graphics.{Color, Point}
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.{Fragment, FragmentManager}
+import android.support.v7.app.AppCompatActivity
+import cards.nine.app.ui.collections.CollectionsDetailsActivity
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.SafeUi._
@@ -13,6 +15,7 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
+import cards.nine.app.ui.components.drawables.RippleCollectionDrawable
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
@@ -22,14 +25,16 @@ import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsF
 import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
 import cards.nine.app.ui.launcher.jobs.LauncherJobs
+import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.app.ui.wizard.WizardActivity
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.Moment
+import cards.nine.models.{Collection, Moment}
 import cards.nine.process.theme.models.NineCardsTheme
+import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
@@ -73,6 +78,28 @@ class NavigationUiActions(val dom: LauncherDOM)
   def goToWizard(): TaskService[Unit] =
     uiStartIntent(new Intent(activityContextWrapper.bestAvailable, classOf[WizardActivity])).toService
 
+  def goToCollection(collection: Collection, point: Point): TaskService[Unit] = {
+    def rippleToCollection: Ui[Future[Any]] = {
+      val color = theme.getIndexColor(collection.themedColorIndex)
+      val y = KitKat.ifSupportedThen(point.y - systemBarsTint.getStatusBarHeight) getOrElse point.y
+      val background = new RippleCollectionDrawable(point.x, y, color)
+      (dom.foreground <~
+        vVisible <~
+        vBackground(background)) ~
+        background.start()
+    }
+
+    val intent = new Intent(activityContextWrapper.bestAvailable, classOf[CollectionsDetailsActivity])
+    intent.putExtra(CollectionsDetailsActivity.startPosition, collection.position)
+    intent.putExtra(CollectionsDetailsActivity.indexColorToolbar, collection.themedColorIndex)
+    intent.putExtra(CollectionsDetailsActivity.iconToolbar, collection.icon)
+    CollectionOpeningAnimations.readValue match {
+      case anim@CircleOpeningCollectionAnimation if anim.isSupported =>
+        (rippleToCollection ~~ uiStartIntentForResult(intent, RequestCodes.goToCollectionDetails)).toService
+      case _ => uiStartIntent(intent).toService
+    }
+  }
+
   def launchCreateOrCollection(bundle: Bundle): TaskService[Unit] =
     showAction(f[CreateOrEditCollectionFragment], bundle).toService
 
@@ -99,9 +126,20 @@ class NavigationUiActions(val dom: LauncherDOM)
     dialog.show(ft, tagDialog)
   }.toService
 
-  def showSelectMomentDialog(moments: Seq[Moment]): TaskService[Unit]= Ui {
+  def showSelectMomentDialog(moments: Seq[Moment]): TaskService[Unit] = Ui {
     val momentDialog = new MomentDialog(moments)
     momentDialog.show()
+  }.toService
+
+  def showDialogForRemoveCollection(collection: Collection): TaskService[Unit] = Ui {
+    val ft = fragmentManagerContext.manager.beginTransaction()
+    Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    val dialog = new AlertDialogFragment(
+      message = R.string.removeCollectionMessage,
+      positiveAction = () => launcherJobs.removeCollection(collection).resolveAsync()
+    )
+    dialog.show(ft, tagDialog)
   }.toService
 
   def showAddItemMessage(nameCollection: String): TaskService[Unit] =
@@ -147,21 +185,10 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   def goToCollectionWorkspace(): TaskService[Unit] = goToWorkspace(pageCollections)
 
-  def goToWorkspace(page: Int): TaskService[Unit] = {
+  def goToWorkspace(page: Int): TaskService[Unit] =
     ((dom.getData.lift(page) map (data => dom.topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
       (dom.workspaces <~ lwsSelect(page)) ~
       (dom.paginationPanel <~ ivReloadPager(page))).toService
-  }
-
-  def goToNextWorkspace(): TaskService[Unit] =
-    (dom.workspaces ~> lwsNextScreen()).get map { next =>
-      goToWorkspace(next)
-    } getOrElse TaskService.empty
-
-  def goToPreviousWorkspace(): TaskService[Unit] =
-    (dom.workspaces ~> lwsPreviousScreen()).get map { previous =>
-      goToWorkspace(previous)
-    } getOrElse TaskService.empty
 
   private[this] def showMessage(res: Int, args: Seq[String] = Seq.empty): Ui[Any] =
     dom.workspaces <~ vLauncherSnackbar(res, args)

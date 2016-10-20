@@ -1,5 +1,6 @@
 package cards.nine.app.ui.launcher.jobs
 
+import android.graphics.Point
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
@@ -19,7 +20,7 @@ import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
 import cards.nine.process.theme.models.NineCardsTheme
 import cats.implicits._
-import macroid.ActivityContextWrapper
+import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
 
 class LauncherJobs(
@@ -36,6 +37,8 @@ class LauncherJobs(
   with AppNineCardsIntentConversions { self =>
 
   lazy val momentPreferences = new MomentPreferences
+
+  val defaultPage = 1
 
   def initialize(): TaskService[Unit] = {
     def initServices: TaskService[Unit] =
@@ -209,6 +212,15 @@ class LauncherJobs(
     }
   }
 
+  def removeCollection(collection: Collection): TaskService[Unit] =
+    for {
+      _ <- di.collectionProcess.deleteCollection(collection.id)
+      (page, data) = removeCollectionToCurrentData(collection.id)
+      _ <- workspaceUiActions.reloadWorkspaces(data, Option(page))
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
+    } yield ()
+  // actions.showContactUsError()
+
   def preferencesChanged(changedPreferences: Array[String]): TaskService[Unit] = {
 
     def needToRecreate(array: Array[String]): Boolean =
@@ -288,6 +300,26 @@ class LauncherJobs(
       _ <- serviceAction(result)
     } yield ()
 
+  }
+
+  private[this] def removeCollectionToCurrentData(collectionId: Int): (Int, Seq[LauncherData]) = {
+    val currentData = mainLauncherUiActions.dom.getData.filter(_.workSpaceType == CollectionsWorkSpace)
+
+    // We remove a collection in sequence and fix positions
+    val collections = (currentData flatMap (_.collections.filterNot(_.id == collectionId))).zipWithIndex map {
+      case (col, index) => col.copy(position = index)
+    }
+
+    val maybeWorkspaceCollection = currentData find (_.collections.exists(_.id == collectionId))
+    val maybePage = maybeWorkspaceCollection map currentData.indexOf
+
+    val newData = createLauncherDataCollections(collections)
+
+    val page = maybePage map { page =>
+      if (newData.isDefinedAt(page)) page else newData.length - 1
+    } getOrElse defaultPage
+
+    (page, newData)
   }
 
   private[this] def updateWeather(): TaskService[Unit] =

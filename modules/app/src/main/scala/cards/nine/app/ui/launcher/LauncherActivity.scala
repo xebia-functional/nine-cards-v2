@@ -34,7 +34,7 @@ class LauncherActivity
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
-  implicit lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
+  lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
 
   lazy val managerContext: FragmentManagerContext[Fragment, FragmentManager] = activityManagerContext
 
@@ -43,6 +43,8 @@ class LauncherActivity
   lazy val appDrawerJobs = createAppDrawerJobs
 
   lazy val navigationJobs = createNavigationJobs
+
+  lazy val dragJobs = createDragJobs
 
   lazy val widgetJobs = createWidgetsJobs
 
@@ -178,7 +180,7 @@ class LauncherActivity
 
 object LauncherActivity {
 
-  var statuses = LauncherPresenterStatuses()
+  var statuses = LauncherStatuses()
 
   def createLauncherJobs(implicit
     activityContextWrapper: ActivityContextWrapper,
@@ -233,12 +235,14 @@ object LauncherActivity {
     new DragJobs(
       mainAppDrawerUiActions = new MainAppDrawerUiActions(dom),
       dragUiActions = new DragUiActions(dom),
-      navigationUiActions = new NavigationUiActions(dom))
+      navigationUiActions = new NavigationUiActions(dom),
+      dockAppsUiActions = new DockAppsUiActions(dom),
+      workspaceUiActions = new WorkspaceUiActions(dom))
   }
 
 }
 
-case class LauncherPresenterStatuses(
+case class LauncherStatuses(
   touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
   hasFocus: Boolean = false,
   hostingNoConfiguredWidget: Option[Widget] = None,
@@ -251,20 +255,20 @@ case class LauncherPresenterStatuses(
   currentDraggingPosition: Int = 0,
   lastPhone: Option[String] = None) {
 
-  def startAddItem(card: CardData): LauncherPresenterStatuses =
+  def startAddItem(card: CardData): LauncherStatuses =
     copy(mode = AddItemMode, cardAddItemMode = Some(card))
 
-  def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =
+  def startReorder(collection: Collection, position: Int): LauncherStatuses =
     copy(
       startPositionReorderMode = position,
       collectionReorderMode = Some(collection),
       currentDraggingPosition = position,
       mode = ReorderMode)
 
-  def updateCurrentPosition(position: Int): LauncherPresenterStatuses =
+  def updateCurrentPosition(position: Int): LauncherStatuses =
     copy(currentDraggingPosition = position)
 
-  def reset(): LauncherPresenterStatuses =
+  def reset(): LauncherStatuses =
     copy(
       startPositionReorderMode = 0,
       cardAddItemMode = None,
