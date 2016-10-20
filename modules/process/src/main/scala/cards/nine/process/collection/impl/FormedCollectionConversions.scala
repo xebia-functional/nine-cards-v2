@@ -28,7 +28,7 @@ trait FormedCollectionConversions
     name = formedCollection.name,
     collectionType = formedCollection.collectionType,
     icon = formedCollection.icon,
-    themedColorIndex = 0,
+    themedColorIndex = position % 9,
     appsCategory = formedCollection.category,
     originalSharedCollectionId = formedCollection.originalSharedCollectionId,
     sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed getOrElse false,
