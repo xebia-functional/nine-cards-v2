@@ -14,10 +14,9 @@ import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.commons.{BroadAction, Jobs, RequestCodes}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.drawer._
 import cards.nine.app.ui.launcher.exceptions.SpaceException
-import cards.nine.app.ui.launcher.holders._
-import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
 import cards.nine.app.ui.wizard.WizardActivity
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
@@ -25,7 +24,7 @@ import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types._
-import cards.nine.models.{Card, Collection, DockApp, Moment, _}
+import cards.nine.models.{Card, Collection, Moment, _}
 import cards.nine.process.accounts._
 import cards.nine.process.device._
 import cards.nine.process.device.models._
@@ -35,8 +34,6 @@ import cats.implicits._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
-
-import LauncherActivity._
 
 import scala.language.postfixOps
 
@@ -51,49 +48,12 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   lazy val momentPreferences = new MomentPreferences
 
-  def initialize(): Unit = {
-
-    def initServices: TaskService[Unit] =
-      di.externalServicesProcess.initializeStrictMode *>
-        di.externalServicesProcess.initializeCrashlytics *>
-        di.externalServicesProcess.initializeFirebase *>
-        di.externalServicesProcess.initializeStetho
-
-    (initServices *> di.userProcess.register).resolveAsync2()
-
-    actions.initialize.run
-  }
-
-  def resume(): Unit = {
-    di.observerRegister.registerObserver()
-    if (momentPreferences.loadWeather) {
-      updateWeather().resolveAsync()
-    }
-    if (actions.isEmptyCollectionsInWorkspace) {
-      loadLauncherInfo()
-    } else if (momentPreferences.nonPersist) {
-      changeMomentIfIsAvailable()
-    }
-  }
-
   private[this] def updateWeather(): TaskService[Unit] =
     for {
       maybeCondition <- di.recognitionProcess.getWeather.map(_.conditions.headOption).resolveLeftTo(None)
       _ = momentPreferences.weatherLoaded(maybeCondition.isEmpty || maybeCondition.contains(UnknownCondition))
       _ <- actions.showWeather(maybeCondition).toService
     } yield ()
-
-  def pause(): Unit = di.observerRegister.unregisterObserver()
-
-  def destroy(): Unit = actions.destroy.run
-
-  def back(): Unit = actions.back.run
-
-  def resetAction(): Unit = actions.resetAction.run
-
-  def destroyAction(): Unit = actions.destroyAction.run
-
-  def logout(): Unit = actions.logout.run
 
   def startAddItemToCollection(app: ApplicationData): Unit = startAddItemToCollection(toCardData(app))
 
@@ -243,15 +203,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   def goToMomentWorkspace(): Unit = (actions.goToMomentWorkspace() ~ actions.closeAppsMoment()).run
 
-  def clickWorkspaceBackground(): Unit = {
-    (statuses.mode, statuses.transformation) match {
-      case (NormalMode, _) => actions.openAppsMoment().run
-      case (EditWidgetsMode, Some(_)) => backToActionEditWidgets()
-      case (EditWidgetsMode, None) => closeModeEditWidgets()
-      case _ =>
-    }
-  }
-
   def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
     card.packageName foreach { packageName =>
       val category = moment map MomentCategory getOrElse FreeCategory
@@ -327,162 +278,10 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     )
   }
 
-  def reloadCollection(collectionId: Int): Unit = {
-    di.collectionProcess.getCollectionById(collectionId).resolveAsync2(
-      onResult = {
-        case Some(collection) => addCollection(collection)
-        case _ => actions.showContactUsError()
-      },
-      onException = (_) => actions.showContactUsError()
-    )
-  }
-
-  def openModeEditWidgets(id: Int): Unit = if (!actions.isWorkspaceScrolling) {
-    statuses = statuses.copy(mode = EditWidgetsMode, transformation = None, idWidget = Some(id))
-    actions.openModeEditWidgets().run
-  }
-
-  def backToActionEditWidgets(): Unit = {
-    statuses = statuses.copy(transformation = None)
-    actions.reloadViewEditWidgets().run
-  }
-
-  def loadViewEditWidgets(id: Int): Unit = {
-    statuses = statuses.copy(idWidget = Some(id), transformation = None)
-    actions.reloadViewEditWidgets().run
-  }
-
   def closeModeEditWidgets(): Unit = {
     statuses = statuses.copy(mode = NormalMode, idWidget = None)
     actions.closeModeEditWidgets().run
   }
-
-  def resizeWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
-    statuses = statuses.copy(transformation = Some(ResizeTransformation))
-    actions.resizeWidget().run
-  }
-
-  def moveWidget(): Unit = if (statuses.mode == EditWidgetsMode) {
-    statuses = statuses.copy(transformation = Some(MoveTransformation))
-    actions.moveWidget().run
-  }
-
-  def arrowWidget(arrow: Arrow): Unit = if (statuses.mode == EditWidgetsMode) {
-
-    type WidgetMovement = (Int, (Int, Int))
-
-    val limits = Option((WidgetsOps.rows, WidgetsOps.columns))
-
-    def outOfTheLimit(area: WidgetArea) =
-      area.spanX <= 0 ||
-        area.spanY <= 0 ||
-        area.startX + area.spanX > WidgetsOps.columns ||
-        area.startY + area.spanY > WidgetsOps.rows
-
-    def resizeIntersect(idWidget: Int): TaskService[Boolean] = {
-
-      def convertSpace(widgetArea: WidgetArea) = {
-        val (increaseX, increaseY) = operationArgs
-        widgetArea.copy(
-          spanX = widgetArea.spanX + increaseX,
-          spanY = widgetArea.spanY + increaseY)
-      }
-
-      for {
-        widget <- di.widgetsProcess.getWidgetById(idWidget).resolveOption(s"Can't find the widget with id $idWidget")
-        widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
-        newSpace = convertSpace(widget.area)
-      } yield {
-        outOfTheLimit(newSpace) ||
-          widgetsByMoment.filterNot(_.id == widget.id).exists(w => newSpace.intersect(w.area, limits))
-      }
-    }
-
-    @scala.annotation.tailrec
-    def searchSpaceForMoveWidget(
-      movements: List[(Int, Int)],
-      widget: Widget,
-      otherWidgets: Seq[Widget]): Option[WidgetMovement] =
-      movements match {
-        case Nil => None
-        case head :: tail =>
-          val (displaceX, displaceY) = head
-          val newPosition = widget.area.copy(
-            startX = widget.area.startX + displaceX,
-            startY = widget.area.startY + displaceY)
-          if (outOfTheLimit(newPosition)) {
-            None
-          } else {
-            val widgetsIntersected = otherWidgets.filter(w => newPosition.intersect(w.area, limits))
-            widgetsIntersected match {
-              case Nil => Option((widget.id, head))
-              case intersected =>
-                searchSpaceForMoveWidget(tail, widget, otherWidgets)
-            }
-          }
-      }
-
-    def moveIntersect(idWidget: Int): TaskService[Option[WidgetMovement]] =
-      for {
-        widget <- di.widgetsProcess.getWidgetById(idWidget)
-          .resolveOption(s"Can't find the widget with id $idWidget")
-        widgetsByMoment <- di.widgetsProcess.getWidgetsByMoment(widget.momentId)
-      } yield {
-        val otherWidgets = widgetsByMoment.filterNot(_.id == widget.id)
-        searchSpaceForMoveWidget(steps(widget.area), widget, otherWidgets)
-      }
-
-    def operationArgs: (Int, Int) = arrow match {
-      case ArrowUp => (0, -1)
-      case ArrowDown => (0, 1)
-      case ArrowRight => (1, 0)
-      case ArrowLeft => (-1, 0)
-    }
-
-    def steps(area: WidgetArea): List[(Int, Int)] = (arrow match {
-      case ArrowUp => 1 to area.startY map (p => (0, -p))
-      case ArrowDown => 1 until (WidgetsOps.columns - area.startY) map (p => (0, p))
-      case ArrowRight => 1 until (WidgetsOps.rows - area.startX) map (p => (p, 0))
-      case ArrowLeft => 1 to area.startX map (p => (-p, 0))
-    }).toList
-
-    (statuses.idWidget, statuses.transformation) match {
-      case (Some(id), Some(ResizeTransformation)) =>
-        resizeIntersect(id).resolveAsync2(
-          onResult = (intersect: Boolean) => {
-            if (intersect) {
-              actions.showWidgetCantResizeMessage().run
-            } else {
-              val (increaseX, increaseY) = operationArgs
-              di.widgetsProcess.resizeWidget(id, increaseX, increaseY).resolveAsyncUi2(
-                onResult = (_) => actions.resizeWidgetById(id, increaseX, increaseY),
-                onException = (_) => actions.showContactUsError())
-            }
-          },
-          onException = (_) => actions.showContactUsError().run)
-      case (Some(id), Some(MoveTransformation)) =>
-        moveIntersect(id).resolveAsync2(
-          onResult = {
-            case Some((idWidget, (displaceX, displaceY))) =>
-              di.widgetsProcess.moveWidget(id, displaceX, displaceY).resolveAsyncUi2(
-                onResult = (_) => actions.moveWidgetById(idWidget, displaceX, displaceY),
-                onException = (_) => actions.showContactUsError())
-            case _ => actions.showWidgetCantMoveMessage().run
-          },
-          onException = (_) => actions.showContactUsError())
-      case _ => actions.showContactUsError().run
-    }
-
-  }
-
-  def cancelWidget(maybeAppWidgetId: Option[Int]): Unit = if (statuses.mode == EditWidgetsMode) {
-    (maybeAppWidgetId match {
-      case Some(id) => actions.cancelWidget(id)
-      case _ => Ui.nop
-    }).run
-  }
-
-  def editWidgetsShowActions(): Unit = actions.editWidgetsShowActions().run
 
   def goToEditMoment(): Unit = {
     val momentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
@@ -518,72 +317,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
             Ui(momentReloadBroadCastIfNecessary())
         case _ => Ui.nop
       })
-  }
-
-  def reloadAppsMomentBar(): Unit = {
-
-    def selectMoment(moments: Seq[Moment]) = for {
-      data <- actions.getData.headOption
-      currentMoment <- data.moment
-      moment <- moments.find(_.momentType == currentMoment.momentType)
-    } yield moment
-
-    def getCollectionById(collectionId: Option[Int]): TaskService[Option[Collection]] =
-      collectionId match {
-        case Some(id) => di.collectionProcess.getCollectionById(id)
-        case _ => TaskService.right(None)
-      }
-
-    def getCollection: TaskService[LauncherMoment] = for {
-      moments <- di.momentProcess.getMoments
-      moment = selectMoment(moments)
-      collection <- getCollectionById(moment flatMap (_.collectionId))
-    } yield LauncherMoment(moment flatMap (_.momentType), collection)
-
-    getCollection.resolveAsyncUi2(
-      onResult = {
-        case launcherMoment: LauncherMoment => actions.reloadBarMoment(launcherMoment)
-        case _ => Ui.nop
-      })
-  }
-
-  def loadLauncherInfo(): Unit = {
-
-    def getMoment = momentPreferences.getPersistMoment match {
-      case Some(moment) => di.momentProcess.fetchMomentByType(moment)
-      case _ => di.momentProcess.getBestAvailableMoment
-    }
-
-    def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
-      for {
-        collections <- di.collectionProcess.getCollections
-        dockApps <- di.deviceProcess.getDockApps
-        moment <- getMoment
-      } yield (collections, dockApps, moment)
-
-    getLauncherInfo.resolveAsyncUi2(
-      onResult = {
-        // Check if there are collections in DB, if there aren't we go to wizard
-        case (Nil, _, _) => Ui(goToWizard())
-        case (collections, apps, moment) =>
-          di.userProcess.getUser.resolveAsyncUi2(
-            onResult = user => actions.showUserProfile(
-              email = user.email,
-              name = user.userProfile.name,
-              avatarUrl = user.userProfile.avatar,
-              coverPhotoUrl = user.userProfile.cover))
-          val collectionMoment = for {
-            m <- moment
-            collectionId <- m.collectionId
-            collection <- collections.find(_.id == collectionId)
-          } yield collection
-          val launcherMoment = LauncherMoment(moment flatMap (_.momentType), collectionMoment)
-          val data = LauncherData(MomentWorkSpace, Some(launcherMoment)) +: createLauncherDataCollections(collections)
-          actions.loadLauncherInfo(data, apps map (_.toData))
-      },
-      onException = (ex: Throwable) => Ui(goToWizard()),
-      onPreTask = () => actions.showLoading()
-    )
   }
 
   def loadApps(appsMenuOption: AppsMenuOption): Unit = {
@@ -652,52 +385,11 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     case _ => actions.showContactUsError()
   }).run
 
-  def resetFromCollectionDetail(): Unit = actions.resetFromCollection().run
-
   def goToWizard(): Unit = {
     contextWrapper.original.get foreach { activity =>
       val wizardIntent = new Intent(activity, classOf[WizardActivity])
       activity.startActivity(wizardIntent)
     }
-  }
-
-  def goToWidgets(): Unit = actions.showWidgetsDialog().run
-
-  def deleteWidget(): Unit =
-    (statuses.idWidget match {
-      case Some(id) => actions.deleteSelectedWidget()
-      case _ => actions.showContactUsError()
-    }).run
-
-  def deleteDBWidget(): Unit =
-    statuses.idWidget match {
-      case Some(id) =>
-        di.widgetsProcess.deleteWidget(id).resolveAsyncUi2(
-          onResult = (_) => {
-            closeModeEditWidgets()
-            actions.unhostWidget(id)
-          },
-          onException = (_) => actions.showContactUsError()
-        )
-      case _ => actions.showContactUsError().run
-    }
-
-  def loadWidgetsForMoment(nineCardsMoment: NineCardsMoment): Unit = {
-
-    def getWidgets = for {
-      moment <- di.momentProcess.getMomentByType(nineCardsMoment)
-      widgets <- di.widgetsProcess.getWidgetsByMoment(moment.id)
-    } yield widgets
-
-    getWidgets.resolveAsyncUi2(
-      onPreTask = actions.clearWidgets,
-      onResult = {
-        case Nil => Ui.nop
-        case widgets => actions.addWidgets(widgets)
-      },
-      onException = (_) => actions.showContactUsError()
-    )
-
   }
 
   def addWidget(maybeAppWidgetId: Option[Int]): Unit = {
@@ -763,51 +455,8 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }) getOrElse actions.showContactUsError().run
   }
 
-  def hostNoConfiguredWidget(widget: Widget): Unit = {
-    statuses = statuses.copy(hostingNoConfiguredWidget = Option(widget))
-    actions.hostWidget(widget.packageName, widget.className).run
-  }
-
-  def hostWidget(widget: AppWidget): Unit = {
-    statuses = statuses.copy(hostingNoConfiguredWidget = None)
-    val currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
-    currentMomentType foreach { moment =>
-      di.trackEventProcess.addWidgetToMoment(
-        widget.packageName,
-        widget.className,
-        MomentCategory(moment)).resolveAsync2()
-    }
-    actions.hostWidget(widget.packageName, widget.className).run
-  }
-
   def configureOrAddWidget(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map actions.configureWidget getOrElse actions.showContactUsError()).run
-
-  def preferencesChanged(changedPreferences: Array[String]): Unit = {
-
-    def needToRecreate(array: Array[String]): Boolean =
-      array.intersect(
-        Seq(PreferencesValuesKeys.theme,
-          PreferencesValuesKeys.iconsSize,
-          PreferencesValuesKeys.fontsSize,
-          PreferencesValuesKeys.appDrawerSelectItemsInScroller)).nonEmpty
-
-    def uiAction(prefKey: String): Ui[_] = prefKey match {
-      case PreferencesValuesKeys.showClockMoment => actions.reloadMomentTopBar()
-      case PreferencesValuesKeys.googleLogo => actions.reloadTopBar()
-      case _ => Ui.nop
-    }
-
-    Option(changedPreferences) match {
-      case Some(array) if array.nonEmpty =>
-        if (needToRecreate(array)) {
-          actions.reloadAllViews().run
-        } else {
-          (array map uiAction reduce (_ ~ _)).run
-        }
-      case _ =>
-    }
-  }
 
   def cleanPersistedMoment() = {
     momentPreferences.clean()
@@ -820,91 +469,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   private[this] def createOrUpdateDockApp(card: CardData, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath getOrElse "", position)
-
-  // Check if there is a new best available moment, if not reload the apps moment bar
-  def changeMomentIfIsAvailable(): Unit = {
-
-    // Check if the best available moment is different to the current moment, if it's different return Some(moment)
-    // in the other case None
-    def getCheckMoment: TaskService[Option[LauncherMoment]] = {
-
-      def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
-        val collectionId = moment flatMap (_.collectionId)
-        collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
-      }
-
-      for {
-        moment <- di.momentProcess.getBestAvailableMoment
-        collection <- getCollection(moment)
-        currentMomentType = actions.getData.headOption flatMap (_.moment) flatMap (_.momentType)
-        momentType = moment flatMap (_.momentType)
-      } yield {
-        currentMomentType match {
-          case `momentType` => None
-          case _ => Option(LauncherMoment(moment flatMap (_.momentType), collection))
-        }
-      }
-    }
-
-    getCheckMoment.resolveAsyncUi2(
-      onResult = {
-        case launcherMoment@Some(_) =>
-          val data = LauncherData(MomentWorkSpace, launcherMoment)
-          actions.reloadMoment(data)
-        case _ => Ui.nop
-      },
-      onException = (_) => Ui(reloadAppsMomentBar()))
-  }
-
-  def requestPermissionsResult(
-    requestCode: Int,
-    permissions: Array[String],
-    grantResults: Array[Int]): Unit = {
-
-    def serviceAction(result: Seq[PermissionResult]): TaskService[Unit] = requestCode match {
-      case RequestCodes.contactsPermission if result.exists(_.hasPermission(ReadContacts)) =>
-        actions.reloadDrawerContacts().toService
-      case RequestCodes.callLogPermission if result.exists(_.hasPermission(ReadCallLog)) =>
-        actions.reloadDrawerContacts().toService
-      case RequestCodes.phoneCallPermission if result.exists(_.hasPermission(CallPhone)) =>
-        statuses.lastPhone match {
-          case Some(phone) =>
-            statuses = statuses.copy(lastPhone = None)
-            di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, phone))
-          case _ => TaskService.right((): Unit)
-        }
-      case RequestCodes.contactsPermission =>
-        (actions.reloadDrawerApps() ~
-          actions.showBottomError(R.string.errorContactsPermission, requestReadContacts)).toService
-      case RequestCodes.callLogPermission =>
-        (actions.reloadDrawerApps() ~
-          actions.showBottomError(R.string.errorCallsPermission, requestReadCallLog)).toService
-      case RequestCodes.phoneCallPermission =>
-        statuses.lastPhone match {
-          case Some(phone) =>
-            statuses = statuses.copy(lastPhone = None)
-            for {
-              _ <- di.launcherExecutorProcess.launchDial(Some(phone))
-              _ <- actions.showNoPhoneCallPermissionError().toService
-            } yield ()
-          case _ => TaskService.right((): Unit)
-        }
-      case RequestCodes.locationPermission if result.exists(_.hasPermission(FineLocation)) =>
-        for {
-          _ <- updateWeather()
-          _ <- di.launcherExecutorProcess.launchGoogleWeather
-        } yield ()
-      case _ =>
-        TaskService.right((): Unit)
-    }
-
-    launcherService {
-      for {
-        result <- di.userAccountsProcess.parsePermissionsRequestResult(permissions, grantResults)
-        _ <- serviceAction(result)
-      } yield ()
-    }
-  }
 
   private[this] def launcherService(service: TaskService[Unit]) =
     service.resolveAsyncUi2(onException = _ => actions.showContactUsError())
@@ -1047,18 +611,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
 trait LauncherUiActions {
 
-  def initialize: Ui[Any]
-
-  def destroy: Ui[Any]
-
-  def back: Ui[Any]
-
-  def resetAction: Ui[Any]
-
-  def destroyAction: Ui[Any]
-
-  def logout: Ui[Any]
-
   def closeTabs: Ui[Any]
 
   def startReorder: Ui[Any]
@@ -1084,22 +636,6 @@ trait LauncherUiActions {
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): Ui[Any]
 
   def reloadDockApps(dockApp: DockAppData): Ui[Any]
-
-  def openModeEditWidgets(): Ui[Any]
-
-  def resizeWidget(): Ui[Any]
-
-  def moveWidget(): Ui[Any]
-
-  def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Ui[Any]
-
-  def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Ui[Any]
-
-  def cancelWidget(appWidgetId: Int): Ui[Any]
-
-  def editWidgetsShowActions(): Ui[Any]
-
-  def reloadViewEditWidgets(): Ui[Any]
 
   def closeModeEditWidgets(): Ui[Any]
 
@@ -1131,10 +667,6 @@ trait LauncherUiActions {
 
   def reloadCurrentMoment(): Ui[Any]
 
-  def reloadMomentTopBar(): Ui[Any]
-
-  def reloadTopBar(): Ui[Any]
-
   def reloadAllViews(): Ui[Any]
 
   def reloadMoment(moment: LauncherData): Ui[Any]
@@ -1152,8 +684,6 @@ trait LauncherUiActions {
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
 
-  def resetFromCollection(): Ui[Any]
-
   def editCollection(collection: Collection): Ui[Any]
 
   def editMoment(momentType: String): Ui[Any]
@@ -1161,8 +691,6 @@ trait LauncherUiActions {
   def addWidgets(widgets: Seq[Widget]): Ui[Any]
 
   def replaceWidget(widget: Widget): Ui[Any]
-
-  def deleteSelectedWidget(): Ui[Any]
 
   def unhostWidget(id: Int): Ui[Any]
 
@@ -1173,8 +701,6 @@ trait LauncherUiActions {
   def getWidgetInfoById(appWidgetId: Int): Option[(ComponentName, Cell)]
 
   def clearWidgets(): Ui[Any]
-
-  def showWidgetsDialog(): Ui[Any]
 
   def showSelectMomentDialog(moments: Seq[Moment]): Ui[Any]
 
