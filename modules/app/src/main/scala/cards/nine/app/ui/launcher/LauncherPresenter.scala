@@ -17,7 +17,6 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.drawer._
 import cards.nine.app.ui.launcher.exceptions.SpaceException
-import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
 import cards.nine.app.ui.wizard.WizardActivity
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
@@ -55,8 +54,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       _ = momentPreferences.weatherLoaded(maybeCondition.isEmpty || maybeCondition.contains(UnknownCondition))
       _ <- actions.showWeather(maybeCondition).toService
     } yield ()
-
-  def logout(): Unit = actions.logout.run
 
   def startAddItemToCollection(app: ApplicationData): Unit = startAddItemToCollection(toCardData(app))
 
@@ -388,8 +385,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     case _ => actions.showContactUsError()
   }).run
 
-  def resetFromCollectionDetail(): Unit = actions.resetFromCollection().run
-
   def goToWizard(): Unit = {
     contextWrapper.original.get foreach { activity =>
       val wizardIntent = new Intent(activity, classOf[WizardActivity])
@@ -463,32 +458,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
   def configureOrAddWidget(maybeAppWidgetId: Option[Int]): Unit =
     (maybeAppWidgetId map actions.configureWidget getOrElse actions.showContactUsError()).run
 
-  def preferencesChanged(changedPreferences: Array[String]): Unit = {
-
-    def needToRecreate(array: Array[String]): Boolean =
-      array.intersect(
-        Seq(PreferencesValuesKeys.theme,
-          PreferencesValuesKeys.iconsSize,
-          PreferencesValuesKeys.fontsSize,
-          PreferencesValuesKeys.appDrawerSelectItemsInScroller)).nonEmpty
-
-    def uiAction(prefKey: String): Ui[_] = prefKey match {
-      case PreferencesValuesKeys.showClockMoment => actions.reloadMomentTopBar()
-      case PreferencesValuesKeys.googleLogo => actions.reloadTopBar()
-      case _ => Ui.nop
-    }
-
-    Option(changedPreferences) match {
-      case Some(array) if array.nonEmpty =>
-        if (needToRecreate(array)) {
-          actions.reloadAllViews().run
-        } else {
-          (array map uiAction reduce (_ ~ _)).run
-        }
-      case _ =>
-    }
-  }
-
   def cleanPersistedMoment() = {
     momentPreferences.clean()
     momentForceBestAvailable()
@@ -500,56 +469,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
   private[this] def createOrUpdateDockApp(card: CardData, dockType: DockType, position: Int) =
     di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath getOrElse "", position)
-
-  def requestPermissionsResult(
-    requestCode: Int,
-    permissions: Array[String],
-    grantResults: Array[Int]): Unit = {
-
-    def serviceAction(result: Seq[PermissionResult]): TaskService[Unit] = requestCode match {
-      case RequestCodes.contactsPermission if result.exists(_.hasPermission(ReadContacts)) =>
-        actions.reloadDrawerContacts().toService
-      case RequestCodes.callLogPermission if result.exists(_.hasPermission(ReadCallLog)) =>
-        actions.reloadDrawerContacts().toService
-      case RequestCodes.phoneCallPermission if result.exists(_.hasPermission(CallPhone)) =>
-        statuses.lastPhone match {
-          case Some(phone) =>
-            statuses = statuses.copy(lastPhone = None)
-            di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, phone))
-          case _ => TaskService.right((): Unit)
-        }
-      case RequestCodes.contactsPermission =>
-        (actions.reloadDrawerApps() ~
-          actions.showBottomError(R.string.errorContactsPermission, requestReadContacts)).toService
-      case RequestCodes.callLogPermission =>
-        (actions.reloadDrawerApps() ~
-          actions.showBottomError(R.string.errorCallsPermission, requestReadCallLog)).toService
-      case RequestCodes.phoneCallPermission =>
-        statuses.lastPhone match {
-          case Some(phone) =>
-            statuses = statuses.copy(lastPhone = None)
-            for {
-              _ <- di.launcherExecutorProcess.launchDial(Some(phone))
-              _ <- actions.showNoPhoneCallPermissionError().toService
-            } yield ()
-          case _ => TaskService.right((): Unit)
-        }
-      case RequestCodes.locationPermission if result.exists(_.hasPermission(FineLocation)) =>
-        for {
-          _ <- updateWeather()
-          _ <- di.launcherExecutorProcess.launchGoogleWeather
-        } yield ()
-      case _ =>
-        TaskService.right((): Unit)
-    }
-
-    launcherService {
-      for {
-        result <- di.userAccountsProcess.parsePermissionsRequestResult(permissions, grantResults)
-        _ <- serviceAction(result)
-      } yield ()
-    }
-  }
 
   private[this] def launcherService(service: TaskService[Unit]) =
     service.resolveAsyncUi2(onException = _ => actions.showContactUsError())
@@ -692,8 +611,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
 
 trait LauncherUiActions {
 
-  def logout: Ui[Any]
-
   def closeTabs: Ui[Any]
 
   def startReorder: Ui[Any]
@@ -750,10 +667,6 @@ trait LauncherUiActions {
 
   def reloadCurrentMoment(): Ui[Any]
 
-  def reloadMomentTopBar(): Ui[Any]
-
-  def reloadTopBar(): Ui[Any]
-
   def reloadAllViews(): Ui[Any]
 
   def reloadMoment(moment: LauncherData): Ui[Any]
@@ -770,8 +683,6 @@ trait LauncherUiActions {
     counters: Seq[TermCounter] = Seq.empty): Ui[Any]
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
-
-  def resetFromCollection(): Ui[Any]
 
   def editCollection(collection: Collection): Ui[Any]
 

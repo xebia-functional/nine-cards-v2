@@ -165,6 +165,8 @@ class WorkspaceUiActions(val dom: LauncherDOM)
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): TaskService[Unit] =
     ((dom.workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager).toService
 
+  def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService
+
   private[this] def reloadWorkspacePager: Ui[Any] = createPager((dom.workspaces ~> lwsCurrentPage()).get)
 
   private[this] def createPager(activePosition: Int): Ui[Any] = {

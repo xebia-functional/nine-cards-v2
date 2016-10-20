@@ -3,12 +3,12 @@ package cards.nine.app.ui.launcher.jobs
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v4.app.{Fragment, FragmentManager}
-import android.support.v7.app.AppCompatActivity
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.SafeUi._
-import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
@@ -91,7 +91,13 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   def showNoImplementedYetMessage(): TaskService[Unit] = showMessage(R.string.todo)
 
-  def showNoPhoneCallPermissionError: TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage)
+  def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage)
+
+  def showContactPermissionError(action: () => Unit): TaskService[Unit] =
+    showMessageWithAction(R.string.errorContactsPermission, R.string.buttonTryAgain, action)
+
+  def showCallPermissionError(action: () => Unit): TaskService[Unit] =
+    showMessageWithAction(R.string.errorCallsPermission, R.string.buttonTryAgain, action)
 
   def removeActionFragment(): TaskService[Unit] =
     dom.getFragment match {
@@ -108,13 +114,16 @@ class NavigationUiActions(val dom: LauncherDOM)
   private[this] def showMessage(res: Int, args: Seq[String] = Seq.empty): TaskService[Unit] =
     (dom.workspaces <~ vLauncherSnackbar(res, args)).toService
 
+  private[this] def showMessageWithAction(resMessage: Int, resButton: Int, action: () => Unit): TaskService[Unit] =
+    (dom.workspaces <~ vLauncherSnackbarWithAction(resMessage, resButton, action, lenght = Snackbar.LENGTH_LONG)).toService
+
   private[this] def showAction[F <: BaseActionFragment]
   (fragmentBuilder: FragmentBuilder[F], bundle: Bundle): Ui[Any] = {
     (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
       closeCollectionMenu() ~
       (dom.actionFragmentContent <~ vBackgroundColor(Color.BLACK.alpha(maxBackgroundPercent))) ~
       (dom.fragmentContent <~ vClickable(true)) ~
-      fragmentBuilder.pass(bundle).framed(R.id.action_fragment_content, ActionsBehaviours.nameActionFragment)
+      fragmentBuilder.pass(bundle).framed(R.id.action_fragment_content, dom.nameActionFragment)
   }
 
   private[this] def closeCollectionMenu(): Ui[Future[Any]] = dom.workspaces <~~ lwsCloseMenu

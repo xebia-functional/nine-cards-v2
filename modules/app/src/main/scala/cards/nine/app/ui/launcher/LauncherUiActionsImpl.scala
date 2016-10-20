@@ -181,13 +181,6 @@ trait LauncherUiActionsImpl
 
   override def reloadCurrentMoment(): Ui[Any] = workspaces <~ lwsDataForceReloadMoment()
 
-  override def reloadMomentTopBar(): Ui[Any] = {
-    val momentType = getData.headOption.flatMap(_.moment).flatMap(_.momentType)
-    topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank)
-  }
-
-  override def reloadTopBar(): Ui[Any] = topBarPanel <~ tblReload
-
   override def reloadAllViews(): Ui[Any] = activityContextWrapper.original.get match {
     case Some(activity: AppCompatActivity) => Ui(activity.recreate())
     case _ => Ui.nop
@@ -238,8 +231,6 @@ trait LauncherUiActionsImpl
 
   override def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any] =
     addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact.number))
-
-  override def resetFromCollection(): Ui[Any] = foreground <~ vBlankBackground <~ vGone
 
   override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
 
@@ -343,8 +334,6 @@ trait LauncherUiActionsImpl
     }
 
   override def closeAppsMoment(): Ui[Any] = drawerLayout <~ dlCloseDrawerEnd
-
-  override def logout: Ui[Any] = cleanWorkspaces() ~ Ui(presenter.goToWizard())
 
   override def closeTabs: Ui[Any] = closeDrawerTabs
 

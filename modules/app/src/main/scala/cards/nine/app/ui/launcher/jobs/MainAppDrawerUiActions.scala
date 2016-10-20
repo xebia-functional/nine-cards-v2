@@ -208,6 +208,16 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
         resetData(searchIsEmpty))).toService
   }
 
+  def reloadContacts(): TaskService[Unit] = {
+    val option = dom.getStatus match {
+      case Some(status) => ContactsMenuOption(status)
+      case _ => None
+    }
+    loadContactsAndSaveStatus(option getOrElse ContactsAlphabetical).toService
+  }
+
+  def reloadApps(): TaskService[Unit] = loadAppsAlphabetical.toService
+
   private[this] def manageContactException(throwable: Throwable) = throwable match {
     case e: CallPermissionException => appDrawerJobs.requestReadCallLog()
     case e: ContactPermissionException => appDrawerJobs.requestReadContacts()
@@ -293,14 +303,6 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
 
     val pagerViews = 0 until pages map paginationDrawer
     dom.paginationDrawerPanel <~ vgAddViews(pagerViews)
-  }
-
-  private[this] def reloadContacts: Ui[_] = {
-    val option = dom.getStatus match {
-      case Some(status) => ContactsMenuOption(status)
-      case _ => None
-    }
-    loadContactsAndSaveStatus(option getOrElse ContactsAlphabetical)
   }
 
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] = {
