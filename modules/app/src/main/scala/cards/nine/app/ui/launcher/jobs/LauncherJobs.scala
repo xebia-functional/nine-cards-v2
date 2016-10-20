@@ -3,18 +3,18 @@ package cards.nine.app.ui.launcher.jobs
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
+import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{BroadAction, Jobs, RequestCodes}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
+import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
 import cards.nine.commons.NineCardExtensions._
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.UnknownCondition
+import cards.nine.models.types.{NineCardsMoment, UnknownCondition}
 import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
 import cards.nine.process.theme.models.NineCardsTheme
@@ -50,7 +50,8 @@ class LauncherJobs(
         appDrawerUiActions.initialize(theme) *>
         topBarUiActions.initialize(theme) *>
         dockAppsUiActions.initialize(theme) *>
-        dragUiActions.initialize(theme)
+        dragUiActions.initialize(theme) *>
+        navigationUiActions.initialize(theme)
 
     for {
       _ <- mainLauncherUiActions.initialize()
@@ -166,6 +167,29 @@ class LauncherJobs(
           workspaceUiActions.reloadMoment(data)
       }
     } yield ()
+  }
+
+  def changeMoment(momentType: NineCardsMoment): TaskService[Unit] = {
+    momentPreferences.persist(momentType)
+    for {
+      maybeMoment <- di.momentProcess.fetchMomentByType(momentType)
+      moment <- maybeMoment match {
+        case Some(moment) => TaskService(Task(Right[NineCardException, Moment](moment)))
+        case _ => di.momentProcess.createMomentWithoutCollection(momentType)
+      }
+      collection <- moment.collectionId match {
+        case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
+        case _ => TaskService(Task(Right[NineCardException, Option[Collection]](None)))
+      }
+      data = LauncherData(MomentWorkSpace, Some(LauncherMoment(moment.momentType, collection)))
+      _ <- workspaceUiActions.reloadMoment(data)
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
+    } yield ()
+  }
+
+  def cleanPersistedMoment(): TaskService[Unit] = {
+    momentPreferences.clean()
+    sendBroadCastTask(BroadAction(MomentForceBestAvailableActionFilter.action))
   }
 
   def reloadCollection(collectionId: Int): TaskService[Unit] =

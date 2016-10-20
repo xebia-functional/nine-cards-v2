@@ -211,50 +211,6 @@ trait CollectionsUiActions
 
   protected def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get getOrElse false
 
-  protected def getItemsForFabMenu = Seq(
-    (w[WorkspaceItemMenu] <~
-      workspaceButtonCreateCollectionStyle <~
-      vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
-      FuncOn.click { view: View =>
-        val iconView = getIconView(view)
-        showAction(f[CreateOrEditCollectionFragment], iconView, resGetColor(R.color.collection_group_1))
-      }).get,
-    (w[WorkspaceItemMenu] <~
-      workspaceButtonMyCollectionsStyle <~
-      vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
-      FuncOn.click { view: View =>
-        val iconView = getIconView(view)
-        showAction(f[PrivateCollectionsFragment], iconView, resGetColor(R.color.collection_fab_button_item_my_collections))
-      }).get,
-    (w[WorkspaceItemMenu] <~
-      workspaceButtonPublicCollectionStyle <~
-      vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
-      FuncOn.click { view: View =>
-        val iconView = getIconView(view)
-        showAction(f[PublicCollectionsFragment], iconView, resGetColor(R.color.collection_fab_button_item_public_collection))
-      }).get,
-    (w[WorkspaceItemMenu] <~
-      workspaceButtonEditMomentStyle <~
-      vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
-      FuncOn.click { view: View =>
-        val momentType = getData.headOption flatMap (_.moment) flatMap (_.momentType) map (_.name)
-        momentType match {
-          case Some(moment) =>
-            val iconView = getIconView(view)
-            val momentMap = Map(EditMomentFragment.momentKey -> moment)
-            showAction(f[EditMomentFragment], iconView, resGetColor(R.color.collection_fab_button_item_edit_moment), momentMap)
-          case _ => Ui.nop
-        }
-
-      }).get,
-    (w[WorkspaceItemMenu] <~
-      workspaceButtonChangeMomentStyle <~
-      vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
-      On.click {
-        closeCollectionMenu() ~~ Ui(presenter.goToChangeMoment())
-      }).get
-  )
-
   private[this] def getIconView(view: View): Option[View] = (view match {
     case wim: WorkspaceItemMenu => Option(wim)
     case _ => None

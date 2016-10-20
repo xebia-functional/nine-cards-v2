@@ -183,8 +183,7 @@ object LauncherActivity {
   def createLauncherJobs(implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_],
-    presenter: LauncherPresenter) = {
+    uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new LauncherJobs(
       mainLauncherUiActions = new MainLauncherUiActions(dom),

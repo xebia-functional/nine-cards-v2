@@ -160,38 +160,11 @@ trait LauncherUiActionsImpl
     }
   }
 
-  override def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockAppData]): Ui[Any] = {
-    val momentType = data.headOption.flatMap(_.moment).flatMap(_.momentType)
-    val launcherMoment = data.headOption.flatMap(_.moment)
-    (loading <~ vGone) ~
-      (appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
-      (topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank)) ~
-      (dockAppsPanel <~ daplInit(apps)) ~
-      (workspaces <~
-        vGlobalLayoutListener(_ =>
-          (workspaces <~
-            lwsData(data, selectedPageDefault) <~
-            (topBarPanel map (tbp => lwsAddPageChangedObserver(tbp.movement)) getOrElse Tweak.blank) <~
-            awsAddPageChangedObserver(currentPage => {
-              (paginationPanel <~ reloadPager(currentPage)).run
-            })) ~
-            createPager(selectedPageDefault)
-        ))
-  }
-
   override def reloadCurrentMoment(): Ui[Any] = workspaces <~ lwsDataForceReloadMoment()
 
   override def reloadAllViews(): Ui[Any] = activityContextWrapper.original.get match {
     case Some(activity: AppCompatActivity) => Ui(activity.recreate())
     case _ => Ui.nop
-  }
-
-  override def reloadMoment(data: LauncherData): Ui[Any] = {
-    val momentType = data.moment.flatMap(_.momentType)
-    val launcherMoment = data.moment
-    (workspaces <~ lwsDataMoment(data)) ~
-      (appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
-      (topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))
   }
 
   override def reloadBarMoment(data: LauncherMoment): Ui[Any] =
@@ -317,13 +290,6 @@ trait LauncherUiActionsImpl
       info <- Option(appWidgetManager.getAppWidgetInfo(appWidgetId))
     } yield (info.provider, info.getCell(ws.getWidth, ws.getHeight))
 
-  override def showSelectMomentDialog(moments: Seq[Moment]): Ui[Any] = activityContextWrapper.original.get match {
-    case Some(activity: Activity) => Ui {
-      val momentDialog = new MomentDialog(moments)
-      momentDialog.show()
-    }
-    case _ => Ui.nop
-  }
 
   override def openMenu(): Ui[Any] = drawerLayout <~ dlOpenDrawer
 

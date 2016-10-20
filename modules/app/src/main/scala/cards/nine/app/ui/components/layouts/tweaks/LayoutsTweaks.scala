@@ -16,7 +16,7 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
-import cards.nine.app.ui.launcher.jobs.WidgetsJobs
+import cards.nine.app.ui.launcher.jobs.{NavigationJobs, WidgetsJobs}
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models._
 import cards.nine.models.TermCounter
@@ -399,13 +399,13 @@ object TopBarLayoutTweaks {
 
   type W = TopBarLayout
 
-  def tblInit(workSpaceType: WorkSpaceType)(implicit theme: NineCardsTheme, contextWrapper: ActivityContextWrapper) =
+  def tblInit(workSpaceType: WorkSpaceType)(implicit theme: NineCardsTheme, navigationJobs: NavigationJobs) =
     Tweak[W] (_.init(workSpaceType).run)
 
-  def tblReload(implicit theme: NineCardsTheme, contextWrapper: ActivityContextWrapper) =
+  def tblReload(implicit theme: NineCardsTheme, navigationJobs: NavigationJobs) =
     Tweak[W] (_.populate.run)
 
-  def tblReloadMoment(moment: NineCardsMoment)(implicit theme: NineCardsTheme, contextWrapper: ActivityContextWrapper) =
+  def tblReloadMoment(moment: NineCardsMoment)(implicit theme: NineCardsTheme, navigationJobs: NavigationJobs) =
     Tweak[W] (_.reloadMoment(moment).run)
 
   def tblReloadByType(workSpaceType: WorkSpaceType)(implicit contextWrapper: ContextWrapper) =

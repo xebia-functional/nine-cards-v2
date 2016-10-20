@@ -11,8 +11,8 @@ import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.{RequestCodes, SystemBarsTint, UiContext}
-import cards.nine.app.ui.components.dialogs.AlertDialogFragment
+import cards.nine.app.ui.commons._
+import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
@@ -21,12 +21,15 @@ import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
 import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
+import cards.nine.app.ui.launcher.jobs.LauncherJobs
 import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.app.ui.wizard.WizardActivity
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.Moment
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
@@ -40,11 +43,20 @@ class NavigationUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) {
+    uiContext: UiContext[_])
+  extends ImplicitsUiExceptions {
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
+  implicit lazy val launcherJobs: LauncherJobs = createLauncherJobs
+
   implicit lazy val widgetsJobs = createWidgetsJobs
+
+  case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
+
+  private[this] var actionsState = State()
+
+  implicit def theme: NineCardsTheme = actionsState.theme
 
   val pageMoments = 0
 
@@ -53,6 +65,10 @@ class NavigationUiActions(val dom: LauncherDOM)
   val maxBackgroundPercent: Float = 0.7f
 
   val tagDialog = "dialog"
+
+  def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = TaskService.right {
+    actionsState = actionsState.copy(theme = nineCardsTheme)
+  }
 
   def goToWizard(): TaskService[Unit] =
     uiStartIntent(new Intent(activityContextWrapper.bestAvailable, classOf[WizardActivity])).toService
@@ -81,6 +97,11 @@ class NavigationUiActions(val dom: LauncherDOM)
       positiveAction = () => widgetsJobs.deleteDBWidget().resolveAsyncServiceOr(_ =>
         widgetsJobs.navigationUiActions.showContactUsError()))
     dialog.show(ft, tagDialog)
+  }.toService
+
+  def showSelectMomentDialog(moments: Seq[Moment]): TaskService[Unit]= Ui {
+    val momentDialog = new MomentDialog(moments)
+    momentDialog.show()
   }.toService
 
   def showAddItemMessage(nameCollection: String): TaskService[Unit] =

@@ -13,7 +13,8 @@ import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.launcher.jobs.LauncherJobs
 import cards.nine.models.Moment
 import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerTextColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
@@ -21,7 +22,7 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-class MomentDialog(moments: Seq[Moment])(implicit contextWrapper: ContextWrapper, presenter: LauncherPresenter, theme: NineCardsTheme)
+class MomentDialog(moments: Seq[Moment])(implicit contextWrapper: ContextWrapper, launcherJobs: LauncherJobs, theme: NineCardsTheme)
   extends BottomSheetDialog(contextWrapper.getOriginal)
   with TypedFindView { dialog =>
 
@@ -68,7 +69,7 @@ class MomentDialog(moments: Seq[Moment])(implicit contextWrapper: ContextWrapper
         padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
       ivSrc(iconIndicatorDrawable) +
         On.click(Ui{
-          presenter.cleanPersistedMoment()
+          launcherJobs.cleanPersistedMoment().resolveAsync()
           dialog.dismiss()
         }) +
         vVisible
@@ -78,7 +79,7 @@ class MomentDialog(moments: Seq[Moment])(implicit contextWrapper: ContextWrapper
 
     ((this <~ On.click(
       Ui {
-        presenter.changeMoment(moment)
+        launcherJobs.changeMoment(moment).resolveAsync()
         dialog.dismiss()
       })) ~
       (icon <~ ivSrc(moment.getIconCollectionDetail) <~ tivDefaultColor(colorText)) ~

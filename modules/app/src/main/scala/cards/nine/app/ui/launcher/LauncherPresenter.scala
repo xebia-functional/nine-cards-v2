@@ -291,34 +291,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
     }).run
   }
 
-  def goToChangeMoment(): Unit = di.momentProcess.getMoments.resolveAsyncUi2(onResult = actions.showSelectMomentDialog)
-
-  def changeMoment(momentType: NineCardsMoment): Unit = {
-    momentPreferences.persist(momentType)
-
-    def getMoment = for {
-      maybeMoment <- di.momentProcess.fetchMomentByType(momentType)
-      moment <- maybeMoment match {
-        case Some(moment) => TaskService(Task(Right[NineCardException, Moment](moment)))
-        case _ => di.momentProcess.createMomentWithoutCollection(momentType)
-      }
-      collection <- moment.collectionId match {
-        case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
-        case _ => TaskService(Task(Right[NineCardException, Option[Collection]](None)))
-      }
-
-    } yield (moment, collection)
-
-    getMoment.resolveAsyncUi2(
-      onResult = {
-        case (moment, collection) =>
-          val data = LauncherData(MomentWorkSpace, Some(LauncherMoment(moment.momentType, collection)))
-          actions.reloadMoment(data) ~
-            Ui(momentReloadBroadCastIfNecessary())
-        case _ => Ui.nop
-      })
-  }
-
   def loadApps(appsMenuOption: AppsMenuOption): Unit = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     getLoadApps(getAppOrder).resolveAsyncUi2(
@@ -663,13 +635,9 @@ trait LauncherUiActions {
 
   def goToCollection(collection: Collection, point: Point): Ui[Any]
 
-  def loadLauncherInfo(data: Seq[LauncherData], apps: Seq[DockAppData]): Ui[Any]
-
   def reloadCurrentMoment(): Ui[Any]
 
   def reloadAllViews(): Ui[Any]
-
-  def reloadMoment(moment: LauncherData): Ui[Any]
 
   def reloadBarMoment(data: LauncherMoment): Ui[Any]
 
@@ -701,8 +669,6 @@ trait LauncherUiActions {
   def getWidgetInfoById(appWidgetId: Int): Option[(ComponentName, Cell)]
 
   def clearWidgets(): Ui[Any]
-
-  def showSelectMomentDialog(moments: Seq[Moment]): Ui[Any]
 
   def openMenu(): Ui[Any]
 

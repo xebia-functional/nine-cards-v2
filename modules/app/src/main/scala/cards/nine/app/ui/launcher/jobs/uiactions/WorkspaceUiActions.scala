@@ -23,9 +23,9 @@ import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import cards.nine.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
+import cards.nine.app.ui.launcher.jobs.NavigationJobs
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.IsDeveloper
@@ -49,8 +49,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_],
-    presenter: LauncherPresenter) {
+    uiContext: UiContext[_]) {
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
@@ -63,7 +62,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
 
   implicit def theme: NineCardsTheme = actionsState.theme
 
-  val navigationJobs = createNavigationJobs
+  implicit lazy val navigationJobs: NavigationJobs = createNavigationJobs
 
   val maxBackgroundPercent: Float = 0.7f
 
@@ -82,7 +81,6 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     }
 
     ((dom.paginationPanel <~ On.longClick((dom.workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
-      (dom.topBarPanel <~ tblInit(CollectionsWorkSpace)) ~
       (dom.workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (dom.workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (dom.menuCollectionRoot <~ vGone) ~
@@ -278,7 +276,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       workspaceButtonChangeMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       On.click {
-        closeCollectionMenu() ~~ Ui(presenter.goToChangeMoment())
+        closeCollectionMenu() ~~ Ui(navigationJobs.goToChangeMoment().resolveAsync())
       }).get
   )
 

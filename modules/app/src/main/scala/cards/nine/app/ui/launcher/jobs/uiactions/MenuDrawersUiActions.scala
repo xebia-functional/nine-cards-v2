@@ -74,6 +74,8 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
           case None => ivBlank
         }))).toService
 
+  def openMenu(): TaskService[Unit] = (dom.drawerLayout <~ dlOpenDrawer).toService
+
   def reloadBarMoment(data: LauncherMoment): TaskService[Unit] =
     ((dom.appsMoment <~ amlPopulate(data)) ~ (dom.drawerLayout <~ (data.collection match {
       case Some(_) => dlUnlockedEnd

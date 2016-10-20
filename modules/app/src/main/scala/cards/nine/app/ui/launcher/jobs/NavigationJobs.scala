@@ -2,7 +2,7 @@ package cards.nine.app.ui.launcher.jobs
 
 import android.os.Bundle
 import cards.nine.app.commons.AppNineCardsIntentConversions
-import cards.nine.app.ui.commons.Jobs
+import cards.nine.app.ui.commons.{Jobs, RequestCodes}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.uiactions.{MainAppDrawerUiActions, MenuDrawersUiActions, NavigationUiActions, WidgetUiActions}
 import cards.nine.app.ui.launcher.{EditWidgetsMode, NormalMode}
@@ -10,6 +10,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.AppCategory
 import cards.nine.models.{ApplicationData, Contact, NineCardsIntentConversions}
+import cards.nine.process.accounts.FineLocation
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
@@ -23,6 +24,8 @@ class NavigationJobs(
   with AppNineCardsIntentConversions {
 
   def goToWizard(): TaskService[Unit] = navigationUiActions.goToWizard()
+
+  def openMenu(): TaskService[Unit] = menuDrawersUiActions.openMenu()
 
   def launchCreateOrCollection(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchCreateOrCollection(bundle)
 
@@ -70,9 +73,29 @@ class NavigationJobs(
     di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, number))
   }
 
+  def launchSearch(): TaskService[Unit] = di.launcherExecutorProcess.launchSearch
+
+  def launchVoiceSearch(): TaskService[Unit] = di.launcherExecutorProcess.launchVoiceSearch
+
+  def launchGoogleWeather(): TaskService[Unit] =
+    for {
+      result <- di.userAccountsProcess.havePermission(FineLocation)
+      _ <- if (result.hasPermission(FineLocation)) {
+        di.launcherExecutorProcess.launchGoogleWeather
+      } else {
+        di.userAccountsProcess.requestPermission(RequestCodes.locationPermission, FineLocation)
+      }
+    } yield ()
+
   def launchPlayStore(): TaskService[Unit] = di.launcherExecutorProcess.launchPlayStore
 
   def launchDial(): TaskService[Unit] = di.launcherExecutorProcess.launchDial(phoneNumber = None)
+
+  def goToChangeMoment(): TaskService[Unit] =
+    for {
+      moments <- di.momentProcess.getMoments
+      _ <- navigationUiActions.showSelectMomentDialog(moments)
+    } yield ()
 
   def goToMenuOption(itemId: Int): TaskService[Unit] = {
     itemId match {
