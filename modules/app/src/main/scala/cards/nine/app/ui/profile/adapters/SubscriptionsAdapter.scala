@@ -55,7 +55,7 @@ case class ViewHolderSubscriptionsAdapter(
     (checkbox <~ ccbInitialize(subscription.getIconSubscriptionDetail, subscriptionColor, defaultCheck = subscription.subscribed)) ~
       (name <~ tvText(resGetString(subscription.name) getOrElse subscription.name)) ~
       (apps <~ tvText(resGetString(R.string.installed_apps_number, subscription.apps.toString))) ~
-      (root <~ On.click(
+      (content <~ On.click(
         Ui(ccbDoCheck(subscriptionColor, !subscription.subscribed)) ~
         Ui(onSubscribe(subscription.sharedCollectionId, !subscription.subscribed))))
   }

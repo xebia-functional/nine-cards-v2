@@ -21,6 +21,7 @@
 
     <color name="background_box_content">#ffffff</color>
 
+    <color name="checkbox_selected">#4caf4f</color>
     <color name="checkbox_unselected">#47000000</color>
 
     <!-- Launcher -->

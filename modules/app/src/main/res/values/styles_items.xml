@@ -561,9 +561,9 @@
     </style>
 
     <style name="SubscriptionsItemCheckboxIcon">
-        <item name="android:layout_width">@dimen/padding_small</item>
-        <item name="android:layout_height">@dimen/padding_small</item>
-        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_width">@dimen/size_icon_item_collections</item>
+        <item name="android:layout_height">@dimen/size_icon_item_collections</item>
+        <item name="android:layout_gravity">top|right</item>
     </style>
 
     <style name="SubscriptionsItemNames">
