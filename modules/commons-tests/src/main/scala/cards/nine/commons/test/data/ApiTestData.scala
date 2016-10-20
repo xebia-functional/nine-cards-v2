@@ -7,7 +7,7 @@ import cards.nine.models.types.NineCardsCategory
 
 trait ApiTestData extends ApplicationTestData {
 
-  val requestConfig = RequestConfig(
+  implicit val requestConfig = RequestConfig(
     apiKey = apiKey,
     sessionToken = sessionToken,
     androidId = androidId,
@@ -18,11 +18,11 @@ trait ApiTestData extends ApplicationTestData {
     sessionToken = sessionToken)
 
   val awarenessLocation = Location(
-      latitude = latitude,
-      longitude = longitude,
-      countryCode = Option(countryCode),
-      countryName = Option(countryName),
-      addressLines = Seq(street, city, postalCode))
+    latitude = latitude,
+    longitude = longitude,
+    countryCode = Option(countryCode),
+    countryName = Option(countryName),
+    addressLines = Seq(street, city, postalCode))
 
   val categorizedDetailPackages = seqApplication map { app =>
     CategorizedDetailPackage(

@@ -6,8 +6,8 @@ import cards.nine.models.{SharedCollectionPackage, SharedCollection}
 trait SharedCollectionTestData extends CollectionTestData {
 
   def sharedCollectionPackage(num: Int = 0) = SharedCollectionPackage(
-    packageName = sharedCollectionPackageName,
-    title = sharedCollectionPackageTitle,
+    packageName = sharedCollectionPackageName + num,
+    title = sharedCollectionPackageTitle + num,
     icon = sharedCollectionPackageIcon,
     category = sharedCollectionPackageCategory,
     stars = sharedCollectionPackageStars,
@@ -18,7 +18,7 @@ trait SharedCollectionTestData extends CollectionTestData {
   val seqSharedCollectionPackage: Seq[SharedCollectionPackage] = Seq(sharedCollectionPackage(0), sharedCollectionPackage(1), sharedCollectionPackage(2))
 
   def sharedCollection(num: Int = 0) = SharedCollection(
-    id = num.toString,
+    id = sharedCollectionId + num,
     sharedCollectionId = sharedCollectionId + num,
     publishedOn = publishedOn,
     author = author,
