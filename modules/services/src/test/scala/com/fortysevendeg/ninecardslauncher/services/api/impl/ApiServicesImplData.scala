@@ -2,29 +2,29 @@ package cards.nine.services.api.impl
 
 import cards.nine.api.version1.{User, _}
 import cards.nine.api.version2._
+import cards.nine.commons.test.data.ApiValues._
+import cards.nine.commons.test.data.ApiV1Values._
+import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.UserV1Values._
+import cards.nine.commons.test.data.UserValues._
+import cards.nine.models.{NineCardsIntentConversions, PackagesByCategory}
 import cards.nine.models.types.NineCardsCategory
-import cards.nine.models.{PackagesByCategory, Device}
+import play.api.libs.json.Json
 
-
-trait ApiServicesImplData {
-
-  def permissions(num: Int = 0) = userV1Permission + num
-
-  val seqPermission: Seq[String] = Seq(permissions(0), permissions(1), permissions(2))
+trait ApiServicesImplData extends NineCardsIntentConversions {
 
   def authGoogleDevice(num: Int = 0) = AuthGoogleDevice(
-    name = userV1GoogleDeviceName + num,
-    deviceId = userV1GoogleDeviceId + num,
-    secretToken = userV1SecretToken,
-    permissions = seqPermission)
+    name = userDeviceName + num,
+    deviceId = userDeviceId + num,
+    secretToken = marketToken,
+    permissions = permissions)
 
   val authGoogleDevice: AuthGoogleDevice = authGoogleDevice(0)
   val seqAuthGoogleDevice: Seq[AuthGoogleDevice] = Seq(authGoogleDevice(0), authGoogleDevice(1), authGoogleDevice(2))
 
   def authGoogle(num: Int = 0) = AuthGoogle(
-    email = userV1email,
+    email = email,
     devices = seqAuthGoogleDevice)
 
   val authGoogle: AuthGoogle = authGoogle(0)
@@ -61,24 +61,15 @@ trait ApiServicesImplData {
 
   val authData: AuthData = authData(0)
 
-  def userV1(num: Int = 0) = User(
-    _id = Option(userV1Id),
-    sessionToken = Option(userV1SessionToken),
-    email = Option(userV1email),
+  def apiUserV1(num: Int = 0) = User(
+    _id = Option(userId.toString),
+    sessionToken = Option(sessionToken),
+    email = Option(email),
     username = Option(userV1Name),
     password = Option(userV1Password),
     authData = Option(authData))
 
-  val userV1: User = userV1(0)
-
-  def device(num: Int = 0) = Device(
-    name = userV1GoogleDeviceName + num,
-    deviceId = userV1GoogleDeviceId + num,
-    secretToken = userV1SecretToken,
-    permissions = seqPermission)
-
-  val device: Device = device(0)
-  val seqDevice: Seq[Device] = Seq(device(0), device(1), device(2))
+  val apiUserV1: User = apiUserV1(0)
 
   val loginV1User = User(
     _id = None,
@@ -94,17 +85,44 @@ trait ApiServicesImplData {
 
   def userConfigProfileImage = UserConfigProfileImage(
     imageType = userConfigPlusImageType,
-    imageUrl = userConfigPlusImageUrl,
+    imageUrl = imageUrl,
     secureUrl = Option(userConfigPlusSecureUrl))
 
   def userConfigPlusProfile = UserConfigPlusProfile(
-    displayName = userConfigPlusDisplayName,
+    displayName = displayName,
     profileImage = userConfigProfileImage)
 
+  def userConfigCollectionItem(num: Int = 0) = UserConfigCollectionItem(
+    itemType = itemType.name,
+    title = title + num,
+    metadata = Json.parse(apiV1Intent),
+    categories = Option(Seq(apiV1CollectionCategory.name, apiV1CollectionAnotherCategory.name)))
+
+  val seqUserConfigCollectionItem: Seq[UserConfigCollectionItem] = Seq(userConfigCollectionItem(0), userConfigCollectionItem(1), userConfigCollectionItem(2))
+
+  def userConfigCollection(num: Int = 0) = UserConfigCollection(
+    name = apiV1CollectionName,
+    originalSharedCollectionId = Option(apiV1OriginalSharedCollectionId),
+    sharedCollectionId = Option(apiV1SharedCollectionId),
+    sharedCollectionSubscribed = Option(apiV1SharedCollectionSubscribed),
+    items = seqUserConfigCollectionItem,
+    collectionType = apiV1CollectionType.name,
+    constrains = constrains,
+    wifi = wifi,
+    occurrence = occurrence,
+    icon = apiV1CollectionIcon,
+    radius = userV1Radius,
+    lat = userV1Latitude,
+    lng = userV1Longitude,
+    alt = userV1Altitude,
+    category = Option(apiV1CollectionCategory.name))
+
+  val seqUserConfigCollection: Seq[UserConfigCollection] = Seq(userConfigCollection(0), userConfigCollection(1), userConfigCollection(2))
+
   def userConfigDevice(num: Int = 0) = UserConfigDevice(
-    deviceId = userV1DeviceId,
-    deviceName = userV1DeviceName,
-    collections = Seq.empty) //TODO review this collections
+    deviceId = deviceIdPrefix + num,
+    deviceName = userDeviceName + num,
+    collections = seqUserConfigCollection)
 
   val seqUserConfigDevice: Seq[UserConfigDevice] = Seq(userConfigDevice(0), userConfigDevice(1), userConfigDevice(2))
 
@@ -127,7 +145,7 @@ trait ApiServicesImplData {
 
   def userConfig(num: Int = 0) = UserConfig(
     _id = userV1Id,
-    email = userV1email,
+    email = email,
     plusProfile = userConfigPlusProfile,
     devices = seqUserConfigDevice,
     geoInfo = userConfigGeoInfo,
@@ -136,20 +154,20 @@ trait ApiServicesImplData {
   val userConfig: UserConfig = userConfig(0)
 
   def categorizedApp(num: Int = 0) = CategorizedApp(
-    packageName = userV1PackageName + num,
-    category = userV1Category)
+    packageName = applicationPackageName + num,
+    category = applicationCategoryStr)
 
   val categorizedApp: CategorizedApp = categorizedApp(0)
   val seqCategorizedApp: Seq[CategorizedApp] = Seq(categorizedApp(0), categorizedApp(1), categorizedApp(2))
 
   def categorizedAppDetail(num: Int = 0) = CategorizedAppDetail(
-      packageName = userV1PackageName + num,
-      title = userV1Title + num,
-      categories = Seq(userV1Category),
-      icon = userV1Icon,
-      free = userV1Free,
-      downloads = userV1Downloads,
-      stars = userV1Stars)
+    packageName = applicationPackageName + num,
+    title = applicationName + num,
+    categories = Seq(applicationCategoryStr),
+    icon = apiIcon,
+    free = free,
+    downloads = downloads,
+    stars = stars)
 
   val categorizedAppDetail: CategorizedAppDetail = categorizedAppDetail(0)
   val seqCategorizedAppDetail: Seq[CategorizedAppDetail] = Seq(categorizedAppDetail(0), categorizedAppDetail(1), categorizedAppDetail(2))
@@ -173,33 +191,33 @@ trait ApiServicesImplData {
   val packageStats = PackagesStats(1, None)
 
   def collectionApp(num: Int = 0) = CollectionApp(
-    stars = userV1Stars,
-    icon = userV1Icon,
-    packageName = userV1PackageName + num,
-    downloads = userV1Downloads,
-    category = userV1Category,
-    title = userV1Title,
-    free = userV1Free)
+    stars = sharedCollectionPackageStars,
+    icon = sharedCollectionPackageIcon,
+    packageName = sharedCollectionPackageName + num,
+    downloads = sharedCollectionDownloads,
+    category = sharedCollectionCategory.name,
+    title = sharedCollectionPackageTitle + num,
+    free = sharedCollectionFree)
 
   val collectionApp: CollectionApp = collectionApp(0)
   val seqCollectionApp: Seq[CollectionApp] = Seq(collectionApp(0), collectionApp(1), collectionApp(2))
 
-  def collection(num: Int = 0) = Collection(
+  def collectionV2(num: Int = 0) = Collection(
     name = sharedCollectionName,
     author = author,
-    icon = userV1Icon,
-    category = userV1Category,
+    icon = sharedCollectionIcon,
+    category = sharedCollectionCategory.name,
     community = community,
-    publishedOn = publishedOn.toString,
+    publishedOn = userV1PublishedOnStr,
     installations = Some(userV1Installations),
     views = Some(views),
-    subscriptions = Some(userV1Subscriptions),
-    publicIdentifier = publicIdentifier,
+    subscriptions = Some(subscriptions),
+    publicIdentifier = sharedCollectionId + num,
     appsInfo = seqCollectionApp,
     packages = seqCollectionApp map (_.packageName))
 
-  val collection: Collection = collection(0)
-  val seqCollection: Seq[Collection] = Seq(collection(0), collection(1), collection(2))
+  val collectionV2: Collection = collectionV2(0)
+  val seqCollectionV2: Seq[Collection] = Seq(collectionV2(0), collectionV2(1), collectionV2(2))
 
   def packagesByCategorySeq(num: Int = 0) = PackagesByCategory(
     category = NineCardsCategory(userV1Category),
@@ -216,7 +234,7 @@ trait ApiServicesImplData {
 
   val recommendationsByAppsRequest = RecommendationsByAppsRequest(userV1Packages, excludedPackages, userV1Limit)
 
-  val loginRequest = ApiLoginRequest(userV1email, userV1AndroidId, userV1TokenId)
+  val loginRequest = ApiLoginRequest(email, userV1AndroidId, userV1TokenId)
 
   val installationRequest = InstallationRequest(userV1DeviceToken)
 
@@ -232,12 +250,12 @@ trait ApiServicesImplData {
 
   val updateCollectionResponse = UpdateCollectionResponse(sharedCollectionId, packageStats)
 
-  val collectionsResponse = CollectionsResponse(seqCollection)
+  val collectionsResponse = CollectionsResponse(seqCollectionV2)
 
   val rankAppsRequest = RankAppsRequest(rankAppMap, Some(userV1Localization))
 
   val rankAppsResponse = RankAppsResponse(rankAppMap)
 
-  val subscriptions = SubscriptionsResponse(subscriptions = Seq(sharedCollectionId))
+  val seqSubscription = Seq(sharedCollectionId)
 
 }

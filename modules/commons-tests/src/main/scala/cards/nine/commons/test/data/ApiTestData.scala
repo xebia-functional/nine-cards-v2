@@ -7,7 +7,7 @@ import cards.nine.models.types.NineCardsCategory
 
 trait ApiTestData extends ApplicationTestData {
 
-  val requestConfig = RequestConfig(
+  implicit val requestConfig = RequestConfig(
     apiKey = apiKey,
     sessionToken = sessionToken,
     androidId = androidId,

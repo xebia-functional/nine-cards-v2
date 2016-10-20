@@ -5,8 +5,8 @@ import cards.nine.models.types._
 
 object ApiValues {
 
-  val latitude: Double = 47
-  val longitude: Double = 36
+  val latitude: Double = 47d
+  val longitude: Double = 36d
   val countryCode: String = "countryCode"
   val countryName: String = "countryName"
   val street: String = "street"
@@ -15,7 +15,7 @@ object ApiValues {
   val apiIcon: String = "apiIcon"
   val free: Boolean = true
   val downloads: String = "100"
-  val stars: Double = 4.5
+  val stars: Double = 4.5d
   val apiCategory: NineCardsCategory = Social
   val likePackages: Seq[String] = Seq("likePackage1", "likePackage2", "likePackage3")
   val limit: Int = 20
@@ -30,7 +30,7 @@ object ApiV1Values {
   val permissions: Seq[String] = Seq("permission1", "permission2")
   val itemType: CardType = AppCardType
   val title: String = "title"
-  val apiV1Intent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val apiV1Intent: String = """{"className":"classNameValue","packageName":"packageNameValue","categories":["category1"],"action":"actionValue","extras":{"pairValue":"pairValue","empty":false,"parcelled":false},"flags":1,"type":"typeValue"}"""
   val apiV1CollectionCategory: NineCardsCategory = Game
   val apiV1CollectionAnotherCategory: NineCardsCategory = Communication
   val apiV1CollectionName: String  = "apiCollectionName"
@@ -47,6 +47,15 @@ object ApiV1Values {
   val displayName: String = "displayName"
   val imageUrl: String = "imageUrl"
   val products: Seq[String] = Seq("product1", "product2")
+
+  val friendsReferred: Int = 5
+  val themesShared: Int = 2
+  val collectionsShared: Int = 10
+  val customCollections: Int = 4
+  val earlyAdopter: Boolean = false
+  val communityMember: Boolean = false
+  val joinedThrough: Option[String] = None
+  val tester: Boolean = false
 
 }
 
@@ -201,10 +210,10 @@ object SharedCollectionValues {
   val sharedCollectionFree: Boolean = true
 
   val sharedCollectionId: String = "sharedCollectionId"
-  val publishedOn: Long = 1l
+  val publishedOn: Long = 1471359330574l
   val author: String = "author"
   val sharedCollectionName: String = "sharedCollectionName"
-  val sharedCollectionPackagesStr: Seq[String] = Seq("sharedCollectionPackage1", "sharedCollectionPackage2", "sharedCollectionPackage2")
+  val sharedCollectionPackagesStr: Seq[String] = Seq("sharedCollectionPackage0", "sharedCollectionPackage1", "sharedCollectionPackage2")
   val views: Int = 29
   val subscriptions: Int = 6
   val sharedCollectionPublicCollectionStatus: PublicCollectionStatus = NotPublished
@@ -230,8 +239,10 @@ object UserValues {
   val anotherDeviceToken = "anotherDeviceToken"
   val marketToken: String = "marketToken"
   val userDeviceName: String = "deviceName"
+  val userDeviceNameDefault: String = "deviceName0"
   val anotherUserDeviceName = "anotherDeviceName"
   val userDeviceId = "deviceId"
+  val userDeviceIdDefault = "deviceId0"
   val deviceCloudId: String = "deviceCloudId"
   val anotherDeviceCloudId = "anotherDeviceCloudId"
   val userName: String = "userName"
@@ -247,17 +258,12 @@ object UserValues {
 
 }
 
-
 object UserV1Values {
 
   val baseUrl = "http://baseUrl"
   val statusCode = 200
 
-  val userV1DeviceId: String = "userV1DeviceId"
-  val userV1DeviceName: String = "userV1DeviceName"
   val userV1DeviceToken: String = "userV1DeviceToken"
-  val userV1Token: String = "userV1Token"
-  val userV1MarketToken: String = "userV1MarketToken"
   val userV1ApiKey: String = "userV1ApiKey"
   val userV1AndroidId: String = "userV1AndroidId"
   val userV1TokenId: String = "userV1TokenId"
@@ -266,15 +272,9 @@ object UserV1Values {
   val userV1AppKey: String = "userV1AppKey"
   val userV1Localization: String = "EN"
 
-  val userV1Id: String = "userV1Id"
   val userV1SessionToken: String = "userV1SessionToken"
-  val userV1email: String = "userV1@email.com"
   val userV1Name: String = "userV1Name"
   val userV1Password: String = "userV1Password"
-  val userV1GoogleDeviceName: String = "userV1GoogleDeviceName"
-  val userV1GoogleDeviceId: String = "userV1GoogleDeviceId"
-  val userV1SecretToken: String = "userV1SecretToken"
-  val userV1Permission: String = "userV1Permission"
   val authFacebookId: String = "authFacebookId"
   val authFacebookAccessToken: String = "authFacebookAccessToken"
   val authFacebookExpirationDate: Long = 10l
@@ -288,20 +288,8 @@ object UserV1Values {
   val authTwitterSecretKey: String = "authTwitterSecretKey"
   val authAnonymousId: String = "authAnonymousId"
 
-  val userConfigPlusDisplayName: String = "userConfigPlusDisplayName"
   val userConfigPlusImageType: Int = 0
-  val userConfigPlusImageUrl: String = "userConfigPlusImageUrl"
   val userConfigPlusSecureUrl: String = "userConfigPlusSecureUrl"
-
-  val products: Seq[String] = Seq("product1", "product2", "product3")
-  val friendsReferred: Int = 5
-  val themesShared: Int = 2
-  val collectionsShared: Int = 10
-  val customCollections: Int = 4
-  val earlyAdopter: Boolean = false
-  val communityMember: Boolean = false
-  val joinedThrough: Option[String] = None
-  val tester: Boolean = false
 
   val userV1PackageName: String = "userV1packageName"
   val userV1Category: String = "SOCIAL"
@@ -316,11 +304,16 @@ object UserV1Values {
   val excludedPackages: Seq[String] = Seq("userV1PackageName1")
   val userV1Installations: Int = 20
   val userV1Subscriptions: Int = 10
-  val publicIdentifier: String = "publicIdentifier"
 
   val collectionTypeTop: String  = "top"
   val collectionTypeLatest: String = "latest"
   val collectionTypeUnknown: String = "unknown"
+
+  val userV1Radius: Int = 57
+  val userV1Latitude: Double = 57d
+  val userV1Longitude: Double = 45d
+  val userV1Altitude: Double = 100d
+  val userV1PublishedOnStr: String = "2016-08-16T14:55:30.574000"
 
 }
 

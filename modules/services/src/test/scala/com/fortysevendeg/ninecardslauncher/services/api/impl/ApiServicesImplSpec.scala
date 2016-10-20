@@ -3,13 +3,14 @@ package cards.nine.services.api.impl
 import cards.nine.api._
 import cards.nine.api.rest.client.http.HttpClientException
 import cards.nine.api.rest.client.messages.ServiceClientResponse
-import cards.nine.api.version2.{ServiceMarketHeader, ServiceHeader}
+import cards.nine.api.version2._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.UserV1Values._
-import cards.nine.commons.test.data.{ApiTestData, CollectionTestData, SharedCollectionTestData}
+import cards.nine.commons.test.data.UserValues._
+import cards.nine.commons.test.data.{ApiTestData, ApiV1TestData, SharedCollectionTestData}
 import cards.nine.models.{Device, _}
 import cards.nine.services.api._
 import cats.syntax.either._
@@ -28,18 +29,8 @@ trait ApiServicesSpecification
     extends Scope
     with ApiServicesImplData
     with ApiTestData
+    with ApiV1TestData
     with SharedCollectionTestData {
-
-    implicit val requestConfigV1 = RequestConfigV1(
-      deviceId = userV1DeviceId,
-      token = userV1Token,
-      marketToken = Option(userV1MarketToken))
-
-    implicit val apiRequestConfig = RequestConfig(
-      apiKey = userV1ApiKey,
-      sessionToken = userV1SessionToken,
-      androidId = userV1AndroidId,
-      marketToken = Option(userV1MarketToken))
 
     val apiServicesConfig = ApiServicesConfig(
       appId = userV1AppId,
@@ -47,15 +38,15 @@ trait ApiServicesSpecification
       localization = userV1Localization)
 
     val serviceHeader = ServiceHeader(
-      apiRequestConfig.apiKey,
-      apiRequestConfig.sessionToken,
-      apiRequestConfig.androidId)
+      requestConfig.apiKey,
+      requestConfig.sessionToken,
+      requestConfig.androidId)
 
     val serviceMarketHeader = ServiceMarketHeader(
-      apiRequestConfig.apiKey,
-      apiRequestConfig.sessionToken,
-      apiRequestConfig.androidId,
-      apiRequestConfig.marketToken)
+      requestConfig.apiKey,
+      requestConfig.sessionToken,
+      requestConfig.androidId,
+      requestConfig.marketToken)
 
     val apiService = mock[cards.nine.api.version2.ApiService]
 
@@ -86,11 +77,11 @@ class ApiServicesImplSpec
         apiServiceV1.baseUrl returns baseUrl
         apiServiceV1.login(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version1.User](statusCode, Option(userV1))))
+            Task(Either.right(ServiceClientResponse(statusCode, Option(apiUserV1))))
           }
 
-        val result = apiServices.loginV1(userV1email, device).value.run
-        result shouldEqual Right(userV1)
+        val result = apiServices.loginV1(email, device).value.run
+        result shouldEqual Right(loginResponseV1)
 
         there was one(apiServiceV1).login(===(loginV1User), any)(any, any)
       }
@@ -133,14 +124,11 @@ class ApiServicesImplSpec
         apiServiceV1.baseUrl returns baseUrl
         apiServiceV1.getUserConfig(any)(any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version1.UserConfig](statusCode, Some(userConfig))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(userConfig))))
           }
 
         val result = apiServices.getUserConfigV1().value.run
-        result must beLike {
-          case Right(response) =>
-            response shouldEqual userConfig
-        }
+        result shouldEqual Right(userV1)
       }
 
     "return an ApiServiceV1ConfigurationException when the base url is empty" in
@@ -182,7 +170,7 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.ApiLoginResponse](statusCode, Some(version2.ApiLoginResponse(userV1ApiKey, userV1SessionToken)))))
           }
 
-        val result = apiServices.login(userV1email, userV1AndroidId, userV1TokenId).value.run
+        val result = apiServices.login(email, userV1AndroidId, userV1TokenId).value.run
         result shouldEqual Right(LoginResponse(userV1ApiKey, userV1SessionToken))
 
         there was one(apiService).login(===(loginRequest))(any, any)
@@ -193,7 +181,7 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns ""
 
-        mustLeft[ApiServiceConfigurationException](apiServices.login(userV1email, userV1AndroidId, userV1TokenId))
+        mustLeft[ApiServiceConfigurationException](apiServices.login(email, userV1AndroidId, userV1TokenId))
       }
 
     "return an ApiServiceException when the service returns None" in
@@ -205,7 +193,7 @@ class ApiServicesImplSpec
             Task(Either.right(ServiceClientResponse[cards.nine.api.version2.ApiLoginResponse](statusCode, None)))
           }
 
-        mustLeft[ApiServiceException](apiServices.login(userV1email, userV1AndroidId, userV1TokenId))
+        mustLeft[ApiServiceException](apiServices.login(email, userV1AndroidId, userV1TokenId))
       }
 
     "return an ApiServiceException when the service returns an exception" in
@@ -214,7 +202,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.login(any)(any, any) returns TaskService(Task(Either.left(exception)))
 
-        mustLeft[ApiServiceException](apiServices.login(userV1email, userV1AndroidId, userV1TokenId))
+        mustLeft[ApiServiceException](apiServices.login(email, userV1AndroidId, userV1TokenId))
       }
 
   }
@@ -326,10 +314,7 @@ class ApiServicesImplSpec
           }
 
         val result = apiServices.googlePlayPackages(seqCategorizedApp.map(_.packageName)).value.run
-        result must beLike {
-          case Right(packages) =>
-            packages shouldEqual (seqCategorizedApp map (a => CategorizedPackage(a.packageName, Some(a.category))))
-        }
+        result shouldEqual Right((seqCategorizedApp map (a => CategorizedPackage(a.packageName, Some(a.category)))))
 
         there was one(apiService).categorize(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
       }
@@ -390,15 +375,11 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.categorizeDetail(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CategorizeDetailResponse](
-              statusCode, Some(version2.CategorizeDetailResponse(Seq.empty, seqCategorizedAppDetail)))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(CategorizeDetailResponse(Seq.empty, seqCategorizedAppDetail)))))
           }
 
         val result = apiServices.googlePlayPackagesDetail(seqCategorizedApp.map(_.packageName)).value.run
-        result must beLike {
-          case Right(packages) =>
-            packages shouldEqual categorizedDetailPackages
-        }
+        result shouldEqual Right(categorizedDetailPackages)
 
         there was one(apiService).categorizeDetail(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
       }
@@ -409,7 +390,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.categorizeDetail(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CategorizeDetailResponse](statusCode, None)))
+            Task(Either.right(ServiceClientResponse[CategorizeDetailResponse](statusCode, None)))
           }
 
         val result = apiServices.googlePlayPackagesDetail(seqCategorizedApp.map(_.packageName)).value.run
@@ -448,7 +429,7 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.recommendations(any, any, any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.RecommendationsResponse](statusCode, Some(recommendationsResponse))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(recommendationsResponse))))
           }
 
         val result = apiServices.getRecommendedApps(userV1Category, excludedPackages, userV1Limit).value.run
@@ -538,14 +519,11 @@ class ApiServicesImplSpec
       new ApiServicesScope {
 
         apiService.baseUrl returns baseUrl
-//        apiService.getCollection(any, any)(any) returns
-//          TaskService(Task(Either.right(ServiceClientResponse(sharedCollection))))
+        apiService.getCollection(any, any)(any) returns
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Option(collectionV2)))))
 
         val result = apiServices.getSharedCollection(sharedCollectionId).value.run
-        result must beLike {
-          case Right(shareCollection) =>
-            shareCollection shouldEqual sharedCollection
-        }
+        result shouldEqual Right(sharedCollection)
 
         there was one(apiService).getCollection(===(sharedCollectionId), ===(serviceMarketHeader))(any)
       }
@@ -587,13 +565,14 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.topCollections(any, any, any, any)(any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CollectionsResponse](statusCode, Some(version2.CollectionsResponse(collections)))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(collectionsResponse))))
           }
 
         val result = apiServices.getSharedCollectionsByCategory(userV1Category, collectionTypeTop, offset, userV1Limit).value.run
         result must beLike {
           case Right(shareCollections) =>
             shareCollections.size shouldEqual seqCollection.size
+            shareCollections map (s => Option(s.sharedCollectionId)) shouldEqual (seqCollection map (_.sharedCollectionId))
         }
 
         there was one(apiService).topCollections(===(userV1Category), ===(offset), ===(userV1Limit), ===(serviceMarketHeader))(any)
@@ -613,12 +592,13 @@ class ApiServicesImplSpec
 
         apiService.baseUrl returns baseUrl
         apiService.latestCollections(any, any, any, any)(any) returns
-          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(version2.CollectionsResponse(seqCollection))))))
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(collectionsResponse)))))
 
         val result = apiServices.getSharedCollectionsByCategory(userV1Category, collectionTypeLatest, offset, userV1Limit).value.run
         result must beLike {
           case Right(shareCollections) =>
             shareCollections.size shouldEqual seqCollection.size
+            shareCollections map (s => Option(s.sharedCollectionId)) shouldEqual (seqCollection map (_.sharedCollectionId))
         }
 
         there was one(apiService).latestCollections(===(userV1Category), ===(offset), ===(userV1Limit), ===(serviceMarketHeader))(any)
@@ -661,14 +641,11 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.createCollection(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.CreateCollectionResponse](statusCode, Some(version2.CreateCollectionResponse(sharedCollectionId, packageStats)))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(CreateCollectionResponse(sharedCollectionId, packageStats)))))
           }
 
         val result = apiServices.createSharedCollection(sharedCollectionName, author, userV1Packages, userV1Category, userV1Icon, community).value.run
-        result must beLike {
-          case Right(shareCollectionId) =>
-            shareCollectionId shouldEqual sharedCollectionId
-        }
+        result shouldEqual Right(sharedCollectionId)
 
         there was one(apiService).createCollection(===(createCollectionRequest), ===(serviceHeader))(any, any)
       }
@@ -715,10 +692,7 @@ class ApiServicesImplSpec
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(updateCollectionResponse)))))
 
         val result = apiServices.updateSharedCollection(sharedCollectionId, Some(sharedCollectionName), userV1Packages).value.run
-        result must beLike {
-          case Right(shareCollectionId) =>
-            shareCollectionId shouldEqual sharedCollectionId
-        }
+        result shouldEqual Right(sharedCollectionId)
 
         there was one(apiService).updateCollection(===(sharedCollectionId), ===(updateCollectionRequest), ===(serviceHeader))(any, any)
       }
@@ -731,10 +705,7 @@ class ApiServicesImplSpec
           TaskService(Task(Either.right(ServiceClientResponse(statusCode, Some(updateCollectionResponse)))))
 
         val result = apiServices.updateSharedCollection(sharedCollectionId, None, userV1Packages).value.run
-        result must beLike {
-          case Right(shareCollectionId) =>
-            shareCollectionId shouldEqual sharedCollectionId
-        }
+        result shouldEqual Right(sharedCollectionId)
 
         there was one(apiService).updateCollection(===(sharedCollectionId), ===(updateCollectionRequest.copy(collectionInfo = None)), ===(serviceHeader))(any, any)
       }
@@ -787,8 +758,9 @@ class ApiServicesImplSpec
 
         val result = apiServices.getPublishedCollections().value.run
         result must beLike {
-          case Right(shareCollection) =>
-            shareCollection.size shouldEqual seqCollection.size
+          case Right(shareCollections) =>
+            shareCollections.size shouldEqual seqCollection.size
+            shareCollections map (s => Option(s.sharedCollectionId)) shouldEqual (seqCollection map (_.sharedCollectionId))
         }
 
         there was one(apiService).getCollections(===(serviceMarketHeader))(any)
@@ -830,14 +802,11 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.getSubscriptions(any)(any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse(statusCode, Some(version2.SubscriptionsResponse(Seq(sharedCollectionId))))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(SubscriptionsResponse(Seq(sharedCollectionId))))))
           }
 
         val result = apiServices.getSubscriptions().value.run
-        result must beLike {
-          case Right(items) =>
-            items shouldEqual subscriptions
-        }
+        result shouldEqual Right(seqSubscription)
 
         there was one(apiService).getSubscriptions(===(serviceHeader))(any)
       }
@@ -944,14 +913,14 @@ class ApiServicesImplSpec
         apiService.baseUrl returns baseUrl
         apiService.rankApps(any, any)(any, any) returns
           TaskService {
-            Task(Either.right(ServiceClientResponse[cards.nine.api.version2.RankAppsResponse](statusCode, Some(rankAppsResponse))))
+            Task(Either.right(ServiceClientResponse(statusCode, Some(rankAppsResponse))))
           }
 
         val result = apiServices.rankApps(seqPackagesByCategory, Some(userV1Localization)).value.run
         result must beLike {
-          case Right(rankApps) =>
-            rankApps.map(_.category) shouldEqual rankAppMap.map(_._1)
-            rankApps.map(_.packages) shouldEqual rankAppMap.map(_._2)
+          case Right(response) =>
+            response.map(_.category) shouldEqual rankAppMap.keys
+            response.map(_.packages) shouldEqual rankAppMap.values
         }
 
         there was one(apiService).rankApps(===(rankAppsRequest), ===(serviceHeader))(any, any)
