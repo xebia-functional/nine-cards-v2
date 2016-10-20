@@ -222,7 +222,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   lazy val momentProcess = new MomentProcessImpl(
     persistenceServices = persistenceServices,
-    wifiServices = wifiServices)
+    wifiServices = wifiServices,
+    awarenessServices = awarenessServices)
 
   lazy val userProcess = new UserProcessImpl(
     apiServices = apiServices,

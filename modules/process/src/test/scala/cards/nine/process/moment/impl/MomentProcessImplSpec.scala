@@ -6,12 +6,12 @@ import android.content.res.Resources
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.commons.test.data.{CollectionTestData, MomentTestData}
 import cards.nine.commons.test.data.MomentValues._
-import cards.nine.models.NineCardsIntent
-import cards.nine.models.types.NineCardsMoment
-import cards.nine.models.types.NineCardsMoment._
+import cards.nine.commons.test.data.{CollectionTestData, MomentTestData}
+import cards.nine.models.types.UnknownActivity
+import cards.nine.models.{Headphones, NineCardsIntent, ProbablyActivity}
 import cards.nine.process.moment.MomentException
+import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
 import cards.nine.services.wifi.{WifiServices, WifiServicesException}
 import cats.syntax.either._
@@ -43,13 +43,15 @@ trait MomentProcessImplSpecification
 
     val mockPersistenceServices = mock[PersistenceServices]
     val mockWifiServices = mock[WifiServices]
+    val mockAwarenessService = mock[AwarenessServices]
 
     val mockIntent = mock[Intent]
     val mockNineCardIntent = mock[NineCardsIntent]
 
     val momentProcess = new MomentProcessImpl(
       persistenceServices = mockPersistenceServices,
-      wifiServices = mockWifiServices)
+      wifiServices = mockWifiServices,
+      awarenessServices = mockAwarenessService)
 
   }
 
@@ -62,12 +64,17 @@ trait MomentProcessImplSpecification
 
     mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
     mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment)))
+    mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right(seqMoment.head)))
 
     mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Either.right(wifi)))
 
+    mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
+    mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+
     override val momentProcess = new MomentProcessImpl(
       persistenceServices = mockPersistenceServices,
-      wifiServices = mockWifiServices) {
+      wifiServices = mockWifiServices,
+      awarenessServices = mockAwarenessService) {
 
       override protected def getNowDateTime = time
     }
@@ -226,7 +233,7 @@ class MomentProcessImplSpec
         override val wifi = homeWifi.headOption
         override val time = nowMorning
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result shouldEqual Right(Some(homeMorningMoment))
       }.pendingUntilFixed("Issue #943")
 
@@ -237,7 +244,7 @@ class MomentProcessImplSpec
         override val wifi = homeWifi.headOption
         override val time = nowAfternoon
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result shouldEqual Right(Some(homeMorningMoment))
       }.pendingUntilFixed("Issue #943")
 
@@ -247,7 +254,7 @@ class MomentProcessImplSpec
         override val wifi = homeWifi.headOption
         override val time = nowNight
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result shouldEqual Right(Some(homeNightMoment))
       }.pendingUntilFixed("Issue #943")
 
@@ -257,7 +264,7 @@ class MomentProcessImplSpec
         override val wifi = homeWifi.headOption
         override val time = nowLateNight
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result shouldEqual Right(Some(homeNightMoment))
       }.pendingUntilFixed("Issue #943")
 
@@ -267,7 +274,7 @@ class MomentProcessImplSpec
         override val wifi = workWifi.headOption
         override val time = nowMorning
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result shouldEqual Right(Some(workMoment))
       }.pendingUntilFixed("Issue #943")
 
@@ -277,7 +284,7 @@ class MomentProcessImplSpec
         override val wifi = workWifi.headOption
         override val time = nowAfternoon
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result shouldEqual Right(Some(transitMoment))
       }.pendingUntilFixed("Issue #943")
 
@@ -287,7 +294,7 @@ class MomentProcessImplSpec
         override val wifi = None
         override val time = nowMorning
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result shouldEqual Right(Some(transitMoment))
       }.pendingUntilFixed("Issue #943")
 
@@ -297,7 +304,7 @@ class MomentProcessImplSpec
         override val wifi = None
         override val time = nowAfternoon
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result shouldEqual Right(Some(transitMoment))
       }.pendingUntilFixed("Issue #943")
 
@@ -307,7 +314,7 @@ class MomentProcessImplSpec
         override val wifi = None
         override val time = nowLateNight
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result shouldEqual Right(Some(transitMoment))
       }.pendingUntilFixed("Issue #943")
 
@@ -317,7 +324,7 @@ class MomentProcessImplSpec
         override val wifi = workWifi.headOption
         override val time = nowMorningWeekend
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result shouldEqual Right(Some(transitMoment))
       }.pendingUntilFixed("Issue #943")
 
@@ -327,7 +334,7 @@ class MomentProcessImplSpec
         mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
         mockPersistenceServices.fetchMoments returns TaskService(Task(Either.left(persistenceServiceException)))
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result must beAnInstanceOf[Left[MomentException, _]]
       }
 
@@ -338,7 +345,7 @@ class MomentProcessImplSpec
         mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment)))
         mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Either.left(wifiServiceException)))
 
-        val result = momentProcess.getBestAvailableMoment(contextSupport).value.run
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).value.run
         result must beAnInstanceOf[Left[MomentException, _]]
       }
   }
