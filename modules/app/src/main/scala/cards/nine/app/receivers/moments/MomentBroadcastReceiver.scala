@@ -1,6 +1,7 @@
 package cards.nine.app.receivers.moments
 
 import android.content.{BroadcastReceiver, Context, Intent}
+import android.net.ConnectivityManager
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import macroid.ContextWrapper
 import monix.execution.cancelables.SerialCancelable
@@ -18,12 +19,12 @@ class MomentBroadcastReceiver
 
     val connectionStatusChangedJobs = new ConnectionStatusChangedJobs
 
-    Option(intent) flatMap (i => Option(i.getAction)) match {
-      case Some(ConnectionStatusChangedJobs.action) =>
-        connectionStatusChangedJobs.connectionStatusChanged(intent) foreach { service =>
-          connectionStatusTaskRef := service.resolveAsyncDelayed(30.seconds)
-        }
-      case _ =>
+    Option(intent) foreach { i =>
+      (Option(i.getAction), Option(i.getParcelableExtra[android.net.NetworkInfo]("networkInfo"))) match {
+        case (Some(ConnectionStatusChangedJobs.action), Some(networkInfo)) if networkInfo.getType == ConnectivityManager.TYPE_WIFI =>
+          connectionStatusTaskRef := connectionStatusChangedJobs.connectionStatusChanged().resolveAsyncDelayed(10.seconds)
+        case _ =>
+      }
     }
 
   }
