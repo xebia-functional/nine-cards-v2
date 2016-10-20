@@ -219,7 +219,6 @@ class LauncherJobs(
       _ <- workspaceUiActions.reloadWorkspaces(data, Option(page))
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
     } yield ()
-  // actions.showContactUsError()
 
   def preferencesChanged(changedPreferences: Array[String]): TaskService[Unit] = {
 

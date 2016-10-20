@@ -161,7 +161,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           navigationJobs.launchSearch().resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (momentMicIcon <~
         On.click(Ui(
-          navigationJobs.launchVoiceSearch()resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
+          navigationJobs.launchVoiceSearch().resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
   }
 
   def reloadByType(workSpaceType: WorkSpaceType): Ui[Any] = workSpaceType match {

@@ -137,7 +137,8 @@ class NavigationUiActions(val dom: LauncherDOM)
     ft.addToBackStack(javaNull)
     val dialog = new AlertDialogFragment(
       message = R.string.removeCollectionMessage,
-      positiveAction = () => launcherJobs.removeCollection(collection).resolveAsync()
+      positiveAction = () => launcherJobs.removeCollection(collection).resolveAsyncServiceOr(_ =>
+        launcherJobs.navigationUiActions.showContactUsError())
     )
     dialog.show(ft, tagDialog)
   }.toService
