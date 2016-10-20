@@ -17,6 +17,7 @@ import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException, SpaceException}
 import cards.nine.app.ui.launcher.jobs._
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import cards.nine.models.{CardData, Collection, Widget}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
@@ -129,9 +130,12 @@ class LauncherActivity
 
     (requestCode, resultCode) match {
       case (RequestCodes.goToCollectionDetails, _) =>
-        presenter.resetFromCollectionDetail()
+        launcherJobs.mainLauncherUiActions.resetFromCollection().resolveAsync()
       case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) =>
-        presenter.logout()
+        (for {
+          _ <- launcherJobs.workspaceUiActions.cleanWorkspaces()
+          _ <- launcherJobs.navigationUiActions.goToWizard()
+        } yield()).resolveAsync()
       case (RequestCodes.goToWidgets, Activity.RESULT_OK) =>
         widgetJobs.configureOrAddWidget(getExtraAppWidgetId).resolveAsync()
       case (RequestCodes.goToConfigureWidgets, Activity.RESULT_OK) =>
@@ -142,13 +146,15 @@ class LauncherActivity
       case (RequestCodes.goToConfigureWidgets | RequestCodes.goToWidgets, Activity.RESULT_CANCELED) =>
         widgetJobs.cancelWidget(getExtraAppWidgetId).resolveAsync()
       case (RequestCodes.goToPreferences, ResultCodes.preferencesChanged) =>
-        presenter.preferencesChanged(data.getStringArrayExtra(ResultData.preferencesResultData))
+        launcherJobs.preferencesChanged(data.getStringArrayExtra(ResultData.preferencesResultData)).resolveAsync()
       case _ =>
     }
   }
 
   override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
-    presenter.requestPermissionsResult(requestCode, permissions, grantResults)
+    launcherJobs.requestPermissionsResult(requestCode, permissions, grantResults).resolveAsyncServiceOr {_ =>
+      launcherJobs.navigationUiActions.showContactUsError()
+    }
 
   private[this] def back() =
     if (statuses.mode == EditWidgetsMode) {
