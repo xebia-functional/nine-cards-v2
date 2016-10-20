@@ -1,4 +1,4 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.content.Intent
 import android.graphics.Color

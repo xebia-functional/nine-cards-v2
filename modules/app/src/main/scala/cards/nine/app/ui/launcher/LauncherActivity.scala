@@ -16,6 +16,7 @@ import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException, SpaceException}
 import cards.nine.app.ui.launcher.jobs._
+import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{CardData, Collection, Widget}

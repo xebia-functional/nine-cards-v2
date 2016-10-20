@@ -1,4 +1,4 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import java.io.Closeable
 
@@ -32,7 +32,8 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
 import cards.nine.app.ui.launcher.drawer.DrawerSnails._
-import cards.nine.app.ui.launcher.drawer.{ContactsMenuOption, _}
+import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption, _}
+import cards.nine.app.ui.launcher.jobs.{AppDrawerJobs, DragJobs, NavigationJobs}
 import cards.nine.app.ui.launcher.types.AddItemToCollection
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService

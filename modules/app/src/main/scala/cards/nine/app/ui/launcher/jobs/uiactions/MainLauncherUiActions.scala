@@ -1,4 +1,4 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity

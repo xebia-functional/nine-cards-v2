@@ -1,4 +1,4 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.appwidget.{AppWidgetHost, AppWidgetManager}
 import android.content.{ComponentName, Intent}
@@ -6,22 +6,22 @@ import android.support.v4.app.{Fragment, FragmentManager}
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps.{Cell, _}
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, RequestCodes, UiContext, UiException}
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.app.ui.launcher.exceptions.SpaceException
+import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Widget
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
-import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.exceptions.SpaceException
-import cards.nine.commons.CatchAll
 
 class WidgetUiActions(val dom: LauncherDOM)
   (implicit

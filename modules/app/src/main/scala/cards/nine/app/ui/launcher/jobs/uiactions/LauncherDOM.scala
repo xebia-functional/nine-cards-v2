@@ -1,4 +1,4 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.app.Activity
 import android.os.Bundle
@@ -8,8 +8,8 @@ import android.view.View
 import cards.nine.app.ui.commons.ActivityFindViews
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.models.LauncherData
 import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.models.types.NineCardsMoment

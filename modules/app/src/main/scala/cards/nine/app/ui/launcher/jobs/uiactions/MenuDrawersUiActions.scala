@@ -1,4 +1,4 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.content.res.ColorStateList
 import android.support.design.widget.NavigationView
@@ -9,11 +9,12 @@ import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.drawables.CharDrawable
 import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import cards.nine.app.ui.components.models.LauncherMoment
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -24,8 +25,6 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
-
-import cards.nine.app.ui.launcher.LauncherActivity._
 
 class MenuDrawersUiActions(val dom: LauncherDOM)
   (implicit

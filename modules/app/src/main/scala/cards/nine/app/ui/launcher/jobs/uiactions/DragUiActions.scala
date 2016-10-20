@@ -1,15 +1,15 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{AppUtils, UiContext}
 import cards.nine.app.ui.components.layouts._
-import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.{AppCardType, CardType}
-import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.commons.services.TaskService
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._

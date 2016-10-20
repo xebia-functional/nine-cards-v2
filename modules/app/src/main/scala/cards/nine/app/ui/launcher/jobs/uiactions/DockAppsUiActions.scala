@@ -1,11 +1,11 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.support.v4.app.{Fragment, FragmentManager}
+import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{AppUtils, UiContext}
 import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
-import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.DockAppData
 import cards.nine.process.theme.models.NineCardsTheme
 import macroid.{ActivityContextWrapper, FragmentManagerContext}
