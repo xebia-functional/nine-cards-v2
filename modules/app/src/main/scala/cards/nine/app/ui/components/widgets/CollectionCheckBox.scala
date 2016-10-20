@@ -7,19 +7,16 @@ import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons._
-import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
-class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
+class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends LinearLayout(context, attr, defStyleAttr)
     with Contexts[View]
     with TypedFindView {
@@ -28,19 +25,17 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
-  val checkKey = "widget-check"
+  val checkKey = "collection-check"
 
-  val momentKey = "widget-moment"
+  val collectionKey = "collection-moment"
 
   val paddingIcon = resGetDimensionPixelSize(R.dimen.padding_default)
 
-  val selectedColor = resGetColor(R.color.wizard_new_conf_accent_3)
-
   val unselectedColor = resGetColor(R.color.checkbox_unselected)
 
-  val selectedDrawable = {
+  def selectedDrawable(color: Int) = {
     val drawable = new ShapeDrawable(new OvalShape)
-    drawable.getPaint.setColor(selectedColor)
+    drawable.getPaint.setColor(color)
     drawable
   }
 
@@ -50,13 +45,13 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
     drawable
   }
 
-  LayoutInflater.from(context).inflate(R.layout.wizard_moment_checkbox, this)
+  LayoutInflater.from(context).inflate(R.layout.collection_checkbox, this)
 
-  val iconContent = findView(TR.wizard_moment_check_content)
+  val iconContent = findView(TR.collection_check_content)
 
-  val icon = findView(TR.wizard_moment_check_icon)
+  val collectionIcon = findView(TR.collection_icon)
 
-  val text = findView(TR.wizard_moment_check_name)
+  val checkboxIcon = findView(TR.collection_checkbox_icon)
 
   (this <~ vAddField(checkKey, true)).run
 
@@ -65,36 +60,25 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_thin),
     padding = resGetDimensionPixelSize(R.dimen.padding_small))
 
-  def initialize(moment: NineCardsMoment, defaultCheck: Boolean = true): Ui[Any] = {
-    (this <~ vAddField(momentKey, moment)) ~
-      (icon <~
+  def initialize(icon: Int, color: Int, defaultCheck: Boolean = true): Ui[Any] = {
+    val background = new ShapeDrawable(new OvalShape)
+    background.getPaint.setColor(color)
+    (this <~ vAddField(collectionKey, icon)) ~
+      (collectionIcon <~
+        vBackground(background) <~
         vPaddings(paddingIcon) <~
-        ivSrc(moment.getIconCollectionDetail)) ~
-      (text <~
-        tvText(moment.getName) <~
-        tvSizeResource(R.dimen.text_xlarge)) ~
-      (if (defaultCheck) check() else uncheck())
+        ivSrc(icon)) ~
+      (if (defaultCheck) check(color) else uncheck())
   }
 
-  def check(): Ui[Any] =
+  def check(color: Int): Ui[Any] =
     (this <~ vAddField(checkKey, true)) ~
-      (iconContent <~ vBackground(selectedDrawable)) ~
-      (text <~ tvColorResource(R.color.wizard_text_title))
+      (iconContent <~ vBackground(selectedDrawable(color)))
 
   def uncheck(): Ui[Any] =
     (this <~ vAddField(checkKey, false)) ~
-      (iconContent <~ vBackground(unselectedDrawable)) ~
-      (text <~ tvColorResource(R.color.checkbox_unselected))
-
-  def swap(): Ui[Any] = this.getField[Boolean](checkKey) match {
-    case Some(true) => uncheck()
-    case Some(false) => check()
-    case _ => Ui.nop
-  }
+      (iconContent <~ vBackground(unselectedDrawable))
 
   def isCheck: Boolean = this.getField[Boolean](checkKey) exists (c => c)
-
-  def getMomentIfSelected: Option[NineCardsMoment] =
-    if (isCheck) this.getField[NineCardsMoment](momentKey) else None
 
 }

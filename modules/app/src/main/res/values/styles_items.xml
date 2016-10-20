@@ -536,6 +536,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
     <style name="SubscriptionsItem">
@@ -554,8 +555,14 @@
     </style>
 
     <style name="SubscriptionsItemIcon">
-        <item name="android:layout_width">@dimen/size_icon_item_collections</item>
-        <item name="android:layout_height">@dimen/size_icon_item_collections</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="SubscriptionsItemCheckboxIcon">
+        <item name="android:layout_width">@dimen/padding_small</item>
+        <item name="android:layout_height">@dimen/padding_small</item>
         <item name="android:layout_gravity">center</item>
     </style>
 

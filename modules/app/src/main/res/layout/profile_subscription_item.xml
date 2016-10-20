@@ -11,9 +11,9 @@
                 style="@style/SubscriptionsItemIconContent"
                 android:id="@+id/subscriptions_item_content">
 
-            <ImageView
-                    android:id="@+id/subscriptions_item_icon"
-                    style="@style/SubscriptionsItemIcon"/>
+            <cards.nine.app.ui.components.widgets.CollectionCheckBox
+                    android:id="@+id/collection_subscription_checkbox"
+                    style="@style/SubscriptionsItemIcon" />
 
         </FrameLayout>
 
@@ -30,9 +30,6 @@
 
         </LinearLayout>
 
-        <Switch
-                android:id="@+id/subscriptions_item_subscribed"
-                style="@style/SubscriptionsItemSubscribed"/>
     </LinearLayout>
 
 </LinearLayout>

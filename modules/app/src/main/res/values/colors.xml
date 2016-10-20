@@ -21,6 +21,8 @@
 
     <color name="background_box_content">#ffffff</color>
 
+    <color name="checkbox_unselected">#47000000</color>
+
     <!-- Launcher -->
 
     <color name="text_launcher_action">#ffffff</color>
@@ -66,8 +68,6 @@
     <color name="wizard_new_conf_accent_2">#3F51B5</color>
     <color name="wizard_new_conf_accent_3">#FF9800</color>
     <color name="wizard_new_conf_accent_4">#F44336</color>
-
-    <color name="wizard_checkbox_unselected">#47000000</color>
 
     <color name="wizard_line">#437b7b7b</color>
 

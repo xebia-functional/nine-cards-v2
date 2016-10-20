@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/collection_check_content"
+             style="@style/SubscriptionsItemIconContent">
+
+    <ImageView
+            android:id="@+id/collection_icon"
+            style="@style/SubscriptionsItemIcon"/>
+
+    <ImageView
+            android:id="@+id/collection_checkbox_icon"
+            style="@style/SubscriptionsItemCheckboxIcon"/>
+
+</FrameLayout>
