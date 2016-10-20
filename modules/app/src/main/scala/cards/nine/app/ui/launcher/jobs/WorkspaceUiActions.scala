@@ -2,7 +2,6 @@ package cards.nine.app.ui.launcher.jobs
 
 import android.content.Intent
 import android.graphics.Color
-import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.view.View
 import android.widget.ImageView
@@ -10,7 +9,6 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
-import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -27,6 +25,7 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
+import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.IsDeveloper
@@ -46,7 +45,7 @@ import macroid._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class WorkspaceUiActions(dom: LauncherDOM)
+class WorkspaceUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -97,7 +96,7 @@ class WorkspaceUiActions(dom: LauncherDOM)
           )
         ) <~
         awsListener(AnimatedWorkSpacesListener(
-          onClick = () => presenter.clickWorkspaceBackground(),
+          onClick = () => navigationJobs.clickWorkspaceBackground().resolveAsync(),
           onLongClick = () => (dom.workspaces <~ lwsOpenMenu).run)
         )) ~
       (dom.menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
@@ -105,7 +104,14 @@ class WorkspaceUiActions(dom: LauncherDOM)
         closeCollectionMenu() ~~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
       }) ~
       (dom.menuLauncherWidgets <~ On.click {
-        closeCollectionMenu() ~~ Ui(presenter.goToWidgets())
+        val widthContent = dom.workspaces.getWidth
+        val heightContent = dom.workspaces.getHeight
+        val map = Map(
+          WidgetsFragment.widgetContentWidth -> widthContent.toString,
+          WidgetsFragment.widgetContentHeight -> heightContent.toString
+        )
+        val bundle = dom.createBundle(Option(dom.menuLauncherWidgets), resGetColor(R.color.primary), map)
+        closeCollectionMenu() ~~ Ui(navigationJobs.launchWidgets(bundle).resolveAsync())
       }) ~
       (dom.menuLauncherSettings <~ On.click {
         goToSettings()
@@ -153,6 +159,15 @@ class WorkspaceUiActions(dom: LauncherDOM)
             createPager(selectedPageDefault)
         ))).toService
   }
+
+  def closeMenu(): TaskService[Unit] = closeCollectionMenu().toService
+
+  def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): TaskService[Unit] =
+    ((dom.workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager).toService
+
+  def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService
+
+  private[this] def reloadWorkspacePager: Ui[Any] = createPager((dom.workspaces ~> lwsCurrentPage()).get)
 
   private[this] def createPager(activePosition: Int): Ui[Any] = {
     def pagination(position: Int) = {
@@ -219,7 +234,7 @@ class WorkspaceUiActions(dom: LauncherDOM)
       FuncOn.click { view: View =>
         Ui {
           val iconView = getIconView(view)
-          val bundle = createBundle(iconView, resGetColor(R.color.collection_group_1))
+          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_group_1))
           navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
         }
       }).get,
@@ -229,7 +244,7 @@ class WorkspaceUiActions(dom: LauncherDOM)
       FuncOn.click { view: View =>
         Ui {
           val iconView = getIconView(view)
-          val bundle = createBundle(iconView, resGetColor(R.color.collection_fab_button_item_my_collections))
+          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_my_collections))
           navigationJobs.launchPrivateCollection(bundle).resolveAsync()
         }
       }).get,
@@ -239,7 +254,7 @@ class WorkspaceUiActions(dom: LauncherDOM)
       FuncOn.click { view: View =>
         Ui {
           val iconView = getIconView(view)
-          val bundle = createBundle(iconView, resGetColor(R.color.collection_fab_button_item_public_collection))
+          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_public_collection))
           navigationJobs.launchPublicCollection(bundle).resolveAsync()
         }
       }).get,
@@ -253,8 +268,8 @@ class WorkspaceUiActions(dom: LauncherDOM)
             Ui {
               val iconView = getIconView(view)
               val momentMap = Map(EditMomentFragment.momentKey -> moment)
-              val bundle = createBundle(iconView, resGetColor(R.color.collection_fab_button_item_edit_moment))
-              navigationJobs.launchEditMoment(bundle, momentMap).resolveAsync()
+              val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_edit_moment), momentMap)
+              navigationJobs.launchEditMoment(bundle).resolveAsync()
             }
           case _ => Ui.nop
         }
@@ -271,26 +286,6 @@ class WorkspaceUiActions(dom: LauncherDOM)
     case wim: WorkspaceItemMenu => Option(wim)
     case _ => None
   }) flatMap (_.icon)
-
-  private[this] def createBundle(maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty): Bundle = {
-    val sizeIconWorkSpaceMenuItem = resGetDimensionPixelSize(R.dimen.size_workspace_menu_item)
-    val (startX: Int, startY: Int) = maybeView map (_.calculateAnchorViewPosition) getOrElse(0, 0)
-    val (startWX: Int, startWY: Int) = dom.workspaces.calculateAnchorViewPosition
-    val (endPosX: Int, endPosY: Int) = (startWX + dom.workspaces.animatedWorkspaceStatuses.dimen.width / 2, startWY + dom.workspaces.animatedWorkspaceStatuses.dimen.height / 2)
-    val x = startX + (sizeIconWorkSpaceMenuItem / 2)
-    val y = startY + (sizeIconWorkSpaceMenuItem / 2)
-    val args = new Bundle()
-    args.putInt(BaseActionFragment.sizeIcon, sizeIconWorkSpaceMenuItem)
-    args.putInt(BaseActionFragment.startRevealPosX, x)
-    args.putInt(BaseActionFragment.startRevealPosY, y)
-    args.putInt(BaseActionFragment.endRevealPosX, endPosX)
-    args.putInt(BaseActionFragment.endRevealPosY, endPosY)
-    map foreach {
-      case (key, value) => args.putString(key, value)
-    }
-    args.putInt(BaseActionFragment.colorPrimary, color)
-    args
-  }
 
   // Styles
 

@@ -10,7 +10,7 @@ import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import macroid.ActivityContextWrapper
 
 class AppDrawerJobs(
-  mainAppDrawerUiActions: MainAppDrawerUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  val mainAppDrawerUiActions: MainAppDrawerUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs { self =>
 
   def loadApps(appsMenuOption: AppsMenuOption): TaskService[Unit] = {

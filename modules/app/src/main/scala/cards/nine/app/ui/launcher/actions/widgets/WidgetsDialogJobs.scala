@@ -5,7 +5,7 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
 import macroid.ActivityContextWrapper
 
-class WidgetsJobs(actions: WidgetsUiActions)(implicit contextWrapper: ActivityContextWrapper)
+class WidgetsDialogJobs(actions: WidgetsDialogUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
 
   def initialize(): TaskService[Unit] =

@@ -3,7 +3,7 @@ package cards.nine.app.ui.components.layouts
 import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.util.AttributeSet
-import android.view.{MotionEvent, View}
+import android.view.MotionEvent
 import android.view.MotionEvent._
 import android.widget.FrameLayout
 import cards.nine.app.ui.commons.AnimationsUtils._
@@ -11,8 +11,10 @@ import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.commons.TranslationAnimator
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
-import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
+import cards.nine.app.ui.launcher.jobs.WidgetsJobs
+import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
 import cards.nine.commons.javaNull
 import cards.nine.models.{Collection, Widget}
 import cards.nine.process.theme.models.NineCardsTheme
@@ -23,7 +25,6 @@ import macroid._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.language.postfixOps
-import LauncherActivity._
 
 class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
@@ -36,6 +37,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   implicit def presenter: LauncherPresenter = context match {
     case activity: LauncherActivity => activity.presenter
     case _ => throw new RuntimeException("LauncherPresenter not found")
+  }
+
+  implicit def widgetJobs: WidgetsJobs = context match {
+    case activity: LauncherActivity => activity.widgetJobs
+    case _ => throw new RuntimeException("WidgetsJobs not found")
   }
 
   implicit def theme: NineCardsTheme = context match {
