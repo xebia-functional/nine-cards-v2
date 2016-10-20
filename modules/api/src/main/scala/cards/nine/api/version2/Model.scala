@@ -86,7 +86,7 @@ case class CollectionApp(
   icon: String,
   packageName: String,
   downloads: String,
-  category: String,
+  categories: Seq[String],
   title: String,
   free: Boolean)
 

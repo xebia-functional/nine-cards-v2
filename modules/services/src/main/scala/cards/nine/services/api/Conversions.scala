@@ -74,13 +74,6 @@ trait Conversions {
         stars = app.stars)
     }
 
-  private[this] def findBestCategory(categories: Seq[String]): Option[NineCardsCategory] =
-    categories.foldLeft[Option[NineCardsCategory]](None) {
-      case (Some(nineCardsCategory), _) => Some(nineCardsCategory)
-      case (_, categoryName) =>
-        (NineCardsCategory.gamesCategories ++ NineCardsCategory.appsCategories).find(_.name == categoryName)
-    }
-
   def toUserV1(apiUserConfig: cards.nine.api.version1.UserConfig): UserV1 =
     UserV1(
       _id = apiUserConfig._id,
@@ -193,6 +186,7 @@ trait Conversions {
       packageName = item.packageName,
       title = item.title,
       icon = item.icon,
+      category = findBestCategory(item.categories),
       stars = item.stars,
       downloads = item.downloads,
       free = item.free)
@@ -205,5 +199,12 @@ trait Conversions {
     (items map {
       case (category, packages) => RankApps(category = category, packages = packages)
     }).toSeq
+
+  private[this] def findBestCategory(categories: Seq[String]): Option[NineCardsCategory] =
+    categories.foldLeft[Option[NineCardsCategory]](None) {
+      case (Some(nineCardsCategory), _) => Some(nineCardsCategory)
+      case (_, categoryName) =>
+        (NineCardsCategory.gamesCategories ++ NineCardsCategory.appsCategories).find(_.name == categoryName)
+    }
 
 }

@@ -66,7 +66,7 @@ trait ApiServiceData {
     icon = "app icon",
     packageName = "com.package.app",
     downloads = "500,000,000+",
-    category = category,
+    categories = Seq(category),
     title = "app title",
     free = true)
 

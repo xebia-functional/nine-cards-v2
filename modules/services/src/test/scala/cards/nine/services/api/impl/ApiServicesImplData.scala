@@ -145,7 +145,7 @@ trait ApiServicesImplData {
       icon = Random.nextString(10),
       packageName = Random.nextString(10),
       downloads = "500,000,000+",
-      category = "SOCIAL",
+      categories = Seq("SOCIAL"),
       title = Random.nextString(10),
       free = Random.nextBoolean())
 

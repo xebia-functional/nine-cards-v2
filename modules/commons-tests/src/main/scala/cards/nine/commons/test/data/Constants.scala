@@ -196,6 +196,7 @@ object SharedCollectionValues {
   val sharedCollectionPackageName: String = "sharedCollectionPackage"
   val sharedCollectionPackageTitle: String = "sharedCollectionPackageTitle"
   val sharedCollectionPackageIcon: String = "sharedCollectionPackageIcon"
+  val sharedCollectionPackageCategory = Some(Social)
   val sharedCollectionPackageStars: Double = 4.2d
   val sharedCollectionDownloads: String = "28"
   val sharedCollectionFree: Boolean = true
