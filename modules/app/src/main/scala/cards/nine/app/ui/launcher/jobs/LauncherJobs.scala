@@ -254,8 +254,7 @@ class LauncherJobs(
           _ <- updateWeather()
           _ <- di.launcherExecutorProcess.launchGoogleWeather
         } yield ()
-      case _ =>
-        TaskService.right((): Unit)
+      case _ => TaskService.empty
     }
 
 
