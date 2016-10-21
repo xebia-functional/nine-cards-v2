@@ -8,14 +8,16 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models
 import cards.nine.models._
 import cards.nine.models.types.{AppCardType, NoInstalledAppCardType}
-import cards.nine.process.collection.{CardException, CollectionProcess}
+import cards.nine.process.collection.{CardException, CollectionProcess, ImplicitsCollectionException}
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import monix.eval.Task
 
-trait CardsProcessImpl extends CollectionProcess {
+trait CardsProcessImpl
+  extends CollectionProcess
+  with NineCardsIntentConversions
+  with ImplicitsCollectionException {
 
   self: CollectionProcessDependencies
-    with FormedCollectionConversions
     with ImplicitsPersistenceServiceExceptions =>
 
   override def addCards(collectionId: Int, cards: Seq[CardData]) =

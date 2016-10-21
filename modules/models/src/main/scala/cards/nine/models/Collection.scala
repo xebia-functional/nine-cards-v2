@@ -51,28 +51,3 @@ object Collection {
 
   }
 }
-
-//case class FormedCollection(
-//  name: String,
-//  originalSharedCollectionId: Option[String],
-//  sharedCollectionId: Option[String],
-//  sharedCollectionSubscribed: Option[Boolean],
-//  items: Seq[CardData],
-//  collectionType: CollectionType,
-//  icon: String,
-//  category: Option[NineCardsCategory],
-//  moment: Option[MomentData])
-
-//case class FormedItem(
-//  itemType: String,
-//  title: String,
-//  intent: String,
-//  uriImage: Option[String] = None)
-
-//case class FormedMoment(
-//  collectionId: Option[Int],
-//  timeslot: Seq[MomentTimeSlot],
-//  wifi: Seq[String],
-//  headphone: Boolean,
-//  momentType: Option[NineCardsMoment],
-//  widgets: Option[Seq[WidgetData]])

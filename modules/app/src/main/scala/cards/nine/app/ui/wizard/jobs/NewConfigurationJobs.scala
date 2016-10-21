@@ -62,7 +62,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
     for {
       _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
       apps <- di.deviceProcess.getSavedApps(GetByName)
-      _ <- di.collectionProcess.createCollectionsFromCollectionDatas(toCollectionData(apps))
+      _ <- di.collectionProcess.createCollectionsFromCollectionData(toCollectionData(apps))
       _ <- di.deviceProcess.generateDockApps(defaultDockAppsSize)
     } yield ()
   }

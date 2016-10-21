@@ -6,36 +6,113 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{RankApps, _}
 import cards.nine.models.types.NineCardsCategory._
+import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
+import cards.nine.models.{RankApps, _}
 import cards.nine.process.collection._
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import cats.syntax.either._
 import monix.eval.Task
 
-trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConversions {
+import scala.annotation.tailrec
+
+trait CollectionsProcessImpl
+  extends CollectionProcess
+  with NineCardsIntentConversions
+  with ImplicitsCollectionException {
 
   self: CollectionProcessDependencies
-    with FormedCollectionConversions
-    with FormedCollectionDependencies
     with ImplicitsPersistenceServiceExceptions =>
 
   val minAppsGenerateCollections = 1
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  def createCollectionsFromCollectionDatas(items: Seq[CollectionData])(implicit context: ContextSupport) =
+  def createCollectionsFromCollectionData(items: Seq[CollectionData])(implicit context: ContextSupport) = {
+
+    def adaptCardsToAppsInstalled(collections: Seq[CollectionData], apps: Seq[ApplicationData]): Seq[CollectionData] =
+      collections map { c =>
+        val cardsWithPath = c.cards map { card =>
+          val nineCardIntent = card.intent
+
+          // We need adapt items to apps installed in cell phone
+          val cardAdapted: CardData = card.cardType match {
+            case AppCardType | RecommendedAppCardType =>
+              (for {
+                packageName <- nineCardIntent.extractPackageName()
+                className <- nineCardIntent.extractClassName()
+              } yield {
+                val maybeAppInstalled = apps find (_.packageName == packageName)
+                maybeAppInstalled map { appInstalled =>
+                  val classChanged = !(appInstalled.className == className)
+                  if (classChanged) {
+                    card.copy(intent = toNineCardIntent(appInstalled), cardType = AppCardType)
+                  } else {
+                    card.copy(cardType = AppCardType)
+                  }
+                } getOrElse card.copy(cardType = NoInstalledAppCardType)
+              }) getOrElse card.copy(cardType = NoInstalledAppCardType)
+            case _ => card
+          }
+          cardAdapted
+        }
+        c.copy(cards = cardsWithPath)
+      }
+
     (for {
       apps <- appsServices.getInstalledApplications
       collectionsRequest = adaptCardsToAppsInstalled(items, apps)
       collections <- persistenceServices.addCollections(collectionsRequest)
     } yield collections).resolve[CollectionException]
+  }
+
 
   def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport) = TaskService {
       CatchAll[CollectionException] {
-        createPrivateCollections(apps, appsCategories, minAppsGenerateCollections)
+
+        @tailrec
+        def createPrivateCollections(
+          items: Seq[ApplicationData],
+          categories: Seq[NineCardsCategory],
+          acc: Seq[CollectionData]): Seq[CollectionData] = categories match {
+          case Nil => acc
+          case h :: t =>
+            val insert = createPrivateCollection(items, h, acc.length)
+            val a = if (insert.cards.length >= minAppsToAdd) acc :+ insert else acc
+            createPrivateCollections(items, t, a)
+        }
+
+        def createPrivateCollection(items: Seq[ApplicationData], category: NineCardsCategory, position: Int): CollectionData = {
+          // TODO We should sort the application using an endpoint in the new sever
+          val appsByCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
+          val themeIndex = if (position >= numSpaces) position % numSpaces else position
+
+          def toCardData(application: ApplicationData): CardData =
+            CardData(
+              term = application.name,
+              packageName = Some(application.packageName),
+              cardType = AppCardType,
+              intent = toNineCardIntent(application),
+              imagePath = None)
+
+          CollectionData (
+            position = position,
+            name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
+            collectionType = AppsCollectionType,
+            icon = category.getStringResource,
+            themedColorIndex = themeIndex,
+            appsCategory = Some(category),
+            cards = appsByCategory map toCardData,
+            moment = None,
+            originalSharedCollectionId = None,
+            sharedCollectionId = None,
+            sharedCollectionSubscribed = false,
+            publicCollectionStatus = NotPublished)
+        }
+
+        createPrivateCollections(apps, appsCategories, Seq.empty)
     }
   }
 

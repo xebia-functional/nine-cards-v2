@@ -23,7 +23,7 @@ trait CollectionProcess {
    * @return the List[cards.nine.models.Collection]
    * @throws CollectionException if there was an error creating the collections
    */
-  def createCollectionsFromCollectionDatas(items: Seq[CollectionData])(implicit context: ContextSupport): TaskService[Seq[Collection]]
+  def createCollectionsFromCollectionData(items: Seq[CollectionData])(implicit context: ContextSupport): TaskService[Seq[Collection]]
 
   /**
    * Gets the existing collections
