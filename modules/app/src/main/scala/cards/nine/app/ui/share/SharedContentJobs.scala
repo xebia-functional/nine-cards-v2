@@ -4,30 +4,30 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
 import android.webkit.URLUtil
-import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.Jobs
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.share.SharedContentActivity._
 import cards.nine.app.ui.share.models.{SharedContent, Web}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models._
+import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.ShortcutCardType
-import cats.syntax.either._
+import cards.nine.models.{CardData, IconResize, NineCardsIntent, NineCardsIntentExtras}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
-import macroid.{ActivityContextWrapper, Ui}
-import monix.eval.Task
+import macroid.ActivityContextWrapper
+import SharedContentActivity._
 
-
-class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit contextWrapper: ActivityContextWrapper)
+class SharedContentJobs(
+  val sharedContentUiActions: SharedContentUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs {
 
-  import Statuses._
+  def initialize(): TaskService[Unit] =
+    for {
+      theme <- getThemeTask
+      _ <- TaskService.right(statuses = statuses.copy(theme = theme))
+    } yield ()
 
-  var statuses = SharedContentPresenterStatuses()
-
-  def receivedIntent(intent: Intent): Unit = {
-
+  def receivedIntent(intent: Intent): TaskService[Unit] = {
     def readImageUri(intent: Intent): Option[Uri] = {
       Option(intent.getClipData) flatMap { clipData =>
         if (clipData.getItemCount > 0) Option(clipData.getItemAt(0)) flatMap (d => Option(d.getUri)) else None
@@ -38,7 +38,7 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
 
     val contentTypeText = "text/plain"
 
-    Option(intent) foreach { i =>
+    Option(intent) map { i =>
 
       val action = Option(i.getAction)
       val intentType = Option(i.getType)
@@ -53,21 +53,23 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
             content = content,
             image = readImageUri(i))
           statuses = statuses.copy(sharedContent = Some(sharedContent))
-          di.collectionProcess.getCollections.resolveAsyncUi2(
-            onResult = uiActions.showChooseCollection,
-            onException = error)
+          for {
+            collections <- di.collectionProcess.getCollections
+            _ <- sharedContentUiActions.showChooseCollection(collections)
+          } yield ()
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) =>
-          uiActions.showErrorContentNotSupported().run
+          sharedContentUiActions.showErrorContentNotSupported()
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), None) =>
-          uiActions.showErrorEmptyContent().run
+          sharedContentUiActions.showErrorEmptyContent()
         case (Some(Intent.ACTION_SEND), _, _) =>
-          uiActions.showErrorContentNotSupported().run
-        case _ =>
+          sharedContentUiActions.showErrorContentNotSupported()
+        case _ => sharedContentUiActions.showUnexpectedError()
       }
-    }
+    } getOrElse TaskService.empty
+
   }
 
-  def collectionChosen(collectionId: Int): Unit = {
+  def collectionChosen(collectionId: Int): TaskService[Unit] = {
 
     def createRequest(sharedContent: SharedContent, imagePath: String): CardData = {
 
@@ -89,9 +91,9 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
         case Some(uri) =>
           val iconSize = resGetDimensionPixelSize(R.dimen.size_icon_app_medium)
           di.deviceProcess.saveShortcutIcon(
-            MediaStore.Images.Media.getBitmap(contextWrapper.bestAvailable.getContentResolver, uri),
+            MediaStore.Images.Media.getBitmap(activityContextWrapper.bestAvailable.getContentResolver, uri),
             Some(IconResize(iconSize, iconSize)))
-        case _ => TaskService(Task(Either.right("")))
+        case _ => TaskService.right("")
       }
     }
 
@@ -102,41 +104,14 @@ class SharedContentPresenter(uiActions: SharedContentUiActions)(implicit context
 
     statuses.sharedContent match {
       case Some(sharedContent) =>
-        addCard(sharedContent).resolveAsyncUi2(
-          onResult = (_) => uiActions.showSuccess(),
-          onException = error)
-      case _ => uiActions.showUnexpectedError().run
+        for {
+          _ <- addCard(sharedContent)
+          _ <- sharedContentUiActions.showSuccess()
+        } yield ()
+      case _ => sharedContentUiActions.showUnexpectedError()
     }
   }
 
-  def dialogDismissed() = uiActions.finishUi().run
-
-  private[this] def error(throwable: Throwable): Ui[Any] = {
-    printErrorMessage(throwable)
-    uiActions.showUnexpectedError()
-  }
-
-}
-
-object Statuses {
-
-  case class SharedContentPresenterStatuses(
-    sharedContent: Option[SharedContent] = None)
-
-}
-
-trait SharedContentUiActions {
-
-  def showChooseCollection(collections: Seq[Collection]): Ui[Any]
-
-  def showSuccess(): Ui[Any]
-
-  def showErrorEmptyContent(): Ui[Any]
-
-  def showErrorContentNotSupported(): Ui[Any]
-
-  def showUnexpectedError(): Ui[Any]
-
-  def finishUi(): Ui[Any]
+  def dialogDismissed(): TaskService[Unit] = sharedContentUiActions.close()
 
 }
