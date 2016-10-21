@@ -131,9 +131,9 @@ object CommonsTweak {
       imageView <~ vActivated(false)
   }
 
-  def vLauncherSnackbar(message: Int, args: Seq[String] = Seq.empty)
+  def vLauncherSnackbar(message: Int, args: Seq[String] = Seq.empty, lenght: Int = Snackbar.LENGTH_SHORT)
     (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
-      val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), Snackbar.LENGTH_SHORT)
+      val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), lenght)
       snackbar.getView.getLayoutParams match {
         case params : FrameLayout.LayoutParams =>
           val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0
@@ -143,6 +143,22 @@ object CommonsTweak {
       }
       snackbar.show()
     }
+
+  def vLauncherSnackbarWithAction(message: Int, resAction: Int, action: () => Unit, args: Seq[String] = Seq.empty, lenght: Int = Snackbar.LENGTH_SHORT)
+    (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
+    val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), lenght)
+    snackbar.getView.getLayoutParams match {
+      case params : FrameLayout.LayoutParams =>
+        val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0
+        params.setMargins(0, 0, 0, bottom)
+        snackbar.getView.setLayoutParams(params)
+      case _ =>
+    }
+    snackbar.setAction(resAction, new OnClickListener {
+      override def onClick(v: View): Unit = action()
+    })
+    snackbar.show()
+  }
 
 }
 

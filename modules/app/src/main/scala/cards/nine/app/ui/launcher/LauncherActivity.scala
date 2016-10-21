@@ -14,9 +14,10 @@ import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
-import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
+import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException, SpaceException}
 import cards.nine.app.ui.launcher.jobs._
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import cards.nine.models.{CardData, Collection, Widget}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
@@ -42,6 +43,8 @@ class LauncherActivity
 
   lazy val navigationJobs = createNavigationJobs
 
+  lazy val widgetJobs = createWidgetsJobs
+
   private[this] var hasFocus = false
 
   override val actionsFilters: Seq[String] =
@@ -49,13 +52,20 @@ class LauncherActivity
 
   override def manageCommand(action: String, data: Option[String]): Unit = {
     (MomentsActionFilter(action), AppsActionFilter(action), CollectionsActionFilter(action), data) match {
-      case (Some(MomentReloadedActionFilter), _, _, _) => presenter.reloadAppsMomentBar()
-      case (Some(MomentConstrainsChangedActionFilter), _, _, _) => presenter.reloadAppsMomentBar()
-      case (Some(MomentForceBestAvailableActionFilter), _, _, _) => presenter.changeMomentIfIsAvailable()
-      case (_, Some(AppInstalledActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
-      case (_, Some(AppUninstalledActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
-      case (_, Some(AppUpdatedActionFilter), _, _) => presenter.loadApps(AppsAlphabetical)
-      case (_, _, Some(CollectionAddedActionFilter), Some(id)) => presenter.reloadCollection(id.toInt)
+      case (Some(MomentReloadedActionFilter), _, _, _) =>
+        launcherJobs.reloadAppsMomentBar().resolveAsync()
+      case (Some(MomentConstrainsChangedActionFilter), _, _, _) =>
+        launcherJobs.reloadAppsMomentBar().resolveAsync()
+      case (Some(MomentForceBestAvailableActionFilter), _, _, _) =>
+        launcherJobs.changeMomentIfIsAvailable().resolveAsync()
+      case (_, Some(AppInstalledActionFilter), _, _) =>
+        appDrawerJobs.loadApps(AppsAlphabetical).resolveAsync()
+      case (_, Some(AppUninstalledActionFilter), _, _) =>
+        appDrawerJobs.loadApps(AppsAlphabetical).resolveAsync()
+      case (_, Some(AppUpdatedActionFilter), _, _) =>
+        appDrawerJobs.loadApps(AppsAlphabetical).resolveAsync()
+      case (_, _, Some(CollectionAddedActionFilter), Some(id)) =>
+        launcherJobs.reloadCollection(id.toInt).resolveAsyncServiceOr(_ => launcherJobs.navigationUiActions.showContactUsError())
       case _ =>
     }
   }
@@ -87,11 +97,11 @@ class LauncherActivity
     launcherJobs.destroy().resolveAsync()
   }
 
-  override def onStartFinishAction(): Unit = presenter.resetAction()
+  override def onStartFinishAction(): Unit = launcherJobs.mainLauncherUiActions.resetAction().resolveAsync()
 
-  override def onEndFinishAction(): Unit = presenter.destroyAction()
+  override def onEndFinishAction(): Unit = launcherJobs.mainLauncherUiActions.destroyAction().resolveAsync()
 
-  override def onBackPressed(): Unit = presenter.back()
+  override def onBackPressed(): Unit = back().resolveAsync()
 
   override def onWindowFocusChanged(hasFocus: Boolean): Unit = {
     super.onWindowFocusChanged(hasFocus)
@@ -103,7 +113,7 @@ class LauncherActivity
     val alreadyOnHome = hasFocus && ((intent.getFlags &
       Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
       != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-    if (alreadyOnHome) presenter.back()
+    if (alreadyOnHome) back().resolveAsync()
   }
 
   override def dispatchKeyEvent(event: KeyEvent): Boolean = (event.getAction, event.getKeyCode) match {
@@ -120,23 +130,51 @@ class LauncherActivity
 
     (requestCode, resultCode) match {
       case (RequestCodes.goToCollectionDetails, _) =>
-        presenter.resetFromCollectionDetail()
+        launcherJobs.mainLauncherUiActions.resetFromCollection().resolveAsync()
       case (RequestCodes.goToProfile, ResultCodes.logoutSuccessful) =>
-        presenter.logout()
+        (for {
+          _ <- launcherJobs.workspaceUiActions.cleanWorkspaces()
+          _ <- launcherJobs.navigationUiActions.goToWizard()
+        } yield()).resolveAsync()
       case (RequestCodes.goToWidgets, Activity.RESULT_OK) =>
-        presenter.configureOrAddWidget(getExtraAppWidgetId)
+        widgetJobs.configureOrAddWidget(getExtraAppWidgetId).resolveAsync()
       case (RequestCodes.goToConfigureWidgets, Activity.RESULT_OK) =>
-        presenter.addWidget(getExtraAppWidgetId)
+        widgetJobs.addWidget(getExtraAppWidgetId).resolveAsyncServiceOr[Throwable]{
+          case ex: SpaceException => widgetJobs.navigationUiActions.showWidgetNoHaveSpaceMessage()
+          case _ => widgetJobs.navigationUiActions.showContactUsError()
+        }
       case (RequestCodes.goToConfigureWidgets | RequestCodes.goToWidgets, Activity.RESULT_CANCELED) =>
-        presenter.cancelWidget(getExtraAppWidgetId)
+        widgetJobs.cancelWidget(getExtraAppWidgetId).resolveAsync()
       case (RequestCodes.goToPreferences, ResultCodes.preferencesChanged) =>
-        presenter.preferencesChanged(data.getStringArrayExtra(ResultData.preferencesResultData))
+        launcherJobs.preferencesChanged(data.getStringArrayExtra(ResultData.preferencesResultData)).resolveAsync()
       case _ =>
     }
   }
 
   override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
-    presenter.requestPermissionsResult(requestCode, permissions, grantResults)
+    launcherJobs.requestPermissionsResult(requestCode, permissions, grantResults).resolveAsyncServiceOr {_ =>
+      launcherJobs.navigationUiActions.showContactUsError()
+    }
+
+  private[this] def back() =
+    if (statuses.mode == EditWidgetsMode) {
+      statuses.transformation match {
+        case Some(_) => widgetJobs.backToActionEditWidgets()
+        case _ => widgetJobs.closeModeEditWidgets()
+      }
+    } else if (launcherJobs.mainLauncherUiActions.dom.isDrawerTabsOpened) {
+      appDrawerJobs.mainAppDrawerUiActions.closeTabs()
+    } else if (launcherJobs.mainLauncherUiActions.dom.isMenuVisible) {
+      launcherJobs.menuDrawersUiActions.close()
+    } else if (launcherJobs.mainLauncherUiActions.dom.isDrawerVisible) {
+      appDrawerJobs.mainAppDrawerUiActions.close()
+    } else if (launcherJobs.mainLauncherUiActions.dom.isActionShowed) {
+      launcherJobs.navigationUiActions.unrevealActionFragment
+    } else if (launcherJobs.mainLauncherUiActions.dom.isCollectionMenuVisible) {
+      launcherJobs.workspaceUiActions.closeMenu()
+    } else {
+      TaskService.empty
+    }
 }
 
 object LauncherActivity {
@@ -156,7 +194,8 @@ object LauncherActivity {
       appDrawerUiActions = new MainAppDrawerUiActions(dom),
       navigationUiActions = new NavigationUiActions(dom),
       dockAppsUiActions = new DockAppsUiActions(dom),
-      topBarUiActions = new TopBarUiActions(dom))
+      topBarUiActions = new TopBarUiActions(dom),
+      widgetUiActions = new WidgetUiActions(dom))
   }
 
   def createAppDrawerJobs(implicit
@@ -174,7 +213,18 @@ object LauncherActivity {
     uiContext: UiContext[_],
     presenter: LauncherPresenter) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
-    new NavigationJobs(new NavigationUiActions(dom))
+    new NavigationJobs(
+      navigationUiActions = new NavigationUiActions(dom),
+      menuDrawersUiActions = new MenuDrawersUiActions(dom),
+      widgetUiActions = new WidgetUiActions(dom))
+  }
+
+  def createWidgetsJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new LauncherDOM(activityContextWrapper.getOriginal)
+    new WidgetsJobs(new WidgetUiActions(dom), new NavigationUiActions(dom))
   }
 
 }

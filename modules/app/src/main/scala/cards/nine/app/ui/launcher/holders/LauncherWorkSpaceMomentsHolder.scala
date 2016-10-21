@@ -18,9 +18,9 @@ import cards.nine.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import cards.nine.app.ui.components.models.LauncherMoment
 import cards.nine.app.ui.components.widgets.LauncherWidgetView._
 import cards.nine.app.ui.components.widgets.{LauncherNoConfiguredWidgetView, LauncherWidgetView}
-import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.commons._
 import cards.nine.models.Widget
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -28,10 +28,10 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._
-
 import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.app.ui.launcher.jobs.WidgetsJobs
 
-class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(implicit presenter: LauncherPresenter, theme: NineCardsTheme)
+class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(implicit widgetJobs: WidgetsJobs, theme: NineCardsTheme)
   extends LauncherWorkSpaceHolder(context)
   with Contexts[View]
   with TypedFindView {
@@ -52,7 +52,10 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
   }
 
   def populate(moment: LauncherMoment): Ui[Any] =
-     moment.momentType map (moment => Ui(presenter.loadWidgetsForMoment(moment))) getOrElse clearWidgets
+     moment.momentType map (moment => Ui {
+       widgetJobs.loadWidgetsForMoment(moment).resolveAsyncServiceOr(_ =>
+         widgetJobs.navigationUiActions.showContactUsError())
+     }) getOrElse clearWidgets
 
   def reloadSelectedWidget: Ui[Any] = this <~ Transformer {
     case widget: LauncherWidgetView if statuses.idWidget.contains(widget.id) => widget.activeSelected()
@@ -98,12 +101,12 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
   }
 
   def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget): Ui[Any] = {
-    val launcherWidgetView = (LauncherWidgetView(widget.id, widgetView, presenter) <~ saveInfoInTag(cell, widget)).get
+    val launcherWidgetView = (LauncherWidgetView(widget.id, widgetView) <~ saveInfoInTag(cell, widget)).get
     this <~ launcherWidgetView.addView(cell, widget)
   }
 
   def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: Widget): Ui[Any] = {
-    val noConfiguredWidgetView = LauncherNoConfiguredWidgetView(widget.id, wCell, hCell, widget, presenter)
+    val noConfiguredWidgetView = LauncherNoConfiguredWidgetView(widget.id, wCell, hCell, widget)
     this <~ noConfiguredWidgetView.addView()
   }
 

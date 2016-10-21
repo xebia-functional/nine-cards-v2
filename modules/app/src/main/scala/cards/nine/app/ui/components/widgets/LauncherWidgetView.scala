@@ -8,7 +8,8 @@ import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
-import cards.nine.app.ui.launcher.{EditWidgetsMode, LauncherPresenter}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.launcher.EditWidgetsMode
 import cards.nine.commons._
 import cards.nine.models.Widget
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -17,10 +18,10 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
-
 import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.app.ui.launcher.jobs.WidgetsJobs
 
-case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter: LauncherPresenter)(implicit contextWrapper: ContextWrapper)
+case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit contextWrapper: ContextWrapper, widgetJobs: WidgetsJobs)
   extends FrameLayout(contextWrapper.bestAvailable) {
 
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
@@ -30,7 +31,7 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter:
   var launcherWidgetViewStatuses = LauncherWidgetViewStatuses()
 
   val gestureDetector = new GestureDetector(getContext, new GestureDetector.SimpleOnGestureListener() {
-    override def onLongPress(e: MotionEvent): Unit = if (launcherWidgetViewStatuses.canEdit) presenter.openModeEditWidgets(id)
+    override def onLongPress(e: MotionEvent): Unit = if (launcherWidgetViewStatuses.canEdit) widgetJobs.openModeEditWidgets(id).resolveAsync()
   })
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = gestureDetector.onTouchEvent(event)
@@ -50,7 +51,7 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView, presenter:
       event.getAction match {
         case ACTION_DOWN =>
           statuses = statuses.copy(touchingWidget = true)
-          if (statuses.mode == EditWidgetsMode) presenter.loadViewEditWidgets(id)
+          if (statuses.mode == EditWidgetsMode) widgetJobs.loadViewEditWidgets(id).resolveAsync()
         case _ =>
       }
       false
