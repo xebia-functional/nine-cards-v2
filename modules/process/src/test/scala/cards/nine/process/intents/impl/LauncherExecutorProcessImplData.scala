@@ -1,7 +1,6 @@
 package cards.nine.process.intents.impl
 
 import cards.nine.models._
-import cards.nine.process.intents.LauncherExecutorProcessConfig
 import cards.nine.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException}
 
 trait LauncherExecutorProcessImplData {

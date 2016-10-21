@@ -6,7 +6,7 @@ import cards.nine.commons.test.data.ApplicationTestData
 import cards.nine.models.NineCardsIntentImplicits._
 import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.process.device.models.{LastCallsContact, _}
+import cards.nine.process.device.models._
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
 import play.api.libs.json.Json
