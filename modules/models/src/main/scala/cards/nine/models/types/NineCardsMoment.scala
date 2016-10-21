@@ -47,13 +47,9 @@ object NineCardsMoment {
 
   val activityMoments = Seq(CarMoment, RunningMoment, BikeMoment)
 
-  val moments = Seq(
-    HomeMorningMoment,
-    WorkMoment,
-    HomeNightMoment,
-    StudyMoment,
-    MusicMoment,
-    WalkMoment) ++ activityMoments
+  val hourlyMoments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment, StudyMoment)
+
+  val moments = hourlyMoments ++ Seq(MusicMoment, WalkMoment) ++ activityMoments
 
   def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse WalkMoment
 

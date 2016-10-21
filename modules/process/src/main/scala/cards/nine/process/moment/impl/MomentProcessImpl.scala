@@ -83,14 +83,14 @@ class MomentProcessImpl(
     maybeHeadphones: Option[Boolean] = None,
     maybeActivity: Option[KindActivity] = None)(implicit context: ContextSupport) = {
 
+    val now = getNowDateTime
+
+    def isHappening(moment: Moment): Boolean = moment.timeslot exists { slot =>
+      val (fromSlot, toSlot) = toDateTime(now, slot)
+      fromSlot.isBefore(now) && toSlot.isAfter(now) && slot.days.lift(getDayOfWeek(now)).contains(1)
+    }
+
     def prioritizedMomentsByTime(moment1: Moment, moment2: Moment): Boolean = {
-
-      val now = getNowDateTime
-
-      def isHappening(moment: Moment): Boolean = moment.timeslot exists { slot =>
-        val (fromSlot, toSlot) = toDateTime(now, slot)
-        fromSlot.isBefore(now) && toSlot.isAfter(now) && slot.days.lift(getDayOfWeek(now)).contains(1)
-      }
 
       def prioritizedByTime(): Boolean = {
         val sum1 = (moment1.timeslot map { slot =>
@@ -116,7 +116,9 @@ class MomentProcessImpl(
       (moments.find(_.momentType.contains(MusicMoment)), maybeHeadphones) match {
         case (Some(m), Some(hp)) => TaskService.right(if (hp) Some(m) else None)
         case (Some(m), None) =>
-          awarenessServices.getHeadphonesState.map(headphones => if (headphones.connected) Some(m) else None)
+          awarenessServices.getHeadphonesState
+            .resolveLeftTo(Headphones(false))
+            .map(headphones => if (headphones.connected) Some(m) else None)
         case (None, _) => TaskService.right(None)
       }
 
@@ -142,14 +144,20 @@ class MomentProcessImpl(
         case (false, Some(activity)) =>
           TaskService.right(activityMoments.find(tuple => activityMatch(tuple._1, activity)).map(_._2))
         case _ =>
-          awarenessServices.getTypeActivity.map { activity =>
-            activityMoments.find(tuple => activityMatch(tuple._1, activity.activityType)).map(_._2)
-          }
+          awarenessServices.getTypeActivity
+            .resolveLeftTo(ProbablyActivity(UnknownActivity))
+            .map { activity =>
+              activityMoments.find(tuple => activityMatch(tuple._1, activity.activityType)).map(_._2)
+            }
       }
     }
 
     def hourMoment(moments: Seq[Moment]): TaskService[Option[Moment]] = TaskService.right {
-      (moments filter(_.wifi.isEmpty) sortWith prioritizedMomentsByTime).headOption
+      (moments.filter { moment =>
+        moment.wifi.isEmpty &&
+          moment.momentType.exists(NineCardsMoment.hourlyMoments.contains) &&
+          isHappening(moment)
+      } sortWith prioritizedMomentsByTime).headOption
     }
 
     def defaultMoment(moments: Seq[Moment]): TaskService[Moment] = {
