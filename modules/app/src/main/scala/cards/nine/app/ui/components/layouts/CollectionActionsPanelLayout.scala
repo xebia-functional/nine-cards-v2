@@ -3,31 +3,41 @@ package cards.nine.app.ui.components.layouts
 import android.content.Context
 import android.util.AttributeSet
 import android.view.DragEvent._
-import android.view.LayoutInflater
+import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
-import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.widgets.TintableButton
 import cards.nine.app.ui.components.widgets.tweaks.TintableButtonTweaks._
-import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
+import cards.nine.app.ui.launcher.LauncherActivity
+import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
+import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
 import cards.nine.commons.javaNull
 import cards.nine.process.theme.models.{NineCardsTheme, PrimaryColor}
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   extends LinearLayout(context, attrs, defStyle)
+  with Contexts[View]
   with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
-  // TODO First implementation in order to remove LauncherPresenter
-  def presenter(implicit context: ActivityContextWrapper): LauncherPresenter = context.original.get match {
-    case Some(activity: LauncherActivity) => activity.presenter
-    case _ => throw new RuntimeException("LauncherPresenter not found")
+  // TODO First implementation in order to remove DragJobs
+  val dragJobs: DragJobs = context match {
+    case activity: LauncherActivity => activity.dragJobs
+    case _ => throw new RuntimeException("DragJobs not found")
+  }
+
+  val navigationJobs: NavigationJobs = context match {
+    case activity: LauncherActivity => activity.navigationJobs
+    case _ => throw new RuntimeException("NavigationJobs not found")
   }
 
   val unselectedPosition = -1
@@ -47,7 +57,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
   def rightActionView: Option[TintableButton] = Option(findView(TR.launcher_collections_action_2))
 
   def load(actions: Seq[CollectionActionItem])
-          (implicit theme: NineCardsTheme, contextWrapper: ActivityContextWrapper): Ui[Any] = {
+          (implicit theme: NineCardsTheme): Ui[Any] = {
 
     def populate(action: CollectionActionItem, position: Int): Tweak[TintableButton] =
       tvText(action.name) +
@@ -68,13 +78,16 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
     }: _*)
   }
 
-  def dragController(action: Int, x: Float, y: Float)(implicit contextWrapper: ActivityContextWrapper): Unit = {
+  def dragController(action: Int, x: Float, y: Float)(implicit theme: NineCardsTheme): Unit = {
 
-    def performAction(action: CollectionActionItem) = action.collectionActionType match {
-      case CollectionActionAppInfo => presenter.settingsInAddItem()
-      case CollectionActionUninstall => presenter.uninstallInAddItem()
-      case CollectionActionRemove => presenter.removeCollectionInReorderMode()
-      case CollectionActionEdit => presenter.editCollectionInReorderMode()
+    def performAction(action: CollectionActionItem) = (action.collectionActionType, statuses.collectionReorderMode) match {
+      case (CollectionActionAppInfo, _) => dragJobs.settingsInAddItem().resolveAsyncServiceOr(_ => dragJobs.dragUiActions.endAddItem())
+      case (CollectionActionUninstall, _) => dragJobs.uninstallInAddItem().resolveAsyncServiceOr(_ => dragJobs.dragUiActions.endAddItem())
+      case (CollectionActionRemove, _) => dragJobs.removeCollectionInReorderMode().resolveAsync()
+      case (CollectionActionEdit, Some(collection)) =>
+        val collectionMap = Map(CreateOrEditCollectionFragment.collectionId -> collection.id.toString)
+        val bundle = dragJobs.dockAppsUiActions.dom.createBundle(leftActionView, theme.getIndexColor(collection.themedColorIndex), collectionMap)
+        navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
       case _ =>
     }
 
@@ -104,7 +117,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
 
   private[this] def calculatePosition(x: Float): Int = x.toInt / (getWidth / actions.length)
 
-  private[this] def select(position: Int)(implicit contextWrapper: ActivityContextWrapper) = Transformer {
+  private[this] def select(position: Int) = Transformer {
     case view: TintableButton if view.getPosition.contains(position) => Ui(view.setPressedColor())
     case view: TintableButton => Ui(view.setDefaultColor())
   }

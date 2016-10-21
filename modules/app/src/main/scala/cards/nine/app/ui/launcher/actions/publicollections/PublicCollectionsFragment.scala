@@ -6,25 +6,20 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
-import cards.nine.models.{Collection, SharedCollection}
-import cards.nine.models.types.{TopSharedCollection, TypeSharedCollection, Communication, NineCardsCategory}
+import cards.nine.app.ui.launcher.jobs.LauncherJobs
+import cards.nine.commons.services.TaskService._
+import cards.nine.models.SharedCollection
+import cards.nine.models.types.{Communication, NineCardsCategory, TopSharedCollection, TypeSharedCollection}
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import cards.nine.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
-class PublicCollectionsFragment
+class PublicCollectionsFragment(implicit launcherJobs: LauncherJobs)
   extends BaseActionFragment
   with PublicCollectionsUiActions
   with PublicCollectionsDOM
   with PublicCollectionsListener
   with AppNineCardsIntentConversions { self =>
-
-  // TODO First implementation in order to remove LauncherPresenter
-  def launcherPresenter: LauncherPresenter = getActivity match {
-    case activity: LauncherActivity => activity.presenter
-    case _ => throw new RuntimeException("LauncherPresenter not found")
-  }
 
   lazy val collectionJobs = new PublicCollectionsJobs(self)
 
@@ -48,11 +43,11 @@ class PublicCollectionsFragment
   override def loadPublicCollections(): Unit =
     collectionJobs.loadPublicCollections().resolveServiceOr(onError)
 
-  override def addLauncherCollection(collection: Collection): Unit =
-    launcherPresenter.addCollection(collection)
-
   override def onAddCollection(sharedCollection: SharedCollection): Unit =
-    collectionJobs.saveSharedCollection(sharedCollection).resolveServiceOr(_ => showErrorSavingCollectionInScreen())
+    (for {
+      collection <- collectionJobs.saveSharedCollection(sharedCollection)
+      _ <- launcherJobs.addCollection(collection)
+    } yield ()).resolveServiceOr(_ => showErrorSavingCollectionInScreen())
 
   override def onShareCollection(sharedCollection: SharedCollection): Unit =
     collectionJobs.shareCollection(sharedCollection).resolveServiceOr(_ => showContactUsError())

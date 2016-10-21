@@ -30,45 +30,37 @@ class CreateOrEditCollectionJobs(actions: CreateOrEditCollectionUiActions)(impli
     } yield ()
   }
 
-  def editCollection(collection: Collection, maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): TaskService[Unit] =
-    (maybeName, maybeIcon, maybeIndex) match {
-      case (Some(name), Some(icon), Some(themedColorIndex)) =>
-        val request = CollectionData(
-          position = collection.position,
-          name = name,
-          collectionType = collection.collectionType,
-          icon = icon,
-          themedColorIndex = themedColorIndex,
-          appsCategory = collection.appsCategory,
-          cards = collection.cards map (_.toData),
-          moment = collection.moment map (_.toData))
-        for {
-          collection <- di.collectionProcess.editCollection(collection.id, request)
-          _ <- actions.editCollection(collection)
-          _ <- actions.close()
-        } yield ()
-      case _ => actions.showMessageFormFieldError
-    }
+  def editCollection(collection: Collection, name: String, icon: String, themedColorIndex: Int): TaskService[Collection] = {
+    val request = CollectionData(
+      position = collection.position,
+      name = name,
+      collectionType = collection.collectionType,
+      icon = icon,
+      themedColorIndex = themedColorIndex,
+      appsCategory = collection.appsCategory,
+      cards = collection.cards map (_.toData),
+      moment = collection.moment map (_.toData))
+    for {
+      collection <- di.collectionProcess.editCollection(collection.id, request)
+      _ <- actions.close()
+    } yield collection
+  }
 
 
-  def saveCollection(maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): TaskService[Unit] =
-    (maybeName, maybeIcon, maybeIndex) match {
-      case (Some(name), Some(icon), Some(themedColorIndex)) =>
-        val request = CollectionData(
-          name = name,
-          collectionType = FreeCollectionType,
-          icon = icon,
-          themedColorIndex = themedColorIndex,
-          appsCategory = None,
-          cards = Seq.empty,
-          moment = None)
-        for {
-          collection <- di.collectionProcess.addCollection(request)
-          _ <- actions.addCollection(collection)
-          _ <- actions.close()
-        } yield ()
-      case _ => actions.showMessageFormFieldError
-    }
+  def saveCollection(name: String, icon: String, themedColorIndex: Int): TaskService[Collection] = {
+    val request = CollectionData(
+      name = name,
+      collectionType = FreeCollectionType,
+      icon = icon,
+      themedColorIndex = themedColorIndex,
+      appsCategory = None,
+      cards = Seq.empty,
+      moment = None)
+    for {
+      collection <- di.collectionProcess.addCollection(request)
+      _ <- actions.close()
+    } yield collection
+  }
 
   def updateIcon(maybeIcon: Option[String]): TaskService[Unit] =
     readOption(maybeIcon, "Empty index color")(actions.updateIcon)
