@@ -70,32 +70,6 @@ trait MomentProcessImplSpecification
     }
   }
 
-  //  trait ValidGetBestAvailableMomentPersistenceServicesResponses {
-  //
-  //    self: MomentProcessScope =>
-  //
-  //    val wifi: Option[String]
-  //    val time: DateTime
-  //
-  //    mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
-  //    mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment)))
-  //    mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right(seqMoment.head)))
-  //
-  //    mockWifiServices.getCurrentSSID(contextSupport) returns TaskService(Task(Either.right(wifi)))
-  //
-  //    mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-  //    mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
-  //
-  //    override val momentProcess = new MomentProcessImpl(
-  //      persistenceServices = mockPersistenceServices,
-  //      wifiServices = mockWifiServices,
-  //      awarenessServices = mockAwarenessService) {
-  //
-  //      override protected def getNowDateTime = time
-  //    }
-  //  }
-
-
 }
 
 class MomentProcessImplSpec
