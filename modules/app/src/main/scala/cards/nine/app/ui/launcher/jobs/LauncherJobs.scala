@@ -111,7 +111,7 @@ class LauncherJobs(
 
     def getMoment = momentPreferences.getPersistMoment match {
       case Some(moment) => di.momentProcess.fetchMomentByType(moment)
-      case _ => di.momentProcess.getBestAvailableMoment(None, None).map(Option(_))
+      case _ => di.momentProcess.getBestAvailableMoment().map(Option(_))
     }
 
     def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
@@ -149,7 +149,7 @@ class LauncherJobs(
       moment.collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
 
     for {
-      moment <- di.momentProcess.getBestAvailableMoment(None, None)
+      moment <- di.momentProcess.getBestAvailableMoment()
       collection <- getCollection(moment)
       currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
       momentType = moment.momentType

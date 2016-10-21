@@ -14,6 +14,8 @@ import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
 
+import scala.util.{Failure, Success, Try}
+
 class MomentProcessImpl(
   val persistenceServices: PersistenceServices,
   val wifiServices: WifiServices,
@@ -111,7 +113,7 @@ class MomentProcessImpl(
     }
 
     def headphonesMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
-      (moments.find(_.headphone), maybeHeadphones) match {
+      (moments.find(_.momentType.contains(MusicMoment)), maybeHeadphones) match {
         case (Some(m), Some(hp)) => TaskService.right(if (hp) Some(m) else None)
         case (Some(m), None) =>
           awarenessServices.getHeadphonesState.map(headphones => if (headphones.connected) Some(m) else None)
@@ -165,10 +167,10 @@ class MomentProcessImpl(
     }
 
     def bestChoice(moments: Seq[Moment]): TaskService[Option[Moment]] = {
+      val momentsToEvaluate = moments.filterNot(_.momentType.contains(WalkMoment))
       Seq(headphonesMoment(_), wifiMoment(_), activityMoment(_), hourMoment(_))
-        .map(_(moments.filterNot(_.momentType.contains(WalkMoment))))
         .foldLeft[TaskService[Option[Moment]]](TaskService.right(None)) { (s1, s2) =>
-        s1.flatMap(maybeMoment => if (maybeMoment.isDefined) TaskService.right(maybeMoment) else s2)
+        s1.flatMap(maybeMoment => if (maybeMoment.isDefined) TaskService.right(maybeMoment) else s2(momentsToEvaluate))
       }
     }
 
