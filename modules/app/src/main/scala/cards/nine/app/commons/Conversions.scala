@@ -11,23 +11,26 @@ import scala.util.Random
 trait Conversions
   extends AppNineCardsIntentConversions {
 
-  def toSeqFormedCollection(collections: Seq[CloudStorageCollection]): Seq[FormedCollection] = collections map toFormedCollection
+  def toSeqCollectionData(collections: Seq[CloudStorageCollection]): Seq[CollectionData] =
+    collections.zipWithIndex.map(zipped => toCollectionData(zipped._1, zipped._2))
 
-  def toFormedCollection(userCollection: CloudStorageCollection): FormedCollection = FormedCollection(
+  def toCollectionData(userCollection: CloudStorageCollection, position: Int): CollectionData = CollectionData(
     name = userCollection.name,
-    originalSharedCollectionId = userCollection.originalSharedCollectionId,
-    sharedCollectionId = userCollection.sharedCollectionId,
-    sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed,
-    items = userCollection.items map toFormedItem,
     collectionType = userCollection.collectionType,
     icon = userCollection.icon,
-    category = userCollection.category,
-    moment = userCollection.moment map toMoment)
+    themedColorIndex = position % numSpaces,
+    appsCategory = userCollection.category,
+    cards = userCollection.items map toCardData,
+    moment = userCollection.moment map toMoment,
+    originalSharedCollectionId = userCollection.originalSharedCollectionId,
+    sharedCollectionId = userCollection.sharedCollectionId,
+    sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed getOrElse false)
 
-  def toFormedItem(item: CloudStorageCollectionItem): FormedItem = FormedItem(
-    itemType = item.itemType,
-    title = item.title,
-    intent = item.intent)
+  def toCardData(item: CloudStorageCollectionItem): CardData = CardData(
+    term = item.title,
+    packageName = None,
+    cardType = CardType(item.itemType),
+    intent = jsonToNineCardIntent(item.intent))
 
   def toCardData(contact: Contact): CardData =
     CardData(
@@ -142,8 +145,8 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
     intent
   }
 
-  def toMoment(cloudStorageMoment: CloudStorageMoment): FormedMoment =
-    FormedMoment(
+  def toMoment(cloudStorageMoment: CloudStorageMoment): MomentData =
+    MomentData(
       collectionId = None,
       timeslot = cloudStorageMoment.timeslot map toTimeSlot,
       wifi = cloudStorageMoment.wifi,

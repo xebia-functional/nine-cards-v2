@@ -1,6 +1,7 @@
 package cards.nine.app.ui.wizard.jobs
 
 import cards.nine.app.commons.Conversions
+import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
@@ -35,35 +36,33 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   def saveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): TaskService[Unit] = {
 
-    def toFormedCollection(apps: Seq[ApplicationData]) = {
-      collections map { collection =>
+    def toCollectionData(apps: Seq[ApplicationData]) = {
+      collections.zipWithIndex.map { zipped =>
+        val (collection, index) = zipped
         val packageNames = if (best9Apps) collection.packages.take(9) else collection.packages
         val category = collection.category
         val collectionApps = apps.filter(app => packageNames.contains(app.packageName))
-        val formedItems = collectionApps map { app =>
-          FormedItem(
-            itemType = AppCardType.name,
-            title = app.name,
-            intent = nineCardIntentToJson(toNineCardIntent(app)),
-            uriImage = None)
+        val cards = collectionApps map { app =>
+          CardData(
+            term = app.name,
+            packageName = Option(app.packageName),
+            cardType = AppCardType,
+            intent = toNineCardIntent(app))
         }
-        FormedCollection(
+        CollectionData(
           name = category.getName,
-          originalSharedCollectionId = None,
-          sharedCollectionId = None,
-          sharedCollectionSubscribed = None,
-          items = formedItems,
           collectionType = AppsCollectionType,
           icon = collection.category.name.toLowerCase,
-          category = Option(category),
-          moment = None)
+          themedColorIndex = index % numSpaces,
+          cards = cards,
+          appsCategory = Option(category))
       }
     }
 
     for {
       _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
       apps <- di.deviceProcess.getSavedApps(GetByName)
-      _ <- di.collectionProcess.createCollectionsFromFormedCollections(toFormedCollection(apps))
+      _ <- di.collectionProcess.createCollectionsFromCollectionDatas(toCollectionData(apps))
       _ <- di.deviceProcess.generateDockApps(defaultDockAppsSize)
     } yield ()
   }

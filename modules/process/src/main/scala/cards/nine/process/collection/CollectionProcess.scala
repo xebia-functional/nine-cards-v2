@@ -2,8 +2,8 @@ package cards.nine.process.collection
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.NineCardsCategory
 import cards.nine.models._
+import cards.nine.models.types.NineCardsCategory
 
 trait CollectionProcess {
 
@@ -19,11 +19,11 @@ trait CollectionProcess {
   /**
    * Creates Collections from some already formed and given Collections
    *
-   * @param items the Seq[cards.nine.models.FormedCollection] of Collections
+   * @param items the Seq[cards.nine.models.CollectionData] of Collections
    * @return the List[cards.nine.models.Collection]
    * @throws CollectionException if there was an error creating the collections
    */
-  def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport): TaskService[Seq[Collection]]
+  def createCollectionsFromCollectionDatas(items: Seq[CollectionData])(implicit context: ContextSupport): TaskService[Seq[Collection]]
 
   /**
    * Gets the existing collections

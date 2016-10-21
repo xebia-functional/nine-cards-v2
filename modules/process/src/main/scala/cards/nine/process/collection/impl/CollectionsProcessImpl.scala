@@ -6,12 +6,11 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models._
+import cards.nine.models.{RankApps, _}
 import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types._
 import cards.nine.process.collection._
 import cards.nine.process.utils.ApiUtils
-import cards.nine.models.RankApps
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import cats.syntax.either._
 import monix.eval.Task
@@ -27,10 +26,10 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) =
+  def createCollectionsFromCollectionDatas(items: Seq[CollectionData])(implicit context: ContextSupport) =
     (for {
       apps <- appsServices.getInstalledApplications
-      collectionsRequest = toCollectionDataByFormedCollection(adaptCardsToAppsInstalled(items, apps))
+      collectionsRequest = adaptCardsToAppsInstalled(items, apps)
       collections <- persistenceServices.addCollections(collectionsRequest)
     } yield collections).resolve[CollectionException]
 
