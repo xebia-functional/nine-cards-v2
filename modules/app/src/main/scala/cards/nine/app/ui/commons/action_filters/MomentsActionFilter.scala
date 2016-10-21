@@ -26,7 +26,11 @@ case object MomentForceBestAvailableActionFilter
 
 object MomentsActionFilter {
 
-  val cases = Seq(MomentReloadedActionFilter, MomentConstrainsChangedActionFilter, MomentForceBestAvailableActionFilter)
+  val cases = Seq(
+    MomentReloadedActionFilter,
+    MomentConstrainsChangedActionFilter,
+    MomentBestAvailableActionFilter,
+    MomentForceBestAvailableActionFilter)
 
   def apply(action: String): Option[MomentsActionFilter] = cases find (_.action == action)
 

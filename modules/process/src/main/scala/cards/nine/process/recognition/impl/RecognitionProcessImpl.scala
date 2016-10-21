@@ -20,7 +20,9 @@ class RecognitionProcessImpl(
   override def getMostProbableActivity: TaskService[ProbablyActivity] =
     awarenessServices.getTypeActivity.resolve[RecognitionProcessException]
 
-  override def registerFenceUpdates(receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport) = {
+  override def registerFenceUpdates(
+    action: String,
+    receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport) = {
 
     def getFencesFromMoments(moments: Seq[Moment]): Seq[AwarenessFenceUpdate] =
       moments.map(_.momentType).flatMap {
@@ -34,12 +36,12 @@ class RecognitionProcessImpl(
     (for {
       moments <- persistenceServices.fetchMoments
       fences = getFencesFromMoments(moments)
-      _ <- if (fences.nonEmpty) awarenessServices.registerFenceUpdates(fences, receiver) else TaskService.empty
+      _ <- if (fences.nonEmpty) awarenessServices.registerFenceUpdates(action, fences, receiver) else TaskService.empty
     } yield ()).resolve[RecognitionProcessException]
   }
 
-  override def unregisterFenceUpdates(implicit contextSupport: ContextSupport): TaskService[Unit] =
-    awarenessServices.unregisterFenceUpdates.resolve[RecognitionProcessException]
+  override def unregisterFenceUpdates(action: String)(implicit contextSupport: ContextSupport): TaskService[Unit] =
+    awarenessServices.unregisterFenceUpdates(action).resolve[RecognitionProcessException]
 
   override def getHeadphone: TaskService[Headphones] =
       awarenessServices.getHeadphonesState.resolve[RecognitionProcessException]

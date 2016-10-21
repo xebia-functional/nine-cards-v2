@@ -18,15 +18,20 @@ trait AwarenessServices {
 
   /**
     * Register a pending intent for fence updates
+    * @param action the action for the intent
     * @param fences fences to register for
     * @param receiver that will receive the updates
     */
-  def registerFenceUpdates(fences: Seq[AwarenessFenceUpdate], receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport): TaskService[Unit]
+  def registerFenceUpdates(
+    action: String,
+    fences: Seq[AwarenessFenceUpdate],
+    receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport): TaskService[Unit]
 
   /**
     * Register a pending intent for fence updates
+    * @param action the action for the intent
     */
-  def unregisterFenceUpdates(implicit contextSupport: ContextSupport): TaskService[Unit]
+  def unregisterFenceUpdates(action: String)(implicit contextSupport: ContextSupport): TaskService[Unit]
 
   /**
     * Return headphone state

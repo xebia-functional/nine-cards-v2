@@ -1,6 +1,7 @@
 package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.commons.AppNineCardsIntentConversions
+import cards.nine.app.receivers.moments.MomentBroadcastReceiver
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
@@ -14,7 +15,7 @@ import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.{NineCardsMoment, UnknownCondition}
+import cards.nine.models.types._
 import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
 import cats.implicits._
@@ -75,6 +76,14 @@ class LauncherJobs(
           Left(ChangeMomentException("Exception changing moment", Option(exception))))
       }
     } yield ()
+
+  def registerFence(): TaskService[Unit] =
+    di.recognitionProcess.registerFenceUpdates(
+      action = MomentBroadcastReceiver.momentFenceAction,
+      receiver = new MomentBroadcastReceiver)
+
+  def unregisterFence(): TaskService[Unit] =
+    di.recognitionProcess.unregisterFenceUpdates(MomentBroadcastReceiver.momentFenceAction)
 
   def pause(): TaskService[Unit] = di.observerRegister.unregisterObserverTask()
 
@@ -145,14 +154,27 @@ class LauncherJobs(
   }
 
   // Check if there is a new best available moment, if not reload the apps moment bar
-  def changeMomentIfIsAvailable(force: Boolean): TaskService[Unit] = {
+  def changeMomentIfIsAvailable(force: Boolean, fenceKey: Option[String] = None): TaskService[Unit] = {
 
     def getCollection(moment: Moment): TaskService[Option[Collection]] =
       moment.collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
 
+    def headphoneKey: Option[Boolean] = fenceKey match {
+      case Some(HeadphonesFence.keyIn) => Some(true)
+      case Some(HeadphonesFence.keyOut) => Some(false)
+      case _ => None
+    }
+
+    def activityKey: Option[KindActivity] = fenceKey match {
+      case Some(RunningFence.key) => Some(RunningActivity)
+      case Some(InVehicleFence.key) => Some(InVehicleActivity)
+      case Some(OnBicycleFence.key) => Some(OnBicycleActivity)
+      case _ => None
+    }
+
     if (force || momentPreferences.nonPersist) {
       for {
-        moment <- di.momentProcess.getBestAvailableMoment()
+        moment <- di.momentProcess.getBestAvailableMoment(maybeHeadphones = headphoneKey, maybeActivity = activityKey)
         collection <- getCollection(moment)
         currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
         momentType = moment.momentType
