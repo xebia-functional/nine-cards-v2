@@ -111,20 +111,18 @@ class MomentProcessImpl(
     }
 
     def headphonesMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
-      moments.find(_.headphone) match {
-        case Some(m) if maybeHeadphones.contains(true) => TaskService.right(Some(m))
-        case Some(m) =>
+      (moments.find(_.headphone), maybeHeadphones) match {
+        case (Some(m), Some(hp)) => TaskService.right(if (hp) Some(m) else None)
+        case (Some(m), None) =>
           awarenessServices.getHeadphonesState.map(headphones => if (headphones.connected) Some(m) else None)
-        case None => TaskService.right(None)
+        case (None, _) => TaskService.right(None)
       }
 
-    def wifiMoment(moments: Seq[Moment]): TaskService[Option[Moment]] = {
-
+    def wifiMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
       wifiServices.getCurrentSSID.map {
         case Some(ssid) => (moments filter(_.wifi.contains(ssid)) sortWith prioritizedMomentsByTime).headOption
         case None => None
       }
-    }
 
     def activityMoment(moments: Seq[Moment]): TaskService[Option[Moment]] = {
 
@@ -168,7 +166,7 @@ class MomentProcessImpl(
 
     def bestChoice(moments: Seq[Moment]): TaskService[Option[Moment]] = {
       Seq(headphonesMoment(_), wifiMoment(_), activityMoment(_), hourMoment(_))
-        .map(_(moments))
+        .map(_(moments.filterNot(_.momentType.contains(WalkMoment))))
         .foldLeft[TaskService[Option[Moment]]](TaskService.right(None)) { (s1, s2) =>
         s1.flatMap(maybeMoment => if (maybeMoment.isDefined) TaskService.right(maybeMoment) else s2)
       }
