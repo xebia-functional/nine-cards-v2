@@ -5,7 +5,7 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.OrderByName
 import cards.nine.models.{AppWidget, Application}
-import cards.nine.process.device.models.AppsWithWidgets
+import cards.nine.models.AppsWithWidgets
 import cards.nine.process.device.{DeviceProcess, ImplicitsDeviceException, WidgetException}
 
 trait WidgetsDeviceProcessImpl extends DeviceProcess {
