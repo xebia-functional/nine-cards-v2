@@ -31,7 +31,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
       collections map { collection =>
         val packageNames = if (best9Apps) collection.packages.take(9) else collection.packages
         val category = collection.category
-        val collectionApps = apps.filter(app => packageNames.contains(app.packageName))
+        val collectionApps = packageNames flatMap (packageName => apps find (_.packageName == packageName))
         val formedItems = collectionApps map { app =>
           FormedItem(
             itemType = AppCardType.name,
