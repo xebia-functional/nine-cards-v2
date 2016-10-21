@@ -2,7 +2,7 @@ package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.MomentValues._
 import cards.nine.models.reads.MomentImplicits
-import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.types._
 import cards.nine.models.{Moment, MomentData, MomentTimeSlot}
 import play.api.libs.json.Json
 
