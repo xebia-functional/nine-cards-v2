@@ -38,7 +38,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
     def toFormedCollection(apps: Seq[ApplicationData]) = {
       collections map { collection =>
         val packageNames = if (best9Apps) collection.packages.take(9) else collection.packages
-        val category = collection.category
+        val category: NineCardsCategory = collection.category
         val collectionApps = apps.filter(app => packageNames.contains(app.packageName))
         val formedItems = collectionApps map { app =>
           FormedItem(
@@ -76,7 +76,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   def saveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): TaskService[Unit] = {
     val homeNightMoment = infoMoment find (_._1 == HomeMorningMoment) map (info => (HomeNightMoment, info._2))
-    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (WalkMoment, None)) ++ Seq(homeNightMoment).flatten
+    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (WalkMoment, None)) ++ homeNightMoment.toSeq
 
     val momentsWithWifi = momentsToAdd map {
       case (moment, wifi) =>
