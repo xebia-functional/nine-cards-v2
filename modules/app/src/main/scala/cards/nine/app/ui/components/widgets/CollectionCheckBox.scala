@@ -10,7 +10,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons._
-import cards.nine.process.theme.models.{ThemeDark, ThemeLight, ThemeType}
+import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -31,6 +31,8 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
   val collectionKey = "collection-moment"
 
   val paddingIcon = resGetDimensionPixelSize(R.dimen.padding_medium)
+
+  val paddingCheckbox = resGetDimensionPixelSize(R.dimen.card_padding_small)
 
   val selectedColor = resGetColor(R.color.checkbox_selected)
 
@@ -58,6 +60,8 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   val collectionIcon = findView(TR.collection_icon)
 
+  val checkboxIconContent = findView(TR.subscriptions_item_content)
+
   val checkboxIcon = findView(TR.collection_checkbox_icon)
 
   (this <~ vAddField(checkKey, true)).run
@@ -65,18 +69,20 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
   val iconSelectedDrawable = PathMorphDrawable(
     defaultIcon = IconTypes.CHECK,
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_thin),
-    padding = resGetDimensionPixelSize(R.dimen.padding_small))
+    padding = resGetDimensionPixelSize(R.dimen.card_padding_small))
 
-  def initialize(icon: Int, color: Int, themeType: ThemeType, defaultCheck: Boolean = true): Ui[Any] = {
+  def initialize(icon: Int, color: Int, theme: NineCardsTheme, defaultCheck: Boolean = true): Ui[Any] = {
     (this <~ vAddField(collectionKey, icon)) ~
       (collectionIcon <~
         vBackground(selectedDrawable(color)) <~
         vPaddings(paddingIcon) <~
         ivSrc(icon)) ~
+      (checkboxIconContent <~
+        vBackground(selectedDrawable(theme.get(CardLayoutBackgroundColor)))) ~
       (checkboxIcon <~
         vBackground(selectedDrawable(selectedColor)) <~
         ivSrc(iconSelectedDrawable)) ~
-      (if (defaultCheck) check(color) else uncheck(themeType))
+      (if (defaultCheck) check(color) else uncheck(theme.parent))
   }
 
   def check(color: Int): Ui[Any] =

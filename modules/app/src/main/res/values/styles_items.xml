@@ -567,11 +567,18 @@
         <item name="android:layout_margin">@dimen/padding_small</item>
     </style>
 
-    <style name="SubscriptionsItemCheckboxIcon">
+    <style name="SubscriptionsCollectionCheckBoxIconContent">
         <item name="android:layout_width">@dimen/size_icon_item_collections_checkboxIcon</item>
         <item name="android:layout_height">@dimen/size_icon_item_collections_checkboxIcon</item>
         <item name="android:layout_marginTop">@dimen/padding_default</item>
         <item name="android:layout_gravity">top|right</item>
+    </style>
+
+    <style name="SubscriptionsItemCheckboxIcon">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_margin">@dimen/card_padding_small</item>
     </style>
 
     <style name="SubscriptionsItemNames">
@@ -591,7 +598,7 @@
         <item name="android:textSize">@dimen/text_xlarge</item>
     </style>
 
-    <style name="SubscriptionsItemApps">
+    <style name="SubscriptionsItemStatus">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lines">1</item>

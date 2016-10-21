@@ -7,7 +7,7 @@ import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{Collection, PackagesByCategory}
-import cards.nine.process.theme.models.ThemeType
+import cards.nine.process.theme.models.{NineCardsTheme, ThemeType}
 import macroid._
 
 object TintableImageViewTweaks {
@@ -143,13 +143,7 @@ object WizardMomentCheckBoxTweaks {
 object CollectionCheckBoxTweaks {
   type W = CollectionCheckBox
 
-  def ccbInitialize(collectionIcon: Int, color: Int, themeType: ThemeType, defaultCheck: Boolean = true) =
-    Tweak[W](_.initialize(collectionIcon, color, themeType, defaultCheck).run)
-
-  def ccbDoCheck(color: Int, themeType: ThemeType, doCheck: Boolean) = Tweak[W] { view => (if (doCheck) view.check(color) else view.uncheck(themeType)).run }
-
-  def ccbCheck(color: Int) = Tweak[W] (_.check(color).run)
-
-  def ccbUncheck(themeType: ThemeType) = Tweak[W] (_.uncheck(themeType).run)
+  def ccbInitialize(collectionIcon: Int, color: Int, theme: NineCardsTheme, defaultCheck: Boolean = true) =
+    Tweak[W](_.initialize(collectionIcon, color, theme, defaultCheck).run)
 
 }

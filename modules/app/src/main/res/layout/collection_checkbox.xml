@@ -7,8 +7,14 @@
             android:id="@+id/collection_icon"
             style="@style/SubscriptionsItemIcon"/>
 
-    <ImageView
-            android:id="@+id/collection_checkbox_icon"
-            style="@style/SubscriptionsItemCheckboxIcon"/>
+    <FrameLayout
+            android:id="@+id/subscriptions_item_content"
+            style="@style/SubscriptionsCollectionCheckBoxIconContent">
+
+        <ImageView
+                android:id="@+id/collection_checkbox_icon"
+                style="@style/SubscriptionsItemCheckboxIcon"/>
+
+    </FrameLayout>
 
 </FrameLayout>
