@@ -5,12 +5,10 @@ import cards.nine.commons.javaNull
 import cards.nine.models
 import cards.nine.models.{Contact, ApplicationData}
 import cards.nine.models.types.Misc
-import cards.nine.process.device.DeviceConversions
 import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
 
 class IterableApps(cursor: ServicesIterableApps)
-  extends IterableCursor[ApplicationData]
-  with DeviceConversions {
+  extends IterableCursor[ApplicationData] {
 
   override def count(): Int = cursor.count()
 
@@ -30,8 +28,7 @@ class EmptyIterableApps()
 
 
 class IterableContacts(cursor: IterableCursor[models.Contact])
-  extends IterableCursor[Contact]
-    with DeviceConversions {
+  extends IterableCursor[Contact] {
 
   override def count(): Int = cursor.count()
 

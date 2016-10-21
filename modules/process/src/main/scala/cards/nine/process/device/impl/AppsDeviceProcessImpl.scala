@@ -18,8 +18,7 @@ trait AppsDeviceProcessImpl
   extends DeviceProcess
   with KnownCategoriesUtil {
 
-  self: DeviceConversions
-    with DeviceProcessDependencies
+  self: DeviceProcessDependencies
     with ImplicitsDeviceException
     with ImplicitsImageExceptions
     with ImplicitsPersistenceServiceExceptions =>
@@ -125,6 +124,12 @@ trait AppsDeviceProcessImpl
       appCategory <- getAppCategory(packageName)
       _ <- persistenceServices.updateApp(app.copy(category = appCategory).toApp(appPersistence.id))
     } yield ()).resolve[AppException]
+
+  private[this] def toFetchAppOrder(orderBy: GetAppOrder): FetchAppOrder = orderBy match {
+    case GetByName(_) => OrderByName
+    case GetByInstallDate(_) => OrderByInstallDate
+    case GetByCategory(_) => OrderByCategory
+  }
 
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {
