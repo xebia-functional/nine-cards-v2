@@ -41,7 +41,7 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   val selectedColor = resGetColor(R.color.wizard_new_conf_accent_1)
 
-  val unselectedColor = resGetColor(R.color.checkbox_unselected)
+  val unselectedColor = resGetColor(R.color.wizard_checkbox_unselected)
 
   val selectedDrawable = {
     val drawable = new ShapeDrawable(new OvalShape)
@@ -99,7 +99,7 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
   def uncheck(): Ui[Any] =
     (this <~ vAddField(checkKey, false)) ~
       (icon <~ vBackground(unselectedDrawable)) ~
-      (text <~ tvColorResource(R.color.checkbox_unselected))
+      (text <~ tvColorResource(R.color.wizard_checkbox_unselected))
 
   def swap(): Ui[Any] = this.getField[Boolean](checkKey) match {
     case Some(true) => uncheck()

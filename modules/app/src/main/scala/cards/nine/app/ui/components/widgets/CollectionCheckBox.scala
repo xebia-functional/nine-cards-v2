@@ -10,6 +10,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons._
+import cards.nine.process.theme.models.{ThemeDark, ThemeLight, ThemeType}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -33,7 +34,9 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   val selectedColor = resGetColor(R.color.checkbox_selected)
 
-  val unselectedColor = resGetColor(R.color.checkbox_unselected)
+  val unselectedLightColor = resGetColor(R.color.checkbox_light_unselected)
+
+  val unselectedDarkColor = resGetColor(R.color.checkbox_dark_unselected)
 
   def selectedDrawable(color: Int) = {
     val drawable = new ShapeDrawable(new OvalShape)
@@ -41,9 +44,13 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
     drawable
   }
 
-  val unselectedDrawable = {
+  def unselectedDrawable(themeType: ThemeType) = {
     val drawable = new ShapeDrawable(new OvalShape)
-    drawable.getPaint.setColor(unselectedColor)
+    drawable.getPaint.setColor(
+      themeType match {
+        case ThemeLight => unselectedLightColor
+        case ThemeDark => unselectedDarkColor
+      })
     drawable
   }
 
@@ -60,7 +67,7 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_thin),
     padding = resGetDimensionPixelSize(R.dimen.padding_small))
 
-  def initialize(icon: Int, color: Int, defaultCheck: Boolean = true): Ui[Any] = {
+  def initialize(icon: Int, color: Int, themeType: ThemeType, defaultCheck: Boolean = true): Ui[Any] = {
     (this <~ vAddField(collectionKey, icon)) ~
       (collectionIcon <~
         vBackground(selectedDrawable(color)) <~
@@ -69,7 +76,7 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
       (checkboxIcon <~
         vBackground(selectedDrawable(selectedColor)) <~
         ivSrc(iconSelectedDrawable)) ~
-      (if (defaultCheck) check(color) else uncheck())
+      (if (defaultCheck) check(color) else uncheck(themeType))
   }
 
   def check(color: Int): Ui[Any] =
@@ -77,10 +84,10 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
       (collectionIcon <~ vBackground(selectedDrawable(color))) ~
       (checkboxIcon <~ vBackground(selectedDrawable(selectedColor)))
 
-  def uncheck(): Ui[Any] =
+  def uncheck(themeType: ThemeType): Ui[Any] =
     (this <~ vAddField(checkKey, false)) ~
-      (collectionIcon <~ vBackground(unselectedDrawable)) ~
-      (checkboxIcon <~ vBackground(unselectedDrawable))
+      (collectionIcon <~ vBackground(unselectedDrawable(themeType))) ~
+      (checkboxIcon <~ vBackground(unselectedDrawable(themeType)))
 
   def isCheck: Boolean = this.getField[Boolean](checkKey) exists (c => c)
 

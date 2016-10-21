@@ -39,7 +39,7 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   val selectedColor = resGetColor(R.color.wizard_new_conf_accent_2)
 
-  val unselectedColor = resGetColor(R.color.checkbox_unselected)
+  val unselectedColor = resGetColor(R.color.wizard_checkbox_unselected)
 
   val selectedDrawable = {
     val drawable = new ShapeDrawable(new OvalShape)
@@ -86,9 +86,9 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
   def uncheck(): Ui[Any] =
     (this <~ vAddField(checkKey, false)) ~
       (icon <~ vBackground(unselectedDrawable)) ~
-      (name <~ tvColorResource(R.color.checkbox_unselected)) ~
-      (textConnected <~ tvColorResource(R.color.checkbox_unselected)) ~
-      (wifiAction <~ vClickable(false) <~ tivColor(resGetColor(R.color.checkbox_unselected)))
+      (name <~ tvColorResource(R.color.wizard_checkbox_unselected)) ~
+      (textConnected <~ tvColorResource(R.color.wizard_checkbox_unselected)) ~
+      (wifiAction <~ vClickable(false) <~ tivColor(resGetColor(R.color.wizard_checkbox_unselected)))
 
   def setWifiName(wifi: String): Ui[Any] =
     (this <~ vAddField(wifiNameKey, wifi)) ~

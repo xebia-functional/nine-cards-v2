@@ -7,7 +7,7 @@ import cards.nine.app.ui.components.widgets.tweaks.CollectionCheckBoxTweaks._
 import cards.nine.app.ui.profile.SubscriptionsAdapterStyles
 import cards.nine.app.ui.profile.ops.SubscriptionOps._
 import cards.nine.models.Subscription
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.process.theme.models.{ThemeType, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
@@ -52,11 +52,11 @@ case class ViewHolderSubscriptionsAdapter(
 
   def bind(subscription: Subscription, position: Int)(implicit uiContext: UiContext[_]): Ui[_] = {
     val subscriptionColor = theme.getIndexColor(subscription.themedColorIndex)
-    (checkbox <~ ccbInitialize(subscription.getIconSubscriptionDetail, subscriptionColor, defaultCheck = subscription.subscribed)) ~
+    (checkbox <~ ccbInitialize(subscription.getIconSubscriptionDetail, subscriptionColor, theme.parent, defaultCheck = subscription.subscribed)) ~
       (name <~ tvText(resGetString(subscription.name) getOrElse subscription.name)) ~
       (apps <~ tvText(resGetString(R.string.installed_apps_number, subscription.apps.toString))) ~
       (content <~ On.click(
-        Ui(ccbDoCheck(subscriptionColor, !subscription.subscribed)) ~
+        Ui(ccbDoCheck(subscriptionColor, theme.parent, !subscription.subscribed)) ~
         Ui(onSubscribe(subscription.sharedCollectionId, !subscription.subscribed))))
   }
 
