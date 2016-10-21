@@ -1,4 +1,4 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.content.Intent
 import android.graphics.Color
@@ -12,7 +12,7 @@ import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.commons.{AppUtils, SystemBarsTint, UiContext}
+import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.drawables.EdgeWorkspaceDrawable
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
@@ -23,9 +23,9 @@ import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import cards.nine.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
+import cards.nine.app.ui.launcher.jobs.NavigationJobs
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.IsDeveloper
@@ -49,21 +49,16 @@ class WorkspaceUiActions(val dom: LauncherDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_],
-    presenter: LauncherPresenter) {
+    uiContext: UiContext[_]) {
 
   // TODO We select the page in ViewPager with collections. In the future this will be a user preference
   val selectedPageDefault = 1
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
-  case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
+  implicit def theme: NineCardsTheme = statuses.theme
 
-  private[this] var actionsState = State()
-
-  implicit def theme: NineCardsTheme = actionsState.theme
-
-  val navigationJobs = createNavigationJobs
+  implicit lazy val navigationJobs: NavigationJobs = createNavigationJobs
 
   val maxBackgroundPercent: Float = 0.7f
 
@@ -71,9 +66,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
 
   val collectionId = "collectionId"
 
-  def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = {
-
-    actionsState = actionsState.copy(theme = nineCardsTheme)
+  def initialize(): TaskService[Unit] = {
 
     def goToSettings(): Ui[Any] = {
       closeCollectionMenu() ~~ uiStartIntentForResult(
@@ -82,7 +75,6 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     }
 
     ((dom.paginationPanel <~ On.longClick((dom.workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
-      (dom.topBarPanel <~ tblInit(CollectionsWorkSpace)) ~
       (dom.workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (dom.workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (dom.menuCollectionRoot <~ vGone) ~
@@ -162,7 +154,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
 
   def closeMenu(): TaskService[Unit] = closeCollectionMenu().toService
 
-  def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int]): TaskService[Unit] =
+  def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): TaskService[Unit] =
     ((dom.workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager).toService
 
   def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService
@@ -278,7 +270,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       workspaceButtonChangeMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       On.click {
-        closeCollectionMenu() ~~ Ui(presenter.goToChangeMoment())
+        closeCollectionMenu() ~~ Ui(navigationJobs.goToChangeMoment().resolveAsync())
       }).get
   )
 
