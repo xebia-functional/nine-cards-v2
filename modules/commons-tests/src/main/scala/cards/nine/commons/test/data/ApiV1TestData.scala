@@ -6,24 +6,16 @@ import cards.nine.models._
 
 trait ApiV1TestData {
 
-  def deviceId(num: Int = 0) = userDeviceId + num
-
-  val deviceId: String = deviceId(0)
-
-  def deviceName(num: Int = 0) = userDeviceName + num
-
-  val deviceName: String = deviceName(0)
-
   def requestConfigV1(num: Int = 0) = RequestConfigV1(
-    deviceId = deviceId(num),
+    deviceId = userDeviceId + num,
     token = sessionToken,
     marketToken = Option(marketToken))
 
-  val requestConfigV1: RequestConfigV1 = requestConfigV1(0)
+  implicit val requestConfigV1: RequestConfigV1 = requestConfigV1(0)
 
   def device(num: Int = 0) = Device(
-    name = deviceName(num),
-    deviceId = deviceId(num),
+    name = userDeviceName + num,
+    deviceId = userDeviceId + num,
     secretToken = marketToken,
     permissions = permissions)
 
@@ -61,7 +53,7 @@ trait ApiV1TestData {
 
   def userV1Device(num: Int = 0) = UserV1Device(
     deviceId = deviceIdPrefix + num,
-    deviceName = deviceName,
+    deviceName = userDeviceName + num,
     collections = seqUserV1Collection)
 
   val seqUserV1Device: Seq[UserV1Device] = Seq(userV1Device(0), userV1Device(1), userV1Device(2))
@@ -77,14 +69,14 @@ trait ApiV1TestData {
     devices = seqUserV1Device,
     status = UserV1StatusInfo(
       products = products,
-      friendsReferred = 0,
-      themesShared = 0,
-      collectionsShared = 0,
-      customCollections = 0,
-      earlyAdopter = false,
-      communityMember = true,
-      joinedThrough = None,
-      tester = false))
+      friendsReferred = friendsReferred,
+      themesShared = themesShared,
+      collectionsShared = collectionsShared,
+      customCollections = customCollections,
+      earlyAdopter = earlyAdopter,
+      communityMember = communityMember,
+      joinedThrough = joinedThrough,
+      tester = tester))
 
   val userV1: UserV1 = userV1(0)
   val seqUserV1: Seq[UserV1] = Seq(userV1(0), userV1(1), userV1(2))

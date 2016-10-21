@@ -8,14 +8,15 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
+import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
+import cards.nine.app.ui.launcher.jobs.NavigationJobs
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons._
-import cards.nine.models.types.ConditionWeather
-import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.types.{ConditionWeather, NineCardsMoment}
 import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -34,12 +35,6 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
-
-  // TODO First implementation in order to remove LauncherPresenter
-  def presenter(implicit context: ActivityContextWrapper): LauncherPresenter = context.original.get match {
-    case Some(activity: LauncherActivity) => activity.presenter
-    case _ => throw new RuntimeException("LauncherPresenter not found")
-  }
 
   lazy val collectionsSearchPanel = Option(findView(TR.launcher_search_panel))
 
@@ -75,7 +70,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   (this <~ vgAddViews(Seq(momentWorkspace, collectionWorkspace)) <~ vInvisible).run
 
-  def init(workSpaceType: WorkSpaceType)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Any] = {
+  def init(workSpaceType: WorkSpaceType)(implicit navigationJobs: NavigationJobs, theme: NineCardsTheme): Ui[Any] = {
     (this <~ vVisible) ~
       populate ~
       (workSpaceType match {
@@ -84,7 +79,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       })
   }
 
-  def populate(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Any] = {
+  def populate(implicit navigationJobs: NavigationJobs, theme: NineCardsTheme): Ui[Any] = {
     val iconColor = theme.get(SearchIconsColor)
     val pressedColor = theme.get(SearchPressedColor)
     val iconBackground = new TopBarMomentBackgroundDrawable
@@ -118,13 +113,13 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (collectionsBurgerIcon <~
         tivDefaultColor(iconColor) <~
         tivPressedColor(pressedColor) <~
-        On.click(Ui(presenter.launchMenu()))) ~
+        On.click(Ui(navigationJobs.openMenu().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (collectionsGoogleIcon <~
         googleLogoTweaks <~
-        On.click(Ui(presenter.launchSearch()))) ~
+        On.click(Ui(navigationJobs.launchSearch().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (collectionsMicIcon <~
         micLogoTweaks <~
-        On.click(Ui(presenter.launchVoiceSearch())))
+        On.click(Ui(navigationJobs.launchVoiceSearch().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
   }
 
   def movement(from: LauncherData, to: LauncherData, isFromLeft: Boolean, fraction: Float): Unit =
@@ -139,14 +134,19 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           vVisible)).run
     }
 
-  def reloadMoment(moment: NineCardsMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Any] = {
+  def reloadMoment(moment: NineCardsMoment)(implicit navigationJobs: NavigationJobs, theme: NineCardsTheme): Ui[Any] = {
     val showClock = ShowClockMoment.readValue
     val text = if (showClock) {
       s"${moment.getName} ${resGetString(R.string.atHour)}"
     } else moment.getName
     (momentContent <~
-      On.click(Ui(presenter.goToChangeMoment())) <~
-      On.longClick(Ui(presenter.goToEditMoment()) ~ Ui(true))) ~
+      On.click(Ui(
+        navigationJobs.goToChangeMoment().resolveAsync())) <~
+      On.longClick(Ui {
+        val momentMap = Map(EditMomentFragment.momentKey -> moment.name)
+        val bundle = navigationJobs.navigationUiActions.dom.createBundle(momentContent, resGetColor(R.color.collection_fab_button_item_edit_moment), momentMap)
+        navigationJobs.launchEditMoment(bundle).resolveAsync()
+      } ~ Ui(true))) ~
       (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~
       (momentClock <~ (if (showClock) vVisible else vGone)) ~
       (momentIcon <~
@@ -154,11 +154,14 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (momentText <~
         tvText(text)) ~
       (momentWeather <~
-        On.click(Ui(presenter.launchGoogleWeather()))) ~
+        On.click(Ui(
+          navigationJobs.launchGoogleWeather().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (momentGoogleIcon <~
-        On.click(Ui(presenter.launchSearch()))) ~
+        On.click(Ui(
+          navigationJobs.launchSearch().resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (momentMicIcon <~
-        On.click(Ui(presenter.launchVoiceSearch())))
+        On.click(Ui(
+          navigationJobs.launchVoiceSearch().resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
   }
 
   def reloadByType(workSpaceType: WorkSpaceType): Ui[Any] = workSpaceType match {
