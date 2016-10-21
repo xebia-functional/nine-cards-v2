@@ -14,9 +14,8 @@ import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models._
 import cards.nine.models.types.{NineCardsMoment, UnknownCondition}
-import cards.nine.models.{Collection, DockApp, Moment}
-import cards.nine.process.accounts._
 import cats.implicits._
 import macroid.ActivityContextWrapper
 import monix.eval.Task
@@ -258,12 +257,12 @@ class LauncherJobs(
     permissions: Array[String],
     grantResults: Array[Int]): TaskService[Unit] = {
 
-    def serviceAction(result: Seq[PermissionResult]): TaskService[Unit] = requestCode match {
-      case RequestCodes.contactsPermission if result.exists(_.hasPermission(ReadContacts)) =>
+    def serviceAction(result: Seq[types.PermissionResult]): TaskService[Unit] = requestCode match {
+      case RequestCodes.contactsPermission if result.exists(_.hasPermission(types.ReadContacts)) =>
         appDrawerUiActions.reloadContacts()
-      case RequestCodes.callLogPermission if result.exists(_.hasPermission(ReadCallLog)) =>
+      case RequestCodes.callLogPermission if result.exists(_.hasPermission(types.ReadCallLog)) =>
         appDrawerUiActions.reloadContacts()
-      case RequestCodes.phoneCallPermission if result.exists(_.hasPermission(CallPhone)) =>
+      case RequestCodes.phoneCallPermission if result.exists(_.hasPermission(types.CallPhone)) =>
         statuses.lastPhone match {
           case Some(phone) =>
             statuses = statuses.copy(lastPhone = None)
@@ -274,13 +273,13 @@ class LauncherJobs(
         for {
           _ <- appDrawerUiActions.reloadApps()
           _ <- navigationUiActions.showContactPermissionError(() =>
-            di.userAccountsProcess.requestPermission(RequestCodes.contactsPermission, ReadContacts).resolveAsync())
+            di.userAccountsProcess.requestPermission(RequestCodes.contactsPermission, types.ReadContacts).resolveAsync())
         } yield ()
       case RequestCodes.callLogPermission =>
         for {
           _ <- appDrawerUiActions.reloadApps()
           _ <- navigationUiActions.showCallPermissionError(() =>
-            di.userAccountsProcess.requestPermission(RequestCodes.callLogPermission, ReadCallLog).resolveAsync())
+            di.userAccountsProcess.requestPermission(RequestCodes.callLogPermission, types.ReadCallLog).resolveAsync())
         } yield ()
       case RequestCodes.phoneCallPermission =>
         statuses.lastPhone match {
@@ -292,7 +291,7 @@ class LauncherJobs(
             } yield ()
           case _ => TaskService.empty
         }
-      case RequestCodes.locationPermission if result.exists(_.hasPermission(FineLocation)) =>
+      case RequestCodes.locationPermission if result.exists(_.hasPermission(types.FineLocation)) =>
         for {
           _ <- updateWeather()
           _ <- di.launcherExecutorProcess.launchGoogleWeather
