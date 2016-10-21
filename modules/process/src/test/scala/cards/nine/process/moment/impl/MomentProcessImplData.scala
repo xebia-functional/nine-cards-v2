@@ -86,9 +86,9 @@ trait MomentProcessImplData {
   val now = DateTime.now()
 
   val nowMorning = now.withDayOfWeek(2).withTime(10, 0, 0, 0)
-  val nowLateNight = now.withDayOfWeek(2).withTime(3, 0, 0, 0)
-  val nowAfternoon = now.withDayOfWeek(2).withTime(18, 0, 0, 0)
+  val nowAfternoon = now.withDayOfWeek(2).withTime(18, 30, 0, 0)
   val nowNight = now.withDayOfWeek(2).withTime(21, 0, 0, 0)
+  val nowLateNight = now.withDayOfWeek(2).withTime(3, 0, 0, 0)
   val nowMorningWeekend = now.withDayOfWeek(7).withTime(10, 0, 0, 0)
 //
 //  val homeMorningId = 1
@@ -186,12 +186,32 @@ trait MomentProcessImplData {
 //      headphone = false,
 //      momentType = Option(NineCardsMoment(seqMomentType(3))))
 
+  val startHomeHour = 8
+  val endHomeHour = 19
+  val startWorkHour = 8
+  val endWorkHour = 17
+  val startNightHour = 20
+  val endNightHour = 8
+  val startStudyHour = 8
+  val endStudyHour = 18
+
+  def toSlotTime(start: Int, end: Int, days: Seq[Int]): Seq[MomentTimeSlot] = {
+    val startTime = if (start < 10) s"0$start:00" else s"$start:00"
+    val endTime = if (end < 10) s"0$end:00" else s"$end:00"
+    if (start > end) {
+      Seq(
+        MomentTimeSlot(from = startTime, to = "23:59", days = days),
+        MomentTimeSlot(from = "00:00", to = endTime, days = days))
+    } else {
+      Seq(MomentTimeSlot(from = startTime, to = endTime, days = days))
+    }
+  }
 
   val homeWifiSSID = "homeSSID"
   val homeMoment = Moment(
     id = momentId + 10,
     collectionId = Some(momentCollectionId + 10),
-    timeslot = Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1))),
+    timeslot = toSlotTime(startHomeHour, endHomeHour, days = Seq(1, 1, 1, 1, 1, 1, 1)),
     wifi = Seq(homeWifiSSID),
     headphone = false,
     momentType = Some(HomeMorningMoment),
@@ -201,7 +221,7 @@ trait MomentProcessImplData {
   val workMoment = Moment(
     id = momentId + 11,
     collectionId = Some(momentCollectionId + 11),
-    timeslot = Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0))),
+    timeslot = toSlotTime(startWorkHour, endWorkHour, days = Seq(0, 1, 1, 1, 1, 1, 0)),
     wifi = Seq(workWifiSSID),
     headphone = false,
     momentType = Some(WorkMoment),
@@ -210,9 +230,7 @@ trait MomentProcessImplData {
   val nightMoment = Moment(
     id = momentId + 12,
     collectionId = Some(momentCollectionId + 12),
-    timeslot = Seq(
-      MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)),
-      MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1))),
+    timeslot = toSlotTime(startNightHour, endNightHour, days = Seq(1, 1, 1, 1, 1, 1, 1)),
     wifi = Seq.empty,
     headphone = false,
     momentType = Some(HomeNightMoment),
@@ -221,7 +239,7 @@ trait MomentProcessImplData {
   val studyMoment = Moment(
     id = momentId + 13,
     collectionId = Some(momentCollectionId + 13),
-    timeslot = Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0))),
+    timeslot = toSlotTime(startStudyHour, endStudyHour, days = Seq(0, 1, 1, 1, 1, 1, 0)),
     wifi = Seq.empty,
     headphone = false,
     momentType = Some(StudyMoment),
