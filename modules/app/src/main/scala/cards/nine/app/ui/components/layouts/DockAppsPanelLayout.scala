@@ -10,16 +10,21 @@ import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
+import cards.nine.app.ui.launcher.LauncherActivity
+import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
+import cards.nine.commons.services.TaskService._
+import cards.nine.models.DockAppData
 import cards.nine.models.types.{AppDockType, ContactDockType}
-import cards.nine.models.{DockAppData, DockApp}
+import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import cards.nine.process.theme.models.{DockPressedColor, NineCardsTheme}
+import cats.implicits._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
@@ -36,10 +41,16 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
   // TODO First implementation in order to remove LauncherPresenter
-  def presenter(implicit context: ActivityContextWrapper): LauncherPresenter = context.original.get match {
-    case Some(activity: LauncherActivity) => activity.presenter
-    case _ => throw new RuntimeException("LauncherPresenter not found")
+  val dragJobs: DragJobs = context match {
+    case activity: LauncherActivity => activity.dragJobs
+    case _ => throw new RuntimeException("DragJobs not found")
   }
+
+  val navigationJobs: NavigationJobs = context match {
+    case activity: LauncherActivity => activity.navigationJobs
+    case _ => throw new RuntimeException("NavigationJobs not found")
+  }
+
 
   val unselectedPosition = -1
 
@@ -92,8 +103,10 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         }
       case ACTION_DROP =>
         draggingTo match {
-          case Some(position) => presenter.endAddItemToDockApp(position)
-          case _ => presenter.endAddItem()
+          case Some(position) =>
+            dragJobs.endAddItemToDockApp(position).resolveAsyncServiceOr(_ =>
+              dragJobs.dragUiActions.endAddItem() *> dragJobs.navigationUiActions.showContactUsError())
+          case _ => dragJobs.endAddItem().resolveAsync()
         }
         draggingTo = None
         (this <~ select(unselectedPosition)).run
@@ -101,7 +114,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         draggingTo = None
         (this <~ select(unselectedPosition)).run
       case ACTION_DRAG_ENDED =>
-        presenter.endAddItem()
+        dragJobs.endAddItem().resolveAsync()
         draggingTo = None
         (this <~ select(unselectedPosition)).run
       case _ =>
@@ -131,7 +144,13 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           case ContactDockType => ivUriContactFromLookup(app.intent.extractLookup(), app.name, circular = true)
           case _ => ivSrc(noFoundAppDrawable)
         }) +
-          On.click (Ui(presenter.execute(app.intent)))
+          On.click (Ui {
+            navigationJobs.execute(app.intent).resolveServiceOr[Throwable]{
+              case e: LauncherExecutorProcessPermissionException =>
+                navigationJobs.openMomentIntentException(app.intent.extractPhone())
+              case _ => navigationJobs.navigationUiActions.showContactUsError()
+            }
+          })
       } getOrElse ivSrc(noFoundAppDrawable) + On.click(Ui.nop))
 
   private[this] def select(position: Int)(implicit contextWrapper: ActivityContextWrapper) = Transformer {

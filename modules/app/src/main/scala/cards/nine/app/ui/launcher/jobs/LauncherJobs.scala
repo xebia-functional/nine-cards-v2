@@ -3,22 +3,21 @@ package cards.nine.app.ui.launcher.jobs
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
+import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{BroadAction, Jobs, RequestCodes}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
+import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
 import cards.nine.commons.NineCardExtensions._
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.UnknownCondition
+import cards.nine.models.types.{NineCardsMoment, UnknownCondition}
 import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
-import cards.nine.process.theme.models.NineCardsTheme
 import cats.implicits._
-import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 
@@ -30,11 +29,14 @@ class LauncherJobs(
   val navigationUiActions: NavigationUiActions,
   val dockAppsUiActions: DockAppsUiActions,
   val topBarUiActions: TopBarUiActions,
-  val widgetUiActions: WidgetUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  val widgetUiActions: WidgetUiActions,
+  val dragUiActions: DragUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
   with AppNineCardsIntentConversions { self =>
 
   lazy val momentPreferences = new MomentPreferences
+
+  val defaultPage = 1
 
   def initialize(): TaskService[Unit] = {
     def initServices: TaskService[Unit] =
@@ -43,20 +45,21 @@ class LauncherJobs(
         di.externalServicesProcess.initializeFirebase *>
         di.externalServicesProcess.initializeStetho
 
-    def setTheme(theme: NineCardsTheme): TaskService[Unit] =
-      workspaceUiActions.initialize(theme) *>
-        menuDrawersUiActions.initialize(theme) *>
-        appDrawerUiActions.initialize(theme) *>
-        topBarUiActions.initialize(theme) *>
-        dockAppsUiActions.initialize(theme)
+    def initAllUiActions(): TaskService[Unit] =
+      widgetUiActions.initialize() *>
+        workspaceUiActions.initialize() *>
+        menuDrawersUiActions.initialize() *>
+        appDrawerUiActions.initialize() *>
+        topBarUiActions.initialize() *>
+        mainLauncherUiActions.initialize()
 
     for {
       _ <- mainLauncherUiActions.initialize()
-      _ <- widgetUiActions.initialize()
+      theme <- getThemeTask
+      _ <- TaskService.right(statuses = statuses.copy(theme = theme))
+      _ <- initAllUiActions()
       _ <- initServices
       _ <- di.userProcess.register
-      theme <- getThemeTask
-      _ <- setTheme(theme)
     } yield ()
   }
 
@@ -166,6 +169,29 @@ class LauncherJobs(
     } yield ()
   }
 
+  def changeMoment(momentType: NineCardsMoment): TaskService[Unit] = {
+    momentPreferences.persist(momentType)
+    for {
+      maybeMoment <- di.momentProcess.fetchMomentByType(momentType)
+      moment <- maybeMoment match {
+        case Some(moment) => TaskService(Task(Right[NineCardException, Moment](moment)))
+        case _ => di.momentProcess.createMomentWithoutCollection(momentType)
+      }
+      collection <- moment.collectionId match {
+        case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
+        case _ => TaskService(Task(Right[NineCardException, Option[Collection]](None)))
+      }
+      data = LauncherData(MomentWorkSpace, Some(LauncherMoment(moment.momentType, collection)))
+      _ <- workspaceUiActions.reloadMoment(data)
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
+    } yield ()
+  }
+
+  def cleanPersistedMoment(): TaskService[Unit] = {
+    momentPreferences.clean()
+    sendBroadCastTask(BroadAction(MomentForceBestAvailableActionFilter.action))
+  }
+
   def reloadCollection(collectionId: Int): TaskService[Unit] =
     for {
       collection <- di.collectionProcess.getCollectionById(collectionId).resolveOption("Collection Id not found in reload collection")
@@ -182,6 +208,23 @@ class LauncherJobs(
       case _ => TaskService.empty
     }
   }
+
+  def updateCollection(collection: Collection): TaskService[Unit] = {
+    def updateCollectionInCurrentData(collection: Collection): Seq[LauncherData] = {
+      val cols = mainLauncherUiActions.dom.getData flatMap (_.collections)
+      val collections = cols.updated(collection.position, collection)
+      createLauncherDataCollections(collections)
+    }
+    workspaceUiActions.reloadWorkspaces(updateCollectionInCurrentData(collection))
+  }
+
+  def removeCollection(collection: Collection): TaskService[Unit] =
+    for {
+      _ <- di.collectionProcess.deleteCollection(collection.id)
+      (page, data) = removeCollectionToCurrentData(collection.id)
+      _ <- workspaceUiActions.reloadWorkspaces(data, Option(page))
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
+    } yield ()
 
   def preferencesChanged(changedPreferences: Array[String]): TaskService[Unit] = {
 
@@ -257,12 +300,31 @@ class LauncherJobs(
       case _ => TaskService.empty
     }
 
-
     for {
       result <- di.userAccountsProcess.parsePermissionsRequestResult(permissions, grantResults)
       _ <- serviceAction(result)
     } yield ()
 
+  }
+
+  private[this] def removeCollectionToCurrentData(collectionId: Int): (Int, Seq[LauncherData]) = {
+    val currentData = mainLauncherUiActions.dom.getData.filter(_.workSpaceType == CollectionsWorkSpace)
+
+    // We remove a collection in sequence and fix positions
+    val collections = (currentData flatMap (_.collections.filterNot(_.id == collectionId))).zipWithIndex map {
+      case (col, index) => col.copy(position = index)
+    }
+
+    val maybeWorkspaceCollection = currentData find (_.collections.exists(_.id == collectionId))
+    val maybePage = maybeWorkspaceCollection map currentData.indexOf
+
+    val newData = createLauncherDataCollections(collections)
+
+    val page = maybePage map { page =>
+      if (newData.isDefinedAt(page)) page else newData.length - 1
+    } getOrElse defaultPage
+
+    (page, newData)
   }
 
   private[this] def updateWeather(): TaskService[Unit] =

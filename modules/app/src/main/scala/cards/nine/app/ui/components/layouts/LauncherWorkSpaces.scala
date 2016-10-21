@@ -11,10 +11,10 @@ import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.commons.TranslationAnimator
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
+import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
-import cards.nine.app.ui.launcher.jobs.WidgetsJobs
-import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
+import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.commons.javaNull
 import cards.nine.models.{Collection, Widget}
 import cards.nine.process.theme.models.NineCardsTheme
@@ -34,8 +34,13 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
   // TODO First implementation in order to remove LauncherPresenter
-  implicit def presenter: LauncherPresenter = context match {
-    case activity: LauncherActivity => activity.presenter
+  implicit def navigationJobs: NavigationJobs = context match {
+    case activity: LauncherActivity => activity.navigationJobs
+    case _ => throw new RuntimeException("LauncherPresenter not found")
+  }
+
+  implicit def dragJobs: DragJobs = context match {
+    case activity: LauncherActivity => activity.dragJobs
     case _ => throw new RuntimeException("LauncherPresenter not found")
   }
 
@@ -44,10 +49,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ => throw new RuntimeException("WidgetsJobs not found")
   }
 
-  implicit def theme: NineCardsTheme = context match {
-    case activity: LauncherActivity => activity.theme
-    case _ => throw new RuntimeException("NineCardsTheme not found")
-  }
+  implicit def theme: NineCardsTheme = statuses.theme
 
   var workSpacesStatuses = LauncherWorkSpacesStatuses()
 

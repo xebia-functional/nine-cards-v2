@@ -16,9 +16,11 @@ import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException, SpaceException}
 import cards.nine.app.ui.launcher.jobs._
+import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{CardData, Collection, Widget}
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
@@ -28,14 +30,9 @@ class LauncherActivity
   with ContextSupportProvider
   with TypedFindView
   with ActionsScreenListener
-  with LauncherUiActionsImpl
   with BroadcastDispatcher { self =>
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
-
-  implicit lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
-
-  lazy val managerContext: FragmentManagerContext[Fragment, FragmentManager] = activityManagerContext
 
   lazy val launcherJobs = createLauncherJobs
 
@@ -43,9 +40,9 @@ class LauncherActivity
 
   lazy val navigationJobs = createNavigationJobs
 
-  lazy val widgetJobs = createWidgetsJobs
+  lazy val dragJobs = createDragJobs
 
-  private[this] var hasFocus = false
+  lazy val widgetJobs = createWidgetsJobs
 
   override val actionsFilters: Seq[String] =
     (MomentsActionFilter.cases map (_.action)) ++ (AppsActionFilter.cases map (_.action)) ++ (CollectionsActionFilter.cases map (_.action))
@@ -105,12 +102,12 @@ class LauncherActivity
 
   override def onWindowFocusChanged(hasFocus: Boolean): Unit = {
     super.onWindowFocusChanged(hasFocus)
-    this.hasFocus = hasFocus
+    statuses = statuses.copy(hasFocus = hasFocus)
   }
 
   override def onNewIntent(intent: Intent): Unit = {
     super.onNewIntent(intent)
-    val alreadyOnHome = hasFocus && ((intent.getFlags &
+    val alreadyOnHome = statuses.hasFocus && ((intent.getFlags &
       Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
       != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
     if (alreadyOnHome) back().resolveAsync()
@@ -179,13 +176,12 @@ class LauncherActivity
 
 object LauncherActivity {
 
-  var statuses = LauncherPresenterStatuses()
+  var statuses = LauncherStatuses()
 
   def createLauncherJobs(implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_],
-    presenter: LauncherPresenter) = {
+    uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new LauncherJobs(
       mainLauncherUiActions = new MainLauncherUiActions(dom),
@@ -195,14 +191,14 @@ object LauncherActivity {
       navigationUiActions = new NavigationUiActions(dom),
       dockAppsUiActions = new DockAppsUiActions(dom),
       topBarUiActions = new TopBarUiActions(dom),
-      widgetUiActions = new WidgetUiActions(dom))
+      widgetUiActions = new WidgetUiActions(dom),
+      dragUiActions = new DragUiActions(dom))
   }
 
   def createAppDrawerJobs(implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_],
-    presenter: LauncherPresenter) = {
+    uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new AppDrawerJobs(new MainAppDrawerUiActions(dom))
   }
@@ -210,13 +206,13 @@ object LauncherActivity {
   def createNavigationJobs(implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_],
-    presenter: LauncherPresenter) = {
+    uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new NavigationJobs(
       navigationUiActions = new NavigationUiActions(dom),
       menuDrawersUiActions = new MenuDrawersUiActions(dom),
-      widgetUiActions = new WidgetUiActions(dom))
+      widgetUiActions = new WidgetUiActions(dom),
+      appDrawerUiActions = new MainAppDrawerUiActions(dom))
   }
 
   def createWidgetsJobs(implicit
@@ -227,10 +223,25 @@ object LauncherActivity {
     new WidgetsJobs(new WidgetUiActions(dom), new NavigationUiActions(dom))
   }
 
+  def createDragJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new LauncherDOM(activityContextWrapper.getOriginal)
+    new DragJobs(
+      mainAppDrawerUiActions = new MainAppDrawerUiActions(dom),
+      dragUiActions = new DragUiActions(dom),
+      navigationUiActions = new NavigationUiActions(dom),
+      dockAppsUiActions = new DockAppsUiActions(dom),
+      workspaceUiActions = new WorkspaceUiActions(dom))
+  }
+
 }
 
-case class LauncherPresenterStatuses(
+case class LauncherStatuses(
+  theme: NineCardsTheme = AppUtils.getDefaultTheme,
   touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
+  hasFocus: Boolean = false,
   hostingNoConfiguredWidget: Option[Widget] = None,
   mode: LauncherMode = NormalMode,
   transformation: Option[EditWidgetTransformation] = None,
@@ -241,20 +252,20 @@ case class LauncherPresenterStatuses(
   currentDraggingPosition: Int = 0,
   lastPhone: Option[String] = None) {
 
-  def startAddItem(card: CardData): LauncherPresenterStatuses =
+  def startAddItem(card: CardData): LauncherStatuses =
     copy(mode = AddItemMode, cardAddItemMode = Some(card))
 
-  def startReorder(collection: Collection, position: Int): LauncherPresenterStatuses =
+  def startReorder(collection: Collection, position: Int): LauncherStatuses =
     copy(
       startPositionReorderMode = position,
       collectionReorderMode = Some(collection),
       currentDraggingPosition = position,
       mode = ReorderMode)
 
-  def updateCurrentPosition(position: Int): LauncherPresenterStatuses =
+  def updateCurrentPosition(position: Int): LauncherStatuses =
     copy(currentDraggingPosition = position)
 
-  def reset(): LauncherPresenterStatuses =
+  def reset(): LauncherStatuses =
     copy(
       startPositionReorderMode = 0,
       cardAddItemMode = None,
@@ -281,3 +292,13 @@ sealed trait EditWidgetTransformation
 case object ResizeTransformation extends EditWidgetTransformation
 
 case object MoveTransformation extends EditWidgetTransformation
+
+sealed trait DragArea
+
+case object ActionsDragArea extends DragArea
+
+case object WorkspacesDragArea extends DragArea
+
+case object DockAppsDragArea extends DragArea
+
+case object NoDragArea extends DragArea
