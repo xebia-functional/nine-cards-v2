@@ -4,9 +4,8 @@ import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.CollectionData
+import cards.nine.models.{Collection, CollectionData}
 import cards.nine.models.types.GetByName
-
 import macroid.ActivityContextWrapper
 
 class PrivateCollectionsJobs(actions: PrivateCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
@@ -39,11 +38,10 @@ class PrivateCollectionsJobs(actions: PrivateCollectionsUiActions)(implicit cont
       }
     } yield ()
 
-  def saveCollection(collection: CollectionData): TaskService[Unit] =
+  def saveCollection(collection: CollectionData): TaskService[Collection] =
     for {
-      collection <- di.collectionProcess.addCollection(collection)
-      _ <- actions.addCollection(collection)
+      collectionAdded <- di.collectionProcess.addCollection(collection)
       _ <- actions.close()
-    } yield ()
+    } yield collectionAdded
 
 }
