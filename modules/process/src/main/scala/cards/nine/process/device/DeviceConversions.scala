@@ -2,7 +2,7 @@ package cards.nine.process.device
 
 import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.process.device.models.{AppsWithWidgets, LastCallsContact}
+import cards.nine.process.device.models.AppsWithWidgets
 
 trait DeviceConversions extends NineCardsIntentConversions {
 

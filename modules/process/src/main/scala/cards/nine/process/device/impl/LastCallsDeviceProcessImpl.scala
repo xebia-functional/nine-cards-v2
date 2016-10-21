@@ -5,7 +5,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{Call, Contact}
 import cards.nine.process.device._
-import cards.nine.process.device.models.LastCallsContact
+import cards.nine.models.LastCallsContact
 import cards.nine.services.calls.CallsServicesPermissionException
 import cats.syntax.either._
 import monix.eval.Task

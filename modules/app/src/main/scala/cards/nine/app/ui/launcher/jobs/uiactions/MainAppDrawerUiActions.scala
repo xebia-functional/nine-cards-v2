@@ -16,7 +16,7 @@ import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAd
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.commons.{AppUtils, DragObject, SystemBarsTint, UiContext}
+import cards.nine.app.ui.commons.{DragObject, SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
 import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.layouts.snails.TabsSnails._
@@ -38,9 +38,9 @@ import cards.nine.app.ui.launcher.types.AddItemToCollection
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
-import cards.nine.models.{ApplicationData, Contact, TermCounter}
+import cards.nine.models.{LastCallsContact, ApplicationData, Contact, TermCounter}
 import cards.nine.process.device._
-import cards.nine.process.device.models.{IterableApps, IterableContacts, LastCallsContact}
+import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
