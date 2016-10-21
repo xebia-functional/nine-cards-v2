@@ -29,7 +29,7 @@ trait TaskServiceSpecification extends Specification {
 
   implicit class TaskServiceTestAwait[B](service: TaskService[B]) {
 
-    def run: NineCardException Either B = Await.result(service.value.runAsync, 10.seconds)
+    def run: NineCardException Either B = Await.result(service.value.runAsync, Duration.Inf)
 
     def mustLeft[A <: NineCardException](implicit classTag: ClassTag[A]): Unit =
       service.run must beLike {
